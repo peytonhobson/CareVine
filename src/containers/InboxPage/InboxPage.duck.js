@@ -2,7 +2,12 @@ import reverse from 'lodash/reverse';
 import sortBy from 'lodash/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
-import { TRANSITIONS } from '../../util/transaction';
+import {
+  TRANSITIONS,
+  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
+  TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION,
+  TRANSITION_NOTIFY_FOR_PAYMENT,
+} from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -10,6 +15,9 @@ import pick from 'lodash/pick';
 import pickBy from 'lodash/pickBy';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
+import { updateUserMetadata, transitionPrivileged } from '../../util/api';
+import * as log from '../../util/log';
+import config from '../../config';
 
 const MESSAGES_PAGE_SIZE = 10;
 const { UUID } = sdkTypes;
@@ -25,9 +33,9 @@ const sortedTransactions = txs =>
 
 export const SET_INITIAL_VALUES = 'app/InboxPage/SET_INITIAL_VALUES';
 
-export const FETCH_ORDERS_OR_SALES_REQUEST = 'app/InboxPage/FETCH_ORDERS_OR_SALES_REQUEST';
-export const FETCH_ORDERS_OR_SALES_SUCCESS = 'app/InboxPage/FETCH_ORDERS_OR_SALES_SUCCESS';
-export const FETCH_ORDERS_OR_SALES_ERROR = 'app/InboxPage/FETCH_ORDERS_OR_SALES_ERROR';
+export const FETCH_TRANSACTIONS_REQUEST = 'app/InboxPage/FETCH_TRANSACTIONS_REQUEST';
+export const FETCH_TRANSACTIONS_SUCCESS = 'app/InboxPage/FETCH_TRANSACTIONS_SUCCESS';
+export const FETCH_TRANSACTIONS_ERROR = 'app/InboxPage/FETCH_TRANSACTIONS_ERROR';
 
 export const FETCH_MESSAGES_REQUEST = 'app/InboxPage/FETCH_MESSAGES_REQUEST';
 export const FETCH_MESSAGES_SUCCESS = 'app/InboxPage/FETCH_MESSAGES_SUCCESS';
@@ -45,7 +53,26 @@ export const FETCH_OTHER_USER_LISTING_REQUEST = 'app/InboxPage/FETCH_OTHER_USER_
 export const FETCH_OTHER_USER_LISTING_SUCCESS = 'app/InboxPage/FETCH_OTHER_USER_LISTING_SUCCESS';
 export const FETCH_OTHER_USER_LISTING_ERROR = 'app/InboxPage/FETCH_OTHER_USER_LISTING_ERROR';
 
-export const CLEAR_MESSAGES_SUCCESS = 'app/InboxPage/CLEAR_MESSAGES_SUCCESS';
+export const UPDATE_VIEWED_MESSAGES_REQUEST = 'app/InboxPage/UPDATE_VIEWED_MESSAGES_REQUEST';
+export const UPDATE_VIEWED_MESSAGES_SUCCESS = 'app/UPDATE_VIEWED_MESSAGES_SUCCESS';
+export const UPDATE_VIEWED_MESSAGES_ERROR = 'app/InboxPage/UPDATE_VIEWED_MESSAGES_ERROR';
+
+export const UPDATE_VIEWED_NOTIFICATIONS_REQUEST =
+  'app/InboxPage/UPDATE_VIEWED_NOTIFICATIONS_REQUEST';
+export const UPDATE_VIEWED_NOTIFICATIONS_SUCCESS =
+  'app/InboxPage/UPDATE_VIEWED_NOTIFICATIONS_SUCCESS';
+export const UPDATE_VIEWED_NOTIFICATIONS_ERROR = 'app/InboxPage/UPDATE_VIEWED_NOTIFICATIONS_ERROR';
+
+// write three action types consts for transition to request payment, accept payment, decline payment
+
+export const TRANSITION_TO_REQUEST_PAYMENT_REQUEST =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_REQUEST';
+export const TRANSITION_TO_REQUEST_PAYMENT_SUCCESS =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_SUCCESS';
+export const TRANSITION_TO_REQUEST_PAYMENT_ERROR =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_ERROR';
+
+export const CLEAR_MESSAGES_SUCCESS = 'app/InboxPage/UPDATE_USER_LAST_VIEWED_TIME_SUCCESS';
 
 // ================ Reducer ================ //
 
@@ -56,8 +83,8 @@ const entityRefs = entities =>
   }));
 
 const initialState = {
-  fetchInProgress: false,
-  fetchOrdersOrSalesError: null,
+  fetchTransactionsInProgress: false,
+  fetchTransactionsError: null,
   pagination: null,
   transactionRefs: [],
   fetchMessagesInProgress: false,
@@ -72,6 +99,15 @@ const initialState = {
   otherUserListing: null,
   fetchOtherUserListingInProgress: false,
   fetchOtherUserListingError: false,
+  updateViewedMessagesSuccess: false,
+  updateViewedMessagesInProgress: false,
+  updateViewedMessagesError: null,
+  updateViewedNotificationsSuccess: false,
+  updateViewedNotificationsInProgress: false,
+  updateViewedNotificationsError: null,
+  transitionToRequestPaymentInProgress: false,
+  transitionToRequestPaymentError: null,
+  transitionToRequestPaymentSuccess: false,
 };
 
 const mergeEntityArrays = (a, b) => {
@@ -81,20 +117,19 @@ const mergeEntityArrays = (a, b) => {
 export default function checkoutPageReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
-    case FETCH_ORDERS_OR_SALES_REQUEST:
-      return { ...state, fetchInProgress: true, fetchOrdersOrSalesError: null };
-    case FETCH_ORDERS_OR_SALES_SUCCESS: {
+    case FETCH_TRANSACTIONS_REQUEST:
+      return { ...state, fetchTransactionsInProgress: true, fetchTransactionsError: null };
+    case FETCH_TRANSACTIONS_SUCCESS: {
       const transactions = sortedTransactions(payload.data.data);
       return {
         ...state,
-        fetchInProgress: false,
+        fetchTransactionsInProgress: false,
         transactionRefs: entityRefs(transactions),
         pagination: payload.data.meta,
       };
     }
-    case FETCH_ORDERS_OR_SALES_ERROR:
-      console.error(payload); // eslint-disable-line
-      return { ...state, fetchInProgress: false, fetchOrdersOrSalesError: payload };
+    case FETCH_TRANSACTIONS_ERROR:
+      return { ...state, fetchTransactionsInProgress: false, fetchTransactionsError: payload };
 
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
@@ -156,9 +191,62 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
     case FETCH_OTHER_USER_LISTING_ERROR:
       return {
         ...state,
-        fetchOtherUserListingProgress: false,
+        fetchOtherUserListingInProgress: false,
         fetchOtherUserListingError: payload,
       };
+    case UPDATE_VIEWED_MESSAGES_REQUEST:
+      return { ...state, updateViewedMessagesInProgress: true, updateViewedMessagesError: false };
+    case UPDATE_VIEWED_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        updateViewedMessagesSuccess: true,
+        updateViewedMessagesInProgress: false,
+      };
+    case UPDATE_VIEWED_MESSAGES_ERROR:
+      return {
+        ...state,
+        updateViewedMessagesInProgress: false,
+        updateViewedMessagesError: payload,
+      };
+
+    case UPDATE_VIEWED_NOTIFICATIONS_REQUEST:
+      return {
+        ...state,
+        updateViewedNotificationsInProgress: true,
+        updateViewedNotificationsError: false,
+      };
+    case UPDATE_VIEWED_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        updateViewedNotificationsSuccess: true,
+        updateViewedNotificationsInProgress: false,
+      };
+    case UPDATE_VIEWED_NOTIFICATIONS_ERROR:
+      return {
+        ...state,
+        updateViewedNotificationsInProgress: false,
+        updateViewedNotificationsError: payload,
+      };
+
+    case TRANSITION_TO_REQUEST_PAYMENT_REQUEST:
+      return {
+        ...state,
+        transitionToRequestPaymentInProgress: true,
+        transitionToRequestPaymentError: false,
+      };
+    case TRANSITION_TO_REQUEST_PAYMENT_SUCCESS:
+      return {
+        ...state,
+        transitionToRequestPaymentSuccess: true,
+        transitionToRequestPaymentInProgress: false,
+      };
+    case TRANSITION_TO_REQUEST_PAYMENT_ERROR:
+      return {
+        ...state,
+        transitionToRequestPaymentInProgress: false,
+        transitionToRequestPaymentError: payload,
+      };
+
     default:
       return state;
   }
@@ -171,13 +259,13 @@ export const setInitialValues = initialValues => ({
   payload: pick(initialValues, Object.keys(initialState)),
 });
 
-const fetchOrdersOrSalesRequest = () => ({ type: FETCH_ORDERS_OR_SALES_REQUEST });
-const fetchOrdersOrSalesSuccess = response => ({
-  type: FETCH_ORDERS_OR_SALES_SUCCESS,
+const fetchTransactionsRequest = () => ({ type: FETCH_TRANSACTIONS_REQUEST });
+const fetchTransactionsSuccess = response => ({
+  type: FETCH_TRANSACTIONS_SUCCESS,
   payload: response,
 });
-const fetchOrdersOrSalesError = e => ({
-  type: FETCH_ORDERS_OR_SALES_ERROR,
+const fetchTransactionsError = e => ({
+  type: FETCH_TRANSACTIONS_ERROR,
   error: true,
   payload: e,
 });
@@ -201,6 +289,36 @@ const fetchOtherUserListingSuccess = response => ({
 });
 const fetchOtherUserListingError = e => ({
   type: FETCH_OTHER_USER_LISTING_ERROR,
+  error: true,
+  payload: e,
+});
+
+const updateViewedMessagesRequest = () => ({ type: UPDATE_VIEWED_MESSAGES_REQUEST });
+const updateViewedMessagesSuccess = () => ({
+  type: UPDATE_VIEWED_MESSAGES_SUCCESS,
+});
+const updateViewedMessagesError = e => ({
+  type: UPDATE_VIEWED_MESSAGES_ERROR,
+  error: true,
+  payload: e,
+});
+
+const updateViewedNotificationsRequest = () => ({ type: UPDATE_VIEWED_NOTIFICATIONS_REQUEST });
+const updateViewedNotificationsSuccess = () => ({
+  type: UPDATE_VIEWED_NOTIFICATIONS_SUCCESS,
+});
+const updateViewedNotificationsError = e => ({
+  type: UPDATE_VIEWED_NOTIFICATIONS_ERROR,
+  error: true,
+  payload: e,
+});
+
+const transitionToRequestPaymentRequest = () => ({ type: TRANSITION_TO_REQUEST_PAYMENT_REQUEST });
+const transitionToRequestPaymentSuccess = () => ({
+  type: TRANSITION_TO_REQUEST_PAYMENT_SUCCESS,
+});
+const transitionToRequestPaymentError = e => ({
+  type: TRANSITION_TO_REQUEST_PAYMENT_ERROR,
   error: true,
   payload: e,
 });
@@ -310,6 +428,50 @@ export const fetchOtherUserListing = userId => (dispatch, getState, sdk) => {
     });
 };
 
+export const updateViewedMessages = (userId, viewedMessages) => (dispatch, getState, sdk) => {
+  dispatch(updateViewedMessagesRequest());
+
+  return updateUserMetadata({ userId, metadata: { viewedMessages } })
+    .then(() => dispatch(updateViewedMessagesSuccess()))
+    .catch(e => dispatch(updateViewedMessagesError(e)));
+};
+
+export const updateViewedNotifications = (userId, viewedNotifications) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(updateViewedNotificationsRequest());
+
+  return updateUserMetadata({ userId, metadata: { viewedNotifications } })
+    .then(() => dispatch(updateViewedNotificationsSuccess()))
+    .catch(e => dispatch(updateViewedNotificationsError(e)));
+};
+
+// write function to transition to request payment
+export const transitionToRequestPayment = tx => (dispatch, getState, sdk) => {
+  dispatch(transitionToRequestPaymentRequest());
+  const lastTransition = tx.attributesl.lastTransition;
+
+  const transitionFromNotification = lastTransition === TRANSITION_NOTIFY_FOR_PAYMENT;
+
+  const bodyParams = {
+    id: txId.id.uuid,
+    transition: transitionFromNotification
+      ? TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION
+      : TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
+    params: {},
+  };
+
+  return sdk.transactions
+    .transition(bodyParams)
+    .then(() => dispatch(transitionToRequestPaymentSuccess()))
+    .catch(e => {
+      log.error(e, 'transition-to-request-payment-failed', {});
+      dispatch(transitionToRequestPaymentError(e));
+    });
+};
+
 const IMAGE_VARIANTS = {
   'fields.image': [
     // Profile images
@@ -335,20 +497,14 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const initialValues = txRef ? {} : pickBy(state, isNonEmpty);
   dispatch(setInitialValues(initialValues));
 
-  dispatch(fetchOrdersOrSalesRequest());
+  dispatch(fetchTransactionsRequest());
 
   const { page = 1 } = parse(search);
 
   const apiQueryParams = {
     lastTransitions: TRANSITIONS,
     include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'listing'],
-    'fields.transaction': [
-      'lastTransition',
-      'lastTransitionedAt',
-      'transitions',
-      'payinTotal',
-      'payoutTotal',
-    ],
+    'fields.transaction': ['lastTransition', 'lastTransitionedAt', 'transitions'],
     'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
     'fields.image': ['variants.square-small', 'variants.square-small2x'],
     page,
@@ -359,7 +515,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     .query(apiQueryParams)
     .then(response => {
       dispatch(addMarketplaceEntities(response));
-      dispatch(fetchOrdersOrSalesSuccess(response));
+      dispatch(fetchTransactionsSuccess(response));
       return response;
     })
     .then(response => {
@@ -368,7 +524,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
       });
     })
     .catch(e => {
-      dispatch(fetchOrdersOrSalesError(storableError(e)));
+      dispatch(fetchTransactionsError(storableError(e)));
       throw e;
     });
 };

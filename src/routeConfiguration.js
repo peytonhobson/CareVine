@@ -12,7 +12,6 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 
 const AboutPage = loadable(() => import(/* webpackChunkName: "AboutPage" */ './containers/AboutPage/AboutPage'));
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ './containers/AuthenticationPage/AuthenticationPage'));
-const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ './containers/CheckoutPage/CheckoutPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
@@ -30,8 +29,6 @@ const SearchPage = loadable(() => import(/* webpackChunkName: "SearchPage" */ /*
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ './containers/StripePayoutPage/StripePayoutPage'));
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
-const CreateProfilePage = loadable(() => import(/* webpackChunksFilename: "CreateProfilePage" */ './containers/CreateProfilePage/CreateProfilePage'));
-const CareTypePage = loadable(() => import(/* webpackChunksFilename: "CareTypePage" */ './containers/CareTypePage/CareTypePage'));
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ './containers/StyleguidePage/StyleguidePage'));
@@ -77,13 +74,6 @@ const routeConfiguration = () => {
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
     },
     {
-      path: '/select-care-types/:slug/:id/:type',
-      name: 'CareTypePage',
-      component: CareTypePage,
-      auth: true,
-      loadData: pageDataLoadingAPI.EditListingPage.loadData,
-    },
-    {
       path: '/s',
       name: 'SearchPage',
       component: SearchPage,
@@ -99,13 +89,6 @@ const routeConfiguration = () => {
       name: 'ListingPage',
       component: ListingPage,
       loadData: pageDataLoadingAPI.ListingPage.loadData,
-    },
-    {
-      path: '/l/:slug/:id/checkout',
-      name: 'CheckoutPage',
-      auth: true,
-      component: CheckoutPage,
-      setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
     },
     {
       path: '/l/:slug/:id/:variant',

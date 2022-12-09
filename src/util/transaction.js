@@ -1,4 +1,6 @@
 import { ensureTransaction } from './data';
+import { CAREGIVER } from './constants';
+import getUuid from 'uuid-by-string';
 
 /**
  * Transitions
@@ -18,12 +20,20 @@ export const TRANSITION_REQUEST_PAYMENT = 'transition/request-payment';
 // A customer can also initiate a transaction with an enquiry, and
 // then transition that with a request.
 export const TRANSITION_ENQUIRE = 'transition/enquire';
+export const TRANSITION_NOTIFY_FOR_PAYMENT = 'transition/notify-for-payment';
+export const TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION =
+  'transition/request-payment-after-notification';
+export const TRANSITION_PAYMENT_AFTER_NOTIFICATION = 'transition/payment-after-notification';
 export const TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY = 'transition/request-payment-after-enquiry';
+export const TRANSITION_PAYMENT_AFTER_ENQUIRY = 'transition/payment-after-enquiry';
+export const TRANSITION_PAYMENT_AFTER_REQUEST = 'transition/payment-after-request';
+export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
+export const TRANSITION_PAYMENT_ERROR = 'transition/payment-error';
 
 // Stripe SDK might need to ask 3D security from customer, in a separate front-end step.
 // Therefore we need to make another transition to Marketplace API,
 // to tell that the payment is confirmed.
-export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
+// export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
 
 // If the payment is not confirmed in the time limit set in transaction process (by default 15min)
 // the transaction will expire automatically.
@@ -86,6 +96,7 @@ const STATE_INITIAL = 'initial';
 const STATE_ENQUIRY = 'enquiry';
 const STATE_PAYMENT_PENDING = 'payment-pending';
 const STATE_PAYMENT_EXPIRED = 'payment-expired';
+const STATE_PAYMENT_REQUESTED = 'payment-requested';
 const STATE_PREAUTHORIZED = 'preauthorized';
 const STATE_DECLINED = 'declined';
 const STATE_ACCEPTED = 'accepted';
@@ -94,6 +105,7 @@ const STATE_DELIVERED = 'delivered';
 const STATE_REVIEWED = 'reviewed';
 const STATE_REVIEWED_BY_CUSTOMER = 'reviewed-by-customer';
 const STATE_REVIEWED_BY_PROVIDER = 'reviewed-by-provider';
+const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 
 /**
  * Description of transaction process
@@ -108,7 +120,7 @@ const stateDescription = {
   // id is defined only to support Xstate format.
   // However if you have multiple transaction processes defined,
   // it is best to keep them in sync with transaction process aliases.
-  id: 'flex-hourly-default-process/release-1',
+  // id: 'instant-care-payment-process/release-8',
 
   // This 'initial' state is a starting point for new transaction
   initial: STATE_INITIAL,
@@ -122,39 +134,31 @@ const stateDescription = {
     },
     [STATE_ENQUIRY]: {
       on: {
-        [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_PENDING,
+        [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_REQUESTED,
+        [TRANSITION_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_PENDING,
+        [TRANSITION_NOTIFY_FOR_PAYMENT]: STATE_NOTIFIED_FOR_PAYMENT,
+      },
+    },
+
+    [STATE_NOTIFIED_FOR_PAYMENT]: {
+      on: {
+        [TRANSITION_PAYMENT_AFTER_NOTIFICATION]: STATE_PAYMENT_PENDING,
+        [TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION]: STATE_PAYMENT_REQUESTED,
+      },
+    },
+
+    [STATE_PAYMENT_REQUESTED]: {
+      on: {
+        [TRANSITION_PAYMENT_AFTER_REQUEST]: STATE_PAYMENT_PENDING,
       },
     },
 
     [STATE_PAYMENT_PENDING]: {
       on: {
-        [TRANSITION_EXPIRE_PAYMENT]: STATE_PAYMENT_EXPIRED,
-        [TRANSITION_CONFIRM_PAYMENT]: STATE_DELIVERED,
+        [TRANSITION_CONFIRM_PAYMENT]: STATE_ENQUIRY,
+        [TRANSITION_PAYMENT_ERROR]: STATE_ENQUIRY,
       },
     },
-
-    [STATE_PAYMENT_EXPIRED]: {},
-
-    [STATE_DELIVERED]: {
-      on: {
-        [TRANSITION_REVIEW_1_BY_CUSTOMER]: STATE_REVIEWED_BY_CUSTOMER,
-        [TRANSITION_REVIEW_1_BY_PROVIDER]: STATE_REVIEWED_BY_PROVIDER,
-      },
-    },
-
-    [STATE_REVIEWED_BY_CUSTOMER]: {
-      on: {
-        [TRANSITION_REVIEW_2_BY_PROVIDER]: STATE_REVIEWED,
-        [TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD]: STATE_REVIEWED,
-      },
-    },
-    [STATE_REVIEWED_BY_PROVIDER]: {
-      on: {
-        [TRANSITION_REVIEW_2_BY_CUSTOMER]: STATE_REVIEWED,
-        [TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD]: STATE_REVIEWED,
-      },
-    },
-    [STATE_REVIEWED]: { type: 'final' },
   },
 };
 
@@ -181,6 +185,14 @@ const getTransitions = states => {
 export const TRANSITIONS = getTransitions(statesFromStateDescription(stateDescription)).map(
   t => t.key
 );
+
+export const NOTIFICATION_TRANSITIONS = [
+  TRANSITION_CONFIRM_PAYMENT,
+  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
+  TRANSITION_NOTIFY_FOR_PAYMENT,
+  TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION,
+  TRANSITION_PAYMENT_AFTER_NOTIFICATION,
+];
 
 // This function returns a function that has given stateDesc in scope chain.
 const getTransitionsToStateFn = stateDesc => state =>
@@ -313,6 +325,61 @@ export const getUserTxRole = (currentUserId, transaction) => {
     throw new Error(`Parameters for "userIsCustomer" function were wrong.
       currentUserId: ${currentUserId}, transaction: ${transaction}`);
   }
+};
+
+export const filterNotificationsByUserType = (notifications, currentUser) => {
+  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+
+  // console.log(userType);
+
+  if (userType === CAREGIVER) {
+    return notifications.filter(notification => {
+      return (
+        notification &&
+        (notification.transition === TRANSITION_CONFIRM_PAYMENT ||
+          notification.transition === TRANSITION_NOTIFY_FOR_PAYMENT)
+      );
+    });
+  } else {
+    return notifications.filter(
+      notification =>
+        notification &&
+        (notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY ||
+          notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION)
+    );
+  }
+};
+
+export const getNotifications = (currentTransactions, currentUser) => {
+  let notifications = [];
+  if (currentTransactions) {
+    currentTransactions.forEach(transaction => {
+      transaction.attributes.transitions.forEach(transition => {
+        transition.transaction = transaction;
+        if (NOTIFICATION_TRANSITIONS.includes(transition.transition)) {
+          notifications.push(transition);
+        }
+      });
+    });
+  }
+
+  const filteredNotifications = filterNotificationsByUserType(notifications, currentUser);
+
+  return filteredNotifications;
+};
+
+export const filterViewedNotifications = (notifications, currentUser) => {
+  const viewedNotifications =
+    (currentUser &&
+      currentUser.attributes.profile.metadata &&
+      currentUser.attributes.profile.metadata.viewedNotifications) ||
+    [];
+
+  const notViewedNotifications = notifications.filter(
+    notification => !viewedNotifications.includes(getUuid(notification.createdAt.toUTCString()))
+  );
+
+  return notViewedNotifications;
 };
 
 export const txRoleIsProvider = userRole => userRole === TX_TRANSITION_ACTOR_PROVIDER;

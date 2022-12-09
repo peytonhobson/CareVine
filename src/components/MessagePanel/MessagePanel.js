@@ -30,6 +30,11 @@ const MessagePanelComponent = props => {
     otherUserListing,
     onManageDisableScrolling,
     onOpenPaymentModal,
+    updateViewedMessages,
+    onRequestPayment,
+    transitionToRequestPaymentInProgress,
+    transitionToRequestPaymentError,
+    transitionToRequestPaymentSuccess,
   } = props;
 
   //   const [isMobSaf, setIsMobSaf] = useState(false);
@@ -124,6 +129,10 @@ const MessagePanelComponent = props => {
           otherUser={otherUser}
           otherUserListing={otherUserListing}
           currentTransaction={currentTransaction}
+          onRequestPayment={onRequestPayment}
+          transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+          transitionToRequestPaymentError={transitionToRequestPaymentError}
+          transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
         />
       </div>
       <FeedSection
@@ -139,6 +148,7 @@ const MessagePanelComponent = props => {
         onOpenReviewModal={() => console.log('Review Modal opened')}
         onShowMoreMessages={() => onShowMoreMessages(currentTransaction.id)}
         totalMessagePages={totalMessagePagesValue}
+        updateViewedMessages={updateViewedMessages}
       />
       {showSendMessageForm ? (
         <SendMessageForm

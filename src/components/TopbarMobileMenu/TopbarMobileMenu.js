@@ -3,7 +3,7 @@
  * shows login actions for those who are not authenticated.
  */
 import React from 'react';
-import { bool, func, number, string } from 'prop-types';
+import { bool, func, number, string, array } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';

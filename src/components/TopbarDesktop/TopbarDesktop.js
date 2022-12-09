@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { bool, func, object, number, string } from 'prop-types';
+import { bool, func, object, number, string, array } from 'prop-types';
 import { FormattedMessage, intlShape } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';
