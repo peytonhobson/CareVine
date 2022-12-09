@@ -39,7 +39,8 @@ const sortSearchByDistance = false;
 //
 // In a way, 'processAlias' defines which transaction process (or processes)
 // this particular web application is able to handle.
-const bookingProcessAlias = 'instant-care-payment/release-7';
+const caregiverInitiatedProcessAlias = `caregiver-initiated/release-4`;
+const employerInitiatedProcessAlias = `employer-initiated/release-3`;
 
 // The transaction line item code for the main unit type in bookings.
 //
@@ -207,7 +208,8 @@ const config = {
   dev,
   appCdnAssets,
   locale,
-  bookingProcessAlias,
+  caregiverInitiatedProcessAlias,
+  employerInitiatedProcessAlias,
   bookingUnitType,
   enableAvailability,
   dayCountAvailableForBooking,

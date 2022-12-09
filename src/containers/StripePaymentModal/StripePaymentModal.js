@@ -18,6 +18,7 @@ import {
   stripeCustomer,
   saveDefaultPayment,
   fetchDefaultPayment,
+  transitionNotifyForPayment,
 } from './StripePaymentModal.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
 import { Elements } from '@stripe/react-stripe-js';
@@ -28,6 +29,7 @@ import { propTypes } from '../../util/types';
 import css from './StripePaymentModal.module.css';
 import { Fragment } from 'react';
 import { fontFamily } from '@mui/system';
+import { TRANSITION_ENQUIRE } from '../../util/transaction';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 const STORAGE_KEY = 'StripePaymentModal';
@@ -62,6 +64,9 @@ const StripePaymentModalComponent = props => {
     defaultPayment,
     onFetchDefaultPayment,
     defaultPaymentFetched,
+    onTransitionNotifyForPayment,
+    transitionNotifyForPaymentInProgress,
+    transitionNotifyForPaymentSuccess,
   } = props;
 
   const [clientSecret, setClientSecret] = useState(null);
@@ -122,7 +127,8 @@ const StripePaymentModalComponent = props => {
       saveCardAsDefault,
       defaultPaymentId,
       paymentIntent.id,
-      useDefaultCard
+      useDefaultCard,
+      modalData.transaction
     );
   };
 
@@ -134,6 +140,10 @@ const StripePaymentModalComponent = props => {
   const onHandleEditPaymentDetails = () => {
     setClientSecret(null);
     setRootClass(classNames(css.root, css.single));
+  };
+
+  const handleNotifyForPayment = () => {
+    onTransitionNotifyForPayment(modalData.transaction.id);
   };
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -212,6 +222,12 @@ const StripePaymentModalComponent = props => {
   const notifyProviderMessage = intl.formatMessage({
     id: 'StripePaymentModal.notifyProviderMessage',
   });
+
+  const notifyButtonDisabled =
+    (modalData &&
+      modalData.transaction &&
+      modalData.transaction.attributes.lastTransition !== TRANSITION_ENQUIRE) ||
+    transitionNotifyForPaymentSuccess;
 
   return (
     <Fragment>
@@ -295,10 +311,10 @@ const StripePaymentModalComponent = props => {
               </p>
               <div className={css.notifyButtonWrapper}>
                 <Button
-                // type="submit"
-                // inProgress={submitInProgress}
-                // disabled={submitDisabled}
-                // ready={submitReady}
+                  onClick={handleNotifyForPayment}
+                  inProgress={transitionNotifyForPaymentInProgress}
+                  disabled={notifyButtonDisabled}
+                  ready={transitionNotifyForPaymentSuccess}
                 >
                   {notifyProviderMessage}
                 </Button>
@@ -398,6 +414,8 @@ const mapStateToProps = state => {
     fetchDefaultPaymentError,
     defaultPayment,
     defaultPaymentFetched,
+    transitionNotifyForPaymentInProgress,
+    transitionNotifyForPaymentSuccess,
   } = state.StripePaymentModal;
   const { currentUser } = state.user;
 
@@ -421,6 +439,8 @@ const mapStateToProps = state => {
     fetchDefaultPaymentError,
     defaultPayment,
     defaultPaymentFetched,
+    transitionNotifyForPaymentInProgress,
+    transitionNotifyForPaymentSuccess,
   };
 };
 
@@ -436,7 +456,8 @@ const mapDispatchToProps = dispatch => ({
     saveCardAsDefault,
     hasDefaultCard,
     paymentIntentId,
-    useDefaultCard
+    useDefaultCard,
+    tx
   ) =>
     dispatch(
       confirmPayment(
@@ -445,7 +466,8 @@ const mapDispatchToProps = dispatch => ({
         saveCardAsDefault,
         hasDefaultCard,
         paymentIntentId,
-        useDefaultCard
+        useDefaultCard,
+        tx
       )
     ),
   onSetInitialState: () => dispatch(setInitialValues(initialState)),
@@ -454,6 +476,7 @@ const mapDispatchToProps = dispatch => ({
   // onSaveDefaultPayment: (currentUser, elements, stripe) =>
   //   dispatch(saveDefaultPayment(currentUser, elements, stripe)),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
+  onTransitionNotifyForPayment: txId => dispatch(transitionNotifyForPayment(txId)),
 });
 
 const StripePaymentModal = compose(

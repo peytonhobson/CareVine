@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { arrayOf, bool, number, shape, string, func, array } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
@@ -7,7 +7,6 @@ import { withRouter } from 'react-router-dom';
 import queryString from 'query-string';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser, cutTextToPreview } from '../../util/data';
-import { formatDate } from '../../util/dates';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -17,9 +16,11 @@ import {
   sendMessage,
   clearMessages,
   fetchOtherUserListing,
+  updateViewedMessages,
+  updateViewedNotifications,
+  transitionToRequestPayment,
 } from './InboxPage.duck';
 import { fetchTransaction } from '../../ducks/transactions.duck';
-import { PAYMENT_DETAILS } from '../../components/ModalMissingInformation/ModalMissingInformation';
 import {
   NotificationBadge,
   Page,
@@ -34,6 +35,8 @@ import {
   IconSpinner,
   MessagePanel,
   InboxItem,
+  MessagesInboxSideList,
+  NotificationsInboxSideList,
 } from '../../components';
 import { TopbarContainer, NotFoundPage } from '..';
 import config from '../../config';
@@ -42,19 +45,28 @@ import StripePaymentModal from '../StripePaymentModal/StripePaymentModal';
 import { getCurrentTransaction } from './InboxPage.helpers';
 import css from './InboxPage.module.css';
 
+const objectsEqual = (o1, o2) =>
+  o1 && o2 && typeof o1 === 'object' && Object.keys(o1).length > 0
+    ? Object.keys(o1).length === Object.keys(o2).length &&
+      Object.keys(o1).every(p => objectsEqual(o1[p], o2[p]))
+    : o1 === o2;
+
+const arraysEqual = (a1, a2) =>
+  a1.length === a2.length && a1.every((o, idx) => objectsEqual(o, a2[idx]));
+
 export const InboxPageComponent = props => {
   const {
     unitType,
     currentUser,
     currentUserListing,
-    fetchInProgress,
-    fetchOrdersOrSalesError,
+    fetchTransactionsInProgress,
+    fetchTransactionsError,
     intl,
     pagination,
     params,
-    providerNotificationCount,
+    notificationCount,
     scrollingDisabled,
-    transactions,
+    currentTransactions,
     onChangeMissingInfoModal,
     history,
     fetchMessagesInProgress,
@@ -74,51 +86,36 @@ export const InboxPageComponent = props => {
     onManageDisableScrolling,
     onFetchTransaction,
     onSetCurrentTransaction,
+    onUpdateViewedMessages,
+    updateViewedMessagesInProgress,
+    fetchCurrentUserNotificationsInProgress,
+    fetchCurrentUserNotificationsError,
+    onUpdateViewedNotifications,
+    updateViewedNotificationsSuccess,
+    updateViewedNotificationsInProgress,
+    updateViewedNotificationsError,
+    onTransitionToRequestPayment,
+    transitionToRequestPaymentInProgress,
+    transitionToRequestPaymentError,
+    transitionToRequestPaymentSuccess,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
   const currentTxId = queryString.parse(history.location.search).id;
 
-  // Memoize transactionsIds so that inboxItems dont rerender on every select
-  let transactionIds = '';
-  transactions.forEach(transaction => {
-    transactionIds = transactionIds.concat(transaction.id.uuid);
-  });
-  const currentTransactions = useMemo(() => {
-    return transactions;
-  }, [transactionIds]);
-  const currentTransaction = getCurrentTransaction(currentTransactions, history.location.search);
-
-  // Show payment details modal if user doesn't have them
-  useEffect(() => {
-    onChangeMissingInfoModal(PAYMENT_DETAILS);
-  }, []);
+  const [transactions, setTransactions] = useState([]);
+  const [currentTransaction, setCurrentTransaction] = useState(null);
 
   useEffect(() => {
-    if (currentTxId === '' || !currentTxId) {
-      history.replace({
-        pathname: history.location.pathname,
-        search: 'id='.concat(
-          (currentTransactions &&
-            currentTransactions.length > 0 &&
-            currentTransactions[0].id.uuid) ||
-            ''
-        ),
-      });
+    if (!arraysEqual(currentTransactions, transactions)) {
+      setTransactions(currentTransactions);
     }
+  }, [currentTransactions]);
 
-    if (currentTransaction) {
-      onSetCurrentTransaction(currentTransaction);
-      const { customer, provider } = currentTransaction;
-      const otherUser =
-        ensuredCurrentUser.id.uuid === customer && customer.id.uuid ? customer : provider;
-
-      if (!!otherUser) {
-        onFetchOtherUserListing(otherUser.id.uuid);
-      }
-    }
-  }, [currentTxId, currentTransactions, history]);
+  useEffect(() => {
+    setCurrentTransaction(getCurrentTransaction(transactions, history.location.search));
+  }, [transactions, history.location.search]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -141,34 +138,21 @@ export const InboxPageComponent = props => {
   const notificationsTitle = intl.formatMessage({ id: 'InboxPage.notificationsTitle' });
   const title = isMessages ? messagesTitle : notificationsTitle;
 
-  const error = fetchOrdersOrSalesError ? (
+  const error = fetchTransactionsError ? (
     <p className={css.error}>
       <FormattedMessage id="InboxPage.fetchFailed" />
     </p>
   ) : null;
 
-  // Need to make this dynamic when notifications are added
-  const noResults = isMessages ? (
-    !fetchInProgress && currentTransactions.length === 0 && !fetchOrdersOrSalesError ? (
-      <li key="noResults" className={css.noResults}>
-        <FormattedMessage id="InboxPage.noMessagesFound" />
-      </li>
-    ) : null
-  ) : (
-    <li key="noResults" className={css.noResults}>
-      <FormattedMessage id="InboxPage.noNotificationsFound" />
-    </li>
-  );
-
   const hasTransactions =
     (ensuredCurrentUser.id &&
-      currentTransactions &&
-      currentTransactions.length > 0 &&
-      currentTransactions[0].customer.id.uuid === ensuredCurrentUser.id.uuid) ||
+      transactions &&
+      transactions.length > 0 &&
+      transactions[0].customer.id.uuid === ensuredCurrentUser.id.uuid) ||
     (ensuredCurrentUser.id &&
-      currentTransactions &&
-      currentTransactions.length > 0 &&
-      currentTransactions[0].provider.id.uuid === ensuredCurrentUser.id.uuid);
+      transactions &&
+      transactions.length > 0 &&
+      transactions[0].provider.id.uuid === ensuredCurrentUser.id.uuid);
   const pagingLinks =
     hasTransactions && pagination && pagination.totalPages > 1 ? (
       <PaginationLinks
@@ -179,8 +163,9 @@ export const InboxPageComponent = props => {
       />
     ) : null;
 
-  const providerNotificationBadge =
-    providerNotificationCount > 0 ? <NotificationBadge count={providerNotificationCount} /> : null;
+  //Need to change to only new notifications
+  const notificationBadge =
+    notificationCount > 0 ? <NotificationBadge count={notificationCount} /> : null;
 
   const tabs = [
     {
@@ -194,7 +179,6 @@ export const InboxPageComponent = props => {
         name: 'InboxPage',
         params: {
           tab: 'messages',
-          // Need to find permanent solution
           search: '?id=',
         },
       },
@@ -203,7 +187,7 @@ export const InboxPageComponent = props => {
       text: (
         <span>
           <FormattedMessage id="InboxPage.notificationsTabTitle" />
-          {providerNotificationBadge}
+          {notificationBadge}
         </span>
       ),
       selected: !isMessages,
@@ -211,12 +195,12 @@ export const InboxPageComponent = props => {
         name: 'InboxPage',
         params: {
           tab: 'notifications',
-          // Need to find permanent solution
           search: '?id=',
         },
       },
     },
   ];
+
   const nav = (
     <LinkTabNavHorizontal
       rootClassName={css.tabs}
@@ -251,44 +235,43 @@ export const InboxPageComponent = props => {
           </h1>
           {currentUserListing ? nav : <div className={css.navPlaceholder} />}
           {error}
-          <ul className={css.itemList}>
-            {isMessages ? (
-              !fetchInProgress || currentTransactions.length > 0 ? (
-                currentTransactions.map(tx => {
-                  const txMessages = messages.get(tx.id.uuid);
-                  const previewMessageLong =
-                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.content) || '';
-                  const previewMessage = cutTextToPreview(previewMessageLong, 40);
-                  const lastMessageTime =
-                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.createdAt) ||
-                    new Date();
-                  const todayString = intl.formatMessage({ id: 'InboxPage.today' });
-                  return (
-                    <InboxItem
-                      key={tx.id.uuid}
-                      unitType={unitType}
-                      tx={tx}
-                      intl={intl}
-                      params={params}
-                      currentUser={ensuredCurrentUser}
-                      selected={currentTxId === tx.id.uuid}
-                      previewMessage={previewMessage}
-                      lastMessageTime={formatDate(intl, todayString, lastMessageTime)}
-                    />
-                  );
-                })
-              ) : (
-                <li className={css.listItemsLoading}>
-                  <IconSpinner />
-                </li>
-              )
-            ) : null}
-            {noResults}
-          </ul>
+          {isMessages ? (
+            <MessagesInboxSideList
+              fetchTransactionsInProgress={fetchTransactionsInProgress}
+              transactions={transactions}
+              currentTransaction={currentTransaction}
+              messages={messages}
+              intl={intl}
+              params={params}
+              ensuredCurrentUser={ensuredCurrentUser}
+              currentTxId={currentTxId}
+              fetchTransactionsError={fetchTransactionsError}
+              history={history}
+              onSetCurrentTransaction={onSetCurrentTransaction}
+              onFetchOtherUserListing={onFetchOtherUserListing}
+              onUpdateViewedMessages={onUpdateViewedMessages}
+              updateViewedMessagesInProgress={updateViewedMessagesInProgress}
+              currentMessages={currentMessages}
+            />
+          ) : (
+            <NotificationsInboxSideList
+              fetchTransactionsInProgress={fetchTransactionsInProgress}
+              transactions={transactions}
+              intl={intl}
+              params={params}
+              currentUser={currentUser}
+              history={history}
+              currentTransaction={currentTransaction}
+              onUpdateViewedNotifications={onUpdateViewedNotifications}
+              updateViewedNotificationsSuccess={updateViewedNotificationsSuccess}
+              updateViewedNotificationsInProgress={updateViewedNotificationsInProgress}
+              updateViewedNotificationsError={updateViewedNotificationsError}
+            />
+          )}
           {pagingLinks}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
-          {currentTxId && (
+          {currentTxId && isMessages && (
             <MessagePanel
               transaction={currentTransaction}
               currentUser={ensuredCurrentUser}
@@ -307,6 +290,10 @@ export const InboxPageComponent = props => {
               onManageDisableScrolling={onManageDisableScrolling}
               onFetchTransaction={onFetchTransaction}
               onOpenPaymentModal={onOpenPaymentModal}
+              onRequestPayment={onTransitionToRequestPayment}
+              transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+              transitionToRequestPaymentError={transitionToRequestPaymentError}
+              transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
             />
           )}
           {isPaymentModalOpen && (
@@ -330,10 +317,13 @@ InboxPageComponent.defaultProps = {
   currentUser: null,
   currentUserListing: null,
   currentUserHasOrders: null,
-  fetchOrdersOrSalesError: null,
+  fetchTransactionsError: null,
   pagination: null,
-  providerNotificationCount: 0,
+  notifications: [],
   sendVerificationEmailError: null,
+  updateViewedMessagesSuccess: false,
+  updateViewedMessagesInProgress: false,
+  updateViewedMessagesError: null,
 };
 
 InboxPageComponent.propTypes = {
@@ -344,12 +334,12 @@ InboxPageComponent.propTypes = {
   unitType: propTypes.bookingUnitType,
   currentUser: propTypes.currentUser,
   currentUserListing: propTypes.ownListing,
-  fetchInProgress: bool.isRequired,
-  fetchOrdersOrSalesError: propTypes.error,
+  fetchTransactionsInProgress: bool.isRequired,
+  fetchTransactionsError: propTypes.error,
   pagination: propTypes.pagination,
-  providerNotificationCount: number,
+  notifications: array,
   scrollingDisabled: bool.isRequired,
-  transactions: arrayOf(propTypes.transaction).isRequired,
+  currentTransactions: arrayOf(propTypes.transaction).isRequired,
 
   /* from withRouter */
   history: shape({
@@ -362,8 +352,8 @@ InboxPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const {
-    fetchInProgress,
-    fetchOrdersOrSalesError,
+    fetchTransactionsInProgress,
+    fetchTransactionsError,
     pagination,
     fetchMessagesInProgress,
     totalMessagePages,
@@ -375,21 +365,32 @@ const mapStateToProps = state => {
     sendMessageError,
     transactionRefs,
     otherUserListing,
+    updateViewedMessagesSuccess,
+    updateViewedMessagesInProgress,
+    updateViewedMessagesError,
+    updateViewedNotificationsSuccess,
+    updateViewedNotificationsInProgress,
+    updateViewedNotificationsError,
+    transitionToRequestPaymentInProgress,
+    transitionToRequestPaymentError,
+    transitionToRequestPaymentSuccess,
   } = state.InboxPage;
   const {
     currentUser,
     currentUserListing,
-    currentUserNotificationCount: providerNotificationCount,
+    currentUserNotifications: notifications,
+    fetchCurrentUserNotificationsInProgress,
+    fetchCurrentUserNotificationsError,
   } = state.user;
   return {
     currentUser,
     currentUserListing,
-    fetchInProgress,
-    fetchOrdersOrSalesError,
+    fetchTransactionsInProgress,
+    fetchTransactionsError,
     pagination,
-    providerNotificationCount,
+    notifications,
     scrollingDisabled: isScrollingDisabled(state),
-    transactions: getMarketplaceEntities(state, transactionRefs),
+    currentTransactions: getMarketplaceEntities(state, transactionRefs),
     fetchMessagesInProgress,
     totalMessagePages,
     messages,
@@ -399,6 +400,17 @@ const mapStateToProps = state => {
     sendMessageInProgress,
     sendMessageError,
     otherUserListing,
+    fetchCurrentUserNotificationsInProgress,
+    fetchCurrentUserNotificationsError,
+    updateViewedMessagesSuccess,
+    updateViewedMessagesInProgress,
+    updateViewedMessagesError,
+    updateViewedNotificationsSuccess,
+    updateViewedNotificationsInProgress,
+    updateViewedNotificationsError,
+    transitionToRequestPaymentInProgress,
+    transitionToRequestPaymentError,
+    transitionToRequestPaymentSuccess,
   };
 };
 
@@ -412,6 +424,10 @@ const mapDispatchToProps = dispatch => ({
   onFetchOtherUserListing: userId => dispatch(fetchOtherUserListing(userId)),
   onFetchTransaction: txId => dispatch(fetchTransaction(txId)),
   onSetCurrentTransaction: tx => dispatch(setCurrentTransaction(tx)),
+  onUpdateViewedMessages: (tx, messages) => dispatch(updateViewedMessages(tx, messages)),
+  onUpdateViewedNotifications: (userId, viewedNotifications) =>
+    dispatch(updateViewedNotifications(userId, viewedNotifications)),
+  onTransitionToRequestPayment: tx => dispatch(transitionToRequestPayment(tx)),
 });
 
 const InboxPage = compose(

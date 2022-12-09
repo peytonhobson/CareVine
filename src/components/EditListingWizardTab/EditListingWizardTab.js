@@ -411,7 +411,6 @@ EditListingWizardTab.propTypes = {
     deleteExceptionError: object,
   }).isRequired,
   fetchInProgress: bool.isRequired,
-  fetchExceptionsInProgress: bool.isRequired,
   newListingPublished: bool.isRequired,
   history: shape({
     push: func.isRequired,
@@ -434,13 +433,8 @@ EditListingWizardTab.propTypes = {
 
   handleCreateFlowTabScrolling: func.isRequired,
   handlePublishListing: func.isRequired,
-  onAddAvailabilityException: func.isRequired,
-  onDeleteAvailabilityException: func.isRequired,
   onUpdateListing: func.isRequired,
   onCreateListingDraft: func.isRequired,
-  onImageUpload: func.isRequired,
-  onUpdateImageOrder: func.isRequired,
-  onRemoveImage: func.isRequired,
   onChange: func.isRequired,
   updatedTab: string,
   updateInProgress: bool.isRequired,
