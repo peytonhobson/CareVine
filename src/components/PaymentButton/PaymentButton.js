@@ -3,43 +3,44 @@ import { storeData } from '../../containers/StripePaymentModal/StripePaymentModa
 import { setInitialValues } from '../../containers/StripePaymentModal/StripePaymentModal.duck';
 import { Button } from '../../components';
 import { EMPLOYER } from '../../util/constants';
-import {
-  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
-  TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION,
-} from '../../util/transaction';
+import classNames from 'classnames';
 
 import css from './PaymentButton.module.css';
+import { userDisplayNameAsString } from '../../util/data';
 
 const PaymentButton = props => {
   const {
-    currentTransaction,
+    rootClassName,
+    className,
     onOpenPaymentModal,
     currentUser,
     otherUser,
-    otherUserListing,
-    onRequestPayment,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentSuccess,
+    channelUrl,
+    channelContext,
+    onSendRequestForPayment,
+    sendRequestForPaymentInProgress,
+    sendRequestForPaymentError,
+    sendRequestForPaymentSuccess,
   } = props;
 
-  const redirectToCheckout = () => {
-    // Set this to store data and set props for payment modal
-
+  const openStripeModal = () => {
     const modalInitialValues = {
-      listing: otherUserListing,
-      transaction: currentTransaction,
       provider: otherUser,
+      channelUrl,
+      channelContext,
     };
 
-    setInitialValues(modalInitialValues);
-    storeData(otherUser, otherUserListing, currentTransaction, 'StripePaymentModal');
+    storeData(otherUser, channelUrl, 'StripePaymentModal');
 
-    onOpenPaymentModal();
+    onOpenPaymentModal(modalInitialValues);
   };
 
   const requestPayment = () => {
-    onRequestPayment(currentTransaction);
+    if (!sendRequestForPaymentSuccess) {
+      const currenUserId = currentUser && currentUser.id && currentUser.id.uuid;
+      const customerName = userDisplayNameAsString(otherUser);
+      onSendRequestForPayment(currenUserId, customerName, channelUrl, channelContext);
+    }
   };
 
   const currentUserType =
@@ -49,22 +50,20 @@ const PaymentButton = props => {
     currentUser.attributes.profile.metadata &&
     currentUser.attributes.profile.metadata.userType;
 
+  const rootClass = rootClassName || css.root;
+  const buttonClass = className || css.buttonRoot;
+
   return (
-    <div className={css.root}>
+    <div className={rootClass}>
       {currentUserType === EMPLOYER ? (
-        <Button rootClassName={css.buttonRoot} onClick={redirectToCheckout}>
+        <Button rootClassName={buttonClass} onClick={openStripeModal}>
           Pay
         </Button>
       ) : (
         <Button
-          rootClassName={css.buttonRoot}
-          inProgress={transitionToRequestPaymentInProgress}
-          disabled={
-            currentTransaction.attributes.lastTransition ===
-              TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY ||
-            currentTransaction.attributes.lastTransition ===
-              TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION
-          }
+          rootClassName={buttonClass}
+          inProgress={sendRequestForPaymentInProgress}
+          ready={sendRequestForPaymentSuccess}
           onClick={requestPayment}
         >
           Request Payment

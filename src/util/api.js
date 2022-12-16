@@ -182,3 +182,15 @@ export const stripeDetachPaymentMethod = body => {
 export const stripeUpdatePaymentIntent = body => {
   return post('/api/stripe-update-payment-intent', body);
 };
+
+// Create group channel and send first message
+//
+// See `server/api/stripe-update-payment-itent.js` to see what data should
+// be sent in the body.
+export const fetchUserEmail = body => {
+  return post('/api/user-email', body);
+};
+
+export const sendbirdUser = body => {
+  return post('/api/sb-user', body);
+};

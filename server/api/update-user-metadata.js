@@ -1,4 +1,5 @@
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
+var crypto = require('crypto');
 const log = require('../log');
 
 module.exports = (req, res) => {

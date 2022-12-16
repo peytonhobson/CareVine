@@ -320,17 +320,18 @@ export const currentUserNotificationsCount = (page = 1) => (dispatch, getState, 
     page: page,
     per_page: NOTIFICATION_PAGE_SIZE,
   };
+  dispatch(currentUserNotificationsCountSuccess(0));
 
-  sdk.transactions
-    .query(apiQueryParams)
-    .then(response => {
-      const transactions = response.data.data;
-      const currentUser = getState().user.currentUser;
-      const notifications = getNotifications(transactions, currentUser);
-      const unseenNotifications = filterViewedNotifications(notifications, currentUser);
-      dispatch(currentUserNotificationsCountSuccess(unseenNotifications.length));
-    })
-    .catch(e => dispatch(currentUserNotificationsCountError(storableError(e))));
+  // sdk.transactions
+  //   .query(apiQueryParams)
+  //   .then(response => {
+  //     const transactions = response.data.data;
+  //     const currentUser = getState().user.currentUser;
+  //     const notifications = getNotifications(transactions, currentUser);
+  //     const unseenNotifications = filterViewedNotifications(notifications, currentUser);
+  //     dispatch(currentUserNotificationsCountSuccess(unseenNotifications.length));
+  //   })
+  //   .catch(e => dispatch(currentUserNotificationsCountError(storableError(e))));
 };
 
 export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => {

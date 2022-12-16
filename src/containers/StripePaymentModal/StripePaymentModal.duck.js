@@ -1,4 +1,4 @@
-import pick from 'lodash/pick';
+import { pick, merge } from 'lodash';
 import {
   stripeCreatePaymentIntent,
   fetchHasStripeAccount,
@@ -9,15 +9,8 @@ import {
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import {
-  TRANSITION_PAYMENT_AFTER_ENQUIRY,
-  TRANSITION_PAYMENT_AFTER_REQUEST,
-  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
-  TRANSITION_CONFIRM_PAYMENT,
-  TRANSITION_PAYMENT_ERROR,
-  TRANSITION_NOTIFY_FOR_PAYMENT,
-} from '../../util/transaction';
-// import { stripe } from '~/src/ducks';
+import SendbirdChat from '@sendbird/chat';
+import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 
 // ================ Action types ================ //
 
@@ -54,19 +47,17 @@ export const FETCH_DEFAULT_PAYMENT_REQUEST = 'app/StripePaymentModal/FETCH_DEFAU
 export const FETCH_DEFAULT_PAYMENT_SUCCESS = 'app/StripePaymentModal/FETCH_DEFAULT_PAYMENT_SUCCESS';
 export const FETCH_DEFAULT_PAYMENT_ERROR = 'app/StripePaymentModal/FETCH_DEFAULT_PAYMENT_ERROR';
 
-//write three consts for transiton notify for payment like above
-export const TRANSITION_NOTIFY_FOR_PAYMENT_REQUEST =
-  'app/StripePaymentModal/TRANSITION_NOTIFY_FOR_PAYMENT_REQUEST';
-export const TRANSITION_NOTIFY_FOR_PAYMENT_SUCCESS =
-  'app/StripePaymentModal/TRANSITION_NOTIFY_FOR_PAYMENT_SUCCESS';
-export const TRANSITION_NOTIFY_FOR_PAYMENT_ERROR =
-  'app/StripePaymentModal/TRANSITION_NOTIFY_FOR_PAYMENT_ERROR';
+export const SEND_NOTIFY_FOR_PAYMENT_REQUEST =
+  'app/StripePaymentModal/SEND_NOTIFY_FOR_PAYMENT_REQUEST';
+export const SEND_NOTIFY_FOR_PAYMENT_SUCCESS =
+  'app/StripePaymentModal/SEND_NOTIFY_FOR_PAYMENT_SUCCESS';
+export const SEND_NOTIFY_FOR_PAYMENT_ERROR = 'app/StripePaymentModal/SEND_NOTIFY_FOR_PAYMENT_ERROR';
 
 // ================ Reducer ================ //
 
 export const initialState = {
-  listing: null,
-  transaction: null,
+  channelUrl: null,
+  channelContext: null,
   provider: null,
   confirmPaymentInProgress: false,
   confirmPaymentError: null,
@@ -83,15 +74,16 @@ export const initialState = {
   fetchDefaultPaymentError: null,
   defaultPayment: null,
   defaultPaymentFetched: false,
-  transitionNotifyForPaymentInProgress: false,
-  transitionNotifyForPaymentError: null,
-  transitionNotifyForPaymentSuccess: false,
+  sendNotifyForPaymentInProgress: false,
+  sendNotifyForPaymentError: null,
+  sendNotifyForPaymentSuccess: false,
 };
 
 export default function StripePaymentModalReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
     case SET_INITIAL_VALUES:
+      console.log({ ...initialState, ...payload });
       return { ...initialState, ...payload };
 
     case CONFIRM_PAYMENT_REQUEST:
@@ -159,24 +151,23 @@ export default function StripePaymentModalReducer(state = initialState, action =
         defaultPaymentFetched: true,
       };
 
-    // WRITE THREE CASES FOR TRANSITION NOTIFY FOR PAYMENT like above
-    case TRANSITION_NOTIFY_FOR_PAYMENT_REQUEST:
+    case SEND_NOTIFY_FOR_PAYMENT_REQUEST:
       return {
         ...state,
-        transitionNotifyForPaymentInProgress: true,
-        transitionNotifyForPaymentError: null,
+        sendNotifyForPaymentInProgress: true,
+        sendNotifyForPaymentError: null,
       };
-    case TRANSITION_NOTIFY_FOR_PAYMENT_SUCCESS:
+    case SEND_NOTIFY_FOR_PAYMENT_SUCCESS:
       return {
         ...state,
-        transitionNotifyForPaymentInProgress: false,
-        transitionNotifyForPaymentSuccess: true,
+        sendNotifyForPaymentInProgress: false,
+        sendNotifyForPaymentSuccess: true,
       };
-    case TRANSITION_NOTIFY_FOR_PAYMENT_ERROR:
+    case SEND_NOTIFY_FOR_PAYMENT_ERROR:
       return {
         ...state,
-        transitionNotifyForPaymentInProgress: false,
-        transitionNotifyForPaymentPaymentError: payload,
+        sendNotifyForPaymentInProgress: false,
+        sendNotifyForPaymentPaymentError: payload,
       };
 
     default:
@@ -190,7 +181,7 @@ export default function StripePaymentModalReducer(state = initialState, action =
 
 export const setInitialValues = initialValues => ({
   type: SET_INITIAL_VALUES,
-  payload: pick(initialValues, Object.keys(initialState)),
+  payload: initialValues,
 });
 
 const confirmPaymentRequest = () => ({ type: CONFIRM_PAYMENT_REQUEST });
@@ -254,37 +245,17 @@ export const fetchDefaultPaymentError = e => ({
   payload: e,
 });
 
-// write three functions for transition notify for payment like above
-export const transitionNotifyForPaymentRequest = () => ({
-  type: TRANSITION_NOTIFY_FOR_PAYMENT_REQUEST,
+export const sendNotifyForPaymentRequest = () => ({
+  type: SEND_NOTIFY_FOR_PAYMENT_REQUEST,
 });
-export const transitionNotifyForPaymentSuccess = () => ({
-  type: TRANSITION_NOTIFY_FOR_PAYMENT_SUCCESS,
+export const sendNotifyForPaymentSuccess = () => ({
+  type: SEND_NOTIFY_FOR_PAYMENT_SUCCESS,
 });
-export const transitionNotifyForPaymentError = e => ({
-  type: TRANSITION_NOTIFY_FOR_PAYMENT_ERROR,
+export const sendNotifyForPaymentError = e => ({
+  type: SEND_NOTIFY_FOR_PAYMENT_ERROR,
   error: true,
   payload: e,
 });
-
-export const sendMessage = params => (dispatch, getState, sdk) => {
-  const message = params.message;
-  const orderId = params.id;
-
-  if (message) {
-    return sdk.messages
-      .send({ transactionId: orderId, content: message })
-      .then(() => {
-        return { orderId, messageSuccess: true };
-      })
-      .catch(e => {
-        log.error(e, 'initial-message-send-failed', { txId: orderId });
-        return { orderId, messageSuccess: false };
-      });
-  } else {
-    return Promise.resolve({ orderId, messageSuccess: true });
-  }
-};
 
 // StripeCustomer is a relantionship to currentUser
 // We need to fetch currentUser with correct params to include relationship
@@ -323,33 +294,77 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
     .catch(e => handleError(e));
 };
 
-export const transitionAfterPayment = (txId, transition) => (dispatch, getState, sdk) => {
-  const bodyParams = {
-    id: txId.uuid,
-    transition,
-    params: {},
+const sendPaymentNotification = (currentUserId, providerName, channelUrl, channelContext) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  const params = {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
   };
 
-  return sdk.transactions
-    .transition(bodyParams)
-    .then(() => console.log('Payment transition success'))
-    .catch(e => log.error(e, 'transition-payment-failed'));
+  const sb = SendbirdChat.init(params);
+
+  return sb
+    .connect(currentUserId)
+    .then(() => {
+      sb.groupChannel.getChannel(channelUrl).then(channel => {
+        const messageParams = {
+          customType: 'CONFIRM_PAYMENT',
+          message: providerName,
+          data: `{"providerName": "${providerName}"}`,
+        };
+
+        channel.sendUserMessage(messageParams).onSucceeded(message => {
+          channelContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+            message,
+            channel,
+          });
+        });
+      });
+    })
+    .catch(e => {
+      log.error(e, 'send-payment-notification-failed', {});
+    });
 };
 
-export const transitionNotifyForPayment = txId => (dispatch, getState, sdk) => {
-  dispatch(transitionNotifyForPaymentRequest());
-  const transition = TRANSITION_NOTIFY_FOR_PAYMENT;
+export const sendNotifyForPayment = (currentUserId, providerName, channelUrl, channelContext) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(sendNotifyForPaymentRequest());
 
-  const bodyParams = {
-    id: txId.uuid,
-    transition,
-    params: {},
+  const params = {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
   };
 
-  return sdk.transactions
-    .transition(bodyParams)
-    .then(() => dispatch(transitionNotifyForPaymentSuccess()))
-    .catch(e => dispatch(transitionNotifyForPaymentError(e)));
+  const sb = SendbirdChat.init(params);
+
+  sb.connect(currentUserId)
+    .then(() => {
+      sb.groupChannel.getChannel(channelUrl).then(channel => {
+        const messageParams = {
+          customType: 'NOTIFY_FOR_PAYMENT',
+          message: providerName,
+          data: `{"providerName": "${providerName}"}`,
+        };
+
+        channel.sendUserMessage(messageParams).onSucceeded(message => {
+          channelContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+            message,
+            channel,
+          });
+
+          dispatch(sendNotifyForPaymentSuccess());
+        });
+      });
+    })
+    .catch(e => {
+      dispatch(sendNotifyForPaymentError(e));
+    });
 };
 
 export const confirmPayment = (
@@ -359,24 +374,20 @@ export const confirmPayment = (
   defaultCardId,
   paymentIntentId,
   useDefaultCard,
-  tx
+  currentUserId,
+  providerName,
+  channelUrl,
+  channelContext
 ) => (dispatch, getState, sdk) => {
   dispatch(confirmPaymentRequest());
 
-  const paymentTransition =
-    tx.attributes.lastTransition === TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY
-      ? TRANSITION_PAYMENT_AFTER_REQUEST
-      : TRANSITION_PAYMENT_AFTER_ENQUIRY;
-  dispatch(transitionAfterPayment(tx.id, paymentTransition));
-
   const handleSuccess = response => {
-    dispatch(transitionAfterPayment(tx.id, TRANSITION_CONFIRM_PAYMENT));
+    dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, channelContext));
     dispatch(confirmPaymentSuccess(response));
     return response;
   };
 
   const handleError = e => {
-    dispatch(transitionAfterPayment(tx.id, TRANSITION_PAYMENT_ERROR));
     dispatch(confirmPaymentError(e));
     log.error(e, 'Confirm-Payment-Failed', {});
     throw e;
