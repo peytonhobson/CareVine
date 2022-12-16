@@ -32,7 +32,7 @@ const NotificationsInboxSideList = props => {
     updateViewedNotificationsError,
   } = props;
 
-  const notifications = getNotifications(transactions, currentUser);
+  // const notifications = getNotifications(transactions, currentUser);
 
   const handleUpdateViewedNotifications = notificationId => {
     let viewedNotifications =

@@ -17,7 +17,7 @@ module.exports = queryEvents = () => {
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 300000; // 5 minutes
+  const pollIdleWait = 60000; // 1 minutes
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 

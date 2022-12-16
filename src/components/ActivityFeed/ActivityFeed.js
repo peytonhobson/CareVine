@@ -7,7 +7,7 @@ import { Avatar, InlineTextButton, ReviewRating, UserDisplayName } from '../../c
 import Transition from './Transition';
 import { formatDate } from '../../util/dates';
 import { ensureTransaction, ensureUser, ensureListing } from '../../util/data';
-import { isRelevantPastTransition } from '../../util/transaction';
+// import { isRelevantPastTransition } from '../../util/transaction';
 import { propTypes } from '../../util/types';
 
 import css from './ActivityFeed.module.css';

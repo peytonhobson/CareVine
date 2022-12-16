@@ -40,6 +40,7 @@ module.exports = (req, res) => {
         })
         .catch(e => {
           handleStripeError(res, e);
+          throw e;
         });
     })
     .then(apiResponse => {

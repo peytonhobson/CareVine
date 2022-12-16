@@ -11,6 +11,8 @@ import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+import { TRANSITION_CONFIRM_PAYMENT, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
+import config from '../../config';
 
 // ================ Action types ================ //
 
@@ -312,7 +314,7 @@ const sendPaymentNotification = (currentUserId, providerName, channelUrl, channe
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const messageParams = {
           customType: 'CONFIRM_PAYMENT',
-          message: providerName,
+          message: `You made a payment to ${providerName}.`,
           data: `{"providerName": "${providerName}"}`,
         };
 
@@ -329,11 +331,13 @@ const sendPaymentNotification = (currentUserId, providerName, channelUrl, channe
     });
 };
 
-export const sendNotifyForPayment = (currentUserId, providerName, channelUrl, channelContext) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const sendNotifyForPayment = (
+  currentUserId,
+  providerName,
+  channelUrl,
+  channelContext,
+  providerListing
+) => (dispatch, getState, sdk) => {
   dispatch(sendNotifyForPaymentRequest());
 
   const params = {
@@ -348,7 +352,7 @@ export const sendNotifyForPayment = (currentUserId, providerName, channelUrl, ch
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const messageParams = {
           customType: 'NOTIFY_FOR_PAYMENT',
-          message: providerName,
+          message: `You notified ${providerName} that you want to pay them.`,
           data: `{"providerName": "${providerName}"}`,
         };
 
@@ -359,11 +363,34 @@ export const sendNotifyForPayment = (currentUserId, providerName, channelUrl, ch
           });
 
           dispatch(sendNotifyForPaymentSuccess());
+          dispatch(transitionTransaction(providerListing, TRANSITION_NOTIFY_FOR_PAYMENT));
         });
       });
     })
     .catch(e => {
       dispatch(sendNotifyForPaymentError(e));
+    });
+};
+
+export const transitionTransaction = (otherUserListing, transition) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  const listingId = otherUserListing && otherUserListing.id.uuid;
+
+  const bodyParams = {
+    transition,
+    processAlias: config.singleActionProcessAlias,
+    params: { listingId },
+  };
+  return sdk.transactions
+    .initiate(bodyParams)
+    .then(response => {
+      return response;
+    })
+    .catch(e => {
+      throw e;
     });
 };
 
@@ -377,13 +404,23 @@ export const confirmPayment = (
   currentUserId,
   providerName,
   channelUrl,
-  channelContext
+  channelContext,
+  providerListing
 ) => (dispatch, getState, sdk) => {
   dispatch(confirmPaymentRequest());
 
   const handleSuccess = response => {
-    dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, channelContext));
     dispatch(confirmPaymentSuccess(response));
+    try {
+      dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, channelContext));
+    } catch (e) {
+      log.error(e, 'send-payment-notification-failed', {});
+    }
+    try {
+      dispatch(transitionTransaction(providerListing, TRANSITION_CONFIRM_PAYMENT));
+    } catch (e) {
+      log.error(e, 'transition-to-payment-confirmed-failed', {});
+    }
     return response;
   };
 

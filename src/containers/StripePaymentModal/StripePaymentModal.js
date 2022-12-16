@@ -29,7 +29,6 @@ import { propTypes } from '../../util/types';
 import css from './StripePaymentModal.module.css';
 import { Fragment } from 'react';
 import { fontFamily } from '@mui/system';
-import { TRANSITION_ENQUIRE } from '../../util/transaction';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 const STORAGE_KEY = 'StripePaymentModal';
@@ -44,6 +43,7 @@ const StripePaymentModalComponent = props => {
     onSetInitialState,
     onClose,
     provider,
+    providerListing,
     channelUrl,
     channelContext,
     confirmPaymentInProgress,
@@ -134,7 +134,8 @@ const StripePaymentModalComponent = props => {
       currentUserId,
       providerName,
       channelUrl,
-      channelContext
+      channelContext,
+      providerListing
     );
   };
 
@@ -155,7 +156,8 @@ const StripePaymentModalComponent = props => {
       currentUserId,
       providerName,
       modalData.channelUrl,
-      modalData.channelContext
+      modalData.channelContext,
+      providerListing
     );
   };
 
@@ -466,7 +468,8 @@ const mapDispatchToProps = dispatch => ({
     currentUserId,
     providerName,
     channelUrl,
-    channelContext
+    channelContext,
+    providerListing
   ) =>
     dispatch(
       confirmPayment(
@@ -479,7 +482,8 @@ const mapDispatchToProps = dispatch => ({
         currentUserId,
         providerName,
         channelUrl,
-        channelContext
+        channelContext,
+        providerListing
       )
     ),
   onSetInitialState: () => dispatch(setInitialValues(initialState)),
@@ -488,8 +492,16 @@ const mapDispatchToProps = dispatch => ({
   // onSaveDefaultPayment: (currentUser, elements, stripe) =>
   //   dispatch(saveDefaultPayment(currentUser, elements, stripe)),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
-  onSendNotifyForPayment: (currentUser, providerName, channelUrl, channelContext) =>
-    dispatch(sendNotifyForPayment(currentUser, providerName, channelUrl, channelContext)),
+  onSendNotifyForPayment: (
+    currentUser,
+    providerName,
+    channelUrl,
+    channelContext,
+    providerListing
+  ) =>
+    dispatch(
+      sendNotifyForPayment(currentUser, providerName, channelUrl, channelContext, providerListing)
+    ),
 });
 
 const StripePaymentModal = compose(
