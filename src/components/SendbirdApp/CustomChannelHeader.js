@@ -94,6 +94,7 @@ const CustomChannelHeader = props => {
           onOpenPaymentModal={onOpenPaymentModal}
           currentUser={currentUser}
           otherUser={otherUser}
+          otherUserListing={otherUserListing}
           channelUrl={channelUrl}
           channelContext={globalStore}
           onSendRequestForPayment={onSendRequestForPayment}

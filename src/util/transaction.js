@@ -19,16 +19,8 @@ export const TRANSITION_REQUEST_PAYMENT = 'transition/request-payment';
 
 // A customer can also initiate a transaction with an enquiry, and
 // then transition that with a request.
-export const TRANSITION_ENQUIRE = 'transition/enquire';
 export const TRANSITION_NOTIFY_FOR_PAYMENT = 'transition/notify-for-payment';
-export const TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION =
-  'transition/request-payment-after-notification';
-export const TRANSITION_PAYMENT_AFTER_NOTIFICATION = 'transition/payment-after-notification';
-export const TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY = 'transition/request-payment-after-enquiry';
-export const TRANSITION_PAYMENT_AFTER_ENQUIRY = 'transition/payment-after-enquiry';
-export const TRANSITION_PAYMENT_AFTER_REQUEST = 'transition/payment-after-request';
 export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
-export const TRANSITION_PAYMENT_ERROR = 'transition/payment-error';
 
 // Stripe SDK might need to ask 3D security from customer, in a separate front-end step.
 // Therefore we need to make another transition to Marketplace API,
@@ -96,7 +88,6 @@ const STATE_INITIAL = 'initial';
 const STATE_ENQUIRY = 'enquiry';
 const STATE_PAYMENT_PENDING = 'payment-pending';
 const STATE_PAYMENT_EXPIRED = 'payment-expired';
-const STATE_PAYMENT_REQUESTED = 'payment-requested';
 const STATE_PREAUTHORIZED = 'preauthorized';
 const STATE_DECLINED = 'declined';
 const STATE_ACCEPTED = 'accepted';
@@ -105,7 +96,10 @@ const STATE_DELIVERED = 'delivered';
 const STATE_REVIEWED = 'reviewed';
 const STATE_REVIEWED_BY_CUSTOMER = 'reviewed-by-customer';
 const STATE_REVIEWED_BY_PROVIDER = 'reviewed-by-provider';
+
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
+const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
+const STATE_PAYMENT_REQUESTED = 'payment-requested';
 
 /**
  * Description of transaction process
@@ -129,34 +123,9 @@ const stateDescription = {
   states: {
     [STATE_INITIAL]: {
       on: {
-        [TRANSITION_ENQUIRE]: STATE_ENQUIRY,
-      },
-    },
-    [STATE_ENQUIRY]: {
-      on: {
-        [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_REQUESTED,
-        [TRANSITION_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_PENDING,
         [TRANSITION_NOTIFY_FOR_PAYMENT]: STATE_NOTIFIED_FOR_PAYMENT,
-      },
-    },
-
-    [STATE_NOTIFIED_FOR_PAYMENT]: {
-      on: {
-        [TRANSITION_PAYMENT_AFTER_NOTIFICATION]: STATE_PAYMENT_PENDING,
-        [TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION]: STATE_PAYMENT_REQUESTED,
-      },
-    },
-
-    [STATE_PAYMENT_REQUESTED]: {
-      on: {
-        [TRANSITION_PAYMENT_AFTER_REQUEST]: STATE_PAYMENT_PENDING,
-      },
-    },
-
-    [STATE_PAYMENT_PENDING]: {
-      on: {
-        [TRANSITION_CONFIRM_PAYMENT]: STATE_ENQUIRY,
-        [TRANSITION_PAYMENT_ERROR]: STATE_ENQUIRY,
+        [TRANSITION_REQUEST_PAYMENT]: STATE_PAYMENT_REQUESTED,
+        [TRANSITION_CONFIRM_PAYMENT]: STATE_PAYMENT_CONFIRMED,
       },
     },
   },
@@ -185,14 +154,6 @@ const getTransitions = states => {
 export const TRANSITIONS = getTransitions(statesFromStateDescription(stateDescription)).map(
   t => t.key
 );
-
-export const NOTIFICATION_TRANSITIONS = [
-  TRANSITION_CONFIRM_PAYMENT,
-  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
-  TRANSITION_NOTIFY_FOR_PAYMENT,
-  TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION,
-  TRANSITION_PAYMENT_AFTER_NOTIFICATION,
-];
 
 // This function returns a function that has given stateDesc in scope chain.
 const getTransitionsToStateFn = stateDesc => state =>
@@ -290,20 +251,20 @@ export const getReview2Transition = isCustomer =>
 // Check if a transition is the kind that should be rendered
 // when showing transition history (e.g. ActivityFeed)
 // The first transition and most of the expiration transitions made by system are not relevant
-export const isRelevantPastTransition = transition => {
-  return [
-    TRANSITION_ACCEPT,
-    TRANSITION_CANCEL,
-    TRANSITION_COMPLETE,
-    TRANSITION_CONFIRM_PAYMENT,
-    TRANSITION_DECLINE,
-    TRANSITION_EXPIRE,
-    TRANSITION_REVIEW_1_BY_CUSTOMER,
-    TRANSITION_REVIEW_1_BY_PROVIDER,
-    TRANSITION_REVIEW_2_BY_CUSTOMER,
-    TRANSITION_REVIEW_2_BY_PROVIDER,
-  ].includes(transition);
-};
+// export const isRelevantPastTransition = transition => {
+//   return [
+//     TRANSITION_ACCEPT,
+//     TRANSITION_CANCEL,
+//     TRANSITION_COMPLETE,
+//     TRANSITION_CONFIRM_PAYMENT,
+//     TRANSITION_DECLINE,
+//     TRANSITION_EXPIRE,
+//     TRANSITION_REVIEW_1_BY_CUSTOMER,
+//     TRANSITION_REVIEW_1_BY_PROVIDER,
+//     TRANSITION_REVIEW_2_BY_CUSTOMER,
+//     TRANSITION_REVIEW_2_BY_PROVIDER,
+//   ].includes(transition);
+// };
 
 export const isCustomerReview = transition => {
   return [TRANSITION_REVIEW_1_BY_CUSTOMER, TRANSITION_REVIEW_2_BY_CUSTOMER].includes(transition);
@@ -327,60 +288,60 @@ export const getUserTxRole = (currentUserId, transaction) => {
   }
 };
 
-export const filterNotificationsByUserType = (notifications, currentUser) => {
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+// export const filterNotificationsByUserType = (notifications, currentUser) => {
+//   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
 
-  // console.log(userType);
+//   // console.log(userType);
 
-  if (userType === CAREGIVER) {
-    return notifications.filter(notification => {
-      return (
-        notification &&
-        (notification.transition === TRANSITION_CONFIRM_PAYMENT ||
-          notification.transition === TRANSITION_NOTIFY_FOR_PAYMENT)
-      );
-    });
-  } else {
-    return notifications.filter(
-      notification =>
-        notification &&
-        (notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY ||
-          notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION)
-    );
-  }
-};
+//   if (userType === CAREGIVER) {
+//     return notifications.filter(notification => {
+//       return (
+//         notification &&
+//         (notification.transition === TRANSITION_CONFIRM_PAYMENT ||
+//           notification.transition === TRANSITION_NOTIFY_FOR_PAYMENT)
+//       );
+//     });
+//   } else {
+//     return notifications.filter(
+//       notification =>
+//         notification &&
+//         (notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY ||
+//           notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION)
+//     );
+//   }
+// };
 
-export const getNotifications = (currentTransactions, currentUser) => {
-  let notifications = [];
-  if (currentTransactions) {
-    currentTransactions.forEach(transaction => {
-      transaction.attributes.transitions.forEach(transition => {
-        transition.transaction = transaction;
-        if (NOTIFICATION_TRANSITIONS.includes(transition.transition)) {
-          notifications.push(transition);
-        }
-      });
-    });
-  }
+// export const getNotifications = (currentTransactions, currentUser) => {
+//   let notifications = [];
+//   if (currentTransactions) {
+//     currentTransactions.forEach(transaction => {
+//       transaction.attributes.transitions.forEach(transition => {
+//         transition.transaction = transaction;
+//         if (NOTIFICATION_TRANSITIONS.includes(transition.transition)) {
+//           notifications.push(transition);
+//         }
+//       });
+//     });
+//   }
 
-  const filteredNotifications = filterNotificationsByUserType(notifications, currentUser);
+//   const filteredNotifications = filterNotificationsByUserType(notifications, currentUser);
 
-  return filteredNotifications;
-};
+//   return filteredNotifications;
+// };
 
-export const filterViewedNotifications = (notifications, currentUser) => {
-  const viewedNotifications =
-    (currentUser &&
-      currentUser.attributes.profile.metadata &&
-      currentUser.attributes.profile.metadata.viewedNotifications) ||
-    [];
+// export const filterViewedNotifications = (notifications, currentUser) => {
+//   const viewedNotifications =
+//     (currentUser &&
+//       currentUser.attributes.profile.metadata &&
+//       currentUser.attributes.profile.metadata.viewedNotifications) ||
+//     [];
 
-  const notViewedNotifications = notifications.filter(
-    notification => !viewedNotifications.includes(getUuid(notification.createdAt.toUTCString()))
-  );
+//   const notViewedNotifications = notifications.filter(
+//     notification => !viewedNotifications.includes(getUuid(notification.createdAt.toUTCString()))
+//   );
 
-  return notViewedNotifications;
-};
+//   return notViewedNotifications;
+// };
 
 export const txRoleIsProvider = userRole => userRole === TX_TRANSITION_ACTOR_PROVIDER;
 export const txRoleIsCustomer = userRole => userRole === TX_TRANSITION_ACTOR_CUSTOMER;
@@ -391,8 +352,8 @@ export const txRoleIsCustomer = userRole => userRole === TX_TRANSITION_ACTOR_CUS
 // i.e. the backend. This helper is used to check if the transition
 // should go through the local API endpoints, or if using JS SDK is
 // enough.
-export const isPrivileged = transition => {
-  return [TRANSITION_REQUEST_PAYMENT, TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY].includes(
-    transition
-  );
-};
+// export const isPrivileged = transition => {
+//   return [TRANSITION_REQUEST_PAYMENT, TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY].includes(
+//     transition
+//   );
+// };

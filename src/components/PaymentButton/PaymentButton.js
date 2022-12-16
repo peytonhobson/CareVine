@@ -15,6 +15,7 @@ const PaymentButton = props => {
     onOpenPaymentModal,
     currentUser,
     otherUser,
+    otherUserListing,
     channelUrl,
     channelContext,
     onSendRequestForPayment,
@@ -39,7 +40,13 @@ const PaymentButton = props => {
     if (!sendRequestForPaymentSuccess) {
       const currenUserId = currentUser && currentUser.id && currentUser.id.uuid;
       const customerName = userDisplayNameAsString(otherUser);
-      onSendRequestForPayment(currenUserId, customerName, channelUrl, channelContext);
+      onSendRequestForPayment(
+        currenUserId,
+        customerName,
+        channelUrl,
+        channelContext,
+        otherUserListing
+      );
     }
   };
 

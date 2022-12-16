@@ -101,13 +101,6 @@ export const InboxPageComponent = props => {
     }
   }, [currentUser, accessToken]);
 
-  // Instead of reload page try making access token a prop in channel and reconnecting context with new token
-  // useEffect(() => {
-  //   if (generateAccessTokenSuccess) {
-  //     window.location.reload(false);
-  //   }
-  // }, [generateAccessTokenSuccess]);
-
   const sendbirdColorSet = {
     '--sendbird-light-primary-500': '#043c2c',
     '--sendbird-light-primary-400': '#043c2c',
@@ -164,6 +157,7 @@ export const InboxPageComponent = props => {
               channelContext={modalInitialValues.channelContext}
               channelUrl={modalInitialValues.channelUrl}
               provider={modalInitialValues.provider}
+              providerListing={otherUserListing}
             />
           )}
         </LayoutWrapperMain>
@@ -295,8 +289,22 @@ const mapDispatchToProps = dispatch => ({
   onTransitionToRequestPayment: tx => dispatch(transitionToRequestPayment(tx)),
   onFetchUserFromChannelUrl: (channelUrl, currentUserId) =>
     dispatch(fetchUserFromChannelUrl(channelUrl, currentUserId)),
-  onSendRequestForPayment: (currentUserId, customerName, channelUrl, channelContext) =>
-    dispatch(sendRequestForPayment(currentUserId, customerName, channelUrl, channelContext)),
+  onSendRequestForPayment: (
+    currentUserId,
+    customerName,
+    channelUrl,
+    channelContext,
+    otherUserListing
+  ) =>
+    dispatch(
+      sendRequestForPayment(
+        currentUserId,
+        customerName,
+        channelUrl,
+        channelContext,
+        otherUserListing
+      )
+    ),
   onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
 });
 

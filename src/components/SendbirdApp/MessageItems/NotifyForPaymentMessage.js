@@ -83,7 +83,7 @@ const NotifyForPaymentMessage = props => {
           <CardContent>
             <p className={css.cardTitle}>
               {/* <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" /> */}
-              You notified {JSON.parse(message.data).providerName} that you want to pay them.
+              {message.message}
             </p>
           </CardContent>
         </Card>

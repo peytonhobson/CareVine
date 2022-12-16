@@ -2,12 +2,7 @@ import reverse from 'lodash/reverse';
 import sortBy from 'lodash/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
-import {
-  TRANSITIONS,
-  TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
-  TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION,
-  TRANSITION_NOTIFY_FOR_PAYMENT,
-} from '../../util/transaction';
+import { TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -289,26 +284,27 @@ export const fetchOtherUserListing = (channelUrl, currentUserId) => (dispatch, g
     });
 };
 
-export const transitionToRequestPayment = tx => (dispatch, getState, sdk) => {
+export const transitionToRequestPayment = otherUserListing => (dispatch, getState, sdk) => {
   dispatch(transitionToRequestPaymentRequest());
-  const lastTransition = tx.attributesl.lastTransition;
 
-  const transitionFromNotification = lastTransition === TRANSITION_NOTIFY_FOR_PAYMENT;
+  const listingId = otherUserListing && otherUserListing.id.uuid;
 
   const bodyParams = {
-    id: txId.id.uuid,
-    transition: transitionFromNotification
-      ? TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION
-      : TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY,
-    params: {},
+    transition: TRANSITION_REQUEST_PAYMENT,
+    processAlias: config.singleActionProcessAlias,
+    // Will need to update for notifications
+    params: { listingId },
   };
-
   return sdk.transactions
-    .transition(bodyParams)
-    .then(() => dispatch(transitionToRequestPaymentSuccess()))
+    .initiate(bodyParams)
+    .then(response => {
+      dispatch(transitionToRequestPaymentSuccess());
+      return response;
+    })
     .catch(e => {
-      log.error(e, 'transition-to-request-payment-failed', {});
-      dispatch(transitionToRequestPaymentError(e));
+      console.log(e);
+      dispatch(transitionToRequestPaymentError(storableError(e)));
+      throw e;
     });
 };
 
@@ -340,11 +336,13 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId) => (dispatch,
     });
 };
 
-export const sendRequestForPayment = (currentUserId, customerName, channelUrl, channelContext) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const sendRequestForPayment = (
+  currentUserId,
+  customerName,
+  channelUrl,
+  channelContext,
+  otherUserListing
+) => (dispatch, getState, sdk) => {
   dispatch(sendRequestForPaymentRequest());
 
   const params = {
@@ -359,7 +357,7 @@ export const sendRequestForPayment = (currentUserId, customerName, channelUrl, c
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const messageParams = {
           customType: 'REQUEST_FOR_PAYMENT',
-          message: 'request for payment',
+          message: `You requested payment from ${customerName}.`,
           data: `{"customerName": "${customerName}"}`,
         };
 
@@ -369,6 +367,7 @@ export const sendRequestForPayment = (currentUserId, customerName, channelUrl, c
             channel,
           });
           dispatch(sendRequestForPaymentSuccess());
+          dispatch(transitionToRequestPayment(otherUserListing));
         });
       });
     })
