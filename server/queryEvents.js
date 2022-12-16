@@ -100,7 +100,7 @@ module.exports = queryEvents = () => {
             authorId: userId,
           })
           .then(res => {
-            userListingId = res.data.data[0].id.uuid;
+            userListingId = res.data.data[0] && res.data.data.id && res.data.data.id.uuid;
             const listingState = res.data.data[0].attributes.state;
 
             if (listingState === 'pendingApproval') {

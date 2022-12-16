@@ -224,7 +224,10 @@ export const signup = params => (dispatch, getState, sdk) => {
       .create(createUserParams)
       .then(() =>
         //Maybe put message on screen if this fails to contact team
-        updateUserMetadata({ email, metadata: { userType } })
+        updateUserMetadata({
+          email,
+          metadata: { userType },
+        })
       )
       .then(() => dispatch(signupSuccess()))
       //Need to change login to create profile path

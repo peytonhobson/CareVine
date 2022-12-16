@@ -3,7 +3,7 @@ import config from '../../config';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { transactionLineItems } from '../../util/api';
+import { transactionLineItems, fetchUserEmail } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
@@ -14,6 +14,9 @@ import {
 } from '../../util/urlHelpers';
 import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
 import { CAREGIVER } from '../../util/constants';
+import SendbirdChat from '@sendbird/chat';
+import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+import { userDisplayNameAsString } from '../../util/data';
 
 const { UUID } = sdkTypes;
 
@@ -279,34 +282,85 @@ export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, ge
     });
 };
 
-export const sendEnquiry = (listingId, message) => (dispatch, getState, sdk) => {
+export const sendEnquiry = (currentAuthor, message) => (dispatch, getState, sdk) => {
   dispatch(sendEnquiryRequest());
 
-  const currentUserType = getState().user.currentUser.attributes.profile.metadata.userType;
-  const bodyParams = {
-    transition: TRANSITION_ENQUIRE,
-    processAlias:
-      currentUserType === CAREGIVER
-        ? config.caregiverInitiatedProcessAlias
-        : config.employerInitiatedProcessAlias,
-    params: { listingId },
-  };
+  const currentUserEmail = getState().user.currentUser.attributes.email;
+  const currentUserId = getState().user.currentUser.id.uuid;
+  const currentAuthorId = currentAuthor.id.uuid;
 
-  return sdk.transactions
-    .initiate(bodyParams)
-    .then(response => {
-      const transactionId = response.data.data.id;
+  return fetchUserEmail({ userId: currentAuthorId })
+    .then(async res => {
+      const params = {
+        appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+        modules: [new GroupChannelModule()],
+      };
+      const sb = SendbirdChat.init(params);
 
-      // Send the message to the created transaction
-      return sdk.messages.send({ transactionId, content: message }).then(() => {
-        dispatch(sendEnquirySuccess());
-        dispatch(fetchCurrentUserHasOrdersSuccess(true));
-        return transactionId;
-      });
+      const userListQueryParams = {
+        userIdsFilter: [currentAuthorId],
+      };
+      const query = sb.createApplicationUserListQuery(userListQueryParams);
+
+      const users = await query.next();
+      if (users.length === 0) {
+        await sb.connect(currentAuthorId);
+        const userUpdateParams = {
+          nickname: userDisplayNameAsString(currentAuthor.attributes.profile.displayName),
+          profileUrl:
+            currentAuthor.profileImage &&
+            currentAuthor.profileImage.attributes.variants['square-small'].url,
+        };
+        await sb.updateCurrentUserInfo(userUpdateParams);
+      }
+      await sb.connect(currentUserId);
+
+      let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
+
+      let channel = null;
+
+      try {
+        channel = await sb.groupChannel.getChannel(CHANNEL_URL);
+      } catch (e) {
+        console.log(e);
+      }
+
+      if (!channel) {
+        CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
+        try {
+          channel = await sb.groupChannel.getChannel(CHANNEL_URL);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      if (!channel) {
+        const channelParams = {
+          invitedUserIds: [currentUserId, currentAuthorId],
+          channelUrl: CHANNEL_URL,
+        };
+        channel = await sb.groupChannel.createChannel(channelParams);
+      }
+
+      const messageParams = {
+        message,
+      };
+      return channel
+        .sendUserMessage(messageParams)
+        .onFailed((err, message) => {
+          throw err;
+        })
+        .onSucceeded(message => {
+          return message;
+        });
+    })
+    .then(() => {
+      dispatch(sendEnquirySuccess());
     })
     .catch(e => {
-      dispatch(sendEnquiryError(storableError(e)));
-      throw e;
+      console.log(e);
+      log.error(e);
+      dispatch(sendEnquiryError(e));
     });
 };
 

@@ -180,18 +180,10 @@ const routeConfiguration = () => {
     },
     {
       path: '/inbox',
-      name: 'InboxBasePage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: () => <NamedRedirect name="InboxPage" params={{ tab: 'messages' }} />,
-    },
-    {
-      path: '/inbox/:tab',
       name: 'InboxPage',
       auth: true,
       authPage: 'LoginPage',
       component: InboxPage,
-      loadData: pageDataLoadingAPI.InboxPage.loadData,
     },
     {
       path: '/order/:id',

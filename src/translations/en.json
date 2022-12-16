@@ -880,6 +880,7 @@
   "SelectMultipleFilterPlainForm.labelSelected": "{labelText} • {count}",
   "SelectSingleFilter.popupClear": "Clear",
   "SelectSingleFilter.plainClear": "Clear",
+  "SendbirdModal.heading": "Send a message to {displayName}",
   "SendMessageForm.sendFailed": "Failed to send. Please try again.",
   "SendMessageForm.sendMessage": "Send message",
   "SignupForm.emailInvalid": "A valid email address is required",

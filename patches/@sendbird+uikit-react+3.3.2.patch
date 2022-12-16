@@ -1,0 +1,38 @@
+diff --git a/node_modules/@sendbird/uikit-react/Thread/components/ThreadMessageInput.js b/node_modules/@sendbird/uikit-react/Thread/components/ThreadMessageInput.js
+index db0ef44..e0ccfe7 100644
+--- a/node_modules/@sendbird/uikit-react/Thread/components/ThreadMessageInput.js
++++ b/node_modules/@sendbird/uikit-react/Thread/components/ThreadMessageInput.js
+@@ -10,7 +10,7 @@ import { u as useThreadContext } from '../../ThreadProvider-ab67609d.js';
+ import { u as useLocalization } from '../../LocalizationContext-3c8d4888.js';
+ import '../../withSendbird.js';
+ import '../../_rollupPluginBabelHelpers-16667c95.js';
+-import 'react-dom/server';
++import 'react-dom/server.js';
+ import 'prop-types';
+ import '../../const-dd057875.js';
+ import '../../ui/IconButton.js';
+diff --git a/node_modules/@sendbird/uikit-react/Thread/components/ThreadUI.js b/node_modules/@sendbird/uikit-react/Thread/components/ThreadUI.js
+index 0f63056..e3abac6 100644
+--- a/node_modules/@sendbird/uikit-react/Thread/components/ThreadUI.js
++++ b/node_modules/@sendbird/uikit-react/Thread/components/ThreadUI.js
+@@ -60,7 +60,7 @@ import '../../ui/FileViewer.js';
+ import '../../ui/MessageItemMenu.js';
+ import '../../ui/MessageItemReactionMenu.js';
+ import '../../ui/MessageInput.js';
+-import 'react-dom/server';
++import 'react-dom/server.js';
+ import '../../ui/MentionUserLabel.js';
+ import './ThreadListItem.js';
+ import '../../ui/DateSeparator.js';
+diff --git a/node_modules/@sendbird/uikit-react/ui/MessageInput.js b/node_modules/@sendbird/uikit-react/ui/MessageInput.js
+index ad96810..c88bf08 100644
+--- a/node_modules/@sendbird/uikit-react/ui/MessageInput.js
++++ b/node_modules/@sendbird/uikit-react/ui/MessageInput.js
+@@ -1,6 +1,6 @@
+ import { _ as _objectSpread2 } from '../_rollupPluginBabelHelpers-16667c95.js';
+ import React__default, { useContext, useRef, useState, useMemo, useEffect, useCallback } from 'react';
+-import { renderToString } from 'react-dom/server';
++import { renderToString } from 'react-dom/server.js';
+ import PropTypes from 'prop-types';
+ import { N as NodeTypes, M as MessageInputKeys, a as NodeNames } from '../const-5b3992dc.js';
+ import { U as USER_MENTION_TEMP_CHAR } from '../const-dd057875.js';

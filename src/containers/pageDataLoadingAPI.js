@@ -5,7 +5,7 @@ import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/Conta
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
 import { loadData as CreateProfilePageLoader } from './CreateProfilePage/CreateProfilePage.duck';
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
-import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
+// import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 import { loadData as ListingPageLoader } from './ListingPage/ListingPage.duck';
 import { loadData as ManageListingsPageLoader } from './ManageListingsPage/ManageListingsPage.duck';
 import { loadData as PaymentMethodsPageLoader } from './PaymentMethodsPage/PaymentMethodsPage.duck';
@@ -32,9 +32,9 @@ const getPageDataLoadingAPI = () => {
     EmailVerificationPage: {
       loadData: EmailVerificationPageLoader,
     },
-    InboxPage: {
-      loadData: InboxPageLoader,
-    },
+    // InboxPage: {
+    //   loadData: InboxPageLoader,
+    // },
     ListingPage: {
       loadData: ListingPageLoader,
     },

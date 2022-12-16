@@ -62,12 +62,11 @@ export const isValidTransaction = transaction => {
 };
 
 // Stores given transaction to sessionStorage
-export const storeData = (provider, listing, transaction, storageKey) => {
-  if (window && window.sessionStorage && transaction) {
+export const storeData = (provider, channelUrl, storageKey) => {
+  if (window && window.sessionStorage && provider) {
     const data = {
       provider,
-      listing,
-      transaction,
+      channelUrl,
       storedAt: new Date(),
     };
 
@@ -104,24 +103,15 @@ export const storedData = storageKey => {
       return sdkTypes.reviver(k, v);
     };
 
-    const { provider, listing, transaction, storedAt } = JSON.parse(
-      stripePaymentModalData,
-      reviver
-    );
+    const { provider, channelUrl, storedAt } = JSON.parse(stripePaymentModalData, reviver);
 
     // If sessionStore contains freshly saved data (max 1 day old), use it
     const isFreshlySaved = storedAt
       ? moment(storedAt).isAfter(moment().subtract(1, 'days'))
       : false;
 
-    // resolve transaction as valid if it is missing
-    const isTransactionValid = !!transaction ? isValidTransaction(transaction) : true;
-
-    const isStoredDataValid =
-      isFreshlySaved && isValidListing(transaction.listing) && isTransactionValid;
-
-    if (isStoredDataValid) {
-      return { provider, listing, transaction };
+    if (isFreshlySaved) {
+      return { provider, channelUrl };
     }
   }
   return {};

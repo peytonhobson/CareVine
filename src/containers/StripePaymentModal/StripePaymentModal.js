@@ -18,7 +18,7 @@ import {
   stripeCustomer,
   saveDefaultPayment,
   fetchDefaultPayment,
-  transitionNotifyForPayment,
+  sendNotifyForPayment,
 } from './StripePaymentModal.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
 import { Elements } from '@stripe/react-stripe-js';
@@ -43,9 +43,9 @@ const StripePaymentModalComponent = props => {
     onConfirmPayment,
     onSetInitialState,
     onClose,
-    listing,
-    transaction,
     provider,
+    channelUrl,
+    channelContext,
     confirmPaymentInProgress,
     confirmPaymentError,
     confirmPaymentSuccess,
@@ -64,9 +64,9 @@ const StripePaymentModalComponent = props => {
     defaultPayment,
     onFetchDefaultPayment,
     defaultPaymentFetched,
-    onTransitionNotifyForPayment,
-    transitionNotifyForPaymentInProgress,
-    transitionNotifyForPaymentSuccess,
+    onSendNotifyForPayment,
+    sendNotifyForPaymentInProgress,
+    sendNotifyForPaymentSuccess,
   } = props;
 
   const [clientSecret, setClientSecret] = useState(null);
@@ -75,13 +75,15 @@ const StripePaymentModalComponent = props => {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const loadInitialData = () => {
-    const hasDataInProps = provider && listing && transaction;
+    const hasDataInProps = provider && channelUrl;
     if (hasDataInProps) {
       // Store data only if data is passed through props and user has navigated through a link.
-      storeData(provider, listing, transaction, STORAGE_KEY);
+      storeData(provider, channelUrl, STORAGE_KEY);
     }
 
-    const modalData = hasDataInProps ? { provider, listing, transaction } : storedData(STORAGE_KEY);
+    const modalData = hasDataInProps
+      ? { provider, channelUrl, channelContext }
+      : storedData(STORAGE_KEY);
 
     fetchStripeCustomer();
     fetchHasStripeAccount(modalData.provider.id);
@@ -121,6 +123,7 @@ const StripePaymentModalComponent = props => {
 
   const onHandlePaymentSubmit = (stripe, elements, saveCardAsDefault, useDefaultCard) => {
     const defaultPaymentId = defaultPayment && defaultPayment.id;
+    const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
     onConfirmPayment(
       stripe,
       elements,
@@ -128,7 +131,10 @@ const StripePaymentModalComponent = props => {
       defaultPaymentId,
       paymentIntent.id,
       useDefaultCard,
-      modalData.transaction
+      currentUserId,
+      providerName,
+      channelUrl,
+      channelContext
     );
   };
 
@@ -143,7 +149,14 @@ const StripePaymentModalComponent = props => {
   };
 
   const handleNotifyForPayment = () => {
-    onTransitionNotifyForPayment(modalData.transaction.id);
+    const providerName = modalData && userDisplayNameAsString(modalData.provider);
+    const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
+    onSendNotifyForPayment(
+      currentUserId,
+      providerName,
+      modalData.channelUrl,
+      modalData.channelContext
+    );
   };
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -227,7 +240,7 @@ const StripePaymentModalComponent = props => {
     (modalData &&
       modalData.transaction &&
       modalData.transaction.attributes.lastTransition !== TRANSITION_ENQUIRE) ||
-    transitionNotifyForPaymentSuccess;
+    sendNotifyForPaymentSuccess;
 
   return (
     <Fragment>
@@ -312,9 +325,9 @@ const StripePaymentModalComponent = props => {
               <div className={css.notifyButtonWrapper}>
                 <Button
                   onClick={handleNotifyForPayment}
-                  inProgress={transitionNotifyForPaymentInProgress}
+                  inProgress={sendNotifyForPaymentInProgress}
                   disabled={notifyButtonDisabled}
-                  ready={transitionNotifyForPaymentSuccess}
+                  ready={sendNotifyForPaymentSuccess}
                 >
                   {notifyProviderMessage}
                 </Button>
@@ -396,9 +409,6 @@ StripePaymentModalComponent.propTypes = {
 
 const mapStateToProps = state => {
   const {
-    listing,
-    transaction,
-    currentProvider,
     confirmPaymentInProgress,
     confirmPaymentError,
     confirmPaymentSuccess,
@@ -414,15 +424,12 @@ const mapStateToProps = state => {
     fetchDefaultPaymentError,
     defaultPayment,
     defaultPaymentFetched,
-    transitionNotifyForPaymentInProgress,
-    transitionNotifyForPaymentSuccess,
+    sendNotifyForPaymentInProgress,
+    sendNotifyForPaymentSuccess,
   } = state.StripePaymentModal;
   const { currentUser } = state.user;
 
   return {
-    listing,
-    transaction,
-    currentProvider,
     confirmPaymentInProgress,
     confirmPaymentError,
     confirmPaymentSuccess,
@@ -439,13 +446,12 @@ const mapStateToProps = state => {
     fetchDefaultPaymentError,
     defaultPayment,
     defaultPaymentFetched,
-    transitionNotifyForPaymentInProgress,
-    transitionNotifyForPaymentSuccess,
+    sendNotifyForPaymentInProgress,
+    sendNotifyForPaymentSuccess,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  onSendMessage: params => dispatch(sendMessage(params)),
   onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId) =>
     dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
@@ -457,7 +463,10 @@ const mapDispatchToProps = dispatch => ({
     hasDefaultCard,
     paymentIntentId,
     useDefaultCard,
-    tx
+    currentUserId,
+    providerName,
+    channelUrl,
+    channelContext
   ) =>
     dispatch(
       confirmPayment(
@@ -467,7 +476,10 @@ const mapDispatchToProps = dispatch => ({
         hasDefaultCard,
         paymentIntentId,
         useDefaultCard,
-        tx
+        currentUserId,
+        providerName,
+        channelUrl,
+        channelContext
       )
     ),
   onSetInitialState: () => dispatch(setInitialValues(initialState)),
@@ -476,7 +488,8 @@ const mapDispatchToProps = dispatch => ({
   // onSaveDefaultPayment: (currentUser, elements, stripe) =>
   //   dispatch(saveDefaultPayment(currentUser, elements, stripe)),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
-  onTransitionNotifyForPayment: txId => dispatch(transitionNotifyForPayment(txId)),
+  onSendNotifyForPayment: (currentUser, providerName, channelUrl, channelContext) =>
+    dispatch(sendNotifyForPayment(currentUser, providerName, channelUrl, channelContext)),
 });
 
 const StripePaymentModal = compose(

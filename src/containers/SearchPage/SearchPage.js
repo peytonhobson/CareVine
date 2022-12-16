@@ -17,15 +17,16 @@ import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import { EMAIL_VERIFICATION } from '../../components/ModalMissingInformation/ModalMissingInformation';
-import { SearchMap, ModalInMobile, Page, Modal } from '../../components';
+import { SearchMap, ModalInMobile, Page, Modal, SendbirdModal } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EnquiryForm } from '../../forms';
+import { generateAccessToken } from '../../containers/InboxPage/InboxPage.duck';
 import {
   searchMapListings,
   setActiveListing,
   fetchCurrentUserTransactions,
+  fetchChannel,
 } from './SearchPage.duck';
-import { sendMessage } from '../InboxPage/InboxPage.duck';
 import {
   pickSearchParamsOnly,
   validURLParamsForExtendedData,
@@ -39,6 +40,9 @@ import css from './SearchPage.module.css';
 import { userDisplayNameAsString } from '../../util/data';
 const { UUID } = sdkTypes;
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import '@sendbird/uikit-react/dist/index.css';
+import SBProvider from '@sendbird/uikit-react/SendbirdProvider';
+import SBConversation from '@sendbird/uikit-react/Channel';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 const SEARCH_WITH_MAP_DEBOUNCE = 300; // Little bit of debounce before search is initiated.
@@ -57,7 +61,6 @@ export class SearchPageComponent extends Component {
 
     this.searchMapListingsInProgress = false;
 
-    this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
@@ -65,45 +68,7 @@ export class SearchPageComponent extends Component {
   }
 
   // Callback to determine if new search is needed
-  // when map is moved by user or viewport has changed
-  onMapMoveEnd(viewportBoundsChanged, data) {
-    const { viewportBounds, viewportCenter } = data;
-
-    const routes = routeConfiguration();
-    const searchPagePath = pathByRouteName('SearchPage', routes);
-    const currentPath =
-      typeof window !== 'undefined' && window.location && window.location.pathname;
-
-    // When using the ReusableMapContainer onMapMoveEnd can fire from other pages than SearchPage too
-    const isSearchPage = currentPath === searchPagePath;
-
-    // If mapSearch url param is given
-    // or original location search is rendered once,
-    // we start to react to "mapmoveend" events by generating new searches
-    // (i.e. 'moveend' event in Mapbox and 'bounds_changed' in Google Maps)
-    if (viewportBoundsChanged && isSearchPage) {
-      const { history, location, filterConfig } = this.props;
-
-      // parse query parameters, including a custom attribute named certificate
-      const { address, bounds, mapSearch, ...rest } = parse(location.search, {
-        latlng: ['origin'],
-        latlngBounds: ['bounds'],
-      });
-
-      //const viewportMapCenter = SearchMap.getMapCenter(map);
-      const originMaybe = config.sortSearchByDistance ? { origin: viewportCenter } : {};
-
-      const searchParams = {
-        address,
-        ...originMaybe,
-        bounds: viewportBounds,
-        mapSearch: true,
-        ...validFilterParams(rest, filterConfig),
-      };
-
-      history.push(createResourceLocatorString('SearchPage', routes, {}, searchParams));
-    }
-  }
+  // when map is moved by user or viewport has change
 
   // Invoked when a modal is opened from a child component,
   // for example when a filter modal is opened in mobile view
@@ -158,34 +123,32 @@ export class SearchPageComponent extends Component {
       hasExistingTransaction(transaction, currentUser, this.state.currentListingAuthor)
     );
 
-    if (existingTransaction) {
-      const txId = existingTransaction.id.uuid;
-      onSendMessage(txId, message.trim())
-        .then(res => {
-          this.setState({ enquiryModalOpen: false });
+    // if (existingTransaction) {
+    //   const txId = existingTransaction.id.uuid;
+    //   onSendMessage(txId, message.trim())
+    //     .then(res => {
+    //       this.setState({ enquiryModalOpen: false });
 
-          // Redirect to InboxPage
-          history.push(
-            createResourceLocatorString('InboxPage', routes, { tab: 'messages' }, { id: txId })
-          );
-        })
-        .catch(() => {
-          // Ignore, error handling in duck file
-        });
-    } else {
-      onSendEnquiry(listingId, message.trim())
-        .then(txId => {
-          this.setState({ enquiryModalOpen: false });
+    //       // Redirect to InboxPage
+    //       history.push(
+    //         createResourceLocatorString('InboxPage', routes, { tab: 'messages' }, { id: txId })
+    //       );
+    //     })
+    //     .catch(() => {
+    //       // Ignore, error handling in duck file
+    //     });
+    // } else {
+    onSendEnquiry(this.state.currentListingAuthor, message.trim())
+      .then(txId => {
+        this.setState({ enquiryModalOpen: false });
 
-          // Redirect to InboxPage
-          history.push(
-            createResourceLocatorString('InboxPage', routes, { tab: 'messages' }, { id: txId.uuid })
-          );
-        })
-        .catch(() => {
-          // Ignore, error handling in duck file
-        });
-    }
+        // Redirect to InboxPage
+        history.push(createResourceLocatorString('InboxPage', routes));
+      })
+      .catch(() => {
+        // Ignore, error handling in duck file
+      });
+    // }
   }
 
   render() {
@@ -212,6 +175,11 @@ export class SearchPageComponent extends Component {
       sendEnquiryInProgress,
       onFetchCurrentUserTransactions,
       currentUserTransactions,
+      onFetchChannel,
+      messageChannel,
+      fetchChannelInProgress,
+      fetchChannelError,
+      onGenerateAccessToken,
     } = this.props;
     // eslint-disable-next-line no-unused-vars
     const { mapSearch, page, ...searchInURL } = parse(location.search, {
@@ -287,22 +255,22 @@ export class SearchPageComponent extends Component {
             currentUser={currentUser}
             onContactUser={this.onContactUser}
           />
-          <Modal
-            id="ListingPage.enquiry"
-            contentClassName={css.enquiryModalContent}
-            isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
-            onClose={() => this.setState({ enquiryModalOpen: false })}
-            onManageDisableScrolling={onManageDisableScrolling}
-          >
-            <EnquiryForm
-              className={css.enquiryForm}
-              submitButtonWrapperClassName={css.enquirySubmitButtonWrapper}
-              authorDisplayName={userDisplayNameAsString(this.state.currentListingAuthor)}
-              sendEnquiryError={sendEnquiryError}
-              onSubmit={this.onSubmitEnquiry}
-              inProgress={sendEnquiryInProgress}
+          {this.state.enquiryModalOpen && (
+            <SendbirdModal
+              contentClassName={css.enquiryModalContent}
+              isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
+              onClose={() => this.setState({ enquiryModalOpen: false })}
+              onManageDisableScrolling={onManageDisableScrolling}
+              currentUser={currentUser}
+              currentAuthor={this.state.currentListingAuthor}
+              onFetchChannel={onFetchChannel}
+              messageChannel={messageChannel}
+              fetchChannelInProgress={fetchChannelInProgress}
+              fetchChannelError={fetchChannelError}
+              history={history}
+              onGenerateAccessToken={onGenerateAccessToken}
             />
-          </Modal>
+          )}
         </div>
       </Page>
     );
@@ -361,6 +329,9 @@ const mapStateToProps = state => {
     searchMapListingIds,
     activeListingId,
     transactions,
+    messageChannel,
+    fetchChannelInProgress,
+    fetchChannelError,
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
@@ -399,6 +370,9 @@ const mapStateToProps = state => {
     currentUser,
     sendEnquiryError,
     sendEnquiryInProgress,
+    messageChannel,
+    fetchChannelInProgress,
+    fetchChannelError,
   };
 };
 
@@ -412,7 +386,9 @@ const mapDispatchToProps = dispatch => ({
   onSendEnquiry: (listingId, message) => dispatch(sendEnquiry(listingId, message)),
   onChangeModalValue: value => dispatch(changeModalValue(value)),
   onFetchCurrentUserTransactions: () => dispatch(fetchCurrentUserTransactions()),
-  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
+  onFetchChannel: (currentAuthor, currentUser, accessToken) =>
+    dispatch(fetchChannel(currentAuthor, currentUser, accessToken)),
+  onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
