@@ -32,8 +32,7 @@ const edit = filePath => {
 };
 
 const main = () => {
-  const dir =
-    '/Users/peyhobso/Personal-Projects/Caregiver-Marketplace/node_modules/@sendbird/uikit-react';
+  const dir = '../node_modules/@sendbird/uikit-react';
   const filePaths = walk(dir);
   filePaths.forEach(filePath => edit(filePath));
 };
