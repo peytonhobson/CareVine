@@ -15,9 +15,9 @@ import classNames from 'classnames';
 
 import css from './PaymentForm.module.css';
 
-export const removeElementsByClass = className => {
+export const setIframeMaxHeight = height => {
   const frame = document.querySelector('iframe');
-  frame.style.maxHeight = '19rem';
+  frame.style.maxHeight = height;
   // .find('.p-BankView--picker')
   // .remove();
 };
@@ -68,10 +68,16 @@ const PaymentForm = props => {
       setIsElementsComplete(true);
     }
 
-    if (element && element.value.type === 'us_bank_account') {
-      removeElementsByClass('p-BankView--picker');
-      setShowCardPayment(false);
-    }
+    // if (element && element.value.type === 'us_bank_account') {
+    //   if (element.complete) {
+    //     setIframeMaxHeight('');
+    //   } else if (element.invalid) {
+    //     setIframeMaxHeight('22rem');
+    //   } else {
+    //     setIframeMaxHeight('19rem');
+    //   }
+    //   setShowCardPayment(false);
+    // }
 
     if (element && element.value.type === 'card') {
       setShowCardPayment(true);
