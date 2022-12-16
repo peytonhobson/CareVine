@@ -30,6 +30,11 @@ import css from './StripePaymentModal.module.css';
 import { Fragment } from 'react';
 import { fontFamily } from '@mui/system';
 
+export const removeElementsByClass = className => {
+  const elements = document.getElementsByClassName(className);
+  Array.from(elements).forEach(el => el.parentNode.removeChild(el));
+};
+
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 const STORAGE_KEY = 'StripePaymentModal';
 
@@ -221,6 +226,19 @@ const StripePaymentModalComponent = props => {
         marginBottom: 0,
         paddingTop: isMobile ? '0px' : '6px',
         color: '#4a4a4a',
+      },
+      '.PickerItem': {
+        padding: '0px',
+        fontSize: '0px',
+        lineHeight: 0,
+        borderColor: 'transparent',
+        margin: 0,
+        boxShadow: 0,
+      },
+      '.PickerItem:hover': {
+        backgroundColor: 'transparent',
+        borderColor: 'transparent',
+        cursor: 'none',
       },
     },
   };
