@@ -32,7 +32,7 @@ const edit = filePath => {
 };
 
 const main = () => {
-  const dir = '../node_modules/@sendbird/uikit-react';
+  const dir = '/opt/render/project/src/node_modules/@sendbird/uikit-react';
   const filePaths = walk(dir);
   filePaths.forEach(filePath => edit(filePath));
 };
