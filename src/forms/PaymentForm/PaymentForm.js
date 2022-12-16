@@ -15,6 +15,13 @@ import classNames from 'classnames';
 
 import css from './PaymentForm.module.css';
 
+export const removeElementsByClass = className => {
+  const frame = document.querySelector('iframe');
+  frame.style.maxHeight = '19rem';
+  // .find('.p-BankView--picker')
+  // .remove();
+};
+
 const STRIPE_INVALID_REQUEST_ERROR = 'StripeInvalidRequestError';
 const STRIPE_CARD_ERROR = 'card_error';
 
@@ -42,6 +49,7 @@ const PaymentForm = props => {
   const [isElementsComplete, setIsElementsComplete] = useState(false);
   const [showDefaultPayment, setShowDefaultPayment] = useState(false);
   const [saveDefaultPayment, setSaveDefaultPayment] = useState(false);
+  const [showCardPayment, setShowCardPayment] = useState(false);
 
   useEffect(() => {
     onFetchDefaultPayment(
@@ -58,6 +66,15 @@ const PaymentForm = props => {
   const handlePaymentChange = element => {
     if (element && element.complete) {
       setIsElementsComplete(true);
+    }
+
+    if (element && element.value.type === 'us_bank_account') {
+      removeElementsByClass('p-BankView--picker');
+      setShowCardPayment(false);
+    }
+
+    if (element && element.value.type === 'card') {
+      setShowCardPayment(true);
     }
   };
 
@@ -154,16 +171,21 @@ const PaymentForm = props => {
               <PaymentElement
                 options={paymentElementOptions}
                 id="payment-element"
-                onChange={handlePaymentChange}
+                onChange={element => {
+                  handlePaymentChange(element);
+                }}
+                className={css.paymentElement}
               />
-              <Checkbox
-                id="saveDefault"
-                name="saveDefault"
-                label="Save as default payment card"
-                onChange={handleDefaultCheckboxChange}
-                value={saveDefaultPayment}
-                className={css.checkbox}
-              />
+              {showCardPayment && (
+                <Checkbox
+                  id="saveDefault"
+                  name="saveDefault"
+                  label="Save as default payment card"
+                  onChange={handleDefaultCheckboxChange}
+                  value={saveDefaultPayment}
+                  className={css.checkbox}
+                />
+              )}
               {defaultPayment && (
                 <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
                   <FormattedMessage id="PaymentForm.useDefaultCard" />
