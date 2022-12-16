@@ -7,10 +7,6 @@
   width: 350px;
 }
 
-.paymentElement {
-  max-height: 400px;
-}
-
 .paymentElementContainer {
   display: flex;
   flex-grow: 1;

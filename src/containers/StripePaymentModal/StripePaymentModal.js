@@ -227,19 +227,6 @@ const StripePaymentModalComponent = props => {
         paddingTop: isMobile ? '0px' : '6px',
         color: '#4a4a4a',
       },
-      '.PickerItem': {
-        padding: '0px',
-        fontSize: '0px',
-        lineHeight: 0,
-        borderColor: 'transparent',
-        margin: 0,
-        boxShadow: 0,
-      },
-      '.PickerItem:hover': {
-        backgroundColor: 'transparent',
-        borderColor: 'transparent',
-        cursor: 'none',
-      },
     },
   };
 
