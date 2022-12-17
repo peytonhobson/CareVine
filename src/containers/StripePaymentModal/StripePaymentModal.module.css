@@ -82,21 +82,6 @@
   }
 }
 
-.usernameContainer {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  flex-direction: row;
-  flex-grow: 1;
-  margin-left: 2rem;
-  font-size: 40px;
-}
-
-.userPreviewRoot {
-  display: flex;
-  align-items: center;
-}
-
 .leftColumnContainer {
   display: flex;
   align-items: stretch;
