@@ -5,7 +5,13 @@ import { Form as FinalForm } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { Form, Button, FieldCurrencyInput, SimpleAccordion } from '../../components';
+import {
+  Form,
+  Button,
+  FieldCurrencyInput,
+  SimpleAccordion,
+  UserListingPreview,
+} from '../../components';
 import config from '../../config';
 import { formatMoney } from '../../util/currency';
 import { composeValidators, required, moneySubUnitAmountAtLeast } from '../../util/validators';
@@ -45,6 +51,7 @@ const PaymentDetailsFormComponent = props => (
         clientSecret,
         values,
         onEditPaymentDetails,
+        provider,
       } = formRenderProps;
 
       const amountLabel = intl.formatMessage({ id: 'PaymentDetailsForm.amountLabel' });
@@ -137,29 +144,40 @@ const PaymentDetailsFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <div className={css.amountContainer}>
-            <label className={css.amountLabel}>Pay amount</label>
-            <FieldCurrencyInput
-              id="amount"
-              name="amount"
-              rootClassName={css.currencyRoot}
-              placeholder={amountPlaceholderMessage}
-              validate={composeValidators(amountRequiredValidator, amountTooLowValidator)}
-              currencyConfig={config.currencyConfig}
-              inputClassName={css.currencyInput}
-              disabled={!!clientSecret}
-            />
-          </div>
-          <div className={css.amountDisplayContainer}>
-            <div className={css.amountDisplay}>Total:</div>
-            <div className={css.amountDisplay}>{totalAmount}</div>
-          </div>
-          <SimpleAccordion label={accordionLabel} onExpand={onHandleExpandPaymentDetails}>
-            <div className={css.amountDisplayContainer}>
-              <div className={css.amountDisplay}>Transaction Fee:</div>
-              <div className={css.amountDisplay}>{transactionFee}</div>
+          <div className={css.mainContainer}>
+            {provider && (
+              <UserListingPreview
+                otherUser={provider}
+                otherUserListing={null}
+                intl={intl}
+                rootClassName={css.userPreviewRoot}
+                className={css.usernameContainer}
+              />
+            )}
+            <div className={css.amountContainer}>
+              <label className={css.amountLabel}>Pay amount</label>
+              <FieldCurrencyInput
+                id="amount"
+                name="amount"
+                rootClassName={css.currencyRoot}
+                placeholder={amountPlaceholderMessage}
+                validate={composeValidators(amountRequiredValidator, amountTooLowValidator)}
+                currencyConfig={config.currencyConfig}
+                inputClassName={css.currencyInput}
+                disabled={!!clientSecret}
+              />
             </div>
-          </SimpleAccordion>
+            <div className={css.amountDisplayContainer}>
+              <div className={css.amountDisplay}>Total:</div>
+              <div className={css.amountDisplay}>{totalAmount}</div>
+            </div>
+            <SimpleAccordion label={accordionLabel} onExpand={onHandleExpandPaymentDetails}>
+              <div className={css.amountDisplayContainer}>
+                <div className={css.amountDisplay}>Transaction Fee:</div>
+                <div className={css.amountDisplay}>{transactionFee}</div>
+              </div>
+            </SimpleAccordion>
+          </div>
           {createPaymentIntentErrorMessage}
           {!clientSecret && (
             <Button

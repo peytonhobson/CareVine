@@ -265,21 +265,13 @@ const StripePaymentModalComponent = props => {
             <div className={rootClass}>
               {!confirmPaymentSuccess && (
                 <div className={css.leftColumnContainer}>
-                  {modalData && (
-                    <UserListingPreview
-                      otherUser={modalData.provider}
-                      otherUserListing={modalData.listing}
-                      intl={intl}
-                      rootClassName={css.userPreviewRoot}
-                      className={css.usernameContainer}
-                    />
-                  )}
                   <PaymentDetailsForm
                     onSubmit={onHandleReviewPayment}
                     createPaymentIntentInProgress={createPaymentIntentInProgress}
                     createPaymentIntentError={createPaymentIntentError}
                     clientSecret={clientSecret}
                     onEditPaymentDetails={onHandleEditPaymentDetails}
+                    provider={provider}
                   />
                 </div>
               )}

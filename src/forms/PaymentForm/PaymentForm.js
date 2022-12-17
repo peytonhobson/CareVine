@@ -68,16 +68,9 @@ const PaymentForm = props => {
       setIsElementsComplete(true);
     }
 
-    // if (element && element.value.type === 'us_bank_account') {
-    //   if (element.complete) {
-    //     setIframeMaxHeight('');
-    //   } else if (element.invalid) {
-    //     setIframeMaxHeight('22rem');
-    //   } else {
-    //     setIframeMaxHeight('19rem');
-    //   }
-    //   setShowCardPayment(false);
-    // }
+    if (element && element.value.type === 'us_bank_account') {
+      setShowCardPayment(false);
+    }
 
     if (element && element.value.type === 'card') {
       setShowCardPayment(true);
@@ -191,7 +184,8 @@ const PaymentForm = props => {
                   value={saveDefaultPayment}
                   className={css.checkbox}
                 />
-              )}
+                )}
+              {/* Change this to match option for default bank account */}
               {defaultPayment && (
                 <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
                   <FormattedMessage id="PaymentForm.useDefaultCard" />
