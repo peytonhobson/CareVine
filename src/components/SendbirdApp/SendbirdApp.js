@@ -54,6 +54,8 @@ const SendbirdApp = props => {
     sendRequestForPaymentInProgress,
     sendRequestForPaymentError,
     sendRequestForPaymentSuccess,
+    isPaymentModalOpen,
+    fetchUserFromChannelUrlInProgress,
   } = props;
   // const logDefaultProps = useCallback(() => {
   //   console.log(
@@ -107,6 +109,26 @@ const SendbirdApp = props => {
     currentChannelUrl && onFetchUserFromChannelUrl(currentChannelUrl, userId);
   }, [currentChannelUrl]);
 
+  const context = useSendbirdStateContext();
+
+  useEffect(() => {
+    context &&
+      context.config &&
+      context.config.pubSub &&
+      context.config.pubSub.publish('PAYMENT_MODAL_DISPLAY_CHANGE', {
+        isPaymentModalOpen,
+      });
+  }, [isPaymentModalOpen, context]);
+
+  useEffect(() => {
+    context &&
+      context.config &&
+      context.config.pubSub &&
+      context.config.pubSub.publish('FETCH_OTHER_USER_IN_PROGRESS_CHANGE', {
+        fetchUserFromChannelUrlInProgress,
+      });
+  }, [fetchUserFromChannelUrlInProgress, context]);
+
   const renderTitle = (
     <div
       className="sendbird-channel-header__title"
@@ -158,6 +180,7 @@ const SendbirdApp = props => {
       sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
       sendRequestForPaymentError={sendRequestForPaymentError}
       sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+      fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
     />
   );
 
@@ -205,6 +228,7 @@ const SendbirdApp = props => {
                 onOpenPaymentModal={onOpenPaymentModal}
                 currentUser={currentUser}
                 otherUser={otherUser}
+                isPaymentModalOpen={isPaymentModalOpen}
               />
             )}
           />

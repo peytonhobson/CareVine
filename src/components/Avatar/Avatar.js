@@ -30,6 +30,8 @@ const AVATAR_IMAGE_VARIANTS = [
 
   // 480x480
   'square-small2x',
+
+  'default',
 ];
 
 export const AvatarComponent = props => {

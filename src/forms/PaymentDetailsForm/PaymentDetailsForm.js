@@ -37,14 +37,8 @@ const PaymentDetailsFormComponent = props => (
     render={formRenderProps => {
       const {
         className,
-        disabled,
-        ready,
         handleSubmit,
         intl,
-        invalid,
-        pristine,
-        saveActionMsg,
-        updated,
         createPaymentIntentInProgress,
         createPaymentIntentSuccess,
         createPaymentIntentError,
@@ -73,9 +67,8 @@ const PaymentDetailsFormComponent = props => (
       const amountTooLowValidator = moneySubUnitAmountAtLeast(amountTooLowMessage, MINIMUM_AMOUNT);
 
       const classes = classNames(css.root, className);
-      const submitReady = (updated && pristine) || ready;
       const submitInProgress = createPaymentIntentInProgress;
-      const submitDisabled = invalid || disabled || submitInProgress || clientSecret;
+      const submitDisabled = submitInProgress || clientSecret;
 
       const totalAmountNumber = values.amount && values.amount.amount + values.amount.amount * 0.06;
       const totalAmountMoney = totalAmountNumber
@@ -186,9 +179,8 @@ const PaymentDetailsFormComponent = props => (
               type="submit"
               inProgress={submitInProgress}
               disabled={submitDisabled}
-              ready={submitReady}
             >
-              {saveActionMsg || 'Review'}
+              Review
             </Button>
           )}
           {clientSecret && (
@@ -201,7 +193,7 @@ const PaymentDetailsFormComponent = props => (
               // disabled={submitDisabled}
               // ready={submitReady}
             >
-              {saveActionMsg || 'Edit'}
+              Edit
             </Button>
           )}
         </Form>
@@ -216,10 +208,6 @@ PaymentDetailsFormComponent.propTypes = {
   className: string,
   intl: intlShape.isRequired,
   onSubmit: func.isRequired,
-  //   saveActionMsg: string.isRequired,
-  disabled: bool.isRequired,
-  ready: bool.isRequired,
-  updated: bool.isRequired,
   fetchErrors: shape({
     createListingDraftError: propTypes.error,
     showListingsError: propTypes.error,

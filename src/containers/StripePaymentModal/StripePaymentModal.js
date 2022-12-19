@@ -50,7 +50,7 @@ const StripePaymentModalComponent = props => {
     provider,
     providerListing,
     channelUrl,
-    channelContext,
+    sendbirdContext,
     confirmPaymentInProgress,
     confirmPaymentError,
     confirmPaymentSuccess,
@@ -80,15 +80,7 @@ const StripePaymentModalComponent = props => {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const loadInitialData = () => {
-    const hasDataInProps = provider && channelUrl;
-    if (hasDataInProps) {
-      // Store data only if data is passed through props and user has navigated through a link.
-      storeData(provider, channelUrl, STORAGE_KEY);
-    }
-
-    const modalData = hasDataInProps
-      ? { provider, channelUrl, channelContext }
-      : storedData(STORAGE_KEY);
+    const modalData = { provider, channelUrl, sendbirdContext };
 
     fetchStripeCustomer();
     fetchHasStripeAccount(modalData.provider.id);
@@ -139,7 +131,7 @@ const StripePaymentModalComponent = props => {
       currentUserId,
       providerName,
       channelUrl,
-      channelContext,
+      sendbirdContext,
       providerListing
     );
   };
@@ -161,7 +153,7 @@ const StripePaymentModalComponent = props => {
       currentUserId,
       providerName,
       modalData.channelUrl,
-      modalData.channelContext,
+      modalData.sendbirdContext,
       providerListing
     );
   };
@@ -465,7 +457,7 @@ const mapDispatchToProps = dispatch => ({
     currentUserId,
     providerName,
     channelUrl,
-    channelContext,
+    sendbirdContext,
     providerListing
   ) =>
     dispatch(
@@ -479,7 +471,7 @@ const mapDispatchToProps = dispatch => ({
         currentUserId,
         providerName,
         channelUrl,
-        channelContext,
+        sendbirdContext,
         providerListing
       )
     ),
@@ -493,11 +485,11 @@ const mapDispatchToProps = dispatch => ({
     currentUser,
     providerName,
     channelUrl,
-    channelContext,
+    sendbirdContext,
     providerListing
   ) =>
     dispatch(
-      sendNotifyForPayment(currentUser, providerName, channelUrl, channelContext, providerListing)
+      sendNotifyForPayment(currentUser, providerName, channelUrl, sendbirdContext, providerListing)
     ),
 });
 

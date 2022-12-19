@@ -1,5 +1,5 @@
 import React from 'react';
-import { AvatarLarge, NamedLink, UserDisplayName } from '../';
+import { AvatarMedium, NamedLink, UserDisplayName } from '../';
 import { createSlug, stringify } from '../../util/urlHelpers';
 import classNames from 'classnames';
 
@@ -24,9 +24,7 @@ const createListingLink = (listing, otherUser, searchParams = {}, className = ''
 };
 
 const UserListingPreview = props => {
-  const { otherUser, otherUserListing, intl, rootClassName, className } = props;
-
-  const listingLink = otherUserListing ? createListingLink(otherUserListing, otherUser) : null;
+  const { otherUser, intl, rootClassName, className } = props;
 
   const userDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
 
@@ -36,7 +34,7 @@ const UserListingPreview = props => {
   return (
     <div className={rootClass}>
       <div className={css.avatarContainer}>
-        {otherUserListing ? listingLink : <AvatarLarge user={otherUser} className={css.avatar} />}
+        <AvatarMedium user={otherUser} className={css.avatar} />
       </div>
       <div className={usernameClass}>{userDisplayName}</div>
     </div>

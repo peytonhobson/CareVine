@@ -6,9 +6,12 @@ import { LabelStringSet } from '@sendbird/uikit-react/ui/Label';
 import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import { useMediaQuery } from '@mui/material';
-import { NamedLink, PaymentButton } from '../';
+import { NamedLink } from '../';
 import { createSlug } from '../../util/urlHelpers';
 import css from './SendbirdApp.module.css';
+import { EMPLOYER } from '../../util/constants';
+import PaymentButton from './CustomButtons/PaymentButton';
+import RequestPaymentButton from './CustomButtons/RequestPaymentButton';
 
 export const getChannelTitle = (channel, currentUserId, stringSet) => {
   const LABEL_STRING_SET = LabelStringSet;
@@ -36,30 +39,33 @@ const CustomChannelHeader = props => {
     currentUser,
     otherUser,
     otherUserListing,
-    onRequestPayment,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentSuccess,
     channelUrl,
     onSendRequestForPayment,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentError,
     sendRequestForPaymentSuccess,
+    fetchUserFromChannelUrlInProgress,
   } = props;
   const slug = createSlug((listing && listing.title) || '');
   const listingId = (listing && listing.id.uuid) || 'a';
 
   const channelStore = useChannelContext();
-  const globalStore = useSendbirdStateContext();
+  const sendbirdContext = useSendbirdStateContext();
 
   const { currentGroupChannel, onSearchClick } = channelStore;
 
   const isMobile = useMediaQuery('(max-width: 768px)');
 
+  const currentUserType =
+    currentUser &&
+    currentUser.attributes &&
+    currentUser.attributes.profile &&
+    currentUser.attributes.profile.metadata &&
+    currentUser.attributes.profile.metadata.userType;
+
   const {
-    stores: { sdkStore, userStore },
-    config: { isOnline, userId, appId, accessToken, theme, userListQuery, logger, pubSub },
-  } = globalStore;
+    config: { userId, theme },
+  } = sendbirdContext;
 
   return (
     <div className="sendbird-chat-header">
@@ -90,18 +96,27 @@ const CustomChannelHeader = props => {
         </NamedLink>
       </div>
       <div className="sendbird-chat-header__right">
-        <PaymentButton
-          onOpenPaymentModal={onOpenPaymentModal}
-          currentUser={currentUser}
-          otherUser={otherUser}
-          otherUserListing={otherUserListing}
-          channelUrl={channelUrl}
-          channelContext={globalStore}
-          onSendRequestForPayment={onSendRequestForPayment}
-          sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-          sendRequestForPaymentError={sendRequestForPaymentError}
-          sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-        />
+        {currentUserType === EMPLOYER ? (
+          <PaymentButton
+            onOpenPaymentModal={onOpenPaymentModal}
+            otherUser={otherUser}
+            channelUrl={channelUrl}
+            sendbirdContext={sendbirdContext}
+            fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+          />
+        ) : (
+          <RequestPaymentButton
+            currentUser={currentUser}
+            otherUser={otherUser}
+            channelUrl={channelUrl}
+            sendbirdContext={sendbirdContext}
+            otherUserListing={otherUserListing}
+            onSendRequestForPayment={onSendRequestForPayment}
+            sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+            sendRequestForPaymentErro={sendRequestForPaymentError}
+            sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+          />
+        )}
       </div>
     </div>
   );

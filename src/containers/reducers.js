@@ -19,7 +19,6 @@ import SearchPage from './SearchPage/SearchPage.duck';
 import StripePaymentModal from './StripePaymentModal/StripePaymentModal.duck';
 import StripePayoutPage from './StripePayoutPage/StripePayoutPage.duck';
 import TopbarContainer from './TopbarContainer/TopbarContainer.duck';
-import TransactionPage from './TransactionPage/TransactionPage.duck';
 
 export {
   ContactDetailsPage,
@@ -38,5 +37,4 @@ export {
   StripePaymentModal,
   StripePayoutPage,
   TopbarContainer,
-  TransactionPage,
 };

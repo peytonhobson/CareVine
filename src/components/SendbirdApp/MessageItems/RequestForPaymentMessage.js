@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '@sendbird/uikit-react/dist/index.css';
 import { Card as MuiCard, CardContent as MuiCardContent } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -7,7 +7,8 @@ import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-import { PaymentButton } from '../../';
+import { Button } from '../../';
+import PaymentButton from '../CustomButtons/PaymentButton';
 
 import css from './index.module.css';
 import classNames from 'classnames';
@@ -26,9 +27,10 @@ const NotifyForPaymentMessage = props => {
     onOpenPaymentModal,
     currentUser,
     otherUser,
+    isPaymentModalOpen,
   } = props;
 
-  const context = useSendbirdStateContext();
+  const sendbirdContext = useSendbirdStateContext();
   const channelContext = useChannelContext();
 
   const baseClass =
@@ -36,31 +38,31 @@ const NotifyForPaymentMessage = props => {
       ? 'sendbird-message-hoc__message-content sendbird-message-content outgoing'
       : 'incoming';
 
-  const Card = styled(props => <MuiCard disableGutters elevation={0} square {...props} />)(
-    ({ theme }) => ({
-      backgroundColor: 'rgb(240, 240, 240)',
-      marginBottom: '40px',
-      borderRadius: '16px',
-      padding: '20px',
-      maxWidth: '50%',
-    })
-  );
+  const Card = styled(props => <MuiCard elevation={0} {...props} />)(({ theme }) => ({
+    backgroundColor: 'rgb(240, 240, 240)',
+    marginBottom: '40px',
+    borderRadius: '16px',
+    padding: '20px',
+    maxWidth: '50%',
+  }));
 
-  const CardContent = styled(props => (
-    <MuiCardContent disableGutters elevation={0} square {...props} />
-  ))(({ theme }) => ({
+  const CardContent = styled(props => <MuiCardContent elevation={0} {...props} />)(({ theme }) => ({
     padding: '5px',
     '&.MuiCardContent-root:last-child': {
       paddingBottom: '5px',
     },
   }));
 
-  const incomingClasses = classNames(css.incomingContainer);
-
   const history = useHistory();
 
-  const redirectToPayoutSetup = () => {
-    history.push('/account/payments');
+  const openStripeModal = () => {
+    const modalInitialValues = {
+      provider: otherUser,
+      channelUrl: channelContext.channelUrl,
+      channelContext: context,
+    };
+
+    onOpenPaymentModal(modalInitialValues);
   };
 
   //   if (channelContext && currentUser) {
@@ -77,6 +79,33 @@ const NotifyForPaymentMessage = props => {
   //       });
   //     });
   //   }
+
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [fetchUserFromChannelUrlInProgress, setFetchUserFromChannelUrlInProgress] = useState(false);
+
+  useEffect(() => {
+    sendbirdContext &&
+      sendbirdContext.config &&
+      sendbirdContext.config.pubSub &&
+      sendbirdContext.config.pubSub.subscribe(
+        'PAYMENT_MODAL_DISPLAY_CHANGE',
+        ({ isPaymentModalOpen }) => {
+          setIsDisabled(isPaymentModalOpen);
+        }
+      );
+  }, [sendbirdContext]);
+
+  useEffect(() => {
+    sendbirdContext &&
+      sendbirdContext.config &&
+      sendbirdContext.config.pubSub &&
+      sendbirdContext.config.pubSub.subscribe(
+        'FETCH_OTHER_USER_IN_PROGRESS_CHANGE',
+        ({ fetchUserFromChannelUrlInProgress }) => {
+          setFetchUserFromChannelUrlInProgress(fetchUserFromChannelUrlInProgress);
+        }
+      );
+  }, [sendbirdContext]);
 
   return (
     <div className={baseClass}>
@@ -105,12 +134,16 @@ const NotifyForPaymentMessage = props => {
               <PaymentButton
                 rootClassName={css.paymentButtonRoot}
                 className={css.paymentButton}
+                disabled={isDisabled}
                 onOpenPaymentModal={onOpenPaymentModal}
-                currentUser={currentUser}
                 otherUser={otherUser}
                 channelUrl={channelContext.channelUrl}
-                channelContext={context}
-              />
+                //TODO: Need to change channel context to be global context in all related instances
+                sendbirdContext={sendbirdContext}
+                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+              >
+                Pay
+              </PaymentButton>
             </div>
           </CardContent>
         </Card>

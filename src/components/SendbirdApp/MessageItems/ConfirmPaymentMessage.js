@@ -36,21 +36,17 @@ const NotifyForPaymentMessage = props => {
       ? 'sendbird-message-hoc__message-content sendbird-message-content outgoing mainContainer'
       : css.mainContainer;
 
-  const Card = styled(props => <MuiCard disableGutters elevation={0} square {...props} />)(
-    ({ theme }) => ({
-      backgroundColor: 'rgb(240, 240, 240)',
-      marginBottom: '40px',
-      borderRadius: '16px',
-      padding: '20px',
-      maxWidth: '50%',
-      display: 'flex',
-      flexShrink: 1,
-    })
-  );
+  const Card = styled(props => <MuiCard elevation={0} {...props} />)(({ theme }) => ({
+    backgroundColor: 'rgb(240, 240, 240)',
+    marginBottom: '40px',
+    borderRadius: '16px',
+    padding: '20px',
+    maxWidth: '50%',
+    display: 'flex',
+    flexShrink: 1,
+  }));
 
-  const CardContent = styled(props => (
-    <MuiCardContent disableGutters elevation={0} square {...props} />
-  ))(({ theme }) => ({
+  const CardContent = styled(props => <MuiCardContent elevation={0} {...props} />)(({ theme }) => ({
     padding: '5px',
     display: 'flex',
     flexShrink: 1,

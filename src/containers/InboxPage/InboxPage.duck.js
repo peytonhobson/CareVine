@@ -74,7 +74,7 @@ const initialState = {
   transitionToRequestPaymentInProgress: false,
   transitionToRequestPaymentError: null,
   transitionToRequestPaymentSuccess: false,
-  otherUser: null,
+  otherUserRef: null,
   fetchUserFromChannelUrlInProgress: false,
   fetchUserFromChannelUrlError: null,
   sendRequestForPaymentInProgress: false,
@@ -94,8 +94,6 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
   switch (type) {
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
-
-      return { ...state, messages: [] };
     case FETCH_OTHER_USER_LISTING_REQUEST:
       return { ...state, fetchOtherUserListingInProgress: true, fetchOtherUserListingError: null };
     case FETCH_OTHER_USER_LISTING_SUCCESS:
@@ -139,7 +137,7 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
     case FETCH_USER_FROM_CHANNEL_URL_SUCCESS:
       return {
         ...state,
-        otherUser: payload,
+        otherUserRef: entityRefs([payload])[0],
         fetchUserFromChannelUrlInProgress: false,
       };
     case FETCH_USER_FROM_CHANNEL_URL_ERROR:
@@ -325,7 +323,8 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId) => (dispatch,
 
         const otherUser = members.find(member => member.userId !== currentUserId);
 
-        sdk.users.show({ id: otherUser.userId }).then(response => {
+        sdk.users.show({ id: otherUser.userId, include: ['profileImage'] }).then(response => {
+          dispatch(addMarketplaceEntities(response));
           dispatch(fetchUserFromChannelUrlSuccess(response.data.data));
           return response.data.data;
         });
@@ -340,7 +339,7 @@ export const sendRequestForPayment = (
   currentUserId,
   customerName,
   channelUrl,
-  channelContext,
+  sendbirdContext,
   otherUserListing
 ) => (dispatch, getState, sdk) => {
   dispatch(sendRequestForPaymentRequest());
@@ -362,7 +361,7 @@ export const sendRequestForPayment = (
         };
 
         channel.sendUserMessage(messageParams).onSucceeded(message => {
-          channelContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
             message,
             channel,
           });

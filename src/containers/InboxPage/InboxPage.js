@@ -57,6 +57,7 @@ export const InboxPageComponent = props => {
     transitionToRequestPaymentError,
     transitionToRequestPaymentSuccess,
     onFetchUserFromChannelUrl,
+    fetchUserFromChannelUrlInProgress,
     onSendRequestForPayment,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentError,
@@ -121,34 +122,38 @@ export const InboxPageComponent = props => {
           />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.wrapper}>
-          <SBProvider
-            appId={appId}
-            userId={userId}
-            accessToken={accessToken}
-            nickname={nickname}
-            profileUrl={profileUrl}
-            colorSet={sendbirdColorSet}
-          >
-            <SendbirdApp
-              history={history}
-              onOpenPaymentModal={onOpenPaymentModal}
-              otherUserListing={otherUserListing}
-              otherUser={otherUser}
-              userEmail={userEmail}
-              ownListing={currentUserListing}
-              currentUser={currentUser}
-              onFetchOtherUserListing={onFetchOtherUserListing}
-              onRequestPayment={onTransitionToRequestPayment}
-              transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
-              transitionToRequestPaymentError={transitionToRequestPaymentError}
-              transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
-              onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
-              onSendRequestForPayment={onSendRequestForPayment}
-              sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-              sendRequestForPaymentError={sendRequestForPaymentError}
-              sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-            />
-          </SBProvider>
+          {userId && (
+            <SBProvider
+              appId={appId}
+              userId={userId}
+              accessToken={accessToken}
+              nickname={nickname}
+              profileUrl={profileUrl}
+              colorSet={sendbirdColorSet}
+            >
+              <SendbirdApp
+                history={history}
+                onOpenPaymentModal={onOpenPaymentModal}
+                otherUserListing={otherUserListing}
+                otherUser={otherUser}
+                userEmail={userEmail}
+                ownListing={currentUserListing}
+                currentUser={currentUser}
+                onFetchOtherUserListing={onFetchOtherUserListing}
+                onRequestPayment={onTransitionToRequestPayment}
+                transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+                transitionToRequestPaymentError={transitionToRequestPaymentError}
+                transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
+                onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
+                onSendRequestForPayment={onSendRequestForPayment}
+                sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+                sendRequestForPaymentError={sendRequestForPaymentError}
+                sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+                isPaymentModalOpen={isPaymentModalOpen}
+                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+              />
+            </SBProvider>
+          )}
           {isPaymentModalOpen && (
             <StripePaymentModal
               containerClassName={css.paymentModal}
@@ -183,10 +188,6 @@ InboxPageComponent.defaultProps = {
 };
 
 InboxPageComponent.propTypes = {
-  params: shape({
-    tab: string.isRequired,
-    id: string,
-  }).isRequired,
   unitType: propTypes.bookingUnitType,
   currentUser: propTypes.currentUser,
   currentUserListing: propTypes.ownListing,
@@ -227,14 +228,17 @@ const mapStateToProps = state => {
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentError,
     transitionToRequestPaymentSuccess,
-    otherUser,
+    otherUserRef,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentError,
     sendRequestForPaymentSuccess,
     generateAccessTokenInProgress,
     generateAccessTokenError,
     generateAccessTokenSuccess,
+    fetchUserFromChannelUrlInProgress,
   } = state.InboxPage;
+
+  const otherUser = otherUserRef && getMarketplaceEntities(state, [otherUserRef])[0];
   const {
     currentUser,
     currentUserListing,
@@ -277,6 +281,7 @@ const mapStateToProps = state => {
     generateAccessTokenInProgress,
     generateAccessTokenError,
     generateAccessTokenSuccess,
+    fetchUserFromChannelUrlInProgress,
   };
 };
 
@@ -293,7 +298,7 @@ const mapDispatchToProps = dispatch => ({
     currentUserId,
     customerName,
     channelUrl,
-    channelContext,
+    sendbirdContext,
     otherUserListing
   ) =>
     dispatch(
@@ -301,7 +306,7 @@ const mapDispatchToProps = dispatch => ({
         currentUserId,
         customerName,
         channelUrl,
-        channelContext,
+        sendbirdContext,
         otherUserListing
       )
     ),

@@ -17,6 +17,7 @@ const CustomMessageItem = props => {
     onOpenPaymentModal,
     currentUser,
     otherUser,
+    isPaymentModalOpen,
   } = props;
 
   const MessageHOC = useMemo(() => {
@@ -25,15 +26,11 @@ const CustomMessageItem = props => {
         <ConfirmPaymentMessage
           message={message}
           userId={userId}
-          emojiContainer={emojiContainer}
-          onDeleteMessage={onDeleteMessage}
-          onUpdateMessage={onUpdateMessage}
-          sdk={sdk}
           currentChannel={currentChannel}
-          updateLastMessage={updateLastMessage}
           onOpenPaymentModal={onOpenPaymentModal}
           currentUser={currentUser}
           otherUser={otherUser}
+          isPaymentModalOpen={isPaymentModalOpen}
         />
       );
     } else if (message.customType === 'REQUEST_FOR_PAYMENT') {
@@ -50,6 +47,7 @@ const CustomMessageItem = props => {
           onOpenPaymentModal={onOpenPaymentModal}
           currentUser={currentUser}
           otherUser={otherUser}
+          isPaymentModalOpen={isPaymentModalOpen}
         />
       );
     } else if (message.customType === 'NOTIFY_FOR_PAYMENT') {
@@ -63,6 +61,7 @@ const CustomMessageItem = props => {
           sdk={sdk}
           currentChannel={currentChannel}
           updateLastMessage={updateLastMessage}
+          isPaymentModalOpen={isPaymentModalOpen}
         />
       );
     } else if (
@@ -85,13 +84,13 @@ const CustomMessageItem = props => {
     return () => <div />;
   }, [
     message,
-    emojiContainer,
     userId,
     onDeleteMessage,
     onUpdateMessage,
     sdk,
     currentChannel,
     updateLastMessage,
+    isPaymentModalOpen,
   ]);
 
   return (
