@@ -70,6 +70,8 @@
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
   padding-block: 15px;
   min-height: 0;
+  background-color: var(--marketplaceColor);
+  color: var(--matterColorLight);
 }
 
 .paymentButtonRoot {

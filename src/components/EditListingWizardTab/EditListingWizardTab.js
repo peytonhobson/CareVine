@@ -22,6 +22,7 @@ import {
   EditListingPricingPanel,
   EditListingCareRecipientDetailsPanel,
   EditListingCaregiverDetailsPanel,
+  EditListingBackgroundCheckPanel,
 } from '..';
 
 import css from './EditListingWizardTab.module.css';
@@ -36,6 +37,7 @@ export const LOCATION = 'location';
 export const PRICING = 'pricing';
 export const PROFILE_PICTURE = 'profile-picture';
 export const CARE_RECEIVER_DETAILS = 'care-recipient-details';
+export const BACKGROUND_CHECK = 'background-check';
 export const CAREGIVER_DETAILS = 'caregiver-details';
 
 // EditListingWizardTab component supports these tabs
@@ -51,6 +53,7 @@ export const SUPPORTED_TABS = [
   PROFILE_PICTURE,
   CARE_RECEIVER_DETAILS,
   CAREGIVER_DETAILS,
+  BACKGROUND_CHECK,
 ];
 
 const pathParamsToNextTab = (params, tab, marketplaceTabs) => {
@@ -256,20 +259,6 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    // case POLICY: {
-    //   const submitButtonTranslationKey = isNewListingFlow
-    //     ? 'EditListingWizard.saveNewPolicies'
-    //     : 'EditListingWizard.saveEditPolicies';
-    //   return (
-    //     <EditListingPoliciesPanel
-    //       {...panelProps(POLICY)}
-    //       submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-    //       onSubmit={values => {
-    //         onCompleteEditListingWizardTab(tab, values);
-    //       }}
-    //     />
-    //   );
-    // }
     case LOCATION: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewLocation'
@@ -318,6 +307,20 @@ const EditListingWizardTab = props => {
           onNextTab={() =>
             redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
           }
+        />
+      );
+    }
+    case BACKGROUND_CHECK: {
+      const submitButtonTranslationKey = isNewListingFlow
+        ? 'EditListingWizard.saveNewBackgroundCheck'
+        : 'EditListingWizard.saveEditBackgroundCheck';
+      return (
+        <EditListingBackgroundCheckPanel
+          {...panelProps(BACKGROUND_CHECK)}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          onSubmit={values => {
+            onCompleteEditListingWizardTab(tab, values);
+          }}
         />
       );
     }

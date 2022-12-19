@@ -28,7 +28,6 @@ const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileS
 const SearchPage = loadable(() => import(/* webpackChunkName: "SearchPage" */ /* webpackPrefetch: true */  './containers/SearchPage/SearchPage'));
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ './containers/StripePayoutPage/StripePayoutPage'));
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
-const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ './containers/StyleguidePage/StyleguidePage'));
@@ -184,41 +183,6 @@ const routeConfiguration = () => {
       auth: true,
       authPage: 'LoginPage',
       component: InboxPage,
-    },
-    {
-      path: '/order/:id',
-      name: 'OrderPage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: props => <NamedRedirect name="OrderDetailsPage" params={{ ...props.params }} />,
-    },
-    {
-      path: '/order/:id/details',
-      name: 'OrderDetailsPage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: TransactionPage,
-      extraProps: { transactionRole: 'customer' },
-      loadData: params =>
-        pageDataLoadingAPI.TransactionPage.loadData({ ...params, transactionRole: 'customer' }),
-      setInitialValues: pageDataLoadingAPI.TransactionPage.setInitialValues,
-    },
-    {
-      path: '/sale/:id',
-      name: 'SalePage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: props => <NamedRedirect name="SaleDetailsPage" params={{ ...props.params }} />,
-    },
-    {
-      path: '/sale/:id/details',
-      name: 'SaleDetailsPage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: TransactionPage,
-      extraProps: { transactionRole: 'provider' },
-      loadData: params =>
-        pageDataLoadingAPI.TransactionPage.loadData({ ...params, transactionRole: 'provider' }),
     },
     {
       path: '/account',

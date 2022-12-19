@@ -3,8 +3,12 @@
 
 .avatarContainer {
   display: flex;
+  justify-content: center;
+  align-items: center;
   float: left;
   text-decoration: none;
+  width: 100px;
+  height: 100px;
 }
 
 .avatarLink {
@@ -14,8 +18,10 @@
 }
 
 .usernameContainer {
+  composes: marketplaceModalTitleStyles from global;
+
   display: flex;
   align-items: center;
-  margin-left: 2rem;
-  font-size: 60px;
+  height: 100px;
+  padding-left: 20px;
 }

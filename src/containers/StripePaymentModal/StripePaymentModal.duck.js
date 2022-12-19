@@ -59,7 +59,7 @@ export const SEND_NOTIFY_FOR_PAYMENT_ERROR = 'app/StripePaymentModal/SEND_NOTIFY
 
 export const initialState = {
   channelUrl: null,
-  channelContext: null,
+  sendbirdContext: null,
   provider: null,
   confirmPaymentInProgress: false,
   confirmPaymentError: null,
@@ -296,7 +296,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
     .catch(e => handleError(e));
 };
 
-const sendPaymentNotification = (currentUserId, providerName, channelUrl, channelContext) => (
+const sendPaymentNotification = (currentUserId, providerName, channelUrl, sendbirdContext) => (
   dispatch,
   getState,
   sdk
@@ -319,7 +319,7 @@ const sendPaymentNotification = (currentUserId, providerName, channelUrl, channe
         };
 
         channel.sendUserMessage(messageParams).onSucceeded(message => {
-          channelContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
             message,
             channel,
           });
@@ -335,7 +335,7 @@ export const sendNotifyForPayment = (
   currentUserId,
   providerName,
   channelUrl,
-  channelContext,
+  sendbirdContext,
   providerListing
 ) => (dispatch, getState, sdk) => {
   dispatch(sendNotifyForPaymentRequest());
@@ -357,7 +357,7 @@ export const sendNotifyForPayment = (
         };
 
         channel.sendUserMessage(messageParams).onSucceeded(message => {
-          channelContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
             message,
             channel,
           });
@@ -404,7 +404,7 @@ export const confirmPayment = (
   currentUserId,
   providerName,
   channelUrl,
-  channelContext,
+  sendbirdContext,
   providerListing
 ) => (dispatch, getState, sdk) => {
   dispatch(confirmPaymentRequest());
@@ -412,7 +412,7 @@ export const confirmPayment = (
   const handleSuccess = response => {
     dispatch(confirmPaymentSuccess(response));
     try {
-      dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, channelContext));
+      dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext));
     } catch (e) {
       log.error(e, 'send-payment-notification-failed', {});
     }

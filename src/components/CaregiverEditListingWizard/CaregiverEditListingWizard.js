@@ -27,6 +27,7 @@ import EditListingWizardTab, {
   ADDITIONAL_DETAILS,
   LOCATION,
   PRICING,
+  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import css from './CaregiverEditListingWizard.module.css';
@@ -48,6 +49,7 @@ export const TABS = [
   LOCATION,
   PRICING,
   ...availabilityMaybe,
+  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 ];
 
@@ -73,6 +75,8 @@ const tabLabel = (intl, tab) => {
     key = 'CaregiverEditListingWizard.tabLabelPricing';
   } else if (tab === AVAILABILITY) {
     key = 'CaregiverEditListingWizard.tabLabelAvailability';
+  } else if (tab === BACKGROUND_CHECK) {
+    key = 'CaregiverEditListingWizard.tabLabelBackgroundCheck';
   } else if (tab === PROFILE_PICTURE) {
     key = 'CaregiverEditListingWizard.tabLabelPhotos';
   }
@@ -89,7 +93,14 @@ const tabLabel = (intl, tab) => {
  * @return true if tab / step is completed.
  */
 const tabCompleted = (tab, listing) => {
-  const { availabilityPlan, description, geolocation, title, publicData } = listing.attributes;
+  const {
+    availabilityPlan,
+    description,
+    geolocation,
+    title,
+    publicData,
+    metadata,
+  } = listing.attributes;
   const images = listing.images;
 
   switch (tab) {
@@ -113,6 +124,8 @@ const tabCompleted = (tab, listing) => {
       return !!(publicData && publicData.rates);
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
+    case BACKGROUND_CHECK:
+      return !!metadata;
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:
@@ -217,10 +230,20 @@ class CaregiverEditListingWizard extends Component {
   }
 
   componentDidMount() {
-    const { stripeOnboardingReturnURL } = this.props;
+    const { stripeOnboardingReturnURL, currentUser } = this.props;
 
     if (stripeOnboardingReturnURL != null && !this.showPayoutDetails) {
       this.setState({ showPayoutDetails: true });
+    }
+
+    if (
+      currentUser &&
+      currentUser.attributes &&
+      currentUser.attributes.profile &&
+      currentUser.attributes.profile.metadata &&
+      currentUser.attributes.profile.metadata.backgroundCheck
+    ) {
+      TABS.remove(BACKGROUND_CHECK);
     }
   }
 
