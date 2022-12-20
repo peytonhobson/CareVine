@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import '@sendbird/uikit-react/dist/index.css';
 import { Card as MuiCard, CardContent as MuiCardContent } from '@mui/material';
@@ -59,28 +59,23 @@ const NotifyForPaymentMessage = props => {
   const [fetchUserFromChannelUrlInProgress, setFetchUserFromChannelUrlInProgress] = useState(false);
 
   useEffect(() => {
-    sendbirdContext &&
-      sendbirdContext.config &&
-      sendbirdContext.config.pubSub &&
-      sendbirdContext.config.pubSub.subscribe(
-        'PAYMENT_MODAL_DISPLAY_CHANGE',
-        ({ isPaymentModalOpen }) => {
-          setIsPaymentModalOpen(isPaymentModalOpen);
-        }
-      );
-  }, [sendbirdContext]);
+    let pubSub = sendbirdContext && sendbirdContext.config && sendbirdContext.config.pubSub;
 
-  useEffect(() => {
-    sendbirdContext &&
-      sendbirdContext.config &&
-      sendbirdContext.config.pubSub &&
-      sendbirdContext.config.pubSub.subscribe(
-        'FETCH_OTHER_USER_IN_PROGRESS_CHANGE',
-        ({ fetchUserFromChannelUrlInProgress }) => {
-          setFetchUserFromChannelUrlInProgress(fetchUserFromChannelUrlInProgress);
-        }
-      );
-  }, [sendbirdContext]);
+    pubSub.subscribe('PAYMENT_MODAL_DISPLAY_CHANGE', ({ isPaymentModalOpen }) => {
+      setIsPaymentModalOpen(isPaymentModalOpen);
+    });
+
+    pubSub.subscribe(
+      'FETCH_OTHER_USER_IN_PROGRESS_CHANGE',
+      ({ fetchUserFromChannelUrlInProgress }) => {
+        setFetchUserFromChannelUrlInProgress(fetchUserFromChannelUrlInProgress);
+      }
+    );
+
+    return () => {
+      pubSub = null;
+    };
+  }, []);
 
   return (
     <div className={baseClass}>
@@ -104,15 +99,15 @@ const NotifyForPaymentMessage = props => {
             </p>
             <div className={css.bottomWrapper}>
               <PaymentButton
+                channelContext={channelContext}
                 rootClassName={css.paymentButtonRoot}
+                channelUrl={channelContext.channelUrl}
                 className={css.paymentButton}
                 disabled={isPaymentModalOpen || !otherUser}
+                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
                 onOpenPaymentModal={onOpenPaymentModal}
                 otherUser={otherUser}
-                channelUrl={channelContext.channelUrl}
-                //TODO: Need to change channel context to be global context in all related instances
                 sendbirdContext={sendbirdContext}
-                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
               ></PaymentButton>
             </div>
           </CardContent>

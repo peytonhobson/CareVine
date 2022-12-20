@@ -7,8 +7,25 @@ import { FormattedMessage } from '../../util/reactIntl';
 import css from './StripePaymentModal.module.css';
 import classNames from 'classnames';
 
+const checkIfNotifiedInLastDay = messages => {
+  let withinADay = false;
+
+  messages &&
+    messages
+      .filter(message => {
+        return message.customType === 'NOTIFY_FOR_PAYMENT';
+      })
+      .forEach(message => {
+        if (new Date(message.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+          withinADay = true;
+        }
+      });
+  return withinADay;
+};
+
 const NotifyForPaymentContainer = props => {
   const {
+    channelContext,
     channelUrl,
     currentUser,
     intl,
@@ -33,11 +50,17 @@ const NotifyForPaymentContainer = props => {
     );
   };
 
+  const notifiedInLastDay = checkIfNotifiedInLastDay(channelContext.allMessages);
+
   const notifyButtonDisabled =
-    !currentUser || !provider || !providerListing || sendNotifyForPaymentSuccess;
+    !currentUser ||
+    !provider ||
+    !providerListing ||
+    sendNotifyForPaymentSuccess ||
+    notifiedInLastDay;
 
   const notifyProviderMessage = intl.formatMessage({
-    id: 'StripePaymentModal.notifyProviderMessage',
+    id: 'NotifyForPaymentContainer.notifyButtonLabel',
   });
 
   const rootClasses = classNames(css.root, css.single);
@@ -52,9 +75,12 @@ const NotifyForPaymentContainer = props => {
       />
       <p className={css.noPayoutMessage}>
         <FormattedMessage
-          id="StripePaymentModal.providerMissingStripeAccountText"
+          id="NotifyForPaymentContainer.providerMissingStripeAccountText"
           values={{ providerName }}
         />
+      </p>
+      <p className={css.notifyDisabledMessage}>
+        <FormattedMessage id="NotifyForPaymentContainer.notifyDisabledMessage" />
       </p>
       <div className={css.notifyButtonWrapper}>
         <Button

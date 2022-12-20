@@ -6,6 +6,7 @@ import css from './index.module.css';
 
 const PaymentButton = props => {
   const {
+    channelContext,
     channelUrl,
     className,
     disabled,
@@ -21,6 +22,7 @@ const PaymentButton = props => {
       channelUrl,
       provider: otherUser,
       sendbirdContext,
+      channelContext,
     };
 
     onOpenPaymentModal(modalInitialValues);

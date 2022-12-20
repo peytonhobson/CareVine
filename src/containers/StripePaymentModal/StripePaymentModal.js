@@ -32,6 +32,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const StripePaymentModalComponent = props => {
   const {
+    channelContext,
     channelUrl,
     confirmPaymentError,
     confirmPaymentInProgress,
@@ -264,6 +265,7 @@ const StripePaymentModalComponent = props => {
           )}
           {!hasStripeAccount && hasStripeAccountFetched && !confirmPaymentSuccess && (
             <NotifyForPaymentContainer
+              channelContext={channelContext}
               channelUrl={channelUrl}
               currentUser={currentUser}
               intl={intl}

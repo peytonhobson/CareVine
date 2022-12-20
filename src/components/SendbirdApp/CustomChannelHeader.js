@@ -110,6 +110,7 @@ const CustomChannelHeader = props => {
       <div className="sendbird-chat-header__right">
         {currentUserType === EMPLOYER ? (
           <PaymentButton
+            channelContext={channelContext}
             channelUrl={channelUrl}
             disabled={!otherUser}
             fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
@@ -119,6 +120,7 @@ const CustomChannelHeader = props => {
           />
         ) : (
           <RequestPaymentButton
+            channelContext={channelContext}
             channelUrl={channelUrl}
             currentUser={currentUser}
             disabled={!otherUser || !listing}
