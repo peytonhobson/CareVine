@@ -1,97 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
+
 import { bool, func, object, oneOfType, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { injectIntl, intlShape, FormattedMessage } from '../../util/reactIntl';
-import { storeData, storedData } from './StripePaymentModalSessionHelpers';
 import { withRouter } from 'react-router-dom';
-import { Modal, UserListingPreview, IconConfirm, Button } from '../../components';
 import classNames from 'classnames';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+import { injectIntl, intlShape, FormattedMessage } from '../../util/reactIntl';
+import { Modal, UserListingPreview, IconConfirm, Button } from '../../components';
 import { userDisplayNameAsString } from '../../util/data';
+import { PaymentForm, PaymentDetailsForm } from '../../forms';
 import {
   createPaymentIntent,
-  sendMessage,
   confirmPayment,
   setInitialValues,
   initialState,
   hasStripeAccount,
   stripeCustomer,
-  saveDefaultPayment,
   fetchDefaultPayment,
   sendNotifyForPayment,
 } from './StripePaymentModal.duck';
-import { manageDisableScrolling } from '../../ducks/UI.duck';
-import { Elements } from '@stripe/react-stripe-js';
-import { PaymentForm, PaymentDetailsForm } from '../../forms';
-import { loadStripe } from '@stripe/stripe-js';
 import { propTypes } from '../../util/types';
+import { manageDisableScrolling } from '../../ducks/UI.duck';
+import NotifyForPaymentContainer from './NotifyForPaymentContainer';
 
 import css from './StripePaymentModal.module.css';
-import { Fragment } from 'react';
-import { fontFamily } from '@mui/system';
-
-export const removeElementsByClass = className => {
-  const elements = document.getElementsByClassName(className);
-  Array.from(elements).forEach(el => el.parentNode.removeChild(el));
-};
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
-const STORAGE_KEY = 'StripePaymentModal';
 
 const StripePaymentModalComponent = props => {
   const {
-    onCreatePaymentIntent,
-    intl,
-    onManageDisableScrolling,
-    isOpen,
-    onConfirmPayment,
-    onSetInitialState,
-    onClose,
-    provider,
-    providerListing,
     channelUrl,
-    sendbirdContext,
-    confirmPaymentInProgress,
     confirmPaymentError,
+    confirmPaymentInProgress,
     confirmPaymentSuccess,
-    createPaymentIntentInProgress,
     createPaymentIntentError,
-    paymentIntent,
+    createPaymentIntentInProgress,
     currentUser,
-    hasStripeAccountInProgress,
-    hasStripeAccountError,
-    hasStripeAccount,
-    hasStripeAccountFetched,
+    defaultPayment,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
     fetchHasStripeAccount,
     fetchStripeCustomer,
-    fetchDefaultPaymentInProgress,
-    fetchDefaultPaymentError,
-    defaultPayment,
+    hasStripeAccount,
+    hasStripeAccountError,
+    hasStripeAccountFetched,
+    hasStripeAccountInProgress,
+    intl,
+    isOpen,
+    onClose,
+    onConfirmPayment,
+    onCreatePaymentIntent,
     onFetchDefaultPayment,
-    defaultPaymentFetched,
+    onManageDisableScrolling,
     onSendNotifyForPayment,
+    onSetInitialState,
+    paymentIntent,
+    provider,
+    providerListing,
+    sendbirdContext,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
   } = props;
 
   const [clientSecret, setClientSecret] = useState(null);
-  const [modalData, setModalData] = useState(null);
   const [rootClass, setRootClass] = useState(classNames(css.root, css.single));
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-  const loadInitialData = () => {
-    const modalData = { provider, channelUrl, sendbirdContext };
-
+  useEffect(() => {
     fetchStripeCustomer();
-    fetchHasStripeAccount(modalData.provider.id);
-
-    return modalData;
-  };
+  }, []);
 
   useEffect(() => {
-    const modalData = loadInitialData();
-    setModalData(modalData);
-  }, []);
+    provider && provider.id && fetchHasStripeAccount(provider.id);
+  }, [provider]);
 
   useEffect(() => {
     if (paymentIntent) {
@@ -110,17 +95,18 @@ const StripePaymentModalComponent = props => {
   const onHandleReviewPayment = values => {
     const { amount } = values;
 
-    if (currentUser.stripeCustomer) {
+    if (currentUser.stripeCustomer && provider) {
       const { stripeCustomerId } = currentUser.stripeCustomer.attributes;
-      onCreatePaymentIntent(amount.amount, modalData.provider.id, stripeCustomerId);
+      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId);
     } else {
-      onCreatePaymentIntent(amount.amount, modalData.provider.id);
+      onCreatePaymentIntent(amount.amount, provider.id);
     }
   };
 
   const onHandlePaymentSubmit = (stripe, elements, saveCardAsDefault, useDefaultCard) => {
     const defaultPaymentId = defaultPayment && defaultPayment.id;
     const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
+    const providerName = userDisplayNameAsString(provider);
     onConfirmPayment(
       stripe,
       elements,
@@ -144,18 +130,6 @@ const StripePaymentModalComponent = props => {
   const onHandleEditPaymentDetails = () => {
     setClientSecret(null);
     setRootClass(classNames(css.root, css.single));
-  };
-
-  const handleNotifyForPayment = () => {
-    const providerName = modalData && userDisplayNameAsString(modalData.provider);
-    const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
-    onSendNotifyForPayment(
-      currentUserId,
-      providerName,
-      modalData.channelUrl,
-      modalData.sendbirdContext,
-      providerListing
-    );
   };
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -230,39 +204,29 @@ const StripePaymentModalComponent = props => {
   const paymentConfirmedMessage = intl.formatMessage({
     id: 'StripePaymentModal.paymentConfirmedMessage',
   });
-  const providerName = modalData && userDisplayNameAsString(modalData.provider);
-  const notifyProviderMessage = intl.formatMessage({
-    id: 'StripePaymentModal.notifyProviderMessage',
-  });
-
-  const notifyButtonDisabled =
-    (modalData &&
-      modalData.transaction &&
-      modalData.transaction.attributes.lastTransition !== TRANSITION_ENQUIRE) ||
-    sendNotifyForPaymentSuccess;
 
   return (
     <Fragment>
       {(hasStripeAccountFetched || confirmPaymentSuccess) && (
         <Modal
-          id="stripePaymentModal"
-          onManageDisableScrolling={onManageDisableScrolling}
+          closeButtonMessage={closeButtonMessage}
           containerClassName={css.modalContainer}
+          id="stripePaymentModal"
           isOpen={isOpen}
           onClose={onHandleClose}
+          onManageDisableScrolling={onManageDisableScrolling}
           usePortal
-          closeButtonMessage={closeButtonMessage}
         >
           {(hasStripeAccount || confirmPaymentSuccess) && (
             <div className={rootClass}>
               {!confirmPaymentSuccess && (
                 <div className={css.leftColumnContainer}>
                   <PaymentDetailsForm
-                    onSubmit={onHandleReviewPayment}
-                    createPaymentIntentInProgress={createPaymentIntentInProgress}
-                    createPaymentIntentError={createPaymentIntentError}
                     clientSecret={clientSecret}
+                    createPaymentIntentError={createPaymentIntentError}
+                    createPaymentIntentInProgress={createPaymentIntentInProgress}
                     onEditPaymentDetails={onHandleEditPaymentDetails}
+                    onSubmit={onHandleReviewPayment}
                     provider={provider}
                   />
                 </div>
@@ -272,19 +236,19 @@ const StripePaymentModalComponent = props => {
                   {showPaymentForm && (
                     <Elements options={options} stripe={stripePromise}>
                       <PaymentForm
-                        paymentIntent={paymentIntent}
-                        onPaymentSubmit={onHandlePaymentSubmit}
-                        intl={intl}
-                        confirmPaymentInProgress={confirmPaymentInProgress}
                         confirmPaymentError={confirmPaymentError}
+                        confirmPaymentInProgress={confirmPaymentInProgress}
                         confirmPaymentSuccess={confirmPaymentSuccess}
                         currentUser={currentUser}
-                        onManageDisableScrolling={onManageDisableScrolling}
-                        fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-                        fetchDefaultPaymentError={fetchDefaultPaymentError}
                         defaultPayment={defaultPayment}
-                        onFetchDefaultPayment={onFetchDefaultPayment}
                         defaultPaymentFetched={defaultPaymentFetched}
+                        fetchDefaultPaymentError={fetchDefaultPaymentError}
+                        fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+                        intl={intl}
+                        onFetchDefaultPayment={onFetchDefaultPayment}
+                        onManageDisableScrolling={onManageDisableScrolling}
+                        onPaymentSubmit={onHandlePaymentSubmit}
+                        paymentIntent={paymentIntent}
                       />
                     </Elements>
                   )}
@@ -299,31 +263,17 @@ const StripePaymentModalComponent = props => {
             </div>
           )}
           {!hasStripeAccount && hasStripeAccountFetched && !confirmPaymentSuccess && (
-            <div className={rootClass}>
-              <UserListingPreview
-                otherUser={modalData && modalData.provider}
-                otherUserListing={modalData && modalData.listing}
-                intl={intl}
-                rootClassName={css.userPreviewRoot}
-                className={css.usernameContainer}
-              />
-              <p className={css.noPayoutMessage}>
-                <FormattedMessage
-                  id="StripePaymentModal.providerMissingStripeAccountText"
-                  values={{ providerName }}
-                />
-              </p>
-              <div className={css.notifyButtonWrapper}>
-                <Button
-                  onClick={handleNotifyForPayment}
-                  inProgress={sendNotifyForPaymentInProgress}
-                  disabled={notifyButtonDisabled}
-                  ready={sendNotifyForPaymentSuccess}
-                >
-                  {notifyProviderMessage}
-                </Button>
-              </div>
-            </div>
+            <NotifyForPaymentContainer
+              channelUrl={channelUrl}
+              currentUser={currentUser}
+              intl={intl}
+              onSendNotifyForPayment={onSendNotifyForPayment}
+              provider={provider}
+              providerListing={providerListing}
+              sendbirdContext={sendbirdContext}
+              sendNotifyForPaymentInProgress={sendNotifyForPaymentInProgress}
+              sendNotifyForPaymentSuccess={sendNotifyForPaymentSuccess}
+            />
           )}
         </Modal>
       )}
@@ -332,55 +282,58 @@ const StripePaymentModalComponent = props => {
 };
 
 StripePaymentModalComponent.defaultProps = {
-  listing: null,
-  transaction: null,
-  provider: null,
-  confirmPaymentInProgress: false,
   confirmPaymentError: null,
+  confirmPaymentInProgress: false,
   confirmPaymentSuccess: false,
-  stripeCustomerFetched: false,
-  createPaymentIntentInProgress: false,
   createPaymentIntentError: null,
-  paymentIntent: null,
-  hasStripeAccountInProgress: false,
-  hasStripeAccountError: null,
-  hasStripeAccount: false,
-  hasStripeAccountFetched: false,
-  fetchDefaultPaymentInProgress: false,
-  fetchDefaultPaymentError: null,
+  createPaymentIntentInProgress: false,
   defaultPayment: null,
   defaultPaymentFetched: false,
+  fetchDefaultPaymentError: null,
+  fetchDefaultPaymentInProgress: false,
+  hasStripeAccount: false,
+  hasStripeAccountError: null,
+  hasStripeAccountFetched: false,
+  hasStripeAccountInProgress: false,
+  paymentIntent: null,
+  sendNotifyForPaymentError: null,
+  sendNotifyForPaymentInProgress: false,
+  sendNotifyForPaymentSuccess: false,
+  stripeCustomerFetched: false,
 };
 
 StripePaymentModalComponent.propTypes = {
-  scrollingDisabled: bool,
-  listing: propTypes.listing,
-  transaction: propTypes.transaction,
-  provider: propTypes.user,
+  confirmPaymentError: propTypes.error,
   confirmPaymentInProgress: bool,
-  confirmPaymentError: oneOfType([propTypes.error, object]),
   confirmPaymentSuccess: bool,
-  stripeCustomerFetched: bool,
+  createPaymentIntentError: propTypes.error,
   createPaymentIntentInProgress: bool,
-  createPaymentIntentError: oneOfType([propTypes.error, object]),
-  paymentIntent: object,
-  hasStripeAccountInProgress: bool,
-  hasStripeAccountError: propTypes.error,
-  hasStripeAccount: bool,
-  hasStripeAccountFetched: bool,
-  fetchDefaultPaymentInProgress: bool,
-  fetchDefaultPaymentError: propTypes.error,
+  currentUser: propTypes.currentUser.isRequired,
   defaultPayment: object,
   defaultPaymentFetched: bool,
-  currentUser: propTypes.currentUser,
+  fetchDefaultPaymentError: propTypes.error,
+  fetchDefaultPaymentInProgress: bool,
+  hasStripeAccount: bool,
+  hasStripeAccountError: propTypes.error,
+  hasStripeAccountFetched: bool,
+  hasStripeAccountInProgress: bool,
+  paymentIntent: object,
+  sendNotifyForPaymentError: propTypes.error,
+  sendNotifyForPaymentInProgress: bool,
+  sendNotifyForPaymentSuccess: bool,
+  stripeCustomerFetched: bool,
   params: shape({
     id: string,
     slug: string,
   }),
 
-  onSendMessage: func,
-  onCreatePaymentIntent: func,
+  fetchHasStripeAccount: func,
+  fetchStripeCustomer: func,
   onConfirmPayment: func,
+  onCreatePaymentIntent: func,
+  onFetchDefaultPayment: func,
+  onSendMessage: func,
+  onSendNotifyForPayment: func,
   onSetInitialState: func,
 
   // from connect
@@ -400,53 +353,53 @@ StripePaymentModalComponent.propTypes = {
 
 const mapStateToProps = state => {
   const {
-    confirmPaymentInProgress,
     confirmPaymentError,
+    confirmPaymentInProgress,
     confirmPaymentSuccess,
-    stripeCustomerFetched,
-    createPaymentIntentInProgress,
     createPaymentIntentError,
-    paymentIntent,
-    hasStripeAccountInProgress,
-    hasStripeAccountError,
-    hasStripeAccount,
-    hasStripeAccountFetched,
-    fetchDefaultPaymentInProgress,
-    fetchDefaultPaymentError,
+    createPaymentIntentInProgress,
     defaultPayment,
     defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+    hasStripeAccount,
+    hasStripeAccountError,
+    hasStripeAccountFetched,
+    hasStripeAccountInProgress,
+    paymentIntent,
+    sendNotifyForPaymentError,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
+    stripeCustomerFetched,
   } = state.StripePaymentModal;
   const { currentUser } = state.user;
 
   return {
-    confirmPaymentInProgress,
     confirmPaymentError,
+    confirmPaymentInProgress,
     confirmPaymentSuccess,
-    stripeCustomerFetched,
-    createPaymentIntentInProgress,
     createPaymentIntentError,
-    paymentIntent,
+    createPaymentIntentInProgress,
     currentUser,
-    hasStripeAccountInProgress,
-    hasStripeAccountError,
-    hasStripeAccount,
-    hasStripeAccountFetched,
-    fetchDefaultPaymentInProgress,
-    fetchDefaultPaymentError,
     defaultPayment,
     defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+    hasStripeAccount,
+    hasStripeAccountError,
+    hasStripeAccountFetched,
+    hasStripeAccountInProgress,
+    paymentIntent,
+    sendNotifyForPaymentError,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
+    stripeCustomerFetched,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId) =>
     dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId)),
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onConfirmPayment: (
     stripe,
     elements,
@@ -475,12 +428,11 @@ const mapDispatchToProps = dispatch => ({
         providerListing
       )
     ),
-  onSetInitialState: () => dispatch(setInitialValues(initialState)),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  // onSaveDefaultPayment: (currentUser, elements, stripe) =>
-  //   dispatch(saveDefaultPayment(currentUser, elements, stripe)),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onSendNotifyForPayment: (
     currentUser,
     providerName,
@@ -491,6 +443,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       sendNotifyForPayment(currentUser, providerName, channelUrl, sendbirdContext, providerListing)
     ),
+  onSetInitialState: () => dispatch(setInitialValues(initialState)),
 });
 
 const StripePaymentModal = compose(

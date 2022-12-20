@@ -28,7 +28,7 @@ const UserListingPreview = props => {
 
   const userDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
 
-  const rootClass = classNames(rootClassName || css.root);
+  const rootClass = classNames(rootClassName || css.userPreviewRoot);
   const usernameClass = classNames(className || css.usernameContainer);
 
   return (

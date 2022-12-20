@@ -6,21 +6,20 @@ import css from './index.module.css';
 
 const PaymentButton = props => {
   const {
-    rootClassName,
-    className,
-    onOpenPaymentModal,
-    otherUser,
     channelUrl,
-    sendbirdContext,
+    className,
     disabled,
     fetchUserFromChannelUrlInProgress,
-    // Need to add fetchOtherUserInProgress so the button can be disabled during that time
+    onOpenPaymentModal,
+    otherUser,
+    rootClassName,
+    sendbirdContext,
   } = props;
 
   const openStripeModal = () => {
     const modalInitialValues = {
-      provider: otherUser,
       channelUrl,
+      provider: otherUser,
       sendbirdContext,
     };
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import '@sendbird/uikit-react/dist/index.css';
+import React from 'react';
+
 import { Card as MuiCard, CardContent as MuiCardContent } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Button } from '../../';
@@ -8,22 +8,13 @@ import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+import { FormattedMessage } from 'react-intl';
 
+import '@sendbird/uikit-react/dist/index.css';
 import css from './index.module.css';
-import classNames from 'classnames';
 
 const NotifyForPaymentMessage = props => {
-  // props
-  const {
-    message,
-    emojiContainer,
-    onDeleteMessage,
-    onUpdateMessage,
-    userId,
-    sdk,
-    currentChannel,
-    updateLastMessage,
-  } = props;
+  const { message, userId } = props;
 
   const baseClass =
     message.sender.userId === userId
@@ -44,8 +35,6 @@ const NotifyForPaymentMessage = props => {
       paddingBottom: '5px',
     },
   }));
-
-  const incomingClasses = classNames(css.incomingContainer);
 
   const history = useHistory();
 
@@ -77,28 +66,25 @@ const NotifyForPaymentMessage = props => {
       {message.sender.userId === userId ? (
         <Card>
           <CardContent>
-            <p className={css.cardTitle}>
-              {/* <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" /> */}
-              {message.message}
-            </p>
+            <p className={css.cardTitle}>{message.message}</p>
           </CardContent>
         </Card>
       ) : (
         <Card>
           <CardContent>
             <p className={css.cardTitle}>
-              {/* <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" /> */}
-              {message.sender.nickname} wants to pay you, but your payout details aren't setup.
+              <FormattedMessage
+                id="NotifyForPaymentMessage.senderWantsToPay"
+                values={{ sender: message.sender.nickname }}
+              />
             </p>
             <p className={css.cardMessage}>
-              {/* <FormattedMessage id="ModalMissingInformation.verifyEmailText" /> */}
-              Click the setup button below to start getting paid.
+              <FormattedMessage id="NotifyForPaymentMessage.clickButtonBelow" />
             </p>
 
             <div className={css.bottomWrapper}>
               <Button rootClassName={css.setupButton} onClick={redirectToPayoutSetup}>
-                {/* <FormattedMessage id="ModalMissingInformation.resendEmailLinkText" /> */}
-                Setup
+                <FormattedMessage id="NotifyForPaymentMessage.buttonLabel" />
               </Button>
             </div>
           </CardContent>

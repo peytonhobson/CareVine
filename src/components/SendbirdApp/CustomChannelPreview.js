@@ -6,11 +6,9 @@ import ChannelAvatar from '@sendbird/uikit-react/ui/ChannelAvatar';
 import Badge from '@sendbird/uikit-react/ui/Badge';
 import Icon, { IconColors, IconTypes } from '@sendbird/uikit-react/ui/Icon';
 import Label, { LabelTypography, LabelColors } from '@sendbird/uikit-react/ui/Label';
-
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import { u as useLocalization } from '@sendbird/uikit-react/LocalizationContext-3c8d4888.js';
 import MentionUserLabel from '@sendbird/uikit-react/ui/MentionUserLabel';
-import TextButton from '@sendbird/uikit-react/ui/TextButton';
 import { u as useChannelListContext } from '@sendbird/uikit-react/ChannelListProvider-95089982.js';
 import { TypingIndicatorText } from '@sendbird/uikit-react/Channel/components/TypingIndicator';
 import MessageStatus from '@sendbird/uikit-react/ui/MessageStatus';
@@ -122,9 +120,8 @@ const getChannelUnreadMessageCount = channel =>
 const CustomChannelPreview = ({
   channel,
   isActive = false,
-  renderChannelAction,
-  onLeaveChannel,
   onClick,
+  renderChannelAction,
   tabIndex,
 }) => {
   const sbState = useSendbirdStateContext();
@@ -137,8 +134,6 @@ const CustomChannelPreview = ({
   const { dateLocale, stringSet } = useLocalization();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTyping = typingChannels?.some(({ url }) => url === channel?.url);
-
-  const [showMobileLeave, setShowMobileLeave] = useState(false);
 
   const userId = sbState?.stores?.userStore?.user?.userId;
   const theme = sbState?.config?.theme;

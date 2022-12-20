@@ -7,17 +7,17 @@ import css from './index.module.css';
 
 const RequestPaymentButton = props => {
   const {
-    rootClassName,
+    channelUrl,
     className,
     currentUser,
-    otherUser,
-    otherUserListing,
-    channelUrl,
-    sendbirdContext,
     disabled,
     onSendRequestForPayment,
-    sendRequestForPaymentInProgress,
+    otherUser,
+    otherUserListing,
+    rootClassName,
+    sendbirdContext,
     sendRequestForPaymentError,
+    sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
   } = props;
 
@@ -43,11 +43,11 @@ const RequestPaymentButton = props => {
   return (
     <div className={rootClass}>
       <Button
-        rootClassName={buttonClass}
-        inProgress={sendRequestForPaymentInProgress}
-        ready={sendRequestForPaymentSuccess}
-        onClick={requestPayment}
         disabled={clickDisabled}
+        inProgress={sendRequestForPaymentInProgress}
+        onClick={requestPayment}
+        ready={sendRequestForPaymentSuccess}
+        rootClassName={buttonClass}
       >
         Request Payment
       </Button>

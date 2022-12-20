@@ -6,11 +6,11 @@
   -moz-transition: min-width 1.5s ease-out;
   -ms-transition: min-width 1.5s ease-out;
   -o-transition: min-width 1.5s ease-out;
+  will-change: min-width;
 }
 
 .root.single {
   min-width: 350px;
-  /* justify-content: flex-start; */
 
   & .leftColumnContainer {
     width: 350px;
@@ -99,11 +99,9 @@
 }
 
 .noPayoutMessage {
-  margin-top: 40px;
-}
-
-.noPayoutMessage {
   composes: marketplaceModalParagraphStyles from global;
+
+  margin-top: 40px;
 }
 
 .notifyButtonWrapper {
