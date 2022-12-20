@@ -1,27 +1,33 @@
 import React, { useMemo } from 'react';
-import NotifyForPaymentMessage from './MessageItems/NotifyForPaymentMessage';
+
 import Message from '@sendbird/uikit-react/Channel/components/Message';
+
+import NotifyForPaymentMessage from './MessageItems/NotifyForPaymentMessage';
 import RequestForPaymentMessage from './MessageItems/RequestForPaymentMessage';
 import ConfirmPaymentMessage from './MessageItems/ConfirmPaymentMessage';
 
+const CONFIRM_PAYMENT = 'CONFIRM_PAYMENT';
+const REQUEST_FOR_PAYMENT = 'REQUEST_FOR_PAYMENT';
+const NOTIFY_FOR_PAYMENT = 'NOTIFY_FOR_PAYMENT';
+
 const CustomMessageItem = props => {
   const {
-    message,
-    emojiContainer,
-    onDeleteMessage,
-    onUpdateMessage,
-    userId,
-    sdk,
     currentChannel,
-    updateLastMessage,
-    onOpenPaymentModal,
     currentUser,
-    otherUser,
+    emojiContainer,
     isPaymentModalOpen,
+    message,
+    onDeleteMessage,
+    onOpenPaymentModal,
+    onUpdateMessage,
+    otherUser,
+    sdk,
+    updateLastMessage,
+    userId,
   } = props;
 
   const MessageHOC = useMemo(() => {
-    if (message.customType === 'CONFIRM_PAYMENT') {
+    if (message.customType === CONFIRM_PAYMENT) {
       return () => (
         <ConfirmPaymentMessage
           message={message}
@@ -33,7 +39,7 @@ const CustomMessageItem = props => {
           isPaymentModalOpen={isPaymentModalOpen}
         />
       );
-    } else if (message.customType === 'REQUEST_FOR_PAYMENT') {
+    } else if (message.customType === REQUEST_FOR_PAYMENT) {
       return () => (
         <RequestForPaymentMessage
           message={message}
@@ -50,7 +56,7 @@ const CustomMessageItem = props => {
           isPaymentModalOpen={isPaymentModalOpen}
         />
       );
-    } else if (message.customType === 'NOTIFY_FOR_PAYMENT') {
+    } else if (message.customType === NOTIFY_FOR_PAYMENT) {
       return () => (
         <NotifyForPaymentMessage
           message={message}
@@ -83,14 +89,14 @@ const CustomMessageItem = props => {
     }
     return () => <div />;
   }, [
+    currentChannel,
+    isPaymentModalOpen,
     message,
-    userId,
     onDeleteMessage,
     onUpdateMessage,
     sdk,
-    currentChannel,
     updateLastMessage,
-    isPaymentModalOpen,
+    userId,
   ]);
 
   return (

@@ -33,25 +33,6 @@
   cursor: pointer;
 }
 
-.StripeElement {
-  width: 100%;
-}
-
-.orderError,
-.notFoundError {
-  margin: 11px 0 12px 0;
-
-  @media (--viewportMedium) {
-    margin: 10px 0 12px 0;
-  }
-}
-.orderError {
-  color: var(--failColor);
-}
-.notFoundError {
-  color: var(--attentionColor);
-}
-
 .defaultPaymentTitle {
   font-weight: var(--fontWeightBold);
   font-size: 20px;

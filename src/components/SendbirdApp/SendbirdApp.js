@@ -1,103 +1,47 @@
-import React, { useState, useCallback, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import SBConversation from '@sendbird/uikit-react/Channel';
-import ChannelList from '@sendbird/uikit-react/ChannelList';
-import SBChannelSettings from '@sendbird/uikit-react/ChannelSettings';
-import withSendbird from '@sendbird/uikit-react/withSendbird';
-import ChannelListHeader from '@sendbird/uikit-react/ChannelList/components/ChannelListHeader';
-import ChannelListUI from '@sendbird/uikit-react/ChannelList/components/ChannelListUI';
 import Avatar from '@sendbird/uikit-react/ui/Avatar';
+import ChannelListHeader from '@sendbird/uikit-react/ChannelList/components/ChannelListHeader';
+import { ChannelListProvider } from '@sendbird/uikit-react/ChannelList/context';
+import ChannelListUI from '@sendbird/uikit-react/ChannelList/components/ChannelListUI';
 import ChannelPreviewAction from '@sendbird/uikit-react/ChannelList/components/ChannelPreviewAction';
+import CustomChannelHeader from './CustomChannelHeader';
+import SBConversation from '@sendbird/uikit-react/Channel';
 import '@sendbird/uikit-react/dist/index.css';
-
-import CustomMessageItem from './CustomMessageItem';
-import CustomChannelPreview from './CustomChannelPreview';
 import sendbirdSelectors from '@sendbird/uikit-react/sendbirdSelectors';
+import withSendbird from '@sendbird/uikit-react/withSendbird';
+
+import CustomChannelPreview from './CustomChannelPreview';
+import CustomMessageItem from './CustomMessageItem';
 
 import css from './SendbirdApp.module.css';
-import { ChannelListProvider } from '@sendbird/uikit-react/ChannelList/context';
-import CustomChannelHeader from './CustomChannelHeader';
-import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
-
-export const removeElementsByClass = className => {
-  const elements = document.getElementsByClassName(className);
-  Array.from(elements).forEach(el => el.parentNode.removeChild(el));
-};
-
-export const replaceElementsByClass = (className, replacement) => {
-  const elements = document.getElementsByClassName(className);
-  elements.forEach(el => el.parentNode.replaceChild(el, replacement));
-};
 
 const SendbirdApp = props => {
-  // default props
   const {
-    stores: { sdkStore, userStore },
     config: { isOnline, userId, appId, accessToken, theme, userListQuery, logger, pubSub },
-    sdk,
-    updateLastMessage,
-    history,
-    userEmail,
-    ownListing,
-    otherUser,
     currentUser,
-    otherUserListing,
+    fetchUserFromChannelUrlInProgress,
+    history,
+    isPaymentModalOpen,
     onFetchOtherUserListing,
-    onFetchOtherUser,
+    onFetchUserFromChannelUrl,
     onOpenPaymentModal,
     onRequestPayment,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentSuccess,
-    onFetchUserFromChannelUrl,
     onSendRequestForPayment,
-    sendRequestForPaymentInProgress,
+    otherUser,
+    otherUserListing,
+    ownListing,
     sendRequestForPaymentError,
+    sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
-    isPaymentModalOpen,
-    fetchUserFromChannelUrlInProgress,
+    sdk,
+    stores: { sdkStore, userStore },
+    transitionToRequestPaymentError,
+    transitionToRequestPaymentInProgress,
+    transitionToRequestPaymentSuccess,
+    updateLastMessage,
   } = props;
-  // const logDefaultProps = useCallback(() => {
-  //   console.log(
-  //     'SDK store list log',
-  //     sdkStore.initialized,
-  //     sdkStore.sdk,
-  //     sdkStore.loading,
-  //     sdkStore.error
-  //   );
-  //   console.log('User store list log', userStore.initialized, userStore.user, userStore.loading);
-  //   console.log(
-  //     'Config list log',
-  //     isOnline,
-  //     userId,
-  //     appId,
-  //     accessToken,
-  //     theme,
-  //     userListQuery,
-  //     logger,
-  //     pubSub
-  //   );
-  // }, [
-  //   sdkStore.initialized,
-  //   sdkStore.sdk,
-  //   sdkStore.loading,
-  //   sdkStore.error,
-  //   userStore.initialized,
-  //   userStore.user,
-  //   userStore.loading,
-  //   isOnline,
-  //   userId,
-  //   appId,
-  //   accessToken,
-  //   theme,
-  //   userListQuery,
-  //   logger,
-  //   pubSub,
-  // ]);
-  // logDefaultProps();
 
-  // useState
-  const [showSettings, setShowSettings] = useState(false);
   const [currentChannelUrl, setCurrentChannelUrl] = useState('');
 
   const redirectToOwnProfile = () => {
@@ -109,26 +53,21 @@ const SendbirdApp = props => {
     currentChannelUrl && onFetchUserFromChannelUrl(currentChannelUrl, userId);
   }, [currentChannelUrl]);
 
-  const context = useSendbirdStateContext();
-
   useEffect(() => {
-    context &&
-      context.config &&
-      context.config.pubSub &&
-      context.config.pubSub.publish('PAYMENT_MODAL_DISPLAY_CHANGE', {
+    pubSub &&
+      pubSub.publish('PAYMENT_MODAL_DISPLAY_CHANGE', {
         isPaymentModalOpen,
       });
-  }, [isPaymentModalOpen, context]);
+  }, [isPaymentModalOpen]);
 
   useEffect(() => {
-    context &&
-      context.config &&
-      context.config.pubSub &&
-      context.config.pubSub.publish('FETCH_OTHER_USER_IN_PROGRESS_CHANGE', {
+    pubSub &&
+      pubSub.publish('FETCH_OTHER_USER_IN_PROGRESS_CHANGE', {
         fetchUserFromChannelUrlInProgress,
       });
-  }, [fetchUserFromChannelUrlInProgress, context]);
+  }, [fetchUserFromChannelUrlInProgress]);
 
+  const userEmail = currentUser.attributes.email;
   const renderTitle = (
     <div
       className="sendbird-channel-header__title"
@@ -162,25 +101,22 @@ const SendbirdApp = props => {
     </div>
   );
 
-  const customListHeader = <ChannelListHeader renderTitle={() => renderTitle} />;
-
   const customChannelHeader = (
     <CustomChannelHeader
+      channelUrl={currentChannelUrl}
+      currentUser={currentUser}
+      fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
       listing={otherUserListing}
       onOpenPaymentModal={onOpenPaymentModal}
-      currentUser={currentUser}
-      otherUser={otherUser}
-      otherUserListing={otherUserListing}
       onRequestPayment={onRequestPayment}
-      transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
-      transitionToRequestPaymentError={transitionToRequestPaymentError}
-      transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
-      channelUrl={currentChannelUrl}
       onSendRequestForPayment={onSendRequestForPayment}
-      sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+      otherUser={otherUser}
       sendRequestForPaymentError={sendRequestForPaymentError}
+      sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
       sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-      fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+      transitionToRequestPaymentError={transitionToRequestPaymentError}
+      transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+      transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
     />
   );
 
@@ -196,7 +132,6 @@ const SendbirdApp = props => {
             }}
           >
             <ChannelListUI
-              renderHeader={() => customListHeader}
               renderChannelPreview={({ channel, onClick }) => (
                 <CustomChannelPreview
                   key={channel?.url}
@@ -208,6 +143,7 @@ const SendbirdApp = props => {
                   )}
                 />
               )}
+              renderHeader={() => <ChannelListHeader renderTitle={() => renderTitle} />}
             />
           </ChannelListProvider>
         </div>
@@ -217,33 +153,23 @@ const SendbirdApp = props => {
             renderChannelHeader={() => customChannelHeader}
             renderMessage={({ message, onDeleteMessage, onUpdateMessage, emojiContainer }) => (
               <CustomMessageItem
+                currentChannel={currentChannelUrl}
+                currentUser={currentUser}
+                emojiContainer={emojiContainer}
+                isPaymentModalOpen={isPaymentModalOpen}
                 message={message}
                 onDeleteMessage={onDeleteMessage}
-                onUpdateMessage={onUpdateMessage}
-                emojiContainer={emojiContainer}
-                userId={userId}
-                sdk={sdk}
-                currentChannel={currentChannelUrl}
-                updateLastMessage={updateLastMessage}
                 onOpenPaymentModal={onOpenPaymentModal}
-                currentUser={currentUser}
+                onUpdateMessage={onUpdateMessage}
                 otherUser={otherUser}
-                isPaymentModalOpen={isPaymentModalOpen}
+                sdk={sdk}
+                updateLastMessage={updateLastMessage}
+                userId={userId}
               />
             )}
           />
         </div>
       </div>
-      {showSettings && (
-        <div className="sendbird-app__settingspanel-wrap">
-          <SBChannelSettings
-            channelUrl={currentChannelUrl}
-            onCloseClick={() => {
-              setShowSettings(false);
-            }}
-          />
-        </div>
-      )}
     </div>
   );
 };

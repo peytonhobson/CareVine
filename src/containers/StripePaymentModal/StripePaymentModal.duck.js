@@ -1,4 +1,6 @@
-import { pick, merge } from 'lodash';
+import SendbirdChat from '@sendbird/chat';
+import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+
 import {
   stripeCreatePaymentIntent,
   fetchHasStripeAccount,
@@ -9,8 +11,6 @@ import {
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 import { TRANSITION_CONFIRM_PAYMENT, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
 import config from '../../config';
 
@@ -34,17 +34,6 @@ export const HAS_STRIPE_ACCOUNT_REQUEST = 'app/StripePaymentModal/HAS_STRIPE_ACC
 export const HAS_STRIPE_ACCOUNT_SUCCESS = 'app/StripePaymentModal/HAS_STRIPE_ACCOUNT_SUCCESS';
 export const HAS_STRIPE_ACCOUNT_ERROR = 'app/StripePaymentModal/HAS_STRIPE_ACCOUNT_ERROR';
 
-export const FETCH_SAVED_PAYMENT_METHODS_REQUEST =
-  'app/StripePaymentModal/FETCH_SAVED_PAYMENT_METHODS_REQUEST';
-export const FETCH_SAVED_PAYMENT_METHODS_SUCCESS =
-  'app/StripePaymentModal/FETCH_SAVED_PAYMENT_METHODS_SUCCESS';
-export const FETCH_SAVED_PAYMENT_METHODS_ERROR =
-  'app/StripePaymentModal/FETCH_SAVED_PAYMENT_METHODS_ERROR';
-
-export const SAVE_DEFAULT_PAYMENT_REQUEST = 'app/StripePaymentModal/SAVE_DEFAULT_PAYMENT_REQUEST';
-export const SAVE_DEFAULT_PAYMENT_SUCCESS = 'app/StripePaymentModal/SAVE_DEFAULT_PAYMENT_SUCCESS';
-export const SAVE_DEFAULT_PAYMENT_ERROR = 'app/StripePaymentModal/SAVE_DEFAULT_PAYMENT_ERROR';
-
 export const FETCH_DEFAULT_PAYMENT_REQUEST = 'app/StripePaymentModal/FETCH_DEFAULT_PAYMENT_REQUEST';
 export const FETCH_DEFAULT_PAYMENT_SUCCESS = 'app/StripePaymentModal/FETCH_DEFAULT_PAYMENT_SUCCESS';
 export const FETCH_DEFAULT_PAYMENT_ERROR = 'app/StripePaymentModal/FETCH_DEFAULT_PAYMENT_ERROR';
@@ -58,34 +47,30 @@ export const SEND_NOTIFY_FOR_PAYMENT_ERROR = 'app/StripePaymentModal/SEND_NOTIFY
 // ================ Reducer ================ //
 
 export const initialState = {
-  channelUrl: null,
-  sendbirdContext: null,
-  provider: null,
-  confirmPaymentInProgress: false,
   confirmPaymentError: null,
+  confirmPaymentInProgress: false,
   confirmPaymentSuccess: false,
-  stripeCustomerFetched: false,
-  createPaymentIntentInProgress: false,
   createPaymentIntentError: null,
-  paymentIntent: null,
-  hasStripeAccountInProgress: false,
-  hasStripeAccountError: null,
-  hasStripeAccount: false,
-  hasStripeAccountFetched: false,
-  fetchDefaultPaymentInProgress: false,
-  fetchDefaultPaymentError: null,
+  createPaymentIntentInProgress: false,
   defaultPayment: null,
   defaultPaymentFetched: false,
-  sendNotifyForPaymentInProgress: false,
+  fetchDefaultPaymentError: null,
+  fetchDefaultPaymentInProgress: false,
+  hasStripeAccount: false,
+  hasStripeAccountError: null,
+  hasStripeAccountFetched: false,
+  hasStripeAccountInProgress: false,
+  paymentIntent: null,
   sendNotifyForPaymentError: null,
+  sendNotifyForPaymentInProgress: false,
   sendNotifyForPaymentSuccess: false,
+  stripeCustomerFetched: false,
 };
 
 export default function StripePaymentModalReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
     case SET_INITIAL_VALUES:
-      console.log({ ...initialState, ...payload });
       return { ...initialState, ...payload };
 
     case CONFIRM_PAYMENT_REQUEST:
@@ -93,7 +78,6 @@ export default function StripePaymentModalReducer(state = initialState, action =
     case CONFIRM_PAYMENT_SUCCESS:
       return { state, confirmPaymentInProgress: false, confirmPaymentSuccess: true };
     case CONFIRM_PAYMENT_ERROR:
-      console.error(payload); // eslint-disable-line no-console
       return { ...state, confirmPaymentInProgress: false, confirmPaymentError: payload };
 
     case STRIPE_CUSTOMER_REQUEST:
@@ -101,7 +85,6 @@ export default function StripePaymentModalReducer(state = initialState, action =
     case STRIPE_CUSTOMER_SUCCESS:
       return { ...state, stripeCustomerFetched: true };
     case STRIPE_CUSTOMER_ERROR:
-      console.error(payload); // eslint-disable-line no-console
       return { ...state, stripeCustomerFetchError: payload };
 
     case CREATE_PAYMENT_INTENT_REQUEST:
@@ -109,7 +92,6 @@ export default function StripePaymentModalReducer(state = initialState, action =
     case CREATE_PAYMENT_INTENT_SUCCESS:
       return { ...state, createPaymentIntentInProgress: false, paymentIntent: payload };
     case CREATE_PAYMENT_INTENT_ERROR:
-      console.error(payload); // eslint-disable-line no-console
       return { ...state, createPaymentIntentInProgress: false, createPaymentIntentError: payload };
 
     case HAS_STRIPE_ACCOUNT_REQUEST:
@@ -122,19 +104,7 @@ export default function StripePaymentModalReducer(state = initialState, action =
         hasStripeAccount: payload,
       };
     case HAS_STRIPE_ACCOUNT_ERROR:
-      console.error(payload); // eslint-disable-line no-console
       return { ...state, hasStripeAccountInProgress: false, hasStripeAccountError: payload };
-
-    case SAVE_DEFAULT_PAYMENT_REQUEST:
-      return { ...state, saveDefaultPaymentInProgress: true, saveDefaultPaymentError: null };
-    case SAVE_DEFAULT_PAYMENT_SUCCESS:
-      return {
-        ...state,
-        saveDefaultPaymentInProgress: false,
-        saveDefaultPaymentSuccess: true,
-      };
-    case SAVE_DEFAULT_PAYMENT_ERROR:
-      return { ...state, saveDefaultPaymentInProgress: false, saveDefaultPaymentError: payload };
 
     case FETCH_DEFAULT_PAYMENT_REQUEST:
       return { ...state, fetchDefaultPaymentInProgress: true, fetchDefaultPaymentError: null };
@@ -178,8 +148,6 @@ export default function StripePaymentModalReducer(state = initialState, action =
 }
 
 // ================ Selectors ================ //
-
-// ================ Action creators ================ //
 
 export const setInitialValues = initialValues => ({
   type: SET_INITIAL_VALUES,
@@ -226,16 +194,6 @@ export const hasStripeAccountError = e => ({
   payload: e,
 });
 
-export const saveDefaultPaymentRequest = () => ({ type: SAVE_DEFAULT_PAYMENT_REQUEST });
-export const saveDefaultPaymentSuccess = () => ({
-  type: SAVE_DEFAULT_PAYMENT_SUCCESS,
-});
-export const saveDefaultPaymentError = e => ({
-  type: SAVE_DEFAULT_PAYMENT_ERROR,
-  error: true,
-  payload: e,
-});
-
 export const fetchDefaultPaymentRequest = () => ({ type: FETCH_DEFAULT_PAYMENT_REQUEST });
 export const fetchDefaultPaymentSuccess = defaultPayment => ({
   type: FETCH_DEFAULT_PAYMENT_SUCCESS,
@@ -259,8 +217,8 @@ export const sendNotifyForPaymentError = e => ({
   payload: e,
 });
 
-// StripeCustomer is a relantionship to currentUser
-// We need to fetch currentUser with correct params to include relationship
+// ================ Action creators ================ //
+
 export const stripeCustomer = () => (dispatch, getState, sdk) => {
   dispatch(stripeCustomerRequest());
 
@@ -296,41 +254,6 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
     .catch(e => handleError(e));
 };
 
-const sendPaymentNotification = (currentUserId, providerName, channelUrl, sendbirdContext) => (
-  dispatch,
-  getState,
-  sdk
-) => {
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
-  };
-
-  const sb = SendbirdChat.init(params);
-
-  return sb
-    .connect(currentUserId)
-    .then(() => {
-      sb.groupChannel.getChannel(channelUrl).then(channel => {
-        const messageParams = {
-          customType: 'CONFIRM_PAYMENT',
-          message: `You made a payment to ${providerName}.`,
-          data: `{"providerName": "${providerName}"}`,
-        };
-
-        channel.sendUserMessage(messageParams).onSucceeded(message => {
-          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
-            message,
-            channel,
-          });
-        });
-      });
-    })
-    .catch(e => {
-      log.error(e, 'send-payment-notification-failed', {});
-    });
-};
-
 export const sendNotifyForPayment = (
   currentUserId,
   providerName,
@@ -363,7 +286,11 @@ export const sendNotifyForPayment = (
           });
 
           dispatch(sendNotifyForPaymentSuccess());
-          dispatch(transitionTransaction(providerListing, TRANSITION_NOTIFY_FOR_PAYMENT));
+          try {
+            dispatch(transitionTransaction(providerListing, TRANSITION_NOTIFY_FOR_PAYMENT));
+          } catch (e) {
+            log.error(e, 'transition-notify-for-payment-failed', {});
+          }
         });
       });
     })
@@ -394,6 +321,42 @@ export const transitionTransaction = (otherUserListing, transition) => (
     });
 };
 
+const sendConfirmPaymentNotification = (
+  currentUserId,
+  providerName,
+  channelUrl,
+  sendbirdContext
+) => (dispatch, getState, sdk) => {
+  const params = {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
+  };
+
+  const sb = SendbirdChat.init(params);
+
+  return sb
+    .connect(currentUserId)
+    .then(() => {
+      sb.groupChannel.getChannel(channelUrl).then(channel => {
+        const messageParams = {
+          customType: 'CONFIRM_PAYMENT',
+          message: `You made a payment to ${providerName}.`,
+          data: `{"providerName": "${providerName}"}`,
+        };
+
+        channel.sendUserMessage(messageParams).onSucceeded(message => {
+          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
+            message,
+            channel,
+          });
+        });
+      });
+    })
+    .catch(e => {
+      log.error(e, 'send-payment-notification-failed', {});
+    });
+};
+
 export const confirmPayment = (
   stripe,
   elements,
@@ -412,7 +375,9 @@ export const confirmPayment = (
   const handleSuccess = response => {
     dispatch(confirmPaymentSuccess(response));
     try {
-      dispatch(sendPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext));
+      dispatch(
+        sendConfirmPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext)
+      );
     } catch (e) {
       log.error(e, 'send-payment-notification-failed', {});
     }
@@ -434,7 +399,7 @@ export const confirmPayment = (
     elements,
     confirmParams: {
       // Make sure to change this to inbox page constant
-      return_url: 'http://localhost:3000',
+      return_url: process.env.REACT_APP_CANONICAL_ROOT_URL,
       payment_method_data: {
         billing_details: {
           address: {

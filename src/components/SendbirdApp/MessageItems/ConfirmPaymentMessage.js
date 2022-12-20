@@ -1,32 +1,18 @@
 import React from 'react';
-import '@sendbird/uikit-react/dist/index.css';
+
 import { Card as MuiCard, CardContent as MuiCardContent } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useHistory } from 'react-router-dom';
 import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-import { PaymentButton } from '../../';
+import { FormattedMessage } from 'react-intl';
 
+import '@sendbird/uikit-react/dist/index.css';
 import css from './index.module.css';
-import classNames from 'classnames';
 
 const NotifyForPaymentMessage = props => {
-  // props
-  const {
-    message,
-    emojiContainer,
-    onDeleteMessage,
-    onUpdateMessage,
-    userId,
-    sdk,
-    currentChannel,
-    updateLastMessage,
-    onOpenPaymentModal,
-    currentUser,
-    otherUser,
-  } = props;
+  const { message, userId } = props;
 
   const context = useSendbirdStateContext();
   const channelContext = useChannelContext();
@@ -55,13 +41,7 @@ const NotifyForPaymentMessage = props => {
     },
   }));
 
-  const incomingClasses = classNames(css.incomingContainer);
-
-  const history = useHistory();
-
-  const redirectToPayoutSetup = () => {
-    history.push('/account/payments');
-  };
+  /* Uncomment below to delete all messages in a channel of this type */
 
   //   if (channelContext && currentUser) {
   //     const params = {
@@ -83,18 +63,17 @@ const NotifyForPaymentMessage = props => {
       {message.sender.userId === userId ? (
         <Card>
           <CardContent>
-            <p className={css.cardTitle}>
-              {/* <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" /> */}
-              {message.message}
-            </p>
+            <p className={css.cardTitle}>{message.message}</p>
           </CardContent>
         </Card>
       ) : (
         <Card>
           <CardContent>
             <p className={css.cardTitle}>
-              {/* <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" /> */}
-              {message.sender.nickname} made a payment to you.
+              <FormattedMessage
+                id="ConfirmPaymentMessage.senderMadePayment"
+                values={{ sender: message.sender.nickname }}
+              />
             </p>
           </CardContent>
         </Card>

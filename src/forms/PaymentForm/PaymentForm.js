@@ -1,45 +1,31 @@
 import React, { useEffect, useState, useMemo, Fragment } from 'react';
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-  CardNumberElement,
-  CardExpiryElement,
-  CardCvcElement,
-} from '@stripe/react-stripe-js';
-import { Button, Checkbox, IconSpinner, SavedCardDetails, Form } from '../../components';
+
+import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+import { Button, Checkbox, SavedCardDetails, Form } from '../../components';
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
-import { Form as FinalForm } from 'react-final-form';
-import classNames from 'classnames';
+import { ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
 
 import css from './PaymentForm.module.css';
-
-export const setIframeMaxHeight = height => {
-  const frame = document.querySelector('iframe');
-  frame.style.maxHeight = height;
-  // .find('.p-BankView--picker')
-  // .remove();
-};
 
 const STRIPE_INVALID_REQUEST_ERROR = 'StripeInvalidRequestError';
 const STRIPE_CARD_ERROR = 'card_error';
 
 const PaymentForm = props => {
   const {
-    paymentIntent,
-    onPaymentSubmit,
-    intl,
-    confirmPaymentInProgress,
     confirmPaymentError,
+    confirmPaymentInProgress,
     confirmPaymentSuccess,
     currentUser,
-    onManageDisableScrolling,
-    onFetchDefaultPayment,
     defaultPayment,
-    fetchDefaultPaymentInProgress,
-    fetchDefaultPaymentError,
     defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+    intl,
+    onFetchDefaultPayment,
+    onManageDisableScrolling,
+    onPaymentSubmit,
+    paymentIntent,
   } = props;
 
   const stripe = useStripe();
@@ -166,7 +152,6 @@ const PaymentForm = props => {
             </Fragment>
           ) : (
             <Fragment>
-              {/* <div className={paymentClasses} id="payment-element" ref={paymentContainer} /> */}
               <PaymentElement
                 options={paymentElementOptions}
                 id="payment-element"
@@ -184,7 +169,7 @@ const PaymentForm = props => {
                   value={saveDefaultPayment}
                   className={css.checkbox}
                 />
-                )}
+              )}
               {/* Change this to match option for default bank account */}
               {defaultPayment && (
                 <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
@@ -196,7 +181,6 @@ const PaymentForm = props => {
         </div>
       )}
       {errorMessage}
-      {/* {payment} */}
       {defaultPaymentFetched && (
         <div className={css.paymentButtonContainer}>
           <Button
@@ -205,7 +189,7 @@ const PaymentForm = props => {
             inProgress={submitInProgress}
             disabled={submitDisabled}
           >
-            {confirmPaymentInProgress ? <IconSpinner /> : buttonMessage}
+            {buttonMessage}
           </Button>
         </div>
       )}

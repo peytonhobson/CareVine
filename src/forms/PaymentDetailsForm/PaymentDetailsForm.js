@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { arrayOf, bool, func, shape, string } from 'prop-types';
+
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
-import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { propTypes } from '../../util/types';
+
+import { injectIntl, FormattedMessage } from '../../util/reactIntl';
 import {
   Form,
   Button,
@@ -17,35 +17,28 @@ import { formatMoney } from '../../util/currency';
 import { composeValidators, required, moneySubUnitAmountAtLeast } from '../../util/validators';
 import { types as sdkTypes } from '../../util/sdkLoader';
 
-const { Money } = sdkTypes;
-
 import css from './PaymentDetailsForm.module.css';
 
+const { Money } = sdkTypes;
 const MINIMUM_AMOUNT = 1000;
 const STRIPE_INVALID_REQUEST_ERROR = 'StripeInvalidRequestError';
 const STRIPE_CARD_ERROR = 'StripeCardError';
 
-const convertDollarToMoneyInteger = dollarAmount => {
-  const amountNoDollar = dollarAmount.replace('$', '');
-
-  return amountNoDollar * 100;
-};
-
-const PaymentDetailsFormComponent = props => (
+const PaymentDetailsForm = props => (
   <FinalForm
     {...props}
     render={formRenderProps => {
       const {
         className,
-        handleSubmit,
-        intl,
+        clientSecret,
+        createPaymentIntentError,
         createPaymentIntentInProgress,
         createPaymentIntentSuccess,
-        createPaymentIntentError,
-        clientSecret,
-        values,
+        handleSubmit,
+        intl,
         onEditPaymentDetails,
         provider,
+        values,
       } = formRenderProps;
 
       const amountLabel = intl.formatMessage({ id: 'PaymentDetailsForm.amountLabel' });
@@ -82,30 +75,26 @@ const PaymentDetailsFormComponent = props => (
         : new Money(0, 'USD');
       const transactionFee = formatMoney(intl, transactionFeeMoney);
 
-      const [accordionLabel, setAccordionLabel] = useState('Show Payment Details');
+      const hideAccordionLabel = intl.formatMessage({
+        id: 'PaymentDetailsForm.hideAccordionLabel',
+      });
+      const showAccordionLabel = intl.formatMessage({
+        id: 'PaymentDetailsForm.showAccordionLabel',
+      });
+
+      const [accordionLabel, setAccordionLabel] = useState(showAccordionLabel);
 
       const onHandleExpandPaymentDetails = isExpanded => {
         if (isExpanded) {
-          setAccordionLabel('Hide Payment Details');
+          setAccordionLabel(hideAccordionLabel);
         } else {
-          setAccordionLabel('Show Payment Details');
+          setAccordionLabel(showAccordionLabel);
         }
       };
 
       let createPaymentIntentErrorMessage = null;
-      let listingNotFoundErrorMessage = null;
-
-      // if (listingNotFound) {
-      //   listingNotFoundErrorMessage = (
-      //     <p className={css.notFoundError}>
-      //       <FormattedMessage id="CheckoutPage.listingNotFoundError" />
-      //     </p>
-      //   );
-      // }
 
       if (createPaymentIntentError) {
-        // NOTE: Error messages from Stripes are not part of translations.
-        // By default they are in English.
         let errorId = null;
         switch (createPaymentIntentError.type) {
           case STRIPE_CARD_ERROR:
@@ -126,29 +115,13 @@ const PaymentDetailsFormComponent = props => (
           </p>
         );
       }
-      // } else if (initiateOrderError) {
-      //   // Generic initiate order error
-      //   initiateOrderErrorMessage = (
-      //     <p className={css.orderError}>
-      //       <FormattedMessage id="CheckoutPage.initiateOrderError" values={{ listingLink }} />
-      //     </p>
-      //   );
-      // }
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.mainContainer}>
-            {provider && (
-              <UserListingPreview
-                otherUser={provider}
-                otherUserListing={null}
-                intl={intl}
-                rootClassName={css.userPreviewRoot}
-                className={css.usernameContainer}
-              />
-            )}
+            {provider && <UserListingPreview otherUser={provider} intl={intl} />}
             <div className={css.amountContainer}>
-              <label className={css.amountLabel}>Pay amount</label>
+              <label className={css.amountLabel}>{amountLabel}</label>
               <FieldCurrencyInput
                 id="amount"
                 name="amount"
@@ -180,7 +153,7 @@ const PaymentDetailsFormComponent = props => (
               inProgress={submitInProgress}
               disabled={submitDisabled}
             >
-              Review
+              <FormattedMessage id="PaymentDetailsForm.reviewButtonLabel" />
             </Button>
           )}
           {clientSecret && (
@@ -189,11 +162,8 @@ const PaymentDetailsFormComponent = props => (
               className={css.submitButton}
               onClick={onEditPaymentDetails}
               type="button"
-              // inProgress={submitInProgress}
-              // disabled={submitDisabled}
-              // ready={submitReady}
             >
-              Edit
+              <FormattedMessage id="PaymentDetailsForm.editButtonLabel" />
             </Button>
           )}
         </Form>
@@ -202,17 +172,4 @@ const PaymentDetailsFormComponent = props => (
   />
 );
 
-PaymentDetailsFormComponent.defaultProps = { className: null, fetchErrors: null };
-
-PaymentDetailsFormComponent.propTypes = {
-  className: string,
-  intl: intlShape.isRequired,
-  onSubmit: func.isRequired,
-  fetchErrors: shape({
-    createListingDraftError: propTypes.error,
-    showListingsError: propTypes.error,
-    updateListingError: propTypes.error,
-  }),
-};
-
-export default compose(injectIntl)(PaymentDetailsFormComponent);
+export default compose(injectIntl)(PaymentDetailsForm);

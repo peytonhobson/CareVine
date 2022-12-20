@@ -1,31 +1,14 @@
-import reverse from 'lodash/reverse';
-import sortBy from 'lodash/sortBy';
-import { storableError } from '../../util/errors';
-import { parse } from '../../util/urlHelpers';
-import { TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
-import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { denormalisedResponseEntities } from '../../util/data';
-import { types as sdkTypes } from '../../util/sdkLoader';
 import pick from 'lodash/pick';
-import pickBy from 'lodash/pickBy';
-import isEmpty from 'lodash/isEmpty';
-import queryString from 'query-string';
-import { updateUserMetadata, transitionPrivileged, sendbirdUser } from '../../util/api';
-import * as log from '../../util/log';
-import config from '../../config';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+
+import { storableError } from '../../util/errors';
+import { TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
+import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
+import { sendbirdUser } from '../../util/api';
+import * as log from '../../util/log';
+import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-
-const MESSAGES_PAGE_SIZE = 10;
-const { UUID } = sdkTypes;
-
-const sortedTransactions = txs =>
-  reverse(
-    sortBy(txs, tx => {
-      return tx.attributes ? tx.attributes.lastTransitionedAt : null;
-    })
-  );
 
 // ================ Action types ================ //
 
@@ -68,25 +51,21 @@ const entityRefs = entities =>
   }));
 
 const initialState = {
-  otherUserListing: null,
+  fetchOtherUserListingError: null,
   fetchOtherUserListingInProgress: false,
-  fetchOtherUserListingError: false,
-  transitionToRequestPaymentInProgress: false,
-  transitionToRequestPaymentError: null,
-  transitionToRequestPaymentSuccess: false,
-  otherUserRef: null,
-  fetchUserFromChannelUrlInProgress: false,
   fetchUserFromChannelUrlError: null,
-  sendRequestForPaymentInProgress: false,
-  sendRequestForPaymentError: null,
-  sendRequestForPaymentSuccess: false,
-  generateAccessTokenInProgress: false,
+  fetchUserFromChannelUrlInProgress: false,
   generateAccessTokenError: null,
+  generateAccessTokenInProgress: false,
   generateAccessTokenSuccess: false,
-};
-
-const mergeEntityArrays = (a, b) => {
-  return a.filter(aEntity => !b.find(bEntity => aEntity.id.uuid === bEntity.id.uuid)).concat(b);
+  otherUserListing: null,
+  otherUserRef: null,
+  sendRequestForPaymentError: null,
+  sendRequestForPaymentInProgress: false,
+  sendRequestForPaymentSuccess: false,
+  transitionToRequestPaymentError: null,
+  transitionToRequestPaymentInProgress: false,
+  transitionToRequestPaymentSuccess: false,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -94,6 +73,7 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
   switch (type) {
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
+
     case FETCH_OTHER_USER_LISTING_REQUEST:
       return { ...state, fetchOtherUserListingInProgress: true, fetchOtherUserListingError: null };
     case FETCH_OTHER_USER_LISTING_SUCCESS:
@@ -290,7 +270,6 @@ export const transitionToRequestPayment = otherUserListing => (dispatch, getStat
   const bodyParams = {
     transition: TRANSITION_REQUEST_PAYMENT,
     processAlias: config.singleActionProcessAlias,
-    // Will need to update for notifications
     params: { listingId },
   };
   return sdk.transactions
@@ -408,45 +387,3 @@ const IMAGE_VARIANTS = {
     'variants.landscape-crop2x',
   ],
 };
-
-const isNonEmpty = value => {
-  return typeof value === 'object' || Array.isArray(value) ? !isEmpty(value) : !!value;
-};
-
-// export const loadData = (params, search) => (dispatch, getState, sdk) => {
-//   const state = getState().InboxPage;
-
-//   const initialValues = txRef ? {} : pickBy(state, isNonEmpty);
-//   dispatch(setInitialValues(initialValues));
-
-//   dispatch(fetchTransactionsRequest());
-
-//   const { page = 1 } = parse(search);
-
-//   const apiQueryParams = {
-//     lastTransitions: TRANSITIONS,
-//     include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'listing'],
-//     'fields.transaction': ['lastTransition', 'lastTransitionedAt', 'transitions'],
-//     'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
-//     'fields.image': ['variants.square-small', 'variants.square-small2x'],
-//     page,
-//     per_page: INBOX_PAGE_SIZE,
-//   };
-
-//   return sdk.transactions
-//     .query(apiQueryParams)
-//     .then(response => {
-//       dispatch(addMarketplaceEntities(response));
-//       dispatch(fetchTransactionsSuccess(response));
-//       return response;
-//     })
-//     .then(response => {
-//       response.data.data.forEach(transaction => {
-//         dispatch(fetchMessages(transaction.id, 1));
-//       });
-//     })
-//     .catch(e => {
-//       dispatch(fetchTransactionsError(storableError(e)));
-//       throw e;
-//     });
-// };
