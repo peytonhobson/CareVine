@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Card as MuiCard, CardContent as MuiCardContent } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -15,6 +15,8 @@ import css from './index.module.css';
 
 const NotifyForPaymentMessage = props => {
   const { message, userId } = props;
+
+  const history = useHistory();
 
   const baseClass =
     message.sender.userId === userId
@@ -35,8 +37,6 @@ const NotifyForPaymentMessage = props => {
       paddingBottom: '5px',
     },
   }));
-
-  const history = useHistory();
 
   const redirectToPayoutSetup = () => {
     history.push('/account/payments');

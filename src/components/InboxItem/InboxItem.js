@@ -34,11 +34,7 @@ const InboxItem = props => {
       : getUuid(notification.createdAt.toUTCString());
 
   return (
-    <NamedLink
-      className={classes}
-      name="InboxPage"
-      params={{ tab: currentTab, search: '?id=' + searchParam }}
-    >
+    <NamedLink className={classes} name="InboxPage" params={{ tab: currentTab }}>
       {currentTab === 'messages' ? (
         <MessageInboxItemContent
           tx={tx}

@@ -1,12 +1,30 @@
 import React from 'react';
+
 import { Button } from '../../../components';
 import classNames from 'classnames';
 import { userDisplayNameAsString } from '../../../util/data';
 
 import css from './index.module.css';
 
+const checkIfRequestInLastDay = messages => {
+  let withinADay = false;
+
+  messages &&
+    messages
+      .filter(message => {
+        return message.customType === 'REQUEST_FOR_PAYMENT';
+      })
+      .forEach(message => {
+        if (new Date(message.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+          withinADay = true;
+        }
+      });
+  return withinADay;
+};
+
 const RequestPaymentButton = props => {
   const {
+    channelContext,
     channelUrl,
     className,
     currentUser,
@@ -21,7 +39,10 @@ const RequestPaymentButton = props => {
     sendRequestForPaymentSuccess,
   } = props;
 
-  const clickDisabled = !!disabled || sendRequestForPaymentSuccess;
+  const clickDisabled =
+    !!disabled ||
+    sendRequestForPaymentSuccess ||
+    checkIfRequestInLastDay(channelContext.allMessages);
 
   const requestPayment = () => {
     if (!sendRequestForPaymentSuccess) {

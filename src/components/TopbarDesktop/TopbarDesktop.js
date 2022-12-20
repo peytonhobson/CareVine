@@ -63,11 +63,7 @@ const TopbarDesktop = props => {
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
   const inboxLink = authenticatedOnClientSide ? (
-    <NamedLink
-      className={css.inboxLink}
-      name="InboxPage"
-      params={{ tab: 'messages', search: '?id=' }}
-    >
+    <NamedLink className={css.inboxLink} name="InboxPage" params={{ tab: 'messages' }}>
       <span className={css.inbox}>
         <FormattedMessage id="TopbarDesktop.inbox" />
         {notificationDot}

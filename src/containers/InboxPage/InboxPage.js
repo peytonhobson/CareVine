@@ -162,12 +162,13 @@ export const InboxPageComponent = props => {
         )}
         {isPaymentModalOpen && (
           <StripePaymentModal
-            sendbirdContext={modalInitialValues.sendbirdContext}
+            channelContext={modalInitialValues.channelContext}
             channelUrl={modalInitialValues.channelUrl}
             isOpen={isPaymentModalOpen}
             onClose={onClosePaymentModal}
             provider={modalInitialValues.provider}
             providerListing={otherUserListing}
+            sendbirdContext={modalInitialValues.sendbirdContext}
           />
         )}
       </LayoutWrapperMain>
