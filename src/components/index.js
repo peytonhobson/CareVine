@@ -13,6 +13,7 @@
 // Icons
 export { default as IconAdd } from './IconAdd/IconAdd';
 export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
+export { default as IconBank } from './IconBank/IconBank';
 export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
 export { default as IconCard } from './IconCard/IconCard';
 export { default as IconCheckmark } from './IconCheckmark/IconCheckmark';
@@ -149,6 +150,7 @@ export { default as OwnListingLink } from './OwnListingLink/OwnListingLink';
 export { default as Page } from './Page/Page';
 export { default as PriceFilter } from './PriceFilter/PriceFilter';
 export { default as Reviews } from './Reviews/Reviews';
+export { default as SavedBankDetails } from './SavedBankDetails/SavedBankDetails';
 export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails';
 export { default as SearchFiltersMobile } from './SearchFiltersMobile/SearchFiltersMobile';
 export { default as SearchFiltersPrimary } from './SearchFiltersPrimary/SearchFiltersPrimary';

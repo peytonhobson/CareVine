@@ -367,14 +367,15 @@ export const confirmPayment = (
   stripe,
   elements,
   saveCardAsDefault,
-  defaultCardId,
+  defaultMethodId,
   paymentIntentId,
-  useDefaultCard,
+  useDefaultMethod,
   currentUserId,
   providerName,
   channelUrl,
   sendbirdContext,
-  providerListing
+  providerListing,
+  methodType
 ) => (dispatch, getState, sdk) => {
   dispatch(confirmPaymentRequest());
 
@@ -418,21 +419,36 @@ export const confirmPayment = (
   };
 
   // If user is using default payment method for payment
-  if (!!useDefaultCard) {
+  if (!!useDefaultMethod) {
     const clientSecret = elements._commonOptions.clientSecret.clientSecret;
 
-    return stripe
-      .confirmCardPayment(clientSecret, {
-        payment_method: defaultCardId,
-      })
-      .then(res => {
-        if (res.error) {
-          throw res.error;
-        }
+    if (methodType === 'card') {
+      return stripe
+        .confirmCardPayment(clientSecret, {
+          payment_method: defaultMethodId,
+        })
+        .then(res => {
+          if (res.error) {
+            throw res.error;
+          }
 
-        handleSuccess(res);
-      })
-      .catch(handleError);
+          handleSuccess(res);
+        })
+        .catch(handleError);
+    } else {
+      return stripe
+        .confirmUsBankAccountPayment(clientSecret, {
+          payment_method: defaultMethodId,
+        })
+        .then(res => {
+          if (res.error) {
+            throw res.error;
+          }
+
+          handleSuccess(res);
+        })
+        .catch(handleError);
+    }
   } else if (!!saveCardAsDefault) {
     // If user is saving card as default
     return stripeUpdatePaymentIntent({
@@ -447,9 +463,9 @@ export const confirmPayment = (
           throw res.error;
         }
 
-        if (defaultCardId) {
+        if (defaultMethodId) {
           // May want to confirm payment after this confirms, otherwise throw error
-          stripeDetachPaymentMethod({ defaultCardId });
+          stripeDetachPaymentMethod({ defaultMethodId });
         }
 
         handleSuccess(res);

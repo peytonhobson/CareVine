@@ -13,7 +13,7 @@
 }
 
 .savedPaymentMethod {
-  display: inline-block;
+  display: flex;
   margin-right: auto;
 }
 
@@ -35,10 +35,19 @@
   }
 }
 
-.cardIcon {
+.bankIconContainer {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  float: left;
+}
+
+.bankIcon {
   margin: 0 12px 0 4px;
   width: 24px;
-  height: 16px;
+  height: 24px;
   display: inline-block;
 }
 
@@ -229,4 +238,20 @@
   &:hover {
     color: var(--matterColor);
   }
+}
+
+.bankName {
+  display: inline-block;
+  line-height: 10px;
+  font-size: 12px;
+}
+
+.accountNumber {
+  display: block;
+}
+
+.bankContent {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: column;
 }

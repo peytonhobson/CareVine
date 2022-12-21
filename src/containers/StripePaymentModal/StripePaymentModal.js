@@ -130,7 +130,8 @@ const StripePaymentModalComponent = props => {
       providerName,
       channelUrl,
       sendbirdContext,
-      providerListing
+      providerListing,
+      methodType
     );
   };
 
@@ -417,28 +418,30 @@ const mapDispatchToProps = dispatch => ({
     stripe,
     elements,
     saveCardAsDefault,
-    hasDefaultCard,
+    defaultMethodId,
     paymentIntentId,
     useDefaultCard,
     currentUserId,
     providerName,
     channelUrl,
     sendbirdContext,
-    providerListing
+    providerListing,
+    methodType
   ) =>
     dispatch(
       confirmPayment(
         stripe,
         elements,
         saveCardAsDefault,
-        hasDefaultCard,
+        defaultMethodId,
         paymentIntentId,
         useDefaultCard,
         currentUserId,
         providerName,
         channelUrl,
         sendbirdContext,
-        providerListing
+        providerListing,
+        methodType
       )
     ),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
