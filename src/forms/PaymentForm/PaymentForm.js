@@ -17,7 +17,7 @@ const PaymentForm = props => {
     confirmPaymentInProgress,
     confirmPaymentSuccess,
     currentUser,
-    defaultPayment,
+    defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
@@ -44,10 +44,10 @@ const PaymentForm = props => {
   }, []);
 
   useEffect(() => {
-    if (!!defaultPayment) {
+    if (!!defaultPaymentMethods) {
       setShowDefaultPayment(true);
     }
-  }, [defaultPayment]);
+  }, [defaultPaymentMethods]);
 
   const handlePaymentChange = element => {
     if (element && element.complete) {
@@ -76,7 +76,9 @@ const PaymentForm = props => {
       return;
     }
 
-    onPaymentSubmit(stripe, elements, saveDefaultPayment, showDefaultPayment);
+    const methodType = showCardPayment ? 'card' : 'bank_account';
+
+    onPaymentSubmit(stripe, elements, saveDefaultPayment, showDefaultPayment, methodType);
   };
 
   const displayErrorMessage = confirmPaymentError => {
@@ -136,7 +138,11 @@ const PaymentForm = props => {
                 <FormattedMessage id="PaymentForm.useDefaultMethod" />
               </p>
               <SavedCardDetails
-                card={ensurePaymentMethodCard(defaultPayment.card)}
+                card={ensurePaymentMethodCard(
+                  defaultPaymentMethods &&
+                    defaultPaymentMethods.card &&
+                    defaultPaymentMethods.card.card
+                )}
                 onManageDisableScrolling={onManageDisableScrolling}
                 hideContent={true}
               />
@@ -160,22 +166,22 @@ const PaymentForm = props => {
                 }}
                 className={css.paymentElement}
               />
-              {showCardPayment && (
-                <Checkbox
-                  id="saveDefault"
-                  name="saveDefault"
-                  label="Save as default payment card"
-                  onChange={handleDefaultCheckboxChange}
-                  value={saveDefaultPayment}
-                  className={css.checkbox}
-                />
-              )}
+
+              <Checkbox
+                id="saveDefault"
+                name="saveDefault"
+                label="Save this payment method"
+                onChange={handleDefaultCheckboxChange}
+                value={saveDefaultPayment}
+                className={css.checkbox}
+              />
               {/* Change this to match option for default bank account */}
-              {defaultPayment && (
-                <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
-                  <FormattedMessage id="PaymentForm.useDefaultCard" />
-                </p>
-              )}
+              {defaultPaymentMethods &&
+                (defaultPaymentMethods.card || defaultPaymentMethods.bankAccount) && (
+                  <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
+                    <FormattedMessage id="PaymentForm.useDefaultCard" />
+                  </p>
+                )}
             </Fragment>
           )}
         </div>

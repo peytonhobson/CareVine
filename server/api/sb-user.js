@@ -1,6 +1,5 @@
 const axios = require('axios');
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
-// const SendbirdChat = require('@sendbird/chat');
 const log = require('../log');
 const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
 

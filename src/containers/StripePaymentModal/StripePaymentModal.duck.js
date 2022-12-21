@@ -52,7 +52,7 @@ export const initialState = {
   confirmPaymentSuccess: false,
   createPaymentIntentError: null,
   createPaymentIntentInProgress: false,
-  defaultPayment: null,
+  defaultPaymentMethods: null,
   defaultPaymentFetched: false,
   fetchDefaultPaymentError: null,
   fetchDefaultPaymentInProgress: false,
@@ -109,10 +109,16 @@ export default function StripePaymentModalReducer(state = initialState, action =
     case FETCH_DEFAULT_PAYMENT_REQUEST:
       return { ...state, fetchDefaultPaymentInProgress: true, fetchDefaultPaymentError: null };
     case FETCH_DEFAULT_PAYMENT_SUCCESS:
+      const card = payload.find(p => p.type === 'card');
+      const bankAccount = payload.find(p => p.type === 'us_bank_account');
+
       return {
         ...state,
         fetchDefaultPaymentInProgress: false,
-        defaultPayment: payload,
+        defaultPaymentMethods: {
+          card,
+          bankAccount,
+        },
         defaultPaymentFetched: true,
       };
     case FETCH_DEFAULT_PAYMENT_ERROR:
@@ -428,6 +434,7 @@ export const confirmPayment = (
       })
       .catch(handleError);
   } else if (!!saveCardAsDefault) {
+    // If user is saving card as default
     return stripeUpdatePaymentIntent({
       paymentIntentId,
       update: { setup_future_usage: 'off_session' },
@@ -485,7 +492,7 @@ export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk)
   dispatch(fetchDefaultPaymentRequest());
 
   const handleSuccess = response => {
-    dispatch(fetchDefaultPaymentSuccess(response.data.data[0]));
+    dispatch(fetchDefaultPaymentSuccess(response.data.data));
     return response;
   };
 

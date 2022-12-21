@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react';
 
-import { bool, func, object, oneOfType, shape, string } from 'prop-types';
+import { arrayOf, bool, func, object, oneOfType, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -40,7 +40,7 @@ const StripePaymentModalComponent = props => {
     createPaymentIntentError,
     createPaymentIntentInProgress,
     currentUser,
-    defaultPayment,
+    defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
@@ -104,17 +104,28 @@ const StripePaymentModalComponent = props => {
     }
   };
 
-  const onHandlePaymentSubmit = (stripe, elements, saveCardAsDefault, useDefaultCard) => {
-    const defaultPaymentId = defaultPayment && defaultPayment.id;
+  const onHandlePaymentSubmit = (
+    stripe,
+    elements,
+    saveMethodAsDefault,
+    useDefaultMethod,
+    methodType
+  ) => {
+    const defaultPaymentId =
+      methodType === 'card'
+        ? defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id
+        : defaultPaymentMethods &&
+          defaultPaymentMethods.bankAccount &&
+          defaultPaymentMethods.bankAccount.id;
     const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
     const providerName = userDisplayNameAsString(provider);
     onConfirmPayment(
       stripe,
       elements,
-      saveCardAsDefault,
+      saveMethodAsDefault,
       defaultPaymentId,
       paymentIntent.id,
-      useDefaultCard,
+      useDefaultMethod,
       currentUserId,
       providerName,
       channelUrl,
@@ -241,7 +252,7 @@ const StripePaymentModalComponent = props => {
                         confirmPaymentInProgress={confirmPaymentInProgress}
                         confirmPaymentSuccess={confirmPaymentSuccess}
                         currentUser={currentUser}
-                        defaultPayment={defaultPayment}
+                        defaultPaymentMethods={defaultPaymentMethods}
                         defaultPaymentFetched={defaultPaymentFetched}
                         fetchDefaultPaymentError={fetchDefaultPaymentError}
                         fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
@@ -289,7 +300,7 @@ StripePaymentModalComponent.defaultProps = {
   confirmPaymentSuccess: false,
   createPaymentIntentError: null,
   createPaymentIntentInProgress: false,
-  defaultPayment: null,
+  defaultPaymentMethods: null,
   defaultPaymentFetched: false,
   fetchDefaultPaymentError: null,
   fetchDefaultPaymentInProgress: false,
@@ -311,7 +322,7 @@ StripePaymentModalComponent.propTypes = {
   createPaymentIntentError: propTypes.error,
   createPaymentIntentInProgress: bool,
   currentUser: propTypes.currentUser.isRequired,
-  defaultPayment: object,
+  defaultPaymentMethods: arrayOf(object),
   defaultPaymentFetched: bool,
   fetchDefaultPaymentError: propTypes.error,
   fetchDefaultPaymentInProgress: bool,
@@ -360,7 +371,7 @@ const mapStateToProps = state => {
     confirmPaymentSuccess,
     createPaymentIntentError,
     createPaymentIntentInProgress,
-    defaultPayment,
+    defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
@@ -383,7 +394,7 @@ const mapStateToProps = state => {
     createPaymentIntentError,
     createPaymentIntentInProgress,
     currentUser,
-    defaultPayment,
+    defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
