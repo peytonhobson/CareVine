@@ -4,8 +4,6 @@ const log = require('../log');
 const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
 
 module.exports = (req, res) => {
-  // Create a PaymentIntent with the order amount and currency
-
   const { currentUser } = req.body;
 
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
