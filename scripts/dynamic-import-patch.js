@@ -32,7 +32,7 @@ const edit = filePath => {
 };
 
 const main = () => {
-  const dir = '/opt/render/project/build/node';
+  const dir = '/opt/render/project/src/build/node';
   const filePaths = walk(dir);
   filePaths.forEach(filePath => edit(filePath));
 };
