@@ -49,9 +49,21 @@
   }
 }
 
+.defaultMethod {
+  margin-bottom: 20px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.defaultPaymentMethodsContainer {
+}
+
 .changeDefaultText {
   color: var(--marketplaceColor);
   margin-block: 0;
+  text-align: center;
 
   &:hover {
     text-decoration: underline;
@@ -60,5 +72,5 @@
 }
 
 .checkbox {
-  padding-block: 7px;
+  margin-block: 10px;
 }

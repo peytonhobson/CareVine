@@ -6,18 +6,15 @@ import classNames from 'classnames';
 import { injectIntl, intlShape } from '../../util/reactIntl';
 import {
   IconArrowHead,
-  IconCard,
+  IconBank,
   IconClose,
   Button,
   InlineTextButton,
   Modal,
 } from '../../components';
-import css from './SavedCardDetails.module.css';
+import css from './SavedBankDetails.module.css';
 
-const DEFAULT_CARD = 'defaultCard';
-const REPLACE_CARD = 'replaceCard';
-
-const SavedCardDetails = props => {
+const SavedBankDetails = props => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [active, setActive] = useState(false);
 
@@ -25,7 +22,7 @@ const SavedCardDetails = props => {
     rootClassName,
     className,
     intl,
-    card,
+    bank,
     onChange,
     onDeleteCard,
     onManageDisableScrolling,
@@ -35,58 +32,18 @@ const SavedCardDetails = props => {
     selected,
   } = props;
 
-  const expirationYear = (card && card.expirationYear) || (card && card.exp_year);
-  const expirationMonth = (card && card.expirationMonth) || (card && card.exp_month);
-  const last4Digits = (card && card.last4Digits) || (card && card.last4);
-  const brand = card && card.brand;
+  const bankName = bank && bank.bank_name;
+  const last4Digits = bank && bank.last4;
 
-  const paymentMethodPlaceholderDesktop = intl.formatMessage(
-    { id: 'SavedCardDetails.savedPaymentMethodPlaceholderDesktop' },
-    { last4Digits }
-  );
-
-  const paymentMethodPlaceholderMobile = intl.formatMessage(
-    { id: 'SavedCardDetails.savedPaymentMethodPlaceholderMobile' },
-    { last4Digits }
-  );
-
-  const paymentMethodPlaceholder = (
-    <>
-      <span className={css.paymentMethodPlaceholderDesktop}>{paymentMethodPlaceholderDesktop}</span>
-      <span className={css.paymentMethodPlaceholderMobile}>{paymentMethodPlaceholderMobile}</span>
-    </>
-  );
-
-  const expiredCardText = intl.formatMessage(
-    { id: 'SavedCardDetails.expiredCardText' },
-    { last4Digits }
-  );
-  const expiredText = <div className={css.cardExpiredText}>{expiredCardText}</div>;
-
-  const isExpired = (expirationMonth, expirationYear) => {
-    const currentTime = new Date();
-    const currentYear = currentTime.getFullYear();
-    const currentMonth = currentTime.getMonth() + 1; //getMonth() method returns the month (from 0 to 11)
-
-    if (expirationYear < currentYear) {
-      return true;
-    } else if (expirationYear === currentYear && expirationMonth < currentMonth) {
-      return true;
-    }
-
-    return false;
-  };
-
-  const isCardExpired =
-    expirationMonth && expirationYear && isExpired(expirationMonth, expirationYear);
-
-  const defaultCard = (
+  const defaultBank = (
     <div className={css.savedPaymentMethod}>
-      <IconCard brand={brand} className={css.cardIcon} />
-      {paymentMethodPlaceholder}
-      <span className={isCardExpired ? css.expirationDateExpired : css.expirationDate}>
-        {expirationMonth}/{expirationYear.toString().substring(2)}
-      </span>
+      <div className={css.bankIconContainer}>
+        <IconBank className={css.bankIcon} />
+      </div>
+      <div className={css.bankContent}>
+        <span className={css.bankName}>{bankName}</span>
+        <span className={css.accountNumber}>Account ending in {last4Digits}</span>
+      </div>
     </div>
   );
 
@@ -105,17 +62,15 @@ const SavedCardDetails = props => {
   const removeCard = intl.formatMessage({ id: 'SavedCardDetails.removeCard' });
   const deletePaymentMethod = intl.formatMessage({ id: 'SavedCardDetails.deletePaymentMethod' });
 
-  const showExpired = isCardExpired && active === DEFAULT_CARD;
-
   const classes = classNames(rootClassName || css.root, className);
   const menuLabelClasses = classNames(css.menuLabel, selected && css.menuLabelActive);
 
   return (
-    <div className={classes} onClick={() => onSelect('card')}>
+    <div className={classes} onClick={() => onSelect('bankAccount')}>
       <div className={css.menu}>
         <div className={menuLabelClasses}>
-          <div className={showExpired ? css.menuLabelWrapperExpired : css.menuLabelWrapper}>
-            {defaultCard}
+          <div className={css.menuLabelWrapper}>
+            {defaultBank}
             {!hideContent && (
               <span>
                 <IconArrowHead
@@ -129,7 +84,6 @@ const SavedCardDetails = props => {
           </div>
         </div>
       </div>
-      {showExpired && expiredText}
 
       {onDeleteCard ? (
         <InlineTextButton onClick={handleDeleteCard} className={css.savedPaymentMethodDelete}>
@@ -171,17 +125,17 @@ const SavedCardDetails = props => {
   );
 };
 
-SavedCardDetails.defaultProps = {
+SavedBankDetails.defaultProps = {
   rootClassName: null,
   className: null,
-  card: null,
+  bankAccount: null,
   onChange: null,
   onDeleteCard: null,
   deletePaymentMethodInProgress: false,
   onManageDisableScrolling: null,
 };
 
-SavedCardDetails.propTypes = {
+SavedBankDetails.propTypes = {
   rootClassName: string,
   className: string,
   intl: intlShape.isRequired,
@@ -197,4 +151,4 @@ SavedCardDetails.propTypes = {
   deletePaymentMethodInProgress: bool,
 };
 
-export default injectIntl(SavedCardDetails);
+export default injectIntl(SavedBankDetails);
