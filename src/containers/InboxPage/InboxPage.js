@@ -275,10 +275,10 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onFetchOtherUserListing: (channelUrl, currentUserId) =>
-    dispatch(fetchOtherUserListing(channelUrl, currentUserId)),
-  onFetchUserFromChannelUrl: (channelUrl, currentUserId) =>
-    dispatch(fetchUserFromChannelUrl(channelUrl, currentUserId)),
+  onFetchOtherUserListing: (channelUrl, currentUserId, accessToken) =>
+    dispatch(fetchOtherUserListing(channelUrl, currentUserId, accessToken)),
+  onFetchUserFromChannelUrl: (channelUrl, currentUserId, accessToken) =>
+    dispatch(fetchUserFromChannelUrl(channelUrl, currentUserId, accessToken)),
   onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
