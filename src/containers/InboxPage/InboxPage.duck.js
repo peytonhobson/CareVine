@@ -235,7 +235,11 @@ export const generateAccessTokenError = e => ({
 
 // ================ Thunks ================ //
 
-export const fetchOtherUserListing = (channelUrl, currentUserId) => (dispatch, getState, sdk) => {
+export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) => (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(fetchOtherUserListingRequest());
 
   const params = {
@@ -244,7 +248,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId) => (dispatch, g
   };
   const sb = SendbirdChat.init(params);
 
-  sb.connect(currentUserId)
+  sb.connect(currentUserId, accessToken)
     .then(() => {
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const members = channel.members;
@@ -285,7 +289,11 @@ export const transitionToRequestPayment = otherUserListing => (dispatch, getStat
     });
 };
 
-export const fetchUserFromChannelUrl = (channelUrl, currentUserId) => (dispatch, getState, sdk) => {
+export const fetchUserFromChannelUrl = (channelUrl, currentUserId, accessToken) => (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(fetchUserFromChannelUrlRequest());
 
   const params = {
