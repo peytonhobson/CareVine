@@ -56,7 +56,9 @@
     "passport": "^0.5.3",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
+    "patch-package": "^6.5.0",
     "path-to-regexp": "^6.2.1",
+    "postinstall-postinstall": "^2.1.0",
     "prop-types": "^15.8.1",
     "qs": "^6.11.0",
     "query-string": "^7.1.1",
@@ -134,7 +136,8 @@
     "timezones": "node scripts/parse-iana-timezones.js",
     "translate": "node scripts/translations.js",
     "build:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
-    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css"
+    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
+    "postinstall": "patch-package"
   },
   "browserslist": {
     "production": [
