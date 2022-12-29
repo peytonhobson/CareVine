@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { bool, func, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
 import { propTypes } from '../../util/types';
@@ -18,16 +21,27 @@ import {
   Footer,
   Page,
   UserNav,
+  ButtonTabNavHorizontal,
+  SavedBankDetails,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { PaymentMethodsForm } from '../../forms';
-import { createStripeSetupIntent, stripeCustomer } from './PaymentMethodsPage.duck.js';
+import { PaymentMethodsForm, SaveBankAccountForm } from '../../forms';
+import {
+  createStripeSetupIntent,
+  stripeCustomer,
+  fetchDefaultPayment,
+} from './PaymentMethodsPage.duck.js';
+import config from '../../config';
 
 import css from './PaymentMethodsPage.module.css';
 
+const BANK_ACCOUNT = 'Bank Account';
+const CREDIT_CARD = 'Payment Card';
+
+const stripePromise = loadStripe(config.stripe.publishableKey);
+
 const PaymentMethodsPageComponent = props => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [cardState, setCardState] = useState(null);
 
   const {
     currentUser,
@@ -45,7 +59,14 @@ const PaymentMethodsPageComponent = props => {
     onManageDisableScrolling,
     intl,
     stripeCustomerFetched,
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+    onFetchDefaultPayment,
   } = props;
+
+  const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
   const getClientSecret = setupIntent => {
     return setupIntent && setupIntent.attributes ? setupIntent.attributes.clientSecret : null;
@@ -80,9 +101,15 @@ const PaymentMethodsPageComponent = props => {
     return paymentParams;
   };
 
+  const card =
+    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
+  const bankAccount =
+    !!defaultPaymentMethods &&
+    !!defaultPaymentMethods.bankAccount &&
+    defaultPaymentMethods.bankAccount.us_bank_account;
+
   const handleSubmit = params => {
     setIsSubmitting(true);
-    const ensuredCurrentUser = ensureCurrentUser(currentUser);
     const stripeCustomer = ensuredCurrentUser.stripeCustomer;
     const { stripe, card, formValues } = params;
 
@@ -107,7 +134,6 @@ const PaymentMethodsPageComponent = props => {
         // Update currentUser entity and its sub entities: stripeCustomer and defaultPaymentMethod
         fetchStripeCustomer();
         setIsSubmitting(false);
-        setCardState('default');
       })
       .catch(error => {
         console.error(error);
@@ -115,15 +141,22 @@ const PaymentMethodsPageComponent = props => {
       });
   };
 
-  const handleRemovePaymentMethod = () => {
-    onDeletePaymentMethod().then(() => {
-      fetchStripeCustomer();
-    });
+  const handleRemovePaymentMethod = methodType => {
+    if (methodType === 'card') {
+      onDeletePaymentMethod(
+        !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.id
+      );
+    } else {
+      onDeletePaymentMethod(
+        !!defaultPaymentMethods &&
+          !!defaultPaymentMethods.bankAccount &&
+          defaultPaymentMethods.bankAccount.id
+      );
+    }
   };
 
   const title = intl.formatMessage({ id: 'PaymentMethodsPage.title' });
 
-  const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const currentUserLoaded = !!ensuredCurrentUser.id;
 
   const hasDefaultPaymentMethod =
@@ -138,12 +171,89 @@ const PaymentMethodsPageComponent = props => {
 
   const initalValuesForStripePayment = { name: userName };
 
-  const card = hasDefaultPaymentMethod
-    ? ensurePaymentMethodCard(currentUser.stripeCustomer.defaultPaymentMethod).attributes.card
-    : null;
+  const [selectedTab, setSelectedTab] = useState(BANK_ACCOUNT);
 
-  const showForm = cardState === 'replaceCard' || !hasDefaultPaymentMethod;
-  const showCardDetails = !!hasDefaultPaymentMethod;
+  const handleSelectedTab = e => {
+    setSelectedTab(e.target.textContent);
+  };
+
+  const tabs = [
+    {
+      text: BANK_ACCOUNT,
+      selected: selectedTab === BANK_ACCOUNT,
+      onClick: handleSelectedTab,
+    },
+    {
+      text: CREDIT_CARD,
+      selected: selectedTab === CREDIT_CARD,
+      onClick: handleSelectedTab,
+    },
+  ];
+
+  useEffect(() => {
+    ensuredCurrentUser.stripeCustomer &&
+      onFetchDefaultPayment(currentUser.stripeCustomer.attributes.stripeCustomerId);
+  }, [ensuredCurrentUser.stripeCustomer]);
+
+  const showBankForm = !bankAccount && defaultPaymentFetched;
+  const showCardForm = !card && defaultPaymentFetched;
+
+  let tabContentPanel = null;
+
+  switch (selectedTab) {
+    case BANK_ACCOUNT:
+      tabContentPanel = (
+        <>
+          {!!bankAccount ? (
+            <SavedBankDetails
+              bank={ensurePaymentMethodCard(bankAccount)}
+              onManageDisableScrolling={onManageDisableScrolling}
+              onDeleteAccount={handleRemovePaymentMethod}
+              deletePaymentMethodInProgress={deletePaymentMethodInProgress}
+            />
+          ) : null}
+          {showBankForm ? (
+            <Elements stripe={stripePromise}>
+              <SaveBankAccountForm onSubmit={() => {}} />
+            </Elements>
+          ) : null}
+        </>
+      );
+      break;
+    case CREDIT_CARD:
+      tabContentPanel = (
+        <>
+          {!!card ? (
+            <SavedCardDetails
+              card={ensurePaymentMethodCard(card)}
+              onManageDisableScrolling={onManageDisableScrolling}
+              onDeleteCard={handleRemovePaymentMethod}
+              deletePaymentMethodInProgress={deletePaymentMethodInProgress}
+            />
+          ) : null}
+          {showCardForm ? (
+            <PaymentMethodsForm
+              className={css.paymentForm}
+              formId="PaymentMethodsForm"
+              initialValues={initalValuesForStripePayment}
+              onSubmit={handleSubmit}
+              handleRemovePaymentMethod={handleRemovePaymentMethod}
+              hasDefaultPaymentMethod={hasDefaultPaymentMethod}
+              addPaymentMethodError={addPaymentMethodError}
+              deletePaymentMethodError={deletePaymentMethodError}
+              createStripeCustomerError={createStripeCustomerError}
+              handleCardSetupError={handleCardSetupError}
+              inProgress={isSubmitting}
+            />
+          ) : null}
+        </>
+      );
+      break;
+    default:
+      tabContentPanel = null;
+      break;
+  }
+
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation>
@@ -164,33 +274,15 @@ const PaymentMethodsPageComponent = props => {
             <h1 className={css.title}>
               <FormattedMessage id="PaymentMethodsPage.heading" />
             </h1>
-            {!stripeCustomerFetched ? null : (
-              <>
-                {showCardDetails ? (
-                  <SavedCardDetails
-                    card={card}
-                    onManageDisableScrolling={onManageDisableScrolling}
-                    onChange={setCardState}
-                    onDeleteCard={handleRemovePaymentMethod}
-                    deletePaymentMethodInProgress={deletePaymentMethodInProgress}
-                  />
-                ) : null}
-                {showForm ? (
-                  <PaymentMethodsForm
-                    className={css.paymentForm}
-                    formId="PaymentMethodsForm"
-                    initialValues={initalValuesForStripePayment}
-                    onSubmit={handleSubmit}
-                    handleRemovePaymentMethod={handleRemovePaymentMethod}
-                    hasDefaultPaymentMethod={hasDefaultPaymentMethod}
-                    addPaymentMethodError={addPaymentMethodError}
-                    deletePaymentMethodError={deletePaymentMethodError}
-                    createStripeCustomerError={createStripeCustomerError}
-                    handleCardSetupError={handleCardSetupError}
-                    inProgress={isSubmitting}
-                  />
-                ) : null}
-              </>
+            <ButtonTabNavHorizontal
+              tabs={tabs}
+              rootClassName={css.nav}
+              tabRootClassName={css.tabRoot}
+              tabContentClass={css.tabContent}
+              tabClassName={css.tab}
+            />
+            {!defaultPaymentFetched ? null : (
+              <div className={css.tabContentPanel}>{tabContentPanel}</div>
             )}
           </div>
         </LayoutWrapperMain>
@@ -208,6 +300,10 @@ PaymentMethodsPageComponent.defaultProps = {
   deletePaymentMethodError: null,
   createStripeCustomerError: null,
   handleCardSetupError: null,
+  defaultPaymentMethods: null,
+  defaultPaymentFetched: false,
+  fetchDefaultPaymentError: null,
+  fetchDefaultPaymentInProgress: false,
 };
 
 PaymentMethodsPageComponent.propTypes = {
@@ -217,6 +313,10 @@ PaymentMethodsPageComponent.propTypes = {
   deletePaymentMethodError: object,
   createStripeCustomerError: object,
   handleCardSetupError: object,
+  defaultPaymentMethods: object,
+  defaultPaymentFetched: bool,
+  fetchDefaultPaymentError: propTypes.error,
+  fetchDefaultPaymentInProgress: bool,
   onCreateSetupIntent: func.isRequired,
   onHandleCardSetup: func.isRequired,
   onSavePaymentMethod: func.isRequired,
@@ -237,7 +337,13 @@ const mapStateToProps = state => {
     createStripeCustomerError,
   } = state.paymentMethods;
 
-  const { stripeCustomerFetched } = state.PaymentMethodsPage;
+  const {
+    stripeCustomerFetched,
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+  } = state.PaymentMethodsPage;
 
   const { handleCardSetupError } = state.stripe;
   return {
@@ -249,6 +355,10 @@ const mapStateToProps = state => {
     createStripeCustomerError,
     handleCardSetupError,
     stripeCustomerFetched,
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
   };
 };
 
@@ -260,7 +370,8 @@ const mapDispatchToProps = dispatch => ({
   onCreateSetupIntent: params => dispatch(createStripeSetupIntent(params)),
   onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>
     dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
-  onDeletePaymentMethod: params => dispatch(deletePaymentMethod(params)),
+  onDeletePaymentMethod: paymentMethodId => dispatch(deletePaymentMethod(paymentMethodId)),
+  onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
 });
 
 const PaymentMethodsPage = compose(

@@ -40,7 +40,8 @@ const PaymentForm = props => {
 
   useEffect(() => {
     onFetchDefaultPayment(
-      ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId
+      currentUser.stripeCustomer &&
+        ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId
     );
   }, []);
 
@@ -132,6 +133,13 @@ const PaymentForm = props => {
     },
   };
 
+  const card =
+    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
+  const bankAccount =
+    !!defaultPaymentMethods &&
+    !!defaultPaymentMethods.bankAccount &&
+    defaultPaymentMethods.bankAccount.us_bank_account;
+
   const submitInProgress = confirmPaymentInProgress;
   const submitDisabled = submitInProgress || (!isElementsComplete && !showDefaultPayment);
 
@@ -142,24 +150,24 @@ const PaymentForm = props => {
       {defaultPaymentFetched && (
         <div className={css.paymentElementContainer}>
           {showDefaultPayment ? (
-            <div className={css.defaultPayemntMethodsContainer}>
+            <div className={css.defaultPaymentMethodsContainer}>
               <p className={css.defaultPaymentTitle}>
                 <FormattedMessage id="PaymentForm.useDefaultMethod" />
               </p>
-              {defaultPaymentMethods && defaultPaymentMethods.card && (
+              {card && (
                 <SavedCardDetails
                   rootClassName={css.defaultMethod}
-                  card={ensurePaymentMethodCard(defaultPaymentMethods.card.card)}
+                  card={ensurePaymentMethodCard(card)}
                   onManageDisableScrolling={onManageDisableScrolling}
                   hideContent={true}
                   onSelect={handleSelectedDefaultPaymentChange}
                   selected={activeDefaultPaymentMethod === 'card'}
                 />
               )}
-              {defaultPaymentMethods && defaultPaymentMethods.bankAccount && (
+              {bankAccount && (
                 <SavedBankDetails
                   rootClassName={css.defaultMethod}
-                  bank={defaultPaymentMethods.bankAccount.us_bank_account}
+                  bank={bankAccount}
                   onManageDisableScrolling={onManageDisableScrolling}
                   hideContent={true}
                   onSelect={handleSelectedDefaultPaymentChange}

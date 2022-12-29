@@ -24,7 +24,7 @@ const SavedBankDetails = props => {
     intl,
     bank,
     onChange,
-    onDeleteCard,
+    onDeleteAccount,
     onManageDisableScrolling,
     deletePaymentMethodInProgress,
     hideContent,
@@ -47,46 +47,39 @@ const SavedBankDetails = props => {
     </div>
   );
 
-  const handleDeleteCard = () => {
+  const handleOpenDeleteModal = () => {
     setIsModalOpen(true);
   };
 
-  const iconArrowClassName = css.IconArrowAnimation;
+  const handleDeleteAccount = () => {
+    onDeleteAccount('bankAccount');
+    //   .then(() => {
+    //   setIsModalOpen(false);
+    // });
+  };
 
-  const removeCardModalTitle = intl.formatMessage({ id: 'SavedCardDetails.removeCardModalTitle' });
+  const removeCardModalTitle = intl.formatMessage({ id: 'SavedBankDetails.removeCardModalTitle' });
   const removeCardModalContent = intl.formatMessage(
-    { id: 'SavedCardDetails.removeCardModalContent' },
+    { id: 'SavedBankDetails.removeCardModalContent' },
     { last4Digits }
   );
-  const cancel = intl.formatMessage({ id: 'SavedCardDetails.cancel' });
-  const removeCard = intl.formatMessage({ id: 'SavedCardDetails.removeCard' });
-  const deletePaymentMethod = intl.formatMessage({ id: 'SavedCardDetails.deletePaymentMethod' });
+  const cancel = intl.formatMessage({ id: 'SavedBankDetails.cancel' });
+  const removeCard = intl.formatMessage({ id: 'SavedBankDetails.removeCard' });
+  const deletePaymentMethod = intl.formatMessage({ id: 'SavedBankDetails.deletePaymentMethod' });
 
   const classes = classNames(rootClassName || css.root, className);
   const menuLabelClasses = classNames(css.menuLabel, selected && css.menuLabelActive);
 
   return (
-    <div className={classes} onClick={() => onSelect('bankAccount')}>
+    <div className={classes} onClick={() => onSelect && onSelect('bankAccount')}>
       <div className={css.menu}>
         <div className={menuLabelClasses}>
-          <div className={css.menuLabelWrapper}>
-            {defaultBank}
-            {!hideContent && (
-              <span>
-                <IconArrowHead
-                  direction="down"
-                  size="small"
-                  rootClassName={css.iconArrow}
-                  className={iconArrowClassName}
-                />
-              </span>
-            )}
-          </div>
+          <div className={css.menuLabelWrapper}>{defaultBank}</div>
         </div>
       </div>
 
-      {onDeleteCard ? (
-        <InlineTextButton onClick={handleDeleteCard} className={css.savedPaymentMethodDelete}>
+      {onDeleteAccount ? (
+        <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
           <IconClose rootClassName={css.closeIcon} size="small" />
           {deletePaymentMethod}
         </InlineTextButton>
@@ -114,7 +107,7 @@ const SavedBankDetails = props => {
               >
                 {cancel}
               </div>
-              <Button onClick={onDeleteCard} inProgress={deletePaymentMethodInProgress}>
+              <Button onClick={handleDeleteAccount} inProgress={deletePaymentMethodInProgress}>
                 {removeCard}
               </Button>
             </div>
@@ -130,7 +123,7 @@ SavedBankDetails.defaultProps = {
   className: null,
   bankAccount: null,
   onChange: null,
-  onDeleteCard: null,
+  onDeleteAccount: null,
   deletePaymentMethodInProgress: false,
   onManageDisableScrolling: null,
 };
@@ -146,7 +139,7 @@ SavedBankDetails.propTypes = {
   //   last4Digits: string.isRequired,
   // }),
   onChange: func,
-  onDeleteCard: func,
+  onDeleteAccount: func,
   onManageDisableScrolling: func,
   deletePaymentMethodInProgress: bool,
 };

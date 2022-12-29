@@ -99,7 +99,7 @@ export class SearchPageComponent extends Component {
 
       // signup and return back to listingPage.
       history.push(createResourceLocatorString('SignupPage', routeConfiguration(), {}, {}), state);
-    } else if (currentUser.attributes.emailVerified) {
+    } else if (currentUser.attributes) {
       this.setState({ enquiryModalOpen: true });
     } else {
       this.props.onChangeModalValue(EMAIL_VERIFICATION);
@@ -119,25 +119,6 @@ export class SearchPageComponent extends Component {
     const listingId = this.state.currentListingId;
     const { message } = values;
 
-    const existingTransaction = currentUserTransactions.find(transaction =>
-      hasExistingTransaction(transaction, currentUser, this.state.currentListingAuthor)
-    );
-
-    // if (existingTransaction) {
-    //   const txId = existingTransaction.id.uuid;
-    //   onSendMessage(txId, message.trim())
-    //     .then(res => {
-    //       this.setState({ enquiryModalOpen: false });
-
-    //       // Redirect to InboxPage
-    //       history.push(
-    //         createResourceLocatorString('InboxPage', routes, { tab: 'messages' }, { id: txId })
-    //       );
-    //     })
-    //     .catch(() => {
-    //       // Ignore, error handling in duck file
-    //     });
-    // } else {
     onSendEnquiry(this.state.currentListingAuthor, message.trim())
       .then(txId => {
         this.setState({ enquiryModalOpen: false });

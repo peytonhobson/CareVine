@@ -3,19 +3,19 @@ const { handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  // Create a PaymentIntent with the order amount and currency
+  const { stripeCustomerId } = req.body;
 
-  const { paymentMethodId } = req.body;
-
-  return stripe.paymentMethods
-    .detach(paymentMethodId)
+  return stripe.setupIntents
+    .create({
+      customer: stripeCustomerId,
+      payment_method_types: ['card', 'us_bank_account'],
+    })
     .then(apiResponse => {
       res
-        .status(200)
         .set('Content-Type', 'application/transit+json')
         .send(
           serialize({
-            data: apiResponse,
+            ...apiResponse,
           })
         )
         .end();
