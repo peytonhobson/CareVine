@@ -25,10 +25,11 @@ import {
 import { propTypes } from '../../util/types';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
 import NotifyForPaymentContainer from './NotifyForPaymentContainer';
+import config from '../../config';
 
 import css from './StripePaymentModal.module.css';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(config.stripe.publishableKey);
 
 const StripePaymentModalComponent = props => {
   const {

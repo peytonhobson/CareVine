@@ -26,7 +26,6 @@ const SavedCardDetails = props => {
     className,
     intl,
     card,
-    onChange,
     onDeleteCard,
     onManageDisableScrolling,
     deletePaymentMethodInProgress,
@@ -90,11 +89,15 @@ const SavedCardDetails = props => {
     </div>
   );
 
-  const handleDeleteCard = () => {
+  const handleOpenDeleteModal = () => {
     setIsModalOpen(true);
   };
 
-  const iconArrowClassName = css.IconArrowAnimation;
+  const handleDeleteCard = () => {
+    onDeleteCard('card').then(() => {
+      setIsModalOpen(false);
+    });
+  };
 
   const removeCardModalTitle = intl.formatMessage({ id: 'SavedCardDetails.removeCardModalTitle' });
   const removeCardModalContent = intl.formatMessage(
@@ -111,28 +114,18 @@ const SavedCardDetails = props => {
   const menuLabelClasses = classNames(css.menuLabel, selected && css.menuLabelActive);
 
   return (
-    <div className={classes} onClick={() => onSelect('card')}>
+    <div className={classes} onClick={() => onSelect && onSelect('card')}>
       <div className={css.menu}>
         <div className={menuLabelClasses}>
           <div className={showExpired ? css.menuLabelWrapperExpired : css.menuLabelWrapper}>
             {defaultCard}
-            {!hideContent && (
-              <span>
-                <IconArrowHead
-                  direction="down"
-                  size="small"
-                  rootClassName={css.iconArrow}
-                  className={iconArrowClassName}
-                />
-              </span>
-            )}
           </div>
         </div>
       </div>
       {showExpired && expiredText}
 
       {onDeleteCard ? (
-        <InlineTextButton onClick={handleDeleteCard} className={css.savedPaymentMethodDelete}>
+        <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
           <IconClose rootClassName={css.closeIcon} size="small" />
           {deletePaymentMethod}
         </InlineTextButton>
@@ -160,7 +153,7 @@ const SavedCardDetails = props => {
               >
                 {cancel}
               </div>
-              <Button onClick={onDeleteCard} inProgress={deletePaymentMethodInProgress}>
+              <Button onClick={handleDeleteCard} inProgress={deletePaymentMethodInProgress}>
                 {removeCard}
               </Button>
             </div>

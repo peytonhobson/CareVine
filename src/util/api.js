@@ -194,3 +194,7 @@ export const fetchUserEmail = body => {
 export const sendbirdUser = body => {
   return post('/api/sb-user', body);
 };
+
+export const stripeCreateSetupIntent = body => {
+  return post('/api/stripe-create-setup-intent', body);
+};

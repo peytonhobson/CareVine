@@ -1,5 +1,6 @@
 import pick from 'lodash/pick';
 import { storableError } from '../util/errors';
+import { stripeDetachPaymentMethod, stripeCreateSetupIntent } from '../util/api';
 import * as log from '../util/log';
 
 // ================ Action types ================ //
@@ -18,6 +19,10 @@ export const DELETE_PAYMENT_METHOD_REQUEST = 'app/paymentMethods/DELETE_PAYMENT_
 export const DELETE_PAYMENT_METHOD_SUCCESS = 'app/paymentMethods/DELETE_PAYMENT_METHOD_SUCCESS';
 export const DELETE_PAYMENT_METHOD_ERROR = 'app/paymentMethods/DELETE_PAYMENT_METHOD_ERROR';
 
+export const CREATE_BANK_ACCOUNT_REQUEST = 'app/paymentMethods/CREATE_BANK_ACCOUNT_REQUEST';
+export const CREATE_BANK_ACCOUNT_SUCCESS = 'app/paymentMethods/CREATE_BANK_ACCOUNT_SUCCESS';
+export const CREATE_BANK_ACCOUNT_ERROR = 'app/paymentMethods/CREATE_BANK_ACCOUNT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -27,6 +32,8 @@ const initialState = {
   deletePaymentMethodError: null,
   createStripeCustomerInProgress: null,
   createStripeCustomerError: null,
+  createBankAccountInProgress: false,
+  createBankAccountError: null,
   stripeCustomer: null,
 };
 
@@ -80,6 +87,22 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         deletePaymentMethodError: payload,
         deletePaymentMethodInProgress: false,
       };
+
+    case CREATE_BANK_ACCOUNT_REQUEST:
+      return { ...state, createBankAccountError: null, createBankAccountInProgress: true };
+    case CREATE_BANK_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        createBankAccountInProgress: false,
+      };
+    case CREATE_BANK_ACCOUNT_ERROR:
+      console.error(payload);
+      return {
+        ...state,
+        createBankAccountError: payload,
+        createBankAccountInProgress: false,
+      };
+
     default:
       return state;
   }
@@ -120,9 +143,8 @@ export const addPaymentMethodError = e => ({
 
 export const deletePaymentMethodRequest = () => ({ type: DELETE_PAYMENT_METHOD_REQUEST });
 
-export const deletePaymentMethodSuccess = stripeCustomer => ({
+export const deletePaymentMethodSuccess = () => ({
   type: DELETE_PAYMENT_METHOD_SUCCESS,
-  payload: stripeCustomer,
 });
 
 export const deletePaymentMethodError = e => ({
@@ -131,21 +153,48 @@ export const deletePaymentMethodError = e => ({
   error: true,
 });
 
+export const createBankAccountRequest = () => ({ type: CREATE_BANK_ACCOUNT_REQUEST });
+
+export const createBankAccountSuccess = () => ({
+  type: CREATE_BANK_ACCOUNT_SUCCESS,
+});
+
+export const createBankAccountError = e => ({
+  type: CREATE_BANK_ACCOUNT_ERROR,
+  payload: e,
+  error: true,
+});
+
 // ================ Thunks ================ //
 
 export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState, sdk) => {
   dispatch(stripeCustomerCreateRequest());
-  return sdk.stripeCustomer
-    .create({ stripePaymentMethodId }, { expand: true, include: ['defaultPaymentMethod'] })
-    .then(response => {
-      const stripeCustomer = response.data.data;
-      dispatch(stripeCustomerCreateSuccess(stripeCustomer));
-      return stripeCustomer;
-    })
-    .catch(e => {
-      log.error(storableError(e), 'create-stripe-user-failed');
-      dispatch(stripeCustomerCreateError(storableError(e)));
-    });
+
+  if (stripePaymentMethodId) {
+    return sdk.stripeCustomer
+      .create({ stripePaymentMethodId }, { expand: true, include: ['defaultPaymentMethod'] })
+      .then(response => {
+        const stripeCustomer = response.data.data;
+        dispatch(stripeCustomerCreateSuccess(stripeCustomer));
+        return stripeCustomer;
+      })
+      .catch(e => {
+        log.error(storableError(e), 'create-stripe-user-failed');
+        dispatch(stripeCustomerCreateError(storableError(e)));
+      });
+  } else {
+    return sdk.stripeCustomer
+      .create({}, { expand: true })
+      .then(response => {
+        const stripeCustomer = response.data.data;
+        dispatch(stripeCustomerCreateSuccess(stripeCustomer));
+        return stripeCustomer;
+      })
+      .catch(e => {
+        log.error(storableError(e), 'create-stripe-user-failed');
+        dispatch(stripeCustomerCreateError(storableError(e)));
+      });
+  }
 };
 
 export const addPaymentMethod = stripePaymentMethodId => (dispatch, getState, sdk) => {
@@ -163,17 +212,15 @@ export const addPaymentMethod = stripePaymentMethodId => (dispatch, getState, sd
     });
 };
 
-export const deletePaymentMethod = () => (dispatch, getState, sdk) => {
+export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) => {
   dispatch(deletePaymentMethodRequest());
-  return sdk.stripeCustomer
-    .deletePaymentMethod({}, { expand: true })
+  return stripeDetachPaymentMethod({ paymentMethodId })
     .then(response => {
-      const stripeCustomer = response.data.data;
-      dispatch(deletePaymentMethodSuccess(stripeCustomer));
-      return stripeCustomer;
+      dispatch(deletePaymentMethodSuccess());
+      return response;
     })
     .catch(e => {
-      log.error(storableError(e), 'add-payment-method-failed');
+      log.error(storableError(e), 'delete-payment-method-failed');
       dispatch(deletePaymentMethodError(storableError(e)));
     });
 };
@@ -189,7 +236,7 @@ export const updatePaymentMethod = stripePaymentMethodId => (dispatch, getState,
 };
 
 // This function helps to choose correct thunk function
-export const savePaymentMethod = (stripeCustomer, stripePaymentMethodId) => (
+export const savePaymentMethod = (stripeCustomer, stripePaymentMethodId, methodType) => (
   dispatch,
   getState,
   sdk
@@ -222,5 +269,26 @@ export const savePaymentMethod = (stripeCustomer, stripePaymentMethodId) => (
     })
     .catch(e => {
       // errors are already catched in other thunk functions.
+    });
+};
+
+const createBankAccount = (stripeCustomerId, routingNumber, AccountNumber, stripe) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(createBankAccountRequest());
+
+  return stripeCreateSetupIntent({ stripeCustomerId })
+    .then(response => {
+      const clientSecret = response.data.data.attributes.clientSecret;
+      return stripeConfirmSetupIntent({ clientSecret, AccountNumber, routingNumber });
+    })
+    .then(response => {
+      dispatch(createBankAccountSuccess());
+    })
+    .catch(e => {
+      log.error(storableError(e), 'create-bank-account-failed');
+      dispatch(createBankAccountError(storableError(e)));
     });
 };

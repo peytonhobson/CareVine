@@ -314,7 +314,6 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
         if (users.length === 0) {
           dispatch(generateAccessToken(currentAuthor));
         }
-        await sb.connect(currentUserId, accessToken);
 
         let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
 
@@ -331,6 +330,7 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           try {
             channel = await sb.groupChannel.getChannel(CHANNEL_URL);
           } catch (e) {
+            // TODO: remove in production
             console.log(e);
           }
         }

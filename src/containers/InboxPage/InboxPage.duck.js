@@ -367,6 +367,7 @@ export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
 
   const params = {
     appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
   };
   const sb = SendbirdChat.init(params);
 

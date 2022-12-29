@@ -12,6 +12,7 @@ import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { TRANSITION_CONFIRM_PAYMENT, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
+import { createStripeCustomer } from '../../ducks/paymentMethods.duck';
 import config from '../../config';
 
 // ================ Action types ================ //
@@ -255,9 +256,23 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
     throw e;
   };
 
-  return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, savePayment })
-    .then(res => handleSuccess(res))
-    .catch(e => handleError(e));
+  if (stripeCustomerId) {
+    return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, savePayment })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  } else {
+    return dispatch(createStripeCustomer())
+      .then(res => {
+        return stripeCreatePaymentIntent({
+          amount,
+          userId,
+          stripeCustomerId: res.attributes.stripeCustomerId,
+          savePayment,
+        });
+      })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  }
 };
 
 export const sendNotifyForPayment = (
@@ -465,7 +480,7 @@ export const confirmPayment = (
 
         if (defaultMethodId) {
           // May want to confirm payment after this confirms, otherwise throw error
-          stripeDetachPaymentMethod({ defaultMethodId });
+          stripeDetachPaymentMethod({ paymentMethodId: defaultMethodId });
         }
 
         handleSuccess(res);

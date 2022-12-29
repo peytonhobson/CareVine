@@ -19,6 +19,7 @@ const updateUserMetadata = require('./api/update-user-metadata');
 const updateListingMetadata = require('./api/update-listing-metadata');
 const deleteAccount = require('./api/delete-account');
 const createPaymentIntent = require('./api/stripe-create-payment-intent');
+const createSetupIntent = require('./api/stripe-create-setup-intent');
 const fetchHasStripeAccount = require('./api/fetch-has-stripe-account');
 const stripePaymentMethods = require('./api/stripe-payment-methods');
 const stripeDetachPaymentMethod = require('./api/stripe-detach-payment-method');
@@ -74,6 +75,7 @@ router.post('/stripe-detach-payment-method', stripeDetachPaymentMethod);
 router.post('/stripe-update-payment-intent', stripeUpdatePaymentIntent);
 router.post('/user-email', userEmail);
 router.post('/sb-user', sendbirdUser);
+router.post('/stripe-create-setup-intent', createSetupIntent);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
