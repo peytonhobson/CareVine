@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { bool, func, number, shape, string } from 'prop-types';
 import classNames from 'classnames';
@@ -29,6 +29,9 @@ const SavedCardDetails = props => {
     onDeleteCard,
     onManageDisableScrolling,
     deletePaymentMethodInProgress,
+    deletePaymentMethodSuccess,
+    stripeCustomer,
+    onFetchDefaultPayment,
     hideContent,
     onSelect,
     selected,
@@ -38,6 +41,13 @@ const SavedCardDetails = props => {
   const expirationMonth = (card && card.expirationMonth) || (card && card.exp_month);
   const last4Digits = (card && card.last4Digits) || (card && card.last4);
   const brand = card && card.brand;
+
+  useEffect(() => {
+    if (deletePaymentMethodSuccess && !!stripeCustomer) {
+      setIsModalOpen(false);
+      onFetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId);
+    }
+  }, [deletePaymentMethodSuccess]);
 
   const paymentMethodPlaceholderDesktop = intl.formatMessage(
     { id: 'SavedCardDetails.savedPaymentMethodPlaceholderDesktop' },
@@ -94,9 +104,7 @@ const SavedCardDetails = props => {
   };
 
   const handleDeleteCard = () => {
-    onDeleteCard('card').then(() => {
-      setIsModalOpen(false);
-    });
+    onDeleteCard('card');
   };
 
   const removeCardModalTitle = intl.formatMessage({ id: 'SavedCardDetails.removeCardModalTitle' });

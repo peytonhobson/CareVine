@@ -25,7 +25,7 @@ import {
   createStripeSetupIntent,
   stripeCustomer,
 } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
-import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
+// import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
 import { handleCardSetup } from '../../ducks/stripe.duck';
 import {
   CaregiverEditListingWizard,
@@ -100,7 +100,7 @@ export const EditListingPageComponent = props => {
     onCreateStripeSetupIntent,
     onHandleCardSetup,
     fetchStripeCustomer,
-    onSavePaymentMethod,
+    // onSavePaymentMethod,
     addPaymentMethodError,
     createStripeCustomerError,
     handleCardSetupError,
@@ -291,7 +291,7 @@ export const EditListingPageComponent = props => {
           uploadInProgress={uploadInProgress}
           onCreateSetupIntent={onCreateStripeSetupIntent}
           fetchStripeCustomer={fetchStripeCustomer}
-          onSavePaymentMethod={onSavePaymentMethod}
+          // onSavePaymentMethod={onSavePaymentMethod}
           addPaymentMethodError={addPaymentMethodError}
           createStripeCustomerError={createStripeCustomerError}
           handleCardSetupError={handleCardSetupError}
@@ -500,8 +500,8 @@ const mapDispatchToProps = dispatch => ({
   onCreateStripeSetupIntent: params => dispatch(createStripeSetupIntent(params)),
   onHandleCardSetup: params => dispatch(handleCardSetup(params)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>
-    dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
+  // onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>
+  //   dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
   onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
 });
 

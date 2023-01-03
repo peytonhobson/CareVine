@@ -23,6 +23,10 @@ export const CREATE_BANK_ACCOUNT_REQUEST = 'app/paymentMethods/CREATE_BANK_ACCOU
 export const CREATE_BANK_ACCOUNT_SUCCESS = 'app/paymentMethods/CREATE_BANK_ACCOUNT_SUCCESS';
 export const CREATE_BANK_ACCOUNT_ERROR = 'app/paymentMethods/CREATE_BANK_ACCOUNT_ERROR';
 
+export const CREATE_CREDIT_CARD_REQUEST = 'app/paymentMethods/CREATE_CREDIT_CARD_REQUEST';
+export const CREATE_CREDIT_CARD_SUCCESS = 'app/paymentMethods/CREATE_CREDIT_CARD_SUCCESS';
+export const CREATE_CREDIT_CARD_ERROR = 'app/paymentMethods/CREATE_CREDIT_CARD_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -30,10 +34,15 @@ const initialState = {
   addPaymentMethodError: null,
   deletePaymentMethodInProgress: null,
   deletePaymentMethodError: null,
+  deletePaymentMethodSuccess: false,
   createStripeCustomerInProgress: null,
   createStripeCustomerError: null,
   createBankAccountInProgress: false,
   createBankAccountError: null,
+  createBankAccountSuccess: false,
+  createCreditCardInProgress: false,
+  createCreditCardError: null,
+  createCreditCardSuccess: false,
   stripeCustomer: null,
 };
 
@@ -74,11 +83,17 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
       };
 
     case DELETE_PAYMENT_METHOD_REQUEST:
-      return { ...state, deletePaymentMethodError: null, deletePaymentMethodInProgress: true };
+      return {
+        ...state,
+        deletePaymentMethodError: null,
+        deletePaymentMethodInProgress: true,
+        deletePaymentMethodSuccess: false,
+      };
     case DELETE_PAYMENT_METHOD_SUCCESS:
       return {
         ...state,
         deletePaymentMethodInProgress: false,
+        deletePaymentMethodSuccess: true,
       };
     case DELETE_PAYMENT_METHOD_ERROR:
       console.error(payload);
@@ -89,10 +104,16 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
       };
 
     case CREATE_BANK_ACCOUNT_REQUEST:
-      return { ...state, createBankAccountError: null, createBankAccountInProgress: true };
+      return {
+        ...state,
+        createBankAccountError: null,
+        createBankAccountInProgress: true,
+        createBankAccountSuccess: false,
+      };
     case CREATE_BANK_ACCOUNT_SUCCESS:
       return {
         ...state,
+        createBankAccountSuccess: true,
         createBankAccountInProgress: false,
       };
     case CREATE_BANK_ACCOUNT_ERROR:
@@ -101,6 +122,27 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         ...state,
         createBankAccountError: payload,
         createBankAccountInProgress: false,
+      };
+
+    case CREATE_CREDIT_CARD_REQUEST:
+      return {
+        ...state,
+        createCreditCardError: null,
+        createCreditCardInProgress: true,
+        createCreditCardSuccess: false,
+      };
+    case CREATE_CREDIT_CARD_SUCCESS:
+      return {
+        ...state,
+        createCreditCardSuccess: true,
+        createCreditCardInProgress: false,
+      };
+    case CREATE_CREDIT_CARD_ERROR:
+      console.error(payload);
+      return {
+        ...state,
+        createCreditCardError: payload,
+        createCreditCardInProgress: false,
       };
 
     default:
@@ -165,6 +207,18 @@ export const createBankAccountError = e => ({
   error: true,
 });
 
+export const createCreditCardRequest = () => ({ type: CREATE_CREDIT_CARD_REQUEST });
+
+export const createCreditCardSuccess = () => ({
+  type: CREATE_CREDIT_CARD_SUCCESS,
+});
+
+export const createCreditCardError = e => ({
+  type: CREATE_CREDIT_CARD_ERROR,
+  payload: e,
+  error: true,
+});
+
 // ================ Thunks ================ //
 
 export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState, sdk) => {
@@ -225,70 +279,102 @@ export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) 
     });
 };
 
-export const updatePaymentMethod = stripePaymentMethodId => (dispatch, getState, sdk) => {
-  return dispatch(deletePaymentMethod())
-    .then(() => {
-      return dispatch(addPaymentMethod(stripePaymentMethodId));
-    })
-    .catch(e => {
-      log.error(storableError(e), 'updating-payment-method-failed');
-    });
-};
-
-// This function helps to choose correct thunk function
-export const savePaymentMethod = (stripeCustomer, stripePaymentMethodId, methodType) => (
-  dispatch,
-  getState,
-  sdk
-) => {
-  const hasAlreadyDefaultPaymentMethod =
-    stripeCustomer && stripeCustomer.defaultPaymentMethod && stripeCustomer.defaultPaymentMethod.id;
-
-  const savePromise =
-    !stripeCustomer || !stripeCustomer.id
-      ? dispatch(createStripeCustomer(stripePaymentMethodId))
-      : hasAlreadyDefaultPaymentMethod
-      ? dispatch(updatePaymentMethod(stripePaymentMethodId))
-      : dispatch(addPaymentMethod(stripePaymentMethodId));
-
-  return savePromise
-    .then(response => {
-      const {
-        createStripeCustomerError,
-        addPaymentMethodError,
-        deletePaymentMethodError,
-      } = getState().paymentMethods;
-
-      // If there are any errors, return those errors
-      if (createStripeCustomerError || addPaymentMethodError || deletePaymentMethodError) {
-        return {
-          errors: { createStripeCustomerError, addPaymentMethodError, deletePaymentMethodError },
-        };
-      }
-      return response;
-    })
-    .catch(e => {
-      // errors are already catched in other thunk functions.
-    });
-};
-
-const createBankAccount = (stripeCustomerId, routingNumber, AccountNumber, stripe) => (
+export const createBankAccount = (stripeCustomerId, stripe, currentUser) => (
   dispatch,
   getState,
   sdk
 ) => {
   dispatch(createBankAccountRequest());
 
-  return stripeCreateSetupIntent({ stripeCustomerId })
+  const savePromise = !stripeCustomerId
+    ? dispatch(createStripeCustomer())
+    : stripeCreateSetupIntent({ stripeCustomerId });
+
+  // TODO: Need to test for error handling
+  return savePromise
     .then(response => {
-      const clientSecret = response.data.data.attributes.clientSecret;
-      return stripeConfirmSetupIntent({ clientSecret, AccountNumber, routingNumber });
+      if (!stripeCustomerId) {
+        return stripeCreateSetupIntent({ stripeCustomerId });
+      } else {
+        return response;
+      }
     })
     .then(response => {
+      const firstName = currentUser.attributes.profile.firstName;
+      const lastName = currentUser.attributes.profile.lastName;
+      const name = `${firstName} ${lastName}`;
+      const email = currentUser.attributes.email;
+
+      return stripe
+        .collectBankAccountForSetup({
+          clientSecret: response.client_secret,
+          params: {
+            payment_method_type: 'us_bank_account',
+            payment_method_data: {
+              billing_details: {
+                name,
+                email,
+              },
+            },
+          },
+          expand: ['payment_method'],
+        })
+        .then(response => {
+          if (response.setupIntent.status === 'requires_confirmation') {
+            return stripe.confirmUsBankAccountSetup(response.setupIntent.client_secret);
+          }
+        });
+    })
+    .then(response => {
+      if (!!response && !!response.error) {
+        throw new Error(response.error.message);
+      }
+
       dispatch(createBankAccountSuccess());
     })
     .catch(e => {
       log.error(storableError(e), 'create-bank-account-failed');
       dispatch(createBankAccountError(storableError(e)));
+    });
+};
+
+export const createCreditCard = (stripeCustomerId, stripe, billing_details, cardElement) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(createCreditCardRequest());
+
+  const savePromise = !stripeCustomerId
+    ? dispatch(createStripeCustomer())
+    : stripeCreateSetupIntent({ stripeCustomerId });
+
+  // TODO: Need to test for error handling
+  return savePromise
+    .then(response => {
+      if (!stripeCustomerId) {
+        return stripeCreateSetupIntent({ stripeCustomerId }).then(() => {
+          return stripe.confirmCardSetup(response.client_secret, {
+            payment_method: {
+              card: cardElement,
+              billing_details,
+            },
+          });
+        });
+      } else {
+        return stripe.confirmCardSetup(response.client_secret, {
+          payment_method: {
+            card: cardElement,
+            billing_details,
+          },
+        });
+      }
+    })
+    .then(response => {
+      dispatch(createCreditCardSuccess());
+    })
+    .catch(e => {
+      log.error(storableError(e), 'create-credit-card-failed');
+      dispatch(createCreditCardError(storableError(e)));
     });
 };
