@@ -132,6 +132,7 @@ export const InboxPageComponent = props => {
             >
               <SendbirdApp
                 currentUser={ensuredCurrentUser}
+                fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
                 fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
                 history={history}
                 isPaymentModalOpen={isPaymentModalOpen}

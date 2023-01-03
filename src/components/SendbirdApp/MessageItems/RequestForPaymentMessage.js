@@ -15,7 +15,7 @@ import '@sendbird/uikit-react/dist/index.css';
 import css from './index.module.css';
 
 const NotifyForPaymentMessage = props => {
-  const { message, userId, onOpenPaymentModal, otherUser } = props;
+  const { message, userId, onOpenPaymentModal } = props;
 
   const sendbirdContext = useSendbirdStateContext();
   const channelContext = useChannelContext();
@@ -56,7 +56,7 @@ const NotifyForPaymentMessage = props => {
   //   }
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [fetchUserFromChannelUrlInProgress, setFetchUserFromChannelUrlInProgress] = useState(false);
+  const [otherUser, setOtherUser] = useState(null);
 
   useEffect(() => {
     let pubSub = sendbirdContext && sendbirdContext.config && sendbirdContext.config.pubSub;
@@ -65,12 +65,9 @@ const NotifyForPaymentMessage = props => {
       setIsPaymentModalOpen(isPaymentModalOpen);
     });
 
-    pubSub.subscribe(
-      'FETCH_OTHER_USER_IN_PROGRESS_CHANGE',
-      ({ fetchUserFromChannelUrlInProgress }) => {
-        setFetchUserFromChannelUrlInProgress(fetchUserFromChannelUrlInProgress);
-      }
-    );
+    pubSub.subscribe('OTHER_USER_CHANGE', ({ otherUser }) => {
+      setOtherUser(otherUser);
+    });
 
     return () => {
       pubSub = null;
@@ -104,7 +101,6 @@ const NotifyForPaymentMessage = props => {
                 channelUrl={channelContext.channelUrl}
                 className={css.paymentButton}
                 disabled={isPaymentModalOpen || !otherUser}
-                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
                 onOpenPaymentModal={onOpenPaymentModal}
                 otherUser={otherUser}
                 sendbirdContext={sendbirdContext}

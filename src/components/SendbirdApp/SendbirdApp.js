@@ -20,6 +20,7 @@ const SendbirdApp = props => {
   const {
     config: { isOnline, userId, appId, accessToken, theme, userListQuery, logger, pubSub },
     currentUser,
+    fetchUserFromChannelUrlError,
     fetchUserFromChannelUrlInProgress,
     history,
     isPaymentModalOpen,
@@ -55,7 +56,7 @@ const SendbirdApp = props => {
     currentChannelUrl !== '' &&
       accessToken &&
       onFetchUserFromChannelUrl(currentChannelUrl, userId, accessToken);
-  }, [currentChannelUrl]);
+  }, [currentChannelUrl, accessToken]);
 
   useEffect(() => {
     pubSub &&
@@ -66,10 +67,10 @@ const SendbirdApp = props => {
 
   useEffect(() => {
     pubSub &&
-      pubSub.publish('FETCH_OTHER_USER_IN_PROGRESS_CHANGE', {
-        fetchUserFromChannelUrlInProgress,
+      pubSub.publish('OTHER_USER_CHANGE', {
+        otherUser,
       });
-  }, [fetchUserFromChannelUrlInProgress]);
+  }, [otherUser]);
 
   const userEmail = currentUser.attributes.email;
   const renderTitle = (

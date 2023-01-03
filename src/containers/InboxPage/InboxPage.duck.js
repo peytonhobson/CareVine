@@ -255,7 +255,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
 
         const otherUser = members.find(member => member.userId !== currentUserId);
 
-        return sdk.listings.query({ authorId: otherUser.userId }).then(response => {
+        return sdk.listings.query({ authorId: otherUser && otherUser.userId }).then(response => {
           dispatch(fetchOtherUserListingSuccess(response.data.data));
         });
       });
@@ -311,11 +311,13 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId, accessToken) 
 
         const otherUser = members.find(member => member.userId !== currentUserId);
 
-        sdk.users.show({ id: otherUser.userId, include: ['profileImage'] }).then(response => {
-          dispatch(addMarketplaceEntities(response));
-          dispatch(fetchUserFromChannelUrlSuccess(response.data.data));
-          return response.data.data;
-        });
+        sdk.users
+          .show({ id: otherUser && otherUser.userId, include: ['profileImage'] })
+          .then(response => {
+            dispatch(addMarketplaceEntities(response));
+            dispatch(fetchUserFromChannelUrlSuccess(response.data.data));
+            return response.data.data;
+          });
       });
     })
     .catch(e => {
