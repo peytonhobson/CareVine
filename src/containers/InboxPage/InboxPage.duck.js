@@ -261,6 +261,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
       });
     })
     .catch(e => {
+      log.error(e, 'fetch-other-user-listing-failed');
       dispatch(fetchOtherUserListingError(e));
       throw e;
     });
@@ -283,7 +284,7 @@ export const transitionToRequestPayment = otherUserListing => (dispatch, getStat
       return response;
     })
     .catch(e => {
-      console.log(e);
+      log.error(e, 'transition-to-request-payment-failed');
       dispatch(transitionToRequestPaymentError(storableError(e)));
       throw e;
     });
@@ -318,6 +319,7 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId, accessToken) 
       });
     })
     .catch(e => {
+      log.error(e, 'fetch-user-from-channel-url-failed');
       dispatch(fetchUserFromChannelUrlError(e));
     });
 };
@@ -358,6 +360,7 @@ export const sendRequestForPayment = (
       });
     })
     .catch(e => {
+      log.error(e, 'send-request-for-payment-failed');
       dispatch(sendRequestForPaymentError(e));
     });
 };
@@ -380,19 +383,7 @@ export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
       dispatch(generateAccessTokenSuccess());
     })
     .catch(e => {
-      log.error(e);
+      log.error(e, 'generate-access-token-failed');
       dispatch(generateAccessTokenError(e));
     });
-};
-
-const IMAGE_VARIANTS = {
-  'fields.image': [
-    // Profile images
-    'variants.square-small',
-    'variants.square-small2x',
-
-    // Listing images:
-    'variants.landscape-crop',
-    'variants.landscape-crop2x',
-  ],
 };
