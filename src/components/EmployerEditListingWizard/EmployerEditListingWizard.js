@@ -170,7 +170,7 @@ class EmployerEditListingWizard extends Component {
     this.handlePublishListing = this.handlePublishListing.bind(this);
     this.handlePayoutModalClose = this.handlePayoutModalClose.bind(this);
     this.handlePayoutSubmit = this.handlePayoutSubmit.bind(this);
-    this.handlePaymentMethodsSubmit = this.handlePaymentMethodsSubmit.bind(this);
+    // this.handlePaymentMethodsSubmit = this.handlePaymentMethodsSubmit.bind(this);
     this.getClientSecret = this.getClientSecret.bind(this);
     this.getPaymentParams = this.getPaymentParams.bind(this);
   }
@@ -259,55 +259,55 @@ class EmployerEditListingWizard extends Component {
     return paymentParams;
   }
 
-  handlePaymentMethodsSubmit(params) {
-    const {
-      onCreateSetupIntent,
-      currentUser,
-      onHandleCardSetup,
-      onSavePaymentMethod,
-      fetchStripeCustomer,
-      history,
-    } = this.props;
+  // handlePaymentMethodsSubmit(params) {
+  //   const {
+  //     onCreateSetupIntent,
+  //     currentUser,
+  //     onHandleCardSetup,
+  //     onSavePaymentMethod,
+  //     fetchStripeCustomer,
+  //     history,
+  //   } = this.props;
 
-    this.setState({ isSubmittingPayment: true });
-    const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const stripeCustomer = ensuredCurrentUser.stripeCustomer;
-    const { stripe, card, formValues } = params;
+  //   this.setState({ isSubmittingPayment: true });
+  //   const ensuredCurrentUser = ensureCurrentUser(currentUser);
+  //   const stripeCustomer = ensuredCurrentUser.stripeCustomer;
+  //   const { stripe, card, formValues } = params;
 
-    onCreateSetupIntent()
-      .then(setupIntent => {
-        const stripeParams = {
-          stripe,
-          card,
-          setupIntentClientSecret: this.getClientSecret(setupIntent),
-          paymentParams: this.getPaymentParams(currentUser, formValues),
-        };
+  //   onCreateSetupIntent()
+  //     .then(setupIntent => {
+  //       const stripeParams = {
+  //         stripe,
+  //         card,
+  //         setupIntentClientSecret: this.getClientSecret(setupIntent),
+  //         paymentParams: this.getPaymentParams(currentUser, formValues),
+  //       };
 
-        return onHandleCardSetup(stripeParams);
-      })
-      .then(result => {
-        const newPaymentMethod = result.setupIntent.payment_method;
-        // Note: stripe.handleCardSetup might return an error inside successful call (200), but those are rejected in thunk functions.
+  //       return onHandleCardSetup(stripeParams);
+  //     })
+  //     .then(result => {
+  //       const newPaymentMethod = result.setupIntent.payment_method;
+  //       // Note: stripe.handleCardSetup might return an error inside successful call (200), but those are rejected in thunk functions.
 
-        return onSavePaymentMethod(stripeCustomer, newPaymentMethod);
-      })
-      .then(() => {
-        // Update currentUser entity and its sub entities: stripeCustomer and defaultPaymentMethod
-        fetchStripeCustomer();
-        this.setState({ isSubmittingPayment: false });
-        this.setState({ cardState: 'default' });
+  //       return onSavePaymentMethod(stripeCustomer, newPaymentMethod);
+  //     })
+  //     .then(() => {
+  //       // Update currentUser entity and its sub entities: stripeCustomer and defaultPaymentMethod
+  //       fetchStripeCustomer();
+  //       this.setState({ isSubmittingPayment: false });
+  //       this.setState({ cardState: 'default' });
 
-        if (history.location.pathname.includes('create-profile')) {
-          history.push('/signup');
-        } else {
-          history.push('/l');
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        this.setState({ isSubmittingPayment: false });
-      });
-  }
+  //       if (history.location.pathname.includes('create-profile')) {
+  //         history.push('/signup');
+  //       } else {
+  //         history.push('/l');
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //       this.setState({ isSubmittingPayment: false });
+  //     });
+  // }
 
   render() {
     const {
@@ -432,7 +432,7 @@ class EmployerEditListingWizard extends Component {
             );
           })}
         </Tabs>
-        <Modal
+        {/* <Modal
           id="EmployerEditListingWizard.payoutModal"
           isOpen={this.state.showPayoutDetails}
           onClose={this.handlePayoutModalClose}
@@ -466,7 +466,7 @@ class EmployerEditListingWizard extends Component {
               </>
             )}
           </div>
-        </Modal>
+        </Modal> */}
       </div>
     );
   }

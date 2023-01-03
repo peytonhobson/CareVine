@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { bool, func, number, shape, string } from 'prop-types';
 import classNames from 'classnames';
@@ -27,9 +27,12 @@ const SavedBankDetails = props => {
     onDeleteAccount,
     onManageDisableScrolling,
     deletePaymentMethodInProgress,
+    deletePaymentMethodSuccess,
     hideContent,
     onSelect,
     selected,
+    onFetchDefaultPayment,
+    stripeCustomer,
   } = props;
 
   const bankName = bank && bank.bank_name;
@@ -47,15 +50,23 @@ const SavedBankDetails = props => {
     </div>
   );
 
+  useEffect(() => {
+    if (deletePaymentMethodSuccess && !!stripeCustomer) {
+      setIsModalOpen(false);
+      onFetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId);
+    }
+  }, [deletePaymentMethodSuccess]);
+
   const handleOpenDeleteModal = () => {
     setIsModalOpen(true);
   };
 
+  // TODO: Close modal on delete
+  // Can probably be done through useEffect and onDeleteAccount success
+
+  // TODO: Need to add error handling to delete account
   const handleDeleteAccount = () => {
     onDeleteAccount('bankAccount');
-    //   .then(() => {
-    //   setIsModalOpen(false);
-    // });
   };
 
   const removeCardModalTitle = intl.formatMessage({ id: 'SavedBankDetails.removeCardModalTitle' });
