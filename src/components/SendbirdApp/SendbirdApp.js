@@ -49,8 +49,12 @@ const SendbirdApp = props => {
   };
 
   useEffect(() => {
-    currentChannelUrl !== '' && onFetchOtherUserListing(currentChannelUrl, userId, accessToken);
-    currentChannelUrl !== '' && onFetchUserFromChannelUrl(currentChannelUrl, userId, accessToken);
+    currentChannelUrl !== '' &&
+      accessToken &&
+      onFetchOtherUserListing(currentChannelUrl, userId, accessToken);
+    currentChannelUrl !== '' &&
+      accessToken &&
+      onFetchUserFromChannelUrl(currentChannelUrl, userId, accessToken);
   }, [currentChannelUrl]);
 
   useEffect(() => {
