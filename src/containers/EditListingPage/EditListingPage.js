@@ -21,10 +21,7 @@ import {
   stripeAccountClearError,
   getStripeConnectAccountLink,
 } from '../../ducks/stripeConnectAccount.duck';
-import {
-  createStripeSetupIntent,
-  stripeCustomer,
-} from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
+import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
 // import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
 import { handleCardSetup } from '../../ducks/stripe.duck';
 import {
@@ -97,7 +94,6 @@ export const EditListingPageComponent = props => {
     onProfileImageUpload,
     onUpdateProfile,
     uploadInProgress,
-    onCreateStripeSetupIntent,
     onHandleCardSetup,
     fetchStripeCustomer,
     // onSavePaymentMethod,
@@ -289,7 +285,6 @@ export const EditListingPageComponent = props => {
           onProfileImageUpload={onProfileImageUpload}
           image={image}
           uploadInProgress={uploadInProgress}
-          onCreateSetupIntent={onCreateStripeSetupIntent}
           fetchStripeCustomer={fetchStripeCustomer}
           // onSavePaymentMethod={onSavePaymentMethod}
           addPaymentMethodError={addPaymentMethodError}
@@ -497,7 +492,6 @@ const mapDispatchToProps = dispatch => ({
   onChange: () => dispatch(clearUpdatedTab()),
   onProfileImageUpload: data => dispatch(uploadImage(data)),
   onUpdateProfile: data => dispatch(updateProfile(data)),
-  onCreateStripeSetupIntent: params => dispatch(createStripeSetupIntent(params)),
   onHandleCardSetup: params => dispatch(handleCardSetup(params)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
   // onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>

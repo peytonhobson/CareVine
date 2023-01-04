@@ -4,13 +4,17 @@
  * It's also handled separately in handleSubmit function.
  */
 import React, { Component } from 'react';
+
 import { func, object, string } from 'prop-types';
-import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
+
+import { propTypes } from '../../util/types';
+import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import config from '../../config';
 import { Form, PrimaryButton, FieldTextInput, StripePaymentAddress } from '../../components';
-import css from './PaymentMethodsForm.module.css';
+
+import css from './SaveCreditCardForm.module.css';
 
 /**
  * Translate a Stripe API error object.
@@ -170,17 +174,17 @@ class PaymentMethodsForm extends Component {
   paymentForm(formRenderProps) {
     const {
       className,
-      rootClassName,
-      inProgress: submitInProgress,
+      createCreditCardError,
+      createStripeCustomerError,
+      deletePaymentMethodError,
+      form,
       formId,
+      handleCardSetupError,
+      handleSubmit,
+      inProgress: submitInProgress,
       intl,
       invalid,
-      handleSubmit,
-      addPaymentMethodError,
-      deletePaymentMethodError,
-      createStripeCustomerError,
-      handleCardSetupError,
-      form,
+      rootClassName,
     } = formRenderProps;
 
     this.finalFormAPI = form;
@@ -194,7 +198,7 @@ class PaymentMethodsForm extends Component {
     });
 
     const hasErrors =
-      addPaymentMethodError ||
+      createCreditCardError ||
       deletePaymentMethodError ||
       createStripeCustomerError ||
       handleCardSetupError;
@@ -285,10 +289,10 @@ class PaymentMethodsForm extends Component {
 
 PaymentMethodsForm.defaultProps = {
   className: null,
+  createCreditCardError: null,
   rootClassName: null,
   inProgress: false,
   onSubmit: null,
-  addPaymentMethodError: null,
   deletePaymentMethodError: null,
   createStripeCustomerError: null,
   handleCardSetupError: null,
@@ -297,9 +301,9 @@ PaymentMethodsForm.defaultProps = {
 
 PaymentMethodsForm.propTypes = {
   formId: string,
+  createCreditCardError: propTypes.error,
   intl: intlShape.isRequired,
   onSubmit: func,
-  addPaymentMethodError: object,
   deletePaymentMethodError: object,
   createStripeCustomerError: object,
   handleCardSetupError: object,

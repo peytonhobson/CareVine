@@ -22,19 +22,18 @@ const SavedCardDetails = props => {
   const [active, setActive] = useState(false);
 
   const {
-    rootClassName,
-    className,
-    intl,
     card,
-    onDeleteCard,
-    onManageDisableScrolling,
+    className,
     deletePaymentMethodInProgress,
     deletePaymentMethodSuccess,
-    stripeCustomer,
+    intl,
+    onDeleteCard,
     onFetchDefaultPayment,
-    hideContent,
+    onManageDisableScrolling,
     onSelect,
+    rootClassName,
     selected,
+    stripeCustomer,
   } = props;
 
   const expirationYear = (card && card.expirationYear) || (card && card.exp_year);
@@ -173,29 +172,42 @@ const SavedCardDetails = props => {
 };
 
 SavedCardDetails.defaultProps = {
-  rootClassName: null,
-  className: null,
   card: null,
-  onChange: null,
-  onDeleteCard: null,
+  className: null,
   deletePaymentMethodInProgress: false,
+  deletePaymentMethodSuccess: false,
+  intl: null,
+  onDeleteCard: null,
+  onFetchDefaultPayment: null,
   onManageDisableScrolling: null,
+  onSelect: null,
+  rootClassName: null,
+  selected: false,
+  stripeCustomer: null,
 };
 
 SavedCardDetails.propTypes = {
-  rootClassName: string,
+  card: shape({
+    brand: string.isRequired,
+    exp_month: number.isRequired,
+    exp_year: number.isRequired,
+    last4: string.isRequired,
+  }),
   className: string,
-  intl: intlShape.isRequired,
-  // card: shape({
-  //   brand: string.isRequired,
-  //   expirationMonth: number.isRequired,
-  //   expirationYear: number.isRequired,
-  //   last4Digits: string.isRequired,
-  // }),
-  onChange: func,
-  onDeleteCard: func,
-  onManageDisableScrolling: func,
   deletePaymentMethodInProgress: bool,
+  deletePaymentMethodSuccess: bool,
+  intl: intlShape.isRequired,
+  onDeleteCard: func,
+  onFetchDefaultPayment: func,
+  onManageDisableScrolling: func,
+  onSelect: func,
+  rootClassName: string,
+  selected: bool,
+  stripeCustomer: shape({
+    attributes: shape({
+      stripeCustomerId: string.isRequired,
+    }),
+  }),
 };
 
 export default injectIntl(SavedCardDetails);

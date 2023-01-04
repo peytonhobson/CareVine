@@ -1,37 +1,31 @@
 import React, { useState, useEffect } from 'react';
 
-import { bool, func, number, shape, string } from 'prop-types';
+import { bool, func, shape, string } from 'prop-types';
 import classNames from 'classnames';
 
 import { injectIntl, intlShape } from '../../util/reactIntl';
-import {
-  IconArrowHead,
-  IconBank,
-  IconClose,
-  Button,
-  InlineTextButton,
-  Modal,
-} from '../../components';
+import { IconBank, IconClose, Button, InlineTextButton, Modal } from '../../components';
+import { propTypes } from '../../util/types';
+
 import css from './SavedBankDetails.module.css';
 
 const SavedBankDetails = props => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [active, setActive] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
-    rootClassName,
-    className,
-    intl,
     bank,
-    onChange,
-    onDeleteAccount,
-    onManageDisableScrolling,
+    className,
+    deletePaymentMethodError,
     deletePaymentMethodInProgress,
     deletePaymentMethodSuccess,
-    hideContent,
-    onSelect,
-    selected,
+    intl,
+    onDeleteAccount,
     onFetchDefaultPayment,
+    onManageDisableScrolling,
+    onSelect,
+    rootClassName,
+    selected,
     stripeCustomer,
   } = props;
 
@@ -54,32 +48,41 @@ const SavedBankDetails = props => {
     if (deletePaymentMethodSuccess && !!stripeCustomer) {
       setIsModalOpen(false);
       onFetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId);
+      setError(null);
     }
   }, [deletePaymentMethodSuccess]);
+
+  useEffect(() => {
+    if (deletePaymentMethodError) {
+      setError(deletePaymentMethodError);
+    }
+  }, [deletePaymentMethodError]);
 
   const handleOpenDeleteModal = () => {
     setIsModalOpen(true);
   };
 
-  // TODO: Close modal on delete
-  // Can probably be done through useEffect and onDeleteAccount success
-
-  // TODO: Need to add error handling to delete account
   const handleDeleteAccount = () => {
     onDeleteAccount('bankAccount');
+    setError(null);
   };
 
-  const removeCardModalTitle = intl.formatMessage({ id: 'SavedBankDetails.removeCardModalTitle' });
+  const removeCardModalTitle = intl.formatMessage({
+    id: 'SavedBankDetails.removeBankAccountModalTitle',
+  });
   const removeCardModalContent = intl.formatMessage(
-    { id: 'SavedBankDetails.removeCardModalContent' },
+    { id: 'SavedBankDetails.removeBankAccountModalContent' },
     { last4Digits }
   );
   const cancel = intl.formatMessage({ id: 'SavedBankDetails.cancel' });
-  const removeCard = intl.formatMessage({ id: 'SavedBankDetails.removeCard' });
-  const deletePaymentMethod = intl.formatMessage({ id: 'SavedBankDetails.deletePaymentMethod' });
+  const removeBankAccount = intl.formatMessage({ id: 'SavedBankDetails.removeBankAccount' });
 
   const classes = classNames(rootClassName || css.root, className);
   const menuLabelClasses = classNames(css.menuLabel, selected && css.menuLabelActive);
+
+  const deletePaymentMethodErrorMessage = intl.formatMessage({
+    id: 'SavedBankDetails.deletePaymentMethodError',
+  });
 
   return (
     <div className={classes} onClick={() => onSelect && onSelect('bankAccount')}>
@@ -92,7 +95,7 @@ const SavedBankDetails = props => {
       {onDeleteAccount ? (
         <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
           <IconClose rootClassName={css.closeIcon} size="small" />
-          {deletePaymentMethod}
+          {removeBankAccount}
         </InlineTextButton>
       ) : null}
 
@@ -109,17 +112,23 @@ const SavedBankDetails = props => {
         >
           <div>
             <div className={css.modalTitle}>{removeCardModalTitle}</div>
-            <p className={css.modalMessage}>{removeCardModalContent}</p>
+            <div className={css.modalMessage}>
+              <p>{removeCardModalContent}</p>
+              <p className={css.errorMessage}>{error && deletePaymentMethodErrorMessage}</p>
+            </div>
             <div className={css.modalButtonsWrapper}>
               <div
-                onClick={() => setIsModalOpen(false)}
-                className={css.cancelCardDelete}
+                onClick={() => {
+                  setError(null);
+                  setIsModalOpen(false);
+                }}
+                className={css.cancelAccountDelete}
                 tabIndex="0"
               >
                 {cancel}
               </div>
               <Button onClick={handleDeleteAccount} inProgress={deletePaymentMethodInProgress}>
-                {removeCard}
+                {removeBankAccount}
               </Button>
             </div>
           </div>
@@ -130,29 +139,42 @@ const SavedBankDetails = props => {
 };
 
 SavedBankDetails.defaultProps = {
-  rootClassName: null,
+  bank: null,
   className: null,
-  bankAccount: null,
-  onChange: null,
-  onDeleteAccount: null,
+  deletePaymentMethodError: null,
   deletePaymentMethodInProgress: false,
+  deletePaymentMethodSuccess: false,
+  intl: null,
+  onDeleteAccount: null,
+  onFetchDefaultPayment: null,
   onManageDisableScrolling: null,
+  onSelect: null,
+  rootClassName: null,
+  selected: false,
+  stripeCustomer: null,
 };
 
 SavedBankDetails.propTypes = {
-  rootClassName: string,
+  bank: shape({
+    bank_name: string.isRequired,
+    last4: string.isRequired,
+  }),
   className: string,
-  intl: intlShape.isRequired,
-  // card: shape({
-  //   brand: string.isRequired,
-  //   expirationMonth: number.isRequired,
-  //   expirationYear: number.isRequired,
-  //   last4Digits: string.isRequired,
-  // }),
-  onChange: func,
-  onDeleteAccount: func,
-  onManageDisableScrolling: func,
+  deletePaymentMethodError: propTypes.error,
   deletePaymentMethodInProgress: bool,
+  deletePaymentMethodSuccess: bool,
+  intl: intlShape.isRequired,
+  onDeleteAccount: func,
+  onFetchDefaultPayment: func,
+  onManageDisableScrolling: func,
+  onSelect: func,
+  rootClassName: string,
+  selected: bool,
+  stripeCustomer: shape({
+    attributes: shape({
+      stripeCustomerId: string.isRequired,
+    }),
+  }),
 };
 
 export default injectIntl(SavedBankDetails);
