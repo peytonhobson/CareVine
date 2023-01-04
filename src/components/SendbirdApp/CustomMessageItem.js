@@ -44,16 +44,8 @@ const CustomMessageItem = props => {
         <RequestForPaymentMessage
           message={message}
           userId={userId}
-          emojiContainer={emojiContainer}
-          onDeleteMessage={onDeleteMessage}
-          onUpdateMessage={onUpdateMessage}
-          sdk={sdk}
-          currentChannel={currentChannel}
-          updateLastMessage={updateLastMessage}
           onOpenPaymentModal={onOpenPaymentModal}
-          currentUser={currentUser}
-          otherUser={otherUser}
-          isPaymentModalOpen={isPaymentModalOpen}
+          changedOtherUser={otherUser}
         />
       );
     } else if (message.customType === NOTIFY_FOR_PAYMENT) {
@@ -97,6 +89,7 @@ const CustomMessageItem = props => {
     sdk,
     updateLastMessage,
     userId,
+    otherUser,
   ]);
 
   return (

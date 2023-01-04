@@ -15,7 +15,7 @@ import '@sendbird/uikit-react/dist/index.css';
 import css from './index.module.css';
 
 const NotifyForPaymentMessage = props => {
-  const { message, userId, onOpenPaymentModal } = props;
+  const { message, userId, onOpenPaymentModal, changedOtherUser } = props;
 
   const sendbirdContext = useSendbirdStateContext();
   const channelContext = useChannelContext();
@@ -74,6 +74,8 @@ const NotifyForPaymentMessage = props => {
     };
   }, []);
 
+  console.log(otherUser);
+
   return (
     <div className={baseClass}>
       {message.sender.userId === userId ? (
@@ -100,9 +102,9 @@ const NotifyForPaymentMessage = props => {
                 rootClassName={css.paymentButtonRoot}
                 channelUrl={channelContext.channelUrl}
                 className={css.paymentButton}
-                disabled={isPaymentModalOpen || !otherUser}
+                disabled={isPaymentModalOpen || (!otherUser && !changedOtherUser)}
                 onOpenPaymentModal={onOpenPaymentModal}
-                otherUser={otherUser}
+                otherUser={otherUser || changedOtherUser}
                 sendbirdContext={sendbirdContext}
               ></PaymentButton>
             </div>
