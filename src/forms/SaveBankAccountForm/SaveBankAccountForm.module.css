@@ -1,9 +1,11 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
-  display: flex;
-  flex-direction: column;
-  margin-top: 40px;
+  margin-top: auto;
+  margin-top: 48px;
+  @media (--viewportLarge) {
+    margin-top: 72px;
+  }
 }
 
 .card {
@@ -163,14 +165,6 @@
 
 .field {
   margin-top: 24px;
-}
-
-.submitContainer {
-  margin-top: auto;
-  margin-top: 48px;
-  @media (--viewportLarge) {
-    margin-top: 72px;
-  }
 }
 
 .infoText {

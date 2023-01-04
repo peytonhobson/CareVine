@@ -30,19 +30,17 @@ export const CREATE_CREDIT_CARD_ERROR = 'app/paymentMethods/CREATE_CREDIT_CARD_E
 // ================ Reducer ================ //
 
 const initialState = {
-  addPaymentMethodInProgress: null,
-  addPaymentMethodError: null,
-  deletePaymentMethodInProgress: null,
-  deletePaymentMethodError: null,
-  deletePaymentMethodSuccess: false,
-  createStripeCustomerInProgress: null,
-  createStripeCustomerError: null,
-  createBankAccountInProgress: false,
   createBankAccountError: null,
+  createBankAccountInProgress: false,
   createBankAccountSuccess: false,
-  createCreditCardInProgress: false,
   createCreditCardError: null,
+  createCreditCardInProgress: false,
   createCreditCardSuccess: false,
+  createStripeCustomerError: null,
+  createStripeCustomerInProgress: null,
+  deletePaymentMethodError: null,
+  deletePaymentMethodInProgress: null,
+  deletePaymentMethodSuccess: false,
   stripeCustomer: null,
 };
 
@@ -268,6 +266,7 @@ export const addPaymentMethod = stripePaymentMethodId => (dispatch, getState, sd
 
 export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) => {
   dispatch(deletePaymentMethodRequest());
+
   return stripeDetachPaymentMethod({ paymentMethodId })
     .then(response => {
       dispatch(deletePaymentMethodSuccess());

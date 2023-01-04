@@ -1,26 +1,29 @@
 import React, { useEffect } from 'react';
+
+import { bool, func, shape, string } from 'prop-types';
+import { injectIntl, intlShape } from '../../util/reactIntl';
 import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
-import * as validators from '../../util/validators';
-import { Form as FinalForm } from 'react-final-form';
 import { FormattedMessage } from 'react-intl';
 
+import { Button } from '../../components';
+import { propTypes } from '../../util/types';
+
 import css from './SaveBankAccountForm.module.css';
-import { StripeBankAccountTokenInputField, Form, Button, IconSpinner } from '../../components';
 
 const SaveBankAccountForm = props => {
+  const stripe = useStripe();
+
   const {
     className,
-    onSubmit,
-    onCreateBankAccount,
-    createBankAccountInProgress,
     createBankAccountError,
+    createBankAccountInProgress,
     createBankAccountSuccess,
-    onFetchDefaultPayment,
-    defaultPaymentFetched,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
     currentUser,
+    fetchDefaultPaymentInProgress,
+    intl,
+    onFetchDefaultPayment,
+    onSubmit,
   } = props;
 
   const stripeCustomer = currentUser && currentUser.stripeCustomer;
@@ -31,24 +34,19 @@ const SaveBankAccountForm = props => {
     }
   }, [createBankAccountSuccess, stripeCustomer]);
 
-  const stripe = useStripe();
+  const classes = classNames(css.root, className);
 
-  // Need to make not null
-  const classes = null;
-
-  // Need to fix this
-  const hasErrors = null;
+  const createBankAccountErrorMessage = intl.formatMessage({
+    id: 'SaveBankAccountForm.createBankAccountErrorMessage',
+  });
+  const hasErrors = !!createBankAccountError;
 
   const submitInProgress = createBankAccountInProgress || fetchDefaultPaymentInProgress;
   const submitDisabled = !stripe || !currentUser;
 
   return (
-    <div className={css.submitContainer}>
-      {hasErrors && (
-        <span className={css.errorMessage}>
-          {hasErrors.message ? hasErrors.message : errorMessage}
-        </span>
-      )}
+    <div className={classes}>
+      {hasErrors && <span className={css.errorMessage}>{createBankAccountErrorMessage}</span>}
       <Button
         className={css.submitButton}
         type="submit"
@@ -62,4 +60,28 @@ const SaveBankAccountForm = props => {
   );
 };
 
-export default SaveBankAccountForm;
+SaveBankAccountForm.defaultProps = {
+  className: null,
+  createBankAccountError: null,
+  createBankAccountInProgress: false,
+  createBankAccountSuccess: false,
+  currentUser: null,
+  fetchDefaultPaymentInProgress: false,
+  intl: null,
+  onFetchDefaultPayment: null,
+  onSubmit: null,
+};
+
+SaveBankAccountForm.propTypes = {
+  className: string,
+  createBankAccountError: propTypes.error,
+  createBankAccountInProgress: bool,
+  createBankAccountSuccess: bool,
+  currentUser: propTypes.currentUser,
+  fetchDefaultPaymentInProgress: bool,
+  intl: intlShape.isRequired,
+  onFetchDefaultPayment: func,
+  onSubmit: func,
+};
+
+export default injectIntl(SaveBankAccountForm);

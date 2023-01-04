@@ -21,12 +21,12 @@ export { default as PasswordChangeForm } from './PasswordChangeForm/PasswordChan
 export { default as PasswordRecoveryForm } from './PasswordRecoveryForm/PasswordRecoveryForm';
 export { default as PasswordResetForm } from './PasswordResetForm/PasswordResetForm';
 export { default as PaymentDetailsForm} from './PaymentDetailsForm/PaymentDetailsForm'
-export { default as PaymentMethodsForm } from './PaymentMethodsForm/PaymentMethodsForm';
 export { default as PaymentForm } from './PaymentForm/PaymentForm';
 export { default as PriceFilterForm } from './PriceFilterForm/PriceFilterForm';
 export { default as ProfileSettingsForm } from './ProfileSettingsForm/ProfileSettingsForm';
 export { default as ReviewForm } from './ReviewForm/ReviewForm';
-export {default as SaveBankAccountForm} from './SaveBankAccountForm/SaveBankAccountForm';
+export { default as SaveBankAccountForm } from './SaveBankAccountForm/SaveBankAccountForm';
+export { default as SaveCreditCardForm } from './SaveCreditCardForm/SaveCreditCardForm';
 export { default as SendMessageForm } from './SendMessageForm/SendMessageForm';
 export { default as SignupForm } from './SignupForm/SignupForm';
 export { default as StripePaymentForm } from './StripePaymentForm/StripePaymentForm';
