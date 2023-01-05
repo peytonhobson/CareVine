@@ -103,11 +103,13 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   // Example: extend default img directive with custom domain
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
-  const { connectSrc = [self] } = defaultDirectives;
+  const { connectSrc = [self], imgSrc = [self] } = defaultDirectives;
   const customConnectSrc = connectSrc.concat('*.sendbird.com').concat('wss://*.sendbird.com');
+  const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
 
   const customDirectives = {
     connectSrc: customConnectSrc,
+    imgSrc: customImgSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //

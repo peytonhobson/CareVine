@@ -74,8 +74,6 @@ const NotifyForPaymentMessage = props => {
     };
   }, []);
 
-  console.log(otherUser);
-
   return (
     <div className={baseClass}>
       {message.sender.userId === userId ? (
