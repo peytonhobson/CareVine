@@ -47,7 +47,7 @@ const SimpleAccordion = props => {
   }));
 
   return (
-    <Accordion expanded={isExpanded} onChange={handleChange}>
+    <Accordion className={className} expanded={isExpanded} onChange={handleChange}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>{label}</AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>

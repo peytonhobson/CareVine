@@ -238,7 +238,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const createPaymentIntent = (amount, userId, stripeCustomerId, savePayment) => (
+export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard) => (
   dispatch,
   getState,
   sdk
@@ -257,7 +257,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
   };
 
   if (stripeCustomerId) {
-    return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, savePayment })
+    return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, isCard })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
   } else {
@@ -267,7 +267,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, savePaymen
           amount,
           userId,
           stripeCustomerId: res.attributes.stripeCustomerId,
-          savePayment,
+          isCard,
         });
       })
       .then(res => handleSuccess(res))
@@ -437,7 +437,7 @@ export const confirmPayment = (
   if (!!useDefaultMethod) {
     const clientSecret = elements._commonOptions.clientSecret.clientSecret;
 
-    if (methodType === 'card') {
+    if (methodType === 'creditCard') {
       return stripe
         .confirmCardPayment(clientSecret, {
           payment_method: defaultMethodId,

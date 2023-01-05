@@ -5,6 +5,10 @@
   height: 100%;
 }
 
+/* .mainContainer {
+  margin-bottom: 1rem;
+} */
+
 .currencyInput {
   display: flex;
   text-align: center;
@@ -83,4 +87,50 @@
 }
 .notFoundError {
   color: var(--attentionColor);
+}
+
+.buttonGroupRoot {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-top: 1rem;
+  height: 3rem;
+}
+
+.buttonGroup {
+  composes: button buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+  min-height: 0;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+}
+
+.buttonGroupSelected {
+  composes: button buttonFont buttonText buttonColors from global;
+
+  min-height: 0;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+}
+
+.accordion {
+  margin-bottom: 1rem;
 }
