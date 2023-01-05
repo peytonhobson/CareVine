@@ -71,7 +71,9 @@ const StripePaymentModalComponent = props => {
   const [clientSecret, setClientSecret] = useState(null);
   const [rootClass, setRootClass] = useState(classNames(css.root, css.single));
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
+  //TODO: Move this to load data?
   useEffect(() => {
     fetchStripeCustomer();
   }, []);
@@ -95,13 +97,17 @@ const StripePaymentModalComponent = props => {
   }, [paymentIntent, confirmPaymentSuccess]);
 
   const onHandleReviewPayment = values => {
-    const { amount } = values;
+    const { amount, paymentMethod } = values;
+
+    setSelectedPaymentMethod(paymentMethod);
+
+    const isCard = paymentMethod === 'creditCard';
 
     if (currentUser.stripeCustomer && provider) {
       const { stripeCustomerId } = currentUser.stripeCustomer.attributes;
-      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId);
+      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId, isCard);
     } else {
-      onCreatePaymentIntent(amount.amount, provider.id);
+      onCreatePaymentIntent(amount.amount, provider.id, null, isCard);
     }
   };
 
@@ -263,6 +269,7 @@ const StripePaymentModalComponent = props => {
                         onManageDisableScrolling={onManageDisableScrolling}
                         onPaymentSubmit={onHandlePaymentSubmit}
                         paymentIntent={paymentIntent}
+                        selectedPaymentMethod={selectedPaymentMethod}
                       />
                     </Elements>
                   )}
@@ -413,8 +420,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId) =>
-    dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId)),
+  onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId, isCard) =>
+    dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId, isCard)),
   onConfirmPayment: (
     stripe,
     elements,

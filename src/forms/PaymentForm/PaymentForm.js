@@ -11,6 +11,9 @@ import css from './PaymentForm.module.css';
 const STRIPE_INVALID_REQUEST_ERROR = 'StripeInvalidRequestError';
 const STRIPE_CARD_ERROR = 'card_error';
 
+const BANK_ACCOUNT_LABEL = 'Bank Account';
+const CREDIT_CARD_LABEL = 'Credit Card';
+
 const PaymentForm = props => {
   const {
     confirmPaymentError,
@@ -26,6 +29,7 @@ const PaymentForm = props => {
     onManageDisableScrolling,
     onPaymentSubmit,
     paymentIntent,
+    selectedPaymentMethod,
   } = props;
 
   const stripe = useStripe();
@@ -35,8 +39,6 @@ const PaymentForm = props => {
   const [isElementsComplete, setIsElementsComplete] = useState(false);
   const [showDefaultPayment, setShowDefaultPayment] = useState(false);
   const [saveDefaultPayment, setSaveDefaultPayment] = useState(false);
-  const [activeDefaultPaymentMethod, setActiveDefaultPaymentMethod] = useState(null);
-  const [activeNewPaymentMethod, setActiveNewPaymentMethod] = useState('bankAccount');
 
   useEffect(() => {
     onFetchDefaultPayment(
@@ -51,7 +53,6 @@ const PaymentForm = props => {
       (!!defaultPaymentMethods.card || !!defaultPaymentMethods.bankAccount)
     ) {
       setShowDefaultPayment(true);
-      setActiveDefaultPaymentMethod(!!defaultPaymentMethods.card ? 'card' : 'bankAccount');
     }
   }, [defaultPaymentMethods]);
 
@@ -59,22 +60,10 @@ const PaymentForm = props => {
     if (element && element.complete) {
       setIsElementsComplete(true);
     }
-
-    if (element && element.value.type === 'us_bank_account') {
-      setActiveNewPaymentMethod('bankAccount');
-    }
-
-    if (element && element.value.type === 'card') {
-      setActiveNewPaymentMethod('card');
-    }
   };
 
   const handleDefaultCheckboxChange = event => {
     setSaveDefaultPayment(event.target.checked);
-  };
-
-  const handleSelectedDefaultPaymentChange = methodType => {
-    setActiveDefaultPaymentMethod(methodType);
   };
 
   const onHandleSubmit = e => {
@@ -86,9 +75,13 @@ const PaymentForm = props => {
       return;
     }
 
-    const methodType = showDefaultPayment ? activeDefaultPaymentMethod : activeNewPaymentMethod;
-
-    onPaymentSubmit(stripe, elements, saveDefaultPayment, showDefaultPayment, methodType);
+    onPaymentSubmit(
+      stripe,
+      elements,
+      saveDefaultPayment,
+      showDefaultPayment,
+      selectedPaymentMethod
+    );
   };
 
   const displayErrorMessage = confirmPaymentError => {
@@ -97,7 +90,7 @@ const PaymentForm = props => {
     let errorId = null;
     switch (confirmPaymentError.type) {
       case STRIPE_CARD_ERROR:
-        errorId = 'PaymentForm.stripeCardErrorMessage';
+        errorId = 'PaymentForm.stripePaymentMethodErrorMessage';
         break;
       case STRIPE_INVALID_REQUEST_ERROR:
         errorId = 'PaymentForm.stripeInvalidRequestErrorMessage';
@@ -123,7 +116,6 @@ const PaymentForm = props => {
 
   const paymentElementOptions = {
     layout: 'tabs',
-    paymentMethodOrder: ['us_bank_account', 'card'],
     fields: {
       billingDetails: {
         address: {
@@ -144,6 +136,16 @@ const PaymentForm = props => {
   const submitDisabled = submitInProgress || (!isElementsComplete && !showDefaultPayment);
 
   const buttonMessage = intl.formatMessage({ id: 'PaymentForm.paymentButtonMessage' });
+  const selectedPaymentMethodLabel =
+    selectedPaymentMethod === 'creditCard' ? CREDIT_CARD_LABEL : BANK_ACCOUNT_LABEL;
+  const saveDefaultPaymentCheckboxLabel = intl.formatMessage(
+    {
+      id: 'PaymentForm.saveDefaultPaymentCheckboxLabel',
+    },
+    {
+      paymentMethod: selectedPaymentMethodLabel.toLocaleLowerCase(),
+    }
+  );
 
   return (
     <Form onSubmit={onHandleSubmit} className={css.root}>
@@ -152,26 +154,29 @@ const PaymentForm = props => {
           {showDefaultPayment ? (
             <div className={css.defaultPaymentMethodsContainer}>
               <p className={css.defaultPaymentTitle}>
-                <FormattedMessage id="PaymentForm.useDefaultMethod" />
+                <FormattedMessage
+                  id="PaymentForm.useDefaultMethodTitle"
+                  values={{
+                    paymentMethod: selectedPaymentMethodLabel,
+                  }}
+                />
               </p>
-              {card && (
+              {card && selectedPaymentMethod === 'creditCard' && (
                 <SavedCardDetails
                   rootClassName={css.defaultMethod}
                   card={ensurePaymentMethodCard(card)}
                   onManageDisableScrolling={onManageDisableScrolling}
                   hideContent={true}
-                  onSelect={handleSelectedDefaultPaymentChange}
-                  selected={activeDefaultPaymentMethod === 'card'}
+                  selected={true}
                 />
               )}
-              {bankAccount && (
+              {bankAccount && selectedPaymentMethod === 'bankAccount' && (
                 <SavedBankDetails
                   rootClassName={css.defaultMethod}
                   bank={bankAccount}
                   onManageDisableScrolling={onManageDisableScrolling}
                   hideContent={true}
-                  onSelect={handleSelectedDefaultPaymentChange}
-                  selected={activeDefaultPaymentMethod === 'bankAccount'}
+                  selected={true}
                 />
               )}
               <p
@@ -181,11 +186,22 @@ const PaymentForm = props => {
                   setSaveDefaultPayment(false);
                 }}
               >
-                <FormattedMessage id="PaymentForm.useDifferentCard" />
+                <FormattedMessage
+                  id="PaymentForm.useDifferentPaymentMethod"
+                  values={{
+                    paymentMethod: selectedPaymentMethodLabel.toLocaleLowerCase(),
+                  }}
+                />
               </p>
             </div>
           ) : (
             <Fragment>
+              <p className={css.defaultPaymentTitle}>
+                <FormattedMessage
+                  id="PaymentForm.newPaymentMethodTitle"
+                  values={{ paymentMethod: selectedPaymentMethodLabel }}
+                />
+              </p>
               <PaymentElement
                 options={paymentElementOptions}
                 id="payment-element"
@@ -198,7 +214,7 @@ const PaymentForm = props => {
               <Checkbox
                 id="saveDefault"
                 name="saveDefault"
-                label="Save this payment method"
+                label={saveDefaultPaymentCheckboxLabel}
                 onChange={handleDefaultCheckboxChange}
                 value={saveDefaultPayment}
                 className={css.checkbox}
@@ -207,7 +223,10 @@ const PaymentForm = props => {
               {defaultPaymentMethods &&
                 (defaultPaymentMethods.card || defaultPaymentMethods.bankAccount) && (
                   <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
-                    <FormattedMessage id="PaymentForm.useDefaultCard" />
+                    <FormattedMessage
+                      id="PaymentForm.useDefaultPaymentMethod"
+                      values={{ paymentMethod: selectedPaymentMethodLabel.toLocaleLowerCase() }}
+                    />
                   </p>
                 )}
             </Fragment>

@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from '../../util/reactIntl';
 import {
   Form,
   Button,
+  ButtonGroup,
   FieldCurrencyInput,
   SimpleAccordion,
   UserListingPreview,
@@ -23,6 +24,8 @@ const { Money } = sdkTypes;
 const MINIMUM_AMOUNT = 1000;
 const STRIPE_INVALID_REQUEST_ERROR = 'StripeInvalidRequestError';
 const STRIPE_CARD_ERROR = 'StripeCardError';
+const CARD_FEE_PERCENTAGE = 0.06;
+const BANK_FEE_PERCENTAGE = 0.03;
 
 const PaymentDetailsForm = props => (
   <FinalForm
@@ -34,6 +37,7 @@ const PaymentDetailsForm = props => (
         createPaymentIntentError,
         createPaymentIntentInProgress,
         createPaymentIntentSuccess,
+        form,
         handleSubmit,
         intl,
         onEditPaymentDetails,
@@ -63,13 +67,24 @@ const PaymentDetailsForm = props => (
       const submitInProgress = createPaymentIntentInProgress;
       const submitDisabled = submitInProgress || clientSecret;
 
-      const totalAmountNumber = values.amount && values.amount.amount + values.amount.amount * 0.06;
+      const totalAmountNumber =
+        values.amount &&
+        values.amount.amount +
+          values.amount.amount *
+            (form.getState().values.paymentMethod === 'creditCard'
+              ? CARD_FEE_PERCENTAGE
+              : BANK_FEE_PERCENTAGE);
       const totalAmountMoney = totalAmountNumber
         ? new Money(totalAmountNumber, 'USD')
         : new Money(0, 'USD');
       const totalAmount = formatMoney(intl, totalAmountMoney);
 
-      const transactionFeeNumber = values.amount && values.amount.amount * 0.06;
+      const transactionFeeNumber =
+        values.amount &&
+        values.amount.amount *
+          (form.getState().values.paymentMethod === 'creditCard'
+            ? CARD_FEE_PERCENTAGE
+            : BANK_FEE_PERCENTAGE);
       const transactionFeeMoney = transactionFeeNumber
         ? new Money(transactionFeeNumber, 'USD')
         : new Money(0, 'USD');
@@ -90,6 +105,10 @@ const PaymentDetailsForm = props => (
         } else {
           setAccordionLabel(showAccordionLabel);
         }
+      };
+
+      const handlePaymentMethodChange = key => {
+        form.change('paymentMethod', key);
       };
 
       let createPaymentIntentErrorMessage = null;
@@ -116,10 +135,24 @@ const PaymentDetailsForm = props => (
         );
       }
 
+      const buttonGroupOptions = [
+        { key: 'bankAccount', label: 'Bank Account' },
+        { key: 'creditCard', label: 'Credit Card' },
+      ];
+
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.mainContainer}>
             {provider && <UserListingPreview otherUser={provider} intl={intl} />}
+            <ButtonGroup
+              className={css.buttonGroup}
+              disabled={submitDisabled}
+              initialSelect="bankAccount"
+              onChange={handlePaymentMethodChange}
+              options={buttonGroupOptions}
+              rootClassName={css.buttonGroupRoot}
+              selectedClassName={css.buttonGroupSelected}
+            />
             <div className={css.amountContainer}>
               <label className={css.amountLabel}>{amountLabel}</label>
               <FieldCurrencyInput
@@ -137,7 +170,11 @@ const PaymentDetailsForm = props => (
               <div className={css.amountDisplay}>Total:</div>
               <div className={css.amountDisplay}>{totalAmount}</div>
             </div>
-            <SimpleAccordion label={accordionLabel} onExpand={onHandleExpandPaymentDetails}>
+            <SimpleAccordion
+              className={css.accordion}
+              label={accordionLabel}
+              onExpand={onHandleExpandPaymentDetails}
+            >
               <div className={css.amountDisplayContainer}>
                 <div className={css.amountDisplay}>Transaction Fee:</div>
                 <div className={css.amountDisplay}>{transactionFee}</div>
