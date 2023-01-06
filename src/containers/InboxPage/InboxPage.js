@@ -119,7 +119,7 @@ export const InboxPageComponent = props => {
           mobileRootClassName={css.mobileTopbar}
         />
       </LayoutWrapperTopbar>
-      <LayoutWrapperMain className={css.wrapper}>
+      <LayoutWrapperMain>
         {!generateAccessTokenError ? (
           userId && !generateAccessTokenInProgress ? (
             <SBProvider
@@ -173,9 +173,6 @@ export const InboxPageComponent = props => {
           />
         )}
       </LayoutWrapperMain>
-      <LayoutWrapperFooter>
-        <Footer />
-      </LayoutWrapperFooter>
     </Page>
   );
 };

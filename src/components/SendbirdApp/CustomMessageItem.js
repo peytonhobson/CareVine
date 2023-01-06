@@ -76,6 +76,7 @@ const CustomMessageItem = props => {
           sdk={sdk}
           currentChannel={currentChannel}
           updateLastMessage={updateLastMessage}
+          handleScroll={() => {}}
         />
       );
     }
