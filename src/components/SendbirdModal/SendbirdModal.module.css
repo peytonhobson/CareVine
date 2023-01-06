@@ -58,3 +58,7 @@
   height: 50px;
   stroke-width: 3px;
 }
+
+.error {
+  color: var(--failColor);
+}

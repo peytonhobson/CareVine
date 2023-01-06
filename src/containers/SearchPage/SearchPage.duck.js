@@ -346,7 +346,10 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
             dispatch(fetchChannelError(e));
           }
         }
-        dispatch(fetchChannelSuccess(channel));
+
+        if (channel) {
+          dispatch(fetchChannelSuccess(channel));
+        }
       });
     })
     .catch(e => {
