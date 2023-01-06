@@ -108,10 +108,13 @@ const SendbirdModal = props => {
                 <CustomMessageInput afterSendMessageMaybe={redirectToInbox} />
               )}
             />
+          ) : fetchChannelError ? (
+            <div className={css.error}>
+              <FormattedMessage id="SendbirdModal.fetchChannelErrorMessage" />
+            </div>
           ) : (
             <IconSpinner className={css.spinner} />
           )}
-          {fetchChannelError && <div>{JSON.stringify(fetchChannelError)}</div>}
         </div>
       </SBProvider>
     </Modal>
