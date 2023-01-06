@@ -1,5 +1,5 @@
 .customizedApp {
-  height: calc(100vh - var(--topbarHeight));
+  height: calc(100vh - var(--topbarHeightDesktop));
   width: 100vw;
 }
 
