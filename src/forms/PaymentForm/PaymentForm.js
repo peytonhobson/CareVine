@@ -50,7 +50,8 @@ const PaymentForm = props => {
   useEffect(() => {
     if (
       !!defaultPaymentMethods &&
-      (!!defaultPaymentMethods.card || !!defaultPaymentMethods.bankAccount)
+      ((selectedPaymentMethod === 'creditCard' && !!defaultPaymentMethods.card) ||
+        (selectedPaymentMethod === 'bankAccount' && !!defaultPaymentMethods.bankAccount))
     ) {
       setShowDefaultPayment(true);
     }
