@@ -15,7 +15,7 @@ const InfoTooltip = props => {
   });
 
   return (
-    <Tooltip title={title} disableInteractive>
+    <Tooltip title={title} disableInteractive placement="top">
       <IconButton>
         <InfoIcon />
       </IconButton>
