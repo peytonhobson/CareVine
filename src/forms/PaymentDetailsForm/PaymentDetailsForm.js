@@ -12,6 +12,7 @@ import {
   FieldCurrencyInput,
   SimpleAccordion,
   UserListingPreview,
+  InfoTooltip,
 } from '../../components';
 import config from '../../config';
 import { formatMoney } from '../../util/currency';
@@ -140,6 +141,16 @@ const PaymentDetailsForm = props => (
         { key: 'creditCard', label: 'Credit Card' },
       ];
 
+      const infoToolTipTitle = (
+        <div>
+          <p>Transaction fees are charged by the payment processor and are not refundable.</p>
+          <ul style={{ textAlign: 'center' }}>
+            <li>Bank Account: 3%</li>
+            <li>Credit Card: 6%</li>
+          </ul>
+        </div>
+      );
+
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.mainContainer}>
@@ -175,8 +186,11 @@ const PaymentDetailsForm = props => (
               label={accordionLabel}
               onExpand={onHandleExpandPaymentDetails}
             >
-              <div className={css.amountDisplayContainer}>
-                <div className={css.amountDisplay}>Transaction Fee:</div>
+              <div className={css.feeDisplayContainer}>
+                <div className={css.feeTooltipContainer}>
+                  <InfoTooltip title={infoToolTipTitle} />
+                  <div className={css.amountDisplay}>Transaction Fee:</div>
+                </div>
                 <div className={css.amountDisplay}>{transactionFee}</div>
               </div>
             </SimpleAccordion>

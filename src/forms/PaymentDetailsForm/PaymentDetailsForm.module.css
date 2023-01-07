@@ -47,7 +47,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding-inline: 10%;
+  padding-inline: 11%;
   background: var(--matterColorNegative);
   border-radius: var(--buttonBorder);
   border: none;
@@ -56,6 +56,22 @@
 .amountDisplay {
   font-weight: 600;
   color: var(--matterColor);
+}
+
+.feeDisplayContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-right: 11%;
+  background: var(--matterColorNegative);
+  border-radius: var(--buttonBorder);
+  border: none;
+}
+
+.feeTooltipContainer {
+  display: flex;
+  align-items: center;
 }
 
 .submitButton {
