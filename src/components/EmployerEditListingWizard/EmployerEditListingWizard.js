@@ -13,30 +13,22 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import {
-  ensureCurrentUser,
-  ensureListing,
-  ensureStripeCustomer,
-  ensurePaymentMethodCard,
-} from '../../util/data';
+import { ensureCurrentUser, ensureListing } from '../../util/data';
 import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
 import { Modal, NamedRedirect, Tabs } from '..';
-import { PaymentMethodsForm } from '../../forms';
 
 import EditListingWizardTab, {
-  CARETYPES,
-  AVAILABILITY,
+  CARE_NEEDS,
+  CARE_SCHEDULE,
   LOCATION,
   PRICING,
   CARE_RECEIVER_DETAILS,
   CAREGIVER_DETAILS,
   PROFILE_PICTURE,
+  JOB_DESCRIPTION,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import css from './EmployerEditListingWizard.module.css';
-
-// Show availability calendar only if environment variable availabilityEnabled is true
-const availabilityMaybe = config.enableAvailability ? [AVAILABILITY] : [];
 
 // You can reorder these panels.
 // Note 1: You need to change save button translations for new listing flow
@@ -45,35 +37,35 @@ const availabilityMaybe = config.enableAvailability ? [AVAILABILITY] : [];
 // Note 3: in FTW-hourly template we don't use the POLICY tab so it's commented out.
 // If you want to add a free text field to your listings you can enable the POLICY tab
 export const TABS = [
-  CARETYPES,
+  CARE_NEEDS,
   LOCATION,
+  CARE_SCHEDULE,
   PRICING,
-  ...availabilityMaybe,
   CARE_RECEIVER_DETAILS,
   CAREGIVER_DETAILS,
+  JOB_DESCRIPTION,
   PROFILE_PICTURE,
 ];
 
 // Tabs are horizontal in small screens
 const MAX_HORIZONTAL_NAV_SCREEN_WIDTH = 1023;
 
-const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
-const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
-
 const tabLabel = (intl, tab) => {
   let key = null;
-  if (tab === CARETYPES) {
-    key = 'EmployerEditListingWizard.tabLabelCareTypes';
+  if (tab === CARE_NEEDS) {
+    key = 'EmployerEditListingWizard.tabLabelCareNeeds';
   } else if (tab === LOCATION) {
     key = 'EmployerEditListingWizard.tabLabelLocation';
   } else if (tab === PRICING) {
     key = 'EmployerEditListingWizard.tabLabelPricing';
-  } else if (tab === AVAILABILITY) {
-    key = 'EmployerEditListingWizard.tabLabelAvailability';
+  } else if (tab === CARE_SCHEDULE) {
+    key = 'EmployerEditListingWizard.tabLabelCareSchedule';
   } else if (tab === CARE_RECEIVER_DETAILS) {
     key = 'EmployerEditListingWizard.tabLabelCareRecipientDetails';
   } else if (tab === CAREGIVER_DETAILS) {
     key = 'EmployerEditListingWizard.tabLabelCaregiverDetails';
+  } else if (tab === JOB_DESCRIPTION) {
+    key = 'EmployerEditListingWizard.tabLabelJobDescription';
   } else if (tab === PROFILE_PICTURE) {
     key = 'EmployerEditListingWizard.tabLabelProfilePicture';
   }
@@ -90,29 +82,23 @@ const tabLabel = (intl, tab) => {
  * @return true if tab / step is completed.
  */
 const tabCompleted = (tab, listing) => {
-  const { availabilityPlan, description, geolocation, title, publicData } = listing.attributes;
+  const { geolocation, title, publicData } = listing.attributes;
 
   switch (tab) {
-    case CARETYPES:
+    case CARE_NEEDS:
       return !!(publicData && publicData.careTypes);
     case LOCATION:
       return !!(geolocation && publicData && publicData.location);
-    case PRICING:
-      return !!(publicData && publicData.rates);
-    case AVAILABILITY:
+    case CARE_SCHEDULE:
       return !!(publicData && publicData.availabilityPlan);
+    case PRICING:
+      return !!(publicData && publicData.pricing);
     case CARE_RECEIVER_DETAILS:
-      return !!(
-        publicData &&
-        publicData.recipientRelationship &&
-        publicData.gender &&
-        publicData.age &&
-        publicData.recipientDetails
-      );
+      return !!(publicData && publicData.careRecipients);
     case CAREGIVER_DETAILS:
       return !!(publicData && publicData.idealCaregiverDetails);
-    case PROFILE_PICTURE:
-      return !!(images && images.length > 0);
+    case JOB_DESCRIPTION:
+      return !!(title && title !== 'Title');
     default:
       return false;
   }
@@ -146,11 +132,6 @@ const scrollToTab = (tabPrefix, tabId) => {
   }
 };
 
-const RedirectToStripe = ({ redirectFn }) => {
-  useEffect(redirectFn('custom_account_verification'), []);
-  return <FormattedMessage id="EmployerEditListingWizard.redirectingToStripe" />;
-};
-
 // Create a new or edit listing through EmployerEditListingWizard
 class EmployerEditListingWizard extends Component {
   constructor(props) {
@@ -161,18 +142,10 @@ class EmployerEditListingWizard extends Component {
 
     this.state = {
       draftId: null,
-      showPayoutDetails: false,
       portalRoot: null,
-      isSubmittingPayment: false,
-      cardState: null,
     };
     this.handleCreateFlowTabScrolling = this.handleCreateFlowTabScrolling.bind(this);
     this.handlePublishListing = this.handlePublishListing.bind(this);
-    this.handlePayoutModalClose = this.handlePayoutModalClose.bind(this);
-    this.handlePayoutSubmit = this.handlePayoutSubmit.bind(this);
-    // this.handlePaymentMethodsSubmit = this.handlePaymentMethodsSubmit.bind(this);
-    this.getClientSecret = this.getClientSecret.bind(this);
-    this.getPaymentParams = this.getPaymentParams.bind(this);
   }
 
   handleCreateFlowTabScrolling(shouldScroll) {
@@ -182,9 +155,6 @@ class EmployerEditListingWizard extends Component {
   handlePublishListing(id) {
     const { onPublishListingDraft, currentUser, onChangeMissingInfoModal, history } = this.props;
 
-    const hasDefaultPaymentMethod =
-      currentUser && currentUser.stripeCustomer && currentUser.stripeCustomer.defaultPaymentMethod;
-
     onPublishListingDraft(id);
 
     if (
@@ -193,121 +163,10 @@ class EmployerEditListingWizard extends Component {
       !history.location.pathname.includes('create-profile')
     ) {
       onChangeMissingInfoModal(EMAIL_VERIFICATION);
-    } else if (!!!hasDefaultPaymentMethod) {
-      this.setState({
-        draftId: id,
-        showPayoutDetails: true,
-      });
     } else if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
     }
   }
-
-  handlePayoutModalClose() {
-    const { history } = this.props;
-
-    this.setState({ showPayoutDetails: false });
-    if (history.location.pathname.includes('create-profile')) {
-      history.push('/signup');
-    } else {
-      history.push('/l');
-    }
-  }
-
-  // TODO: Change for payment methods
-  handlePayoutSubmit(values) {
-    this.props
-      .onPayoutDetailsSubmit(values)
-      .then(response => {
-        this.props.onManageDisableScrolling('EmployerEditListingWizard.payoutModal', false);
-      })
-      .catch(() => {
-        // do nothing
-      });
-  }
-
-  getClientSecret(setupIntent) {
-    return setupIntent && setupIntent.attributes ? setupIntent.attributes.clientSecret : null;
-  }
-  getPaymentParams(currentUser, formValues) {
-    const { name, addressLine1, addressLine2, postal, state, city, country } = formValues;
-    const addressMaybe =
-      addressLine1 && postal
-        ? {
-            address: {
-              city: city,
-              country: country,
-              line1: addressLine1,
-              line2: addressLine2,
-              postal_code: postal,
-              state: state,
-            },
-          }
-        : {};
-    const billingDetails = {
-      name,
-      email: ensureCurrentUser(currentUser).attributes.email,
-      ...addressMaybe,
-    };
-
-    const paymentParams = {
-      payment_method_data: {
-        billing_details: billingDetails,
-      },
-    };
-
-    return paymentParams;
-  }
-
-  // handlePaymentMethodsSubmit(params) {
-  //   const {
-  //     onCreateSetupIntent,
-  //     currentUser,
-  //     onHandleCardSetup,
-  //     onSavePaymentMethod,
-  //     fetchStripeCustomer,
-  //     history,
-  //   } = this.props;
-
-  //   this.setState({ isSubmittingPayment: true });
-  //   const ensuredCurrentUser = ensureCurrentUser(currentUser);
-  //   const stripeCustomer = ensuredCurrentUser.stripeCustomer;
-  //   const { stripe, card, formValues } = params;
-
-  //   onCreateSetupIntent()
-  //     .then(setupIntent => {
-  //       const stripeParams = {
-  //         stripe,
-  //         card,
-  //         setupIntentClientSecret: this.getClientSecret(setupIntent),
-  //         paymentParams: this.getPaymentParams(currentUser, formValues),
-  //       };
-
-  //       return onHandleCardSetup(stripeParams);
-  //     })
-  //     .then(result => {
-  //       const newPaymentMethod = result.setupIntent.payment_method;
-  //       // Note: stripe.handleCardSetup might return an error inside successful call (200), but those are rejected in thunk functions.
-
-  //       return onSavePaymentMethod(stripeCustomer, newPaymentMethod);
-  //     })
-  //     .then(() => {
-  //       // Update currentUser entity and its sub entities: stripeCustomer and defaultPaymentMethod
-  //       fetchStripeCustomer();
-  //       this.setState({ isSubmittingPayment: false });
-  //       this.setState({ cardState: 'default' });
-
-  //       if (history.location.pathname.includes('create-profile')) {
-  //         history.push('/signup');
-  //       } else {
-  //         history.push('/l');
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //       this.setState({ isSubmittingPayment: false });
-  //     });
-  // }
 
   render() {
     const {
@@ -327,9 +186,6 @@ class EmployerEditListingWizard extends Component {
       onProfileImageUpload,
       onUpdateProfile,
       uploadInProgress,
-      handleCardSetupError,
-      addPaymentMethodError,
-      createStripeCustomerError,
       ...rest
     } = this.props;
 
@@ -378,22 +234,6 @@ class EmployerEditListingWizard extends Component {
     };
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const currentUserLoaded = !!ensuredCurrentUser.id;
-
-    const rootURL = config.canonicalRootURL;
-    const routes = routeConfiguration();
-    const { returnURLType, ...pathParams } = params;
-
-    const userName = currentUserLoaded
-      ? `${ensuredCurrentUser.attributes.profile.firstName} ${ensuredCurrentUser.attributes.profile.lastName}`
-      : null;
-
-    const initalValuesForStripePayment = { name: userName };
-
-    const hasDefaultPaymentMethod =
-      currentUser &&
-      ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId &&
-      ensurePaymentMethodCard(currentUser.stripeCustomer.defaultPaymentMethod).id;
 
     return (
       <div className={classes}>
@@ -424,7 +264,7 @@ class EmployerEditListingWizard extends Component {
                 onManageDisableScrolling={onManageDisableScrolling}
                 pageName={pageName}
                 profileImage={profileImage}
-                currentUser={currentUser}
+                currentUser={ensuredCurrentUser}
                 onProfileImageUpload={onProfileImageUpload}
                 uploadInProgress={uploadInProgress}
                 onUpdateProfile={onUpdateProfile}
@@ -432,41 +272,6 @@ class EmployerEditListingWizard extends Component {
             );
           })}
         </Tabs>
-        {/* <Modal
-          id="EmployerEditListingWizard.payoutModal"
-          isOpen={this.state.showPayoutDetails}
-          onClose={this.handlePayoutModalClose}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-        >
-          <div className={css.modalPayoutDetailsWrapper}>
-            <h1 className={css.modalTitle}>
-              <FormattedMessage id="EmployerEditListingWizard.payoutModalTitleOneMoreThing" />
-              <br />
-              <FormattedMessage id="EmployerEditListingWizard.payoutModalTitlePayoutPreferences" />
-            </h1>
-            {!currentUserLoaded ? (
-              <FormattedMessage id="StripePayoutPage.loadingData" />
-            ) : (
-              <>
-                <p className={css.modalMessage}>
-                  <FormattedMessage id="EmployerEditListingWizard.payoutModalInfo" />
-                </p>
-                <PaymentMethodsForm
-                  className={css.paymentForm}
-                  formId="PaymentMethodsForm"
-                  initialValues={initalValuesForStripePayment}
-                  onSubmit={this.handlePaymentMethodsSubmit}
-                  hasDefaultPaymentMethod={hasDefaultPaymentMethod}
-                  addPaymentMethodError={addPaymentMethodError}
-                  createStripeCustomerError={createStripeCustomerError}
-                  handleCardSetupError={handleCardSetupError}
-                  inProgress={this.state.isSubmittingPayment}
-                />
-              </>
-            )}
-          </div>
-        </Modal> */}
       </div>
     );
   }

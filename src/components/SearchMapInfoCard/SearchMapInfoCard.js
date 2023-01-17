@@ -18,7 +18,8 @@ const ListingCard = props => {
   const { className, clickHandler, intl, isInCarousel, listing, urlToListing } = props;
 
   const { title } = listing.attributes;
-  const { rates } = listing.attributes.publicData;
+  const { pricing } = listing.attributes.publicData;
+  const rates = pricing.rates || [0, 0];
 
   const minPriceMoney = new Money(rates[0], 'USD');
   const maxPriceMoney = new Money(rates[1], 'USD');

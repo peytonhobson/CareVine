@@ -24,3 +24,7 @@
 .priceCurrencyInvalid {
   color: var(--failColor);
 }
+
+.payRangeText {
+  color: var(--marketplaceColor);
+}

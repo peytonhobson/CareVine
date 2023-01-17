@@ -84,13 +84,13 @@
   flex-grow: 1;
 
   @media (--viewportLarge) {
-    padding: 88px 36px 82px 59px;
+    padding: 88px 36px 82px 59px !important;
     border-left: 1px solid var(--matterColorNegative);
     background-color: var(--matterColorLight);
   }
 
   @media (--viewportLargeWithPaddings) {
-    padding: 88px calc((100% - 1056px) / 2) 82px 59px;
+    padding: 88px calc((100% - 1056px) / 2) 82px 59px !important;
   }
 }
 

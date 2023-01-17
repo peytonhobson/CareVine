@@ -44,15 +44,24 @@ class EditListingPhotosPanel extends Component {
       <FormattedMessage
         id="EditListingPhotosPanel.title"
         values={{
-          listingTitle: (
-            <ListingLink listing={listing}>
-              <FormattedMessage id="EditListingPhotosPanel.listingTitle" />
-            </ListingLink>
+          profilePicture: (
+            <span className={css.profilePictureText}>
+              <FormattedMessage id="EditListingPhotosPanel.profilePicture" />
+            </span>
           ),
         }}
       />
     ) : (
-      <FormattedMessage id="EditListingPhotosPanel.createListingTitle" />
+      <FormattedMessage
+        id="EditListingPhotosPanel.createListingTitle"
+        values={{
+          profilePicture: (
+            <span className={css.profilePictureText}>
+              <FormattedMessage id="EditListingPhotosPanel.profilePicture" />
+            </span>
+          ),
+        }}
+      />
     );
 
     return (

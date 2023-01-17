@@ -10,8 +10,15 @@ import {
   autocompletePlaceSelected,
   composeValidators,
 } from '../../util/validators';
-import { Form, LocationAutocompleteInputField, Button, FieldAddSubtract } from '../../components';
-import { CAREGIVER } from '../../util/constants';
+import {
+  Form,
+  LocationAutocompleteInputField,
+  Button,
+  FieldAddSubtract,
+  Checkbox,
+  FieldCheckbox,
+} from '../../components';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './EditListingLocationForm.module.css';
 
@@ -73,6 +80,10 @@ export const EditListingLocationFormComponent = props => (
         </p>
       ) : null;
 
+      const nearPublicTransitText = intl.formatMessage({
+        id: 'EditListingLocationForm.nearPublicTransitText',
+      });
+
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
@@ -82,23 +93,26 @@ export const EditListingLocationFormComponent = props => (
         <Form className={classes} onSubmit={handleSubmit}>
           {errorMessage}
           {errorMessageShowListing}
-          <LocationAutocompleteInputField
-            className={css.locationAddress}
-            inputClassName={css.locationAutocompleteInput}
-            predictionsClassName={css.predictionsRoot}
-            validClassName={css.validLocation}
-            name="location"
-            label={addressTitleRequiredMessage}
-            placeholder={addressPlaceholderMessage}
-            useDefaultPredictions={false}
-            useCurrentLocation={true}
-            format={identity}
-            valueFromForm={values.location}
-            validate={composeValidators(
-              autocompleteSearchRequired(addressRequiredMessage),
-              autocompletePlaceSelected(addressNotRecognizedMessage)
-            )}
-          />
+          <div className={css.inputContainer}>
+            <LocationAutocompleteInputField
+              className={css.locationAddress}
+              inputClassName={css.locationAutocompleteInput}
+              predictionsClassName={css.predictionsRoot}
+              validClassName={css.validLocation}
+              name="location"
+              label={addressTitleRequiredMessage}
+              placeholder={addressPlaceholderMessage}
+              useDefaultPredictions={false}
+              useCurrentLocation={true}
+              format={identity}
+              valueFromForm={values.location}
+              validate={composeValidators(
+                autocompleteSearchRequired(addressRequiredMessage),
+                autocompletePlaceSelected(addressNotRecognizedMessage)
+              )}
+              usePostalCode={true}
+            />
+          </div>
           {userType === CAREGIVER && (
             <FieldAddSubtract
               id={formId ? `${formId}.travelDistance` : 'travelDistance'}
@@ -106,6 +120,14 @@ export const EditListingLocationFormComponent = props => (
               startingCount={values.travelDistance}
               countLabel={distanceCountLabel}
               label={distanceLabel}
+            />
+          )}
+          {userType === EMPLOYER && (
+            <FieldCheckbox
+              id={formId ? `${formId}.nearPublicTransit` : 'nearPublicTransit'}
+              name="nearPublicTransit"
+              label={nearPublicTransitText}
+              value="nearPublicTransit"
             />
           )}
           <Button

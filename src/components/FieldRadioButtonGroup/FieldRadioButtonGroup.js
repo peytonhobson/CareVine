@@ -7,7 +7,7 @@
  *
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { arrayOf, bool, node, shape, string } from 'prop-types';
 import classNames from 'classnames';
 import { FieldArray } from 'react-final-form-arrays';
@@ -16,10 +16,13 @@ import { FieldRadioButton, ValidationError } from '..';
 import css from './FieldRadioButtonGroup.module.css';
 
 const FieldRadioButtonRenderer = props => {
-  const { className, rootClassName, label, id, fields, options, required, meta } = props;
+  const { className, rootClassName, label, id, fields, options, required, meta, ...rest } = props;
 
-  const classes = classNames(rootClassName || css.root, className);
-  const listClasses = css.list;
+  const { initialSelect, inline } = props;
+
+  const classes = classNames(rootClassName, inline ? css.inlineRoot : css.root);
+  const listClasses = className || (inline ? css.inlineList : css.list);
+  const itemClasses = inline ? css.inlineItem : css.item;
 
   return (
     <fieldset className={classes}>
@@ -33,7 +36,7 @@ const FieldRadioButtonRenderer = props => {
         {options.map((option, index) => {
           const fieldId = `${id}.${option.key}`;
           return (
-            <li key={fieldId} className={css.item}>
+            <li key={fieldId} className={itemClasses}>
               <FieldRadioButton
                 id={fieldId.concat(index)}
                 name={fields.name}

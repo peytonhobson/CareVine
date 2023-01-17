@@ -11,6 +11,12 @@
   margin-top: 1rem;
 }
 
+.inlineList {
+  margin: 0;
+  margin-top: 1rem;
+  display: flex;
+}
+
 .twoColumns {
   @media (--viewportMedium) {
     columns: 2;
@@ -25,6 +31,17 @@
 
   @media (--viewportMedium) {
     padding: 4px 0;
+  }
+}
+
+.inlineItem {
+  padding: 2px 1rem 0 0;
+
+  /* Fix broken multi-column layout in Chrome */
+  page-break-inside: avoid;
+
+  @media (--viewportMedium) {
+    padding: 4px 2rem 0 0;
   }
 }
 

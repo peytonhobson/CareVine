@@ -9,7 +9,6 @@ const RangeSliderInput = props => {
 
   useEffect(() => {
     input.onChange(handles);
-    console.log(handles);
   }, []);
 
   const currentHandles = Array.isArray(value) ? value : handles;

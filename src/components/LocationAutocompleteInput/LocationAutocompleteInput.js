@@ -20,8 +20,6 @@ class LocationAutocompleteInputComponent extends Component {
       const isLoading = !prevState.isLoading;
       return { isLoading };
     });
-
-    console.log(this.state.isLoading);
   };
 
   render() {

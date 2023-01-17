@@ -44,6 +44,8 @@ const CheckboxComponent = props => {
     useSuccessColor,
     onChange,
     value,
+    checked,
+    onClick,
     ...rest
   } = props;
 
@@ -58,8 +60,15 @@ const CheckboxComponent = props => {
 
   return (
     <span className={classes}>
-      <input id={id} type="checkbox" className={css.input} onChange={onChange} value={value} />
-      <label htmlFor={id} className={css.label}>
+      <input
+        id={id}
+        type="checkbox"
+        className={css.input}
+        onChange={onChange}
+        value={value}
+        checked={checked}
+      />
+      <label htmlFor={id} className={css.label} onClick={onClick}>
         <span className={css.checkboxWrapper}>
           <IconCheckbox className={svgClassName} {...successColorVariantMaybe} />
         </span>

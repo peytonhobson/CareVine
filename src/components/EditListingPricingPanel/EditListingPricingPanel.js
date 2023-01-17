@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
@@ -10,6 +10,7 @@ import { types as sdkTypes } from '../../util/sdkLoader';
 import config from '../../config';
 
 import css from './EditListingPricingPanel.module.css';
+import { isStartDateSelected } from '../FieldDateRangeInput/DateRangeInput.helpers';
 
 const { Money } = sdkTypes;
 
@@ -28,6 +29,8 @@ const EditListingPricingPanel = props => {
     errors,
   } = props;
 
+  const [submittedValues, setSubmittedValues] = useState(null);
+
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
   const { publicData } = currentListing.attributes;
@@ -37,21 +40,34 @@ const EditListingPricingPanel = props => {
     <FormattedMessage
       id="EditListingPricingPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingPricingPanel.listingTitle" />
-          </ListingLink>
+        payRange: (
+          <span className={css.payRangeText}>
+            <FormattedMessage id="EditListingPricingPanel.preferredPayRange" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingPricingPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingPricingPanel.createListingTitle"
+      values={{
+        payRange: (
+          <span className={css.payRangeText}>
+            <FormattedMessage id="EditListingPricingPanel.preferredPayRange" />
+          </span>
+        ),
+      }}
+    />
   );
 
-  const rates = publicData && publicData.rates;
+  const pricing = publicData && publicData.pricing;
+  const { rates, priceTime } = pricing || {};
 
   const initialValues = {
-    rates: rates && [rates[0] / 100, rates[1] / 100],
+    rates: submittedValues
+      ? submittedValues.rates.map(rate => rate / 100)
+      : rates && rates.map(rate => rate / 100),
+    priceTime: submittedValues ? submittedValues.priceTime : priceTime || 'hourly',
   };
 
   // const priceCurrencyValid =
@@ -63,15 +79,22 @@ const EditListingPricingPanel = props => {
       className={css.form}
       initialValues={initialValues}
       onSubmit={values => {
-        const { rates } = values;
+        const { rates, priceTime } = values;
+
+        setSubmittedValues(values);
+
         rates[0] *= 100;
         rates[1] *= 100;
 
         const updateValues = {
           publicData: {
-            rates,
+            pricing: {
+              rates,
+              priceTime,
+            },
           },
         };
+
         onSubmit(updateValues);
       }}
       onChange={onChange}

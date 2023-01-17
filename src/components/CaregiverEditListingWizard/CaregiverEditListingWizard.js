@@ -20,8 +20,8 @@ import { StripeConnectAccountForm } from '../../forms';
 import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
 import EditListingWizardTab, {
-  CARETYPES,
-  AVAILABILITY,
+  CARE_NEEDS,
+  CARE_SCHEDULE,
   BIO,
   EXPERIENCE_LEVEL,
   ADDITIONAL_DETAILS,
@@ -32,9 +32,6 @@ import EditListingWizardTab, {
 } from '../EditListingWizardTab/EditListingWizardTab';
 import css from './CaregiverEditListingWizard.module.css';
 
-// Show availability calendar only if environment variable availabilityEnabled is true
-const availabilityMaybe = config.enableAvailability ? [AVAILABILITY] : [];
-
 // You can reorder these panels.
 // Note 1: You need to change save button translations for new listing flow
 // Note 2: Ensure that draft listing is created after the first panel
@@ -42,13 +39,13 @@ const availabilityMaybe = config.enableAvailability ? [AVAILABILITY] : [];
 // Note 3: in FTW-hourly template we don't use the POLICY tab so it's commented out.
 // If you want to add a free text field to your listings you can enable the POLICY tab
 export const TABS = [
-  CARETYPES,
+  CARE_NEEDS,
   BIO,
   EXPERIENCE_LEVEL,
   ADDITIONAL_DETAILS,
   LOCATION,
   PRICING,
-  ...availabilityMaybe,
+  CARE_SCHEDULE,
   BACKGROUND_CHECK,
   PROFILE_PICTURE,
 ];
@@ -61,7 +58,7 @@ const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
 
 const tabLabel = (intl, tab) => {
   let key = null;
-  if (tab === CARETYPES) {
+  if (tab === CARE_NEEDS) {
     key = 'CaregiverEditListingWizard.tabLabelCareTypes';
   } else if (tab === BIO) {
     key = 'CaregiverEditListingWizard.tabLabelBio';
@@ -73,8 +70,8 @@ const tabLabel = (intl, tab) => {
     key = 'CaregiverEditListingWizard.tabLabelLocation';
   } else if (tab === PRICING) {
     key = 'CaregiverEditListingWizard.tabLabelPricing';
-  } else if (tab === AVAILABILITY) {
-    key = 'CaregiverEditListingWizard.tabLabelAvailability';
+  } else if (tab === CARE_SCHEDULE) {
+    key = 'CaregiverEditListingWizard.tabLabelCareSchedule';
   } else if (tab === BACKGROUND_CHECK) {
     key = 'CaregiverEditListingWizard.tabLabelBackgroundCheck';
   } else if (tab === PROFILE_PICTURE) {
@@ -104,7 +101,7 @@ const tabCompleted = (tab, listing) => {
   const images = listing.images;
 
   switch (tab) {
-    case CARETYPES:
+    case CARE_NEEDS:
       return !!(publicData && publicData.careTypes);
     case BIO:
       return !!description;
@@ -121,8 +118,8 @@ const tabCompleted = (tab, listing) => {
         publicData.travelDistance != undefined
       );
     case PRICING:
-      return !!(publicData && publicData.rates);
-    case AVAILABILITY:
+      return !!(publicData && publicData.pricing);
+    case CARE_SCHEDULE:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
       return !!metadata;

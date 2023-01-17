@@ -21,3 +21,117 @@
     padding: 1px 0 7px 0;
   }
 }
+
+.whoNeedsCareText {
+  color: var(--marketplaceColor);
+}
+
+.addRecipientButton {
+  composes: h4 from global;
+  padding: 1px 0 5px 0;
+  margin: 0 0 24px 0;
+  display: flex;
+}
+
+.noExceptions {
+  composes: h4 from global;
+  display: flex;
+  align-items: center;
+  margin: 0 0 24px 0;
+}
+
+@media (--viewportMedium) {
+  .addRecipientButton {
+    padding: 3px 0 5px 0;
+    margin: 0 0 72px 0;
+  }
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  justify-content: center;
+
+  @media (--viewportLarge) {
+    margin-top: 6vh;
+  }
+}
+
+.submitButtonWrapper {
+  composes: marketplaceModalBottomWrapper from global;
+
+  text-align: left;
+}
+
+.recipients {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 600px;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-top: 0;
+  margin-bottom: 11px;
+
+  & > .recipient {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
+
+.recipient {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px 12px 0px;
+}
+
+.recipientTraitsContainer {
+  display: inline-grid;
+  width: 60%;
+  padding-left: 30px;
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.recipientTrait {
+  color: var(--matterColorAnti);
+  white-space: nowrap;
+}
+
+.recipientLabel {
+  color: var(--marketplaceColor);
+}
+
+.recipientHeader {
+  display: flex;
+  flex-direction: row;
+}
+
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+}
+
+.removeRecipientButton {
+  padding: 0 24px 0 24px;
+  border: 0;
+  cursor: pointer;
+
+  &:hover .removeIcon {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+}
+
+@media (--viewportMedium) {
+  .recipients {
+    margin-bottom: 8px;
+  }
+
+  .removeRecipientButton {
+    padding: 0 24px 0 24px;
+  }
+}

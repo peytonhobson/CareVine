@@ -48,8 +48,20 @@ const FieldRadioButtonComponent = props => {
     id,
     label,
     showAsRequired,
+    onChange,
+    input,
     ...rest
   } = props;
+
+  // const handleChange = (value, item) => {
+  //   // If "onChange" callback is passed through the props,
+  //   // it can notify the parent when the content of the input has changed.
+  //   if (onChange) {
+  //     onChange(value);
+  //   }
+  //   // Notify Final Form that the input has changed.
+  //   input.onChange(value);
+  // };
 
   const classes = classNames(rootClassName || css.root, className);
   const radioButtonProps = {
@@ -57,6 +69,7 @@ const FieldRadioButtonComponent = props => {
     className: css.input,
     component: 'input',
     type: 'radio',
+    // onChange: handleChange,
     ...rest,
   };
 

@@ -129,6 +129,134 @@ export const filters = [
         { key: 'transportation', label: 'Transportation' },
         { key: 'specializedCare', label: 'Specialized care' },
         { key: 'mobilityAssistance', label: 'Mobility assistance' },
+        { key: 'memoryCare', label: 'Memory Care' },
+      ],
+    },
+  },
+  {
+    id: 'detailedCareNeeds',
+    label: 'Detailed Care Needs',
+    type: 'SelectMultipleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_detailedCareNeeds', 'pub_skills'],
+    config: {
+      // Optional modes: 'has_all', 'has_any'
+      // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
+      searchMode: 'has_all',
+
+      // "key" is the option you see in Flex Console.
+      // "label" is set here for this web app's UI only.
+      // Note: label is not added through the translation files
+      // to make filter customizations a bit easier.
+      options: [
+        {
+          key: 'hospice',
+          label: 'Hospice Care',
+        },
+        {
+          key: 'memory',
+          label: 'Memory Care',
+        },
+        {
+          key: 'medicationAdministration',
+          label: 'Medication Administration',
+        },
+        {
+          key: 'incontinence',
+          label: 'Incontinence Care',
+        },
+        {
+          key: 'insulinAdministration',
+          label: 'Insulin Administration',
+        },
+        {
+          key: 'bedConfined',
+          label: 'Bed Confined Care',
+        },
+        {
+          key: 'dressing',
+          label: 'Dressing Assistance',
+        },
+        {
+          key: 'hygiene',
+          label: 'Hygiene Care',
+        },
+        {
+          key: 'showering',
+          label: 'Showering Assistance',
+        },
+        {
+          key: 'transfer',
+          label: 'Transfer Assistance',
+        },
+        {
+          key: 'walking',
+          label: 'Walking Assistance',
+        },
+        {
+          key: 'cpr_firstAid',
+          label: 'CPR/First Aid',
+        },
+        {
+          key: 'mealPrep',
+          label: 'Meal Preparation',
+        },
+        {
+          key: 'cleaning',
+          label: 'Cleaning/House care',
+        },
+        {
+          key: 'catheter',
+          label: 'Catheter Care',
+        },
+        {
+          key: 'documentation',
+          label: 'Documentation',
+        },
+        {
+          key: 'medMgmt',
+          label: 'Medication Management',
+        },
+        {
+          key: 'medDocumentation',
+          label: 'Medication Documentation',
+        },
+        {
+          key: 'fallPrevention',
+          label: 'Fall Prevention',
+        },
+        {
+          key: 'bowel',
+          label: 'Bowel Care',
+        },
+        {
+          key: 'colostomy',
+          label: 'Colostomy Care',
+        },
+        {
+          key: 'diabetesMgmt',
+          label: 'Diabetes Management',
+        },
+        {
+          key: 'feedingTube',
+          label: 'Feeding Tube Administration',
+        },
+        {
+          key: 'hoyerLift',
+          label: 'Hoyer Lift',
+        },
+        {
+          key: 'woundcare',
+          label: 'Basic Wound Care',
+        },
+        {
+          key: 'vitalSign',
+          label: 'Vital Sign Monitoring',
+        },
+        {
+          key: 'exercise',
+          label: 'Exercise Assistance',
+        },
       ],
     },
   },

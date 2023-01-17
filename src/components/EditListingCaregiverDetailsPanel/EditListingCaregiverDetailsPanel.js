@@ -37,19 +37,29 @@ const EditListingCaregiverDetailsPanel = props => {
     <FormattedMessage
       id="EditListingCaregiverDetailsPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingCaregiverDetailsPanel.listingTitle" />
-          </ListingLink>
+        idealCaregiver: (
+          <span className={css.caregiverTitleText}>
+            <FormattedMessage id="EditListingCaregiverDetailsPanel.idealCaregiver" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingCaregiverDetailsPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingCaregiverDetailsPanel.createListingTitle"
+      values={{
+        idealCaregiver: (
+          <span className={css.caregiverTitleText}>
+            <FormattedMessage id="EditListingCaregiverDetailsPanel.idealCaregiver" />
+          </span>
+        ),
+      }}
+    />
   );
 
-  const idealCaregiverDetails = publicData.idealCaregiverDetails;
-  const initialValues = { ...idealCaregiverDetails };
+  const idealCaregiverDetails =
+    publicData.idealCaregiverDetails !== ' ' ? publicData.idealCaregiverDetails : null;
+  const initialValues = { idealCaregiverDetails };
 
   const formProps = {
     className: css.form,
@@ -71,7 +81,7 @@ const EditListingCaregiverDetailsPanel = props => {
         saveActionMsg={submitButtonText}
         required={true}
         onSubmit={values => {
-          const { idealCaregiverDetails } = values;
+          const { idealCaregiverDetails = ' ' } = values;
 
           const updatedValues = {
             publicData: {

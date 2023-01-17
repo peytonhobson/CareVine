@@ -7,6 +7,7 @@ import { ensureOwnListing } from '../../util/data';
 import { ListingLink } from '../../components';
 import { EditListingLocationForm } from '../../forms';
 import { CAREGIVER } from '../../util/constants';
+import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import css from './EditListingLocationPanel.module.css';
 
@@ -34,14 +35,17 @@ class EditListingLocationPanel extends Component {
     const travelDistanceFieldPresent = publicData && publicData.travelDistance;
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
 
+    const nearBusLine = publicData && publicData.nearBusLine ? publicData.nearBusLine : null;
+
     return {
       location: locationFieldsPresent
         ? {
-            search: location,
+            search: location.zipcode,
             selectedPlace: { location, origin: geolocation },
           }
         : null,
       travelDistance: travelDistanceFieldPresent ? travelDistance : 15,
+      nearBusLine,
     };
   }
 
@@ -70,15 +74,24 @@ class EditListingLocationPanel extends Component {
       <FormattedMessage
         id="EditListingLocationPanel.title"
         values={{
-          listingTitle: (
-            <ListingLink listing={listing}>
-              <FormattedMessage id="EditListingLocationPanel.listingTitle" />
-            </ListingLink>
+          location: (
+            <span className={css.locationText}>
+              <FormattedMessage id="EditListingLocationPanel.location" />
+            </span>
           ),
         }}
       />
     ) : (
-      <FormattedMessage id="EditListingLocationPanel.createListingTitle" />
+      <FormattedMessage
+        id="EditListingLocationPanel.createListingTitle"
+        values={{
+          location: (
+            <span className={css.locationText}>
+              <FormattedMessage id="EditListingLocationPanel.createListingLocation" />
+            </span>
+          ),
+        }}
+      />
     );
 
     const { userType } = currentUser && currentUser.attributes.profile.metadata;
@@ -90,32 +103,54 @@ class EditListingLocationPanel extends Component {
           className={css.form}
           initialValues={this.state.initialValues}
           onSubmit={values => {
-            const { location, travelDistance } = values;
+            const { location, travelDistance, nearPublicTransit } = values;
 
             const {
               selectedPlace: { address, origin },
             } = location;
+
+            const zipcode = address.split(' ')[2];
+            const timezone = zipcodeToTimezone.lookup(zipcode);
+
+            const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
+
+            if (availabilityPlanMaybe) {
+              availabilityPlanMaybe.timezone = timezone;
+            }
+
+            const nearPublicTransitValue = nearPublicTransit.length > 0 ? true : false;
 
             const updateValues =
               userType === CAREGIVER
                 ? {
                     geolocation: origin,
                     publicData: {
-                      location: address,
+                      location: {
+                        city: address.split(',')[0],
+                        state: address.split(',')[1].split(' ')[1],
+                        zipcode,
+                      },
                       travelDistance,
                     },
                   }
                 : {
                     geolocation: origin,
                     publicData: {
-                      location: address,
+                      location: {
+                        city: address.split(',')[0],
+                        state: address.split(',')[1].split(' ')[1],
+                        zipcode,
+                      },
+                      nearPublicTransit: nearPublicTransitValue,
+                      availabilityPlan: availabilityPlanMaybe,
                     },
                   };
 
             this.setState({
               initialValues: {
-                location: { search: address, selectedPlace: { address, origin } },
+                location: { search: zipcode, selectedPlace: { address, origin } },
                 travelDistance,
+                nearPublicTransit: nearPublicTransitValue,
               },
             });
             onSubmit(updateValues);

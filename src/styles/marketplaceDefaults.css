@@ -121,6 +121,8 @@
 
   --LocationAutocompleteInput_inputHeight: 50px;
   --LocationAutocompleteInput_sidePaddingDesktop: 36px;
+  --LocationAutocompleteInput_widthDesktopLocationForm: 300px;
+  --LocationAutocompleteInputIcon_widthDesktopLocationForm: 400px;
 
   /* ================ Filters ================ */
   --marketplaceButtonSmallDesktopPadding: 9px 16px 9px 16px;
