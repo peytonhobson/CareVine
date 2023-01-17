@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+
 import { bool, func, shape, string } from 'prop-types';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
+
 import { FormattedMessage } from '../../util/reactIntl';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { propTypes } from '../../util/types';
@@ -19,23 +21,23 @@ const EditListingFeaturesFormComponent = props => (
     mutators={{ ...arrayMutators }}
     render={formRenderProps => {
       const {
-        disabled,
-        ready,
-        rootClassName,
         className,
-        name,
-        handleSubmit,
-        pristine,
-        saveActionMsg,
-        updated,
-        updateInProgress,
+        disabled,
         fetchErrors,
         filterConfig,
-        label,
-        singleSelect,
+        handleSubmit,
         intl,
         invalid,
+        label,
+        name,
+        pristine,
+        ready,
         required,
+        rootClassName,
+        saveActionMsg,
+        singleSelect,
+        updated,
+        updateInProgress,
       } = formRenderProps;
 
       const classes = classNames(rootClassName || css.root, className);

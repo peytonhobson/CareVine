@@ -1,22 +1,17 @@
-@import '../../styles/customMediaQueries.css';
-
 .root {
-  flex-grow: 1;
-  width: 100%;
-  height: auto;
   display: flex;
-  flex-direction: column;
-  padding: 12px 24px 0 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.section {
+  padding-block: 20px;
 }
 
 .sectionHeader {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.title {
-  margin-bottom: 18px;
 }
 
 .sectionTitle {
@@ -26,59 +21,6 @@
   margin-top: 18px;
   margin-bottom: 18px;
   padding: 3px 0 3px 0;
-}
-
-.editPlanButton {
-  composes: h5 from global;
-  margin: 0;
-  padding-top: 5px;
-}
-
-.editPlanIcon {
-  margin: 0px 3px 4px 0;
-}
-
-.week {
-  display: flex;
-  flex-direction: column;
-  border-top: solid 1px var(--matterColorNegative);
-  border-right: solid 1px var(--matterColorNegative);
-  border-left: solid 1px var(--matterColorNegative);
-  border-radius: 4px;
-  margin-bottom: 23px;
-
-  & > .weekDay {
-    border-bottom: solid 1px var(--matterColorNegative);
-  }
-}
-
-.weekDay {
-  composes: marketplaceTabNavHorizontalFontStyles from global;
-  display: flex;
-  flex-direction: row;
-  padding: 24px 24px 23px 24px;
-}
-
-.dayOfWeek {
-  width: 100px;
-}
-
-.blockedWeekDay {
-  background-color: #f3f3f3;
-  & > .dayOfWeek {
-    color: var(--matterColorAnti);
-  }
-
-  &:hover > .dayOfWeek {
-    color: var(--matterColor);
-  }
-}
-
-.entries {
-}
-
-.entry {
-  display: block;
 }
 
 .exceptionsLoading {
@@ -96,7 +38,9 @@
 
 .exceptions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-basis: 50%;
+  flex-wrap: wrap;
   border-top: solid 1px var(--matterColorNegative);
   border-right: solid 1px var(--matterColorNegative);
   border-left: solid 1px var(--matterColorNegative);
@@ -107,6 +51,21 @@
   & > .exception {
     border-bottom: solid 1px var(--matterColorNegative);
   }
+}
+
+.exception {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px 12px 0px;
+}
+
+.exceptionsContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .exceptionHeader {
@@ -143,19 +102,6 @@
   padding: 0;
 }
 
-.timeRange {
-  composes: h5 from global;
-  margin: -2px 12px 13px 32px;
-  color: var(--matterColorAnti);
-}
-
-.removeIcon {
-  width: 10px;
-  height: 10px;
-  stroke: var(--matterColorAnti);
-  fill: var(--matterColorAnti);
-}
-
 .removeExceptionButton {
   padding: 0 24px 0 24px;
   border: 0;
@@ -167,22 +113,30 @@
   }
 }
 
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+}
+
+.timeRange {
+  /* composes: h5 from global; */
+  /* margin: -2px 12px 13px 32px; */
+  color: var(--matterColorAnti);
+}
+
 .addExceptionButton {
   composes: h4 from global;
   padding: 1px 0 5px 0;
   margin: 0 0 24px 0;
-}
-
-.goToNextTabButton {
-  margin-top: auto;
-  margin-bottom: 24px;
-  flex-shrink: 0;
+  display: flex;
 }
 
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
-  min-height: 100vh;
-  height: 100%;
+  /* min-height: 100vh; */
+  /* height: 100%; */
 
   padding-left: 0;
   padding-right: 0;
@@ -190,44 +144,16 @@
   background-color: var(--matterColorBright);
 }
 
-.error {
-  color: var(--failColor);
-}
-
 @media (--viewportMedium) {
-  .root {
-    padding: 11px 24px 0 24px;
-  }
-
   .sectionHeader {
     padding-top: 3px;
     padding-bottom: 3px;
-  }
-
-  .title {
-    margin-bottom: 16px;
   }
 
   .sectionTitle {
     margin-top: 21px;
     margin-bottom: 17px;
     padding: 0;
-  }
-
-  .weekDay {
-    padding-top: 22px;
-    padding-bottom: 25px;
-    padding-right: 24px;
-    padding-left: 24px;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--matterColorDark);
-    }
-  }
-
-  .dayOfWeek {
-    width: 200px;
   }
 
   .exceptions {
@@ -258,7 +184,7 @@
   }
 
   .removeExceptionButton {
-    padding: 6px 24px 0 24px;
+    padding: 0 24px 0 24px;
   }
 
   .addExceptionButton {
@@ -273,15 +199,8 @@
   }
 }
 
-@media (--viewportLarge) {
-  .title {
-    margin-bottom: 38px;
-    padding: 1px 0 7px 0;
-  }
-
-  .goToNextTabButton {
-    display: inline-block;
-    width: 241px;
-    margin-top: 62px;
-  }
+.error {
+  color: var(--failColor);
+  width: 100%;
+  text-align: center;
 }

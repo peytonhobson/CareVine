@@ -1,6 +1,6 @@
 import React from 'react';
 import { array, arrayOf, bool, func, object, oneOf, shape, string } from 'prop-types';
-import queryString from 'query-string';
+
 import { propTypes } from '../../util/types';
 import { intlShape } from '../../util/reactIntl';
 import routeConfiguration from '../../routeConfiguration';
@@ -12,23 +12,24 @@ import {
 import { ensureListing } from '../../util/data';
 import { createResourceLocatorString } from '../../util/routes';
 import {
-  EditListingAvailabilityPanel,
-  EditListingBioPanel,
-  EditListingExperienceLevelPanel,
   EditListingAdditionalDetailsPanel,
+  EditListingBackgroundCheckPanel,
+  EditListingBioPanel,
+  EditListingCaregiverDetailsPanel,
+  EditListingCareNeedsPanel,
+  EditListingCareRecipientDetailsPanel,
+  EditListingCareSchedulePanel,
+  EditListingExperienceLevelPanel,
+  EditListingJobDescriptionPanel,
   EditListingLocationPanel,
   EditListingPhotosPanel,
-  EditListingCareTypesPanel,
   EditListingPricingPanel,
-  EditListingCareRecipientDetailsPanel,
-  EditListingCaregiverDetailsPanel,
-  EditListingBackgroundCheckPanel,
 } from '..';
 
 import css from './EditListingWizardTab.module.css';
 
-export const CARETYPES = 'care-types';
-export const AVAILABILITY = 'availability';
+export const CARE_NEEDS = 'care-needs';
+export const CARE_SCHEDULE = 'care-schedule';
 export const BIO = 'bio';
 export const EXPERIENCE_LEVEL = 'experience-level';
 export const ADDITIONAL_DETAILS = 'additional-details';
@@ -39,21 +40,23 @@ export const PROFILE_PICTURE = 'profile-picture';
 export const CARE_RECEIVER_DETAILS = 'care-recipient-details';
 export const BACKGROUND_CHECK = 'background-check';
 export const CAREGIVER_DETAILS = 'caregiver-details';
+export const JOB_DESCRIPTION = 'job-description';
 
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
-  CARETYPES,
+  CARE_NEEDS,
   BIO,
   EXPERIENCE_LEVEL,
   ADDITIONAL_DETAILS,
   POLICY,
   LOCATION,
   PRICING,
-  AVAILABILITY,
+  CARE_SCHEDULE,
   PROFILE_PICTURE,
   CARE_RECEIVER_DETAILS,
   CAREGIVER_DETAILS,
   BACKGROUND_CHECK,
+  JOB_DESCRIPTION,
 ];
 
 const pathParamsToNextTab = (params, tab, marketplaceTabs) => {
@@ -67,38 +70,37 @@ const pathParamsToNextTab = (params, tab, marketplaceTabs) => {
 
 const EditListingWizardTab = props => {
   const {
-    tab,
-    marketplaceTabs,
-    params,
+    availabilityExceptions,
+    currentUser,
     errors,
+    fetchExceptionsInProgress,
     fetchInProgress,
-    newListingPublished,
-    history,
-    images,
-    listing,
     handleCreateFlowTabScrolling,
     handlePublishListing,
+    history,
+    image,
+    intl,
+    listing,
+    marketplaceTabs,
+    newListingPublished,
     onAddAvailabilityException,
-    onDeleteAvailabilityException,
-    onUpdateListing,
-    onCreateListingDraft,
-    onImageUpload,
-    onUpdateImageOrder,
-    onRemoveImage,
     onChange,
+    onCreateListingDraft,
+    onDeleteAvailabilityException,
+    onImageUpload,
     onManageDisableScrolling,
+    onProfileImageUpload,
+    onRemoveImage,
+    onUpdateImageOrder,
+    onUpdateListing,
+    onUpdateProfile,
+    pageName,
+    params,
+    profileImage,
+    tab,
     updatedTab,
     updateInProgress,
-    intl,
-    fetchExceptionsInProgress,
-    availabilityExceptions,
-    pageName,
-    profileImage,
-    currentUser,
-    onProfileImageUpload,
     uploadInProgress,
-    onUpdateProfile,
-    image,
   } = props;
 
   const { type } = params;
@@ -142,10 +144,6 @@ const EditListingWizardTab = props => {
 
   const onCompleteEditListingWizardTab = (tab, updateValues, passThrownErrors = false) => {
     // Normalize images for API call
-    const { images: updatedImages, ...otherValues } = updateValues;
-    const imageProperty =
-      typeof updatedImages !== 'undefined' ? { images: imageIds(updatedImages) } : {};
-    const updateValuesWithImages = { ...otherValues, ...imageProperty };
 
     if (isNewListingFlow) {
       const onUpsertListingDraft = isNewURI
@@ -156,13 +154,11 @@ const EditListingWizardTab = props => {
           }
         : onUpdateListing;
 
-      const upsertValues = isNewURI
-        ? updateValuesWithImages
-        : { ...updateValuesWithImages, id: currentListing.id };
+      const upsertValues = isNewURI ? updateValues : { ...updateValues, id: currentListing.id };
 
       return onUpsertListingDraft(tab, upsertValues)
         .then(r => {
-          if (tab !== AVAILABILITY && tab !== marketplaceTabs[marketplaceTabs.length - 1]) {
+          if (tab !== CARE_SCHEDULE && tab !== marketplaceTabs[marketplaceTabs.length - 1]) {
             // Create listing flow: smooth scrolling polyfill to scroll to correct tab
             handleCreateFlowTabScrolling(false);
 
@@ -180,7 +176,7 @@ const EditListingWizardTab = props => {
           // Error is logged in EditListingPage.duck file.
         });
     } else {
-      return onUpdateListing(tab, { ...updateValuesWithImages, id: currentListing.id });
+      return onUpdateListing(tab, { ...updateValues, id: currentListing.id });
     }
   };
 
@@ -203,13 +199,13 @@ const EditListingWizardTab = props => {
   };
 
   switch (tab) {
-    case CARETYPES: {
+    case CARE_NEEDS: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewCareTypes'
         : 'EditListingWizard.saveEditCareTypes';
       return (
-        <EditListingCareTypesPanel
-          {...panelProps(CARETYPES)}
+        <EditListingCareNeedsPanel
+          {...panelProps(CARE_NEEDS)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -287,13 +283,13 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    case AVAILABILITY: {
+    case CARE_SCHEDULE: {
       const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewAvailability'
-        : 'EditListingWizard.saveEditAvailability';
+        ? 'EditListingWizard.saveNewCareSchedule'
+        : 'EditListingWizard.saveEditCareSchedule';
       return (
-        <EditListingAvailabilityPanel
-          {...panelProps(AVAILABILITY)}
+        <EditListingCareSchedulePanel
+          {...panelProps(CARE_SCHEDULE)}
           fetchExceptionsInProgress={fetchExceptionsInProgress}
           availabilityExceptions={availabilityExceptions}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
@@ -359,6 +355,7 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          onManageDisableScrolling={onManageDisableScrolling}
         />
       );
     }
@@ -371,15 +368,24 @@ const EditListingWizardTab = props => {
         <EditListingCaregiverDetailsPanel
           {...panelProps(CAREGIVER_DETAILS)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-          profileImage={profileImage}
-          onImageUpload={onImageUpload}
-          onRemoveImage={onRemoveImage}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
-          onUpdateImageOrder={onUpdateImageOrder}
-          onProfileImageUpload={onProfileImageUpload}
-          uploadInProgress={uploadInProgress}
+        />
+      );
+    }
+    case JOB_DESCRIPTION: {
+      const submitButtonTranslationKey = isNewListingFlow
+        ? 'EditListingWizard.saveNewJobDescription'
+        : 'EditListingWizard.saveEditJobDescription';
+
+      return (
+        <EditListingJobDescriptionPanel
+          {...panelProps(JOB_DESCRIPTION)}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          onSubmit={values => {
+            onCompleteEditListingWizardTab(tab, values);
+          }}
         />
       );
     }

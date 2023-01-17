@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { bool, object, string } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
@@ -16,6 +16,8 @@ import {
 } from '../../components';
 
 import css from './EditListingAvailabilityPlanForm.module.css';
+import { useEffect } from 'react';
+import { B } from '@sendbird/uikit-react/index-c45e5f15';
 
 const printHourStrings = h => {
   if (h === 0 || h === 24) {
@@ -34,7 +36,7 @@ const printHourStrings = h => {
   return `${h}:00am`;
 };
 
-const timeOrderMap = new Map([
+const startTimeOrderMap = new Map([
   ['12:00am', 0],
   ['1:00am', 1],
   ['2:00am', 2],
@@ -61,14 +63,40 @@ const timeOrderMap = new Map([
   ['11:00pm', 23],
 ]);
 
-const HOURS = Array(24).fill();
-const ALL_START_HOURS = [...HOURS].map((v, i) => printHourStrings(i));
-const ALL_END_HOURS = [...HOURS].map((v, i) => printHourStrings(i + 1));
+const endTimeOrderMap = new Map([
+  ['1:00am', 1],
+  ['2:00am', 2],
+  ['3:00am', 3],
+  ['4:00am', 4],
+  ['5:00am', 5],
+  ['6:00am', 6],
+  ['7:00am', 7],
+  ['8:00am', 8],
+  ['9:00am', 9],
+  ['10:00am', 10],
+  ['11:00am', 11],
+  ['12:00pm', 12],
+  ['1:00pm', 13],
+  ['2:00pm', 14],
+  ['3:00pm', 15],
+  ['4:00pm', 16],
+  ['5:00pm', 17],
+  ['6:00pm', 18],
+  ['7:00pm', 19],
+  ['8:00pm', 20],
+  ['9:00pm', 21],
+  ['10:00pm', 22],
+  ['11:00pm', 23],
+  ['12:00am', 24],
+]);
+
+const ALL_START_HOURS = Array.from(startTimeOrderMap.keys());
+const ALL_END_HOURS = Array.from(endTimeOrderMap.keys());
 
 const sortEntries = (defaultCompareReturn = 0) => (a, b) => {
   if (a.startTime && b.startTime) {
-    const aStart = Number.parseInt(a.startTime.split(':')[0]);
-    const bStart = Number.parseInt(b.startTime.split(':')[0]);
+    const aStart = startTimeOrderMap.get(a.startTime);
+    const bStart = startTimeOrderMap.get(b.startTime);
     return aStart - bStart;
   }
   return defaultCompareReturn;
@@ -81,7 +109,7 @@ const filterStartHours = (availableStartHours, values, dayOfWeek, index) => {
   const currentEntry = entries[index];
 
   // If there is no end time selected, return all the available start times
-  if (!currentEntry.endTime || currentEntry.endTime === '12:00am') {
+  if (!currentEntry.endTime) {
     return availableStartHours;
   }
 
@@ -96,11 +124,14 @@ const filterStartHours = (availableStartHours, values, dayOfWeek, index) => {
   // return all the available times before current selected end time.
   // Otherwise return all the available start times that are after the previous entry or entries.
   const prevEntry = sortedEntries[currentIndex - 1];
-  const pickBefore = time => h => {
-    return timeOrderMap.get(h) < timeOrderMap.get(time);
+  const pickBefore = time => h => startTimeOrderMap.get(h) < endTimeOrderMap.get(time);
+
+  const pickBetween = (start, end) => h => {
+    return (
+      startTimeOrderMap.get(h) >= endTimeOrderMap.get(start) &&
+      startTimeOrderMap.get(h) < endTimeOrderMap.get(end)
+    );
   };
-  const pickBetween = (start, end) => h =>
-    timeOrderMap.get(h) >= timeOrderMap.get(start) && timeOrderMap.get(h) < timeOrderMap.get(end);
 
   return !prevEntry || !prevEntry.endTime
     ? availableStartHours.filter(pickBefore(currentEntry.endTime))
@@ -116,10 +147,6 @@ const filterEndHours = (availableEndHours, values, dayOfWeek, index) => {
     return [];
   }
 
-  if (currentEntry.startTime === '12:00am') {
-    return availableEndHours;
-  }
-
   // By default the entries are not in order so we need to sort the entries by startTime
   // in order to find out the allowed start times
   const sortedEntries = [...entries].sort(sortEntries(-1));
@@ -132,10 +159,14 @@ const filterEndHours = (availableEndHours, values, dayOfWeek, index) => {
   // Otherwise return all the available end hours between current start time and next entry.
   const nextEntry = sortedEntries[currentIndex + 1];
   const pickAfter = time => h => {
-    return timeOrderMap.get(h) > timeOrderMap.get(time);
+    return endTimeOrderMap.get(h) > startTimeOrderMap.get(time);
   };
-  const pickBetween = (start, end) => h =>
-    timeOrderMap.get(h) > timeOrderMap.get(start) && timeOrderMap.get(h) <= timeOrderMap.get(end);
+  const pickBetween = (start, end) => h => {
+    return (
+      endTimeOrderMap.get(h) > startTimeOrderMap.get(start) &&
+      endTimeOrderMap.get(h) <= endTimeOrderMap.get(end)
+    );
+  };
 
   let availableHours = null;
 
@@ -144,8 +175,6 @@ const filterEndHours = (availableEndHours, values, dayOfWeek, index) => {
     : (availableHours = availableEndHours.filter(
         pickBetween(currentEntry.startTime, nextEntry.startTime)
       ));
-
-  nextEntry ? availableHours.push('12:00am') : null;
 
   return availableHours;
 };
@@ -158,11 +187,9 @@ const getEntryBoundaries = (values, dayOfWeek, intl, findStartHours) => index =>
     const { startTime, endTime } = entry || {};
 
     if (i !== index && startTime && endTime) {
-      const startHour = Number.parseInt(startTime.split(':')[0]);
-      const endHour = Number.parseInt(endTime.split(':')[0]);
-      const hoursBetween = Array(endHour - startHour)
+      const hoursBetween = Array(endTimeOrderMap.get(endTime) - startTimeOrderMap.get(startTime))
         .fill()
-        .map((v, i) => printHourStrings(startHour + i + boundaryDiff));
+        .map((v, i) => printHourStrings(startTimeOrderMap.get(startTime) + i + boundaryDiff));
 
       return allHours.concat(hoursBetween);
     }
@@ -175,6 +202,9 @@ const DailyPlan = props => {
   const { dayOfWeek, values, intl } = props;
   const getEntryStartTimes = getEntryBoundaries(values, dayOfWeek, intl, true);
   const getEntryEndTimes = getEntryBoundaries(values, dayOfWeek, intl, false);
+
+  // const [startHours, setStartHours] = useState(ALL_START_HOURS);
+  // const [endHours, setEndHours] = useState(ALL_END_HOURS);
 
   const hasEntries = values[dayOfWeek] && values[dayOfWeek][0];
 
@@ -212,8 +242,13 @@ const DailyPlan = props => {
                           id={`${name}.startTime`}
                           name={`${name}.startTime`}
                           selectClassName={css.fieldSelect}
-                          initialValueSelected={fields.value[0].startTime}
+                          initialValueSelected={index === 0 && fields.value[index].startTime}
                         >
+                          {index !== 0 && (
+                            <option disabled value="">
+                              {startTimePlaceholder}
+                            </option>
+                          )}
                           {filterStartHours(availableStartHours, values, dayOfWeek, index).map(
                             s => (
                               <option value={s} key={s}>
@@ -229,8 +264,13 @@ const DailyPlan = props => {
                           id={`${name}.endTime`}
                           name={`${name}.endTime`}
                           selectClassName={css.fieldSelect}
-                          initialValueSelected={fields.value[0].endTime}
+                          initialValueSelected={index === 0 && fields.value[index].endTime}
                         >
+                          {index !== 0 && (
+                            <option disabled value="">
+                              {endTimePlaceholder}
+                            </option>
+                          )}
                           {filterEndHours(availableEndHours, values, dayOfWeek, index).map(s => (
                             <option value={s} key={s}>
                               {s}
@@ -302,16 +342,17 @@ const EditListingAvailabilityPlanFormComponent = props => {
       }}
       render={fieldRenderProps => {
         const {
-          rootClassName,
           className,
+          fetchErrors,
           formId,
           handleSubmit,
           inProgress,
           intl,
           listingTitle,
-          weekdays,
-          fetchErrors,
+          rootClassName,
+          showErrors,
           values,
+          weekdays,
         } = fieldRenderProps;
 
         const classes = classNames(rootClassName || css.root, className);
@@ -331,17 +372,8 @@ const EditListingAvailabilityPlanFormComponent = props => {
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
             <h2 className={css.heading}>
-              <FormattedMessage
-                id="EditListingAvailabilityPlanForm.title"
-                values={{ listingTitle }}
-              />
+              <FormattedMessage id="EditListingAvailabilityPlanForm.title" />
             </h2>
-            <h3 className={css.subheading}>
-              <FormattedMessage id="EditListingAvailabilityPlanForm.timezonePickerTitle" />
-            </h3>
-            <div className={css.timezonePicker}>
-              <FieldTimeZoneSelect id="timezone" name="timezone" />
-            </div>
             <h3 className={css.subheading}>
               <FormattedMessage id="EditListingAvailabilityPlanForm.hoursOfOperationTitle" />
             </h3>
@@ -352,7 +384,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
             </div>
 
             <div className={css.submitButton}>
-              {updateListingError ? (
+              {updateListingError && showErrors ? (
                 <p className={css.error}>
                   <FormattedMessage id="EditListingAvailabilityPlanForm.updateFailed" />
                 </p>

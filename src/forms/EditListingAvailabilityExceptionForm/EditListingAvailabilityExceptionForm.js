@@ -15,6 +15,7 @@ import {
   isSameDate,
   isSameDay,
   resetToStartOfDay,
+  resetToEndOfDay,
   timeOfDayFromLocalToTimeZone,
   timeOfDayFromTimeZoneToLocal,
   dateIsAfter,
@@ -206,7 +207,8 @@ const getAllTimeValues = (
   timeRanges,
   selectedStartDate,
   selectedStartTime,
-  selectedEndDate
+  selectedEndDate,
+  planType
 ) => {
   const startTimes = selectedStartTime
     ? []
@@ -239,7 +241,15 @@ const getAllTimeValues = (
 
   const endTimes = getAvailableEndTimes(startTime, endDate, selectedTimeRange, intl, timeZone);
   const endTime =
-    endTimes.length > 0 && endTimes[0] && endTimes[0].timestamp ? endTimes[0].timestamp : null;
+    planType === 'availability-plan/recurring'
+      ? endTimes.length > 0 && endTimes[0] && endTimes[0].timestamp
+        ? endTimes[0].timestamp
+        : null
+      : endTimes.length > 0 &&
+        endTimes[endTimes.length - 1] &&
+        endTimes[endTimes.length - 1].timestamp
+      ? endTimes[endTimes.length - 1].timestamp
+      : null;
 
   return { startTime, endDate, endTime, selectedTimeRange };
 };
@@ -295,7 +305,9 @@ const isOutsideRange = (exceptionStartDate, selectedTimeRange, timeZone) => day 
 
 // Helper function, which changes form's state when exceptionStartDate input has been changed
 const onExceptionStartDateChange = (value, timeRanges, props) => {
-  const { timeZone, intl, form } = props;
+  const { timeZone, intl, form, planType } = props;
+
+  const is24Hour = planType === 'availability-plan/24hour';
 
   if (!value || !value.date) {
     form.batch(() => {
@@ -315,13 +327,18 @@ const onExceptionStartDateChange = (value, timeRanges, props) => {
     intl,
     timeZone,
     timeRangesOnSelectedDate,
-    startDate
+    startDate,
+    null,
+    null,
+    planType
   );
+
+  const endOfDay = resetToEndOfDay(endDate, timeZone, 5).getTime();
 
   form.batch(() => {
     form.change('exceptionStartTime', startTime);
     form.change('exceptionEndDate', { date: endDate });
-    form.change('exceptionEndTime', endTime);
+    form.change('exceptionEndTime', is24Hour ? endOfDay : endTime);
   });
 };
 
@@ -419,6 +436,7 @@ const EditListingAvailabilityExceptionForm = props => {
           updateInProgress,
           fetchErrors,
           values,
+          planType,
         } = formRenderProps;
 
         const idPrefix = `${formId}` || 'EditListingAvailabilityExceptionForm';
@@ -523,124 +541,213 @@ const EditListingAvailabilityExceptionForm = props => {
               <FieldRadioButton
                 id={`${idPrefix}.available`}
                 name="availability"
-                label={intl.formatMessage({ id: 'EditListingAvailabilityExceptionForm.available' })}
-                value="available"
+                label={
+                  planType === 'availability-plan/recurring'
+                    ? intl.formatMessage({
+                        id: 'EditListingAvailabilityExceptionForm.available',
+                      })
+                    : intl.formatMessage({
+                        id: 'EditListingAvailabilityExceptionForm.careNeeded',
+                      })
+                }
+                value={planType === 'availability-plan/recurring' ? 'available' : 'care-needed'}
                 checkedClassName={css.checkedAvailable}
                 showAsRequired={pristine}
               />
               <FieldRadioButton
                 id={`${idPrefix}.not-available`}
                 name="availability"
-                label={intl.formatMessage({
-                  id: 'EditListingAvailabilityExceptionForm.notAvailable',
-                })}
-                value="not-available"
+                label={
+                  planType === 'availability-plan/recurring'
+                    ? intl.formatMessage({
+                        id: 'EditListingAvailabilityExceptionForm.notAvailable',
+                      })
+                    : intl.formatMessage({
+                        id: 'EditListingAvailabilityExceptionForm.careNotNeeded',
+                      })
+                }
+                value={
+                  planType === 'availability-plan/recurring' ? 'not-available' : 'care-not-needed'
+                }
                 checkedClassName={css.checkedNotAvailable}
                 showAsRequired={pristine}
               />
             </div>
             <div className={css.section}>
-              <div className={css.formRow}>
-                <div className={css.field}>
-                  <FieldDateInput
-                    className={css.fieldDateInput}
-                    name="exceptionStartDate"
-                    id={`${idPrefix}.exceptionStartDate`}
-                    label={intl.formatMessage({
-                      id: 'EditListingAvailabilityExceptionForm.exceptionStartDateLabel',
-                    })}
-                    placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
-                    format={formatFieldDateInput(timeZone)}
-                    parse={parseFieldDateInput(timeZone)}
-                    isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
-                    onChange={value =>
-                      onExceptionStartDateChange(value, availableTimeRanges, formRenderProps)
-                    }
-                    onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
-                    onNextMonthClick={() => handleMonthClick(nextMonthFn)}
-                    navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
-                    navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
-                    useMobileMargins
-                    showErrorMessage={false}
-                    validate={bookingDateRequired('Required')}
-                  />
-                </div>
-                <div className={css.field}>
-                  <FieldSelect
-                    name="exceptionStartTime"
-                    id={`${idPrefix}.exceptionStartTime`}
-                    className={exceptionStartDate ? css.fieldSelect : css.fieldSelectDisabled}
-                    selectClassName={exceptionStartDate ? css.select : css.selectDisabled}
-                    disabled={startTimeDisabled}
-                    onChange={value =>
-                      onExceptionStartTimeChange(value, timeRangesOnSelectedDate, formRenderProps)
-                    }
-                  >
-                    {exceptionStartDay ? (
-                      availableStartTimes.map(p => (
-                        <option key={p.timestamp} value={p.timestamp}>
-                          {p.timeOfDay}
-                        </option>
-                      ))
-                    ) : (
-                      <option>{placeholderTime}</option>
-                    )}
-                  </FieldSelect>
-                </div>
-              </div>
-              <div className={css.formRow}>
-                <div className={css.field}>
-                  <FieldDateInput
-                    name="exceptionEndDate"
-                    id={`${idPrefix}.exceptionEndDate`}
-                    className={css.fieldDateInput}
-                    label={intl.formatMessage({
-                      id: 'EditListingAvailabilityExceptionForm.exceptionEndDateLabel',
-                    })}
-                    placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
-                    format={formatFieldDateInput(timeZone)}
-                    parse={parseFieldDateInput(timeZone)}
-                    isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
-                    onChange={value =>
-                      onExceptionEndDateChange(value, timeRangesOnSelectedDate, formRenderProps)
-                    }
-                    onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
-                    onNextMonthClick={() => handleMonthClick(nextMonthFn)}
-                    navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
-                    navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
-                    isOutsideRange={isOutsideRange(exceptionStartDay, selectedTimeRange, timeZone)}
-                    useMobileMargins
-                    showErrorMessage={false}
-                    validate={bookingDateRequired('Required')}
-                    disabled={endDateDisabled}
-                    showLabelAsDisabled={endDateDisabled}
-                  />
-                </div>
-                <div className={css.field}>
-                  <FieldSelect
-                    name="exceptionEndTime"
-                    id={`${idPrefix}.exceptionEndTime`}
-                    className={exceptionStartDate ? css.fieldSelect : css.fieldSelectDisabled}
-                    selectClassName={exceptionStartDate ? css.select : css.selectDisabled}
-                    disabled={endTimeDisabled}
-                  >
-                    {exceptionStartDay && exceptionStartTime && endDate ? (
-                      availableEndTimes.map((p, i) => {
-                        const isLastIndex = i === availableEndTimes.length - 1;
-                        const timeOfDay =
-                          p.timeOfDay === '00:00' && isLastIndex ? '24:00' : p.timeOfDay;
-                        return (
-                          <option key={p.timestamp} value={p.timestamp}>
-                            {timeOfDay}
-                          </option>
-                        );
-                      })
-                    ) : (
-                      <option>{placeholderTime}</option>
-                    )}
-                  </FieldSelect>
-                </div>
-              </div>
+              {planType === 'availability-plan/recurring' ? (
+                <>
+                  <div className={css.formRow}>
+                    <div className={css.field}>
+                      <FieldDateInput
+                        className={css.fieldDateInput}
+                        name="exceptionStartDate"
+                        id={`${idPrefix}.exceptionStartDate`}
+                        label={intl.formatMessage({
+                          id: 'EditListingAvailabilityExceptionForm.exceptionStartDateLabel',
+                        })}
+                        placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
+                        format={formatFieldDateInput(timeZone)}
+                        parse={parseFieldDateInput(timeZone)}
+                        isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
+                        onChange={value =>
+                          onExceptionStartDateChange(value, availableTimeRanges, formRenderProps)
+                        }
+                        onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
+                        onNextMonthClick={() => handleMonthClick(nextMonthFn)}
+                        navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
+                        navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
+                        useMobileMargins
+                        showErrorMessage={false}
+                        validate={bookingDateRequired('Required')}
+                      />
+                    </div>
+                    <div className={css.field}>
+                      <FieldSelect
+                        name="exceptionStartTime"
+                        id={`${idPrefix}.exceptionStartTime`}
+                        className={exceptionStartDate ? css.fieldSelect : css.fieldSelectDisabled}
+                        selectClassName={exceptionStartDate ? css.select : css.selectDisabled}
+                        disabled={startTimeDisabled}
+                        onChange={value =>
+                          onExceptionStartTimeChange(
+                            value,
+                            timeRangesOnSelectedDate,
+                            formRenderProps
+                          )
+                        }
+                      >
+                        {exceptionStartDay ? (
+                          availableStartTimes.map(p => (
+                            <option key={p.timestamp} value={p.timestamp}>
+                              {p.timeOfDay}
+                            </option>
+                          ))
+                        ) : (
+                          <option>{placeholderTime}</option>
+                        )}
+                      </FieldSelect>
+                    </div>
+                  </div>
+                  <div className={css.formRow}>
+                    <div className={css.field}>
+                      <FieldDateInput
+                        name="exceptionEndDate"
+                        id={`${idPrefix}.exceptionEndDate`}
+                        className={css.fieldDateInput}
+                        label={intl.formatMessage({
+                          id: 'EditListingAvailabilityExceptionForm.exceptionEndDateLabel',
+                        })}
+                        placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
+                        format={formatFieldDateInput(timeZone)}
+                        parse={parseFieldDateInput(timeZone)}
+                        isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
+                        onChange={value =>
+                          onExceptionEndDateChange(value, timeRangesOnSelectedDate, formRenderProps)
+                        }
+                        onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
+                        onNextMonthClick={() => handleMonthClick(nextMonthFn)}
+                        navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
+                        navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
+                        isOutsideRange={isOutsideRange(
+                          exceptionStartDay,
+                          selectedTimeRange,
+                          timeZone
+                        )}
+                        useMobileMargins
+                        showErrorMessage={false}
+                        validate={bookingDateRequired('Required')}
+                        disabled={endDateDisabled}
+                        showLabelAsDisabled={endDateDisabled}
+                      />
+                    </div>
+                    <div className={css.field}>
+                      <FieldSelect
+                        name="exceptionEndTime"
+                        id={`${idPrefix}.exceptionEndTime`}
+                        className={exceptionStartDate ? css.fieldSelect : css.fieldSelectDisabled}
+                        selectClassName={exceptionStartDate ? css.select : css.selectDisabled}
+                        disabled={endTimeDisabled}
+                      >
+                        {exceptionStartDay && exceptionStartTime && endDate ? (
+                          availableEndTimes.map((p, i) => {
+                            const isLastIndex = i === availableEndTimes.length - 1;
+                            const timeOfDay =
+                              p.timeOfDay === '00:00' && isLastIndex ? '24:00' : p.timeOfDay;
+
+                            return (
+                              <option key={p.timestamp} value={p.timestamp}>
+                                {timeOfDay}
+                              </option>
+                            );
+                          })
+                        ) : (
+                          <option>{placeholderTime}</option>
+                        )}
+                      </FieldSelect>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={css.formRow}>
+                    <div className={css.field}>
+                      <FieldDateInput
+                        className={css.fieldDateInput}
+                        name="exceptionStartDate"
+                        id={`${idPrefix}.exceptionStartDate`}
+                        label={intl.formatMessage({
+                          id: 'EditListingAvailabilityExceptionForm.exceptionStartDateLabel',
+                        })}
+                        placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
+                        format={formatFieldDateInput(timeZone)}
+                        parse={parseFieldDateInput(timeZone)}
+                        isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
+                        onChange={value =>
+                          onExceptionStartDateChange(value, availableTimeRanges, formRenderProps)
+                        }
+                        onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
+                        onNextMonthClick={() => handleMonthClick(nextMonthFn)}
+                        navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
+                        navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
+                        useMobileMargins
+                        showErrorMessage={false}
+                        validate={bookingDateRequired('Required')}
+                      />
+                    </div>
+                    <div className={css.field}>
+                      <FieldDateInput
+                        name="exceptionEndDate"
+                        id={`${idPrefix}.exceptionEndDate`}
+                        className={css.fieldDateInput}
+                        label={intl.formatMessage({
+                          id: 'EditListingAvailabilityExceptionForm.exceptionEndDateLabel',
+                        })}
+                        placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
+                        format={formatFieldDateInput(timeZone)}
+                        parse={parseFieldDateInput(timeZone)}
+                        isDayBlocked={isDayBlocked(availableTimeRanges, timeZone)}
+                        onChange={value =>
+                          onExceptionEndDateChange(value, timeRangesOnSelectedDate, formRenderProps)
+                        }
+                        onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
+                        onNextMonthClick={() => handleMonthClick(nextMonthFn)}
+                        navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
+                        navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
+                        isOutsideRange={isOutsideRange(
+                          exceptionStartDay,
+                          selectedTimeRange,
+                          timeZone
+                        )}
+                        useMobileMargins
+                        showErrorMessage={false}
+                        validate={bookingDateRequired('Required')}
+                        disabled={endDateDisabled}
+                        showLabelAsDisabled={endDateDisabled}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className={css.submitButton}>

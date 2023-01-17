@@ -27,7 +27,8 @@ class SearchMapPriceLabel extends Component {
   render() {
     const { className, rootClassName, intl, listing, onListingClicked, isActive } = this.props;
     const currentListing = ensureListing(listing);
-    const { rates } = currentListing.attributes.publicData;
+    const { pricing } = currentListing.attributes.publicData;
+    const rates = (pricing && pricing.rates) || [0, 0];
 
     const minPriceMoney = new Money(rates[0], 'USD');
     const maxPriceMoney = new Money(rates[1], 'USD');

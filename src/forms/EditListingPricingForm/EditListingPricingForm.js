@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { bool, func, shape, string } from 'prop-types';
 import { compose } from 'redux';
-import { Form as FinalForm, useField } from 'react-final-form';
-import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
+import { Form as FinalForm } from 'react-final-form';
+import arrayMutators, { update } from 'final-form-arrays';
 import classNames from 'classnames';
-import config from '../../config';
-import { LINE_ITEM_NIGHT, LINE_ITEM_DAY, propTypes } from '../../util/types';
-import * as validators from '../../util/validators';
-import { formatMoney, convertMoneyToNumber } from '../../util/currency';
+
+import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
+import { propTypes } from '../../util/types';
 import { types as sdkTypes } from '../../util/sdkLoader';
-import { Button, Form, FieldCurrencyInput, FieldRangeSlider } from '../../components';
+import { Button, Form, FieldRangeSlider, FieldRadioButtonGroup } from '../../components';
+
 import css from './EditListingPricingForm.module.css';
 
 const { Money } = sdkTypes;
+
+const HOURLY = 'hourly';
+const DAILY = 'daily';
 
 export const EditListingPricingFormComponent = props => (
   <FinalForm
     {...props}
     mutators={{
-      setValue: ([field, value], state, { changeValue }) => {
-        document.getElementById(field).value = value;
-        changeValue(state, field, () => value);
-      },
+      ...arrayMutators,
     }}
     render={formRenderProps => {
       const {
@@ -37,87 +37,36 @@ export const EditListingPricingFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
-        form: {
-          mutators: { setValue },
-        },
+        form,
       } = formRenderProps;
 
-      const maximumPricePerUnitMessage = intl.formatMessage({
-        id: 'EditListingPricingForm.maximumPricePerUnit',
-      });
-      const minimumPricePerUnitMessage = intl.formatMessage({
-        id: 'EditListingPricingForm.minimumPricePerUnit',
-      });
+      const formState = form.getState();
+      const formValues = formState.values;
+      const formInitialValues = formState.initialValues;
 
-      // Minimum price
-      const minimumPricePlaceholderMessage = intl.formatMessage({
-        id: 'EditListingPricingForm.minimumPriceInputPlaceholder',
-      });
-      const maxPriceRequired = validators.required(
-        intl.formatMessage({
-          id: 'EditListingPricingForm.maximumPriceRequired',
-        })
-      );
-      const minimumPriceRequired = validators.required(
-        intl.formatMessage({
-          id: 'EditListingPricingForm.minimumPriceRequired',
-        })
-      );
-      const minimumPrice = new Money(config.listingMinimumPriceSubUnits, config.currency);
-      const minPriceRequired = validators.moneySubUnitAmountAtLeast(
-        intl.formatMessage(
-          {
-            id: 'EditListingPricingForm.priceTooLow',
-          },
-          {
-            minPrice: formatMoney(intl, minimumPrice),
-          }
-        ),
-        config.listingMinimumPriceSubUnits
-      );
-      const minimumPriceValidators = config.listingMinimumPriceSubUnits
-        ? validators.composeValidators(minimumPriceRequired, minPriceRequired)
-        : minimumPriceRequired;
+      useEffect(() => {
+        const initialRates = formInitialValues.rates;
+        if (formValues.priceTime === HOURLY) {
+          initialRates && formInitialValues.priceTime === HOURLY
+            ? form.change('rates', initialRates)
+            : form.change('rates', [15, 25]);
+        } else {
+          initialRates && formInitialValues.priceTime === DAILY
+            ? form.change('rates', initialRates)
+            : form.change('rates', [150, 250]);
+        }
+      }, [formValues.priceTime]);
 
-      //Maximum Price
-      const maximumPricePlaceholderMessage = intl.formatMessage({
-        id: 'EditListingPricingForm.maximumPriceInputPlaceholder',
-      });
+      const priceTimeOptions = [
+        { key: HOURLY, label: 'Per hour' },
+        { key: DAILY, label: 'Per day' },
+      ];
 
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
       const { updateListingError, showListingsError } = fetchErrors || {};
-
-      // const [handles, setHandles] = useState([15, 25]);
-      // const [maxPrice, setMaxPrice] = useState(25);
-      // const [minPrice, setMinPrice] = useState(15);
-
-      // const handleCurrencyFieldChange = value => {
-      //   if ([value[0], value[1]] != handles) {
-      //     setHandles([value[0], value[1]]);
-      //     setMinPrice(value[0].toString());
-      //     setMaxPrice(value[1].toString());
-      //     setValue('minPrice', new Money(value[0], 'USD'));
-      //     setValue('maxPrice', new Money(value[1], 'USD'));
-      //   }
-      // };
-
-      // const [priceError, setPriceError] = useState(false);
-
-      // const onSubmit = e => {
-      //   e.preventDefault();
-
-      //   if (
-      //     Number(e.target[0].value.replace('$', '')) > Number(e.target[1].value.replace('$', ''))
-      //   ) {
-      //     setPriceError(true);
-      //     return;
-      //   }
-
-      //   handleSubmit(e);
-      // };
 
       return (
         <Form onSubmit={handleSubmit} className={classes}>
@@ -131,41 +80,22 @@ export const EditListingPricingFormComponent = props => (
               <FormattedMessage id="EditListingPricingForm.showListingFailed" />
             </p>
           ) : null}
-          {/* {priceError ? (
-            <p className={css.error}>
-              <FormattedMessage id="EditListingPricingForm.oppositePricingError" />
-            </p>
-          ) : null} */}
-          {/* <div className={css.currencyFieldContainer}>
-            <FieldCurrencyInput
-              id="minPrice"
-              name="minPrice"
-              className={css.priceInput}
-              label={minimumPricePerUnitMessage}
-              placeholder={minimumPricePlaceholderMessage}
-              currencyConfig={config.currencyConfig}
-              validate={!submitInProgress && minimumPriceValidators}
-              parentValue={minPrice}
-            />
-            <FieldCurrencyInput
-              id="maxPrice"
-              name="maxPrice"
-              className={css.priceInput}
-              label={maximumPricePerUnitMessage}
-              placeholder={maximumPricePlaceholderMessage}
-              currencyConfig={config.currencyConfig}
-              validate={!submitInProgress && maxPriceRequired}
-              parentValue={maxPrice}
-            />
-          </div> */}
           <FieldRangeSlider
             id="rates"
             name="rates"
             className={css.priceRange}
-            min={10}
-            max={50}
-            step={1}
-            handles={[15, 25]}
+            min={formValues.priceTime === HOURLY ? 10 : 100}
+            max={formValues.priceTime === HOURLY ? 50 : 500}
+            step={formValues.priceTime === HOURLY ? 1 : 5}
+            handles={formValues.rates}
+          />
+          <FieldRadioButtonGroup
+            rootClassName={css.timeRadioGroup}
+            className={css.timeRadio}
+            id="priceTime"
+            name="priceTime"
+            options={priceTimeOptions}
+            inline={true}
           />
           <Button
             className={css.submitButton}

@@ -392,7 +392,6 @@ export function requestShowListing(actionPayload) {
     return sdk.ownListings
       .show(actionPayload)
       .then(response => {
-        // CreateCaregiverProfilePage fetches new listing data, which also needs to be added to global data
         dispatch(addMarketplaceEntities(response));
         dispatch(showListingsSuccess(response));
         return response;
@@ -578,8 +577,6 @@ export const loadData = params => (dispatch, getState, sdk) => {
 
   const payload = {
     id: new UUID(id),
-    include: ['author', 'images'],
-    'fields.image': ['variants.square-small', 'variants.square-small2x'],
   };
 
   return Promise.all([
@@ -599,7 +596,7 @@ export const loadData = params => (dispatch, getState, sdk) => {
         const listing = response[0].data.data;
 
         // If the listing doesn't have availabilityPlan yet
-        // use the defaul timezone
+        // use the default timezone
         const availabilityPlan = listing.attributes.availabilityPlan;
 
         const tz = availabilityPlan

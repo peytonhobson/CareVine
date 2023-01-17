@@ -168,6 +168,28 @@ class GeocoderMapbox {
         limit: 5,
         ...limitCountriesMaybe,
         language: [config.locale],
+        types: ['place', 'postcode'],
+      })
+      .send()
+      .then(response => {
+        return {
+          search,
+          predictions: response.body.features,
+        };
+      });
+  }
+
+  getPostalCodePredictions(search) {
+    const limitCountriesMaybe = config.maps.search.countryLimit
+      ? { countries: config.maps.search.countryLimit }
+      : {};
+
+    return this.getClient()
+      .geocoding.forwardGeocode({
+        query: search,
+        limit: 5,
+        ...limitCountriesMaybe,
+        language: [config.locale],
         types: ['postcode'],
       })
       .send()

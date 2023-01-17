@@ -71,8 +71,9 @@ export const CaregiverListingCardComponent = props => {
   const currentAuthor = currentListing.author;
   const userDisplayName = userDisplayNameAsString(currentAuthor) + '.';
   const { publicData, description } = currentListing.attributes;
-  const { rates, location, careTypes: providedServices } = publicData;
+  const { pricing, location, careTypes: providedServices } = publicData;
   const slug = createSlug(userDisplayName);
+  const rates = (pricing && pricing.rates) || [0, 0];
 
   let descriptionCutoff =
     description.length > 300 ? cutTextToPreview(description, 300) : description;

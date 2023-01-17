@@ -49,13 +49,11 @@ class FieldTextInputComponent extends Component {
     // Use inputRef if it is passed as prop.
     const refMaybe = inputRef ? { ref: inputRef } : {};
 
-    const inputClasses =
-      inputRootClass ||
-      classNames(css.input, {
-        [css.inputSuccess]: valid,
-        [css.inputError]: hasError,
-        [css.textarea]: isTextarea,
-      });
+    const inputClasses = classNames(inputRootClass || css.input, {
+      [css.inputSuccess]: valid,
+      [css.inputError]: hasError,
+      [css.textarea]: isTextarea,
+    });
     const maxLength = CONTENT_MAX_LENGTH;
     const inputProps = isTextarea
       ? {

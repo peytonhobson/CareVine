@@ -1,0 +1,99 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  padding: 20px 0 0 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.buttonRowContainer {
+  display: flex;
+  padding-block: 20px;
+  justify-content: center;
+}
+
+.weekdayButton {
+  composes: buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+  min-height: 0;
+
+  border-radius: 100%;
+
+  width: 8rem;
+  height: 5rem;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+  margin: 0 0.5rem;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+}
+
+.selectedButton {
+  composes: buttonFont buttonText buttonColors from global;
+
+  min-height: 0;
+
+  border-radius: 100%;
+
+  width: 8rem;
+  height: 5rem;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+  margin: 0 0.5rem;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+}
+
+.checkbox {
+  display: flex;
+  margin-top: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.submitButton {
+  margin-top: auto;
+  margin-bottom: 24px;
+
+  @media (--viewportLarge) {
+    display: inline-block;
+    width: 241px;
+    margin-top: 40px;
+  }
+}
+
+.submitButtonContainer {
+  width: 100%;
+}
+
+.children {
+  width: 100%;
+}
+
+.error {
+  color: var(--failColor);
+  width: 100%;
+  text-align: start;
+}

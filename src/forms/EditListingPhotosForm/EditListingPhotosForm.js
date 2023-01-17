@@ -71,21 +71,6 @@ export class EditListingPhotosFormComponent extends Component {
             image,
           } = formRenderProps;
 
-          const chooseImageText = (
-            <span className={css.chooseImageText}>
-              <span className={css.chooseImage}>
-                <FormattedMessage id="EditListingPhotosForm.chooseImage" />
-              </span>
-              <span className={css.imageTypes}>
-                <FormattedMessage id="EditListingPhotosForm.imageTypes" />
-              </span>
-            </span>
-          );
-
-          const imageRequiredMessage = intl.formatMessage({
-            id: 'EditListingPhotosForm.imageRequired',
-          });
-
           const { publishListingError, showListingsError, updateListingError, uploadImageError } =
             fetchErrors || {};
           const uploadOverLimit = isUploadImageOverLimitError(uploadImageError);

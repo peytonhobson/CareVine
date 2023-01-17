@@ -376,6 +376,7 @@ export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
   };
   const sb = SendbirdChat.init(params);
 
+  // May be failing when current user isnt available
   sb.connect(currentUser.id.uuid)
     .then(() => {
       return sendbirdUser({ currentUser });

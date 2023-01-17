@@ -198,4 +198,17 @@
   &:select {
     margin-right: 0;
   }
+
+  & > option {
+    color: var(--matterColor);
+  }
+  & > option:disabled {
+    color: var(--matterColorAnti);
+  }
+
+  &:disabled {
+    border-bottom-color: var(--matterColorNegative);
+    color: var(--matterColorNegative);
+    cursor: default;
+  }
 }

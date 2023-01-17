@@ -132,7 +132,7 @@ const CaregiverListingMainContent = props => {
 
   const {
     location = '',
-    rates,
+    pricing,
     experienceLevel,
     covidVaccination,
     experienceWith,
@@ -140,6 +140,7 @@ const CaregiverListingMainContent = props => {
     languagesSpoken,
     additionalInfo,
   } = currentListing?.attributes.publicData;
+  const rates = (pricing && pricing.rates) || [0, 0];
   const { formattedMinPrice } = priceData(rates, intl);
 
   const convertedExperienceLevel = convertExperienceToLabel(experienceLevel);

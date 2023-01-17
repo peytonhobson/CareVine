@@ -1,33 +1,31 @@
 import React from 'react';
+
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
-
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing, ensureCurrentUser } from '../../util/data';
 import { EditListingFeaturesForm } from '../../forms';
-import { ListingLink } from '..';
 import { CAREGIVER } from '../../util/constants';
 
-import css from './EditListingCareTypesPanel.module.css';
+import css from './EditListingCareNeedsPanel.module.css';
 
 const EditListingCareTypesPanel = props => {
   const {
-    rootClassName,
     className,
-    listing,
-    isNewListingFlow,
+    currentUser,
     disabled,
-    ready,
-    onSubmit,
-    onChange,
-    panelUpdated,
-    updateInProgress,
     errors,
     intl,
-    currentUser,
+    listing,
+    onChange,
+    onSubmit,
+    panelUpdated,
+    ready,
+    rootClassName,
     submitButtonText,
+    updateInProgress,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -37,29 +35,38 @@ const EditListingCareTypesPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
     <FormattedMessage
-      id="EditListingCareTypesPanel.title"
+      id="EditListingCareNeedsPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingCareTypesPanel.listingTitle" />
-          </ListingLink>
+        careNeeds: (
+          <span className={css.careNeeds}>
+            <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingCareTypesPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingCareNeedsPanel.createListingTitle"
+      values={{
+        careNeeds: (
+          <span className={css.careNeeds}>
+            <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
+          </span>
+        ),
+      }}
+    />
   );
 
   const user = ensureCurrentUser(currentUser);
   const userType = user.attributes?.profile.metadata.userType;
 
-  const careTypes = publicData && publicData.careTypes;
-  const initialValues = { careTypes };
+  const careNeeds = publicData && publicData.careNeeds;
+  const initialValues = { careNeeds };
 
   const careTypesFeaturesLabel = intl.formatMessage(
     userType === CAREGIVER
-      ? { id: 'EditListingCareTypesPanel.caregiverFormLabel' }
-      : { id: 'EditListingCareTypesPanel.employerFormLabel' }
+      ? { id: 'EditListingCareNeedsPanel.caregiverFormLabel' }
+      : { id: 'EditListingCareNeedsPanel.employerFormLabel' }
   );
 
   const formProps = {
@@ -81,7 +88,7 @@ const EditListingCareTypesPanel = props => {
         {...formProps}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
-          const { careTypes = [] } = values;
+          const { careTypes } = values;
 
           const updatedValues = {
             publicData: { careTypes },

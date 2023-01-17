@@ -277,7 +277,7 @@ export const getSharpHours = (intl, timeZone, startTime, endTime) => {
 
   // Select a moment before startTime to find next possible sharp hour.
   // I.e. startTime might be a sharp hour.
-  const millisecondBeforeStartTime = new Date(startTime.getTime() - 1);
+  const millisecondBeforeStartTime = new Date(startTime - 1);
   return findBookingUnitBoundaries({
     currentBoundary: findNextBoundary(timeZone, millisecondBeforeStartTime),
     startMoment: moment(startTime),
@@ -505,6 +505,24 @@ export const resetToStartOfDay = (date, timeZone, offset = 0) => {
     .tz(timeZone)
     .startOf('day')
     .add(offset, 'days')
+    .toDate();
+};
+
+/**
+ * Resets the date to 23:59:59
+ *
+ * @param {Date} date date to be reseted
+ * @param {int} offset offset of days (e.g. add 1 day)
+ * @param {String} timeZone
+ *
+ * @returns {Date} date with time 23:59:59 with given offset
+ */
+export const resetToEndOfDay = (date, timeZone, offset = 0) => {
+  return moment(date)
+    .clone()
+    .tz(timeZone)
+    .startOf('day')
+    .add(1, 'days')
     .toDate();
 };
 

@@ -6,23 +6,9 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import {
-  requiredFieldArrayCheckbox,
-  requiredFieldArrayRadio,
-  required,
-  maxLength,
-  minLength,
-  composeValidators,
-} from '../../util/validators';
+import { maxLength } from '../../util/validators';
 import config from '../../config';
-import {
-  Form,
-  Button,
-  FieldCheckboxGroup,
-  FieldRadioButtonGroup,
-  FieldTextInput,
-  FieldSelect,
-} from '../../components';
+import { Form, Button, FieldTextInput } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingCaregiverDetailsForm.module.css';
@@ -46,13 +32,13 @@ const EditListingCaregiverDetailsFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
+        filterConfig,
       } = formRenderProps;
 
-      // Caregiver Details
-      const caregiverDetailsMessage = intl.formatMessage({
+      const caregiverDetailsLabel = intl.formatMessage({
         id: 'EditListingCaregiverDetailsForm.caregiverDetailsLabel',
       });
-      const caregiverDetailsPlaceholderMessage = intl.formatMessage({
+      const caregiverDetailsPlaceholder = intl.formatMessage({
         id: 'EditListingCaregiverDetailsForm.caregiverDetailsPlaceholder',
       });
       const maxLengthMessage = intl.formatMessage(
@@ -86,15 +72,16 @@ const EditListingCaregiverDetailsFormComponent = props => (
           {errorMessageUpdateListing}
           {errorMessageShowListing}
 
-          <label htmlFor="idealCaregiverDetails">{caregiverDetailsMessage}</label>
           <FieldTextInput
             id="idealCaregiverDetails"
             name="idealCaregiverDetails"
             className={css.textarea}
+            inputRootClass={css.textareaRoot}
             type="textarea"
-            placeholder={caregiverDetailsPlaceholderMessage}
+            placeholder={caregiverDetailsPlaceholder}
             maxLength={CAREGIVER_DETAILS_MAX_LENGTH}
             validate={maxLength700Message}
+            label={caregiverDetailsLabel}
           />
 
           <Button

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import queryString from 'query-string';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
@@ -7,8 +7,8 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
-import { EditListingCareRecipientDetailsForm } from '../../forms';
-import { ListingLink } from '..';
+import { EditListingAddCareRecipientForm, EditListingCareRecipientDetailsForm } from '../../forms';
+import { ListingLink, InlineTextButton, Modal, IconClose } from '..';
 
 import css from './EditListingCareRecipientDetailsPanel.module.css';
 
@@ -27,44 +27,100 @@ const EditListingCareRecipientDetailsPanel = props => {
     errors,
     intl,
     submitButtonText,
+    onManageDisableScrolling,
   } = props;
 
-  const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
+
+  const [careRecipients, setCareRecipients] = useState(
+    currentListing.attributes.publicData.careRecipients || []
+  );
+  const [isCareRecipientFormVisible, setIsCareRecipientFormVisible] = useState(false);
+
+  const classes = classNames(rootClassName || css.root, className);
   const { publicData } = currentListing.attributes;
+
+  const handleSubmit = values => {
+    const { recipientDetails, detailedCareNeeds } = values;
+
+    const updatedValues = {
+      publicData: {
+        careRecipients,
+        detailedCareNeeds,
+        recipientDetails,
+      },
+    };
+
+    onSubmit(updatedValues);
+  };
+
+  const handleAddRecipient = values => {
+    const { recipientRelationship, gender, age } = values;
+
+    const newCareRecipient = {
+      recipientRelationship,
+      gender,
+      age,
+    };
+
+    setCareRecipients(prevCareRecipients => [...prevCareRecipients, newCareRecipient]);
+    setIsCareRecipientFormVisible(false);
+  };
+
+  const onDeleteRecipient = careRecipient => {
+    setCareRecipients(prevCareRecipients => prevCareRecipients.filter(cr => cr !== careRecipient));
+  };
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
     <FormattedMessage
       id="EditListingCareRecipientDetailsPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingCareRecipientDetailsPanel.listingTitle" />
-          </ListingLink>
+        whoNeedsCare: (
+          <span className={css.whoNeedsCareText}>
+            <FormattedMessage id="EditListingCareRecipientDetailsPanel.whoNeedsCare" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingCareRecipientDetailsPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingCareRecipientDetailsPanel.createListingTitle"
+      values={{
+        whoNeedsCare: (
+          <span className={css.whoNeedsCareText}>
+            <FormattedMessage id="EditListingCareRecipientDetailsPanel.whoNeedsCare" />
+          </span>
+        ),
+      }}
+    />
   );
 
-  const additionalDetails = publicData
-    ? {
-        recipientRelationship: publicData.recipientRelationship,
-        gender: publicData.gender,
-        age: publicData.age,
-        recipientDetails: publicData.recipientDetails,
-      }
-    : {};
-  const initialValues = { ...additionalDetails };
+  const initialValues = {
+    recipientDetails: publicData.recipientDetails,
+    detailedCareNeeds: publicData.detailedCareNeeds,
+  };
 
   const formProps = {
     className: css.form,
+    initialValues,
     onChange,
     disabled,
-    initialValues,
     ready,
+    updated: panelUpdated,
+    updateInProgress,
+    fetchErrors: errors,
+    intl,
+  };
+
+  const addCareFormInitialValues = { age: '30s' };
+
+  const addCareFormProps = {
+    className: css.form,
+    onChange,
+    disabled,
+    ready,
+    initialValues: addCareFormInitialValues,
     updated: panelUpdated,
     updateInProgress,
     fetchErrors: errors,
@@ -74,25 +130,73 @@ const EditListingCareRecipientDetailsPanel = props => {
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>
+
+      {/* <label>
+        <FormattedMessage id={'EditListingCareRecipientDetailsPanel.whoNeedsCareLabel'} />
+      </label> */}
+      {careRecipients.length === 0 ? (
+        <div className={css.noRecipients}>
+          <FormattedMessage id="EditListingCareRecipientDetailsPanel.noCareRecipients" />
+        </div>
+      ) : (
+        <div className={css.recipients}>
+          {careRecipients.map((recipient, index) => {
+            const { recipientRelationship, gender, age } = recipient;
+            return (
+              <div key={index} className={css.recipient}>
+                <div className={css.recipientHeader}>
+                  <button
+                    className={css.removeRecipientButton}
+                    onClick={() => onDeleteRecipient(recipient)}
+                  >
+                    <IconClose size="normal" className={css.removeIcon} />
+                  </button>
+                </div>
+                <h3 className={css.recipientLabel}>Recipient {index + 1}:</h3>
+                <div className={css.recipientTraitsContainer}>
+                  <span className={css.recipientTrait}>Relationship: {recipientRelationship}</span>
+                  <span className={css.recipientTrait}>Gender: {gender}</span>
+                  <span className={css.recipientTrait}>Age: {age}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div>
+        <InlineTextButton
+          className={css.addRecipientButton}
+          onClick={() => setIsCareRecipientFormVisible(true)}
+          disabled={disabled}
+          ready={ready}
+        >
+          <FormattedMessage id="EditListingCareRecipientDetailsPanel.addCareRecipient" />
+        </InlineTextButton>
+      </div>
       <EditListingCareRecipientDetailsForm
         {...formProps}
         saveActionMsg={submitButtonText}
         required={true}
-        onSubmit={values => {
-          const { recipientRelationship, gender, age, recipientDetails } = values;
-
-          const updatedValues = {
-            publicData: {
-              recipientRelationship,
-              gender,
-              age,
-              recipientDetails,
-            },
-          };
-
-          onSubmit(updatedValues);
-        }}
+        onSubmit={handleSubmit}
       />
+      {onManageDisableScrolling && isCareRecipientFormVisible ? (
+        <Modal
+          id="AddCareSessionModal"
+          isOpen={isCareRecipientFormVisible}
+          onClose={() => setIsCareRecipientFormVisible(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          containerClassName={css.modalContainer}
+          usePortal
+        >
+          <EditListingAddCareRecipientForm
+            {...addCareFormProps}
+            saveActionMsg={submitButtonText}
+            required={true}
+            onSubmit={handleAddRecipient}
+            isFormVisible={isCareRecipientFormVisible}
+          />
+        </Modal>
+      ) : null}
     </div>
   );
 };

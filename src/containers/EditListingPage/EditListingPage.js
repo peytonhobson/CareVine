@@ -76,6 +76,8 @@ export const EditListingPageComponent = props => {
     history,
     intl,
     image,
+    onAddAvailabilityException,
+    onDeleteAvailabilityException,
     onCreateListingDraft,
     onPublishListingDraft,
     onUpdateListing,
@@ -121,6 +123,7 @@ export const EditListingPageComponent = props => {
   const showForm = hasStripeOnboardingDataIfNeeded && (isNewURI || currentListing.id);
 
   const createProfile = history.location.pathname.includes('create-profile');
+  const isPublished = currentListingState && currentListingState !== LISTING_STATE_DRAFT;
 
   if (shouldRedirect) {
     const isPendingApproval =
@@ -148,7 +151,10 @@ export const EditListingPageComponent = props => {
         };
 
     return <NamedRedirect {...redirectProps} />;
-  } else if (allowOnlyOneListing && isNewURI && currentUserListingFetched && currentUserListing) {
+  } else if (
+    (allowOnlyOneListing && isNewURI && currentUserListingFetched && currentUserListing) ||
+    (createProfile && isPublished)
+  ) {
     // If we allow only one listing per provider, we need to redirect to correct listing.
     return (
       <NamedRedirect
@@ -157,7 +163,7 @@ export const EditListingPageComponent = props => {
           id: currentUserListing.id.uuid,
           slug: createSlug(currentUserListing.attributes.title),
           type: LISTING_PAGE_PARAM_TYPE_EDIT,
-          tab: 'description',
+          tab: 'location',
         }}
       />
     );
@@ -292,6 +298,10 @@ export const EditListingPageComponent = props => {
           handleCardSetupError={handleCardSetupError}
           onHandleCardSetup={onHandleCardSetup}
           onChangeMissingInfoModal={onChangeMissingInfoModal}
+          onAddAvailabilityException={onAddAvailabilityException}
+          onDeleteAvailabilityException={onDeleteAvailabilityException}
+          availabilityExceptions={page.availabilityExceptions}
+          fetchExceptionsInProgress={page.fetchExceptionsInProgress}
         />
       );
     } else {
