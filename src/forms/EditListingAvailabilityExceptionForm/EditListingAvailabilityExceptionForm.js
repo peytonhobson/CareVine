@@ -500,7 +500,7 @@ const EditListingAvailabilityExceptionForm = props => {
           onMonthChanged
         );
 
-        const { updateListingError } = fetchErrors || {};
+        const { updateListingError, addExceptionError } = fetchErrors || {};
 
         const placeholderTime = localizeAndFormatTime(
           intl,
@@ -751,7 +751,7 @@ const EditListingAvailabilityExceptionForm = props => {
             </div>
 
             <div className={css.submitButton}>
-              {updateListingError ? (
+              {updateListingError || addExceptionError ? (
                 <p className={css.error}>
                   <FormattedMessage id="EditListingAvailabilityExceptionForm.updateFailed" />
                 </p>

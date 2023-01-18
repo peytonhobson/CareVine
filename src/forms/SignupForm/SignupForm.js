@@ -12,6 +12,7 @@ import { useHistory } from 'react-router-dom';
 import css from './SignupForm.module.css';
 
 const KEY_CODE_ENTER = 13;
+const newListingId = '00000000-0000-0000-0000-000000000000';
 
 const SignupFormComponent = props => (
   <FinalForm
@@ -27,6 +28,7 @@ const SignupFormComponent = props => (
         invalid,
         intl,
         onOpenTermsOfService,
+        form,
       } = fieldRenderProps;
 
       // select user type
@@ -151,12 +153,18 @@ const SignupFormComponent = props => (
 
       const history = useHistory();
 
+      const formValues = form.getState().values;
+
       const onSubmit = values => {
         values.preventDefault();
 
+        const userType = formValues.userType;
+
         handleSubmit(values);
 
-        history.push(`/create-profile/draft/00000000-0000-0000-0000-000000000000/new/care-types`);
+        const firstTab = userType === 'employer' ? 'care-needs' : 'care-needs';
+
+        history.push(`/create-profile/draft/00000000-0000-0000-0000-000000000000/new/${firstTab}`);
       };
 
       return (

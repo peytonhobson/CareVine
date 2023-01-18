@@ -75,6 +75,8 @@ export class EditListingPhotosFormComponent extends Component {
             fetchErrors || {};
           const uploadOverLimit = isUploadImageOverLimitError(uploadImageError);
 
+          let uploadImageFailed = null;
+
           if (uploadOverLimit) {
             uploadImageFailed = (
               <p className={css.error}>
@@ -105,7 +107,7 @@ export class EditListingPhotosFormComponent extends Component {
 
           // imgs can contain added images (with temp ids) and submitted images with uniq ids.
 
-          const submitReady = (updated && pristine) || ready;
+          const submitReady = ((updated && pristine) || ready) && !publishListingFailed;
           const submitInProgress = updateInProgress;
           const submitDisabled =
             invalid || disabled || submitInProgress || uploadInProgress || ready || image === null;
@@ -185,11 +187,6 @@ export class EditListingPhotosFormComponent extends Component {
                 handleSubmit(e);
               }}
             >
-              {updateListingError ? (
-                <p className={css.error}>
-                  <FormattedMessage id="EditListingPhotosForm.updateFailed" />
-                </p>
-              ) : null}
               <div className={css.sectionContainer}>
                 <h3 className={css.sectionTitle}>
                   <FormattedMessage id="ProfileSettingsForm.yourProfilePicture" />
@@ -261,6 +258,11 @@ export class EditListingPhotosFormComponent extends Component {
                 </div>
               </div>
 
+              {updateListingError ? (
+                <p className={css.error}>
+                  <FormattedMessage id="EditListingPhotosForm.updateFailed" />
+                </p>
+              ) : null}
               {publishListingFailed}
               {showListingFailed}
 

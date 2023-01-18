@@ -103,7 +103,7 @@ class EditListingLocationPanel extends Component {
           className={css.form}
           initialValues={this.state.initialValues}
           onSubmit={values => {
-            const { location, travelDistance, nearPublicTransit } = values;
+            const { location, travelDistance, nearPublicTransit = [] } = values;
 
             const {
               selectedPlace: { address, origin },

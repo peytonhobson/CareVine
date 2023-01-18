@@ -63,6 +63,8 @@ const CareScheduleExceptions = props => {
   );
   const exceptionCount = (sortedAvailabilityExceptions && sortedAvailabilityExceptions.length) || 0;
 
+  const { deleteExceptionError, fetchExceptionsError } = errors || {};
+
   // Save exception click handler
   const saveException = values => {
     const { availability, exceptionStartTime, exceptionEndTime } = values;
@@ -114,9 +116,18 @@ const CareScheduleExceptions = props => {
             )}
           </h2>
         </header>
+        {deleteExceptionError ? (
+          <p className={css.error}>
+            <FormattedMessage id="CareScheduleExceptions.deleteExceptionFailed" />
+          </p>
+        ) : null}
         {fetchExceptionsInProgress ? (
           <div className={css.exceptionsLoading}>
             <IconSpinner />
+          </div>
+        ) : fetchExceptionsError ? (
+          <div className={css.error}>
+            <FormattedMessage id="CareScheduleExceptions.fetchExceptionsError" />
           </div>
         ) : exceptionCount === 0 ? (
           <div className={css.noExceptions}>
