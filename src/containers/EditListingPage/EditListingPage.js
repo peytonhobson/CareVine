@@ -98,11 +98,10 @@ export const EditListingPageComponent = props => {
     uploadInProgress,
     onHandleCardSetup,
     fetchStripeCustomer,
-    // onSavePaymentMethod,
-    addPaymentMethodError,
     createStripeCustomerError,
     handleCardSetupError,
     onChangeMissingInfoModal,
+    uploadImageError,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -156,6 +155,8 @@ export const EditListingPageComponent = props => {
     (createProfile && isPublished)
   ) {
     // If we allow only one listing per provider, we need to redirect to correct listing.
+
+    const userType = currentUser && currentUser.attributes.profile.publicData.userType;
     return (
       <NamedRedirect
         name="EditListingPage"
@@ -163,7 +164,7 @@ export const EditListingPageComponent = props => {
           id: currentUserListing.id.uuid,
           slug: createSlug(currentUserListing.attributes.title),
           type: LISTING_PAGE_PARAM_TYPE_EDIT,
-          tab: 'location',
+          tab: userType === 'employer' ? 'care-needs' : 'care-types',
         }}
       />
     );
@@ -173,7 +174,6 @@ export const EditListingPageComponent = props => {
       publishListingError = null,
       updateListingError = null,
       showListingsError = null,
-      uploadImageError = null,
       fetchExceptionsError = null,
       addExceptionError = null,
       deleteExceptionError = null,
@@ -291,12 +291,6 @@ export const EditListingPageComponent = props => {
           onProfileImageUpload={onProfileImageUpload}
           image={image}
           uploadInProgress={uploadInProgress}
-          fetchStripeCustomer={fetchStripeCustomer}
-          // onSavePaymentMethod={onSavePaymentMethod}
-          addPaymentMethodError={addPaymentMethodError}
-          createStripeCustomerError={createStripeCustomerError}
-          handleCardSetupError={handleCardSetupError}
-          onHandleCardSetup={onHandleCardSetup}
           onChangeMissingInfoModal={onChangeMissingInfoModal}
           onAddAvailabilityException={onAddAvailabilityException}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
@@ -432,7 +426,7 @@ EditListingPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const page = state.EditListingPage;
-  const { image, uploadInProgress } = state.ProfileSettingsPage;
+  const { image, uploadInProgress, uploadImageError } = state.ProfileSettingsPage;
 
   const {
     getAccountLinkInProgress,
@@ -481,6 +475,7 @@ const mapStateToProps = state => {
     addPaymentMethodError,
     createStripeCustomerError,
     handleCardSetupError,
+    uploadImageError,
   };
 };
 

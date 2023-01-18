@@ -3,7 +3,6 @@
  */
 import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/ContactDetailsPage.duck';
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
-import { loadData as CreateProfilePageLoader } from './CreateProfilePage/CreateProfilePage.duck';
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
 // import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 import { loadData as ListingPageLoader } from './ListingPage/ListingPage.duck';
@@ -18,9 +17,6 @@ const getPageDataLoadingAPI = () => {
   return {
     ContactDetailsPage: {
       loadData: ContactDetailsPageLoader,
-    },
-    CreateProfilePage: {
-      loadData: CreateProfilePageLoader,
     },
     EditListingPage: {
       loadData: EditListingPageLoader,

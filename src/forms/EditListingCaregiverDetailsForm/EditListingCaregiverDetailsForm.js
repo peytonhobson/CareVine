@@ -69,7 +69,6 @@ const EditListingCaregiverDetailsFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessageUpdateListing}
           {errorMessageShowListing}
 
           <FieldTextInput
@@ -83,6 +82,8 @@ const EditListingCaregiverDetailsFormComponent = props => (
             validate={maxLength700Message}
             label={caregiverDetailsLabel}
           />
+
+          {errorMessageUpdateListing}
 
           <Button
             className={css.submitButton}

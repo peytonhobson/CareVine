@@ -70,17 +70,10 @@ const EditListingCareRecipientDetailsFormComponent = props => (
       );
       const maxLength700Message = maxLength(maxLengthMessage, RECIPIENT_DETAILS_MAX_LENGTH);
 
-      const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
+      const { updateListingError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingCareRecipientDetailsForm.updateFailed" />
-        </p>
-      ) : null;
-
-      // This error happens only on first tab (of EditListingWizard)
-      const errorMessageCreateListingDraft = createListingDraftError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingCareRecipientDetailsForm.createListingDraftError" />
         </p>
       ) : null;
 
@@ -97,8 +90,6 @@ const EditListingCareRecipientDetailsFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessageCreateListingDraft}
-          {errorMessageUpdateListing}
           {errorMessageShowListing}
 
           <FieldCheckboxGroup
@@ -120,6 +111,8 @@ const EditListingCareRecipientDetailsFormComponent = props => (
             validate={maxLength700Message}
             label={recipientDetailsMessage}
           />
+
+          {errorMessageUpdateListing}
 
           <Button
             className={css.submitButton}

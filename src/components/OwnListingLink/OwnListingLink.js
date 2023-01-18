@@ -29,6 +29,8 @@ const OwnListingLink = props => {
   const slug = createSlug(title);
   const isDraft = state === LISTING_STATE_DRAFT;
 
+  const listingType = currentListing.attributes.metadata.listingType;
+
   return (
     <NamedLink
       className={className ? className : css.yourListingsLink}
@@ -37,7 +39,7 @@ const OwnListingLink = props => {
         id,
         slug,
         type: getListingType(isDraft),
-        tab: 'care-types',
+        tab: listingType === 'employer' ? 'care-needs' : 'care-types',
       }}
     >
       <span className={css.menuItemBorder} />

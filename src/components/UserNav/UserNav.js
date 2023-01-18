@@ -27,6 +27,8 @@ const listingTab = (listing, selectedPageName) => {
   const slug = createSlug(title);
   const isDraft = state === LISTING_STATE_DRAFT;
 
+  const listingType = currentListing.attributes.metadata.listingType;
+
   return {
     text: <FormattedMessage id="UserNav.editListing" />,
     selected: selectedPageName === 'EditListingPage',
@@ -36,7 +38,7 @@ const listingTab = (listing, selectedPageName) => {
         id,
         slug,
         type: getListingType(isDraft),
-        tab: 'care-types',
+        tab: listingType === 'employer' ? 'care-needs' : 'care-types',
       },
     },
   };

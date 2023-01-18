@@ -155,17 +155,19 @@ class EmployerEditListingWizard extends Component {
   handlePublishListing(id) {
     const { onPublishListingDraft, currentUser, onChangeMissingInfoModal, history } = this.props;
 
-    onPublishListingDraft(id);
-
-    if (
-      currentUser &&
-      !currentUser.attributes.emailVerified &&
-      !history.location.pathname.includes('create-profile')
-    ) {
-      onChangeMissingInfoModal(EMAIL_VERIFICATION);
-    } else if (history.location.pathname.includes('create-profile')) {
-      history.push('/signup');
-    }
+    onPublishListingDraft(id).then(res => {
+      if (res.type !== 'error') {
+        if (
+          currentUser &&
+          !currentUser.attributes.emailVerified &&
+          !history.location.pathname.includes('create-profile')
+        ) {
+          onChangeMissingInfoModal(EMAIL_VERIFICATION);
+        } else if (history.location.pathname.includes('create-profile')) {
+          history.push('/signup');
+        }
+      }
+    });
   }
 
   render() {

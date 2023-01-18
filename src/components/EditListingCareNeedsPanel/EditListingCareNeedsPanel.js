@@ -60,8 +60,8 @@ const EditListingCareTypesPanel = props => {
   const user = ensureCurrentUser(currentUser);
   const userType = user.attributes?.profile.metadata.userType;
 
-  const careNeeds = publicData && publicData.careNeeds;
-  const initialValues = { careNeeds };
+  const careTypes = publicData && publicData.careTypes;
+  const initialValues = { careTypes };
 
   const careTypesFeaturesLabel = intl.formatMessage(
     userType === CAREGIVER

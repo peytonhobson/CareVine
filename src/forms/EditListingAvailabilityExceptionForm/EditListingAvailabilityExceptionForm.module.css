@@ -198,3 +198,6 @@
     padding-bottom: 0;
   }
 }
+.error {
+  color: var(--failColor);
+}

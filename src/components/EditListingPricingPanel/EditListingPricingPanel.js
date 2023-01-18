@@ -70,10 +70,6 @@ const EditListingPricingPanel = props => {
     priceTime: submittedValues ? submittedValues.priceTime : priceTime || 'hourly',
   };
 
-  // const priceCurrencyValid =
-  //   minPrice instanceof Money && maxPrice instanceof Money
-  //     ? minPrice.currency === config.currency && maxPrice.currency === config.currency
-  //     : true;
   const form = (
     <EditListingPricingForm
       className={css.form}
@@ -106,11 +102,6 @@ const EditListingPricingPanel = props => {
       fetchErrors={errors}
     />
   );
-  // ) : (
-  //   <div className={css.priceCurrencyInvalid}>
-  //     <FormattedMessage id="EditListingPricingPanel.listingPriceCurrencyInvalid" />
-  //   </div>
-  // );
 
   return (
     <div className={classes}>

@@ -45,7 +45,7 @@ const EditListingFeaturesFormComponent = props => (
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
 
-      const { updateListingError, showListingsError } = fetchErrors || {};
+      const { updateListingError, showListingsError, createListingDraftError } = fetchErrors || {};
 
       const errorMessageNotSelected = intl.formatMessage(
         singleSelect
@@ -62,12 +62,18 @@ const EditListingFeaturesFormComponent = props => (
           <FormattedMessage id="EditListingFeaturesForm.showListingFailed" />
         </p>
       ) : null;
+      const errorMessageCreateListingDraft = createListingDraftError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingFeaturesForm.createListingFailed" />
+        </p>
+      ) : null;
 
       const options = findOptionsForSelectFilter(name, filterConfig);
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           {errorMessage}
           {errorMessageShowListing}
+          {errorMessageCreateListingDraft}
 
           {!singleSelect && (
             <FieldCheckboxGroup

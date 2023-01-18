@@ -2,6 +2,10 @@
   padding-block: 20px;
 }
 
+.error {
+  color: var(--failColor);
+}
+
 .sectionHeader {
   display: flex;
   flex-direction: row;

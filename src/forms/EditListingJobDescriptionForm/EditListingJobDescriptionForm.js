@@ -84,7 +84,6 @@ const EditListingJobDescriptionFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessageUpdateListing}
           {errorMessageShowListing}
 
           <FieldTextInput
@@ -109,6 +108,8 @@ const EditListingJobDescriptionFormComponent = props => (
             maxLength={DESCRIPTION_MAX_LENGTH}
             validate={maxLength700Message}
           />
+
+          {errorMessageUpdateListing}
 
           <Button
             className={css.submitButton}
