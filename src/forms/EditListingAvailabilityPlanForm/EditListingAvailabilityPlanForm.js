@@ -12,12 +12,10 @@ import {
   IconClose,
   PrimaryButton,
   FieldSelect,
-  FieldTimeZoneSelect,
+  FieldCheckbox,
 } from '../../components';
 
 import css from './EditListingAvailabilityPlanForm.module.css';
-import { useEffect } from 'react';
-import { B } from '@sendbird/uikit-react/index-c45e5f15';
 
 const printHourStrings = h => {
   if (h === 0 || h === 24) {
@@ -353,6 +351,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
           showErrors,
           values,
           weekdays,
+          currentListing,
         } = fieldRenderProps;
 
         const classes = classNames(rootClassName || css.root, className);
@@ -369,19 +368,29 @@ const EditListingAvailabilityPlanFormComponent = props => {
 
         const submitDisabled = submitInProgress || hasUnfinishedEntries;
 
+        const listingType = currentListing && currentListing.attributes.metadata.listingType;
+
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
             <h2 className={css.heading}>
               <FormattedMessage id="EditListingAvailabilityPlanForm.title" />
             </h2>
-            <h3 className={css.subheading}>
-              <FormattedMessage id="EditListingAvailabilityPlanForm.hoursOfOperationTitle" />
-            </h3>
-            <div className={css.week}>
+            <div className={listingType === 'caregiver' ? css.caregiverWeek : css.week}>
               {weekdays.map(w => {
                 return <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} />;
               })}
             </div>
+            {listingType === 'caregiver' ? (
+              <FieldCheckbox
+                id="isFlexible"
+                name="isFlexible"
+                className={css.isFlexible}
+                textClassName={css.isFlexibleText}
+                label={intl.formatMessage({
+                  id: 'EditListingAvailabilityPlanForm.isFlexible',
+                })}
+              />
+            ) : null}
 
             <div className={css.submitButton}>
               {updateListingError && showErrors ? (

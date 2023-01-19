@@ -13,6 +13,7 @@ import { ensureListing } from '../../util/data';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   EditListingAdditionalDetailsPanel,
+  EditListingAvailabilityPanel,
   EditListingBackgroundCheckPanel,
   EditListingBioPanel,
   EditListingCaregiverDetailsPanel,
@@ -29,9 +30,11 @@ import {
 import css from './EditListingWizardTab.module.css';
 
 export const CARE_NEEDS = 'care-needs';
+export const SERVICES = 'services';
 export const CARE_SCHEDULE = 'care-schedule';
+export const AVAILABILITY = 'availability';
 export const BIO = 'bio';
-export const EXPERIENCE_LEVEL = 'experience-level';
+export const EXPERIENCE = 'experience';
 export const ADDITIONAL_DETAILS = 'additional-details';
 export const POLICY = 'policy';
 export const LOCATION = 'location';
@@ -45,8 +48,10 @@ export const JOB_DESCRIPTION = 'job-description';
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
   CARE_NEEDS,
+  SERVICES,
+  AVAILABILITY,
   BIO,
-  EXPERIENCE_LEVEL,
+  EXPERIENCE,
   ADDITIONAL_DETAILS,
   POLICY,
   LOCATION,
@@ -213,6 +218,20 @@ const EditListingWizardTab = props => {
         />
       );
     }
+    case SERVICES: {
+      const submitButtonTranslationKey = isNewListingFlow
+        ? 'EditListingWizard.saveNewServices'
+        : 'EditListingWizard.saveEditServices';
+      return (
+        <EditListingCareNeedsPanel
+          {...panelProps(SERVICES)}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          onSubmit={values => {
+            onCompleteEditListingWizardTab(tab, values);
+          }}
+        />
+      );
+    }
     case BIO: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewBio'
@@ -227,13 +246,13 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    case EXPERIENCE_LEVEL: {
+    case EXPERIENCE: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewExperienceLevel'
         : 'EditListingWizard.saveEditExperienceLevel';
       return (
         <EditListingExperienceLevelPanel
-          {...panelProps(EXPERIENCE_LEVEL)}
+          {...panelProps(EXPERIENCE)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -290,6 +309,29 @@ const EditListingWizardTab = props => {
       return (
         <EditListingCareSchedulePanel
           {...panelProps(CARE_SCHEDULE)}
+          fetchExceptionsInProgress={fetchExceptionsInProgress}
+          availabilityExceptions={availabilityExceptions}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          onAddAvailabilityException={onAddAvailabilityException}
+          onDeleteAvailabilityException={onDeleteAvailabilityException}
+          onSubmit={values => {
+            // We want to return the Promise to the form,
+            // so that it doesn't close its modal if an error is thrown.
+            return onCompleteEditListingWizardTab(tab, values, true);
+          }}
+          onNextTab={() =>
+            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+          }
+        />
+      );
+    }
+    case AVAILABILITY: {
+      const submitButtonTranslationKey = isNewListingFlow
+        ? 'EditListingWizard.saveNewCareSchedule'
+        : 'EditListingWizard.saveEditCareSchedule';
+      return (
+        <EditListingAvailabilityPanel
+          {...panelProps(AVAILABILITY)}
           fetchExceptionsInProgress={fetchExceptionsInProgress}
           availabilityExceptions={availabilityExceptions}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}

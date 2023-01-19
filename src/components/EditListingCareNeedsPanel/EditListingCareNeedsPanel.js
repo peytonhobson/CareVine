@@ -7,7 +7,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing, ensureCurrentUser } from '../../util/data';
 import { EditListingFeaturesForm } from '../../forms';
-import { CAREGIVER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './EditListingCareNeedsPanel.module.css';
 
@@ -32,33 +32,58 @@ const EditListingCareTypesPanel = props => {
   const currentListing = ensureListing(listing);
   const { publicData } = currentListing.attributes;
 
-  const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const panelTitle = isPublished ? (
-    <FormattedMessage
-      id="EditListingCareNeedsPanel.title"
-      values={{
-        careNeeds: (
-          <span className={css.careNeeds}>
-            <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
-          </span>
-        ),
-      }}
-    />
-  ) : (
-    <FormattedMessage
-      id="EditListingCareNeedsPanel.createListingTitle"
-      values={{
-        careNeeds: (
-          <span className={css.careNeeds}>
-            <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
-          </span>
-        ),
-      }}
-    />
-  );
-
   const user = ensureCurrentUser(currentUser);
   const userType = user.attributes?.profile.metadata.userType;
+
+  const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
+  const panelTitle =
+    userType === EMPLOYER ? (
+      isPublished ? (
+        <FormattedMessage
+          id="EditListingCareNeedsPanel.employerTitle"
+          values={{
+            careNeeds: (
+              <span className={css.careNeeds}>
+                <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
+              </span>
+            ),
+          }}
+        />
+      ) : (
+        <FormattedMessage
+          id="EditListingCareNeedsPanel.employerCreateListingTitle"
+          values={{
+            careNeeds: (
+              <span className={css.careNeeds}>
+                <FormattedMessage id="EditListingCareNeedsPanel.careNeeds" />
+              </span>
+            ),
+          }}
+        />
+      )
+    ) : isPublished ? (
+      <FormattedMessage
+        id="EditListingCareNeedsPanel.caregiverTitle"
+        values={{
+          services: (
+            <span className={css.careNeeds}>
+              <FormattedMessage id="EditListingCareNeedsPanel.services" />
+            </span>
+          ),
+        }}
+      />
+    ) : (
+      <FormattedMessage
+        id="EditListingCareNeedsPanel.caregiverCreateListingTitle"
+        values={{
+          services: (
+            <span className={css.careNeeds}>
+              <FormattedMessage id="EditListingCareNeedsPanel.services" />
+            </span>
+          ),
+        }}
+      />
+    );
 
   const careTypes = publicData && publicData.careTypes;
   const initialValues = { careTypes };

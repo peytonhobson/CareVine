@@ -56,6 +56,33 @@
   }
 }
 
+.caregiverWeek {
+  display: flex;
+  flex-direction: column;
+
+  padding-top: 16px;
+}
+
+.isFlexible {
+  margin-block: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  display: flex;
+  justify-content: center;
+
+  @media (--viewportLarge) {
+    margin-block: 35px;
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.isFlexibleText {
+  composes: h3 from global;
+
+  margin: 0;
+}
+
 .weekDay {
   composes: marketplaceTabNavHorizontalFontStyles from global;
 

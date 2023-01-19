@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { FormattedMessage } from '../../../util/reactIntl';
 import { InlineTextButton, IconEdit, Modal, CareScheduleExceptions, Button } from '../..';
 import Weekday from '../Weekday';
-import { createAvailabilityPlan } from '../EditListingCareSchedule.helpers';
+import { createAvailabilityPlan, createInitialValues } from '../EditListingCareSchedule.helpers';
 import { EditListingAvailabilityPlanForm } from '../../../forms';
 
 import css from './containers.module.css';
@@ -14,8 +14,7 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const CareScheduleRecurringTimesContainer = props => {
   const {
-    availabilityExceptions,
-    availabilityPlan,
+    availabilityPlan: savedAvailabilityPlan,
     currentListing,
     disabled,
     errors,
@@ -30,29 +29,61 @@ const CareScheduleRecurringTimesContainer = props => {
     submitButtonText,
     updateInProgress,
     showErrors,
-    useDefaultPlan,
+    panelUpdated,
   } = props;
 
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
   const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
+  const [availabilityExceptions, setAvailabilityExceptions] = useState(
+    (savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions) || []
+  );
+  const [availabilityPlan, setAvailabilityPlan] = useState(savedAvailabilityPlan);
 
-  const handleSubmit = values => {
+  const handleAvailabilityPlanSubmit = values => {
     setValuesFromLastSubmit(values);
 
-    const newAvailabilityPlan = createAvailabilityPlan(values, currentListing);
+    setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
 
+    setIsEditPlanModalOpen(false);
+  };
+
+  const handleSubmit = () => {
     // Final Form can wait for Promises to return.
-    return onSubmit({ publicData: { availabilityPlan: newAvailabilityPlan } })
+    return onSubmit({
+      publicData: {
+        availabilityPlan: {
+          ...availabilityPlan,
+          availabilityExceptions,
+        },
+      },
+    })
       .then(() => {
-        setIsEditPlanModalOpen(false);
+        if (!isPublished) {
+          onNextTab();
+        }
       })
       .catch(e => {
         // Don't close modal if there was an error
       });
   };
 
-  const isNextButtonDisabled = !availabilityPlan;
-  const initialValues = valuesFromLastSubmit ? valuesFromLastSubmit : availabilityPlan;
+  const initialValues = valuesFromLastSubmit
+    ? valuesFromLastSubmit
+    : createInitialValues(availabilityPlan);
+
+  const submitDisabled = !valuesFromLastSubmit;
+  const submitInProgress = updateInProgress;
+  const submitReady = ready || panelUpdated;
+
+  const handleSaveAvailabilityException = exception => {
+    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
+  };
+
+  const handleDeleteException = start => {
+    setAvailabilityExceptions(prevExceptions =>
+      prevExceptions.filter(exception => exception.attributes.start !== start)
+    );
+  };
 
   return (
     <>
@@ -81,10 +112,7 @@ const CareScheduleRecurringTimesContainer = props => {
         </div>
       </section>
       <CareScheduleExceptions
-        fetchExceptionsInProgress={fetchExceptionsInProgress}
         availabilityExceptions={availabilityExceptions}
-        onDeleteAvailabilityException={onDeleteAvailabilityException}
-        onAddAvailabilityException={onAddAvailabilityException}
         onManageDisableScrolling={onManageDisableScrolling}
         availabilityPlan={availabilityPlan}
         updateInProgress={updateInProgress}
@@ -92,17 +120,18 @@ const CareScheduleRecurringTimesContainer = props => {
         disabled={disabled}
         ready={ready}
         listing={currentListing}
-        useDefaultPlan={useDefaultPlan}
+        onSave={handleSaveAvailabilityException}
+        onDelete={handleDeleteException}
       />
-      {!isPublished ? (
-        <Button
-          className={css.goToNextTabButton}
-          onClick={onNextTab}
-          disabled={isNextButtonDisabled}
-        >
-          {submitButtonText}
-        </Button>
-      ) : null}
+      <Button
+        className={css.goToNextTabButton}
+        onClick={handleSubmit}
+        disabled={submitDisabled}
+        inProgress={submitInProgress}
+        ready={submitReady}
+      >
+        {submitButtonText}
+      </Button>
       {onManageDisableScrolling ? (
         <Modal
           id="EditAvailabilityPlan"
@@ -117,7 +146,7 @@ const CareScheduleRecurringTimesContainer = props => {
             listingTitle={currentListing.attributes.title}
             availabilityPlan={availabilityPlan}
             weekdays={WEEKDAYS}
-            onSubmit={handleSubmit}
+            onSubmit={handleAvailabilityPlanSubmit}
             initialValues={initialValues}
             inProgress={updateInProgress}
             fetchErrors={errors}

@@ -23,7 +23,7 @@ const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
 // Note: if you allow fetching more than 100 exception,
 // pagination kicks in and that makes client-side sorting impossible.
 const sortExceptionsByStartTime = (a, b) => {
-  return a.attributes.start.getTime() - b.attributes.start.getTime();
+  return a.attributes.start - b.attributes.start;
 };
 
 const filterExceptionsByType = (exceptions, planType) => {
@@ -41,7 +41,6 @@ const CareScheduleExceptions = props => {
     fetchExceptionsInProgress,
     availabilityExceptions,
     onDeleteAvailabilityException,
-    onAddAvailabilityException,
     onManageDisableScrolling,
     availabilityPlan,
     updateInProgress,
@@ -49,7 +48,8 @@ const CareScheduleExceptions = props => {
     disabled,
     ready,
     listing,
-    useDefaultPlan,
+    onSave,
+    onDelete,
   } = props;
 
   const [isEditExceptionsModalOpen, setIsEditExceptionsModalOpen] = useState(false);
@@ -74,30 +74,20 @@ const CareScheduleExceptions = props => {
     // TODO: add proper seat handling
     const seats = isRecurring ? (available ? 1 : 0) : available ? 3 : 2;
 
-    if (planType)
-      return onAddAvailabilityException({
-        listingId: listing.id,
+    onSave({
+      listingId: listing.id.uuid,
+      attributes: {
         seats,
-        start: timestampToDate(exceptionStartTime),
-        end: timestampToDate(exceptionEndTime),
-      })
-        .then(() => {
-          setIsEditExceptionsModalOpen(false);
-        })
-        .catch(e => {
-          // Don't close modal if there was an error
-        });
+        start: exceptionStartTime,
+        end: exceptionEndTime,
+      },
+    });
+
+    setIsEditExceptionsModalOpen(false);
   };
 
   const openExceptionsModal = e => {
     e.preventDefault();
-    const otherPlanSeats = isRecurring ? [2, 3] : [0, 1];
-    availabilityExceptions &&
-      availabilityExceptions.forEach(exception => {
-        if (otherPlanSeats.includes(exception.attributes.seats)) {
-          onDeleteAvailabilityException({ id: exception.id });
-        }
-      });
     setIsEditExceptionsModalOpen(true);
   };
 
@@ -138,7 +128,7 @@ const CareScheduleExceptions = props => {
             {sortedAvailabilityExceptions.map(availabilityException => {
               const { start, end, seats } = availabilityException.attributes;
               return (
-                <div key={availabilityException.id.uuid} className={css.exception}>
+                <div key={availabilityException.start} className={css.exception}>
                   <div className={css.exceptionHeader}>
                     <div className={css.exceptionAvailability}>
                       <div
@@ -162,9 +152,7 @@ const CareScheduleExceptions = props => {
                     </div>
                     <button
                       className={css.removeExceptionButton}
-                      onClick={() =>
-                        onDeleteAvailabilityException({ id: availabilityException.id })
-                      }
+                      onClick={() => onDelete(start)}
                       type="button"
                     >
                       <IconClose size="normal" className={css.removeIcon} />
@@ -172,8 +160,8 @@ const CareScheduleExceptions = props => {
                   </div>
                   <TimeRange
                     className={css.timeRange}
-                    startDate={start}
-                    endDate={isRecurring ? end : end - 1}
+                    startDate={timestampToDate(start)}
+                    endDate={isRecurring ? timestampToDate(end) : timestampToDate(end) - 1}
                     dateType={isRecurring ? DATE_TYPE_DATETIME : DATE_TYPE_DATE}
                     timeZone={availabilityPlan.timezone}
                   />
