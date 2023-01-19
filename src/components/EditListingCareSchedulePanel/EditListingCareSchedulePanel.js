@@ -33,7 +33,6 @@ const defaultTimeZone = () =>
 
 const EditListingCareSchedulePanel = props => {
   const {
-    availabilityExceptions,
     className,
     disabled,
     errors,
@@ -63,7 +62,7 @@ const EditListingCareSchedulePanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
   const handle24HourCareSubmit = values => {
-    const { liveIn, availableDays } = values;
+    const { liveIn, availableDays, availabilityExceptions } = values;
 
     const currentZipcode = currentListing.attributes.publicData.location.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
@@ -73,6 +72,7 @@ const EditListingCareSchedulePanel = props => {
       liveIn,
       availableDays,
       timezone,
+      availabilityExceptions,
     };
 
     return onSubmit({ publicData: { availabilityPlan } })
@@ -85,10 +85,6 @@ const EditListingCareSchedulePanel = props => {
   };
 
   const handleSelectDatesSubmit = availabilityPlan => {
-    availabilityExceptions.forEach(exception => {
-      onDeleteAvailabilityException({ id: exception.id });
-    });
-
     return onSubmit({ publicData: { availabilityPlan } })
       .then(() => {
         if (!isPublished) {
@@ -140,15 +136,11 @@ const EditListingCareSchedulePanel = props => {
           : defaultAvailabilityPlan;
       mainContent = (
         <CareScheduleRecurringTimesContainer
-          availabilityExceptions={availabilityExceptions}
           availabilityPlan={availabilityPlan}
           currentListing={currentListing}
           disabled={disabled}
           errors={errors}
-          fetchExceptionsInProgress={fetchExceptionsInProgress}
           isPublished={isPublished}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
           onManageDisableScrolling={onManageDisableScrolling}
           onNextTab={onNextTab}
           onSubmit={onSubmit}
@@ -156,7 +148,7 @@ const EditListingCareSchedulePanel = props => {
           submitButtonText={submitButtonText}
           updateInProgress={updateInProgress}
           showErrors={showErrors}
-          useDefaultPlan={availabilityPlan === defaultAvailabilityPlan}
+          panelUpdated={panelUpdated}
         />
       );
       break;
@@ -174,14 +166,10 @@ const EditListingCareSchedulePanel = props => {
           : defaultAvailabilityPlan;
       mainContent = (
         <Care24HourForm
-          availabilityExceptions={availabilityExceptions}
           availabilityPlan={availabilityPlan}
           currentListing={currentListing}
           disabled={disabled}
           fetchErrors={errors}
-          fetchExceptionsInProgress={fetchExceptionsInProgress}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
           onManageDisableScrolling={onManageDisableScrolling}
           onSubmit={handle24HourCareSubmit}
           ready={ready}
@@ -189,7 +177,6 @@ const EditListingCareSchedulePanel = props => {
           submitButtonText={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
-          useDefaultPlan={currentListing === defaultAvailabilityPlan}
         ></Care24HourForm>
       );
       break;

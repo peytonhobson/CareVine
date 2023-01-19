@@ -177,6 +177,7 @@ export { default as UserCard } from './UserCard/UserCard';
 
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
 export { default as CaregiverListingContainer } from './ListingContainer/CaregiverListingContainer'
+export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingBackgroundCheckPanel} from './EditListingBackgroundCheckPanel/EditListingBackgroundCheckPanel';
 export { default as EditListingBioPanel } from './EditListingBioPanel/EditListingBioPanel';

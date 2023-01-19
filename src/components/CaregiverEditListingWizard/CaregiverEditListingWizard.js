@@ -20,10 +20,10 @@ import { StripeConnectAccountForm } from '../../forms';
 import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
 import EditListingWizardTab, {
-  CARE_NEEDS,
-  CARE_SCHEDULE,
+  SERVICES,
+  AVAILABILITY,
   BIO,
-  EXPERIENCE_LEVEL,
+  EXPERIENCE,
   ADDITIONAL_DETAILS,
   LOCATION,
   PRICING,
@@ -39,13 +39,13 @@ import css from './CaregiverEditListingWizard.module.css';
 // Note 3: in FTW-hourly template we don't use the POLICY tab so it's commented out.
 // If you want to add a free text field to your listings you can enable the POLICY tab
 export const TABS = [
-  CARE_NEEDS,
-  BIO,
-  EXPERIENCE_LEVEL,
-  ADDITIONAL_DETAILS,
+  SERVICES,
   LOCATION,
+  AVAILABILITY,
   PRICING,
-  CARE_SCHEDULE,
+  EXPERIENCE,
+  ADDITIONAL_DETAILS,
+  BIO,
   BACKGROUND_CHECK,
   PROFILE_PICTURE,
 ];
@@ -58,20 +58,20 @@ const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
 
 const tabLabel = (intl, tab) => {
   let key = null;
-  if (tab === CARE_NEEDS) {
-    key = 'CaregiverEditListingWizard.tabLabelCareTypes';
+  if (tab === SERVICES) {
+    key = 'CaregiverEditListingWizard.tabLabelServices';
   } else if (tab === BIO) {
     key = 'CaregiverEditListingWizard.tabLabelBio';
-  } else if (tab === EXPERIENCE_LEVEL) {
-    key = 'CaregiverEditListingWizard.tabLabelExperienceLevel';
+  } else if (tab === EXPERIENCE) {
+    key = 'CaregiverEditListingWizard.tabLabelExperience';
   } else if (tab === ADDITIONAL_DETAILS) {
     key = 'CaregiverEditListingWizard.tabLabelAdditionalDetails';
   } else if (tab === LOCATION) {
     key = 'CaregiverEditListingWizard.tabLabelLocation';
   } else if (tab === PRICING) {
     key = 'CaregiverEditListingWizard.tabLabelPricing';
-  } else if (tab === CARE_SCHEDULE) {
-    key = 'CaregiverEditListingWizard.tabLabelCareSchedule';
+  } else if (tab === AVAILABILITY) {
+    key = 'CaregiverEditListingWizard.tabLabelAvailability';
   } else if (tab === BACKGROUND_CHECK) {
     key = 'CaregiverEditListingWizard.tabLabelBackgroundCheck';
   } else if (tab === PROFILE_PICTURE) {
@@ -101,12 +101,12 @@ const tabCompleted = (tab, listing) => {
   const images = listing.images;
 
   switch (tab) {
-    case CARE_NEEDS:
+    case SERVICES:
       return !!(publicData && publicData.careTypes);
     case BIO:
       return !!description;
     // TODO: Update publicData to be verified
-    case EXPERIENCE_LEVEL:
+    case EXPERIENCE:
       return !!(publicData && publicData.experienceLevel);
     case ADDITIONAL_DETAILS:
       return !!(publicData && publicData.covidVaccination && publicData.languagesSpoken);
@@ -119,7 +119,7 @@ const tabCompleted = (tab, listing) => {
       );
     case PRICING:
       return !!(publicData && publicData.pricing);
-    case CARE_SCHEDULE:
+    case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
       return !!metadata;

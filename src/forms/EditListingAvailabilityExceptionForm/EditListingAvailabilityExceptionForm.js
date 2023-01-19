@@ -70,6 +70,17 @@ const getAvailableTimeRangesForExceptions = (exceptions, timeZone) => {
   const nextBoundary = findNextBoundary(timeZone, TODAY);
   const lastBoundary = endOfAvailabilityExceptionRange(timeZone, TODAY);
 
+  exceptions = exceptions.map(exception => {
+    return {
+      ...exception,
+      attributes: {
+        seats: exception.attributes.seats,
+        start: timestampToDate(exception.attributes.start),
+        end: timestampToDate(exception.attributes.end),
+      },
+    };
+  });
+
   // If no exceptions, return full time range as free of exceptions.
   if (!exceptions || exceptions.length < 1) {
     return [{ start: nextBoundary, end: lastBoundary }];
@@ -523,13 +534,12 @@ const EditListingAvailabilityExceptionForm = props => {
           <Form
             className={classes}
             onSubmit={e => {
-              handleSubmit(e).then(() => {
-                form.initialize({
-                  exceptionStartDate: null,
-                  exceptionStartTime: null,
-                  exceptionEndDate: null,
-                  exceptionEndTime: null,
-                });
+              handleSubmit(e);
+              form.initialize({
+                exceptionStartDate: null,
+                exceptionStartTime: null,
+                exceptionEndDate: null,
+                exceptionEndTime: null,
               });
             }}
           >

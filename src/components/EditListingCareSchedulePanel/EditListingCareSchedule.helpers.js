@@ -30,10 +30,13 @@ export const createEntriesFromSubmitValues = values =>
 export const createAvailabilityPlan = (values, currentListing) => {
   const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
 
+  const isFlexible = values.isFlexible;
+
   return {
     type: 'availability-plan/recurring',
     timezone,
     entries: createEntriesFromSubmitValues(values),
+    ...isFlexible,
   };
 };
 

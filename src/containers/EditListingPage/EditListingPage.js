@@ -262,6 +262,9 @@ export const EditListingPageComponent = props => {
           uploadInProgress={uploadInProgress}
           onChangeMissingInfoModal={onChangeMissingInfoModal}
           image={image}
+          onAddAvailabilityException={onAddAvailabilityException}
+          onDeleteAvailabilityException={onDeleteAvailabilityException}
+          availabilityExceptions={page.availabilityExceptions}
         />
       );
     } else if (userType === EMPLOYER) {

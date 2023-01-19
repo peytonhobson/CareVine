@@ -23,7 +23,6 @@ const weekdayButtons = [
 
 const Care24HourFormComponent = props => {
   const {
-    availabilityExceptions,
     availabilityPlan,
     currentListing,
     disabled,
@@ -39,11 +38,13 @@ const Care24HourFormComponent = props => {
     submitButtonText,
     updated,
     updateInProgress,
-    useDefaultPlan,
   } = props;
 
   const [selectedWeekdays, setSelectedWeekdays] = useState(
-    availabilityPlan && availabilityPlan.availableDays
+    (availabilityPlan && availabilityPlan.availableDays) || []
+  );
+  const [availabilityExceptions, setAvailabilityExceptions] = useState(
+    (availabilityPlan && availabilityPlan.availabilityExceptions) || []
   );
   const [liveIn, setLiveIn] = useState(availabilityPlan && !!availabilityPlan.liveIn);
 
@@ -65,7 +66,17 @@ const Care24HourFormComponent = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit({ availableDays: selectedWeekdays, liveIn });
+    onSubmit({ availableDays: selectedWeekdays, liveIn, availabilityExceptions });
+  };
+
+  const handleSaveAvailabilityException = exception => {
+    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
+  };
+
+  const handleDeleteException = start => {
+    setAvailabilityExceptions(prevExceptions =>
+      prevExceptions.filter(exception => exception.attributes.start !== start)
+    );
   };
 
   return (
@@ -139,7 +150,8 @@ const Care24HourFormComponent = props => {
           disabled={disabled}
           ready={ready}
           listing={currentListing}
-          useDefaultPlan={useDefaultPlan}
+          onDelete={handleDeleteException}
+          onSave={handleSaveAvailabilityException}
         />
       </div>
       {fetchErrors.updateListingError && showErrors ? (
@@ -147,17 +159,15 @@ const Care24HourFormComponent = props => {
           <FormattedMessage id="Care24HourForm.updateFailed" />
         </p>
       ) : null}
-      <div className={css.submitButtonContainer}>
-        <Button
-          className={css.submitButton}
-          disabled={submitDisabled}
-          type="submit"
-          inProgress={submitInProgress}
-          ready={submitReady}
-        >
-          {submitButtonText}
-        </Button>
-      </div>
+      <Button
+        className={css.submitButton}
+        disabled={submitDisabled}
+        type="submit"
+        inProgress={submitInProgress}
+        ready={submitReady}
+      >
+        {submitButtonText}
+      </Button>
     </Form>
   );
 };

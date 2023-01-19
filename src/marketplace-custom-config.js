@@ -134,6 +134,20 @@ export const filters = [
     },
   },
   {
+    id: 'availabilityTypes',
+    label: 'Availability Types',
+    type: 'SelectSingleFilter',
+    group: 'primary',
+    queryParamNames: ['pub_availabilityTypes'],
+    config: {
+      options: [
+        { key: 'oneTime', label: 'One time Jobs' },
+        { key: 'recurring', label: 'Recurring' },
+        { key: 'liveIn', label: 'Live In' },
+      ],
+    },
+  },
+  {
     id: 'detailedCareNeeds',
     label: 'Detailed Care Needs',
     type: 'SelectMultipleFilter',
