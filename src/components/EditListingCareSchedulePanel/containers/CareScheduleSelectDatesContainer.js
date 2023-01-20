@@ -10,7 +10,7 @@ import { CareScheduleSelectDatesForm } from '../../../forms';
 
 import css from './containers.module.css';
 
-const AVAILABILITY_PLAN_TYPE_SELECT_DATES = 'availability-plan/selectDates';
+const AVAILABILITY_PLAN_TYPE_ONE_TIME = 'availability-plan/oneTime';
 
 // Ensure that the AvailabilityExceptions are in sensible order.
 //
@@ -42,7 +42,7 @@ const CareScheduleSelectDatesContainer = props => {
 
   useEffect(() => {
     setSelectedSessions(
-      availabilityPlan && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_SELECT_DATES
+      availabilityPlan && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
         ? availabilityPlan.selectedSessions
         : []
     );
@@ -70,7 +70,7 @@ const CareScheduleSelectDatesContainer = props => {
 
   const handleSubmit = () => {
     const availabilityPlan = {
-      type: AVAILABILITY_PLAN_TYPE_SELECT_DATES,
+      type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
       selectedSessions,
       timezone: timeZone,
     };
@@ -81,7 +81,7 @@ const CareScheduleSelectDatesContainer = props => {
   const submitInProgress = updateInProgress;
   const submitDisabled = disabled || selectedSessions.length === 0;
   const submitReady =
-    (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_SELECT_DATES;
+    (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME;
 
   return (
     <div className={css.root}>

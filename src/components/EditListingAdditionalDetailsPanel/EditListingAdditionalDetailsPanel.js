@@ -38,26 +38,27 @@ const EditListingAdditionalDetailsPanel = props => {
     <FormattedMessage
       id="EditListingAdditionalDetailsPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingAdditionalDetailsPanel.listingTitle" />
-          </ListingLink>
+        additionalDetails: (
+          <span className={css.additionalDetailsText}>
+            <FormattedMessage id="EditListingAdditionalDetailsPanel.additionalDetails" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingAdditionalDetailsPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingAdditionalDetailsPanel.createListingTitle"
+      values={{
+        additionalDetails: (
+          <span className={css.additionalDetailsText}>
+            <FormattedMessage id="EditListingAdditionalDetailsPanel.additionalDetails" />
+          </span>
+        ),
+      }}
+    />
   );
 
-  const additionalDetails = publicData
-    ? {
-        experienceWith: publicData.experienceWith,
-        certificationsAndTraining: publicData.certificationsAndTraining,
-        additionalInfo: publicData.additionalInfo,
-        covidVaccination: publicData.covidVaccination,
-        languagesSpoken: publicData.languagesSpoken,
-      }
-    : {};
+  const additionalDetails = publicData.additionalDetails;
   const initialValues = { ...additionalDetails };
 
   const formProps = {
@@ -90,11 +91,13 @@ const EditListingAdditionalDetailsPanel = props => {
 
           const updatedValues = {
             publicData: {
-              experienceWith,
-              certificationsAndTraining,
-              additionalInfo,
-              covidVaccination,
-              languagesSpoken,
+              additionalDetails: {
+                experienceWith,
+                certificationsAndTraining,
+                additionalInfo,
+                covidVaccination,
+                languagesSpoken,
+              },
             },
           };
 

@@ -6,7 +6,12 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { requiredFieldArrayCheckbox, requiredFieldArrayRadio } from '../../util/validators';
+import {
+  requiredFieldArrayCheckbox,
+  requiredFieldArrayRadio,
+  required,
+  requiredOpenCheckbox,
+} from '../../util/validators';
 import config from '../../config';
 import {
   Form,
@@ -14,6 +19,7 @@ import {
   FieldCheckboxGroup,
   FieldRadioButtonGroup,
   FieldTextInput,
+  FieldOpenCheckboxGroup,
 } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
 
@@ -109,13 +115,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
         </p>
       ) : null;
 
-      // This error happens only on first tab (of EditListingWizard)
-      const errorMessageCreateListingDraft = createListingDraftError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingAdditionalDetailsForm.createListingDraftError" />
-        </p>
-      ) : null;
-
       const errorMessageShowListing = showListingsError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingAdditionalDetailsForm.showListingFailed" />
@@ -129,8 +128,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessageCreateListingDraft}
-          {errorMessageUpdateListing}
           {errorMessageShowListing}
 
           <FieldCheckboxGroup
@@ -146,6 +143,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
             name={certificationsName}
             options={certificationsOptions}
             label={certificationsLabel}
+            twoColumns
           />
           <FieldCheckboxGroup
             className={css.features}
@@ -153,6 +151,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
             name={additionalInfoName}
             options={additionalInfoOptions}
             label={additionalInfoLabel}
+            twoColumns
           />
           <FieldRadioButtonGroup
             className={css.features}
@@ -163,26 +162,19 @@ const EditListingAdditionalDetailsFormComponent = props => (
             required={true}
             validate={requiredFieldArrayRadio(errorVaccineNotSelected)}
           />
+          <FieldOpenCheckboxGroup
+            id="languagesSpoken"
+            name="languagesSpoken"
+            rootClassName={css.checkboxGroup}
+            options={languagesSpokenRadioOptions}
+            label={languagesSpokenRadioLabel}
+            placeholder="Languages..."
+            buttonLabel="+ Add Language"
+            required
+            validate={requiredOpenCheckbox(errorLanguagesNotSelected)}
+          />
 
-          <div>
-            <FieldCheckboxGroup
-              className={css.features && css.languagesRadio}
-              id={languagesSpokenRadioName}
-              name={languagesSpokenRadioName}
-              options={languagesSpokenRadioOptions}
-              label={languagesSpokenRadioLabel}
-              required={true}
-              validate={requiredFieldArrayCheckbox(errorLanguagesNotSelected)}
-            />
-            {/* {May need to add custom onChange to this to integrate with languagesSpoken} */}
-            <FieldTextInput
-              id={languagesSpokenTextName}
-              name={languagesSpokenTextName}
-              className={css.additionalLanguages}
-              type="text"
-              placeholder={languagesSpokenTextPlaceholder}
-            />
-          </div>
+          {errorMessageUpdateListing}
 
           <Button
             className={css.submitButton}

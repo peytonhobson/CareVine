@@ -1,0 +1,77 @@
+@import '../../styles/customMediaQueries.css';
+
+.formMargins {
+  margin-bottom: 24px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 32px;
+  }
+}
+
+.root {
+  composes: formMargins;
+  padding: 0;
+  border: none;
+}
+
+.list {
+  margin: 0;
+  margin-top: 1rem;
+}
+
+.twoColumns {
+  @media (--viewportMedium) {
+    columns: 2;
+  }
+}
+
+.item {
+  padding: 2px 0;
+
+  /* Fix broken multi-column layout in Chrome */
+  page-break-inside: avoid;
+
+  @media (--viewportMedium) {
+    padding: 4px 0;
+  }
+}
+
+.requiredStar {
+  color: red;
+}
+
+.textInputContainer {
+  display: flex;
+}
+
+.textInput {
+  max-width: 8rem;
+  margin-bottom: 0.5rem;
+}
+
+.removeIcon {
+  width: 8px;
+  height: 8px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+
+  @media (--viewportMedium) {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.removeExceptionButton {
+  padding: 0 8px 0 0;
+  border: 0;
+  cursor: pointer;
+
+  &:hover .removeIcon {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+
+  @media (--viewportMedium) {
+    padding: 0 14px 0 2px;
+  }
+}

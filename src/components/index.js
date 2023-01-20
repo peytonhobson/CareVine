@@ -106,6 +106,7 @@ export { default as FieldTextInput } from './FieldTextInput/FieldTextInput';
 export { default as FieldAddSubtract } from './FieldAddSubtract/FieldAddSubtract';
 export { default as FieldRangeSlider } from './FieldRangeSlider/FieldRangeSlider';
 // Fields that use other Fields
+export { default as FieldOpenCheckboxGroup} from './FieldOpenCheckboxGroup/FieldOpenCheckboxGroup';
 export { default as FieldTimeZoneSelect } from './FieldTimeZoneSelect/FieldTimeZoneSelect';
 export { default as FieldBoolean } from './FieldBoolean/FieldBoolean';
 export { default as FieldCheckboxGroup } from './FieldCheckboxGroup/FieldCheckboxGroup';
@@ -185,7 +186,7 @@ export { default as EditListingCaregiverDetailsPanel } from './EditListingCaregi
 export { default as EditListingCareNeedsPanel } from './EditListingCareNeedsPanel/EditListingCareNeedsPanel';
 export { default as EditListingCareRecipientDetailsPanel } from './EditListingCareRecipientDetailsPanel/EditListingCareRecipientDetailsPanel';
 export { default as EditListingCareSchedulePanel } from './EditListingCareSchedulePanel/EditListingCareSchedulePanel';
-export { default as EditListingExperienceLevelPanel } from './EditListingExperienceLevelPanel/EditListingExperienceLevelPanel';
+export { default as EditListingExperiencePanel } from './EditListingExperiencePanel/EditListingExperiencePanel';
 export { default as EditListingJobDescriptionPanel } from './EditListingJobDescriptionPanel/EditListingJobDescriptionPanel';
 export { default as EditListingLocationPanel } from './EditListingLocationPanel/EditListingLocationPanel';
 export { default as EditListingPhotosPanel } from './EditListingPhotosPanel/EditListingPhotosPanel';

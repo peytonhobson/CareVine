@@ -60,14 +60,14 @@ const EditListingPricingPanel = props => {
     />
   );
 
-  const pricing = publicData && publicData.pricing;
-  const { rates, priceTime } = pricing || {};
+  const rates = publicData && publicData.rates;
 
   const initialValues = {
     rates: submittedValues
       ? submittedValues.rates.map(rate => rate / 100)
-      : rates && rates.map(rate => rate / 100),
-    priceTime: submittedValues ? submittedValues.priceTime : priceTime || 'hourly',
+      : rates
+      ? rates.map(rate => rate / 100)
+      : [15, 25],
   };
 
   const form = (
@@ -75,7 +75,7 @@ const EditListingPricingPanel = props => {
       className={css.form}
       initialValues={initialValues}
       onSubmit={values => {
-        const { rates, priceTime } = values;
+        const { rates } = values;
 
         setSubmittedValues(values);
 
@@ -84,10 +84,7 @@ const EditListingPricingPanel = props => {
 
         const updateValues = {
           publicData: {
-            pricing: {
-              rates,
-              priceTime,
-            },
+            rates,
           },
         };
 

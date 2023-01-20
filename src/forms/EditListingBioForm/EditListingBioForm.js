@@ -32,21 +32,6 @@ const EditListingBioFormComponent = props => (
         fetchErrors,
       } = formRenderProps;
 
-      const titleMessage = intl.formatMessage({ id: 'EditListingBioForm.title' });
-      const titlePlaceholderMessage = intl.formatMessage({
-        id: 'EditListingBioForm.titlePlaceholder',
-      });
-      const titleRequiredMessage = intl.formatMessage({
-        id: 'EditListingBioForm.titleRequired',
-      });
-      const maxLengthTitleMessage = intl.formatMessage(
-        { id: 'EditListingBioForm.maxLength' },
-        {
-          maxLength: TITLE_MAX_LENGTH,
-        }
-      );
-      const maxLength60Message = maxLength(maxLengthTitleMessage, TITLE_MAX_LENGTH);
-
       const descriptionMessage = intl.formatMessage({
         id: 'EditListingBioForm.description',
       });
@@ -73,13 +58,6 @@ const EditListingBioFormComponent = props => (
         </p>
       ) : null;
 
-      // This error happens only on first tab (of EditListingWizard)
-      const errorMessageCreateListingDraft = createListingDraftError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingBioForm.createListingDraftError" />
-        </p>
-      ) : null;
-
       const errorMessageShowListing = showListingsError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingBioForm.showListingFailed" />
@@ -93,14 +71,13 @@ const EditListingBioFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessageCreateListingDraft}
-          {errorMessageUpdateListing}
           {errorMessageShowListing}
 
           <FieldTextInput
             id="description"
             name="description"
             className={css.description}
+            inputRootClass={css.descriptionInput}
             type="textarea"
             label={descriptionMessage}
             placeholder={descriptionPlaceholderMessage}
@@ -111,6 +88,9 @@ const EditListingBioFormComponent = props => (
               minLength100Message
             )}
           />
+
+          {errorMessageUpdateListing}
+
           <Button
             className={css.submitButton}
             type="submit"

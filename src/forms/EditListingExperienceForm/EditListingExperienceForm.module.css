@@ -43,15 +43,6 @@
   }
 }
 
-.textarea {
-  composes: formMargins;
-  flex-shrink: 0;
-}
-
-.textareaRoot {
-  margin-top: 1rem;
-}
-
 .submitButton {
   margin-top: auto;
   margin-bottom: 24px;
@@ -64,7 +55,7 @@
   }
 }
 
-.checkboxGroup {
+.group {
   composes: formMargins;
   flex-shrink: 0;
 }

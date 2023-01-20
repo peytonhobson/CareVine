@@ -56,6 +56,9 @@ const FieldCheckboxComponent = props => {
 
     onChange(event);
     onBlur(event);
+    if (props.onBlur) {
+      props.onBlur(event);
+    }
   };
 
   const successColorVariantMaybe = useSuccessColor

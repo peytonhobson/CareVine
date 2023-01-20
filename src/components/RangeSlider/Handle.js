@@ -97,7 +97,7 @@ class Handle extends Component {
   }
 
   render() {
-    const { rootClassName, className, value, valueToPosition } = this.props;
+    const { rootClassName, className, value, valueToPosition, noHandleLabels } = this.props;
     const position = valueToPosition(value);
     const classes = classNames(rootClassName || css.rootTouchBuffer, className);
 
@@ -114,7 +114,7 @@ class Handle extends Component {
         onTouchEnd={this.onTouchEnd}
         role="button"
       >
-        <label className={css.handleLabel}>${value}</label>
+        {!noHandleLabels && <label className={css.handleLabel}>${value}</label>}
         <div
           className={classNames(css.visibleHandle, {
             [css.dragged]: this.state.dragging,

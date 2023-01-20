@@ -454,7 +454,6 @@ select:focus {
 }
 
 input,
-textarea,
 .marketplaceInputStyles {
   /* Dimensions */
   display: block;
@@ -481,13 +480,46 @@ textarea,
     padding: 4px 0 2px 0;
   }
 }
+
+textarea {
+  /* Dimensions */
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 5px 0 5px 0;
+
+  /* Borders */
+  border: none;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-radius: 0;
+
+  &::placeholder {
+    color: var(--matterColorAnti);
+  }
+
+  /* Effects */
+
+  transition: border-color var(--transitionStyle);
+
+  @media (--viewportMedium) {
+    padding: 4px 0 2px 0;
+  }
+}
+
 input:hover,
 input:focus,
+.marketplaceInputStyles:hover,
+.marketplaceInputStyles:focus {
+  border-bottom-color: var(--matterColor);
+  outline: none;
+}
+
 textarea:hover,
 textarea:focus,
 .marketplaceInputStyles:hover,
 .marketplaceInputStyles:focus {
-  border-bottom-color: var(--matterColor);
+  border-color: var(--matterColor);
   outline: none;
 }
 
