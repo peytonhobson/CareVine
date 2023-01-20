@@ -7,12 +7,12 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
-import { EditListingFeaturesForm } from '../../forms';
+import { EditListingExperienceForm } from '../../forms';
 import { ListingLink } from '..';
 
-import css from './EditListingExperienceLevelPanel.module.css';
+import css from './EditListingExperiencePanel.module.css';
 
-const EditListingExperienceLevelPanel = props => {
+const EditListingExperiencePanel = props => {
   const {
     rootClassName,
     className,
@@ -36,25 +36,30 @@ const EditListingExperienceLevelPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
     <FormattedMessage
-      id="EditListingExperienceLevelPanel.title"
+      id="EditListingExperiencePanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingExperienceLevelPanel.listingTitle" />
-          </ListingLink>
+        experience: (
+          <span className={css.experienceText}>
+            <FormattedMessage id="EditListingExperiencePanel.experience" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingExperienceLevelPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingExperiencePanel.createListingTitle"
+      values={{
+        experience: (
+          <span className={css.experienceText}>
+            <FormattedMessage id="EditListingExperiencePanel.experience" />
+          </span>
+        ),
+      }}
+    />
   );
 
-  const experienceLevel = publicData && publicData.experienceLevel; //;
-  const initialValues = { experienceLevel };
-
-  const experienceLevelFeaturesLabel = intl.formatMessage({
-    id: 'EditListingExperienceLevelPanel.experienceLevelFormLabel',
-  });
+  const experience = publicData && publicData.experience; //;
+  const initialValues = { ...experience };
 
   const formProps = {
     className: css.form,
@@ -71,27 +76,29 @@ const EditListingExperienceLevelPanel = props => {
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>
-      <EditListingFeaturesForm
+      <EditListingExperienceForm
         {...formProps}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
-          const { experienceLevel } = values;
+          const { experienceLevel, experienceAreas } = values;
 
           const updatedValues = {
-            publicData: { experienceLevel },
+            publicData: {
+              experience: {
+                experienceLevel,
+                experienceAreas,
+              },
+            },
           };
           onSubmit(updatedValues);
         }}
         name="experienceLevel"
-        label={experienceLevelFeaturesLabel}
-        singleSelect={true}
-        required={true}
       />
     </div>
   );
 };
 
-EditListingExperienceLevelPanel.defaultProps = {
+EditListingExperiencePanel.defaultProps = {
   rootClassName: null,
   className: null,
   listing: null,
@@ -99,7 +106,7 @@ EditListingExperienceLevelPanel.defaultProps = {
 
 const { bool, func, object, string, shape } = PropTypes;
 
-EditListingExperienceLevelPanel.propTypes = {
+EditListingExperiencePanel.propTypes = {
   rootClassName: string,
   className: string,
 
@@ -117,4 +124,4 @@ EditListingExperienceLevelPanel.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default EditListingExperienceLevelPanel;
+export default EditListingExperiencePanel;

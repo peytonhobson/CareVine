@@ -40,27 +40,7 @@ export const EditListingPricingFormComponent = props => (
         form,
       } = formRenderProps;
 
-      const formState = form.getState();
-      const formValues = formState.values;
-      const formInitialValues = formState.initialValues;
-
-      useEffect(() => {
-        const initialRates = formInitialValues.rates;
-        if (formValues.priceTime === HOURLY) {
-          initialRates && formInitialValues.priceTime === HOURLY
-            ? form.change('rates', initialRates)
-            : form.change('rates', [15, 25]);
-        } else {
-          initialRates && formInitialValues.priceTime === DAILY
-            ? form.change('rates', initialRates)
-            : form.change('rates', [150, 250]);
-        }
-      }, [formValues.priceTime]);
-
-      const priceTimeOptions = [
-        { key: HOURLY, label: 'Per hour' },
-        { key: DAILY, label: 'Per day' },
-      ];
+      const formValues = form.getState().values;
 
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
@@ -70,33 +50,30 @@ export const EditListingPricingFormComponent = props => (
 
       return (
         <Form onSubmit={handleSubmit} className={classes}>
-          {updateListingError ? (
-            <p className={css.error}>
-              <FormattedMessage id="EditListingPricingForm.updateFailed" />
-            </p>
-          ) : null}
           {showListingsError ? (
             <p className={css.error}>
               <FormattedMessage id="EditListingPricingForm.showListingFailed" />
             </p>
           ) : null}
+          <div className={css.ratesContainer}>
+            <h3 className={css.rateLabels}>${formValues.rates[0] || 15}/hr</h3>
+            <h3 className={css.rateLabels}>${formValues.rates[1] || 25}/hr</h3>
+          </div>
           <FieldRangeSlider
             id="rates"
             name="rates"
             className={css.priceRange}
-            min={formValues.priceTime === HOURLY ? 10 : 100}
-            max={formValues.priceTime === HOURLY ? 50 : 500}
-            step={formValues.priceTime === HOURLY ? 1 : 5}
-            handles={formValues.rates}
+            min={10}
+            max={50}
+            step={1}
+            handles={[15, 25]}
+            noHandleLabels
           />
-          <FieldRadioButtonGroup
-            rootClassName={css.timeRadioGroup}
-            className={css.timeRadio}
-            id="priceTime"
-            name="priceTime"
-            options={priceTimeOptions}
-            inline={true}
-          />
+          {updateListingError ? (
+            <p className={css.error}>
+              <FormattedMessage id="EditListingPricingForm.updateFailed" />
+            </p>
+          ) : null}
           <Button
             className={css.submitButton}
             type="submit"

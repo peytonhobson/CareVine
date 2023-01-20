@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { types as sdkTypes } from './sdkLoader';
 import toPairs from 'lodash/toPairs';
+import { isAnyFilterActive } from './search';
 
 const { LatLng, Money } = sdkTypes;
 
@@ -229,3 +230,26 @@ export const validSGID = message => value => {
 
 export const composeValidators = (...validators) => value =>
   validators.reduce((error, validator) => error || validator(value), VALID);
+
+export const requiredOpenCheckbox = message => value => {
+  if (!value) {
+    return message;
+  }
+
+  let nonEmpty = false;
+  let invalid = false;
+
+  for (const entry in value) {
+    value[entry].forEach(a => {
+      if (a !== undefined) {
+        nonEmpty = true;
+      }
+    });
+  }
+
+  if (nonEmpty && !invalid) {
+    return VALID;
+  } else {
+    return message;
+  }
+};

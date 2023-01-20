@@ -20,7 +20,7 @@ import {
   EditListingCareNeedsPanel,
   EditListingCareRecipientDetailsPanel,
   EditListingCareSchedulePanel,
-  EditListingExperienceLevelPanel,
+  EditListingExperiencePanel,
   EditListingJobDescriptionPanel,
   EditListingLocationPanel,
   EditListingPhotosPanel,
@@ -28,6 +28,7 @@ import {
 } from '..';
 
 import css from './EditListingWizardTab.module.css';
+import { CAREGIVER } from '../../util/constants';
 
 export const CARE_NEEDS = 'care-needs';
 export const SERVICES = 'services';
@@ -112,6 +113,7 @@ const EditListingWizardTab = props => {
   const isNewURI = type === LISTING_PAGE_PARAM_TYPE_NEW;
   const isDraftURI = type === LISTING_PAGE_PARAM_TYPE_DRAFT;
   const isNewListingFlow = isNewURI || isDraftURI;
+  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
 
   const currentListing = ensureListing(listing);
   const imageIds = images => {
@@ -248,10 +250,10 @@ const EditListingWizardTab = props => {
     }
     case EXPERIENCE: {
       const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewExperienceLevel'
-        : 'EditListingWizard.saveEditExperienceLevel';
+        ? 'EditListingWizard.saveNewExperience'
+        : 'EditListingWizard.saveEditExperience';
       return (
-        <EditListingExperienceLevelPanel
+        <EditListingExperiencePanel
           {...panelProps(EXPERIENCE)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
@@ -275,9 +277,14 @@ const EditListingWizardTab = props => {
       );
     }
     case LOCATION: {
-      const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewLocation'
-        : 'EditListingWizard.saveEditLocation';
+      const submitButtonTranslationKey =
+        userType === CAREGIVER
+          ? isNewListingFlow
+            ? 'EditListingWizard.saveNewCaregiverLocation'
+            : 'EditListingWizard.saveEditLocation'
+          : isNewListingFlow
+          ? 'EditListingWizard.saveNewEmployerLocation'
+          : 'EditListingWizard.saveEditLocation';
       return (
         <EditListingLocationPanel
           {...panelProps(LOCATION)}
@@ -289,9 +296,14 @@ const EditListingWizardTab = props => {
       );
     }
     case PRICING: {
-      const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewPricing'
-        : 'EditListingWizard.saveEditPricing';
+      const submitButtonTranslationKey =
+        userType === CAREGIVER
+          ? isNewListingFlow
+            ? 'EditListingWizard.saveNewCaregiverPricing'
+            : 'EditListingWizard.saveEditPricing'
+          : isNewListingFlow
+          ? 'EditListingWizard.saveNewEmployerPricing'
+          : 'EditListingWizard.saveEditPricing';
       return (
         <EditListingPricingPanel
           {...panelProps(PRICING)}
@@ -327,8 +339,8 @@ const EditListingWizardTab = props => {
     }
     case AVAILABILITY: {
       const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewCareSchedule'
-        : 'EditListingWizard.saveEditCareSchedule';
+        ? 'EditListingWizard.saveNewAvailability'
+        : 'EditListingWizard.saveEditAvailability';
       return (
         <EditListingAvailabilityPanel
           {...panelProps(AVAILABILITY)}

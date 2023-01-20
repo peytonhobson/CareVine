@@ -66,7 +66,7 @@ const CheckboxComponent = props => {
         className={css.input}
         onChange={onChange}
         value={value}
-        checked={checked}
+        defaultChecked={checked}
       />
       <label htmlFor={id} className={css.label} onClick={onClick}>
         <span className={css.checkboxWrapper}>

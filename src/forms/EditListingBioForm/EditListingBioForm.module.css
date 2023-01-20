@@ -38,6 +38,10 @@
   flex-shrink: 0;
 }
 
+.descriptionInput {
+  margin-top: 1rem;
+}
+
 .certificate {
   composes: formMargins;
 }

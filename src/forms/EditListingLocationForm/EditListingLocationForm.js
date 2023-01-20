@@ -91,7 +91,6 @@ export const EditListingLocationFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {errorMessage}
           {errorMessageShowListing}
           <div className={css.inputContainer}>
             <LocationAutocompleteInputField
@@ -130,6 +129,7 @@ export const EditListingLocationFormComponent = props => (
               value="nearPublicTransit"
             />
           )}
+          {errorMessage}
           <Button
             className={css.submitButton}
             type="submit"

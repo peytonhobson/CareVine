@@ -60,8 +60,12 @@ const EditListingAvailabilityPanel = props => {
     entries: [],
   };
   const savedAvailabilityPlan = currentListing.attributes.publicData.availabilityPlan;
-  const savedAvailabilityExceptions = savedAvailabilityPlan.availabilityExceptions;
-  const savedSelectedAvailabilityTypes = savedAvailabilityPlan.availabilityTypes;
+
+  const savedAvailabilityExceptions =
+    savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions;
+  const savedSelectedAvailabilityTypes =
+    savedAvailabilityPlan && savedAvailabilityPlan.availabilityTypes;
+
   // Hooks
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
   const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
@@ -78,10 +82,8 @@ const EditListingAvailabilityPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
-  const submitDisabled =
-    !currentListing.attributes.publicData.availabilityPlan ||
-    selectedAvailabilityTypes.length === 0 ||
-    !valuesFromLastSubmit;
+
+  const submitDisabled = selectedAvailabilityTypes.length === 0 || !valuesFromLastSubmit;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -213,6 +215,11 @@ const EditListingAvailabilityPanel = props => {
       {errors.showListingsError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingAvailabilityPanel.showListingFailed" />
+        </p>
+      ) : null}
+      {errors.updateListingError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingAvailabilityPanel.updateListingFailed" />
         </p>
       ) : null}
 

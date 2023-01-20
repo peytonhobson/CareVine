@@ -35,15 +35,24 @@ const EditListingBioPanel = props => {
     <FormattedMessage
       id="EditListingDescriptionPanel.title"
       values={{
-        listingTitle: (
-          <ListingLink listing={listing}>
-            <FormattedMessage id="EditListingDescriptionPanel.listingTitle" />
-          </ListingLink>
+        bio: (
+          <span className={css.bioText}>
+            <FormattedMessage id="EditListingDescriptionPanel.bio" />
+          </span>
         ),
       }}
     />
   ) : (
-    <FormattedMessage id="EditListingDescriptionPanel.createListingTitle" />
+    <FormattedMessage
+      id="EditListingDescriptionPanel.createListingTitle"
+      values={{
+        bio: (
+          <span className={css.bioText}>
+            <FormattedMessage id="EditListingDescriptionPanel.bio" />
+          </span>
+        ),
+      }}
+    />
   );
 
   // const userFullName = listing?.author?.attributes.profile.displayName;

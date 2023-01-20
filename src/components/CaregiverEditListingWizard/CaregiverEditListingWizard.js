@@ -107,9 +107,9 @@ const tabCompleted = (tab, listing) => {
       return !!description;
     // TODO: Update publicData to be verified
     case EXPERIENCE:
-      return !!(publicData && publicData.experienceLevel);
+      return !!(publicData && publicData.experience);
     case ADDITIONAL_DETAILS:
-      return !!(publicData && publicData.covidVaccination && publicData.languagesSpoken);
+      return !!(publicData && publicData.additionalDetails);
     case LOCATION:
       return !!(
         geolocation &&
@@ -118,7 +118,7 @@ const tabCompleted = (tab, listing) => {
         publicData.travelDistance != undefined
       );
     case PRICING:
-      return !!(publicData && publicData.pricing);
+      return !!(publicData && publicData.rates);
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:

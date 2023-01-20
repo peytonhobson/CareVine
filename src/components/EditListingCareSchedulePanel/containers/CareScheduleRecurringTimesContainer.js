@@ -8,8 +8,6 @@ import { EditListingAvailabilityPlanForm } from '../../../forms';
 
 import css from './containers.module.css';
 
-const AVAILABILITY_PLAN_TYPE_RECURRING = 'availability-plan/recurring';
-
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const CareScheduleRecurringTimesContainer = props => {
@@ -18,10 +16,7 @@ const CareScheduleRecurringTimesContainer = props => {
     currentListing,
     disabled,
     errors,
-    fetchExceptionsInProgress,
     isPublished,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
     onManageDisableScrolling,
     onNextTab,
     onSubmit,

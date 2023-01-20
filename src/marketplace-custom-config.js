@@ -208,10 +208,6 @@ export const filters = [
           label: 'Walking Assistance',
         },
         {
-          key: 'cpr_firstAid',
-          label: 'CPR/First Aid',
-        },
-        {
           key: 'mealPrep',
           label: 'Meal Preparation',
         },
@@ -224,16 +220,8 @@ export const filters = [
           label: 'Catheter Care',
         },
         {
-          key: 'documentation',
-          label: 'Documentation',
-        },
-        {
           key: 'medMgmt',
           label: 'Medication Management',
-        },
-        {
-          key: 'medDocumentation',
-          label: 'Medication Documentation',
         },
         {
           key: 'fallPrevention',
@@ -315,6 +303,12 @@ export const filters = [
         { key: 'cna', label: 'Certified Nursing Assistant' },
         { key: 'rn', label: 'Registered Nurse' },
         { key: 'cpr', label: 'CPR Training' },
+        { key: 'lpc', label: 'Licensed Practical Nurse' },
+        { key: 'ma', label: 'Medical Assistant' },
+        { key: 'pca', label: 'Personal Care Assistant' },
+        { key: 'emt', label: 'Paramedic/EMT' },
+        { key: 'ad', label: 'Activity Director' },
+        { key: 'cfh', label: 'Certified Food Handler' },
       ],
     },
   },
@@ -396,24 +390,6 @@ export const filters = [
       options: [
         { key: 'yes', label: 'Yes' },
         { key: 'no', label: 'No' },
-      ],
-    },
-  },
-  {
-    id: 'certificate',
-    label: 'Certificate',
-    type: 'SelectSingleFilter',
-    group: 'secondary',
-    queryParamNames: ['pub_certificate'],
-    config: {
-      // "key" is the option you see in Flex Console.
-      // "label" is set here for the UI only.
-      // Note: label is not added through the translation files
-      // to make filter customizations a bit easier.
-      options: [
-        { key: 'none', label: 'None', hideFromFilters: true, hideFromListingInfo: true },
-        { key: '200h', label: 'Registered yoga teacher 200h' },
-        { key: '500h', label: 'Registered yoga teacher 500h' },
       ],
     },
   },

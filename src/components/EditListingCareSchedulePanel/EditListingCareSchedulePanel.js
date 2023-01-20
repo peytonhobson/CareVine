@@ -15,16 +15,16 @@ import CareScheduleSelectDatesContainer from './containers/CareScheduleSelectDat
 import css from './EditListingCareSchedulePanel.module.css';
 import { useEffect } from 'react';
 
-const AVAILABILITY_PLAN_TYPE_RECURRING = 'availability-plan/recurring';
+const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
 const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
 
-const SELECT_DATES = 'selectDates';
-const RECURRING = 'recurring';
+const ONE_TIME = 'oneTime';
+const REPEAT = 'repeat';
 const TWENTY_FOUR_HOUR = '24hour';
 
 const buttonGroupOptions = [
-  { key: SELECT_DATES, label: 'Select Dates' },
-  { key: RECURRING, label: 'Recurring' },
+  { key: ONE_TIME, label: 'One Time Care' },
+  { key: REPEAT, label: 'Repeat Care' },
   { key: TWENTY_FOUR_HOUR, label: '24 Hour Care' },
 ];
 
@@ -104,7 +104,7 @@ const EditListingCareSchedulePanel = props => {
   let defaultAvailabilityPlan = null;
 
   switch (selectedScheduleType) {
-    case SELECT_DATES:
+    case ONE_TIME:
       availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
       mainContent = (
         <CareScheduleSelectDatesContainer
@@ -122,16 +122,15 @@ const EditListingCareSchedulePanel = props => {
         />
       );
       break;
-    case RECURRING:
+    case REPEAT:
       defaultAvailabilityPlan = {
-        type: AVAILABILITY_PLAN_TYPE_RECURRING,
+        type: AVAILABILITY_PLAN_TYPE_REPEAT,
         timezone: defaultTimeZone(),
         entries: [],
       };
       availabilityPlan =
         currentListing.attributes.publicData.availabilityPlan &&
-        currentListing.attributes.publicData.availabilityPlan.type ===
-          AVAILABILITY_PLAN_TYPE_RECURRING
+        currentListing.attributes.publicData.availabilityPlan.type === AVAILABILITY_PLAN_TYPE_REPEAT
           ? currentListing.attributes.publicData.availabilityPlan
           : defaultAvailabilityPlan;
       mainContent = (
@@ -219,7 +218,7 @@ const EditListingCareSchedulePanel = props => {
       ) : null}
       <ButtonGroup
         className={css.buttonGroup}
-        initialSelect="selectDates"
+        initialSelect={ONE_TIME}
         onChange={handleScheduleTypeChange}
         options={buttonGroupOptions}
         rootClassName={css.buttonGroupRoot}

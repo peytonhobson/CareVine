@@ -92,11 +92,11 @@ const tabCompleted = (tab, listing) => {
     case CARE_SCHEDULE:
       return !!(publicData && publicData.availabilityPlan);
     case PRICING:
-      return !!(publicData && publicData.pricing);
+      return !!(publicData && publicData.rates);
     case CARE_RECEIVER_DETAILS:
       return !!(publicData && publicData.careRecipients);
     case CAREGIVER_DETAILS:
-      return !!(publicData && publicData.idealCaregiverDetails);
+      return !!(publicData && publicData.caregiverDetails);
     case JOB_DESCRIPTION:
       return !!(title && title !== 'Title');
     default:

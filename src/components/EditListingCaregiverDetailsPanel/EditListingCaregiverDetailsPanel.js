@@ -57,9 +57,8 @@ const EditListingCaregiverDetailsPanel = props => {
     />
   );
 
-  const idealCaregiverDetails =
-    publicData.idealCaregiverDetails !== ' ' ? publicData.idealCaregiverDetails : null;
-  const initialValues = { idealCaregiverDetails };
+  const caregiverDetails = publicData.caregiverDetails;
+  const initialValues = { ...caregiverDetails };
 
   const formProps = {
     className: css.form,
@@ -81,11 +80,23 @@ const EditListingCaregiverDetailsPanel = props => {
         saveActionMsg={submitButtonText}
         required={true}
         onSubmit={values => {
-          const { idealCaregiverDetails = ' ' } = values;
+          const {
+            certificationsAndTraining,
+            additionalInfo,
+            covidVaccination,
+            languagesSpoken,
+            idealCaregiverDetails = ' ',
+          } = values;
 
           const updatedValues = {
             publicData: {
-              idealCaregiverDetails,
+              caregiverDetails: {
+                certificationsAndTraining,
+                additionalInfo,
+                covidVaccination,
+                languagesSpoken,
+                idealCaregiverDetails,
+              },
             },
           };
 
