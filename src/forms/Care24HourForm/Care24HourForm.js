@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import classNames from 'classnames';
 import { Form as FinalForm, Field } from 'react-final-form';
+import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import { Checkbox, Button, Form, CareScheduleExceptions } from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
+import { timestampToDate } from '../../util/dates';
+import { TimelineForm } from '../../forms';
 
 import css from './Care24HourForm.module.css';
 
 const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
-const AVAILABLE_DAYS = 'availableDays';
 const weekdayButtons = [
   { day: 'monday', label: 'Monday' },
   { day: 'tuesday', label: 'Tuesday' },
@@ -48,11 +50,27 @@ const Care24HourFormComponent = props => {
   );
   const [liveIn, setLiveIn] = useState(availabilityPlan && !!availabilityPlan.liveIn);
 
+  const savedStartDate = availabilityPlan && availabilityPlan.startDate;
+  const savedEndDate = availabilityPlan && availabilityPlan.endDate;
+  const [startDate, setStartDate] = useState(savedStartDate);
+  const [endDate, setEndDate] = useState(savedEndDate);
+
   const liveInCheckboxLabel = intl.formatMessage({ id: 'Care24HourForm.liveInCheckboxLabel' });
 
   const submitInProgress = updateInProgress;
   const submitReady = (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR;
-  const submitDisabled = selectedWeekdays.length === 0;
+  const submitDisabled = selectedWeekdays.length === 0 || !startDate;
+
+  const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
+
+  const timelineInitialValues = {
+    startDate: {
+      date: savedStartDate ? timestampToDate(savedStartDate) : null,
+    },
+    endDate: {
+      date: savedEndDate ? timestampToDate(savedEndDate) : null,
+    },
+  };
 
   const handleButtonClick = day => {
     setSelectedWeekdays(prevState => {
@@ -66,7 +84,13 @@ const Care24HourFormComponent = props => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit({ availableDays: selectedWeekdays, liveIn, availabilityExceptions });
+    onSubmit({
+      availableDays: selectedWeekdays,
+      liveIn,
+      availabilityExceptions,
+      startDate,
+      endDate,
+    });
   };
 
   const handleSaveAvailabilityException = exception => {
@@ -77,6 +101,14 @@ const Care24HourFormComponent = props => {
     setAvailabilityExceptions(prevExceptions =>
       prevExceptions.filter(exception => exception.attributes.start !== start)
     );
+  };
+
+  const onStartDateChange = date => {
+    setStartDate(date.date.getTime());
+  };
+
+  const onEndDateChange = date => {
+    setEndDate(date.date.getTime());
   };
 
   return (
@@ -136,6 +168,19 @@ const Care24HourFormComponent = props => {
         checked={liveIn}
         value={liveIn}
         onClick={() => setLiveIn(prevLiveIn => !prevLiveIn)}
+      />
+
+      <TimelineForm
+        className={css.timelineForm}
+        rootClassName={css.timelineForm}
+        formId="TimelineForm"
+        initialValues={timelineInitialValues}
+        intl={intl}
+        timeZone={timezone}
+        onStartDateChange={onStartDateChange}
+        onEndDateChange={onEndDateChange}
+        onSubmit={() => {}}
+        keepDirtyOnReinitialize
       />
       <div className={css.children}>
         <CareScheduleExceptions

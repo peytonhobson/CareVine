@@ -14,6 +14,7 @@ import CareScheduleSelectDatesContainer from './containers/CareScheduleSelectDat
 
 import css from './EditListingCareSchedulePanel.module.css';
 import { useEffect } from 'react';
+import { apiEndDateToPickerDate } from '../FieldDateRangeInput/DateRangeInput.helpers';
 
 const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
 const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
@@ -36,10 +37,7 @@ const EditListingCareSchedulePanel = props => {
     className,
     disabled,
     errors,
-    fetchExceptionsInProgress,
     listing,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
     onManageDisableScrolling,
     onNextTab,
     onSubmit,
@@ -62,7 +60,7 @@ const EditListingCareSchedulePanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
   const handle24HourCareSubmit = values => {
-    const { liveIn, availableDays, availabilityExceptions } = values;
+    const { liveIn, availableDays, availabilityExceptions, startDate, endDate } = values;
 
     const currentZipcode = currentListing.attributes.publicData.location.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
@@ -73,6 +71,8 @@ const EditListingCareSchedulePanel = props => {
       availableDays,
       timezone,
       availabilityExceptions,
+      startDate,
+      endDate,
     };
 
     return onSubmit({ publicData: { availabilityPlan } })

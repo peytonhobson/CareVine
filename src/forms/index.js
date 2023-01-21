@@ -37,4 +37,5 @@ export { default as SendMessageForm } from './SendMessageForm/SendMessageForm';
 export { default as SignupForm } from './SignupForm/SignupForm';
 export { default as StripePaymentForm } from './StripePaymentForm/StripePaymentForm';
 export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/StripeConnectAccountForm';
+export { default as TimelineForm } from './TimelineForm/TimelineForm';
 export { default as TopbarSearchForm } from './TopbarSearchForm/TopbarSearchForm';

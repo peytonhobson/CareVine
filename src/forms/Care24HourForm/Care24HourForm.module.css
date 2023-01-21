@@ -96,3 +96,11 @@
   width: 100%;
   text-align: start;
 }
+
+.timelineForm {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 600px;
+  margin-top: 3rem;
+}

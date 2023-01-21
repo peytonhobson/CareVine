@@ -204,3 +204,16 @@
   width: 100%;
   text-align: center;
 }
+
+.timelineForm {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 600px;
+}
+
+.timelineFormContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}

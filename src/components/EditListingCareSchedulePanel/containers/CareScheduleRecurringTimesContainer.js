@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 
-import { FormattedMessage } from '../../../util/reactIntl';
+import zipcodeToTimezone from 'zipcode-to-timezone';
+import { compose } from 'redux';
+
+import { FormattedMessage, injectIntl } from '../../../util/reactIntl';
 import { InlineTextButton, IconEdit, Modal, CareScheduleExceptions, Button } from '../..';
 import Weekday from '../Weekday';
 import { createAvailabilityPlan, createInitialValues } from '../EditListingCareSchedule.helpers';
-import { EditListingAvailabilityPlanForm } from '../../../forms';
+import { EditListingAvailabilityPlanForm, TimelineForm } from '../../../forms';
+import { timestampToDate } from '../../../util/dates';
 
 import css from './containers.module.css';
 
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-const CareScheduleRecurringTimesContainer = props => {
+const CareScheduleRecurringTimesContainerComponent = props => {
   const {
     availabilityPlan: savedAvailabilityPlan,
     currentListing,
@@ -25,6 +29,7 @@ const CareScheduleRecurringTimesContainer = props => {
     updateInProgress,
     showErrors,
     panelUpdated,
+    intl,
   } = props;
 
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
@@ -33,6 +38,11 @@ const CareScheduleRecurringTimesContainer = props => {
     (savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions) || []
   );
   const [availabilityPlan, setAvailabilityPlan] = useState(savedAvailabilityPlan);
+
+  const savedStartDate = savedAvailabilityPlan && savedAvailabilityPlan.startDate;
+  const savedEndDate = savedAvailabilityPlan && savedAvailabilityPlan.endDate;
+  const [startDate, setStartDate] = useState(savedStartDate);
+  const [endDate, setEndDate] = useState(savedEndDate);
 
   const handleAvailabilityPlanSubmit = values => {
     setValuesFromLastSubmit(values);
@@ -49,6 +59,8 @@ const CareScheduleRecurringTimesContainer = props => {
         availabilityPlan: {
           ...availabilityPlan,
           availabilityExceptions,
+          startDate,
+          endDate,
         },
       },
     })
@@ -66,9 +78,20 @@ const CareScheduleRecurringTimesContainer = props => {
     ? valuesFromLastSubmit
     : createInitialValues(availabilityPlan);
 
-  const submitDisabled = !valuesFromLastSubmit;
+  const submitDisabled = !valuesFromLastSubmit || !startDate;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
+
+  const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
+
+  const timelineInitialValues = {
+    startDate: {
+      date: savedStartDate ? timestampToDate(savedStartDate) : null,
+    },
+    endDate: {
+      date: savedEndDate ? timestampToDate(savedEndDate) : null,
+    },
+  };
 
   const handleSaveAvailabilityException = exception => {
     setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
@@ -78,6 +101,14 @@ const CareScheduleRecurringTimesContainer = props => {
     setAvailabilityExceptions(prevExceptions =>
       prevExceptions.filter(exception => exception.attributes.start !== start)
     );
+  };
+
+  const onStartDateChange = date => {
+    setStartDate(date.date.getTime());
+  };
+
+  const onEndDateChange = date => {
+    setEndDate(date.date.getTime());
   };
 
   return (
@@ -106,6 +137,20 @@ const CareScheduleRecurringTimesContainer = props => {
           ))}
         </div>
       </section>
+      <div className={css.timelineFormContainer}>
+        <TimelineForm
+          className={css.timelineForm}
+          rootClassName={css.timelineForm}
+          formId="TimelineForm"
+          initialValues={timelineInitialValues}
+          intl={intl}
+          timeZone={timezone}
+          onStartDateChange={onStartDateChange}
+          onEndDateChange={onEndDateChange}
+          onSubmit={() => {}}
+          keepDirtyOnReinitialize
+        />
+      </div>
       <CareScheduleExceptions
         availabilityExceptions={availabilityExceptions}
         onManageDisableScrolling={onManageDisableScrolling}
@@ -152,5 +197,9 @@ const CareScheduleRecurringTimesContainer = props => {
     </>
   );
 };
+
+const CareScheduleRecurringTimesContainer = compose(injectIntl)(
+  CareScheduleRecurringTimesContainerComponent
+);
 
 export default CareScheduleRecurringTimesContainer;
