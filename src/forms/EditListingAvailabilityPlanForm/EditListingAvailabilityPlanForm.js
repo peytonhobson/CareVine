@@ -13,6 +13,7 @@ import {
   PrimaryButton,
   FieldSelect,
   FieldCheckbox,
+  InfoTooltip,
 } from '../../components';
 
 import css from './EditListingAvailabilityPlanForm.module.css';
@@ -370,6 +371,14 @@ const EditListingAvailabilityPlanFormComponent = props => {
 
         const listingType = currentListing && currentListing.attributes.metadata.listingType;
 
+        const isFlexibleTooltipText = (
+          <div>
+            <p>
+              <FormattedMessage id="EditListingAvailabilityPlanForm.isFlexibleTooltipText" />
+            </p>
+          </div>
+        );
+
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
             <h2 className={css.heading}>
@@ -381,15 +390,18 @@ const EditListingAvailabilityPlanFormComponent = props => {
               })}
             </div>
             {listingType === 'caregiver' ? (
-              <FieldCheckbox
-                id="isFlexible"
-                name="isFlexible"
-                className={css.isFlexible}
-                textClassName={css.isFlexibleText}
-                label={intl.formatMessage({
-                  id: 'EditListingAvailabilityPlanForm.isFlexible',
-                })}
-              />
+              <div className={css.isFlexibleContainer}>
+                <FieldCheckbox
+                  id="isFlexible"
+                  name="isFlexible"
+                  className={css.isFlexible}
+                  textClassName={css.isFlexibleText}
+                  label={intl.formatMessage({
+                    id: 'EditListingAvailabilityPlanForm.isFlexible',
+                  })}
+                />
+                <InfoTooltip title={isFlexibleTooltipText} />
+              </div>
             ) : null}
 
             <div className={css.submitButton}>

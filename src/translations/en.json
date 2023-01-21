@@ -263,6 +263,7 @@
   "EditListingAvailabilityPlanForm.timezonePickerTitle": "Choose a time zone",
   "EditListingAvailabilityPlanForm.title": "Edit default schedule",
   "EditListingAvailabilityPlanForm.updateFailed": "Failed to update. Please try again.",
+  "EditListingAvailabilityPlanForm.isFlexibleTooltipText": "If you are flexible, people can request to book you outside of your normal hours of availability.",
   "EditListingBackgroundCheckPanel.createListingTitle": "Add your background check",
   "EditListingBioForm.certificateLabel": "Teaching certificate",
   "EditListingBioForm.createListingDraftError": "Failed to create a draft. Please try again.",
