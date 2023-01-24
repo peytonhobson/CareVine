@@ -119,7 +119,7 @@ export const InboxPageComponent = props => {
           mobileRootClassName={css.mobileTopbar}
         />
       </LayoutWrapperTopbar>
-      <LayoutWrapperMain>
+      <LayoutWrapperMain className={css.wrapper}>
         {!generateAccessTokenError ? (
           userId && !generateAccessTokenInProgress ? (
             <SBProvider
@@ -132,6 +132,8 @@ export const InboxPageComponent = props => {
             >
               <SendbirdApp
                 currentUser={ensuredCurrentUser}
+                fetchOtherUserListingError={fetchOtherUserListingError}
+                fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
                 fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
                 fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
                 history={history}

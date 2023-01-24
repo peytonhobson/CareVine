@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button } from '../../../components';
 import classNames from 'classnames';
 import { userDisplayNameAsString } from '../../../util/data';
 
 import css from './index.module.css';
+import { useEffect } from 'react';
 
 const checkIfRequestInLastDay = messages => {
   let withinADay = false;
@@ -39,13 +40,28 @@ const RequestPaymentButton = props => {
     sendRequestForPaymentSuccess,
   } = props;
 
+  const [paymentRequestedForUser, setPaymentRequestedForUser] = useState(false);
+  const [currentOtherUser, setCurrentOtherUser] = useState(otherUser);
+
+  useEffect(() => {
+    if (
+      (otherUser && otherUser.id.uuid) !== (currentOtherUser && currentOtherUser.id.uuid) ||
+      !sendRequestForPaymentSuccess
+    ) {
+      setPaymentRequestedForUser(false);
+      setCurrentOtherUser(otherUser);
+    } else if (sendRequestForPaymentSuccess) {
+      setPaymentRequestedForUser(true);
+    }
+  }, [sendRequestForPaymentSuccess, otherUser]);
+
   const clickDisabled =
     !!disabled ||
-    sendRequestForPaymentSuccess ||
+    channelContext.allMessages.length === 0 ||
     checkIfRequestInLastDay(channelContext.allMessages);
 
   const requestPayment = () => {
-    if (!sendRequestForPaymentSuccess) {
+    if (!paymentRequestedForUser) {
       const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
       const customerName = userDisplayNameAsString(otherUser);
       onSendRequestForPayment(
@@ -67,7 +83,7 @@ const RequestPaymentButton = props => {
         disabled={clickDisabled}
         inProgress={sendRequestForPaymentInProgress}
         onClick={requestPayment}
-        ready={sendRequestForPaymentSuccess}
+        ready={paymentRequestedForUser}
         rootClassName={buttonClass}
       >
         Request Payment

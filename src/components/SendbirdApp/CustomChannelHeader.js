@@ -46,6 +46,7 @@ const CustomChannelHeader = props => {
     sendRequestForPaymentError,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
+    fetchOtherUserListingInProgress,
   } = props;
 
   const slug = listing && createSlug(listing);
@@ -123,7 +124,12 @@ const CustomChannelHeader = props => {
             channelContext={channelContext}
             channelUrl={channelUrl}
             currentUser={currentUser}
-            disabled={!otherUser || !listing}
+            disabled={
+              !otherUser ||
+              !listing ||
+              fetchUserFromChannelUrlInProgress ||
+              fetchOtherUserListingInProgress
+            }
             onSendRequestForPayment={onSendRequestForPayment}
             otherUser={otherUser}
             otherUserListing={listing}

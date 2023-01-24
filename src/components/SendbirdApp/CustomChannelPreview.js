@@ -3,7 +3,7 @@ import '@sendbird/uikit-react/dist/index.css';
 import React, { useState } from 'react';
 
 import ChannelAvatar from '@sendbird/uikit-react/ui/ChannelAvatar';
-import Badge from '@sendbird/uikit-react/ui/Badge';
+import Badge from '../Badge/Badge';
 import Icon, { IconColors, IconTypes } from '@sendbird/uikit-react/ui/Icon';
 import Label, { LabelTypography, LabelColors } from '@sendbird/uikit-react/ui/Label';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
@@ -135,6 +135,8 @@ const CustomChannelPreview = ({
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTyping = typingChannels?.some(({ url }) => url === channel?.url);
 
+  const [showMobileLeave, setShowMobileLeave] = useState(false);
+
   const userId = sbState?.stores?.userStore?.user?.userId;
   const theme = sbState?.config?.theme;
   const isMentionEnabled = sbState?.config?.isMentionEnabled;
@@ -193,13 +195,6 @@ const CustomChannelPreview = ({
                   {channelName}
                 </div>
               </span>
-              <Label
-                className="sendbird-channel-preview__content__upper__header__total-members"
-                type={LabelTypography.CAPTION_2}
-                color={LabelColors.ONBACKGROUND_2}
-              >
-                {getTotalMembers(channel)}
-              </Label>
               {isFrozen && (
                 <div
                   title="Frozen"
@@ -225,11 +220,16 @@ const CustomChannelPreview = ({
                 className="sendbird-channel-preview__content__upper__last-message-at sendbird-label--color-onbackground-2 sendbird-label--caption-3"
                 style={{ color: isActive && '#ffffff' }}
               >
+                <div style={{ marginRight: '10px', float: 'left' }}>
+                  {getChannelUnreadMessageCount(channel) ? ( // return number
+                    <Badge count={getChannelUnreadMessageCount(channel)} />
+                  ) : null}
+                </div>
                 {getLastMessageCreatedAt(channel, dateLocale)}
               </span>
             )}
           </div>
-          <div className="sendbird-channel-preview__content__lower">
+          <div className="sendbird-channel-preview__content__lower" style={{ maxWidth: '80%' }}>
             <span
               className="sendbird-channel-preview__content__lower__last-message sendbird-label--color-onbackground-2 sendbird-label--body-2"
               style={{ color: isActive && '#ffffff' }}
@@ -239,24 +239,9 @@ const CustomChannelPreview = ({
                 getLastMessage(channel) +
                   (isEditedMessage(channel?.lastMessage) ? ` ${stringSet.MESSAGE_EDITED}` : '')}
             </span>
-            <div className="sendbird-channel-preview__content__lower__unread-message-count">
-              {isMentionEnabled && channel?.unreadMentionCount > 0 ? (
-                <MentionUserLabel
-                  className="sendbird-channel-preview__content__lower__unread-message-count__mention"
-                  color="purple"
-                >
-                  {'@'}
-                </MentionUserLabel>
-              ) : null}
-              {getChannelUnreadMessageCount(channel) ? ( // return number
-                <Badge count={getChannelUnreadMessageCount(channel)} />
-              ) : null}
-            </div>
           </div>
         </div>
-        {/* {!isMobile && (
-          <div className="sendbird-channel-preview__action">{renderChannelAction({ channel })}</div>
-        )} */}
+        <div className="sendbird-channel-preview__action">{renderChannelAction({ channel })}</div>
       </div>
       {/*
         Event from portal is transferred to parent
@@ -264,6 +249,27 @@ const CustomChannelPreview = ({
         ChannelPreview and cause many issues with click/touchEnd etc
         https://github.com/facebook/react/issues/11387#issuecomment-340019419
       */}
+      {showMobileLeave && isMobile && (
+        <Modal
+          className="sendbird-channel-preview__leave--mobile"
+          titleText={channelName}
+          hideFooter
+          isCloseOnClickOutside
+          onCancel={() => setShowMobileLeave(false)}
+        >
+          <TextButton
+            onClick={() => {
+              onLeaveChannel();
+              setShowMobileLeave(false);
+            }}
+            className="sendbird-channel-preview__leave-label--mobile"
+          >
+            <Label type={LabelTypography.SUBTITLE_1} color={LabelColors.ONBACKGROUND_1}>
+              {stringSet.CHANNEL_PREVIEW_MOBILE_LEAVE}
+            </Label>
+          </TextButton>
+        </Modal>
+      )}
     </>
   );
 };

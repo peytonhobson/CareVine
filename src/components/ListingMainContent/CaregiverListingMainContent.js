@@ -133,74 +133,60 @@ const CaregiverListingMainContent = props => {
   const {
     location = '',
     pricing,
-    experienceLevel,
-    covidVaccination,
-    experienceWith,
-    certificationsAndTraining,
-    languagesSpoken,
-    additionalInfo,
+    experience,
+    additionalDetails,
   } = currentListing?.attributes.publicData;
   const rates = (pricing && pricing.rates) || [0, 0];
   const { formattedMinPrice } = priceData(rates, intl);
-
-  const convertedExperienceLevel = convertExperienceToLabel(experienceLevel);
 
   const infoArray = [];
 
   let tabContentPanel = null;
 
-  switch (selectedTab) {
-    case AVAILABILITY:
-      const availabilityPlan = currentListing?.attributes.publicData.availabilityPlan;
-      tabContentPanel = (
-        <ListingAvailabilityPanel
-          availabilityPlan={availabilityPlan}
-          currentListing={currentListing}
-          isOwnListing={isOwnListing}
-          unitType={unitType}
-          handleBookingSubmit={handleBookingSubmit}
-          currentAuthor={currentAuthor}
-          onManageDisableScrolling={onManageDisableScrolling}
-          monthlyTimeSlots={monthlyTimeSlots}
-          onFetchTimeSlots={onFetchTimeSlots}
-          onFetchTransactionLineItems={onFetchTransactionLineItems}
-          lineItems={lineItems}
-          fetchLineItemsInProgress={fetchLineItemsInProgress}
-          fetchLineItemsError={fetchLineItemsError}
-        />
-      );
-      break;
-    case BIO:
-      tabContentPanel = <ListingBioPanel currentListing={currentListing} />;
-      break;
-    case SERVICES:
-      tabContentPanel = <ListingServicesPanel currentListing={currentListing} />;
-      break;
-    case RECOMMENDATIONS:
-      tabContentPanel = (
-        <ListingRecommendationsPanel currentListing={currentListing} reviews={reviews} />
-      );
-      break;
-    default:
-      tabContentPanel = null;
-      break;
-  }
+  // switch (selectedTab) {
+  //   case AVAILABILITY:
+  //     const availabilityPlan = currentListing?.attributes.publicData.availabilityPlan;
+  //     tabContentPanel = (
+  //       <ListingAvailabilityPanel
+  //         availabilityPlan={availabilityPlan}
+  //         currentListing={currentListing}
+  //         isOwnListing={isOwnListing}
+  //         unitType={unitType}
+  //         handleBookingSubmit={handleBookingSubmit}
+  //         currentAuthor={currentAuthor}
+  //         onManageDisableScrolling={onManageDisableScrolling}
+  //         monthlyTimeSlots={monthlyTimeSlots}
+  //         onFetchTimeSlots={onFetchTimeSlots}
+  //         onFetchTransactionLineItems={onFetchTransactionLineItems}
+  //         lineItems={lineItems}
+  //         fetchLineItemsInProgress={fetchLineItemsInProgress}
+  //         fetchLineItemsError={fetchLineItemsError}
+  //       />
+  //     );
+  //     break;
+  //   case BIO:
+  //     tabContentPanel = <ListingBioPanel currentListing={currentListing} />;
+  //     break;
+  //   case SERVICES:
+  //     tabContentPanel = <ListingServicesPanel currentListing={currentListing} />;
+  //     break;
+  //   case RECOMMENDATIONS:
+  //     tabContentPanel = (
+  //       <ListingRecommendationsPanel currentListing={currentListing} reviews={reviews} />
+  //     );
+  //     break;
+  //   default:
+  //     tabContentPanel = null;
+  //     break;
+  // }
 
-  const details = {
-    experienceWith,
-    covidVaccination,
-    certificationsAndTraining,
-    languagesSpoken,
-    additionalInfo,
-  };
-
-  for (const property in details) {
-    if (details[property] instanceof Array) {
-      details[property].forEach(detail => {
+  for (const property in additionalDetails) {
+    if (additionalDetails[property] instanceof Array) {
+      additionalDetails[property].forEach(detail => {
         infoArray.push(detail);
       });
     } else {
-      infoArray.push(details[property]);
+      infoArray.push(additionalDetails[property]);
     }
   }
 
@@ -224,11 +210,11 @@ const CaregiverListingMainContent = props => {
             </div>
             <div className={css.primaryInfo}>
               <span className={css.bold}>Experience: </span>
-              <span className={css.marketH2}>&nbsp;{convertedExperienceLevel}</span>
+              {/* <span className={css.marketH2}>&nbsp;{convertedExperienceLevel}</span> */}
             </div>
             <div className={css.primaryInfo}>
               <div className={css.marketH2}>
-                {richText(location, {
+                {richText(`${location.city}, ${location.state}`, {
                   longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
                   longWordClass: css.longWord,
                 })}
@@ -255,7 +241,7 @@ const CaregiverListingMainContent = props => {
           tabClassName={css.tab}
         />
       </div>
-      {tabContentPanel}
+      {/* {tabContentPanel} */}
     </div>
   );
 };
