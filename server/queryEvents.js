@@ -1,6 +1,10 @@
 module.exports = queryEvents = () => {
   const fs = require('fs');
   const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+  const axios = require('axios');
+  const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
+  const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
+  const log = require('./log');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
     // These two env vars need to be set in the `.env` file.
@@ -17,7 +21,7 @@ module.exports = queryEvents = () => {
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 60000; // 1 minutes
+  const pollIdleWait = 10000; // 1 minutes
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -26,7 +30,7 @@ module.exports = queryEvents = () => {
   const stateFile = 'server/last-sequence-id.state';
 
   const queryEvents = args => {
-    var filter = { eventTypes: 'user/updated, listing/updated' };
+    var filter = { eventTypes: 'user/updated, listing/updated, user/deleted' };
     return integrationSdk.events.query({ ...args, ...filter });
   };
 
@@ -76,10 +80,10 @@ module.exports = queryEvents = () => {
                   id: listingId,
                 })
                 .then(res => console.log(res))
-                .catch(err => console.log(err));
+                .catch(err => log.error(err));
             }
           })
-          .catch(err => console.log(err));
+          .catch(err => log.error(err));
       }
     }
 
@@ -109,13 +113,43 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(res => console.log(res))
-                .catch(err => console.log(err));
+                .catch(err => log.error(err));
             }
           })
           .catch(err => {
-            console.log(err);
+            log.error(err);
           });
       }
+    }
+
+    if (eventType === 'user/deleted') {
+      const userId = event.attributes.previousValues.id.uuid;
+
+      axios
+        .get(`https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`, {
+          headers: {
+            'Content-Type': 'application/json; charset=utf8',
+            'Api-Token': SB_API_TOKEN,
+          },
+        })
+        .then(apiResponse => {
+          const channels = apiResponse.data.channels;
+
+          channels.forEach(channel => {
+            axios
+              .delete(
+                `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
+                {
+                  headers: {
+                    'Content-Type': 'application/json; charset=utf8',
+                    'Api-Token': SB_API_TOKEN,
+                  },
+                }
+              )
+              .catch(e => log.error(e));
+          });
+        })
+        .catch(e => log.error(e));
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

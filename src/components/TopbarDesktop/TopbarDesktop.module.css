@@ -358,7 +358,7 @@
   padding: 20px 24px;
 
   /* Layout details */
-  color: var(--matterColorAnti);
+  color: var(--marketplaceColor);
   text-align: left;
   white-space: nowrap;
   transition: var(--transitionStyleButton);

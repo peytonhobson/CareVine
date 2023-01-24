@@ -20,6 +20,8 @@ const SendbirdApp = props => {
   const {
     config: { isOnline, userId, appId, accessToken, theme, userListQuery, logger, pubSub },
     currentUser,
+    fetchOtherUserListingError,
+    fetchOtherUserListingInProgress,
     fetchUserFromChannelUrlError,
     fetchUserFromChannelUrlInProgress,
     history,
@@ -32,10 +34,10 @@ const SendbirdApp = props => {
     otherUser,
     otherUserListing,
     ownListing,
+    sdk,
     sendRequestForPaymentError,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
-    sdk,
     stores: { sdkStore, userStore },
     transitionToRequestPaymentError,
     transitionToRequestPaymentInProgress,
@@ -46,17 +48,17 @@ const SendbirdApp = props => {
   const [currentChannelUrl, setCurrentChannelUrl] = useState('');
 
   const redirectToOwnProfile = () => {
-    history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}`);
+    const pendingString =
+      ownListing.attributes.state === 'pendingApproval' ? '/pending-approval' : '';
+    history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}${pendingString}`);
   };
 
   useEffect(() => {
-    currentChannelUrl !== '' &&
-      accessToken &&
+    ((currentChannelUrl !== '' && accessToken) || !!fetchOtherUserListingError) &&
       onFetchOtherUserListing(currentChannelUrl, userId, accessToken);
-    currentChannelUrl !== '' &&
-      accessToken &&
+    ((currentChannelUrl !== '' && accessToken) || !!fetchUserFromChannelUrlError) &&
       onFetchUserFromChannelUrl(currentChannelUrl, userId, accessToken);
-  }, [currentChannelUrl, accessToken]);
+  }, [currentChannelUrl, accessToken, fetchUserFromChannelUrlError, fetchOtherUserListingError]);
 
   useEffect(() => {
     pubSub &&
@@ -110,6 +112,7 @@ const SendbirdApp = props => {
     <CustomChannelHeader
       channelUrl={currentChannelUrl}
       currentUser={currentUser}
+      fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
       fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
       listing={otherUserListing}
       onOpenPaymentModal={onOpenPaymentModal}
@@ -156,6 +159,7 @@ const SendbirdApp = props => {
           <SBConversation
             channelUrl={currentChannelUrl}
             renderChannelHeader={() => customChannelHeader}
+            disableUserProfile
             renderMessage={({ message, onDeleteMessage, onUpdateMessage, emojiContainer }) => (
               <CustomMessageItem
                 currentChannel={currentChannelUrl}

@@ -38,6 +38,7 @@ export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
 
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
+export { default as Badge } from './Badge/Badge';
 export { default as ExpandingTextarea } from './ExpandingTextarea/ExpandingTextarea';
 export { default as Form } from './Form/Form';
 export { default as FullPageError } from './FullPageError/FullPageError';

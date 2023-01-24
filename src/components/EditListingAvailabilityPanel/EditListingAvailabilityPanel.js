@@ -70,7 +70,7 @@ const EditListingAvailabilityPanel = props => {
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
   const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
   const [selectedAvailabilityTypes, setSelectedAvailabilityTypes] = useState(
-    savedSelectedAvailabilityTypes
+    savedSelectedAvailabilityTypes || []
   );
   const [availabilityPlan, setAvailabilityPlan] = useState(
     savedAvailabilityPlan || defaultAvailabilityPlan
@@ -82,8 +82,8 @@ const EditListingAvailabilityPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
-
-  const submitDisabled = selectedAvailabilityTypes.length === 0 || !valuesFromLastSubmit;
+  const submitDisabled =
+    (selectedAvailabilityTypes && selectedAvailabilityTypes.length === 0) || !valuesFromLastSubmit;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 

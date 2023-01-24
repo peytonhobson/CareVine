@@ -21,7 +21,7 @@ module.exports = (req, res) => {
       {
         user_id: userId,
         nickname,
-        profile_url: profileUrl,
+        profile_url: profileUrl || '',
         issue_access_token: true,
       },
       {

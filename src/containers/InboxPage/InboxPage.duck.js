@@ -132,6 +132,7 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         ...state,
         sendRequestForPaymentInProgress: true,
         sendRequestForPaymentError: null,
+        sendRequestForPaymentSuccess: false,
       };
     case SEND_REQUEST_FOR_PAYMENT_SUCCESS:
       return {
