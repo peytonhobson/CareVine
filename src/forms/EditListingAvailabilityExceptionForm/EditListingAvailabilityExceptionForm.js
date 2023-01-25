@@ -584,7 +584,7 @@ const EditListingAvailabilityExceptionForm = props => {
               />
             </div>
             <div className={css.section}>
-              {planType === 'availability-plan/recurring' ? (
+              {planType === 'availability-plan/repeat' ? (
                 <>
                   <div className={css.formRow}>
                     <div className={css.field}>

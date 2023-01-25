@@ -125,6 +125,7 @@ const EditListingAvailabilityPanel = props => {
   };
 
   const handleAvailabilityTypeChange = values => {
+    // sessionStorage.setItem(, 'value');
     setSelectedAvailabilityTypes(values.availabilityTypes);
   };
 

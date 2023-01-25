@@ -7,7 +7,8 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
 import { EditListingJobDescriptionForm } from '../../forms';
-import { ListingLink } from '..';
+import config from '../../config';
+import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingJobDescriptionPanel.module.css';
 
@@ -19,7 +20,15 @@ const SELECT_DATES = 'Select Dates';
 const RECURRING = 'Recurring';
 const TWENTY_FOUR_HOUR = '24 Hour Care';
 
-const generateTitle = (currentListing, intl) => {
+const convertFilterKeyToLabel = (key, property, filter) => {
+  const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
+    return key === data.key;
+  });
+
+  return filterOption ? filterOption.label : null;
+};
+
+const generateTitle = (currentListing, filterConfig) => {
   let careScheduleType = null;
   const availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
 
@@ -42,17 +51,49 @@ const generateTitle = (currentListing, intl) => {
   const careRecipients = currentListing.attributes.publicData.careRecipients;
 
   if (careRecipients.length > 0) {
-    relationships = careRecipients.map(recipient => recipient.recipientRelationship);
+    relationships = careRecipients.map(recipient =>
+      convertFilterKeyToLabel(
+        recipient.recipientRelationship,
+        'recipientRelationship',
+        filterConfig
+      )
+    );
   }
+
+  const pluralizeRelationshipsIfMultiple = relationships => {
+    const relationshipsCountMap = relationships.reduce((acc, relationship) => {
+      if (acc[relationship]) {
+        acc[relationship] += 1;
+      } else {
+        acc[relationship] = 1;
+      }
+      return acc;
+    }, {});
+
+    return Object.keys(relationshipsCountMap).map(key => {
+      if (relationshipsCountMap[key] > 1) {
+        return `${key}s`;
+      } else {
+        return key;
+      }
+    });
+  };
+
+  const pluralizedRelationships = pluralizeRelationshipsIfMultiple(relationships);
 
   let relationshipString = null;
 
-  relationships.forEach((relationship, index) => {
-    const capitalizedRelationship = relationship.charAt(0).toUpperCase() + relationship.slice(1);
+  pluralizedRelationships.forEach((relationship, index) => {
+    const capitalizedRelationship =
+      relationship
+        .replace('My ', '')
+        .charAt(0)
+        .toUpperCase() + relationship.replace('My ', '').slice(1);
     if (index === 0) {
       relationshipString = capitalizedRelationship;
-    } else if (index === relationships.length - 1) {
-      relationshipString = `${relationshipString} and ${capitalizedRelationship}`;
+    } else if (index === pluralizedRelationships.length - 1) {
+      const comma = pluralizedRelationships.length > 2 ? ',' : '';
+      relationshipString = `${relationshipString}${comma} and ${capitalizedRelationship}`;
     } else {
       relationshipString = `${relationshipString}, ${capitalizedRelationship}`;
     }
@@ -60,7 +101,7 @@ const generateTitle = (currentListing, intl) => {
 
   const city = currentListing.attributes.publicData.location.city;
 
-  return `${careScheduleType} Care Needed for ${relationshipString} in ${city}`;
+  return `${careScheduleType} Needed for My ${relationshipString} in ${city}`;
 };
 
 const EditListingJobDescriptionPanel = props => {
@@ -78,11 +119,12 @@ const EditListingJobDescriptionPanel = props => {
     errors,
     intl,
     submitButtonText,
+    filterConfig,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
-  const { publicData } = currentListing.attributes;
+  const { publicData, description, title } = currentListing.attributes;
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
@@ -109,9 +151,8 @@ const EditListingJobDescriptionPanel = props => {
     />
   );
 
-  const title = generateTitle(currentListing);
-  const description = publicData && publicData.description;
-  const initialValues = { title, description };
+  const initialTitle = title || generateTitle(currentListing, filterConfig);
+  const initialValues = { title: initialTitle, description };
 
   const formProps = {
     className: css.form,
@@ -151,9 +192,10 @@ EditListingJobDescriptionPanel.defaultProps = {
   rootClassName: null,
   className: null,
   listing: null,
+  filterConfig: config.custom.filters,
 };
 
-const { bool, func, object, string, shape } = PropTypes;
+const { bool, func, object, string, shape, filterConfig } = PropTypes;
 
 EditListingJobDescriptionPanel.propTypes = {
   rootClassName: string,
@@ -171,6 +213,7 @@ EditListingJobDescriptionPanel.propTypes = {
   updateInProgress: bool.isRequired,
   errors: object.isRequired,
   intl: intlShape.isRequired,
+  filterConfig: filterConfig,
 };
 
 export default EditListingJobDescriptionPanel;

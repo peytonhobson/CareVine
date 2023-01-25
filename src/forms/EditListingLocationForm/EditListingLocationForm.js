@@ -9,15 +9,19 @@ import {
   autocompleteSearchRequired,
   autocompletePlaceSelected,
   composeValidators,
+  requiredFieldArrayRadio,
 } from '../../util/validators';
+import arrayMutators from 'final-form-arrays';
+import { findOptionsForSelectFilter } from '../../util/search';
 import {
   Form,
   LocationAutocompleteInputField,
   Button,
   FieldAddSubtract,
-  Checkbox,
   FieldCheckbox,
+  FieldRadioButtonGroup,
 } from '../../components';
+import config from '../../config';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './EditListingLocationForm.module.css';
@@ -27,6 +31,7 @@ const identity = v => v;
 export const EditListingLocationFormComponent = props => (
   <FinalForm
     {...props}
+    mutators={{ ...arrayMutators }}
     render={formRenderProps => {
       const {
         className,
@@ -41,6 +46,7 @@ export const EditListingLocationFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
+        filterConfig,
         values,
         userType,
       } = formRenderProps;
@@ -65,6 +71,14 @@ export const EditListingLocationFormComponent = props => (
       });
       const distanceCountLabel = intl.formatMessage({
         id: 'EditListingLocationForm.distanceCountLabel',
+      });
+
+      const residenceTypeLabel = intl.formatMessage({
+        id: 'EditListingLocationForm.residenceTypeLabel',
+      });
+      const residenceTypeOptions = findOptionsForSelectFilter('residenceType', filterConfig);
+      const residenceTypeRequiredMessage = intl.formatMessage({
+        id: 'EditListingLocationForm.residenceTypeRequired',
       });
 
       const { updateListingError, showListingsError } = fetchErrors || {};
@@ -122,12 +136,24 @@ export const EditListingLocationFormComponent = props => (
             />
           )}
           {userType === EMPLOYER && (
-            <FieldCheckbox
-              id={formId ? `${formId}.nearPublicTransit` : 'nearPublicTransit'}
-              name="nearPublicTransit"
-              label={nearPublicTransitText}
-              value="nearPublicTransit"
-            />
+            <>
+              <FieldCheckbox
+                id={formId ? `${formId}.nearPublicTransit` : 'nearPublicTransit'}
+                className={css.formMargins}
+                name="nearPublicTransit"
+                label={nearPublicTransitText}
+                value="nearPublicTransit"
+              />
+              <FieldRadioButtonGroup
+                id={formId ? `${formId}.residenceType` : 'residenceType'}
+                className={css.formMargins}
+                name="residenceType"
+                label={residenceTypeLabel}
+                options={residenceTypeOptions}
+                required
+                validate={requiredFieldArrayRadio(residenceTypeRequiredMessage)}
+              />
+            </>
           )}
           {errorMessage}
           <Button
@@ -148,6 +174,7 @@ export const EditListingLocationFormComponent = props => (
 EditListingLocationFormComponent.defaultProps = {
   selectedPlace: null,
   fetchErrors: null,
+  filterConfig: config.custom.filters,
 };
 
 EditListingLocationFormComponent.propTypes = {
@@ -163,6 +190,7 @@ EditListingLocationFormComponent.propTypes = {
     showListingsError: propTypes.error,
     updateListingError: propTypes.error,
   }),
+  filterConfig: propTypes.filterConfig,
 };
 
 export default compose(injectIntl)(EditListingLocationFormComponent);

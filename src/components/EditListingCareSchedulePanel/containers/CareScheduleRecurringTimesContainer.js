@@ -113,6 +113,20 @@ const CareScheduleRecurringTimesContainerComponent = props => {
 
   return (
     <>
+      <div className={css.timelineFormContainer}>
+        <TimelineForm
+          className={css.timelineForm}
+          rootClassName={css.timelineForm}
+          formId="TimelineForm"
+          initialValues={timelineInitialValues}
+          intl={intl}
+          timeZone={timezone}
+          onStartDateChange={onStartDateChange}
+          onEndDateChange={onEndDateChange}
+          onSubmit={() => {}}
+          keepDirtyOnReinitialize
+        />
+      </div>
       <section className={css.section}>
         <header className={css.sectionHeader}>
           <h2 className={css.sectionTitle}>
@@ -137,20 +151,6 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           ))}
         </div>
       </section>
-      <div className={css.timelineFormContainer}>
-        <TimelineForm
-          className={css.timelineForm}
-          rootClassName={css.timelineForm}
-          formId="TimelineForm"
-          initialValues={timelineInitialValues}
-          intl={intl}
-          timeZone={timezone}
-          onStartDateChange={onStartDateChange}
-          onEndDateChange={onEndDateChange}
-          onSubmit={() => {}}
-          keepDirtyOnReinitialize
-        />
-      </div>
       <CareScheduleExceptions
         availabilityExceptions={availabilityExceptions}
         onManageDisableScrolling={onManageDisableScrolling}

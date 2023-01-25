@@ -21,7 +21,7 @@ module.exports = queryEvents = () => {
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 10000; // 1 minutes
+  const pollIdleWait = 60000; // 1 minute
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -113,11 +113,11 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(res => console.log(res))
-                .catch(err => log.error(err));
+                .catch(err => log.error(err.data));
             }
           })
           .catch(err => {
-            log.error(err);
+            log.error(err.data);
           });
       }
     }
@@ -146,10 +146,10 @@ module.exports = queryEvents = () => {
                   },
                 }
               )
-              .catch(e => log.error(e));
+              .catch(e => log.error(e.data));
           });
         })
-        .catch(e => log.error(e));
+        .catch(e => log.error(e.data));
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

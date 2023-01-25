@@ -1,23 +1,31 @@
 import React, { useState } from 'react';
-import queryString from 'query-string';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
+import config from '../../config';
+import { findOptionsForSelectFilter } from '../../util/search';
 
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
 import { EditListingAddCareRecipientForm, EditListingCareRecipientDetailsForm } from '../../forms';
-import { ListingLink, InlineTextButton, Modal, IconClose } from '..';
+import { InlineTextButton, Modal, IconClose } from '..';
 
 import css from './EditListingCareRecipientDetailsPanel.module.css';
+
+const convertFilterKeyToLabel = (key, property, filter) => {
+  const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
+    return key === data.key;
+  });
+
+  return filterOption ? filterOption.label : null;
+};
 
 const EditListingCareRecipientDetailsPanel = props => {
   const {
     rootClassName,
     className,
     listing,
-    isNewListingFlow,
     disabled,
     ready,
     onSubmit,
@@ -28,6 +36,7 @@ const EditListingCareRecipientDetailsPanel = props => {
     intl,
     submitButtonText,
     onManageDisableScrolling,
+    filterConfig,
   } = props;
 
   const currentListing = ensureListing(listing);
@@ -113,7 +122,7 @@ const EditListingCareRecipientDetailsPanel = props => {
     intl,
   };
 
-  const addCareFormInitialValues = { age: '30s' };
+  const addCareFormInitialValues = { age: 'early30s' };
 
   const addCareFormProps = {
     className: css.form,
@@ -142,6 +151,13 @@ const EditListingCareRecipientDetailsPanel = props => {
         <div className={css.recipients}>
           {careRecipients.map((recipient, index) => {
             const { recipientRelationship, gender, age } = recipient;
+            const recipientRelationshipLabel = convertFilterKeyToLabel(
+              recipientRelationship,
+              'recipientRelationship',
+              filterConfig
+            );
+            const genderLabel = convertFilterKeyToLabel(gender, 'gender', filterConfig);
+            const ageLabel = convertFilterKeyToLabel(age, 'recipientAge', filterConfig);
             return (
               <div key={index} className={css.recipient}>
                 <div className={css.recipientHeader}>
@@ -154,9 +170,11 @@ const EditListingCareRecipientDetailsPanel = props => {
                 </div>
                 <h3 className={css.recipientLabel}>Recipient {index + 1}:</h3>
                 <div className={css.recipientTraitsContainer}>
-                  <span className={css.recipientTrait}>Relationship: {recipientRelationship}</span>
-                  <span className={css.recipientTrait}>Gender: {gender}</span>
-                  <span className={css.recipientTrait}>Age: {age}</span>
+                  <span className={css.recipientTrait}>
+                    Relationship: {recipientRelationshipLabel}
+                  </span>
+                  <span className={css.recipientTrait}>Gender: {genderLabel}</span>
+                  <span className={css.recipientTrait}>Age: {ageLabel}</span>
                 </div>
               </div>
             );
@@ -205,9 +223,10 @@ EditListingCareRecipientDetailsPanel.defaultProps = {
   rootClassName: null,
   className: null,
   listing: null,
+  filterConfig: config.custom.filters,
 };
 
-const { bool, func, object, string, shape } = PropTypes;
+const { bool, func, object, string, shape, filterConfig } = PropTypes;
 
 EditListingCareRecipientDetailsPanel.propTypes = {
   rootClassName: string,
@@ -225,6 +244,7 @@ EditListingCareRecipientDetailsPanel.propTypes = {
   updateInProgress: bool.isRequired,
   errors: object.isRequired,
   intl: intlShape.isRequired,
+  filterConfig: filterConfig,
 };
 
 export default EditListingCareRecipientDetailsPanel;

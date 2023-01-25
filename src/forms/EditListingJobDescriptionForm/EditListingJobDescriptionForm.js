@@ -16,11 +16,11 @@ import {
 } from '../../util/validators';
 import config from '../../config';
 import { Form, Button, FieldTextInput } from '../../components';
-import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingJobDescriptionForm.module.css';
 
 const DESCRIPTION_MAX_LENGTH = 700;
+const DESCRIPTION_MIN_LENGTH = 100;
 
 const EditListingJobDescriptionFormComponent = props => (
   <FinalForm
@@ -48,6 +48,11 @@ const EditListingJobDescriptionFormComponent = props => (
       const descriptionPlaceholder = intl.formatMessage({
         id: 'EditListingJobDescriptionForm.descriptionPlaceholder',
       });
+      const minLengthMessage = intl.formatMessage(
+        { id: 'EditListingJobDescriptionForm.minLengthMessage' },
+        { minLength: DESCRIPTION_MIN_LENGTH }
+      );
+      const minLength100Message = minLength(minLengthMessage, DESCRIPTION_MIN_LENGTH);
       const maxLengthMessage = intl.formatMessage(
         { id: 'EditListingJobDescriptionForm.maxLengthMessage' },
         {
@@ -95,6 +100,7 @@ const EditListingJobDescriptionFormComponent = props => (
             placeholder={titlePlaceholder}
             validate={titleRequired}
             label={titleLabel}
+            required
           />
 
           <FieldTextInput
@@ -105,8 +111,10 @@ const EditListingJobDescriptionFormComponent = props => (
             type="textarea"
             placeholder={descriptionPlaceholder}
             label={descriptionLabel}
+            minLength={DESCRIPTION_MIN_LENGTH}
             maxLength={DESCRIPTION_MAX_LENGTH}
-            validate={maxLength700Message}
+            required
+            validate={composeValidators(maxLength700Message, minLength100Message)}
           />
 
           {errorMessageUpdateListing}

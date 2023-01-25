@@ -25,3 +25,7 @@
 .textarea.inputSuccess {
   border-color: var(--successColor);
 }
+
+.error {
+  color: var(--failColor);
+}
