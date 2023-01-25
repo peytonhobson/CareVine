@@ -71,6 +71,7 @@
     background: none;
   }
   & :global(.DayPicker__horizontal) {
+    z-index: 10000;
     margin: 0 auto;
     background-color: var(--marketplaceColor);
     box-shadow: none;
@@ -219,7 +220,7 @@
     height: var(--DateInput_selectionHeight);
     background-color: var(--DateInput_hoveredOverlayColor);
   }
-  & :global(.CalendarDay:hover .renderedDay) {
+  & :global(.CalendarDay:hover:not(.CalendarDay__blocked_out_of_range) .renderedDay) {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -232,7 +233,7 @@
   & :global(.CalendarDay__blocked_out_of_range:active),
   & :global(.CalendarDay__blocked_out_of_range:hover) {
     background-color: transparent;
-    color: var(--marketplaceColorDark);
+    color: var(--matterColorDark);
     border: 0;
   }
   /* Remove default bg-color and use our extra span instead '.renderedDay' */
@@ -240,7 +241,7 @@
   & :global(.CalendarDay__blocked_calendar:active),
   & :global(.CalendarDay__blocked_calendar:hover) {
     background-color: transparent;
-    color: var(--marketplaceColorDark);
+    color: var(--matterColorDark);
     border: 0;
   }
   & :global(.CalendarDay__blocked_out_of_range .CalendarDay__blocked_calendar .renderedDay) {

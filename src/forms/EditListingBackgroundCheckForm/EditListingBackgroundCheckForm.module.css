@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: 24px;
+}
+
+.nameInput {
+  max-width: 25%;
+}
+
+.dobInput {
+  max-width: 25%;
+  z-index: 100;
+}
+
+.emailInput {
+  max-width: 40%;
+}
+
+.phoneInput {
+  max-width: 25%;
+}
+
+.streetField {
+  max-width: 40%;
+}
+
+.aptField {
+  max-width: 20%;
+}
+
+.monthYearContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.monthSelect {
+  margin-inline: 16px;
+  width: auto;
+}
+
+.yearSelect {
+  margin-inline: 16px;
+  width: auto;
+  padding-right: 1.5rem;
+}

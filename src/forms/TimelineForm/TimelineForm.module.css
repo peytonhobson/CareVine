@@ -87,6 +87,25 @@
   }
 }
 
+.endDateField {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  width: 50%;
+
+  &:nth-child(2n) {
+    margin-top: 12px;
+  }
+
+  @media (--viewportMedium) {
+    width: 50%;
+
+    &:nth-child(2n) {
+      margin-top: unset;
+    }
+  }
+}
+
 .fieldDisabled {
   background: none;
   color: var(--matterColorNegative);
@@ -161,6 +180,33 @@
       left: 0;
       bottom: 17px;
     }
+  }
+}
+
+.removeExceptionButton {
+  padding: 0 12px 0 12px;
+  border: 0;
+  cursor: pointer;
+
+  &:hover .removeIcon {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+
+  @media (--viewportMedium) {
+    padding: 6px 26px 0 12px;
+  }
+}
+
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+
+  @media (--viewportMedium) {
+    width: 12px;
+    height: 12px;
   }
 }
 

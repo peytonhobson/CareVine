@@ -15,7 +15,7 @@ import { timestampToDate } from '../../util/dates';
 import css from './CareScheduleExceptions.module.css';
 
 const MAX_EXCEPTIONS_COUNT = 20;
-const AVAILABILITY_PLAN_TYPE_RECURRING = 'availability-plan/recurring';
+const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
 const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
 
 // Ensure that the AvailabilityExceptions are in sensible order.
@@ -28,7 +28,7 @@ const sortExceptionsByStartTime = (a, b) => {
 
 const filterExceptionsByType = (exceptions, planType) => {
   return exceptions.filter(exception => {
-    return planType === AVAILABILITY_PLAN_TYPE_RECURRING
+    return planType === AVAILABILITY_PLAN_TYPE_REPEAT
       ? exception.attributes.seats === 1 || exception.attributes.seats === 0
       : exception.attributes.seats === 3 || exception.attributes.seats === 2;
   });
@@ -55,7 +55,7 @@ const CareScheduleExceptions = props => {
   const [isEditExceptionsModalOpen, setIsEditExceptionsModalOpen] = useState(false);
 
   const planType = availabilityPlan && availabilityPlan.type;
-  const isRecurring = planType === AVAILABILITY_PLAN_TYPE_RECURRING;
+  const isRecurring = planType === AVAILABILITY_PLAN_TYPE_REPEAT;
 
   const sortedAvailabilityExceptions = filterExceptionsByType(
     availabilityExceptions.sort(sortExceptionsByStartTime),

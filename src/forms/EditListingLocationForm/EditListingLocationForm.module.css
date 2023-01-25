@@ -15,6 +15,14 @@
   }
 }
 
+.formMargins {
+  margin-bottom: 24px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 32px;
+  }
+}
+
 .error {
   color: var(--failColor);
 }
@@ -81,10 +89,10 @@
 .locationAddress,
 .building {
   flex-shrink: 0;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 
   @media (--viewportMedium) {
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
 }
 
@@ -95,6 +103,10 @@
   @media (--viewportLarge) {
     display: inline-block;
     width: 241px;
-    margin-top: 100px;
+    margin-top: 50px;
   }
+}
+
+.residenceType {
+  composes: formMargins;
 }

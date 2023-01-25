@@ -113,6 +113,18 @@ const Care24HourFormComponent = props => {
 
   return (
     <Form className={css.root} onSubmit={handleSubmit}>
+      <TimelineForm
+        className={css.timelineForm}
+        rootClassName={css.timelineForm}
+        formId="TimelineForm"
+        initialValues={timelineInitialValues}
+        intl={intl}
+        timeZone={timezone}
+        onStartDateChange={onStartDateChange}
+        onEndDateChange={onEndDateChange}
+        onSubmit={() => {}}
+        keepDirtyOnReinitialize
+      />
       <h2>
         <FormattedMessage id="Care24HourForm.whichCareDays" />
       </h2>
@@ -168,19 +180,6 @@ const Care24HourFormComponent = props => {
         checked={liveIn}
         value={liveIn}
         onClick={() => setLiveIn(prevLiveIn => !prevLiveIn)}
-      />
-
-      <TimelineForm
-        className={css.timelineForm}
-        rootClassName={css.timelineForm}
-        formId="TimelineForm"
-        initialValues={timelineInitialValues}
-        intl={intl}
-        timeZone={timezone}
-        onStartDateChange={onStartDateChange}
-        onEndDateChange={onEndDateChange}
-        onSubmit={() => {}}
-        keepDirtyOnReinitialize
       />
       <div className={css.children}>
         <CareScheduleExceptions

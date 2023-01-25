@@ -8,6 +8,7 @@ export { default as EditListingAvailabilityPlanForm } from './EditListingAvailab
 export { default as ConfirmSignupForm } from './ConfirmSignupForm/ConfirmSignupForm';
 export { default as EditListingAddCareRecipientForm } from './EditListingAddCareRecipientForm/EditListingAddCareRecipientForm';
 export { default as EditListingAdditionalDetailsForm } from './EditListingAdditionalDetailsForm/EditListingAdditionalDetailsForm';
+export { default as EditListingBackgroundCheckForm } from './EditListingBackgroundCheckForm/EditListingBackgroundCheckForm';
 export { default as EditListingBioForm } from './EditListingBioForm/EditListingBioForm';
 export { default as EditListingCaregiverDetailsForm } from './EditListingCaregiverDetailsForm/EditListingCaregiverDetailsForm';
 export { default as EditListingCareRecipientDetailsForm } from './EditListingCareRecipientDetailsForm/EditListingCareRecipientDetailsForm';

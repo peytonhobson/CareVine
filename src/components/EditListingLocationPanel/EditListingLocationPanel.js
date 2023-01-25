@@ -36,6 +36,7 @@ class EditListingLocationPanel extends Component {
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
 
     const nearBusLine = publicData && publicData.nearBusLine ? publicData.nearBusLine : null;
+    const residenceType = publicData && publicData.residenceType ? publicData.residenceType : null;
 
     return {
       location: locationFieldsPresent
@@ -46,6 +47,7 @@ class EditListingLocationPanel extends Component {
         : null,
       travelDistance: travelDistanceFieldPresent ? travelDistance : 15,
       nearBusLine,
+      residenceType,
     };
   }
 
@@ -103,7 +105,7 @@ class EditListingLocationPanel extends Component {
           className={css.form}
           initialValues={this.state.initialValues}
           onSubmit={values => {
-            const { location, travelDistance, nearPublicTransit = [] } = values;
+            const { location, travelDistance, nearPublicTransit = [], residenceType } = values;
 
             const {
               selectedPlace: { address, origin },
@@ -143,6 +145,7 @@ class EditListingLocationPanel extends Component {
                       },
                       nearPublicTransit: nearPublicTransitValue,
                       availabilityPlan: availabilityPlanMaybe,
+                      residenceType,
                     },
                   };
 
@@ -151,6 +154,7 @@ class EditListingLocationPanel extends Component {
                 location: { search: zipcode, selectedPlace: { address, origin } },
                 travelDistance,
                 nearPublicTransit: nearPublicTransitValue,
+                residenceType,
               },
             });
             onSubmit(updateValues);

@@ -85,12 +85,8 @@ const CareScheduleSelectDatesContainer = props => {
 
   return (
     <div className={css.root}>
-      <div className={css.exceptionsContainer}>
-        {selectedSessions.length === 0 ? (
-          <div className={css.noExceptions}>
-            <FormattedMessage id="CareScheduleSelectDatesContainer.noCareSessions" />
-          </div>
-        ) : (
+      {selectedSessions.length !== 0 ? (
+        <div className={css.exceptionsContainer}>
           <div className={css.exceptions}>
             {selectedSessions.map(session => {
               const { start, end } = session;
@@ -115,15 +111,15 @@ const CareScheduleSelectDatesContainer = props => {
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      ) : null}
       <InlineTextButton
         className={css.addExceptionButton}
         onClick={() => setIsAddCareSessionModalOpen(true)}
         disabled={disabled}
         ready={ready}
       >
-        <FormattedMessage id="CareScheduleSelectDatesContainer.addCareSession" />
+        <FormattedMessage id="CareScheduleSelectDatesContainer.addCareSchedule" />
       </InlineTextButton>
       {errors.updateListingError && showErrors ? (
         <p className={css.error}>

@@ -27,7 +27,14 @@ import {
   prevMonthFn,
 } from '../../util/dates';
 import { bookingDateRequired } from '../../util/validators';
-import { FieldDateInput, FieldSelect, Form, IconArrowHead, PrimaryButton } from '../../components';
+import {
+  FieldDateInput,
+  FieldSelect,
+  Form,
+  IconArrowHead,
+  PrimaryButton,
+  IconClose,
+} from '../../components';
 
 import css from './TimelineForm.module.css';
 
@@ -138,6 +145,10 @@ const TimelineForm = props => {
           onMonthChanged
         );
 
+        const onDeleteEndDate = () => {
+          form.change('endDate', null);
+        };
+
         const classes = classNames(rootClassName || css.root, className);
 
         return (
@@ -170,7 +181,7 @@ const TimelineForm = props => {
                     validate={bookingDateRequired('Required')}
                   />
                 </div>
-                <div className={css.field}>
+                <div className={css.endDateField}>
                   <FieldDateInput
                     name="endDate"
                     id={`${idPrefix}.endDate`}
@@ -190,6 +201,13 @@ const TimelineForm = props => {
                     useMobileMargins
                     showErrorMessage={false}
                   />
+                  <button
+                    className={css.removeExceptionButton}
+                    onClick={() => onDeleteEndDate()}
+                    type="button"
+                  >
+                    <IconClose size="normal" className={css.removeIcon} />
+                  </button>
                 </div>
               </div>
             </div>

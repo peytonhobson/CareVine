@@ -58,13 +58,10 @@ const EditListingAddCareRecipientFormComponent = props => (
       const recipientRelationshipName = intl.formatMessage({
         id: 'EditListingAddCareRecipientForm.recipientRelationshipName',
       });
-      const recipientRelationshipOptions = [
-        { key: 'parent', label: 'My parent' },
-        { key: 'spouse', label: 'My spouse' },
-        { key: 'grandparent', label: 'My grandparent' },
-        { key: 'friend', label: 'My friend/extended relative' },
-        { key: 'myself', label: 'Myself' },
-      ];
+      const recipientRelationshipOptions = findOptionsForSelectFilter(
+        'recipientRelationship',
+        filterConfig
+      );
       const recipientRelationshipLabel = intl.formatMessage({
         id: 'EditListingAddCareRecipientForm.recipientRelationshipLabel',
       });
@@ -76,10 +73,7 @@ const EditListingAddCareRecipientFormComponent = props => (
       const genderName = intl.formatMessage({
         id: 'EditListingAddCareRecipientForm.genderName',
       });
-      const genderOptions = [
-        { key: 'male', label: 'Male' },
-        { key: 'female', label: 'Female' },
-      ];
+      const genderOptions = findOptionsForSelectFilter('gender', filterConfig);
       const genderLabel = intl.formatMessage({
         id: 'EditListingAddCareRecipientForm.genderLabel',
       });
@@ -91,20 +85,10 @@ const EditListingAddCareRecipientFormComponent = props => (
       const ageSelectLabel = intl.formatMessage({
         id: 'EditListingAddCareRecipientForm.ageSelectLabel',
       });
-      const ageSelectOptions = [
-        { value: '30s', label: "30's" },
-        { value: '40s', label: "40's" },
-        { value: '50s', label: "50's" },
-        { value: '60s', label: "60's" },
-        { value: '70s', label: "70's" },
-        { value: '80s', label: "80's" },
-        { value: '90s', label: "90's" },
-        { value: '100s', label: "100's" },
-      ];
+      const ageSelectOptions = findOptionsForSelectFilter('recipientAge', filterConfig);
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
-      const submitReady = (updated && pristine) || ready;
       const submitDisabled = invalid || disabled || submitInProgress;
 
       return (
@@ -115,7 +99,7 @@ const EditListingAddCareRecipientFormComponent = props => (
             form.initialize({
               recipientRelationship: null,
               gender: null,
-              age: '30s',
+              age: 'early30s',
             });
             form.resetFieldState('recipientRelationship');
             form.resetFieldState('gender');
@@ -155,7 +139,7 @@ const EditListingAddCareRecipientFormComponent = props => (
           >
             {ageSelectOptions.map(item => {
               return (
-                <option key={item.value} value={item.value}>
+                <option key={item.key} value={item.key}>
                   {item.label}
                 </option>
               );
@@ -167,7 +151,6 @@ const EditListingAddCareRecipientFormComponent = props => (
             type="submit"
             inProgress={submitInProgress}
             disabled={submitDisabled}
-            ready={submitReady}
           >
             {saveActionMsg}
           </Button>

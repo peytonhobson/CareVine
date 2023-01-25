@@ -6,6 +6,7 @@ import { LISTING_STATE_DRAFT } from '../../util/types';
 import { FormattedMessage } from 'react-intl';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
+import { EditListingBackgroundCheckForm } from '../../forms';
 
 const isDev = process.env.REACT_APP_ENV === 'development';
 
@@ -24,19 +25,6 @@ const EditListingBackgroundCheckPanel = props => {
     errors,
   } = props;
 
-  useEffect(() => {
-    const script = document.createElement('script');
-
-    script.src = `https://cdn${isDev ? '-dev' : ''}.authenticating.com/public/verifyUI/client.js`;
-    script.async = true;
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
   const { description, title, publicData } = currentListing.attributes;
@@ -49,6 +37,7 @@ const EditListingBackgroundCheckPanel = props => {
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>
+      <EditListingBackgroundCheckForm onSubmit={() => {}} />
       <Button
         onClick={() =>
           identify('COMPANY_ACCESS_CODE', {
