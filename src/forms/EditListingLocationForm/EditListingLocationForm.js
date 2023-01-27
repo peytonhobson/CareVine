@@ -124,6 +124,7 @@ export const EditListingLocationFormComponent = props => (
                 autocompletePlaceSelected(addressNotRecognizedMessage)
               )}
               usePostalCode={true}
+              required
             />
           </div>
           {userType === CAREGIVER && (

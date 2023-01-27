@@ -72,26 +72,8 @@
   display: flex;
   align-items: flex-end;
   position: relative;
-  width: calc(50% - 50px);
-
-  &:nth-child(2n) {
-    margin-top: 12px;
-  }
-
-  @media (--viewportMedium) {
-    width: calc(50% - 50px);
-
-    &:nth-child(2n) {
-      margin-top: unset;
-    }
-  }
-}
-
-.endDateField {
-  display: flex;
-  align-items: flex-end;
-  position: relative;
   width: 50%;
+  margin-inline: 20px;
 
   &:nth-child(2n) {
     margin-top: 12px;

@@ -4,23 +4,14 @@ import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
 
+import moment from 'moment';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import {
-  getSharpHours,
-  getStartHours,
-  getEndHours,
-  isDayMomentInsideRange,
-  isInRange,
-  isSameDate,
-  isSameDay,
   resetToStartOfDay,
   timeOfDayFromLocalToTimeZone,
   timeOfDayFromTimeZoneToLocal,
   dateIsAfter,
-  findNextBoundary,
-  timestampToDate,
-  localizeAndFormatTime,
   monthIdStringInTimeZone,
   getMonthStartInTimeZone,
   nextMonthFn,
@@ -133,6 +124,11 @@ const TimelineForm = props => {
         const idPrefix = `${formId}` || 'TimelineForm';
         const { startDate, endDate } = values;
 
+        if (startDate && startDate.date && startDate.date < TODAY) {
+          form.change(startDate, null);
+          form.change(endDate, null);
+        }
+
         const startDay = extractDateFromFieldDateInput(startDate);
         const endDay = extractDateFromFieldDateInput(endDate);
 
@@ -146,6 +142,11 @@ const TimelineForm = props => {
         );
 
         const onDeleteEndDate = () => {
+          form.change('endDate', null);
+        };
+
+        const onDeleteStartDate = () => {
+          form.change('startDate', null);
           form.change('endDate', null);
         };
 
@@ -178,10 +179,16 @@ const TimelineForm = props => {
                     navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
                     useMobileMargins
                     showErrorMessage={false}
-                    validate={bookingDateRequired('Required')}
                   />
+                  <button
+                    className={css.removeExceptionButton}
+                    onClick={() => onDeleteStartDate()}
+                    type="button"
+                  >
+                    <IconClose size="normal" className={css.removeIcon} />
+                  </button>
                 </div>
-                <div className={css.endDateField}>
+                <div className={css.field}>
                   <FieldDateInput
                     name="endDate"
                     id={`${idPrefix}.endDate`}
@@ -200,6 +207,7 @@ const TimelineForm = props => {
                     navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
                     useMobileMargins
                     showErrorMessage={false}
+                    disabled={!startDate || !startDate.date}
                   />
                   <button
                     className={css.removeExceptionButton}

@@ -142,10 +142,8 @@ export const filters = [
       options: [
         { key: 'ownHome', label: 'Own Home' },
         { key: 'withFamily', label: 'Living with Family' },
-        { key: 'independentFacility', label: 'Independent Senior Living Facility' },
+        { key: 'independentFacility', label: 'Independent Living Facility' },
         { key: 'assistedLiving', label: 'Assisted Living Facility' },
-        { key: 'residentialCare', label: 'Residential Care Facility' },
-        { key: 'memoryFacility', label: 'Memory Care Facility' },
       ],
     },
   },

@@ -11,6 +11,7 @@ import config from '../../config';
 
 import css from './EditListingPricingPanel.module.css';
 import { isStartDateSelected } from '../FieldDateRangeInput/DateRangeInput.helpers';
+import { CAREGIVER } from '../../util/constants';
 
 const { Money } = sdkTypes;
 
@@ -33,29 +34,32 @@ const EditListingPricingPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
-  const { publicData } = currentListing.attributes;
+  const { publicData, metadata } = currentListing.attributes;
+  const listingType = metadata && metadata.listingType;
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
+  const titleValue =
+    listingType === CAREGIVER ? (
+      <span className={css.payRangeText}>
+        <FormattedMessage id="EditListingPricingPanel.PayRange" />
+      </span>
+    ) : (
+      <span className={css.payRangeText}>
+        <FormattedMessage id="EditListingPricingPanel.PriceRange" />
+      </span>
+    );
   const panelTitle = isPublished ? (
     <FormattedMessage
       id="EditListingPricingPanel.title"
       values={{
-        payRange: (
-          <span className={css.payRangeText}>
-            <FormattedMessage id="EditListingPricingPanel.preferredPayRange" />
-          </span>
-        ),
+        payRange: titleValue,
       }}
     />
   ) : (
     <FormattedMessage
       id="EditListingPricingPanel.createListingTitle"
       values={{
-        payRange: (
-          <span className={css.payRangeText}>
-            <FormattedMessage id="EditListingPricingPanel.preferredPayRange" />
-          </span>
-        ),
+        payRange: titleValue,
       }}
     />
   );

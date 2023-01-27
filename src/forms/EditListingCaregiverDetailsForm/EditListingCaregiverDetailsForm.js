@@ -6,7 +6,12 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { maxLength, required } from '../../util/validators';
+import {
+  maxLength,
+  required,
+  requiredFieldArrayCheckbox,
+  requiredOpenCheckbox,
+} from '../../util/validators';
 import config from '../../config';
 import {
   Form,
@@ -136,6 +141,8 @@ const EditListingCaregiverDetailsFormComponent = props => (
             rootClassName={css.checkboxGroup}
             options={covidVaccinationOptions}
             label={covidVaccinationLabel}
+            required
+            validate={requiredFieldArrayCheckbox('You must select at least one option')}
           />
 
           <FieldOpenCheckboxGroup
@@ -146,6 +153,8 @@ const EditListingCaregiverDetailsFormComponent = props => (
             label={languagesSpokenRadioLabel}
             placeholder={languagesSpokenTextPlaceholder}
             buttonLabel="+ Add Language"
+            required
+            validate={requiredOpenCheckbox('You must select at least one option')}
           />
 
           <FieldTextInput

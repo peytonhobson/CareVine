@@ -87,6 +87,7 @@ const EditListingBioFormComponent = props => (
               maxLength700Message,
               minLength100Message
             )}
+            required
           />
 
           {errorMessageUpdateListing}

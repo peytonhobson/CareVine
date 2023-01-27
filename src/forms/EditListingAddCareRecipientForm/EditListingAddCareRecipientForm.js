@@ -116,7 +116,7 @@ const EditListingAddCareRecipientFormComponent = props => (
             name={recipientRelationshipName}
             options={recipientRelationshipOptions}
             label={recipientRelationshipLabel}
-            required={true}
+            required
             validate={requiredFieldArrayRadio(recipientRelationshipErrorMessage)}
           />
           <FieldRadioButtonGroup
@@ -126,15 +126,15 @@ const EditListingAddCareRecipientFormComponent = props => (
             name={genderName}
             options={genderOptions}
             label={genderLabel}
-            required={true}
+            required
             validate={requiredFieldArrayRadio(genderErrorMessage)}
           />
           <FieldSelect
             selectClassName={css.select}
             id={formId ? `${formId}.age` : 'age'}
             name="age"
-            firstValueSelected={true}
-            required={true}
+            firstValueSelected
+            required
             label={ageSelectLabel}
           >
             {ageSelectOptions.map(item => {

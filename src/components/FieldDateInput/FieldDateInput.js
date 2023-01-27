@@ -43,6 +43,7 @@ class FieldDateInputComponent extends Component {
       useMobileMargins,
       showErrorMessage,
       onChange,
+      required,
       ...rest
     } = this.props;
 
@@ -89,6 +90,7 @@ class FieldDateInputComponent extends Component {
             htmlFor={id}
           >
             {label}
+            {required && <span className={css.error}>*</span>}
           </label>
         ) : null}
         <DateInput className={inputClasses} {...inputProps} />

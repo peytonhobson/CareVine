@@ -14,7 +14,6 @@ import CareScheduleSelectDatesContainer from './containers/CareScheduleSelectDat
 
 import css from './EditListingCareSchedulePanel.module.css';
 import { useEffect } from 'react';
-import { apiEndDateToPickerDate } from '../FieldDateRangeInput/DateRangeInput.helpers';
 
 const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
 const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
@@ -26,7 +25,7 @@ const TWENTY_FOUR_HOUR = '24hour';
 const buttonGroupOptions = [
   { key: ONE_TIME, label: 'One Time Care' },
   { key: REPEAT, label: 'Repeat Care' },
-  { key: TWENTY_FOUR_HOUR, label: '24 Hour Care' },
+  { key: TWENTY_FOUR_HOUR, label: '24-Hour Care' },
 ];
 
 const defaultTimeZone = () =>

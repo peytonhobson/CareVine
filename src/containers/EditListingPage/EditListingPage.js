@@ -46,6 +46,7 @@ import {
   removeListingImage,
   clearUpdatedTab,
   savePayoutDetails,
+  authenticateCreateUser,
 } from './EditListingPage.duck';
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -77,6 +78,7 @@ export const EditListingPageComponent = props => {
     intl,
     image,
     onAddAvailabilityException,
+    onAuthenticateCreateUser,
     onDeleteAvailabilityException,
     onCreateListingDraft,
     onPublishListingDraft,
@@ -265,6 +267,10 @@ export const EditListingPageComponent = props => {
           onAddAvailabilityException={onAddAvailabilityException}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           availabilityExceptions={page.availabilityExceptions}
+          onAuthenticateCreateUser={onAuthenticateCreateUser}
+          authenticateCreateUserInProgress={page.authenticateCreateUserInProgress}
+          authenticateCreateUserError={page.authenticateCreateUserError}
+          authenticateUserAccessCode={page.authenticateUserAccessCode}
         />
       );
     } else if (userType === EMPLOYER) {
@@ -505,6 +511,7 @@ const mapDispatchToProps = dispatch => ({
   // onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>
   //   dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
   onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
+  onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
