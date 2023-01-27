@@ -4,6 +4,8 @@ import { Field } from 'react-final-form';
 import { ValidationError } from '../../components';
 import LocationAutocompleteInputImpl from './LocationAutocompleteInputImpl.js';
 
+import css from './LocationAutocompleteInput.module.css';
+
 class LocationAutocompleteInputComponent extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +26,7 @@ class LocationAutocompleteInputComponent extends Component {
 
   render() {
     /* eslint-disable no-unused-vars */
-    const { rootClassName, labelClassName, ...restProps } = this.props;
+    const { rootClassName, labelClassName, required, ...restProps } = this.props;
     const { input, label, meta, valueFromForm, useCurrentLocation, ...otherProps } = restProps;
     /* eslint-enable no-unused-vars */
 
@@ -40,6 +42,7 @@ class LocationAutocompleteInputComponent extends Component {
     const labelInfo = label ? (
       <label className={labelClassName} htmlFor={input.name}>
         {label}
+        {required && <span className={css.error}>*</span>}
       </label>
     ) : null;
 

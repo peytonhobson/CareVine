@@ -78,7 +78,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     ? valuesFromLastSubmit
     : createInitialValues(availabilityPlan);
 
-  const submitDisabled = !valuesFromLastSubmit || !startDate;
+  const submitDisabled = !valuesFromLastSubmit;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 

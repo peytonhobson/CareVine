@@ -51,3 +51,15 @@
   width: auto;
   padding-right: 1.5rem;
 }
+
+.submitButton {
+  margin-top: 60px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+
+  @media (--viewportLarge) {
+    display: inline-block;
+    width: 241px;
+    margin-top: 60px;
+  }
+}

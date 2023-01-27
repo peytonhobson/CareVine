@@ -32,3 +32,7 @@
 .requiredStar {
   color: var(--failColor);
 }
+
+.error {
+  color: var(--failColor);
+}

@@ -30,7 +30,7 @@ import {
 import css from './EditListingWizardTab.module.css';
 import { CAREGIVER } from '../../util/constants';
 
-export const CARE_NEEDS = 'care-needs';
+export const CARE_TYPE = 'care-type';
 export const SERVICES = 'services';
 export const CARE_SCHEDULE = 'care-schedule';
 export const AVAILABILITY = 'availability';
@@ -41,14 +41,14 @@ export const POLICY = 'policy';
 export const LOCATION = 'location';
 export const PRICING = 'pricing';
 export const PROFILE_PICTURE = 'profile-picture';
-export const CARE_RECEIVER_DETAILS = 'care-recipient-details';
+export const CARE_RECIPIENT = 'care-recipient';
 export const BACKGROUND_CHECK = 'background-check';
-export const CAREGIVER_DETAILS = 'caregiver-details';
+export const CAREIGVER_PREFERENCES = 'caregiver-preferences';
 export const JOB_DESCRIPTION = 'job-description';
 
 // EditListingWizardTab component supports these tabs
 export const SUPPORTED_TABS = [
-  CARE_NEEDS,
+  CARE_TYPE,
   SERVICES,
   AVAILABILITY,
   BIO,
@@ -59,8 +59,8 @@ export const SUPPORTED_TABS = [
   PRICING,
   CARE_SCHEDULE,
   PROFILE_PICTURE,
-  CARE_RECEIVER_DETAILS,
-  CAREGIVER_DETAILS,
+  CARE_RECIPIENT,
+  CAREIGVER_PREFERENCES,
   BACKGROUND_CHECK,
   JOB_DESCRIPTION,
 ];
@@ -90,6 +90,7 @@ const EditListingWizardTab = props => {
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
+    onAuthenticateCreateUser,
     onChange,
     onCreateListingDraft,
     onDeleteAvailabilityException,
@@ -107,6 +108,9 @@ const EditListingWizardTab = props => {
     updatedTab,
     updateInProgress,
     uploadInProgress,
+    authenticateCreateUserError,
+    authenticateCreateUserInProgress,
+    authenticateUserAccessCode,
   } = props;
 
   const { type } = params;
@@ -206,13 +210,13 @@ const EditListingWizardTab = props => {
   };
 
   switch (tab) {
-    case CARE_NEEDS: {
+    case CARE_TYPE: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewCareTypes'
         : 'EditListingWizard.saveEditCareTypes';
       return (
         <EditListingCareNeedsPanel
-          {...panelProps(CARE_NEEDS)}
+          {...panelProps(CARE_TYPE)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -371,6 +375,10 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          onAuthenticateCreateUser={onAuthenticateCreateUser}
+          authenticateCreateUserError={authenticateCreateUserError}
+          authenticateCreateUserInProgress={authenticateCreateUserInProgress}
+          authenticateUserAccessCode={authenticateUserAccessCode}
         />
       );
     }
@@ -397,14 +405,14 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    case CARE_RECEIVER_DETAILS: {
+    case CARE_RECIPIENT: {
       const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewCareRecipientDetails'
-        : 'EditListingWizard.saveEditCareRecipientDetails';
+        ? 'EditListingWizard.saveNewCareRecipient'
+        : 'EditListingWizard.saveEditCareRecipient';
 
       return (
         <EditListingCareRecipientDetailsPanel
-          {...panelProps(CARE_RECEIVER_DETAILS)}
+          {...panelProps(CARE_RECIPIENT)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -413,14 +421,14 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    case CAREGIVER_DETAILS: {
+    case CAREIGVER_PREFERENCES: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewCaregiverDetails'
         : 'EditListingWizard.saveEditCaregiverDetails';
 
       return (
         <EditListingCaregiverDetailsPanel
-          {...panelProps(CAREGIVER_DETAILS)}
+          {...panelProps(CAREIGVER_PREFERENCES)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);

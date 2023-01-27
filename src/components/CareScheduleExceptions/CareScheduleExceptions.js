@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
-import { IconSpinner, IconClose, InlineTextButton, TimeRange, Modal } from '../';
+import { IconSpinner, IconClose, InlineTextButton, TimeRange, Modal, InfoTooltip } from '../';
 import { EditListingAvailabilityExceptionForm } from '../../forms';
 import {
   LISTING_STATE_DRAFT,
@@ -65,6 +65,14 @@ const CareScheduleExceptions = props => {
 
   const { deleteExceptionError, fetchExceptionsError } = errors || {};
 
+  const exceptionsTooltipText = (
+    <div>
+      <p>
+        <FormattedMessage id="CareScheduleExceptions.exceptionTooltip" />
+      </p>
+    </div>
+  );
+
   // Save exception click handler
   const saveException = values => {
     const { availability, exceptionStartTime, exceptionEndTime } = values;
@@ -105,7 +113,9 @@ const CareScheduleExceptions = props => {
               />
             )}
           </h2>
+          <InfoTooltip title={exceptionsTooltipText} />
         </header>
+
         {deleteExceptionError ? (
           <p className={css.error}>
             <FormattedMessage id="CareScheduleExceptions.deleteExceptionFailed" />
@@ -119,11 +129,7 @@ const CareScheduleExceptions = props => {
           <div className={css.error}>
             <FormattedMessage id="CareScheduleExceptions.fetchExceptionsError" />
           </div>
-        ) : exceptionCount === 0 ? (
-          <div className={css.noExceptions}>
-            <FormattedMessage id="CareScheduleExceptions.noExceptions" />
-          </div>
-        ) : (
+        ) : exceptionCount === 0 ? null : (
           <div className={css.exceptions}>
             {sortedAvailabilityExceptions.map(availabilityException => {
               const { start, end, seats } = availabilityException.attributes;

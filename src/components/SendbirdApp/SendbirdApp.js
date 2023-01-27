@@ -13,6 +13,7 @@ import withSendbird from '@sendbird/uikit-react/withSendbird';
 
 import CustomChannelPreview from './CustomChannelPreview';
 import CustomMessageItem from './CustomMessageItem';
+import CustomChannelPreviewAction from './CustomChannelPreviewAction';
 
 import css from './SendbirdApp.module.css';
 
@@ -147,7 +148,7 @@ const SendbirdApp = props => {
                   channel={channel}
                   isActive={channel?.url === currentChannelUrl}
                   renderChannelAction={() => (
-                    <ChannelPreviewAction channel={channel} disabled={!isOnline} />
+                    <CustomChannelPreviewAction channel={channel} disabled={!isOnline} />
                   )}
                 />
               )}

@@ -265,7 +265,7 @@ const CustomChannelPreview = ({
             className="sendbird-channel-preview__leave-label--mobile"
           >
             <Label type={LabelTypography.SUBTITLE_1} color={LabelColors.ONBACKGROUND_1}>
-              {stringSet.CHANNEL_PREVIEW_MOBILE_LEAVE}
+              Delete Chat
             </Label>
           </TextButton>
         </Modal>

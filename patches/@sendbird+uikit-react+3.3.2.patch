@@ -538,6 +538,28 @@ index 0370b63..90d4cd1 100644
  import './ui/MentionUserLabel.js';
  import './Thread/components/ThreadHeader.js';
  import './Thread/components/ThreadList.js';
+diff --git a/node_modules/@sendbird/uikit-react/stringSet-90d297f1.js b/node_modules/@sendbird/uikit-react/stringSet-90d297f1.js
+index e084c4d..291d79b 100644
+--- a/node_modules/@sendbird/uikit-react/stringSet-90d297f1.js
++++ b/node_modules/@sendbird/uikit-react/stringSet-90d297f1.js
+@@ -2,7 +2,7 @@ const getStringSet = function () {
+   let lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'en';
+   const stringSet = {
+     en: {
+-      CHANNEL_PREVIEW_MOBILE_LEAVE: 'Leave channel',
++      CHANNEL_PREVIEW_MOBILE_LEAVE: 'Delete chat',
+       OPEN_CHANNEL_SETTINGS__OPERATOR_TITLE: 'Channel Information',
+       OPEN_CHANNEL_SETTINGS__OPERATOR_URL: 'URL',
+       OPEN_CHANNEL_SETTINGS__PARTICIPANTS_ACCORDION_TITLE: 'Participants',
+@@ -59,7 +59,7 @@ const getStringSet = function () {
+       CHANNEL_SETTING__MEMBERS__YOU: ' (You)',
+       CHANNEL_SETTING__MEMBERS__SELECT_TITLE: 'Select members',
+       CHANNEL_SETTING__MEMBERS__OPERATOR: 'Operator',
+-      CHANNEL_SETTING__LEAVE_CHANNEL__TITLE: 'Leave channel',
++      CHANNEL_SETTING__LEAVE_CHANNEL__TITLE: 'Delete chat',
+       CHANNEL_SETTING__OPERATORS__TITLE: 'Operators',
+       CHANNEL_SETTING__OPERATORS__TITLE_ALL: 'All operators',
+       CHANNEL_SETTING__OPERATORS__TITLE_ADD: 'Add operator',
 diff --git a/node_modules/@sendbird/uikit-react/ui/MessageInput.js b/node_modules/@sendbird/uikit-react/ui/MessageInput.js
 index ad96810..c88bf08 100644
 --- a/node_modules/@sendbird/uikit-react/ui/MessageInput.js

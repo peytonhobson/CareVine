@@ -19,12 +19,12 @@ import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInfor
 import { Modal, NamedRedirect, Tabs } from '..';
 
 import EditListingWizardTab, {
-  CARE_NEEDS,
+  CARE_TYPE,
   CARE_SCHEDULE,
   LOCATION,
   PRICING,
-  CARE_RECEIVER_DETAILS,
-  CAREGIVER_DETAILS,
+  CARE_RECIPIENT,
+  CAREIGVER_PREFERENCES,
   PROFILE_PICTURE,
   JOB_DESCRIPTION,
 } from '../EditListingWizardTab/EditListingWizardTab';
@@ -37,12 +37,12 @@ import css from './EmployerEditListingWizard.module.css';
 // Note 3: in FTW-hourly template we don't use the POLICY tab so it's commented out.
 // If you want to add a free text field to your listings you can enable the POLICY tab
 export const TABS = [
-  CARE_NEEDS,
+  CARE_TYPE,
   LOCATION,
   CARE_SCHEDULE,
   PRICING,
-  CARE_RECEIVER_DETAILS,
-  CAREGIVER_DETAILS,
+  CARE_RECIPIENT,
+  CAREIGVER_PREFERENCES,
   JOB_DESCRIPTION,
   PROFILE_PICTURE,
 ];
@@ -52,18 +52,18 @@ const MAX_HORIZONTAL_NAV_SCREEN_WIDTH = 1023;
 
 const tabLabel = (intl, tab) => {
   let key = null;
-  if (tab === CARE_NEEDS) {
-    key = 'EmployerEditListingWizard.tabLabelCareNeeds';
+  if (tab === CARE_TYPE) {
+    key = 'EmployerEditListingWizard.tabLabelCareType';
   } else if (tab === LOCATION) {
     key = 'EmployerEditListingWizard.tabLabelLocation';
   } else if (tab === PRICING) {
     key = 'EmployerEditListingWizard.tabLabelPricing';
   } else if (tab === CARE_SCHEDULE) {
     key = 'EmployerEditListingWizard.tabLabelCareSchedule';
-  } else if (tab === CARE_RECEIVER_DETAILS) {
-    key = 'EmployerEditListingWizard.tabLabelCareRecipientDetails';
-  } else if (tab === CAREGIVER_DETAILS) {
-    key = 'EmployerEditListingWizard.tabLabelCaregiverDetails';
+  } else if (tab === CARE_RECIPIENT) {
+    key = 'EmployerEditListingWizard.tabLabelCareRecipient';
+  } else if (tab === CAREIGVER_PREFERENCES) {
+    key = 'EmployerEditListingWizard.tabLabelCaregiverPreferences';
   } else if (tab === JOB_DESCRIPTION) {
     key = 'EmployerEditListingWizard.tabLabelJobDescription';
   } else if (tab === PROFILE_PICTURE) {
@@ -95,7 +95,7 @@ const tabCompleted = (tab, listing) => {
       return !!(publicData && publicData.rates);
     case CARE_RECEIVER_DETAILS:
       return !!(publicData && publicData.careRecipients);
-    case CAREGIVER_DETAILS:
+    case CAREIGVER_PREFERENCES:
       return !!(publicData && publicData.caregiverDetails);
     case JOB_DESCRIPTION:
       return !!(title && title !== 'Title');

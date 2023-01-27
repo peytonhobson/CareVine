@@ -33,6 +33,7 @@ const FieldSelectComponent = props => {
     onChange,
     firstValueSelected,
     initialValueSelected,
+    required,
     ...rest
   } = props;
 
@@ -72,7 +73,11 @@ const FieldSelectComponent = props => {
   const classes = classNames(rootClassName || css.root, className);
   return (
     <div className={classes}>
-      {label ? <label htmlFor={id}>{label}</label> : null}
+      {label ? (
+        <label htmlFor={id}>
+          {label} {required && <span className={css.error}>*</span>}{' '}
+        </label>
+      ) : null}
       <select {...selectProps}>{children}</select>
       <ValidationError fieldMeta={meta} />
     </div>

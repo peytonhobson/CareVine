@@ -2,6 +2,7 @@
 export { default as BookingTimeForm } from './BookingTimeForm/BookingTimeForm';
 export { default as Care24HourForm } from './Care24HourForm/Care24HourForm';
 export { default as CareScheduleSelectDatesForm } from './CareScheduleSelectDatesForm/CareScheduleSelectDatesForm';
+export { default as ConsentModalForm } from './ConsentModalForm/ConsentModalForm';
 export { default as ContactDetailsForm } from './ContactDetailsForm/ContactDetailsForm';
 export { default as EditListingAvailabilityExceptionForm } from './EditListingAvailabilityExceptionForm/EditListingAvailabilityExceptionForm';
 export { default as EditListingAvailabilityPlanForm } from './EditListingAvailabilityPlanForm/EditListingAvailabilityPlanForm';

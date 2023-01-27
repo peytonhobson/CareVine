@@ -198,3 +198,7 @@ export const sendbirdUser = body => {
 export const stripeCreateSetupIntent = body => {
   return post('/api/stripe-create-setup-intent', body);
 };
+
+export const createUserAuthenticate = body => {
+  return post('/api/authenticate-create-user', body);
+};

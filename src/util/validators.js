@@ -115,6 +115,24 @@ export const emailFormatValid = message => value => {
   return value && EMAIL_RE.test(value) ? VALID : message;
 };
 
+const PHONE_RE = /^\+?[0-9]{1,3}[-. ]?[0-9]{3,4}[-. ]?[0-9]{3,4}$/;
+
+export const phoneFormatValid = message => value => {
+  return value && PHONE_RE.test(value) ? VALID : message;
+};
+
+const POSTAL_CODE_RE = /^[0-9]{5}$/;
+
+export const postalCodeFormatValid = message => value => {
+  return value && POSTAL_CODE_RE.test(value) ? VALID : message;
+};
+
+const SSN_RE = /^[0-9]{3}-?[0-9]{2}?-?[0-9]{4}$/;
+
+export const ssnFormatValid = message => value => {
+  return value && SSN_RE.test(value) ? VALID : message;
+};
+
 export const moneySubUnitAmountAtLeast = (message, minValue) => value => {
   return value instanceof Money && value.amount >= minValue ? VALID : message;
 };

@@ -128,3 +128,7 @@ bottom of the container.
 .currentLocationIcon {
   margin-right: 10px;
 }
+
+.error {
+  color: var(--failColor);
+}

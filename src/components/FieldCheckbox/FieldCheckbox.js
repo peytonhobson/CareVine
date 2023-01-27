@@ -44,6 +44,7 @@ const FieldCheckboxComponent = props => {
     id,
     label,
     useSuccessColor,
+    disabled,
     ...rest
   } = props;
 
@@ -79,6 +80,7 @@ const FieldCheckboxComponent = props => {
               className={css.input}
               {...input}
               onChange={event => handleOnChange(input, event)}
+              disabled={disabled}
             />
           );
         }}

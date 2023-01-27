@@ -59,7 +59,7 @@ const Care24HourFormComponent = props => {
 
   const submitInProgress = updateInProgress;
   const submitReady = (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR;
-  const submitDisabled = selectedWeekdays.length === 0 || !startDate;
+  const submitDisabled = selectedWeekdays.length === 0;
 
   const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
 

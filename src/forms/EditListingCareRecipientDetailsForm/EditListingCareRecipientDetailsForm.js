@@ -99,6 +99,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
             options={careNeedsOptions}
             label={careNeedsLabel}
             twoColumns={true}
+            required
           />
           <FieldTextInput
             id="recipientDetails"
