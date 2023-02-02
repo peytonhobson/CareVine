@@ -245,7 +245,7 @@ class CaregiverEditListingWizard extends Component {
     if (!isNewListingFlow) {
       const index = TABS.indexOf(BACKGROUND_CHECK);
       if (index > -1) {
-        // TABS.splice(index, 1);
+        TABS.splice(index, 1);
       }
     }
   }
