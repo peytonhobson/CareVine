@@ -28,13 +28,15 @@ const userEmail = require('./api/user-email');
 const sendbirdUser = require('./api/sb-user');
 const authenticateCreateUser = require('./api/authenticate-create-user');
 const authenticateSubmitConsent = require('./api/authenticate-submit-consent');
-const getIdentityProofQuiz = require('./api/get-identity-proof-quiz');
+const getIdentityProofQuiz = require('./api/identity-proof-quiz');
 const verifyIdentityProofQuiz = require('./api/verify-identity-proof-quiz');
 const authenticateTestResult = require('./api/authenticate-test-result');
 const authenticate7YearHistory = require('./api/authenticate-7-year-history');
 const authenticateGenerateCriminalBackground = require('./api/authenticate-generate-criminal-background');
 const authenticateUpdateUser = require('./api/authenticate-update-user');
 const authenticateEnrollTCM = require('./api/authenticate-enroll-tcm');
+
+//askdjf
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
