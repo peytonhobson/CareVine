@@ -271,6 +271,7 @@ export const fetchCurrentUserHasListings = () => (dispatch, getState, sdk) => {
     // listings, we only need at most one result.
     page: 1,
     per_page: 1,
+    include: ['author'],
   };
 
   return sdk.ownListings

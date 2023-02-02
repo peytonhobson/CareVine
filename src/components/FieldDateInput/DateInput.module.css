@@ -75,6 +75,11 @@
     margin: 0 auto;
     background-color: var(--marketplaceColor);
     box-shadow: none;
+    position: relative;
+  }
+
+  & :global(.DayPicker_transitionContainer) {
+    overflow: auto;
   }
 
   & :global(.DayPickerNavigation__horizontal) {

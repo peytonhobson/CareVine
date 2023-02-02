@@ -6,20 +6,18 @@ const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 
 module.exports = (req, res) => {
-  const { userInfo } = req.body;
-
-  const mockString = isDev ? 'mock/' : '';
+  const { userAccessCode } = req.body;
 
   axios
     .post(
-      `https://api-v3.authenticating.com/${mockString}user/create`,
+      `https://api-v3.authenticating.com/user/service/monitoring`,
       {
-        ...userInfo,
+        userAccessCode,
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: isDev ? '' : `Bearer ${AUTHENTICATE_API_KEY}`,
+          Authorization: `Bearer ${AUTHENTICATE_API_KEY}`,
         },
       }
     )

@@ -5,16 +5,23 @@ const AUTHENTICATE_COMPANY_ACCESS_KEY = process.env.AUTHENTICATE_COMPANY_ACCESS_
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 
+const mockUserAccessCodes = [
+  '100385a1-4308-49db-889f-9a898fa88c21', // To call generateCriminalReport, ID verification has to be completed first.
+  '2d91a19f-d07b-48f0-912f-886ed67009dd', // Success
+];
+
+const mockFullNames = ['Jonathan Doe', 'Michael Gary Scott'];
+
 module.exports = (req, res) => {
-  const { userInfo } = req.body;
+  const { userAccessCode } = req.body;
 
   const mockString = isDev ? 'mock/' : '';
 
   axios
     .post(
-      `https://api-v3.authenticating.com/${mockString}user/create`,
+      `https://api-v3.authenticating.com/${mockString}user/generateCriminalReport`,
       {
-        ...userInfo,
+        userAccessCode: isDev ? mockUserAccessCodes[1] : userAccessCode,
       },
       {
         headers: {
@@ -24,15 +31,26 @@ module.exports = (req, res) => {
       }
     )
     .then(apiResponse => {
-      res
+      return res
         .status(200)
         .set('Content-Type', 'application/transit+json')
         .send(
           serialize({
-            data: apiResponse.data.userAccessCode,
+            data: apiResponse.data,
           })
         )
         .end();
     })
-    .catch(e => log.error(e));
+    .catch(e => {
+      log.error(e);
+      res
+        .status(e.response.status)
+        .json({
+          name: 'Local API request failed',
+          status: e.response.status,
+          statusText: e.response.data.errorMessage,
+          data: e.response.data,
+        })
+        .end();
+    });
 };

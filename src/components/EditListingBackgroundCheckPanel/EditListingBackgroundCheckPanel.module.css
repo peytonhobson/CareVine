@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   padding: 11px 24px 0 24px;
+  overflow: auto;
 }
 
 .form {
@@ -15,11 +16,33 @@
 
 .title {
   margin-bottom: 19px;
+  width: 100%;
 
   @media (--viewportLarge) {
     margin-bottom: 38px;
     padding: 1px 0 7px 0;
   }
+}
+
+.quizTitle {
+  width: 100%;
+
+  @media (--viewportLarge) {
+    margin-bottom: 0;
+    padding: 1px 0 7px 0;
+  }
+}
+
+.attemptsContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.attemptsHeader {
+  display: inline;
+  color: var(--marketplaceColor);
+  margin-right: 2rem;
 }
 
 .bioText {
@@ -30,4 +53,183 @@
   composes: marketplaceModalBaseStyles from global;
 
   padding-inline: 4rem;
+}
+
+.screeningTitleContainer {
+  width: 100%;
+  text-align: center;
+}
+
+.screeningTitle {
+  margin-bottom: 0;
+}
+
+.amountPerYear {
+  margin-top: 0;
+}
+
+.benefitsListContainer {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  padding-inline: 7rem;
+}
+
+.benefitsList {
+  list-style-image: url('../../assets/checkmark.svg');
+  display: block;
+  padding-left: 1rem;
+
+  & li::marker {
+    stroke: var(--marketplaceColor);
+    fill: var(--marketplaceColor);
+  }
+}
+.payButton {
+  max-width: 100%;
+  max-height: 100%;
+  margin-top: auto;
+}
+
+.confirmationText {
+  font-size: 30px;
+  animation: 2.5s fadeIn;
+  animation-fill-mode: forwards;
+  max-width: 30rem;
+  text-align: center;
+}
+
+.redirectingText {
+  width: 100%;
+  text-align: center;
+  color: var(--marketplaceColor);
+}
+
+.confirmationContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.iconContainer {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: row;
+  width: 100%;
+  max-height: 10rem;
+  justify-content: center;
+}
+
+.rejectedContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.rejectedIconContainer {
+  height: 5rem;
+  width: 5rem;
+  border-radius: 100%;
+  background-color: var(--failColor);
+  position: relative;
+}
+
+.rejectedIcon {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  fill: var(--matterColorLight);
+  stroke: var(--matterColorLight);
+}
+
+.rejectedText {
+  font-size: 30px;
+  animation: 2.5s fadeIn;
+  animation-fill-mode: forwards;
+  max-width: 40rem;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.goToNextTabButton {
+  margin-top: 20px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+  max-width: 30rem;
+}
+
+.paymentForm {
+  height: 100%;
+  padding-right: 20px;
+  border-right: 1px solid var(--matterColorAnti);
+}
+
+.paymentContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.spinner {
+  width: 4rem;
+  height: 4rem;
+  stroke-width: 3px;
+}
+
+.spreadSection {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.textSm {
+  font-family: var(--fontFamily);
+  font-weight: var(--fontWeightMedium);
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  /* margin-top + n * line-height + margin-bottom => x * 6px */
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+    line-height: 28px;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+.content {
+  @media (--viewportMedium) {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin: 32px auto 0 auto;
+    width: 100%;
+    max-width: 564px;
+    flex-wrap: wrap;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0;
+  }
+}
+
+.identityText {
+  color: var(--marketplaceColor);
 }

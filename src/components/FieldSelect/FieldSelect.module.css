@@ -21,12 +21,12 @@
 }
 
 .selectSuccess {
-  color: var(--matterColor);
-  border-bottom-color: var(--successColor);
+  color: var(--matterColor) !important;
+  border-bottom-color: var(--successColor) !important;
 }
 
 .selectError {
-  border-bottom-color: var(--failColor);
+  border-bottom-color: var(--failColor) !important;
 }
 
 .requiredStar {

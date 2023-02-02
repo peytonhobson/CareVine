@@ -16,7 +16,13 @@ const calculateFeeAmount = (amount, isCard) => {
 module.exports = (req, res) => {
   // Create a PaymentIntent with the order amount and currency
 
-  const { userId, amount, stripeCustomerId, isCard } = req.body;
+  const { userId, amount, stripeCustomerId, isCard, noFee } = req.body;
+
+  const applicationFeeMaybe = noFee
+    ? null
+    : {
+        application_fee_amount: calculateFeeAmount(amount, isCard),
+      };
 
   integrationSdk.users
     .show({ id: userId.uuid, include: ['stripeAccount'] })
@@ -28,13 +34,13 @@ module.exports = (req, res) => {
     .then(stripeAccountId => {
       return stripe.paymentIntents
         .create({
-          amount: calculateOrderAmount(amount, isCard),
+          amount: noFee ? amount : calculateOrderAmount(amount, isCard),
           currency: 'usd',
           payment_method_types: [isCard ? 'card' : 'us_bank_account'],
           transfer_data: {
             destination: stripeAccountId,
           },
-          application_fee_amount: calculateFeeAmount(amount, isCard),
+          ...applicationFeeMaybe,
           customer: stripeCustomerId,
         })
         .catch(e => {
@@ -53,6 +59,15 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      handleError(res, e);
+      log.error(e.data);
+      res
+        .status(e.status)
+        .json({
+          name: 'Local API request failed',
+          status: e.status,
+          statusText: e.statusText,
+          data: e.data,
+        })
+        .end();
     });
 };

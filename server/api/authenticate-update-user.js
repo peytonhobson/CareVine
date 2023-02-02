@@ -6,14 +6,15 @@ const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 
 module.exports = (req, res) => {
-  const { userInfo } = req.body;
+  const { userAccessCode, userInfo } = req.body;
 
   const mockString = isDev ? 'mock/' : '';
 
   axios
-    .post(
-      `https://api-v3.authenticating.com/${mockString}user/create`,
+    .put(
+      `https://api-v3.authenticating.com/${mockString}user/update`,
       {
+        userAccessCode,
         ...userInfo,
       },
       {
@@ -24,15 +25,26 @@ module.exports = (req, res) => {
       }
     )
     .then(apiResponse => {
-      res
+      return res
         .status(200)
         .set('Content-Type', 'application/transit+json')
         .send(
           serialize({
-            data: apiResponse.data.userAccessCode,
+            data: apiResponse.data,
           })
         )
         .end();
     })
-    .catch(e => log.error(e));
+    .catch(e => {
+      log.error(e);
+      res
+        .status(e.response.status)
+        .json({
+          name: 'Local API request failed',
+          status: e.response.status,
+          statusText: e.response.data.errorMessage,
+          data: e.response.data,
+        })
+        .end();
+    });
 };

@@ -1,0 +1,17 @@
+.paymentButtonContainer {
+  padding-top: 1rem;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.paymentButtonRoot {
+  composes: buttonFont buttonText buttonBorders buttonColors from global;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+  height: 3rem;
+  width: 100%;
+
+  transition: all var(--transitionStyleButton);
+  cursor: pointer;
+}

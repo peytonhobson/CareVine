@@ -22,8 +22,8 @@ import {
   getStripeConnectAccountLink,
 } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
-// import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
-import { handleCardSetup } from '../../ducks/stripe.duck';
+import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
+import { handleCardSetup, createPayment, createPaymentIntent } from '../../ducks/stripe.duck';
 import {
   CaregiverEditListingWizard,
   EmployerEditListingWizard,
@@ -46,8 +46,17 @@ import {
   removeListingImage,
   clearUpdatedTab,
   savePayoutDetails,
-  authenticateCreateUser,
 } from './EditListingPage.duck';
+import {
+  authenticateCreateUser,
+  authenticateSubmitConsent,
+  identityProofQuiz,
+  verifyIdentityProofQuiz,
+  authenticateUpdateUser,
+  getAuthenticateTestResult,
+  authenticateGenerateCriminalBackground,
+  authenticate7YearHistory,
+} from '../../ducks/authenticate.duck';
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
@@ -104,6 +113,22 @@ export const EditListingPageComponent = props => {
     handleCardSetupError,
     onChangeMissingInfoModal,
     uploadImageError,
+    onAuthenticateSubmitConsent,
+    onCreatePayment,
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    onGetIdentityProofQuiz,
+    onVerifyIdentityProofQuiz,
+    onCreatePaymentIntent,
+    createPaymentIntentError,
+    createPaymentIntentInProgress,
+    paymentIntent,
+    authenticate,
+    onAuthenticateUpdateUser,
+    onGetAuthenticateTestResult,
+    onGenerateCriminalBackground,
+    onGet7YearHistory,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -268,9 +293,22 @@ export const EditListingPageComponent = props => {
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           availabilityExceptions={page.availabilityExceptions}
           onAuthenticateCreateUser={onAuthenticateCreateUser}
-          authenticateCreateUserInProgress={page.authenticateCreateUserInProgress}
-          authenticateCreateUserError={page.authenticateCreateUserError}
-          authenticateUserAccessCode={page.authenticateUserAccessCode}
+          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
+          onCreatePayment={onCreatePayment}
+          createPaymentInProgress={createPaymentInProgress}
+          createPaymentError={createPaymentError}
+          createPaymentSuccess={createPaymentSuccess}
+          onGetIdentityProofQuiz={onGetIdentityProofQuiz}
+          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
+          onCreatePaymentIntent={onCreatePaymentIntent}
+          createPaymentIntentError={createPaymentIntentError}
+          createPaymentIntentInProgress={createPaymentIntentInProgress}
+          paymentIntent={paymentIntent}
+          authenticate={authenticate}
+          onAuthenticateUpdateUser={onAuthenticateUpdateUser}
+          onGetAuthenticateTestResult={onGetAuthenticateTestResult}
+          onGenerateCriminalBackground={onGenerateCriminalBackground}
+          onGet7YearHistory={onGet7YearHistory}
         />
       );
     } else if (userType === EMPLOYER) {
@@ -435,6 +473,7 @@ EditListingPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const page = state.EditListingPage;
+  const authenticate = state.Authenticate;
   const { image, uploadInProgress, uploadImageError } = state.ProfileSettingsPage;
 
   const {
@@ -462,7 +501,15 @@ const mapStateToProps = state => {
 
   const { stripeCustomerFetched } = state.PaymentMethodsPage;
 
-  const { handleCardSetupError } = state.stripe;
+  const {
+    handleCardSetupError,
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    createPaymentIntentError,
+    createPaymentIntentInProgress,
+    paymentIntent,
+  } = state.stripe;
 
   return {
     getAccountLinkInProgress,
@@ -485,6 +532,13 @@ const mapStateToProps = state => {
     createStripeCustomerError,
     handleCardSetupError,
     uploadImageError,
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    createPaymentIntentError,
+    createPaymentIntentInProgress,
+    paymentIntent,
+    authenticate,
   };
 };
 
@@ -512,6 +566,25 @@ const mapDispatchToProps = dispatch => ({
   //   dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
   onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
   onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
+  onAuthenticateSubmitConsent: (userAccessCode, fullName, userId) =>
+    dispatch(authenticateSubmitConsent(userAccessCode, fullName, userId)),
+  onCreatePayment: params => dispatch(createPayment(params)),
+  onGetIdentityProofQuiz: (userAccessCode, userId) =>
+    dispatch(identityProofQuiz(userAccessCode, userId)),
+  onVerifyIdentityProofQuiz: (IDMSessionId, userAccessCode, userId, answers, currentAttempts) =>
+    dispatch(
+      verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
+    ),
+  onCreatePaymentIntent: (amount, userId, stripeCustomerId, isCard, noFee) =>
+    dispatch(createPaymentIntent(amount, userId, stripeCustomerId, isCard, noFee)),
+  onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
+    dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
+  onGetAuthenticateTestResult: (userAccessCode, userId) =>
+    dispatch(getAuthenticateTestResult(userAccessCode, userId)),
+  onGenerateCriminalBackground: (userAccessCode, userId) =>
+    dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
+  onGet7YearHistory: (userAccessCode, userId) =>
+    dispatch(authenticate7YearHistory(userAccessCode, userId)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

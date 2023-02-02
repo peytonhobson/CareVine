@@ -1,5 +1,7 @@
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
+import { stripeCreatePaymentIntent } from '../util/api';
+import { createStripeCustomer } from './paymentMethods.duck';
 
 // https://stripe.com/docs/api/payment_intents/object#payment_intent_object-status
 const STRIPE_PI_HAS_PASSED_CONFIRM = ['processing', 'requires_capture', 'canceled', 'succeeded'];
@@ -32,6 +34,18 @@ export const RETRIEVE_PAYMENT_INTENT_REQUEST = 'app/stripe/RETRIEVE_PAYMENT_INTE
 export const RETRIEVE_PAYMENT_INTENT_SUCCESS = 'app/stripe/RETRIEVE_PAYMENT_INTENT_SUCCESS';
 export const RETRIEVE_PAYMENT_INTENT_ERROR = 'app/stripe/RETRIEVE_PAYMENT_INTENT_ERROR';
 
+export const CREATE_CARD_PAYMENT_REQUEST = 'app/stripe/CREATE_CARD_PAYMENT_REQUEST';
+export const CREATE_CARD_PAYMENT_SUCCESS = 'app/stripe/CREATE_CARD_PAYMENT_SUCCESS';
+export const CREATE_CARD_PAYMENT_ERROR = 'app/stripe/CREATE_CARD_PAYMENT_ERROR';
+
+export const CREATE_PAYMENT_REQUEST = 'app/stripe/CREATE_PAYMENT_REQUEST';
+export const CREATE_PAYMENT_SUCCESS = 'app/stripe/CREATE_PAYMENT_SUCCESS';
+export const CREATE_PAYMENT_ERROR = 'app/stripe/CREATE_PAYMENT_ERROR';
+
+export const CREATE_PAYMENT_INTENT_REQUEST = 'app/stripe/CREATE_PAYMENT_INTENT_REQUEST';
+export const CREATE_PAYMENT_INTENT_SUCCESS = 'app/stripe/CREATE_PAYMENT_INTENT_SUCCESS';
+export const CREATE_PAYMENT_INTENT_ERROR = 'app/stripe/CREATE_PAYMENT_INTENT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -43,6 +57,14 @@ const initialState = {
   setupIntent: null,
   retrievePaymentIntentInProgress: false,
   retrievePaymentIntentError: null,
+  createCardPaymentInProgress: false,
+  createCardPaymentError: null,
+  createCardPaymentSuccess: false,
+  createPaymentInProgress: false,
+  createPaymentError: null,
+  createPaymentSuccess: false,
+  createPaymentIntentError: null,
+  createPaymentIntentInProgress: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -143,6 +165,53 @@ export default function reducer(state = initialState, action = {}) {
         retrievePaymentIntentInProgress: false,
       };
 
+    case CREATE_CARD_PAYMENT_REQUEST:
+      return {
+        ...state,
+        createCardPaymentError: null,
+        createCardPaymentInProgress: true,
+        createCardPaymentSuccess: false,
+      };
+    case CREATE_CARD_PAYMENT_SUCCESS:
+      return { ...state, createCardPaymentInProgress: false, createCardPaymentSuccess: true };
+    case CREATE_CARD_PAYMENT_ERROR:
+      return {
+        ...state,
+        createCardPaymentError: payload,
+        createCardPaymentInProgress: false,
+      };
+
+    case CREATE_PAYMENT_REQUEST:
+      return {
+        ...state,
+        createPaymentError: null,
+        createPaymentInProgress: true,
+        createPaymentSuccess: false,
+      };
+    case CREATE_PAYMENT_SUCCESS:
+      return { ...state, createPaymentInProgress: false, createPaymentSuccess: true };
+    case CREATE_PAYMENT_ERROR:
+      return {
+        ...state,
+        createPaymentError: payload,
+        createPaymentInProgress: false,
+      };
+
+    case CREATE_PAYMENT_INTENT_REQUEST:
+      return {
+        ...state,
+        createPaymentIntentError: null,
+        createPaymentIntentInProgress: true,
+      };
+    case CREATE_PAYMENT_INTENT_SUCCESS:
+      return { ...state, createPaymentIntentInProgress: false, paymentIntent: payload };
+    case CREATE_PAYMENT_INTENT_ERROR:
+      return {
+        ...state,
+        createPaymentIntentError: payload,
+        createPaymentIntentInProgress: false,
+      };
+
     default:
       return state;
   }
@@ -199,6 +268,45 @@ export const retrievePaymentIntentSuccess = payload => ({
 
 export const retrievePaymentIntentError = payload => ({
   type: RETRIEVE_PAYMENT_INTENT_ERROR,
+  payload,
+  error: true,
+});
+
+export const createCardPaymentRequest = () => ({
+  type: CREATE_CARD_PAYMENT_REQUEST,
+});
+export const createCardPaymentSuccess = payload => ({
+  type: CREATE_CARD_PAYMENT_SUCCESS,
+  payload,
+});
+export const createCardPaymentError = payload => ({
+  type: CREATE_CARD_PAYMENT_ERROR,
+  payload,
+  error: true,
+});
+
+export const createPaymentRequest = () => ({
+  type: CREATE_PAYMENT_REQUEST,
+});
+export const createPaymentSuccess = payload => ({
+  type: CREATE_PAYMENT_SUCCESS,
+  payload,
+});
+export const createPaymentError = payload => ({
+  type: CREATE_PAYMENT_ERROR,
+  payload,
+  error: true,
+});
+
+export const createPaymentIntentRequest = () => ({
+  type: CREATE_PAYMENT_INTENT_REQUEST,
+});
+export const createPaymentIntentSuccess = payload => ({
+  type: CREATE_PAYMENT_INTENT_SUCCESS,
+  payload,
+});
+export const createPaymentIntentError = payload => ({
+  type: CREATE_PAYMENT_INTENT_ERROR,
   payload,
   error: true,
 });
@@ -345,4 +453,121 @@ export const handleCardSetup = params => dispatch => {
       });
       throw e;
     });
+};
+
+export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, noFee) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(createPaymentIntentRequest());
+
+  const handleSuccess = response => {
+    dispatch(createPaymentIntentSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(createPaymentIntentError(e));
+    log.error(e, 'create-payment-intent-Failed', {});
+    throw e;
+  };
+
+  if (stripeCustomerId) {
+    return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, isCard, noFee })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  } else {
+    return dispatch(createStripeCustomer())
+      .then(res => {
+        return stripeCreatePaymentIntent({
+          amount,
+          userId,
+          stripeCustomerId: res.attributes.stripeCustomerId,
+          isCard,
+          noFee,
+        });
+      })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  }
+};
+
+export const createCardPayment = params => (dispatch, getState, sdk) => {
+  const { stripe, card, billingDetails } = params;
+
+  dispatch(createCardPaymentRequest());
+
+  const handleSuccess = response => {
+    dispatch(createCardPaymentSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(createCardPaymentError(e));
+    log.error(e, 'Create-Card-Payment-Failed', {});
+    throw e;
+  };
+
+  return stripe
+    .confirmCardPayment(res.client_secret, {
+      payment_method: {
+        card,
+        billing_details: {
+          ...billingDetails,
+        },
+      },
+    })
+    .then(res => {
+      if (res.error) {
+        throw res.error;
+      }
+
+      handleSuccess(res);
+    })
+    .catch(handleError);
+};
+
+export const createPayment = params => (dispatch, getState, sdk) => {
+  const { stripe, elements } = params;
+
+  dispatch(createPaymentRequest());
+
+  const handleSuccess = response => {
+    dispatch(createPaymentSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(createPaymentError(e));
+    log.error(e, 'Create-Payment-Failed', {});
+    throw e;
+  };
+
+  const confirmParams = {
+    elements,
+    confirmParams: {
+      // Make sure to change this to inbox page constant
+      return_url: process.env.REACT_APP_CANONICAL_ROOT_URL,
+      payment_method_data: {
+        billing_details: {
+          address: {
+            country: 'US',
+          },
+        },
+      },
+    },
+    redirect: 'if_required',
+  };
+
+  return stripe
+    .confirmPayment(confirmParams)
+    .then(res => {
+      if (res.error) {
+        throw res.error;
+      }
+
+      handleSuccess(res);
+    })
+    .catch(handleError);
 };

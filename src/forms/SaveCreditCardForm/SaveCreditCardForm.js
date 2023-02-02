@@ -177,6 +177,7 @@ class PaymentMethodsForm extends Component {
       createCreditCardError,
       createStripeCustomerError,
       deletePaymentMethodError,
+      createCardPaymentError,
       form,
       formId,
       handleCardSetupError,
@@ -201,7 +202,8 @@ class PaymentMethodsForm extends Component {
       createCreditCardError ||
       deletePaymentMethodError ||
       createStripeCustomerError ||
-      handleCardSetupError;
+      handleCardSetupError ||
+      createCardPaymentError;
 
     const errorMessage = intl.formatMessage({ id: 'PaymentMethodsForm.genericError' });
 

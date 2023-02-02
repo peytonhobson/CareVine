@@ -5,6 +5,21 @@ module.exports = queryEvents = () => {
   const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
   const log = require('./log');
+  const isDev = process.env.REACT_APP_ENV === 'development';
+  const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
+
+  const apiBaseUrl = () => {
+    const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
+    const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
+
+    // In development, the dev API server is running in a different port
+    if (useDevApiServer) {
+      return `http://localhost:${port}`;
+    }
+
+    // Otherwise, use the same domain and port as the frontend
+    return `${window.location.origin}`;
+  };
 
   const integrationSdk = flexIntegrationSdk.createInstance({
     // These two env vars need to be set in the `.env` file.
@@ -21,7 +36,7 @@ module.exports = queryEvents = () => {
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 60000; // 1 minute
+  const pollIdleWait = 10000; // 1 minute
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -119,6 +134,44 @@ module.exports = queryEvents = () => {
           .catch(err => {
             log.error(err.data);
           });
+      }
+
+      const metadata =
+        event.attributes.resource.attributes &&
+        event.attributes.resource.attributes.profile &&
+        event.attributes.resource.attributes.profile.metadata;
+
+      if (metadata && metadata.backgroundCheckApproved && !isDev && !metadata.tcmEnrolled) {
+        const userAccessCode = metadata.authenticateUserAccessCode;
+
+        axios
+          .post(
+            `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
+            {
+              userAccessCode,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/transit+json',
+              },
+            }
+          )
+          .then(() => {
+            const userId = event.attributes.resource.id.uuid;
+            axios.post(
+              `${apiBaseUrl()}/api/update-user-metadata`,
+              {
+                userId,
+                metadata: { tcmEnrolled: true },
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/transit+json',
+                },
+              }
+            );
+          })
+          .catch(err => log.error(err));
       }
     }
 

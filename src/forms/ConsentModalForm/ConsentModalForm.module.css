@@ -7,7 +7,7 @@
 .consentTextWrapper {
   width: 60rem;
   height: 20rem;
-  border: 1px solid var(--marketplaceColor);
+  border: 3px solid var(--matterColorDark);
   overflow: scroll;
   padding: 1rem;
   margin-top: 10px;
@@ -29,4 +29,41 @@
     display: inline-block;
     margin-top: 100px;
   }
+}
+
+.consentCheckboxText {
+  composes: marketplaceListingAttributeFontStyles from global;
+  color: var(--matterColor);
+  margin-top: -1px;
+  margin-bottom: 1px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--matterColorAnti);
+  }
+}
+
+.consentCheckboxText[data-disabled='true'] {
+  color: var(--matterColorAnti);
+
+  &:hover {
+    color: var(--matterColorAnti);
+  }
+}
+
+.consentCheckbox {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* Hightlight the text on checked, hover and focus */
+  &:focus + label .text,
+  &:hover + label .text,
+  &:checked + label .text {
+    color: var(--matterColorDark);
+  }
+}
+
+.error {
+  display: block;
+  color: var(--failColor);
 }

@@ -7,33 +7,16 @@
 .row {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   margin-bottom: 24px;
 }
 
-.nameInput {
-  max-width: 25%;
+.thirdField {
+  width: calc(33% - 24px);
 }
 
-.dobInput {
-  max-width: 25%;
-  z-index: 100;
-}
-
-.emailInput {
-  max-width: 40%;
-}
-
-.phoneInput {
-  max-width: 25%;
-}
-
-.streetField {
-  max-width: 40%;
-}
-
-.aptField {
-  max-width: 20%;
+.secondField {
+  width: calc(50% - 24px);
 }
 
 .monthYearContainer {
@@ -62,4 +45,12 @@
     width: 241px;
     margin-top: 60px;
   }
+}
+
+.identityText {
+  color: var(--marketplaceColor);
+}
+
+.error {
+  color: var(--failColor);
 }

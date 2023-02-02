@@ -4,6 +4,7 @@
  * https://github.com/erikras/ducks-modular-redux
  */
 
+import Authenticate from './authenticate.duck';
 import Auth from './Auth.duck';
 import EmailVerification from './EmailVerification.duck';
 import LocationFilter from './LocationFilter.duck';
@@ -18,6 +19,7 @@ import user from './user.duck';
 import transactions from './transactions.duck';
 
 export {
+  Authenticate,
   Auth,
   EmailVerification,
   LocationFilter,
