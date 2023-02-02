@@ -36,8 +36,6 @@ const authenticateGenerateCriminalBackground = require('./api/authenticate-gener
 const authenticateUpdateUser = require('./api/authenticate-update-user');
 const authenticateEnrollTCM = require('./api/authenticate-enroll-tcm');
 
-//askdjf
-
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
 const { authenticateFacebook, authenticateFacebookCallback } = require('./api/auth/facebook');
