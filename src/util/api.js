@@ -202,3 +202,35 @@ export const stripeCreateSetupIntent = body => {
 export const createUserAuthenticate = body => {
   return post('/api/authenticate-create-user', body);
 };
+
+export const submitConsentAuthenticate = body => {
+  return post('/api/authenticate-submit-consent', body);
+};
+
+export const getIdentityProofQuiz = body => {
+  return post('/api/get-identity-proof-quiz', body);
+};
+
+export const identityProofQuizVerification = body => {
+  return post('/api/verify-identity-proof-quiz', body);
+};
+
+export const authenticateTestResult = body => {
+  return post('/api/authenticate-test-result', body);
+};
+
+export const getAuthenticate7YearHistory = body => {
+  return post('/api/authenticate-7-year-history', body);
+};
+
+export const authenticateGenerateCriminalBackgroundCheck = body => {
+  return post('/api/authenticate-generate-criminal-background', body);
+};
+
+export const updateUserAuthenticate = body => {
+  return post('/api/authenticate-update-user', body);
+};
+
+export const authenticateEnrollTCM = body => {
+  return post('/api/authenticate-enroll-tcm', body);
+};

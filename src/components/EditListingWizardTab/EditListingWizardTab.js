@@ -108,9 +108,22 @@ const EditListingWizardTab = props => {
     updatedTab,
     updateInProgress,
     uploadInProgress,
-    authenticateCreateUserError,
-    authenticateCreateUserInProgress,
-    authenticateUserAccessCode,
+    onAuthenticateSubmitConsent,
+    onCreatePayment,
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    onGetIdentityProofQuiz,
+    onVerifyIdentityProofQuiz,
+    onCreatePaymentIntent,
+    createPaymentIntentError,
+    createPaymentIntentInProgress,
+    paymentIntent,
+    authenticate,
+    onAuthenticateUpdateUser,
+    onGetAuthenticateTestResult,
+    onGenerateCriminalBackground,
+    onGet7YearHistory,
   } = props;
 
   const { type } = params;
@@ -365,9 +378,8 @@ const EditListingWizardTab = props => {
       );
     }
     case BACKGROUND_CHECK: {
-      const submitButtonTranslationKey = isNewListingFlow
-        ? 'EditListingWizard.saveNewBackgroundCheck'
-        : 'EditListingWizard.saveEditBackgroundCheck';
+      const submitButtonTranslationKey = 'EditListingWizard.saveNewBackgroundCheck';
+
       return (
         <EditListingBackgroundCheckPanel
           {...panelProps(BACKGROUND_CHECK)}
@@ -376,9 +388,26 @@ const EditListingWizardTab = props => {
             onCompleteEditListingWizardTab(tab, values);
           }}
           onAuthenticateCreateUser={onAuthenticateCreateUser}
-          authenticateCreateUserError={authenticateCreateUserError}
-          authenticateCreateUserInProgress={authenticateCreateUserInProgress}
-          authenticateUserAccessCode={authenticateUserAccessCode}
+          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
+          onCreatePayment={onCreatePayment}
+          createPaymentInProgress={createPaymentInProgress}
+          createPaymentError={createPaymentError}
+          createPaymentSuccess={createPaymentSuccess}
+          onUpdateProfile={onUpdateProfile}
+          onGetIdentityProofQuiz={onGetIdentityProofQuiz}
+          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
+          onNextTab={() =>
+            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+          }
+          onCreatePaymentIntent={onCreatePaymentIntent}
+          createPaymentIntentError={createPaymentIntentError}
+          createPaymentIntentInProgress={createPaymentIntentInProgress}
+          paymentIntent={paymentIntent}
+          authenticate={authenticate}
+          onAuthenticateUpdateUser={onAuthenticateUpdateUser}
+          onGetAuthenticateTestResult={onGetAuthenticateTestResult}
+          onGenerateCriminalBackground={onGenerateCriminalBackground}
+          onGet7YearHistory={onGet7YearHistory}
         />
       );
     }

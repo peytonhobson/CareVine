@@ -7,7 +7,7 @@ const SIZE_SMALL = 'small';
 const SIZE_NORMAL = 'normal';
 
 const IconClose = props => {
-  const { className, rootClassName, size } = props;
+  const { className, rootClassName, size, pixelHeight } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   if (size === SIZE_SMALL) {
@@ -24,8 +24,8 @@ const IconClose = props => {
   return (
     <svg
       className={classes}
-      width="12"
-      height="12"
+      width={pixelHeight || '12'}
+      height={pixelHeight || '12'}
       viewBox="0 0 12 12"
       xmlns="http://www.w3.org/2000/svg"
     >

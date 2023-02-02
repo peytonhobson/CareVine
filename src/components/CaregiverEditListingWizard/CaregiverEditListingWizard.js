@@ -89,7 +89,7 @@ const tabLabel = (intl, tab) => {
  *
  * @return true if tab / step is completed.
  */
-const tabCompleted = (tab, listing) => {
+const tabCompleted = (tab, listing, user) => {
   const {
     availabilityPlan,
     description,
@@ -99,6 +99,11 @@ const tabCompleted = (tab, listing) => {
     metadata,
   } = listing.attributes;
   const images = listing.images;
+
+  const backgroundCheckApproved =
+    user &&
+    user.attributes.profile.metadata &&
+    user.attributes.profile.metadata.backgroundCheckApproved;
 
   switch (tab) {
     case SERVICES:
@@ -122,7 +127,7 @@ const tabCompleted = (tab, listing) => {
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
-      return !!metadata;
+      return !!backgroundCheckApproved;
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:
@@ -139,11 +144,11 @@ const tabCompleted = (tab, listing) => {
  *
  * @return object containing activity / editability of different tabs of this wizard
  */
-const tabsActive = (isNew, listing) => {
+const tabsActive = (isNew, listing, user) => {
   return TABS.reduce((acc, tab) => {
     const previousTabIndex = TABS.findIndex(t => t === tab) - 1;
     const isActive =
-      previousTabIndex >= 0 ? !isNew || tabCompleted(TABS[previousTabIndex], listing) : true;
+      previousTabIndex >= 0 ? !isNew || tabCompleted(TABS[previousTabIndex], listing, user) : true;
     return { ...acc, [tab]: isActive };
   }, {});
 };
@@ -227,20 +232,21 @@ class CaregiverEditListingWizard extends Component {
   }
 
   componentDidMount() {
-    const { stripeOnboardingReturnURL, currentUser } = this.props;
+    const { stripeOnboardingReturnURL, params } = this.props;
+
+    const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
+      params.type
+    );
 
     if (stripeOnboardingReturnURL != null && !this.showPayoutDetails) {
       this.setState({ showPayoutDetails: true });
     }
 
-    if (
-      currentUser &&
-      currentUser.attributes &&
-      currentUser.attributes.profile &&
-      currentUser.attributes.profile.metadata &&
-      currentUser.attributes.profile.metadata.backgroundCheck
-    ) {
-      TABS.remove(BACKGROUND_CHECK);
+    if (!isNewListingFlow) {
+      const index = TABS.indexOf(BACKGROUND_CHECK);
+      if (index > -1) {
+        // TABS.splice(index, 1);
+      }
     }
   }
 
@@ -347,7 +353,7 @@ class CaregiverEditListingWizard extends Component {
     const rootClasses = rootClassName || css.root;
     const classes = classNames(rootClasses, className);
     const currentListing = ensureListing(listing);
-    const tabsStatus = tabsActive(isNewListingFlow, currentListing);
+    const tabsStatus = tabsActive(isNewListingFlow, currentListing, currentUser);
 
     // If selectedTab is not active, redirect to the beginning of wizard
     if (!tabsStatus[selectedTab]) {

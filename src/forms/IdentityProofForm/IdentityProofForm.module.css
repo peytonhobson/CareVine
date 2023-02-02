@@ -1,0 +1,59 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  /* Dimensions */
+  width: 100%;
+  height: auto;
+
+  /* Layout */
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  padding-top: 1px;
+
+  @media (--viewportMedium) {
+    padding-top: 2px;
+  }
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.formMargins {
+  margin-bottom: 24px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 32px;
+  }
+}
+
+.question {
+  composes: formMargins;
+
+  /* max-width: 25rem; */
+}
+
+.submitButton {
+  margin-top: 3rem;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+
+  @media (--viewportLarge) {
+    display: inline-block;
+    /* margin-top: 100px; */
+  }
+}
+
+.select {
+  color: var(--matterColorAnti);
+  border-bottom-color: var(--attentionColor);
+  padding-right: 20px;
+
+  &:disabled {
+    border-bottom-color: var(--matterColorNegative);
+    color: var(--matterColorNegative);
+    cursor: default;
+  }
+}

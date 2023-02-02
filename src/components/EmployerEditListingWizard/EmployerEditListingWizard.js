@@ -85,7 +85,7 @@ const tabCompleted = (tab, listing) => {
   const { geolocation, title, publicData } = listing.attributes;
 
   switch (tab) {
-    case CARE_NEEDS:
+    case CARE_TYPE:
       return !!(publicData && publicData.careTypes);
     case LOCATION:
       return !!(geolocation && publicData && publicData.location);
@@ -93,7 +93,7 @@ const tabCompleted = (tab, listing) => {
       return !!(publicData && publicData.availabilityPlan);
     case PRICING:
       return !!(publicData && publicData.rates);
-    case CARE_RECEIVER_DETAILS:
+    case CARE_RECIPIENT:
       return !!(publicData && publicData.careRecipients);
     case CAREIGVER_PREFERENCES:
       return !!(publicData && publicData.caregiverDetails);

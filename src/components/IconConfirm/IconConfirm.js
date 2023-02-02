@@ -8,7 +8,7 @@ const SIZE_NORMAL = 'normal';
 
 const IconConfirm = props => {
   const { className, rootClassName, size } = props;
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(rootClassName || css.checkmark, className);
 
   return (
     <svg className={css.checkmark} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">

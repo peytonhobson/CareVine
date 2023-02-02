@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Form as FinalForm } from 'react-final-form';
@@ -11,31 +11,54 @@ const ConsentModalForm = props => (
   <FinalForm
     {...props}
     render={formRenderProps => {
-      const { handleSubmit, currentUser } = formRenderProps;
+      const {
+        handleSubmit,
+        currentUser,
+        authenticateSubmitConsentInProgress,
+        authenticateSubmitConsentError,
+        invalid,
+        disabled,
+      } = formRenderProps;
 
       const [scrollAtBottom, setScrollAtBottom] = useState(false);
 
       const userFullName =
         currentUser.attributes.profile.firstName + ' ' + currentUser.attributes.profile.lastName;
+      const textWrapper = useRef();
+      const authenticateConsent =
+        currentUser &&
+        currentUser.attributes.profile.metadata &&
+        currentUser.attributes.profile.metadata.authenticateConsent;
 
       const handleScroll = e => {
         if (e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight) {
           setScrollAtBottom(true);
-        } else {
+          textWrapper.current.style.border = '3px solid var(--successColor)';
+        } else if (scrollAtBottom) {
           setScrollAtBottom(false);
+          textWrapper.current.style.border = '3px solid var(--matterColorDark)';
         }
       };
 
-      // const submitReady = !!authenticateUserAccessCode;
-      // const submitInProgress = !!authenticateCreateUserInProgress;
-      // const submitDisabled = invalid || disabled || submitInProgress;
+      useEffect(() => {
+        if (textWrapper.current) {
+          textWrapper.current.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+        }
+      }, [textWrapper]);
+
+      const submitReady = !!authenticateConsent;
+      const submitInProgress = !!authenticateSubmitConsentInProgress;
+      const submitDisabled = invalid || disabled || submitInProgress;
 
       return (
         <Form className={css.root} onSubmit={handleSubmit}>
           <p className={css.modalTitle}>
             <FormattedMessage id="ConsentModalForm.modalTitle" />
           </p>
-          <div className={css.consentTextWrapper} onScroll={handleScroll}>
+          <div className={css.consentTextWrapper} onScroll={handleScroll} ref={textWrapper}>
             <p>
               <b>BACKGROUND CHECK</b>
             </p>
@@ -70,21 +93,38 @@ const ConsentModalForm = props => (
             </p>
           </div>
 
-          <FieldCheckbox
-            id="consent"
-            name="consent"
-            label="I agree to the above terms and conditions"
-            className={css.consentCheckbox}
-            required
-            disabled={!scrollAtBottom}
-            validate={required('Please agree to the terms and conditions')}
-          />
+          <span
+            onClick={() => {
+              if (!scrollAtBottom)
+                alert(
+                  'Please scroll to the bottom of the text to agree to the terms and conditions'
+                );
+            }}
+          >
+            <FieldCheckbox
+              id="consent"
+              name="consent"
+              label="I agree to the above terms and conditions"
+              className={css.consentCheckbox}
+              textClassName={css.consentCheckboxText}
+              required
+              disabled={!scrollAtBottom}
+              validate={required('Please agree to the terms and conditions')}
+            />
+          </span>
+
+          {authenticateSubmitConsentError ? (
+            <p className={css.error}>
+              <FormattedMessage id="ConsentModalForm.error" />
+            </p>
+          ) : null}
 
           <Button
             className={css.submitButton}
             type="submit"
-            // inProgress={submitInProgress}
-            // disabled={submitDisabled}
+            inProgress={submitInProgress}
+            disabled={submitDisabled}
+            ready={submitReady}
           >
             Submit
           </Button>

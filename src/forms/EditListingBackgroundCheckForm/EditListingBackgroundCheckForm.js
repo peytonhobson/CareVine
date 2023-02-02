@@ -22,9 +22,30 @@ import moment from 'moment';
 import css from './EditListingBackgroundCheckForm.module.css';
 import { useEffect } from 'react';
 
-const isDayBlocked = day => {
-  const isBlocked = day.isAfter(moment().subtract(18, 'years'));
-  return isBlocked;
+const isDayBlocked = day => day.isAfter(moment().subtract(18, 'years'));
+
+const formatPhoneNumber = value => {
+  // if input value is falsy eg if the user deletes the input, then just return
+  if (!value) return value;
+
+  // clean the input for any non-digit values.
+  const ssn = value.replace(/[^\d]/g, '');
+
+  // ssnLength is used to know when to apply our formatting for the ssn
+  const ssnLength = ssn.length;
+
+  // we need to return the value with no formatting if its less than four digits
+  if (ssnLength < 4) return ssn;
+
+  // if ssnLength is greater than 4 and less the 6 we start to return
+  // the formatted number
+  if (ssnLength < 7) {
+    return `${ssn.slice(0, 3)}-${ssn.slice(3)}`;
+  }
+
+  // finally, if the ssnLength is greater then 6, we add the last
+  // bit of formatting and return it.
+  return `${ssn.slice(0, 3)}-${ssn.slice(3, 6)}-${ssn.slice(6, 10)}`;
 };
 
 const formatSSN = value => {
@@ -51,30 +72,6 @@ const formatSSN = value => {
   return `${ssn.slice(0, 3)}-${ssn.slice(3, 5)}-${ssn.slice(5, 9)}`;
 };
 
-const formatPhoneNumber = value => {
-  // if input value is falsy eg if the user deletes the input, then just return
-  if (!value) return value;
-
-  // clean the input for any non-digit values.
-  const ssn = value.replace(/[^\d]/g, '');
-
-  // ssnLength is used to know when to apply our formatting for the ssn
-  const ssnLength = ssn.length;
-
-  // we need to return the value with no formatting if its less than four digits
-  if (ssnLength < 4) return ssn;
-
-  // if ssnLength is greater than 4 and less the 6 we start to return
-  // the formatted number
-  if (ssnLength < 7) {
-    return `${ssn.slice(0, 3)}-${ssn.slice(3)}`;
-  }
-
-  // finally, if the ssnLength is greater then 6, we add the last
-  // bit of formatting and return it.
-  return `${ssn.slice(0, 3)}-${ssn.slice(3, 6)}-${ssn.slice(6, 10)}`;
-};
-
 const EditListingBackgroundCheckForm = props => (
   <FinalForm
     {...props}
@@ -95,11 +92,15 @@ const EditListingBackgroundCheckForm = props => (
         authenticateCreateUserError,
         authenticateCreateUserInProgress,
         authenticateUserAccessCode,
+        authenticateUpdateUserError,
+        authenticateUpdateUserInProgress,
+        update,
       } = formRenderProps;
 
       const classes = classNames(css.root, className);
       const submitReady = !!authenticateUserAccessCode;
-      const submitInProgress = !!authenticateCreateUserInProgress;
+      const submitInProgress =
+        !!authenticateCreateUserInProgress || !!authenticateUpdateUserInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
 
       const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
@@ -154,12 +155,21 @@ const EditListingBackgroundCheckForm = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
+          <h1 className={css.title}>
+            Provide your <span className={css.identityText}>information</span>
+          </h1>
+          {update && (
+            <p style={{ color: 'var(--marketplaceColor)' }}>
+              We were unable to verify your identity with the information you provided. Please fill
+              in your information again. If the issue persists, please contact support.
+            </p>
+          )}
           <div className={css.row}>
             <FieldTextInput
               id="firstName"
               name="firstName"
               type="text"
-              className={css.nameInput}
+              className={css.thirdField}
               label="First Name"
               placeholder="First Name"
               validate={required('First name is required')}
@@ -169,7 +179,7 @@ const EditListingBackgroundCheckForm = props => (
               id="middleName"
               name="middleName"
               type="text"
-              className={css.nameInput}
+              className={css.thirdField}
               label="Middle Name"
               placeholder="Middle Name"
             />
@@ -177,7 +187,7 @@ const EditListingBackgroundCheckForm = props => (
               id="lastName"
               name="lastName"
               type="text"
-              className={css.nameInput}
+              className={css.thirdField}
               label="Last Name"
               placeholder="Last Name"
               validate={required('Last name is required')}
@@ -186,71 +196,10 @@ const EditListingBackgroundCheckForm = props => (
           </div>
           <div className={css.row}>
             <FieldTextInput
-              id="email"
-              name="email"
-              type="email"
-              className={css.emailInput}
-              label="Email"
-              placeholder="example.email@carevine.us"
-              validate={composeValidators(
-                required('Email is required'),
-                emailFormatValid('Invalid email address')
-              )}
-              required
-            />
-            {/* Make sure to replace dashes with empty and add +1 */}
-            <FieldTextInput
-              id="phone"
-              name="phone"
-              type="text"
-              className={css.phoneInput}
-              label="Phone Number"
-              placeholder="xxx-xxx-xxxx"
-              validate={composeValidators(
-                phoneFormatValid('Invalid phone number'),
-                required('Phone is required')
-              )}
-              onChange={phoneFormatter}
-              required
-            />
-          </div>
-          <div className={css.row}>
-            <FieldDateInput
-              id="dob"
-              name="dob"
-              className={css.dobInput}
-              label="Date of Birth"
-              placeholderText="mm/dd/yyyy"
-              validate={required('Date of Birth is required')}
-              renderMonthElement={renderMonthElement}
-              isDayBlocked={isDayBlocked}
-              isOutsideRange={isDayBlocked}
-              initialVisibleMonth={() => moment().subtract(18, 'years')}
-              displayFormat="MM/DD/YYYY"
-              required
-            />
-            {/* Need to parse out - */}
-            <FieldTextInput
-              id="ssn"
-              name="ssn"
-              type="text"
-              className={css.aptField}
-              label="SSN"
-              placeholder="xxx-xx-xxxx"
-              validate={composeValidators(
-                ssnFormatValid('Invalid SSN'),
-                required('SSN is required')
-              )}
-              onChange={ssnFormatter}
-              required
-            />
-          </div>
-          <div className={css.row}>
-            <FieldTextInput
               id="addressLine1"
               name="addressLine1"
               disabled={disabled}
-              className={css.streetField}
+              className={css.secondField}
               type="text"
               autoComplete="billing address-line1"
               label="Street Address"
@@ -263,7 +212,7 @@ const EditListingBackgroundCheckForm = props => (
               id="addressLine2"
               name="addressLine2"
               disabled={disabled}
-              className={css.aptField}
+              className={css.secondField}
               type="text"
               autoComplete="billing address-line2"
               label="Apt # • optional"
@@ -275,7 +224,7 @@ const EditListingBackgroundCheckForm = props => (
               id="zipCode"
               name="zipCode"
               disabled={disabled}
-              className={css.nameInput}
+              className={css.thirdField}
               type="text"
               autoComplete="billing postal-code"
               label="Zip Code"
@@ -290,7 +239,7 @@ const EditListingBackgroundCheckForm = props => (
               id="city"
               name="city"
               disabled={disabled}
-              className={css.nameInput}
+              className={css.thirdField}
               type="text"
               autoComplete="billing address-level2"
               label="City"
@@ -302,7 +251,7 @@ const EditListingBackgroundCheckForm = props => (
               id="state"
               name="state"
               disabled={disabled}
-              className={css.nameInput}
+              className={css.thirdField}
               type="text"
               autoComplete="billing address-level1"
               label="State"
@@ -310,8 +259,67 @@ const EditListingBackgroundCheckForm = props => (
               required
             />
           </div>
+          <div className={css.row}>
+            <FieldDateInput
+              id="dob"
+              name="dob"
+              className={css.secondField}
+              label="Date of Birth"
+              placeholderText="mm/dd/yyyy"
+              validate={required('Date of Birth is required')}
+              renderMonthElement={renderMonthElement}
+              isDayBlocked={isDayBlocked}
+              isOutsideRange={isDayBlocked}
+              initialVisibleMonth={() => moment().subtract(18, 'years')}
+              displayFormat="MM/DD/YYYY"
+              required
+            />
+            <FieldTextInput
+              id="ssn"
+              name="ssn"
+              type="text"
+              className={css.secondField}
+              label="SSN"
+              placeholder="xxx-xx-xxxx"
+              validate={composeValidators(
+                ssnFormatValid('Invalid SSN'),
+                required('SSN is required')
+              )}
+              onChange={ssnFormatter}
+              required
+            />
+          </div>
+          <div className={css.row}>
+            <FieldTextInput
+              id="email"
+              name="email"
+              type="email"
+              className={css.secondField}
+              label="Email"
+              placeholder="example.email@carevine.us"
+              validate={composeValidators(
+                required('Email is required'),
+                emailFormatValid('Invalid email address')
+              )}
+              required
+            />
+            <FieldTextInput
+              id="phone"
+              name="phone"
+              type="text"
+              className={css.secondField}
+              label="Phone Number"
+              placeholder="xxx-xxx-xxxx"
+              validate={composeValidators(
+                phoneFormatValid('Invalid phone number'),
+                required('Phone is required')
+              )}
+              onChange={phoneFormatter}
+              required
+            />
+          </div>
 
-          {authenticateCreateUserError ? (
+          {authenticateCreateUserError || authenticateUpdateUserError ? (
             <p className={css.error}>
               <FormattedMessage id="EditListingBackgroundCheckForm.authenticateCreateUserError" />
             </p>

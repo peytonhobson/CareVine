@@ -9,9 +9,9 @@
   width: 0;
 
   /* Highlight the borders if the checkbox is hovered, focused or checked */
-  &:hover + label .box,
-  &:focus + label .box,
-  &:checked + label .box {
+  &:hover:not(:disabled) + label .box,
+  &:focus:not(:disabled) + label .box,
+  &:checked:not(:disabled) + label .box {
     stroke: var(--marketplaceColor);
   }
 
@@ -37,9 +37,9 @@
   }
 
   /* Hightlight the text on checked, hover and focus */
-  &:focus + label .text,
-  &:hover + label .text,
-  &:checked + label .text {
+  &:focus:not(:disabled) + label .text,
+  &:hover:not(:disabled) + label .text,
+  &:checked:not(:disabled) + label .text {
     color: var(--matterColorDark);
   }
 }

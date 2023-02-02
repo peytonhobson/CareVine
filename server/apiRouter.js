@@ -27,6 +27,14 @@ const stripeUpdatePaymentIntent = require('./api/stripe-update-payment-intent');
 const userEmail = require('./api/user-email');
 const sendbirdUser = require('./api/sb-user');
 const authenticateCreateUser = require('./api/authenticate-create-user');
+const authenticateSubmitConsent = require('./api/authenticate-submit-consent');
+const getIdentityProofQuiz = require('./api/get-identity-proof-quiz');
+const verifyIdentityProofQuiz = require('./api/verify-identity-proof-quiz');
+const authenticateTestResult = require('./api/authenticate-test-result');
+const authenticate7YearHistory = require('./api/authenticate-7-year-history');
+const authenticateGenerateCriminalBackground = require('./api/authenticate-generate-criminal-background');
+const authenticateUpdateUser = require('./api/authenticate-update-user');
+const authenticateEnrollTCM = require('./api/authenticate-enroll-tcm');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -78,6 +86,14 @@ router.post('/user-email', userEmail);
 router.post('/sb-user', sendbirdUser);
 router.post('/stripe-create-setup-intent', createSetupIntent);
 router.post('/authenticate-create-user', authenticateCreateUser);
+router.post('/authenticate-submit-consent', authenticateSubmitConsent);
+router.post('/get-identity-proof-quiz', getIdentityProofQuiz);
+router.post('/verify-identity-proof-quiz', verifyIdentityProofQuiz);
+router.post('/authenticate-test-result', authenticateTestResult);
+router.post('/authenticate-7-year-history', authenticate7YearHistory);
+router.post('/authenticate-generate-criminal-background', authenticateGenerateCriminalBackground);
+router.post('/authenticate-update-user', authenticateUpdateUser);
+router.post('/authenticate-enroll-tcm', authenticateEnrollTCM);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
