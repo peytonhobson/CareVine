@@ -199,7 +199,7 @@ const EditListingCareRecipientDetailsPanel = props => {
       />
       {onManageDisableScrolling && isCareRecipientFormVisible ? (
         <Modal
-          id="AddCareSessionModal"
+          id="AddCareRecipientModal"
           isOpen={isCareRecipientFormVisible}
           onClose={() => setIsCareRecipientFormVisible(false)}
           onManageDisableScrolling={onManageDisableScrolling}

@@ -157,7 +157,7 @@ export const filters = [
       options: [
         { key: 'oneTime', label: 'One time Jobs' },
         { key: 'recurring', label: 'Recurring' },
-        { key: 'liveIn', label: 'Live In' },
+        { key: 'liveIn', label: 'Live-In' },
       ],
     },
   },
@@ -226,6 +226,14 @@ export const filters = [
           label: 'Meal Preparation',
         },
         {
+          key: 'companionship',
+          label: 'Companionship',
+        },
+        {
+          key: 'transportation',
+          label: 'Transportation/Shopping',
+        },
+        {
           key: 'cleaning',
           label: 'Cleaning/House care',
         },
@@ -277,27 +285,6 @@ export const filters = [
     },
   },
   {
-    id: 'experienceWith',
-    label: 'Experience With',
-    type: 'SelectMultipleFilter',
-    group: 'secondary',
-    queryParamNames: ['pub_experienceWith'],
-    config: {
-      // Optional modes: 'has_all', 'has_any'
-      // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_all',
-
-      // "key" is the option you see in Flex Console.
-      // "label" is set here for this web app's UI only.
-      // Note: label is not added through the translation files
-      // to make filter customizations a bit easier.
-      options: [
-        { key: 'dimentia', label: "Alzheimer's or Dementia" },
-        { key: 'hospice', label: 'Hospice / end of life care' },
-      ],
-    },
-  },
-  {
     id: 'certificationsAndTraining',
     label: 'Certifications and Training',
     type: 'SelectMultipleFilter',
@@ -321,8 +308,6 @@ export const filters = [
         { key: 'ma', label: 'Medical Assistant' },
         { key: 'pca', label: 'Personal Care Assistant' },
         { key: 'emt', label: 'Paramedic/EMT' },
-        { key: 'ad', label: 'Activity Director' },
-        { key: 'cfh', label: 'Certified Food Handler' },
       ],
     },
   },

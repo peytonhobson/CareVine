@@ -52,7 +52,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
       });
 
       if (history.location.pathname.includes(CREATE_PROFILE)) {
-        careNeedsOptions.splice(14, careNeedsOptions.length);
+        careNeedsOptions.splice(16, careNeedsOptions.length);
       }
 
       // Recipient Details
