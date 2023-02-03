@@ -132,13 +132,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
 
           <FieldCheckboxGroup
             className={css.features}
-            id={experienceWithName}
-            name={experienceWithName}
-            options={experienceWithOptions}
-            label={experienceWithLabel}
-          />
-          <FieldCheckboxGroup
-            className={css.features}
             id={certificationsName}
             name={certificationsName}
             options={certificationsOptions}

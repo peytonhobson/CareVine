@@ -274,7 +274,7 @@
   "EditListingBioForm.description": "Describe yourself to families by writing a bio (100 - 700 characters)",
   "EditListingBioForm.descriptionLength": "Must be between {minLength} and {maxLength} characters",
   "EditListingBioForm.descriptionPlaceholder": "What kind of qualities do you have? What does your experience look like?",
-  "EditListingBioForm.descriptionRequired": "A description is required.",
+  "EditListingBioForm.descriptionRequired": "A bio is required.",
   "EditListingBioForm.maxLength": "Must be {maxLength} characters or less",
   "EditListingBioForm.showListingFailed": "Fetching caregiver profile data failed",
   "EditListingBioForm.title": "Add a title (optional)",

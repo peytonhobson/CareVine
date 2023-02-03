@@ -16,9 +16,12 @@ import {
 import { Form, Button, FieldRadioButtonGroup, FieldCheckboxGroup } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
 import config from '../../config';
+import { withRouter } from 'react-router-dom';
 import arrayMutators from 'final-form-arrays';
 
 import css from './EditListingExperienceForm.module.css';
+
+const CREATE_PROFILE = 'create-profile';
 
 const EditListingExperienceFormComponent = props => (
   <FinalForm
@@ -38,6 +41,7 @@ const EditListingExperienceFormComponent = props => (
         updateInProgress,
         fetchErrors,
         filterConfig,
+        history,
       } = formRenderProps;
 
       const experienceLevelFeaturesLabel = intl.formatMessage({
@@ -55,6 +59,10 @@ const EditListingExperienceFormComponent = props => (
       const experienceAreasErrorMessage = intl.formatMessage({
         id: 'EditListingExperienceForm.experienceAreasFormError',
       });
+
+      if (history.location.pathname.includes(CREATE_PROFILE)) {
+        experienceAreasOptions.splice(16, experienceAreasOptions.length);
+      }
 
       const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
@@ -145,4 +153,4 @@ EditListingExperienceFormComponent.propTypes = {
   filterConfig: propTypes.filterConfig,
 };
 
-export default compose(injectIntl)(EditListingExperienceFormComponent);
+export default compose(withRouter, injectIntl)(EditListingExperienceFormComponent);
