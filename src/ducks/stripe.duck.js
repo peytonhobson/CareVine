@@ -760,7 +760,7 @@ export const createPayment = params => (dispatch, getState, sdk) => {
         },
       },
     },
-    metdata: {
+    metadata: {
       userId,
     },
     redirect: 'if_required',
