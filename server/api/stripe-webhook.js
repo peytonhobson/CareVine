@@ -62,16 +62,16 @@ module.exports = (request, response) => {
 
   let event;
 
-  // const stripePayload = request.rawBody || request.body;
+  const stripePayload = request.rawBody || request.body;
 
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(stripePayload, sig, endpointSecret);
   } catch (err) {
     log.error(err);
     response
       .status(400)
       .send(
-        `Webhook Error: ${err.message}, sig: ${sig}, request.body: ${request.body}, endpointSecret: ${endpointSecret}`
+        `Webhook Error: ${err.message}, sig: ${sig}, request.body: ${stripePayload}, endpointSecret: ${endpointSecret}`
       );
     return;
   }
