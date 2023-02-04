@@ -103,7 +103,7 @@ router.post('/authenticate-update-user', authenticateUpdateUser);
 router.post('/authenticate-enroll-tcm', authenticateEnrollTCM);
 router.post('/stripe-create-subscription', stripeCreateSubscription);
 router.post('/stripe-update-customer', stripeUpdateCustomer);
-router.post('/stripe-webhook', bodyParser.raw({ type: 'application/json' }), stripeWebhook);
+router.post('/stripe-webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 router.post('/stripe-cancel-subscription', stripeCancelSubscription);
 router.post('/stripe-update-subscription', stripeUpdateSubscription);
 router.post('/stripe-confirm-payment', stripeConfirmPayment);
