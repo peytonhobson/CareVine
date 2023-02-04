@@ -2,6 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 const axios = require('axios');
+const bodyParser = require('body-parser');
 const VINE_CHECK_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
@@ -69,7 +70,9 @@ module.exports = (request, response) => {
     response
       .status(400)
       .send(
-        `Webhook Error: ${err.message}, sig: ${sig}, request.body: ${stripePayload}, endpointSecret: ${endpointSecret}`
+        `Webhook Error: ${
+          err.message
+        }, sig: ${sig}, request.body: ${request.body.json()}, endpointSecret: ${endpointSecret}`
       );
     return;
   }

@@ -61,21 +61,17 @@ router.use(
 
 // Deserialize Transit body string to JS data
 router.use((req, res, next) => {
-  if (req.originalUrl === '/stripe-webhook') {
-    next(); // Do nothing with the body because I need it in a raw state.
-  } else {
-    if (req.get('Content-Type') === 'application/transit+json' && typeof req.body === 'string') {
-      try {
-        req.body = deserialize(req.body);
-      } catch (e) {
-        console.error('Failed to parse request body as Transit:');
-        console.error(e);
-        res.status(400).send('Invalid Transit in request body.');
-        return;
-      }
+  if (req.get('Content-Type') === 'application/transit+json' && typeof req.body === 'string') {
+    try {
+      req.body = deserialize(req.body);
+    } catch (e) {
+      console.error('Failed to parse request body as Transit:');
+      console.error(e);
+      res.status(400).send('Invalid Transit in request body.');
+      return;
     }
-    next();
   }
+  next();
 });
 
 // ================ API router endpoints: ================ //
@@ -107,7 +103,7 @@ router.post('/authenticate-update-user', authenticateUpdateUser);
 router.post('/authenticate-enroll-tcm', authenticateEnrollTCM);
 router.post('/stripe-create-subscription', stripeCreateSubscription);
 router.post('/stripe-update-customer', stripeUpdateCustomer);
-router.post('/stripe-webhook', express.json(), stripeWebhook);
+router.post('/stripe-webhook', stripeWebhook);
 router.post('/stripe-cancel-subscription', stripeCancelSubscription);
 router.post('/stripe-update-subscription', stripeUpdateSubscription);
 router.post('/stripe-confirm-payment', stripeConfirmPayment);
