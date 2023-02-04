@@ -16,6 +16,7 @@ export const apiBaseUrl = () => {
   }
 
   // Otherwise, use the same domain and port as the frontend
+  console.log('apiBaseUrl', `${window.location.origin}`);
   return `${window.location.origin}`;
 };
 
