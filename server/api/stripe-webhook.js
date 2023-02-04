@@ -58,13 +58,15 @@ const updateBackgroundCheckSubscription = subscription => {
 module.exports = (request, response) => {
   const sig = request.headers['stripe-signature'];
 
+  console.log('sig', sig);
+
   let event;
 
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
     log.error(err);
-    response.status(400).send(`Webhook Error: ${err.message}`);
+    response.status(400).send(`Webhook Error: ${err.message}, sig: ${sig}`);
     return;
   }
 
