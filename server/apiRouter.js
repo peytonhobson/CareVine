@@ -35,6 +35,13 @@ const authenticate7YearHistory = require('./api/authenticate-7-year-history');
 const authenticateGenerateCriminalBackground = require('./api/authenticate-generate-criminal-background');
 const authenticateUpdateUser = require('./api/authenticate-update-user');
 const authenticateEnrollTCM = require('./api/authenticate-enroll-tcm');
+const stripeCreateSubscription = require('./api/stripe-create-subscription');
+const stripeUpdateCustomer = require('./api/stripe-update-customer');
+const stripeWebhook = require('./api/stripe-webhook');
+const stripeCancelSubscription = require('./api/stripe-cancel-subscription');
+const stripeUpdateSubscription = require('./api/stripe-update-subscription');
+const stripeConfirmPayment = require('./api/stripe-confirm-payment');
+const authenticateDeenrollTCM = require('./api/authenticate-deenroll-tcm');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -94,6 +101,13 @@ router.post('/authenticate-7-year-history', authenticate7YearHistory);
 router.post('/authenticate-generate-criminal-background', authenticateGenerateCriminalBackground);
 router.post('/authenticate-update-user', authenticateUpdateUser);
 router.post('/authenticate-enroll-tcm', authenticateEnrollTCM);
+router.post('/stripe-create-subscription', stripeCreateSubscription);
+router.post('/stripe-update-customer', stripeUpdateCustomer);
+router.post('/stripe-webhook', bodyParser.raw({ type: 'application/json' }), stripeWebhook);
+router.post('/stripe-cancel-subscription', stripeCancelSubscription);
+router.post('/stripe-update-subscription', stripeUpdateSubscription);
+router.post('/stripe-confirm-payment', stripeConfirmPayment);
+router.post('/authenticate-deenroll-tcm', authenticateDeenrollTCM);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

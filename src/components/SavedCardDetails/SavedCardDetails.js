@@ -34,6 +34,7 @@ const SavedCardDetails = props => {
     rootClassName,
     selected,
     stripeCustomer,
+    onEditCard,
   } = props;
 
   const expirationYear = (card && card.expirationYear) || (card && card.exp_year);
@@ -114,6 +115,7 @@ const SavedCardDetails = props => {
   const cancel = intl.formatMessage({ id: 'SavedCardDetails.cancel' });
   const removeCard = intl.formatMessage({ id: 'SavedCardDetails.removeCard' });
   const deletePaymentMethod = intl.formatMessage({ id: 'SavedCardDetails.deletePaymentMethod' });
+  const editPaymentMethod = intl.formatMessage({ id: 'SavedCardDetails.editPaymentMethod' });
 
   const showExpired = isCardExpired && active === DEFAULT_CARD;
 
@@ -135,6 +137,12 @@ const SavedCardDetails = props => {
         <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
           <IconClose rootClassName={css.closeIcon} size="small" />
           {deletePaymentMethod}
+        </InlineTextButton>
+      ) : null}
+      {onEditCard ? (
+        <InlineTextButton onClick={onEditCard} className={css.savedPaymentMethodDelete}>
+          <IconClose rootClassName={css.closeIcon} size="small" />
+          {editPaymentMethod}
         </InlineTextButton>
       ) : null}
 

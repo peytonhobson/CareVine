@@ -23,7 +23,7 @@ import {
 } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
 import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
-import { handleCardSetup, createPayment, createPaymentIntent } from '../../ducks/stripe.duck';
+import { handleCardSetup, createPayment, createSubscription } from '../../ducks/stripe.duck';
 import {
   CaregiverEditListingWizard,
   EmployerEditListingWizard,
@@ -120,10 +120,10 @@ export const EditListingPageComponent = props => {
     createPaymentSuccess,
     onGetIdentityProofQuiz,
     onVerifyIdentityProofQuiz,
-    onCreatePaymentIntent,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    paymentIntent,
+    onCreateSubscription,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
     authenticate,
     onAuthenticateUpdateUser,
     onGetAuthenticateTestResult,
@@ -300,10 +300,10 @@ export const EditListingPageComponent = props => {
           createPaymentSuccess={createPaymentSuccess}
           onGetIdentityProofQuiz={onGetIdentityProofQuiz}
           onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
-          onCreatePaymentIntent={onCreatePaymentIntent}
-          createPaymentIntentError={createPaymentIntentError}
-          createPaymentIntentInProgress={createPaymentIntentInProgress}
-          paymentIntent={paymentIntent}
+          onCreateSubscription={onCreateSubscription}
+          createSubscriptionError={createSubscriptionError}
+          createSubscriptionInProgress={createSubscriptionInProgress}
+          subscription={subscription}
           authenticate={authenticate}
           onAuthenticateUpdateUser={onAuthenticateUpdateUser}
           onGetAuthenticateTestResult={onGetAuthenticateTestResult}
@@ -506,9 +506,9 @@ const mapStateToProps = state => {
     createPaymentInProgress,
     createPaymentError,
     createPaymentSuccess,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    paymentIntent,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
   } = state.stripe;
 
   return {
@@ -535,9 +535,9 @@ const mapStateToProps = state => {
     createPaymentInProgress,
     createPaymentError,
     createPaymentSuccess,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    paymentIntent,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
     authenticate,
   };
 };
@@ -575,8 +575,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
     ),
-  onCreatePaymentIntent: (amount, userId, stripeCustomerId, isCard, noFee) =>
-    dispatch(createPaymentIntent(amount, userId, stripeCustomerId, isCard, noFee)),
+  onCreateSubscription: (stripeCustomerId, priceId, userId) =>
+    dispatch(createSubscription(stripeCustomerId, priceId, userId)),
   onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
     dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
   onGetAuthenticateTestResult: (userAccessCode, userId) =>

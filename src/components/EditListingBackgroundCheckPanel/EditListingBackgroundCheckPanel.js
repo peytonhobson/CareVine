@@ -18,9 +18,10 @@ import { ensureCurrentUser } from '../../util/data';
 import { updateUserMetadata } from '../../util/api';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import PaymentInfo from './PaymentInfo';
+import { VINE_CHECK_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
-import { I } from '@sendbird/uikit-react/index-c45e5f15';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -100,8 +101,12 @@ const BACKGROUND_CHECK_REJECTED = 'BACKGROUND_CHECK_REJECTED';
 const UPDATE_USER = 'UPDATE_USER';
 const QUIZ_MAX_ATTEMPTS_FAILED = 'QUIZ_MAX_ATTEMPTS_FAILED';
 
-const BACKGROUND_CHECK_PRICE = 499;
+const BASIC_CHECK_PRICE = 1499;
+const VINE_CHECK_PRICE = 499;
 const MAX_QUIZ_ATTEMPTS = 3;
+
+const BASIC = 'basic';
+const VINE_CHECK = 'vineCheck';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
@@ -125,10 +130,10 @@ const EditListingBackgroundCheckPanel = props => {
     onGetIdentityProofQuiz,
     onVerifyIdentityProofQuiz,
     onNextTab,
-    onCreatePaymentIntent,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    paymentIntent,
+    onCreateSubscription,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
     authenticate,
     onAuthenticateUpdateUser,
     createPaymentInProgress,
@@ -160,6 +165,7 @@ const EditListingBackgroundCheckPanel = props => {
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
+  const [backgroundCheckType, setBackgroundCheckType] = useState(null);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -174,7 +180,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   const authenticateUserAccessCode = metadata && metadata.authenticateUserAccessCode;
   const authenticateConsent = metadata && metadata.authenticateConsent;
-  const backgroundCheckPaid = metadata && metadata.backgroundCheckPaid;
+  const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
   const identityProofQuiz = metadata && metadata.identityProofQuiz;
   const identityProofQuizVerification = metadata && metadata.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
@@ -203,7 +209,7 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(UPDATE_USER);
     } else if (authenticateUserAccessCode) {
       setStage(SUBMIT_CONSENT);
-    } else if (backgroundCheckPaid) {
+    } else if (backgroundCheckSubscription && backgroundCheckSubscription.status === 'active') {
       setStage(CREATE_USER);
     } else if (createPaymentSuccess && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);
@@ -212,7 +218,7 @@ const EditListingBackgroundCheckPanel = props => {
       }, 3000);
     }
   }, [
-    backgroundCheckPaid,
+    backgroundCheckSubscription,
     authenticateUserAccessCode,
     authenticateConsent,
     createPaymentSuccess,
@@ -294,18 +300,9 @@ const EditListingBackgroundCheckPanel = props => {
     const params = {
       stripe,
       elements,
+      userId,
     };
-    onCreatePayment(params).then(() => {
-      updateUserMetadata({
-        userId,
-        metadata: {
-          backgroundCheckPaid: {
-            paid: true,
-            date: moment().format('MM-DD-YYYY'),
-          },
-        },
-      });
-    });
+    onCreatePayment(params);
   };
 
   const handleIdentityQuizSubmit = answers => {
@@ -358,14 +355,13 @@ const EditListingBackgroundCheckPanel = props => {
     case INITIAL:
       content = (
         <ScreeningDescription
-          onPayForBC={() => {
+          onPayForBC={bcType => {
             setStage(PAYMENT);
-            onCreatePaymentIntent(
-              BACKGROUND_CHECK_PRICE,
-              currentUser.id,
+            setBackgroundCheckType(bcType);
+            onCreateSubscription(
               stripeCustomerId,
-              true,
-              true
+              bcType === BASIC ? BASIC_CHECK_PRICE_ID : VINE_CHECK_PRICE_ID,
+              currentUser.id.uuid
             );
           }}
         />
@@ -373,12 +369,12 @@ const EditListingBackgroundCheckPanel = props => {
       break;
     case PAYMENT:
       const options = {
-        clientSecret: paymentIntent && paymentIntent.client_secret,
+        clientSecret: subscription && subscription.latest_invoice.payment_intent.client_secret,
         appearance,
       };
 
       content =
-        paymentIntent && paymentIntent.client_secret ? (
+        subscription && subscription.latest_invoice.payment_intent.client_secret ? (
           <div className={css.paymentContainer}>
             <div className={css.paymentForm}>
               <Elements options={options} stripe={stripePromise}>
@@ -391,36 +387,17 @@ const EditListingBackgroundCheckPanel = props => {
                 />
               </Elements>
             </div>
-            <div className={css.paymentInfo}>
-              <h2>Order Summary</h2>
-              <div className={css.spreadSection}>
-                <h3>Screening Fee:</h3>
-                <h3>$4.99</h3>
-              </div>
-              <div className={css.spreadSection}>
-                <h3>Estimated Sales Tax (0%):</h3>
-                <h3>$0.00</h3>
-              </div>
-              <hr></hr>
-              <div className={css.spreadSection}>
-                <h3>Total:</h3>
-                <h3>$4.99</h3>
-              </div>
-              <p className={css.textSm}>
-                By submitting this form, you agree that your credit card will be charged $4.99, plus
-                applicable sales tax.
-              </p>
-              <p className={css.textSm}>
-                You also agree that your screening fee will automatically renew and you authorize us
-                to charge your credit card $4.99 every 3 months, plus any applicable sales tax,
-                unless you cancel your subscription before the renewal date via your Account
-                Settings. Once charged, all purchases, including renewals, are non-refundable.
-              </p>
-            </div>
+            <PaymentInfo backgroundCheckType={backgroundCheckType} subscription={subscription} />
           </div>
         ) : (
           <div className={css.spinnerContainer}>
-            <IconSpinner className={css.spinner} />
+            {createSubscriptionError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingBackgroundCheckPanel.createSubscriptionError" />
+              </p>
+            ) : (
+              <IconSpinner className={css.spinner} />
+            )}
           </div>
         );
       break;

@@ -234,3 +234,23 @@ export const updateUserAuthenticate = body => {
 export const authenticateEnrollTCM = body => {
   return post('/api/authenticate-enroll-tcm', body);
 };
+
+export const stripeCreateSubscription = body => {
+  return post('/api/stripe-create-subscription', body);
+};
+
+export const stripeUpdateCustomer = body => {
+  return post('/api/stripe-update-customer', body);
+};
+
+export const stripeCancelSubscription = body => {
+  return post('/api/stripe-cancel-subscription', body);
+};
+
+export const stripeUpdateSubscription = body => {
+  return post('/api/stripe-update-subscription', body);
+};
+
+export const stripeConfirmPayment = body => {
+  return post('/api/stripe-confirm-payment', body);
+};

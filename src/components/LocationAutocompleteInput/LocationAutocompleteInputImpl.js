@@ -341,10 +341,12 @@ class LocationAutocompleteInputImpl extends Component {
           }
         }
 
+        const splitAddress = place.address.split(' ');
+
         this.setState({ fetchingPlaceDetails: false });
         this.props.input.onChange({
           search: this.props.usePostalCode
-            ? place.address.split(' ')[2]
+            ? splitAddress[splitAddress.length - 1]
             : place.address.replace(', United States', ''),
           predictions: [],
           selectedPlace: place,

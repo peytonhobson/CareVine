@@ -115,10 +115,10 @@ const EditListingWizardTab = props => {
     createPaymentSuccess,
     onGetIdentityProofQuiz,
     onVerifyIdentityProofQuiz,
-    onCreatePaymentIntent,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    paymentIntent,
+    onCreateSubscription,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
     authenticate,
     onAuthenticateUpdateUser,
     onGetAuthenticateTestResult,
@@ -399,10 +399,10 @@ const EditListingWizardTab = props => {
           onNextTab={() =>
             redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
           }
-          onCreatePaymentIntent={onCreatePaymentIntent}
-          createPaymentIntentError={createPaymentIntentError}
-          createPaymentIntentInProgress={createPaymentIntentInProgress}
-          paymentIntent={paymentIntent}
+          onCreateSubscription={onCreateSubscription}
+          createSubscriptionError={createSubscriptionError}
+          createSubscriptionInProgress={createSubscriptionInProgress}
+          subscription={subscription}
           authenticate={authenticate}
           onAuthenticateUpdateUser={onAuthenticateUpdateUser}
           onGetAuthenticateTestResult={onGetAuthenticateTestResult}

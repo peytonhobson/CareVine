@@ -1,6 +1,13 @@
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
-import { stripeCreatePaymentIntent } from '../util/api';
+import {
+  stripeCreatePaymentIntent,
+  stripeCreateSubscription,
+  stripeUpdateCustomer,
+  stripeCancelSubscription,
+  stripeUpdateSubscription,
+  stripeConfirmPayment,
+} from '../util/api';
 import { createStripeCustomer } from './paymentMethods.duck';
 
 // https://stripe.com/docs/api/payment_intents/object#payment_intent_object-status
@@ -46,6 +53,18 @@ export const CREATE_PAYMENT_INTENT_REQUEST = 'app/stripe/CREATE_PAYMENT_INTENT_R
 export const CREATE_PAYMENT_INTENT_SUCCESS = 'app/stripe/CREATE_PAYMENT_INTENT_SUCCESS';
 export const CREATE_PAYMENT_INTENT_ERROR = 'app/stripe/CREATE_PAYMENT_INTENT_ERROR';
 
+export const CREATE_SUBSCRIPTION_REQUEST = 'app/stripe/CREATE_SUBSCRIPTION_REQUEST';
+export const CREATE_SUBSCRIPTION_SUCCESS = 'app/stripe/CREATE_SUBSCRIPTION_SUCCESS';
+export const CREATE_SUBSCRIPTION_ERROR = 'app/stripe/CREATE_SUBSCRIPTION_ERROR';
+
+export const CANCEL_SUBSCRIPTION_REQUEST = 'app/stripe/CANCEL_SUBSCRIPTION_REQUEST';
+export const CANCEL_SUBSCRIPTION_SUCCESS = 'app/stripe/CANCEL_SUBSCRIPTION_SUCCESS';
+export const CANCEL_SUBSCRIPTION_ERROR = 'app/stripe/CANCEL_SUBSCRIPTION_ERROR';
+
+export const UPDATE_SUBSCRIPTION_REQUEST = 'app/stripe/UPDATE_SUBSCRIPTION_REQUEST';
+export const UPDATE_SUBSCRIPTION_SUCCESS = 'app/stripe/UPDATE_SUBSCRIPTION_SUCCESS';
+export const UPDATE_SUBSCRIPTION_ERROR = 'app/stripe/UPDATE_SUBSCRIPTION_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -65,6 +84,13 @@ const initialState = {
   createPaymentSuccess: false,
   createPaymentIntentError: null,
   createPaymentIntentInProgress: false,
+  createSubscriptionInProgress: false,
+  createSubscriptionError: null,
+  subscription: null,
+  cancelSubscriptionInProgress: false,
+  cancelSubscriptionError: null,
+  updateSubscriptionInProgress: false,
+  updateSubscriptionError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -212,6 +238,51 @@ export default function reducer(state = initialState, action = {}) {
         createPaymentIntentInProgress: false,
       };
 
+    case CREATE_SUBSCRIPTION_REQUEST:
+      return {
+        ...state,
+        createSubscriptionError: null,
+        createSubscriptionInProgress: true,
+      };
+    case CREATE_SUBSCRIPTION_SUCCESS:
+      return { ...state, createSubscriptionInProgress: false, subscription: payload };
+    case CREATE_SUBSCRIPTION_ERROR:
+      return {
+        ...state,
+        createSubscriptionError: payload,
+        createSubscriptionInProgress: false,
+      };
+
+    case CANCEL_SUBSCRIPTION_REQUEST:
+      return {
+        ...state,
+        cancelSubscriptionError: null,
+        cancelSubscriptionInProgress: true,
+      };
+    case CANCEL_SUBSCRIPTION_SUCCESS:
+      return { ...state, cancelSubscriptionInProgress: false };
+    case CANCEL_SUBSCRIPTION_ERROR:
+      return {
+        ...state,
+        cancelSubscriptionError: payload,
+        cancelSubscriptionInProgress: false,
+      };
+
+    case UPDATE_SUBSCRIPTION_REQUEST:
+      return {
+        ...state,
+        updateSubscriptionError: null,
+        updateSubscriptionInProgress: true,
+      };
+    case UPDATE_SUBSCRIPTION_SUCCESS:
+      return { ...state, updateSubscriptionInProgress: false };
+    case UPDATE_SUBSCRIPTION_ERROR:
+      return {
+        ...state,
+        updateSubscriptionError: payload,
+        updateSubscriptionInProgress: false,
+      };
+
     default:
       return state;
   }
@@ -307,6 +378,43 @@ export const createPaymentIntentSuccess = payload => ({
 });
 export const createPaymentIntentError = payload => ({
   type: CREATE_PAYMENT_INTENT_ERROR,
+  payload,
+  error: true,
+});
+
+export const createSubscriptionRequest = () => ({
+  type: CREATE_SUBSCRIPTION_REQUEST,
+});
+export const createSubscriptionSuccess = payload => ({
+  type: CREATE_SUBSCRIPTION_SUCCESS,
+  payload,
+});
+export const createSubscriptionError = payload => ({
+  type: CREATE_SUBSCRIPTION_ERROR,
+  payload,
+  error: true,
+});
+
+export const cancelSubscriptionRequest = () => ({
+  type: CANCEL_SUBSCRIPTION_REQUEST,
+});
+export const cancelSubscriptionSuccess = () => ({
+  type: CANCEL_SUBSCRIPTION_SUCCESS,
+});
+export const cancelSubscriptionError = payload => ({
+  type: CANCEL_SUBSCRIPTION_ERROR,
+  payload,
+  error: true,
+});
+
+export const updateSubscriptionRequest = () => ({
+  type: UPDATE_SUBSCRIPTION_REQUEST,
+});
+export const updateSubscriptionSuccess = () => ({
+  type: UPDATE_SUBSCRIPTION_SUCCESS,
+});
+export const updateSubscriptionError = payload => ({
+  type: UPDATE_SUBSCRIPTION_ERROR,
   payload,
   error: true,
 });
@@ -493,6 +601,101 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, no
   }
 };
 
+export const createSubscription = (stripeCustomerId, priceId, userId, params) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(createSubscriptionRequest());
+
+  const handleSuccess = response => {
+    dispatch(createSubscriptionSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(createSubscriptionError(e));
+    log.error(e, 'create-subscription-Failed', {});
+    throw e;
+  };
+
+  if (stripeCustomerId) {
+    return stripeCreateSubscription({ stripeCustomerId, priceId, userId, params })
+      .then(res => {
+        if (params && params.default_payment_method) {
+          return stripeConfirmPayment({
+            paymentId: res.latest_invoice.payment_intent.id,
+            paymentMethod: params.default_payment_method,
+          });
+        } else {
+          return res;
+        }
+      })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  } else {
+    return dispatch(createStripeCustomer())
+      .then(res => {
+        return stripeCreateSubscription({
+          stripeCustomerId: res.id,
+          priceId,
+          userId,
+          params,
+        });
+      })
+      .then(res => {
+        if (params && params.default_payment_method) {
+          return stripeConfirmPayment({
+            paymentId: res.latest_invoice.payment_intent.id,
+            paymentMethod: params.default_payment_method,
+          });
+        } else {
+          return res;
+        }
+      })
+      .then(res => handleSuccess(res))
+      .catch(e => handleError(e));
+  }
+};
+
+export const cancelSubscription = subscriptionId => (dispatch, getState, sdk) => {
+  dispatch(cancelSubscriptionRequest());
+
+  const handleSuccess = response => {
+    dispatch(cancelSubscriptionSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(cancelSubscriptionError(e));
+    log.error(e, 'cancel-subscription-Failed', {});
+    throw e;
+  };
+
+  return stripeCancelSubscription({ subscriptionId })
+    .then(res => handleSuccess(res))
+    .catch(e => handleError(e));
+};
+
+export const updateSubscription = (subscriptionId, params) => (dispatch, getState, sdk) => {
+  dispatch(updateSubscriptionRequest());
+
+  const handleSuccess = response => {
+    dispatch(updateSubscriptionSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(updateSubscriptionError(e));
+    log.error(e, 'cancel-subscription-Failed', {});
+    throw e;
+  };
+
+  return stripeUpdateSubscription({ subscriptionId, params })
+    .then(res => handleSuccess(res))
+    .catch(e => handleError(e));
+};
+
 export const createCardPayment = params => (dispatch, getState, sdk) => {
   const { stripe, card, billingDetails } = params;
 
@@ -529,7 +732,7 @@ export const createCardPayment = params => (dispatch, getState, sdk) => {
 };
 
 export const createPayment = params => (dispatch, getState, sdk) => {
-  const { stripe, elements } = params;
+  const { stripe, elements, userId } = params;
 
   dispatch(createPaymentRequest());
 
@@ -556,6 +759,9 @@ export const createPayment = params => (dispatch, getState, sdk) => {
           },
         },
       },
+    },
+    metdata: {
+      userId,
     },
     redirect: 'if_required',
   };

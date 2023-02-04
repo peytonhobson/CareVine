@@ -1,0 +1,119 @@
+@import '../../styles/customMediaQueries.css';
+.content {
+  @media (--viewportMedium) {
+    margin: 32px auto 0 auto;
+    max-width: 564px;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0;
+  }
+}
+
+.desktopTopbar,
+.mobileTopbar {
+  box-shadow: none;
+}
+
+.title {
+  hyphens: auto;
+  margin-top: 8px;
+  margin-bottom: 19px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 47px;
+  }
+}
+
+.spinnerContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loadingText {
+  margin-left: 1rem;
+}
+
+.paymentForm {
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.dateText {
+  color: var(--matterColorAnti);
+  font-size: 14px;
+}
+
+.amountText {
+  font-size: 24px;
+}
+
+p {
+  margin-block: 0;
+}
+
+.chargesContainer {
+  display: inline;
+  float: left;
+  margin-right: 5rem;
+}
+
+.headerContainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cancelButton {
+  color: var(--failColor);
+}
+
+.reactivateButton {
+  color: var(--marketplaceColor);
+}
+
+.headerButtonContainer {
+  margin-right: 2rem;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5rem;
+}
+
+.cancelModalButton {
+  composes: button buttonFont buttonText buttonBorders from global;
+
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.reactivateModalButton {
+  margin-inline: 1rem;
+}
+
+.modalError {
+  color: var(--failColor);
+  margin-top: 1rem;
+}
+
+.greenText {
+  color: var(--marketplaceColor);
+}

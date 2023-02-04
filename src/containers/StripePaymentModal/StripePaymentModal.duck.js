@@ -266,7 +266,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard) =>
         return stripeCreatePaymentIntent({
           amount,
           userId,
-          stripeCustomerId: res.attributes.stripeCustomerId,
+          stripeCustomerId: res.id,
           isCard,
         });
       })

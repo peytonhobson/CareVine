@@ -12,6 +12,7 @@ import { loadData as ProfilePageLoader } from './ProfilePage/ProfilePage.duck';
 import { loadData as SearchPageLoader } from './SearchPage/SearchPage.duck';
 import { loadData as StripePayoutPageLoader } from './StripePayoutPage/StripePayoutPage.duck';
 import { loadData as TopbarContainerLoader } from './TopbarContainer/TopbarContainer.duck';
+import { loadData as SubscriptionsPageLoader } from './SubscriptionsPage/SubscriptionsPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
@@ -44,6 +45,9 @@ const getPageDataLoadingAPI = () => {
     },
     StripePayoutPage: {
       loadData: StripePayoutPageLoader,
+    },
+    SubscriptionsPage: {
+      loadData: SubscriptionsPageLoader,
     },
     TopbarContainer: {
       loadData: TopbarContainerLoader,
