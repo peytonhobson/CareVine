@@ -229,9 +229,13 @@ module.exports = queryEvents = () => {
       }
 
       const previousQuizAttempts =
-        previousValues && previousValues.attributes.profile.metadata.identityProofQuizAttempts;
+        previousValues &&
+        previousValues.attributes.profile.metadata &&
+        previousValues.attributes.profile.metadata.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
-        previousValues && previousValues.attributes.profile.metadata.backgroundCheckRejected;
+        previousValues &&
+        previousValues.attributes.profile.metadata &&
+        previousValues.attributes.profile.metadata.backgroundCheckRejected;
 
       // If failed background check, set subscription to cancel at end of period
       if (
