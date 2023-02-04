@@ -70,9 +70,7 @@ module.exports = (request, response) => {
     response
       .status(400)
       .send(
-        `Webhook Error: ${
-          err.message
-        }, sig: ${sig}, request.body: ${request.body.json()}, endpointSecret: ${endpointSecret}`
+        `Webhook Error: ${err.message}, sig: ${sig}, request.body: ${request.body}, endpointSecret: ${endpointSecret}`
       );
     return;
   }
