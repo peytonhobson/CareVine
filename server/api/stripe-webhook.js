@@ -68,7 +68,11 @@ module.exports = (request, response) => {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
     log.error(err);
-    response.status(400).send(`Webhook Error: ${err.message}, sig: ${sig}`);
+    response
+      .status(400)
+      .send(
+        `Webhook Error: ${err.message}, sig: ${sig}, request.body: ${request.body}, endpointSecret: ${endpointSecret}`
+      );
     return;
   }
 
