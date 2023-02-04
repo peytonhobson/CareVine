@@ -18,7 +18,7 @@ module.exports = queryEvents = () => {
     }
 
     // Otherwise, use the same domain and port as the frontend
-    return `${window.location.origin}`;
+    return process.env.REACT_APP_CANONICAL_ROOT_URL;
   };
 
   const integrationSdk = flexIntegrationSdk.createInstance({
