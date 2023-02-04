@@ -61,17 +61,21 @@ router.use(
 
 // Deserialize Transit body string to JS data
 router.use((req, res, next) => {
-  if (req.get('Content-Type') === 'application/transit+json' && typeof req.body === 'string') {
-    try {
-      req.body = deserialize(req.body);
-    } catch (e) {
-      console.error('Failed to parse request body as Transit:');
-      console.error(e);
-      res.status(400).send('Invalid Transit in request body.');
-      return;
+  if (req.originalUrl === '/stripe-webhook') {
+    next(); // Do nothing with the body because I need it in a raw state.
+  } else {
+    if (req.get('Content-Type') === 'application/transit+json' && typeof req.body === 'string') {
+      try {
+        req.body = deserialize(req.body);
+      } catch (e) {
+        console.error('Failed to parse request body as Transit:');
+        console.error(e);
+        res.status(400).send('Invalid Transit in request body.');
+        return;
+      }
     }
+    next();
   }
-  next();
 });
 
 // ================ API router endpoints: ================ //
