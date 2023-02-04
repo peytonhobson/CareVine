@@ -62,6 +62,8 @@ module.exports = (request, response) => {
 
   let event;
 
+  // const stripePayload = request.rawBody || request.body;
+
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
