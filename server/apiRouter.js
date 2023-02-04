@@ -53,17 +53,11 @@ const router = express.Router();
 // ================ API router middleware: ================ //
 
 // Parse Transit body first to a string
-router.use((req, res, next) => {
-  if (req.originalUrl === '/stripe-webhook') {
-    log.error('webhook call');
-    express.raw({ type: 'application/json' }); // Do nothing with the body because I need it in a raw state.
-  } else {
-    log.error('non webhook call');
-    bodyParser.text({
-      type: 'application/transit+json',
-    });
-  }
-});
+router.use(
+  bodyParser.text({
+    type: 'application/transit+json',
+  })
+);
 
 // Deserialize Transit body string to JS data
 router.use((req, res, next) => {
