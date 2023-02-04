@@ -55,8 +55,10 @@ const router = express.Router();
 // Parse Transit body first to a string
 router.use((req, res, next) => {
   if (req.originalUrl === '/stripe-webhook') {
-    next(); // Do nothing with the body because I need it in a raw state.
+    log.error('webhook call');
+    express.raw({ type: 'application/json' }); // Do nothing with the body because I need it in a raw state.
   } else {
+    log.error('non webhook call');
     bodyParser.text({
       type: 'application/transit+json',
     });
@@ -107,7 +109,7 @@ router.post('/authenticate-update-user', authenticateUpdateUser);
 router.post('/authenticate-enroll-tcm', authenticateEnrollTCM);
 router.post('/stripe-create-subscription', stripeCreateSubscription);
 router.post('/stripe-update-customer', stripeUpdateCustomer);
-router.post('/stripe-webhook', stripeWebhook);
+router.post('/stripe-webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 router.post('/stripe-cancel-subscription', stripeCancelSubscription);
 router.post('/stripe-update-subscription', stripeUpdateSubscription);
 router.post('/stripe-confirm-payment', stripeConfirmPayment);
