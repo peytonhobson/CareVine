@@ -75,7 +75,9 @@ const LayoutWrapperAccountSettingsSideNavComponent = props => {
     return () => {
       // Update scroll position when unmounting
       const el = document.querySelector(`#${currentTab}Tab`);
-      setScrollLeft(el.parentElement.scrollLeft);
+      if (el) {
+        setScrollLeft(el.parentElement.scrollLeft);
+      }
     };
   });
 
@@ -120,7 +122,21 @@ const LayoutWrapperAccountSettingsSideNavComponent = props => {
     },
   };
 
-  userType === CAREGIVER ? tabs.push(payoutTab) : tabs.push(paymentMethodsTab);
+  const subscriptionsTab = {
+    text: <FormattedMessage id="LayoutWrapperAccountSettingsSideNav.subscriptionsTabTitle" />,
+    selected: currentTab === 'SubscriptionsPage',
+    id: 'SubscriptionsPageTab',
+    linkProps: {
+      name: 'SubscriptionsPage',
+    },
+  };
+
+  if (userType === CAREGIVER) {
+    tabs.push(subscriptionsTab);
+    tabs.push(payoutTab);
+  } else {
+    tabs.push(paymentMethodsTab);
+  }
 
   return <LayoutWrapperSideNav tabs={tabs} />;
 };

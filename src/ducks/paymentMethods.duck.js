@@ -1,6 +1,10 @@
 import pick from 'lodash/pick';
 import { storableError } from '../util/errors';
-import { stripeDetachPaymentMethod, stripeCreateSetupIntent } from '../util/api';
+import {
+  stripeDetachPaymentMethod,
+  stripeCreateSetupIntent,
+  stripeUpdateCustomer,
+} from '../util/api';
 import * as log from '../util/log';
 
 // ================ Action types ================ //
@@ -227,8 +231,19 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .create({ stripePaymentMethodId }, { expand: true, include: ['defaultPaymentMethod'] })
       .then(response => {
         const stripeCustomer = response.data.data;
-        dispatch(stripeCustomerCreateSuccess(stripeCustomer));
-        return stripeCustomer;
+        dispatch(stripeCustomerCreateSuccess(response));
+        return sdk.ownListings.query({}).then(res => {
+          const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
+          return stripeUpdateCustomer({
+            stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
+            update: {
+              address: {
+                postal_code,
+                country: 'US',
+              },
+            },
+          });
+        });
       })
       .catch(e => {
         log.error(storableError(e), 'create-stripe-user-failed');
@@ -239,8 +254,22 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .create({}, { expand: true })
       .then(response => {
         const stripeCustomer = response.data.data;
-        dispatch(stripeCustomerCreateSuccess(stripeCustomer));
-        return stripeCustomer;
+        return sdk.ownListings.query({}).then(res => {
+          const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
+          return stripeUpdateCustomer({
+            stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
+            update: {
+              address: {
+                postal_code,
+                country: 'US',
+              },
+            },
+          });
+        });
+      })
+      .then(response => {
+        dispatch(stripeCustomerCreateSuccess(response));
+        return response;
       })
       .catch(e => {
         log.error(storableError(e), 'create-stripe-user-failed');
@@ -284,6 +313,8 @@ export const createBankAccount = (stripeCustomerId, stripe, currentUser) => (
   sdk
 ) => {
   dispatch(createBankAccountRequest());
+
+  const userId = currentUser.id.uuid;
 
   const savePromise = !stripeCustomerId
     ? dispatch(createStripeCustomer())
@@ -337,11 +368,13 @@ export const createBankAccount = (stripeCustomerId, stripe, currentUser) => (
     });
 };
 
-export const createCreditCard = (stripeCustomerId, stripe, billing_details, cardElement) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const createCreditCard = (
+  stripeCustomerId,
+  stripe,
+  billing_details,
+  cardElement,
+  userId
+) => (dispatch, getState, sdk) => {
   dispatch(createCreditCardRequest());
 
   const savePromise = !stripeCustomerId

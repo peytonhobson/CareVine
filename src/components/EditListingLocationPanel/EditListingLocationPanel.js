@@ -111,7 +111,17 @@ class EditListingLocationPanel extends Component {
               selectedPlace: { address, origin },
             } = location;
 
-            const zipcode = address.split(' ')[2];
+            const splitCommaAddress = address.split(',');
+
+            const splitSpaceAddress = splitCommaAddress[1].split(' ');
+            const asdf = splitSpaceAddress.slice(1, splitSpaceAddress.length - 1);
+
+            const zipcode = address.split(' ')[address.split(' ').length - 1];
+            const city = splitCommaAddress[0];
+            const state = splitSpaceAddress
+              .slice(1, splitSpaceAddress.length - 1)
+              .join(' ')
+              .trim();
             const timezone = zipcodeToTimezone.lookup(zipcode);
 
             const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
@@ -128,8 +138,8 @@ class EditListingLocationPanel extends Component {
                     geolocation: origin,
                     publicData: {
                       location: {
-                        city: address.split(',')[0],
-                        state: address.split(',')[1].split(' ')[1],
+                        city,
+                        state,
                         zipcode,
                       },
                       travelDistance,
@@ -139,8 +149,8 @@ class EditListingLocationPanel extends Component {
                     geolocation: origin,
                     publicData: {
                       location: {
-                        city: address.split(',')[0],
-                        state: address.split(',')[1].split(' ')[1],
+                        city,
+                        state,
                         zipcode,
                       },
                       nearPublicTransit: nearPublicTransitValue,

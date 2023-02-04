@@ -28,6 +28,7 @@ const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileS
 const SearchPage = loadable(() => import(/* webpackChunkName: "SearchPage" */ /* webpackPrefetch: true */  './containers/SearchPage/SearchPage'));
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ './containers/StripePayoutPage/StripePayoutPage'));
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
+const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "SubscriptionPage" */ './containers/SubscriptionsPage/SubscriptionsPage'));
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ './containers/StyleguidePage/StyleguidePage'));
@@ -37,6 +38,7 @@ export const ACCOUNT_SETTINGS_PAGES = [
   'PasswordChangePage',
   'StripePayoutPage',
   'PaymentMethodsPage',
+  'SubscriptionsPage',
 ];
 
 // https://en.wikipedia.org/wiki/Universally_unique_identifier#Nil_UUID
@@ -265,6 +267,14 @@ const routeConfiguration = () => {
       name: 'StyleguideComponentExampleRaw',
       component: StyleguidePage,
       extraProps: { raw: true },
+    },
+    {
+      path: '/account/subscriptions',
+      name: 'SubscriptionsPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: SubscriptionsPage,
+      loadData: pageDataLoadingAPI.SubscriptionsPage.loadData,
     },
     {
       path: '/notfound',

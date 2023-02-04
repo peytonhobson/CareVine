@@ -232,7 +232,7 @@ class CaregiverEditListingWizard extends Component {
   }
 
   componentDidMount() {
-    const { stripeOnboardingReturnURL, params } = this.props;
+    const { stripeOnboardingReturnURL, params, currentUser } = this.props;
 
     const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
       params.type
@@ -242,7 +242,12 @@ class CaregiverEditListingWizard extends Component {
       this.setState({ showPayoutDetails: true });
     }
 
-    if (!isNewListingFlow) {
+    const backgroundCheckApproved =
+      currentUser &&
+      currentUser.attributes.profile.metadata &&
+      currentUser.attributes.profile.metadata.backgroundCheckApproved;
+
+    if (!isNewListingFlow && backgroundCheckApproved) {
       const index = TABS.indexOf(BACKGROUND_CHECK);
       if (index > -1) {
         TABS.splice(index, 1);

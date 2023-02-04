@@ -140,8 +140,24 @@ module.exports = queryEvents = () => {
         event.attributes.resource.attributes &&
         event.attributes.resource.attributes.profile &&
         event.attributes.resource.attributes.profile.metadata;
+      const previousValues = event.attributes.previousValues;
+      const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
+      const previousBCSubscription =
+        previousValues &&
+        previousValues.attributes.profile.metadata &&
+        previousValues.attributes.profile.metadata.backgroundCheckSubscription;
+      const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
+      const tcmEnrolled = metadata && metadata.tcmEnrolled;
+      const identityProofQuizAttempts = metadata && metadata.identityProofQuizAttempts;
+      const backgroundCheckRejected = metadata && metadata.backgroundCheckRejected;
 
-      if (metadata && metadata.backgroundCheckApproved && !isDev && !metadata.tcmEnrolled) {
+      if (
+        backgroundCheckApproved &&
+        !isDev &&
+        tcmEnrolled &&
+        backgroundCheckSubscription.type === 'vine' &&
+        backgroundCheckSubscription.status === 'active'
+      ) {
         const userAccessCode = metadata.authenticateUserAccessCode;
 
         axios
@@ -172,6 +188,101 @@ module.exports = queryEvents = () => {
             );
           })
           .catch(err => log.error(err));
+      }
+
+      if (
+        !isDev &&
+        tcmEnrolled &&
+        (backgroundCheckSubscription.type !== 'vine' ||
+          backgroundCheckSubscription.status !== 'active')
+      ) {
+        const userAccessCode = metadata.authenticateUserAccessCode;
+
+        axios
+          .post(
+            `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
+            {
+              userAccessCode,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/transit+json',
+              },
+            }
+          )
+          .then(() => {
+            const userId = event.attributes.resource.id.uuid;
+            axios.post(
+              `${apiBaseUrl()}/api/update-user-metadata`,
+              {
+                userId,
+                metadata: { tcmEnrolled: false },
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/transit+json',
+                },
+              }
+            );
+          })
+          .catch(err => log.error(err));
+      }
+
+      const previousQuizAttempts =
+        previousValues && previousValues.attributes.profile.metadata.identityProofQuizAttempts;
+      const previousBackgroundCheckRejected =
+        previousValues && previousValues.attributes.profile.metadata.backgroundCheckRejected;
+
+      // If failed background check, set subscription to cancel at end of period
+      if (
+        ((identityProofQuizAttempts >= 3 && previousQuizAttempts < 3) ||
+          (backgroundCheckRejected && !previousBackgroundCheckRejected)) &&
+        backgroundCheckSubscription &&
+        backgroundCheckSubscription.status === 'active'
+      ) {
+        axios
+          .post(
+            `${apiBaseUrl()}/api/stripe-update-subscription`,
+            {
+              subscriptionId: backgroundCheckSubscription.subscriptionId,
+              params: { cancel_at_period_end: true },
+            },
+            {
+              headers: {
+                'Content-Type': 'application/transit+json',
+              },
+            }
+          )
+          .catch(e => log.error(e));
+      }
+
+      // Close user listing if background check subscription is cancelled
+      if (
+        backgroundCheckSubscription &&
+        backgroundCheckSubscription.status !== 'active' &&
+        previousBCSubscription &&
+        previousBCSubscription.status === 'active'
+      ) {
+        const userId = event.attributes.resource.id.uuid;
+
+        integrationSdk.listings
+          .query({ authorId: userId })
+          .then(res => {
+            const listing = res.data.data[0];
+            if (listing.state === 'published') {
+              integrationSdk.listings
+                .close(
+                  {
+                    id: listing.id.uuid,
+                  },
+                  {
+                    expand: true,
+                  }
+                )
+                .catch(e => log.error(e.data.errors));
+            }
+          })
+          .catch(e => log.error(e.data.errors));
       }
     }
 

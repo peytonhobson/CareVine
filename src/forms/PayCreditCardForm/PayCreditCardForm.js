@@ -46,7 +46,7 @@ const PayCreditCardForm = props => {
     let errorId = null;
     switch (createPaymentError.type) {
       case STRIPE_CARD_ERROR:
-        errorId = 'PayCreditCardForm.stripePaymentMethodErrorMessage';
+        errorId = 'PayCreditCardForm.stripeCardErrorMessage';
         break;
       case STRIPE_INVALID_REQUEST_ERROR:
         errorId = 'PayCreditCardForm.stripeInvalidRequestErrorMessage';

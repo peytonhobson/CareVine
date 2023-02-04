@@ -5,11 +5,10 @@ const log = require('../log');
 module.exports = (req, res) => {
   // Create a PaymentIntent with the order amount and currency
 
-  const { clientSecret, elements } = req.body;
+  const { paymentId, paymentMethod } = req.body;
 
-  stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-
-    });
+  stripe.paymentIntents
+    .confirm(paymentId, { payment_method: paymentMethod })
     .then(apiResponse => {
       const clientSecret = apiResponse.client_secret;
       res
@@ -22,6 +21,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      handleError(res, e);
+      log.error(e);
     });
 };
