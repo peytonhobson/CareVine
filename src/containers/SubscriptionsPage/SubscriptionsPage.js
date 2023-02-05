@@ -96,6 +96,7 @@ const SubscriptionsPageComponent = props => {
     isReactivateSubscriptionPaymentModalOpen,
     setIsReactivateSubscriptionPaymentModalOpen,
   ] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(false);
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
@@ -195,9 +196,12 @@ const SubscriptionsPageComponent = props => {
     if (bcStatus === 'active' || bcStatus === 'past_due') {
       const params = { cancel_at_period_end: true };
       onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
+        setFetchingUser(true);
         setTimeout(() => {
-          onFetchCurrentUser();
-        }, 500);
+          onFetchCurrentUser().then(() => {
+            setFetchingUser(false);
+          });
+        }, 1000);
         setIsCancelSubscriptionModalOpen(false);
       });
     }
@@ -225,9 +229,12 @@ const SubscriptionsPageComponent = props => {
 
         onCancelSubscription(backgroundCheckSubscription.subscriptionId).then(() => {
           onCreateSubscription(stripeCustomerId, priceId, currentUser.id.uuid, params).then(() => {
+            setFetchingUser(true);
             setTimeout(() => {
-              onFetchCurrentUser();
-            }, 500);
+              onFetchCurrentUser().then(() => {
+                setFetchingUser(false);
+              });
+            }, 1000);
 
             setIsReactivateSubscriptionPaymentModalOpen(false);
           });
@@ -235,18 +242,24 @@ const SubscriptionsPageComponent = props => {
       } else {
         const params = { cancel_at_period_end: false };
         onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
+          setFetchingUser(true);
           setTimeout(() => {
-            onFetchCurrentUser();
-          }, 500);
+            onFetchCurrentUser().then(() => {
+              setFetchingUser(false);
+            });
+          }, 1000);
           setIsReactivateSubscriptionPaymentModalOpen(false);
         });
       }
     } else {
       const params = { default_payment_method: cardId, cancel_at_period_end: false };
       onCreateSubscription(stripeCustomerId, priceId, currentUser.id.uuid, params).then(() => {
+        setFetchingUser(true);
         setTimeout(() => {
-          onFetchCurrentUser();
-        }, 500);
+          onFetchCurrentUser().then(() => {
+            setFetchingUser(false);
+          });
+        }, 1000);
         setIsReactivateSubscriptionPaymentModalOpen(false);
       });
     }
@@ -280,39 +293,42 @@ const SubscriptionsPageComponent = props => {
       </InlineTextButton>
     );
 
-  const bcSubscriptionContent =
-    backgroundCheckSubscription && bcStatusText ? (
-      <SubscriptionCard title={backgroundCheckTitle} headerButton={cancelButton}>
-        {bcStatus === 'active' && !cancelAtPeriodEnd ? (
-          <div className={css.chargesContainer}>
-            <h3>Upcoming Charges</h3>
-            <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>
-            <p className={css.amountText}>(${amount / 100})</p>
-          </div>
-        ) : null}
-        <div className={css.planInfoContainer}>
-          <h3>Plan Information</h3>
-          <p>
-            Type:&nbsp;
-            {backgroundCheckSubscription.type === 'vine' ? (
-              <FormattedMessage id="SubscriptionsPage.vineCheck" />
-            ) : (
-              <FormattedMessage id="SubscriptionsPage.basicCheck" />
-            )}
-          </p>
-          <p>Status: {bcStatusText}</p>
-          {renewalDate && renewalDate > TODAY && cancelAtPeriodEnd && (
-            <p className={css.greenText}>
-              Your subscription will be canceled&nbsp;
-              {renewalDate.toLocaleDateString()} and you won't be charged for any additional billing
-              periods.
-            </p>
-          )}
+  const bcSubscriptionContent = fetchingUser ? (
+    <div className={css.spinnerContainer}>
+      <IconSpinner />
+    </div>
+  ) : backgroundCheckSubscription && bcStatusText ? (
+    <SubscriptionCard title={backgroundCheckTitle} headerButton={cancelButton}>
+      {bcStatus === 'active' && !cancelAtPeriodEnd ? (
+        <div className={css.chargesContainer}>
+          <h3>Upcoming Charges</h3>
+          <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>
+          <p className={css.amountText}>(${amount / 100})</p>
         </div>
-      </SubscriptionCard>
-    ) : (
-      <h2 className={css.title}>No Current Subscriptions</h2>
-    );
+      ) : null}
+      <div className={css.planInfoContainer}>
+        <h3>Plan Information</h3>
+        <p>
+          Type:&nbsp;
+          {backgroundCheckSubscription.type === 'vine' ? (
+            <FormattedMessage id="SubscriptionsPage.vineCheck" />
+          ) : (
+            <FormattedMessage id="SubscriptionsPage.basicCheck" />
+          )}
+        </p>
+        <p>Status: {bcStatusText}</p>
+        {renewalDate && renewalDate > TODAY && cancelAtPeriodEnd && (
+          <p className={css.greenText}>
+            Your subscription will be canceled&nbsp;
+            {renewalDate.toLocaleDateString()} and you won't be charged for any additional billing
+            periods.
+          </p>
+        )}
+      </div>
+    </SubscriptionCard>
+  ) : (
+    <h2 className={css.title}>No Current Subscriptions</h2>
+  );
 
   const cardContent = !!card ? (
     <SavedCardDetails

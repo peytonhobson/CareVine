@@ -32,28 +32,33 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const updateBackgroundCheckSubscription = subscription => {
   const userId = subscription.metadata.userId;
-  axios.post(
-    `${apiBaseUrl()}/api/update-user-metadata`,
-    {
-      userId,
-      metadata: {
-        backgroundCheckSubscription: {
-          // May set this to null if webhooks work
-          status: subscription.status,
-          subscriptionId: subscription.id,
-          type: subscription.items.data[0].price.id === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
-          currentPeriodEnd: subscription.current_period_end,
-          amount: subscription.plan.amount,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+  axios
+    .post(
+      `${apiBaseUrl()}/api/update-user-metadata`,
+      {
+        userId,
+        metadata: {
+          backgroundCheckSubscription: {
+            // May set this to null if webhooks work
+            status: subscription.status,
+            subscriptionId: subscription.id,
+            type: subscription.items.data[0].price.id === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
+            currentPeriodEnd: subscription.current_period_end,
+            amount: subscription.plan.amount,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          },
         },
       },
-    },
-    {
-      headers: {
-        'Content-Type': 'application/transit+json',
-      },
-    }
-  );
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    )
+    .then(apiResponse => {
+      log.info(apiResponse);
+    })
+    .catch(e => log.error(e));
 };
 
 module.exports = (request, response) => {
@@ -61,12 +66,10 @@ module.exports = (request, response) => {
 
   let event;
 
-  // console.log(request.body);
-
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
-    // log.error(err);
+    log.error(err);
     response
       .status(400)
       .send(
