@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import css from './ReactivateInfo.module.css';
+import css from './Modals.module.css';
 
 const BASIC = 'basic';
 const VINE_CHECK = 'vineCheck';

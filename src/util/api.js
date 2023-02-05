@@ -255,3 +255,11 @@ export const stripeUpdateSubscription = body => {
 export const stripeConfirmPayment = body => {
   return post('/api/stripe-confirm-payment', body);
 };
+
+export const stripeCreateSubscriptionSchedule = body => {
+  return post('/api/stripe-create-subscription-schedule', body);
+};
+
+export const stripeCancelSubscriptionSchedule = body => {
+  return post('/api/stripe-cancel-subscription-schedule', body);
+};

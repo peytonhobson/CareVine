@@ -1,0 +1,82 @@
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5rem;
+}
+
+.cancelModalButton {
+  composes: button buttonFont buttonText buttonBorders from global;
+
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.reactivateModalButton {
+  margin-inline: 1rem;
+}
+
+.modalError {
+  color: var(--failColor);
+  margin-top: 1rem;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5rem;
+}
+
+.cancelModalButton {
+  composes: button buttonFont buttonText buttonBorders from global;
+
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.spreadSection {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.textSm {
+  font-family: var(--fontFamily);
+  font-weight: var(--fontWeightMedium);
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: -0.1px;
+  /* margin-top + n * line-height + margin-bottom => x * 6px */
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+    line-height: 28px;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+.wontChargeUntil {
+  color: var(--marketplaceColor);
+  margin-bottom: 1rem;
+}

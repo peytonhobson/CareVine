@@ -3,10 +3,10 @@ const { handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { subscriptionId } = req.body;
+  const { scheduleId } = req.body;
 
-  stripe.subscriptions
-    .del(subscriptionId)
+  stripe.subscriptionSchedules
+    .cancel(scheduleId)
     .then(apiResponse => {
       res
         .set('Content-Type', 'application/transit+json')

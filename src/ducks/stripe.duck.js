@@ -7,6 +7,8 @@ import {
   stripeCancelSubscription,
   stripeUpdateSubscription,
   stripeConfirmPayment,
+  stripeCreateSubscriptionSchedule,
+  stripeCancelSubscriptionSchedule,
 } from '../util/api';
 import { createStripeCustomer } from './paymentMethods.duck';
 
@@ -656,6 +658,48 @@ export const createSubscription = (stripeCustomerId, priceId, userId, params) =>
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
   }
+};
+
+export const createFutureSubscription = (stripeCustomerId, startDate, priceId, userId) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(createSubscriptionRequest());
+
+  const handleSuccess = response => {
+    dispatch(createSubscriptionSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(createSubscriptionError(e));
+    log.error(e, 'create-future-subscription-Failed', {});
+    throw e;
+  };
+
+  return stripeCreateSubscriptionSchedule({ stripeCustomerId, startDate, priceId, userId })
+    .then(res => handleSuccess(res))
+    .catch(e => handleError(e));
+};
+
+export const cancelFutureSubscription = scheduleId => (dispatch, getState, sdk) => {
+  dispatch(cancelSubscriptionRequest());
+
+  const handleSuccess = response => {
+    dispatch(cancelSubscriptionSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(cancelSubscriptionError(e));
+    log.error(e, 'cancel-future-subscription-Failed', {});
+    throw e;
+  };
+
+  return stripeCancelSubscriptionSchedule({ scheduleId })
+    .then(res => handleSuccess(res))
+    .catch(e => handleError(e));
 };
 
 export const cancelSubscription = subscriptionId => (dispatch, getState, sdk) => {

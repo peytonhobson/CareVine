@@ -47,15 +47,19 @@
 
 .amountText {
   font-size: 24px;
+  line-height: 32px;
 }
 
 p {
   margin-block: 0;
 }
 
+.subscriptionContentContainer {
+  display: flex;
+}
+
 .chargesContainer {
   display: inline;
-  float: left;
   margin-right: 5rem;
 }
 
@@ -116,4 +120,13 @@ p {
 
 .greenText {
   color: var(--marketplaceColor);
+}
+
+.wontChargeUntil {
+  composes: greenText;
+  margin-bottom: 1rem;
+}
+
+.futureSubscriptions {
+  margin-top: 1rem;
 }
