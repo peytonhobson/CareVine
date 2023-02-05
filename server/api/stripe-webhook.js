@@ -32,6 +32,7 @@ const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 const updateBackgroundCheckSubscription = subscription => {
   const userId = subscription.metadata.userId;
+
   axios
     .post(
       `${apiBaseUrl()}/api/update-user-metadata`,
@@ -55,9 +56,54 @@ const updateBackgroundCheckSubscription = subscription => {
         },
       }
     )
-    .then(apiResponse => {
-      log.info(apiResponse);
-    })
+    .catch(e => log.error(e));
+};
+
+const updateBackgroundCheckSubscriptionSchedule = schedule => {
+  const userId = schedule.metadata.userId;
+
+  axios
+    .post(
+      `${apiBaseUrl()}/api/update-user-metadata`,
+      {
+        userId,
+        metadata: {
+          backgroundCheckSubscriptionSchedule: {
+            scheduleId: schedule.id,
+            status: schedule.status,
+            startDate: schedule.phases[0].start_date,
+            type: schedule.phases[0].items[0].price === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
+            amount: schedule.phases[0].items[0].price === VINE_CHECK_PRICE_ID ? 499 : 1499,
+          },
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    )
+    .catch(e => log.error(e));
+};
+
+const cancelBackgroundCheckSubscriptionSchedule = schedule => {
+  const userId = schedule.metadata.userId;
+
+  axios
+    .post(
+      `${apiBaseUrl()}/api/update-user-metadata`,
+      {
+        userId,
+        metadata: {
+          backgroundCheckSubscriptionSchedule: null,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    )
     .catch(e => log.error(e));
 };
 
@@ -117,6 +163,14 @@ module.exports = (request, response) => {
     case 'invoice.payment_failed':
       const invoicePaymentFailed = event.data.object;
       // TODO: Send email to user that their subscription payment has failed and their subscription has been paused
+      break;
+    case 'subscription_schedule.canceled':
+      const susbcriptionScheduleCanceled = event.data.object;
+      cancelBackgroundCheckSubscriptionSchedule(susbcriptionScheduleCanceled);
+      break;
+    case 'subscription_schedule.created':
+      const susbcriptionScheduleCreated = event.data.object;
+      updateBackgroundCheckSubscriptionSchedule(susbcriptionScheduleCreated);
       break;
     // ... handle other event types
     default:

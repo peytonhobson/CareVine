@@ -43,6 +43,8 @@ const stripeCancelSubscription = require('./api/stripe-cancel-subscription');
 const stripeUpdateSubscription = require('./api/stripe-update-subscription');
 const stripeConfirmPayment = require('./api/stripe-confirm-payment');
 const authenticateDeenrollTCM = require('./api/authenticate-deenroll-tcm');
+const stripeCreateSubscriptionSchedule = require('./api/stripe-create-subscription-schedule');
+const stripeCancelSubscriptionSchedule = require('./api/stripe-cancel-subscription-schedule');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -109,6 +111,8 @@ router.post('/stripe-cancel-subscription', stripeCancelSubscription);
 router.post('/stripe-update-subscription', stripeUpdateSubscription);
 router.post('/stripe-confirm-payment', stripeConfirmPayment);
 router.post('/authenticate-deenroll-tcm', authenticateDeenrollTCM);
+router.post('/stripe-create-subscription-schedule', stripeCreateSubscriptionSchedule);
+router.post('/stripe-cancel-subscription-schedule', stripeCancelSubscriptionSchedule);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
