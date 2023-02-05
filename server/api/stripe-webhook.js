@@ -22,7 +22,7 @@ const apiBaseUrl = () => {
   }
 
   // Otherwise, use the same domain and port as the frontend
-  return `${window.location.origin}`;
+  return process.env.REACT_APP_CANONICAL_ROOT_URL;
 };
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
@@ -59,14 +59,14 @@ const updateBackgroundCheckSubscription = subscription => {
 module.exports = (request, response) => {
   const sig = request.headers['stripe-signature'];
 
-  console.log('sig', sig);
-
   let event;
+
+  // console.log(request.body);
 
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
-    log.error(err);
+    // log.error(err);
     response
       .status(400)
       .send(
