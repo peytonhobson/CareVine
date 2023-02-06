@@ -1,6 +1,5 @@
 import { storableError } from '../util/errors';
 import { fetchCurrentUser } from './user.duck';
-import * as log from '../util/log';
 import {
   authenticateGenerateCriminalBackgroundCheck,
   authenticateTestResult,
@@ -10,14 +9,14 @@ import {
   identityProofQuizVerification,
   submitConsentAuthenticate,
   updateUserAuthenticate,
-  updateUserMetadata,
 } from '../util/api';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
-import { addMarketplaceEntities } from './marketplaceData.duck';
 
 const requestAction = actionType => params => ({ type: actionType, payload: { params } });
 
-const successAction = actionType => result => ({ type: actionType, payload: result.data });
+const successAction = actionType => () => ({
+  type: actionType,
+});
 
 const errorAction = actionType => error => ({ type: actionType, payload: error, error: true });
 
@@ -71,10 +70,6 @@ export const AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_SUCCESS =
 export const AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR =
   'app/Authenticate/AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR';
 
-export const ENROLL_TCM_REQUEST = 'app/Authenticate/ENROLL_TCM_REQUEST';
-export const ENROLL_TCM_SUCCESS = 'app/Authenticate/ENROLL_TCM_SUCCESS';
-export const ENROLL_TCM_ERROR = 'app/Authenticate/ENROLL_TCM_ERROR';
-
 // ================ Reducer ================ //
 
 const initialState = {
@@ -93,7 +88,6 @@ const initialState = {
   getAuthenticateTestResultInProgress: false,
   getIdentityProofQuizError: null,
   getIdentityProofQuizInProgress: false,
-  identityProofQuiz: null,
   verifyIdentityProofQuizError: null,
   verifyIdentityProofQuizInProgress: false,
   verifyIdentityProofQuizFailure: false,
@@ -174,7 +168,6 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         getIdentityProofQuizInProgress: false,
-        identityProofQuiz: payload,
       };
 
     case VERIFY_IDENTITY_PROOF_QUIZ_REQUEST:
@@ -256,24 +249,6 @@ export default function reducer(state = initialState, action = {}) {
         authenticateGenerateCriminalBackgroundInProgress: false,
       };
 
-    case ENROLL_TCM_REQUEST:
-      return {
-        ...state,
-        enrollTcmInProgress: true,
-        enrollTcmError: null,
-      };
-    case ENROLL_TCM_ERROR:
-      return {
-        ...state,
-        enrollTcmInProgress: false,
-        enrollTcmError: payload,
-      };
-    case ENROLL_TCM_SUCCESS:
-      return {
-        ...state,
-        enrollTcmInProgress: false,
-      };
-
     default:
       return state;
   }
@@ -322,10 +297,6 @@ export const authenticateGenerateCriminalBackgroundError = errorAction(
   AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR
 );
 
-export const enrollTCMRequest = requestAction(ENROLL_TCM_REQUEST);
-export const enrollTCMSuccess = successAction(ENROLL_TCM_SUCCESS);
-export const enrollTCMError = errorAction(ENROLL_TCM_ERROR);
-
 // ================ Thunk ================ //
 
 export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState, sdk) => {
@@ -338,13 +309,12 @@ export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState,
       return createUserAuthenticate({ userInfo });
     })
     .then(response => {
-      return updateUserMetadata({
-        metadata: { authenticateUserAccessCode: response.data },
-        userId,
+      return sdk.currentUser.updateProfile({
+        privateData: { authenticateUserAccessCode: response.data },
       });
     })
     .then(response => {
-      dispatch(authenticateCreateUserSuccess(response));
+      dispatch(authenticateCreateUserSuccess());
       dispatch(fetchCurrentUser());
       return response;
     })
@@ -364,7 +334,7 @@ export const authenticateUpdateUser = (userInfo, userAccessCode) => (dispatch, g
       return updateUserAuthenticate({ userInfo, userAccessCode });
     })
     .then(response => {
-      dispatch(authenticateUpdateUserSuccess(response));
+      dispatch(authenticateUpdateUserSuccess());
       dispatch(fetchCurrentUser());
       return response;
     })
@@ -383,13 +353,12 @@ export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
 
   return submitConsentAuthenticate({ userAccessCode, fullName })
     .then(response => {
-      return updateUserMetadata({
-        metadata: { authenticateConsent: true },
-        userId,
+      return sdk.currentUser.updateProfile({
+        privateData: { authenticateConsent: true },
       });
     })
     .then(response => {
-      dispatch(authenticateSubmitConsentSuccess(response));
+      dispatch(authenticateSubmitConsentSuccess());
       dispatch(fetchCurrentUser());
       return response;
     })
@@ -404,13 +373,12 @@ export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState
 
   return getIdentityProofQuiz({ userAccessCode })
     .then(response => {
-      return updateUserMetadata({
-        metadata: { identityProofQuiz: response.data },
-        userId,
+      return sdk.currentUser.updateProfile({
+        privateData: { identityProofQuiz: response.data },
       });
     })
     .then(response => {
-      dispatch(getIdentityProofQuizSuccess(response));
+      dispatch(getIdentityProofQuizSuccess());
       dispatch(fetchCurrentUser());
       return response;
     })
@@ -437,28 +405,26 @@ export const verifyIdentityProofQuiz = (
 
   return identityProofQuizVerification({ payload })
     .then(response => {
-      const metadata = !!response.data.success
-        ? { identityProofQuizVerification: response.data }
-        : { identityProofQuizAttempts: currentAttempts + 1 };
-
-      updateUserMetadata({
-        metadata,
-        userId,
-      }).then(() => {
-        dispatch(fetchCurrentUser()).then(() => {
-          if (response.data.success) {
-            dispatch(verifyIdentityProofQuizSuccess(response));
-          } else {
-            dispatch(verifyIdentityProofQuizFailure(response));
-          }
-        });
-      });
-      return response;
-    })
-    .then(response => {
       if (response.data.success) {
         dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId));
       }
+
+      if (response.data.success) {
+        dispatch(verifyIdentityProofQuizSuccess());
+      } else {
+        dispatch(verifyIdentityProofQuizFailure());
+      }
+
+      const privateData = !!response.data.success
+        ? { identityProofQuizVerification: response.data }
+        : { identityProofQuizAttempts: currentAttempts + 1 };
+
+      return sdk.currentUser.updateProfile({
+        privateData,
+      });
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
       return response;
     })
     .catch(e => {
@@ -475,21 +441,16 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
 
   return authenticateGenerateCriminalBackgroundCheck({ userAccessCode })
     .then(response => {
-      updateUserMetadata({
-        metadata: { authenticateCriminalBackgroundGenerated: response.data.success },
-        userId,
-      }).then(() => {
-        dispatch(fetchCurrentUser()).then(() => {
-          dispatch(authenticateGenerateCriminalBackgroundSuccess(response));
-        });
-      });
-      return response;
-    })
-    .then(response => {
-      dispatch(authenticateGenerateCriminalBackgroundSuccess(response));
       if (response.data.success) {
         dispatch(getAuthenticateTestResult(userAccessCode, userId));
       }
+      return sdk.currentUser.updateProfile({
+        privateData: { authenticateCriminalBackgroundGenerated: response.data.success },
+      });
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
+      dispatch(authenticateGenerateCriminalBackgroundSuccess());
       return response;
     })
     .catch(e => {
@@ -502,23 +463,19 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
 
   return authenticateTestResult({ userAccessCode })
     .then(response => {
-      updateUserMetadata({
-        metadata: {
-          authenticateUserTestResult: response.data,
-          backgroundCheckApproved: !response.data.backgroundCheck.hasCriminalRecord,
-        },
-        userId,
-      }).then(() => {
-        dispatch(fetchCurrentUser()).then(() => {
-          dispatch(getAuthenticateTestResultSuccess(response));
-        });
-      });
-      return response;
-    })
-    .then(response => {
       if (response.data.backgroundCheck.hasCriminalRecord) {
         dispatch(authenticate7YearHistory(userAccessCode, userId));
       }
+      return sdk.currentUser.updateProfile({
+        privateData: {
+          authenticateUserTestResult: response.data,
+          backgroundCheckApproved: !response.data.backgroundCheck.hasCriminalRecord,
+        },
+      });
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
+      dispatch(getAuthenticateTestResultSuccess(response));
       return response;
     })
     .catch(e => {
@@ -532,39 +489,19 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
   return getAuthenticate7YearHistory({ userAccessCode })
     .then(response => {
       const { Candidate } = response.data.result.Candidates;
-      updateUserMetadata({
-        metadata: { authenticate7YearHistory: response.data, backgroundCheckApproved: !Candidate },
-        userId,
-      }).then(() => {
-        dispatch(fetchCurrentUser()).then(() => {
-          dispatch(authenticate7YearHistorySuccess(response));
-        });
+      return sdk.currentUser.updateProfile({
+        privateData: {
+          authenticate7YearHistory: response.data,
+          backgroundCheckApproved: !Candidate,
+        },
       });
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
+      dispatch(authenticate7YearHistorySuccess(response));
       return response;
     })
     .catch(e => {
       dispatch(authenticate7YearHistoryError(storableError(e)));
-    });
-};
-
-export const enrollTCM = (userAccessCode, userId) => (dispatch, getState, sdk) => {
-  dispatch(enrollTCMRequest());
-
-  return enrollTCMAuthenticate({ userAccessCode })
-    .then(response => {
-      updateUserMetadata({
-        metadata: { tcmEnrolled: response.data },
-        userId,
-      }).then(() => {
-        dispatch(fetchCurrentUser());
-      });
-      return response;
-    })
-    .then(response => {
-      dispatch(enrollTCMSuccess(response));
-      return response;
-    })
-    .catch(e => {
-      dispatch(enrollTCMError(storableError(e)));
     });
 };
