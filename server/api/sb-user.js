@@ -56,5 +56,11 @@ module.exports = (req, res) => {
         )
         .end();
     })
-    .catch(e => log.error(e));
+    .catch(e => {
+      if (e.response) {
+        handleError(res, e.response);
+      } else {
+        handleError(res, e);
+      }
+    });
 };

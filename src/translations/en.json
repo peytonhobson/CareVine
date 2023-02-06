@@ -271,6 +271,7 @@
   "EditListingAvailabilityPlanForm.title": "Edit default schedule",
   "EditListingAvailabilityPlanForm.updateFailed": "Failed to update. Please try again.",
   "EditListingBackgroundCheckForm.authenticateCreateUserError": "Failed to create user on authenticate.com. Please try again.",
+  "EditListingBackgroundCheckForm.authenticateUpdateUserError": "Failed to update user on authenticate.com. Please try again.",
   "EditListingBackgroundCheckPanel.createListingTitle": "Add your background check",
   "EditListingBackgroundCheckPanel.createSubscriptionError": "Failed to initialize payment. Please try refreshing the page.",
   "EditListingBackgroundCheckPanel.feeAgreementMessage": "You also agree that your {feeName} will automatically renew and you authorize us to charge your credit card ${paymentAmount} {renewalTerm}, plus any applicable sales tax, unless you cancel your subscription before the renewal date via your Account Settings. Once charged, all purchases, including renewals, are non-refundable.",

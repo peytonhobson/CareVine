@@ -1,5 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleError, serialize } = require('../api-util/sdk');
+const { handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
@@ -22,6 +22,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      handleError(res, e);
+      handleStripeError(res, e);
     });
 };

@@ -100,6 +100,7 @@ const ConsentModalForm = props => (
                   'Please scroll to the bottom of the text to agree to the terms and conditions'
                 );
             }}
+            style={{ width: '100%' }}
           >
             <FieldCheckbox
               id="consent"

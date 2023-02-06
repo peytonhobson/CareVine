@@ -32,5 +32,5 @@ module.exports = (req, res) => {
         )
         .end();
     })
-    .catch(e => log.error(e));
+    .catch(e => handleError(res, e.response));
 };

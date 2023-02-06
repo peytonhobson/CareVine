@@ -97,7 +97,7 @@ exports.handleStripeError = (res, error) => {
   } else {
     res
       .status(500)
-      .json({ error: error.message })
+      .json({ error: raw.message })
       .end();
   }
 };

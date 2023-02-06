@@ -54,6 +54,10 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      handleStripeError(res, e);
+      if (e.raw) {
+        handleStripeError(res, e);
+      } else {
+        handleError(res, e);
+      }
     });
 };

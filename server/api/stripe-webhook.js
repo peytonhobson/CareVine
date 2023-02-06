@@ -178,5 +178,5 @@ module.exports = (request, response) => {
   }
 
   // Return a 200 response to acknowledge receipt of the event
-  response.status(200).send();
+  response.send();
 };
