@@ -32,30 +32,29 @@ module.exports = (req, res) => {
       }
     )
     .then(apiResponse => {
-      integrationSdk.users
-        .updateProfile(
-          {
-            id: userId,
-            privateData: {
-              sbAccessToken: apiResponse.data.access_token,
-            },
+      return integrationSdk.users.updateProfile(
+        {
+          id: userId,
+          privateData: {
+            sbAccessToken: apiResponse.data.access_token,
           },
-          {
-            expand: true,
-            'fields.user': ['email', 'profile.metadata', 'emailVerified'],
-          }
+        },
+        {
+          expand: true,
+          'fields.user': ['email', 'profile.metadata', 'emailVerified'],
+        }
+      );
+    })
+    .then(apiResponse => {
+      res
+        .status(200)
+        .set('Content-Type', 'application/transit+json')
+        .send(
+          serialize({
+            data: apiResponse,
+          })
         )
-        .then(apiResponse => {
-          res
-            .status(200)
-            .set('Content-Type', 'application/transit+json')
-            .send(
-              serialize({
-                data: apiResponse,
-              })
-            )
-            .end();
-        });
+        .end();
     })
     .catch(e => log.error(e));
 };

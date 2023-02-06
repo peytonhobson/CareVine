@@ -21,7 +21,7 @@ module.exports = (req, res) => {
   const applicationFeeMaybe = noFee
     ? null
     : {
-        application_fee_amount: calculateFeeAmount(amount, isCard),
+        application_fee_amount: Math.ceil(calculateFeeAmount(amount, isCard)),
       };
 
   integrationSdk.users
@@ -32,21 +32,16 @@ module.exports = (req, res) => {
       return stripeAccountId;
     })
     .then(stripeAccountId => {
-      return stripe.paymentIntents
-        .create({
-          amount: noFee ? amount : calculateOrderAmount(amount, isCard),
-          currency: 'usd',
-          payment_method_types: [isCard ? 'card' : 'us_bank_account'],
-          transfer_data: {
-            destination: stripeAccountId,
-          },
-          ...applicationFeeMaybe,
-          customer: stripeCustomerId,
-        })
-        .catch(e => {
-          handleStripeError(res, e);
-          throw e;
-        });
+      return stripe.paymentIntents.create({
+        amount: noFee ? amount : Math.ceil(calculateOrderAmount(amount, isCard)),
+        currency: 'usd',
+        payment_method_types: [isCard ? 'card' : 'us_bank_account'],
+        transfer_data: {
+          destination: stripeAccountId,
+        },
+        ...applicationFeeMaybe,
+        customer: stripeCustomerId,
+      });
     })
     .then(apiResponse => {
       res
@@ -59,15 +54,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e.data);
-      res
-        .status(e.status)
-        .json({
-          name: 'Local API request failed',
-          status: e.status,
-          statusText: e.statusText,
-          data: e.data,
-        })
-        .end();
+      handleStripeError(res, e);
     });
 };

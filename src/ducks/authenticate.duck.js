@@ -479,7 +479,9 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
         metadata: { authenticateCriminalBackgroundGenerated: response.data.success },
         userId,
       }).then(() => {
-        dispatch(fetchCurrentUser());
+        dispatch(fetchCurrentUser()).then(() => {
+          dispatch(authenticateGenerateCriminalBackgroundSuccess(response));
+        });
       });
       return response;
     })
@@ -507,12 +509,10 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
         },
         userId,
       }).then(() => {
-        dispatch(fetchCurrentUser());
+        dispatch(fetchCurrentUser()).then(() => {
+          dispatch(getAuthenticateTestResultSuccess(response));
+        });
       });
-      return response;
-    })
-    .then(response => {
-      dispatch(getAuthenticateTestResultSuccess(response));
       return response;
     })
     .then(response => {
@@ -536,12 +536,10 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
         metadata: { authenticate7YearHistory: response.data, backgroundCheckApproved: !Candidate },
         userId,
       }).then(() => {
-        dispatch(fetchCurrentUser());
+        dispatch(fetchCurrentUser()).then(() => {
+          dispatch(authenticate7YearHistorySuccess(response));
+        });
       });
-      return response;
-    })
-    .then(response => {
-      dispatch(authenticate7YearHistorySuccess(response));
       return response;
     })
     .catch(e => {

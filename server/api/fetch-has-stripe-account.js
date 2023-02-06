@@ -9,7 +9,11 @@ module.exports = (req, res) => {
   integrationSdk.users
     .show({ id: userId.uuid, include: ['stripeAccount'] })
     .then(apiResponse => {
-      const stripeAccountId = apiResponse.data.data.attributes.profile.metadata.stripeAccountId;
+      const stripeAccountId =
+        apiResponse.data.data &&
+        apiResponse.data.data.attributes &&
+        apiResponse.data.data.attributes.profile &&
+        apiResponse.data.data.attributes.profile.metadata.stripeAccountId;
 
       if (!!stripeAccountId) {
         res

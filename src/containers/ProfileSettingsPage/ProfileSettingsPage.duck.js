@@ -1,6 +1,7 @@
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { currentUserShowSuccess } from '../../ducks/user.duck';
+import { sendbirdUser } from '../../util/api';
 
 // ================ Action types ================ //
 
@@ -148,11 +149,21 @@ export const updateProfile = actionPayload => {
       .then(response => {
         dispatch(updateProfileSuccess(response));
 
+        // const currentUser = getState().user.currentUser;
+
+        if (!!actionPayload.profileImageId) {
+          sendbirdUser({ currentUser: response.data.data });
+        }
+
         const entities = denormalisedResponseEntities(response);
         if (entities.length !== 1) {
           throw new Error('Expected a resource in the sdk.currentUser.updateProfile response');
         }
         const currentUser = entities[0];
+
+        if (!!actionPayload.profileImageId) {
+          sendbirdUser({ currentUser });
+        }
 
         // Update current user in state.user.currentUser through user.duck.js
         dispatch(currentUserShowSuccess(currentUser));

@@ -22,7 +22,7 @@ module.exports = (req, res) => {
     .post(
       `https://api-v3.authenticating.com/${mockString}user/getTestResult`,
       {
-        userAccessCode: isDev ? mockUserAccessCodes[3] : userAccessCode,
+        userAccessCode: isDev ? mockUserAccessCodes[2] : userAccessCode,
       },
       {
         headers: {

@@ -42,15 +42,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e);
-      res
-        .status(e.response.status)
-        .json({
-          name: 'Local API request failed',
-          status: e.response.status,
-          statusText: e.response.data.errorMessage,
-          data: e.response.data,
-        })
-        .end();
+      handleError(res, e.response);
     });
 };

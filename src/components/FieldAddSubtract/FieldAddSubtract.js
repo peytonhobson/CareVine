@@ -36,22 +36,27 @@ class AddSubtractComponent extends Component {
       label,
       input,
       meta,
+      increment,
       ...rest
     } = this.props;
 
     const { onChange: inputOnChange, ...restOfInput } = input;
 
-    const add = async () => {
-      await this.setState(state => ({
-        currentCount: state.currentCount < 50 ? state.currentCount + 1 : state.currentCount,
+    const countIncrement = increment || 1;
+
+    const add = () => {
+      this.setState(state => ({
+        currentCount:
+          state.currentCount < 100 ? state.currentCount + countIncrement : state.currentCount,
       }));
 
       inputOnChange(this.state.currentCount);
     };
 
-    const subtract = async () => {
-      await this.setState(state => ({
-        currentCount: state.currentCount > 0 ? state.currentCount - 1 : state.currentCount,
+    const subtract = () => {
+      this.setState(state => ({
+        currentCount:
+          state.currentCount > 0 ? state.currentCount - countIncrement : state.currentCount,
       }));
 
       inputOnChange(this.state.currentCount);
