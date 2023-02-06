@@ -81,17 +81,16 @@ const PaymentMethodsPageComponent = props => {
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
 
   const getBillingDetails = (currentUser, formValues) => {
-    const { name, addressLine1, addressLine2, postal, state, city, country } = formValues;
+    const { name, addressLine1, addressLine2, postal, city } = formValues;
     const addressMaybe =
       addressLine1 && postal
         ? {
             address: {
               city: city,
-              country: country,
+              country: 'US',
               line1: addressLine1,
               line2: addressLine2,
               postal_code: postal,
-              state: state,
             },
           }
         : {};

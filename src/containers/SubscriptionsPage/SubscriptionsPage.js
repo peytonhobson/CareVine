@@ -94,24 +94,23 @@ const SubscriptionsPageComponent = props => {
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
   const backgroundCheckSubscription =
-    ensuredCurrentUser.attributes.profile.metadata &&
-    ensuredCurrentUser.attributes.profile.metadata.backgroundCheckSubscription;
+    ensuredCurrentUser.attributes.profile.privateData &&
+    ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscription;
   const backgroundCheckSubscriptionSchedule =
-    ensuredCurrentUser.attributes.profile.metadata &&
-    ensuredCurrentUser.attributes.profile.metadata.backgroundCheckSubscriptionSchedule;
+    ensuredCurrentUser.attributes.profile.privateData &&
+    ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscriptionSchedule;
 
   const getBillingDetails = (currentUser, formValues) => {
-    const { name, addressLine1, addressLine2, postal, state, city, country } = formValues;
+    const { name, addressLine1, addressLine2, postal, city } = formValues;
     const addressMaybe =
       addressLine1 && postal
         ? {
             address: {
               city: city,
-              country: country,
+              country: 'US',
               line1: addressLine1,
               line2: addressLine2,
               postal_code: postal,
-              state: state,
             },
           }
         : {};

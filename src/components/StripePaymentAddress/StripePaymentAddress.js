@@ -59,6 +59,11 @@ const StripePaymentAddress = props => {
     { optionalText: optionalText }
   );
   const statePlaceholder = intl.formatMessage({ id: 'StripePaymentAddress.statePlaceholder' });
+  const stateRequired = validators.required(
+    intl.formatMessage({
+      id: 'StripePaymentAddress.cityRequired',
+    })
+  );
 
   const countryLabel = intl.formatMessage({ id: 'StripePaymentAddress.countryLabel' });
   const countryPlaceholder = intl.formatMessage({ id: 'StripePaymentAddress.countryPlaceholder' });
@@ -133,42 +138,10 @@ const StripePaymentAddress = props => {
           onUnmount={() => form.change('city', undefined)}
         />
       </div>
-      <div className={css.formRow}>
-        <FieldTextInput
-          id={`${fieldId}.state`}
-          name="state"
-          disabled={disabled}
-          className={css.field}
-          type="text"
-          autoComplete="billing address-level1"
-          label={stateLabel}
-          placeholder={statePlaceholder}
-          onUnmount={() => form.change('state', undefined)}
-        />
-
-        <FieldSelect
-          id={`${fieldId}.country`}
-          name="country"
-          disabled={disabled}
-          className={css.field}
-          label={countryLabel}
-          validate={countryRequired}
-        >
-          <option disabled value="">
-            {countryPlaceholder}
-          </option>
-          {countryCodes.map(country => {
-            return (
-              <option key={country.code} value={country.code}>
-                {country.name}
-              </option>
-            );
-          })}
-        </FieldSelect>
-      </div>
     </div>
   );
 };
+
 StripePaymentAddress.defaultProps = {
   country: null,
   disabled: false,
