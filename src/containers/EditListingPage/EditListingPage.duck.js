@@ -11,7 +11,7 @@ import {
 } from '../../ducks/stripeConnectAccount.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import * as log from '../../util/log';
-import { createUserAuthenticate, updateListingMetadata, updateUserMetadata } from '../../util/api';
+import { updateListingMetadata } from '../../util/api';
 
 const { UUID } = sdkTypes;
 
@@ -66,20 +66,10 @@ export const SAVE_PAYOUT_DETAILS_REQUEST = 'app/EditListingPage/SAVE_PAYOUT_DETA
 export const SAVE_PAYOUT_DETAILS_SUCCESS = 'app/EditListingPage/SAVE_PAYOUT_DETAILS_SUCCESS';
 export const SAVE_PAYOUT_DETAILS_ERROR = 'app/EditListingPage/SAVE_PAYOUT_DETAILS_ERROR';
 
-export const AUTHENTICATE_CREATE_USER_REQUEST =
-  'app/CreateCaregiverProfilePage/AUTHENTICATE_CREATE_USER_REQUEST';
-export const AUTHENTICATE_CREATE_USER_SUCCESS =
-  'app/CreateCaregiverProfilePage/AUTHENTICATE_CREATE_USER_SUCCESS';
-export const AUTHENTICATE_CREATE_USER_ERROR =
-  'app/CreateCaregiverProfilePage/AUTHENTICATE_CREATE_USER_ERROR';
-
 // ================ Reducer ================ //
 
 const initialState = {
   // Error instance placeholders for each endpoint
-  authenticateCreateUserInProgress: false,
-  authenticateCreateUserError: null,
-  authenticateUserAccessCode: null,
   createListingDraftError: null,
   publishingListing: null,
   publishListingError: null,
@@ -304,20 +294,6 @@ export default function reducer(state = initialState, action = {}) {
     case SAVE_PAYOUT_DETAILS_SUCCESS:
       return { ...state, payoutDetailsSaveInProgress: false, payoutDetailsSaved: true };
 
-    case AUTHENTICATE_CREATE_USER_REQUEST:
-      return { ...state, authenticateCreateUserInProgress: true };
-    case AUTHENTICATE_CREATE_USER_ERROR:
-      return {
-        ...state,
-        authenticateCreateUserInProgress: false,
-        authenticateCreateUserError: payload,
-      };
-    case AUTHENTICATE_CREATE_USER_SUCCESS:
-      return {
-        ...state,
-        authenticateCreateUserInProgress: false,
-      };
-
     default:
       return state;
   }
@@ -393,10 +369,6 @@ export const deleteAvailabilityExceptionError = errorAction(DELETE_EXCEPTION_ERR
 export const savePayoutDetailsRequest = requestAction(SAVE_PAYOUT_DETAILS_REQUEST);
 export const savePayoutDetailsSuccess = successAction(SAVE_PAYOUT_DETAILS_SUCCESS);
 export const savePayoutDetailsError = errorAction(SAVE_PAYOUT_DETAILS_ERROR);
-
-export const authenticateCreateUserRequest = requestAction(AUTHENTICATE_CREATE_USER_REQUEST);
-export const authenticateCreateUserSuccess = successAction(AUTHENTICATE_CREATE_USER_SUCCESS);
-export const authenticateCreateUserError = errorAction(AUTHENTICATE_CREATE_USER_ERROR);
 
 // ================ Thunk ================ //
 
@@ -566,27 +538,6 @@ export const savePayoutDetails = (values, isUpdateCall) => (dispatch, getState, 
       return response;
     })
     .catch(() => dispatch(savePayoutDetailsError()));
-};
-
-export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState, sdk) => {
-  dispatch(authenticateCreateUserRequest());
-
-  return createUserAuthenticate({ userInfo })
-    .then(response => {
-      return updateUserMetadata({
-        metadata: { authenticateUserAccessCode: response.data },
-        userId,
-      });
-    })
-    .then(response => {
-      dispatch(authenticateCreateUserSuccess(response));
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      dispatch(authenticateCreateUserError(storableError(e)));
-      throw e;
-    });
 };
 
 // loadData is run for each tab of the wizard. When editing an

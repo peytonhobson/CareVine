@@ -102,9 +102,17 @@ module.exports = queryEvents = () => {
     }
 
     if (eventType === 'user/updated') {
+      const previousValues = event.attributes.previousValues;
+      const currentAttributes = event.attributes.resource.attributes;
+      const metadata =
+        currentAttributes && currentAttributes.profile && currentAttributes.profile.metadata;
+      const privateData =
+        currentAttributes && currentAttributes.profile && currentAttributes.profile.privateData;
+      const previousValuesProfile =
+        previousValues && previousValues.attributes && previousValues.attributes.profile;
+
       const prevEmailVerified =
-        event.attributes.previousValues.attributes &&
-        event.attributes.previousValues.attributes.emailVerified;
+        previousValues.attributes && previousValues.attributes.emailVerified;
       const emailVerified = event.attributes.resource.attributes.emailVerified;
 
       // Maybe rewrite as (!!!undefined)
@@ -134,31 +142,24 @@ module.exports = queryEvents = () => {
           });
       }
 
-      const metadata =
-        event.attributes.resource.attributes &&
-        event.attributes.resource.attributes.profile &&
-        event.attributes.resource.attributes.profile.metadata;
-      const previousValues = event.attributes.previousValues;
-      const previousValuesProfile =
-        previousValues && previousValues.attributes && previousValues.attributes.profile;
-      const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
+      const backgroundCheckApproved = privateData && privateData.backgroundCheckApproved;
       const previousBCSubscription =
         previousValuesProfile &&
-        previousValuesProfile.metadata &&
-        previousValuesProfile.metadata.backgroundCheckSubscription;
-      const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
-      const tcmEnrolled = metadata && metadata.tcmEnrolled;
-      const identityProofQuizAttempts = metadata && metadata.identityProofQuizAttempts;
-      const backgroundCheckRejected = metadata && metadata.backgroundCheckRejected;
+        previousValuesProfile.privateData &&
+        previousValuesProfile.privateData.backgroundCheckSubscription;
+      const backgroundCheckSubscription = privateData && privateData.backgroundCheckSubscription;
+      const tcmEnrolled = privateData && privateData.tcmEnrolled;
+      const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
+      const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
 
       if (
         backgroundCheckApproved &&
         !isDev &&
-        tcmEnrolled &&
+        !tcmEnrolled &&
         backgroundCheckSubscription.type === 'vine' &&
         backgroundCheckSubscription.status === 'active'
       ) {
-        const userAccessCode = metadata.authenticateUserAccessCode;
+        const userAccessCode = privateData.authenticateUserAccessCode;
 
         axios
           .post(
@@ -174,18 +175,12 @@ module.exports = queryEvents = () => {
           )
           .then(() => {
             const userId = event.attributes.resource.id.uuid;
-            axios.post(
-              `${apiBaseUrl()}/api/update-user-metadata`,
-              {
-                userId,
-                metadata: { tcmEnrolled: true },
+            integrationSdk.users.updateProfile({
+              id: userId,
+              privateData: {
+                tcmEnrolled: true,
               },
-              {
-                headers: {
-                  'Content-Type': 'application/transit+json',
-                },
-              }
-            );
+            });
           })
           .catch(err => log.error(err));
       }
@@ -196,7 +191,7 @@ module.exports = queryEvents = () => {
         (backgroundCheckSubscription.type !== 'vine' ||
           backgroundCheckSubscription.status !== 'active')
       ) {
-        const userAccessCode = metadata.authenticateUserAccessCode;
+        const userAccessCode = privateData.authenticateUserAccessCode;
 
         axios
           .post(
@@ -212,30 +207,24 @@ module.exports = queryEvents = () => {
           )
           .then(() => {
             const userId = event.attributes.resource.id.uuid;
-            axios.post(
-              `${apiBaseUrl()}/api/update-user-metadata`,
-              {
-                userId,
-                metadata: { tcmEnrolled: false },
+            integrationSdk.users.updateProfile({
+              id: userId,
+              privateData: {
+                tcmEnrolled: false,
               },
-              {
-                headers: {
-                  'Content-Type': 'application/transit+json',
-                },
-              }
-            );
+            });
           })
           .catch(err => log.error(err));
       }
 
       const previousQuizAttempts =
         previousValuesProfile &&
-        previousValuesProfile.metadata &&
-        previousValuesProfile.metadata.identityProofQuizAttempts;
+        previousValuesProfile.privateData &&
+        previousValuesProfile.privateData.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
         previousValuesProfile &&
-        previousValuesProfile.metadata &&
-        previousValuesProfile.metadata.backgroundCheckRejected;
+        previousValuesProfile.privateData &&
+        previousValuesProfile.privateData.backgroundCheckRejected;
 
       // If failed background check, set subscription to cancel at end of period
       if (

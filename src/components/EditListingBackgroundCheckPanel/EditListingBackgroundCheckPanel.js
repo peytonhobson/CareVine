@@ -7,15 +7,12 @@ import { FormattedMessage } from 'react-intl';
 import {
   ConsentModalForm,
   EditListingBackgroundCheckForm,
-  SaveCreditCardForm,
   IdentityProofForm,
   PayCreditCardForm,
 } from '../../forms';
 import moment from 'moment';
 import config from '../../config';
 import ScreeningDescription from './ScreeningDescription';
-import { ensureCurrentUser } from '../../util/data';
-import { updateUserMetadata } from '../../util/api';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import PaymentInfo from './PaymentInfo';
@@ -178,20 +175,20 @@ const EditListingBackgroundCheckPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = <FormattedMessage id="EditListingBackgroundCheckPanel.createListingTitle" />;
 
-  const authenticateUserAccessCode = metadata && metadata.authenticateUserAccessCode;
-  const authenticateConsent = metadata && metadata.authenticateConsent;
-  const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
-  const identityProofQuiz = metadata && metadata.identityProofQuiz;
-  const identityProofQuizVerification = metadata && metadata.identityProofQuizVerification;
+  const authenticateUserAccessCode = privateData && privateData.authenticateUserAccessCode;
+  const authenticateConsent = privateData && privateData.authenticateConsent;
+  const backgroundCheckSubscription = privateData && privateData.backgroundCheckSubscription;
+  const identityProofQuiz = privateData && privateData.identityProofQuiz;
+  const identityProofQuizVerification = privateData && privateData.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
-    metadata && metadata.authenticateCriminalBackgroundGenerated;
-  const authenticateUserTestResult = metadata && metadata.authenticateUserTestResult;
-  const authenticate7YearHistory = metadata && metadata.authenticate7YearHistory;
-  const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
-  const backgroundCheckRejected = metadata && metadata.backgroundCheckRejected;
+    privateData && privateData.authenticateCriminalBackgroundGenerated;
+  const authenticateUserTestResult = privateData && privateData.authenticateUserTestResult;
+  const authenticate7YearHistory = privateData && privateData.authenticate7YearHistory;
+  const backgroundCheckApproved = privateData && privateData.backgroundCheckApproved;
+  const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
   const stripeCustomerId =
     currentUser.stripeCustomer && currentUser.stripeCustomer.attributes.stripeCustomerId;
-  const identityProofQuizAttempts = metadata && metadata.identityProofQuizAttempts;
+  const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
