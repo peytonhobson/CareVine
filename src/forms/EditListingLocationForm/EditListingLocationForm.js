@@ -134,6 +134,7 @@ export const EditListingLocationFormComponent = props => (
               startingCount={values.travelDistance}
               countLabel={distanceCountLabel}
               label={distanceLabel}
+              increment={5}
             />
           )}
           {userType === EMPLOYER && (

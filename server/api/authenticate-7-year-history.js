@@ -1,7 +1,6 @@
 const axios = require('axios');
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
-const AUTHENTICATE_COMPANY_ACCESS_KEY = process.env.AUTHENTICATE_COMPANY_ACCESS_KEY;
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 
@@ -40,15 +39,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e);
-      res
-        .status(e.response.status)
-        .json({
-          name: 'Local API request failed',
-          status: e.response.status,
-          statusText: e.response.data.errorMessage,
-          data: e.response.data,
-        })
-        .end();
+      handleError(res, e.response);
     });
 };

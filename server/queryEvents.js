@@ -94,7 +94,6 @@ module.exports = queryEvents = () => {
                 .approve({
                   id: listingId,
                 })
-                .then(res => console.log(res))
                 .catch(err => log.error(err));
             }
           })
@@ -127,7 +126,6 @@ module.exports = queryEvents = () => {
                 .approve({
                   id: userListingId,
                 })
-                .then(res => console.log(res))
                 .catch(err => log.error(err.data));
             }
           })
@@ -141,11 +139,13 @@ module.exports = queryEvents = () => {
         event.attributes.resource.attributes.profile &&
         event.attributes.resource.attributes.profile.metadata;
       const previousValues = event.attributes.previousValues;
+      const previousValuesProfile =
+        previousValues && previousValues.attributes && previousValues.attributes.profile;
       const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
       const previousBCSubscription =
-        previousValues &&
-        previousValues.attributes.profile.metadata &&
-        previousValues.attributes.profile.metadata.backgroundCheckSubscription;
+        previousValuesProfile &&
+        previousValuesProfile.metadata &&
+        previousValuesProfile.metadata.backgroundCheckSubscription;
       const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
       const tcmEnrolled = metadata && metadata.tcmEnrolled;
       const identityProofQuizAttempts = metadata && metadata.identityProofQuizAttempts;
@@ -229,13 +229,13 @@ module.exports = queryEvents = () => {
       }
 
       const previousQuizAttempts =
-        previousValues &&
-        previousValues.attributes.profile.metadata &&
-        previousValues.attributes.profile.metadata.identityProofQuizAttempts;
+        previousValuesProfile &&
+        previousValuesProfile.metadata &&
+        previousValuesProfile.metadata.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
-        previousValues &&
-        previousValues.attributes.profile.metadata &&
-        previousValues.attributes.profile.metadata.backgroundCheckRejected;
+        previousValuesProfile &&
+        previousValuesProfile.metadata &&
+        previousValuesProfile.metadata.backgroundCheckRejected;
 
       // If failed background check, set subscription to cancel at end of period
       if (
@@ -291,7 +291,8 @@ module.exports = queryEvents = () => {
     }
 
     if (eventType === 'user/deleted') {
-      const userId = event.attributes.previousValues.id.uuid;
+      const previousValues = event.attributes.previousValues;
+      const userId = previousValues && previousValues.id && previousValues.id.uuid;
 
       axios
         .get(`https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`, {

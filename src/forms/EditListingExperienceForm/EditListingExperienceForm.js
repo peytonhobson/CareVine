@@ -56,10 +56,6 @@ const EditListingExperienceFormComponent = props => (
         id: 'EditListingExperienceForm.experienceAreasFormLabel',
       });
       const experienceAreasOptions = findOptionsForSelectFilter('detailedCareNeeds', filterConfig);
-      const experienceAreasErrorMessage = intl.formatMessage({
-        id: 'EditListingExperienceForm.experienceAreasFormError',
-      });
-
       if (history.location.pathname.includes(CREATE_PROFILE)) {
         experienceAreasOptions.splice(16, experienceAreasOptions.length);
       }
@@ -102,9 +98,7 @@ const EditListingExperienceFormComponent = props => (
             name="experienceAreas"
             label={experienceAreasFeaturesLabel}
             options={experienceAreasOptions}
-            required
             twoColumns
-            validate={requiredFieldArrayCheckbox(experienceAreasErrorMessage)}
           />
 
           {errorMessageUpdateListing}

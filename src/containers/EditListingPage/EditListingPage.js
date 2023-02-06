@@ -12,6 +12,7 @@ import {
   LISTING_PAGE_PARAM_TYPES,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
   createSlug,
+  getListingType,
 } from '../../util/urlHelpers';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
 import { ensureOwnListing } from '../../util/data';
@@ -34,6 +35,8 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { createResourceLocatorString } from '../../util/routes';
+import routeConfiguration from '../../routeConfiguration';
 
 import {
   requestAddAvailabilityException,
@@ -137,6 +140,25 @@ export const EditListingPageComponent = props => {
   const isDraftURI = type === LISTING_PAGE_PARAM_TYPE_DRAFT;
   const isNewListingFlow = isNewURI || isDraftURI;
 
+  if (isNewListingFlow && history.location.pathname.includes('/l/')) {
+    history.replace(history.location.pathname.replace('/l/', '/create-profile/'));
+  }
+
+  const userType = currentUser && currentUser.attributes.profile.publicData.userType;
+  const isListingDraft =
+    currentUserListing && currentUserListing.attributes.state === LISTING_PAGE_PARAM_TYPE_DRAFT;
+
+  if (currentUserListing && type !== getListingType(isListingDraft)) {
+    history.replace(
+      createResourceLocatorString('EditListingPage', routeConfiguration(), {
+        id: currentUserListing.id.uuid,
+        slug: createSlug(currentUserListing.attributes.title),
+        type: getListingType(isListingDraft),
+        tab: userType === 'employer' ? 'care-type' : 'services',
+      })
+    );
+  }
+
   const listingId = page.submittedListingId || (id ? new UUID(id) : null);
   const listing = getOwnListing(listingId);
   const currentListing = ensureOwnListing(listing);
@@ -183,7 +205,6 @@ export const EditListingPageComponent = props => {
   ) {
     // If we allow only one listing per provider, we need to redirect to correct listing.
 
-    const userType = currentUser && currentUser.attributes.profile.publicData.userType;
     return (
       <NamedRedirect
         name="EditListingPage"
@@ -191,7 +212,7 @@ export const EditListingPageComponent = props => {
           id: currentUserListing.id.uuid,
           slug: createSlug(currentUserListing.attributes.title),
           type: LISTING_PAGE_PARAM_TYPE_EDIT,
-          tab: userType === 'employer' ? 'care-needs' : 'care-types',
+          tab: userType === 'employer' ? 'care-type' : 'services',
         }}
       />
     );
