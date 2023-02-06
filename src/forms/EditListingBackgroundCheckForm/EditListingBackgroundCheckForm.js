@@ -318,10 +318,14 @@ const EditListingBackgroundCheckForm = props => (
               required
             />
           </div>
-
-          {authenticateCreateUserError || authenticateUpdateUserError ? (
+          {authenticateCreateUserError ? (
             <p className={css.error}>
               <FormattedMessage id="EditListingBackgroundCheckForm.authenticateCreateUserError" />
+            </p>
+          ) : null}
+          {authenticateUpdateUserError ? (
+            <p className={css.error}>
+              <FormattedMessage id="EditListingBackgroundCheckForm.authenticateUpdateUserError" />
             </p>
           ) : null}
 

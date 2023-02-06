@@ -10,7 +10,6 @@ module.exports = (req, res) => {
     .show({ id: userId.uuid, include: ['stripeAccount'] })
     .then(apiResponse => {
       const stripeAccountId =
-        apiResponse.data.data &&
         apiResponse.data.data.attributes &&
         apiResponse.data.data.attributes.profile &&
         apiResponse.data.data.attributes.profile.metadata.stripeAccountId;

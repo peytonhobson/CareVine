@@ -22,7 +22,7 @@ module.exports = (req, res) => {
     .post(
       `https://api-v3.authenticating.com/${mockString}user/getTestResult`,
       {
-        userAccessCode: isDev ? mockUserAccessCodes[2] : userAccessCode,
+        userAccessCode: isDev ? mockUserAccessCodes[1] : userAccessCode,
       },
       {
         headers: {
@@ -43,14 +43,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      res
-        .status(e.response.status)
-        .json({
-          name: 'Local API request failed',
-          status: e.response.status,
-          statusText: e.response.data.errorMessage,
-          data: e.response.data,
-        })
-        .end();
+      handleError(res, e.response);
     });
 };

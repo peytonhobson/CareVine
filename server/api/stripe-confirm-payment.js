@@ -21,6 +21,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e);
+      handleStripeError(res, e);
     });
 };

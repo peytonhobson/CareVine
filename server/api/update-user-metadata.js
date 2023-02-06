@@ -36,6 +36,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e);
+      handleError(res, e);
     });
 };
