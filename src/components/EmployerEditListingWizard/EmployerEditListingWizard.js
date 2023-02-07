@@ -13,7 +13,7 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureCurrentUser, ensureListing } from '../../util/data';
+import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
 import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
 import { Modal, NamedRedirect, Tabs } from '..';
@@ -162,7 +162,7 @@ class EmployerEditListingWizard extends Component {
           !currentUser.attributes.emailVerified &&
           !history.location.pathname.includes('create-profile')
         ) {
-          onChangeMissingInfoModal(EMAIL_VERIFICATION);
+          onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
         } else if (history.location.pathname.includes('create-profile')) {
           history.push('/signup');
         }

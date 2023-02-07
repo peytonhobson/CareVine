@@ -233,12 +233,12 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
         const stripeCustomer = response.data.data;
         dispatch(stripeCustomerCreateSuccess(response));
         return sdk.ownListings.query({}).then(res => {
-          const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
+          // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
           return stripeUpdateCustomer({
             stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
             update: {
               address: {
-                postal_code,
+                // postal_code,
                 country: 'US',
               },
             },
@@ -255,12 +255,12 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .then(response => {
         const stripeCustomer = response.data.data;
         return sdk.ownListings.query({}).then(res => {
-          const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
+          // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
           return stripeUpdateCustomer({
             stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
             update: {
               address: {
-                postal_code,
+                // postal_code,
                 country: 'US',
               },
             },
@@ -385,7 +385,7 @@ export const createCreditCard = (
   return savePromise
     .then(response => {
       if (!stripeCustomerId) {
-        return stripeCreateSetupIntent({ stripeCustomerId }).then(() => {
+        return stripeCreateSetupIntent({ stripeCustomerId: response.id }).then(response => {
           return stripe.confirmCardSetup(response.client_secret, {
             payment_method: {
               card: cardElement,

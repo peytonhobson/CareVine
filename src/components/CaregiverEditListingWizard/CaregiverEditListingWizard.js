@@ -13,7 +13,7 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureCurrentUser, ensureListing } from '../../util/data';
+import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
 
 import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox } from '..';
 import { StripeConnectAccountForm } from '../../forms';
@@ -102,8 +102,8 @@ const tabCompleted = (tab, listing, user) => {
 
   const backgroundCheckApproved =
     user &&
-    user.attributes.profile.metadata &&
-    user.attributes.profile.metadata.backgroundCheckApproved;
+    user.attributes.profile.privateData &&
+    user.attributes.profile.privateData.backgroundCheckApproved;
 
   switch (tab) {
     case SERVICES:
@@ -285,7 +285,7 @@ class CaregiverEditListingWizard extends Component {
       !currentUser.attributes.emailVerified &&
       !history.location.pathname.includes('create-profile')
     ) {
-      onChangeMissingInfoModal(EMAIL_VERIFICATION);
+      onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
     } else if (requirementsMissing || !stripeConnected) {
       this.setState({
         draftId: id,

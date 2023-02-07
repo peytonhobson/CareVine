@@ -115,7 +115,7 @@ export const emailFormatValid = message => value => {
   return value && EMAIL_RE.test(value) ? VALID : message;
 };
 
-const PHONE_RE = /^\+?[0-9]{1,3}[-. ]?[0-9]{3,4}[-. ]?[0-9]{3,4}$/;
+const PHONE_RE = /^\+?[0-9]{3}[-. ]?[0-9]{3}[-. ]?[0-9]{4}$/;
 
 export const phoneFormatValid = message => value => {
   return value && PHONE_RE.test(value) ? VALID : message;

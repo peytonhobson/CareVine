@@ -163,7 +163,7 @@ export const createStripeAccount = params => (dispatch, getState, sdk) => {
   }
   const stripe = window.Stripe(config.stripe.publishableKey);
 
-  const { country, accountType, bankAccountToken, businessProfileMCC, businessProfileURL } = params;
+  const { accountType, bankAccountToken, businessProfileMCC, businessProfileURL } = params;
 
   // Capabilities are a collection of settings that can be requested for each provider.
   // What Capabilities are required determines what information Stripe requires to be
@@ -185,7 +185,7 @@ export const createStripeAccount = params => (dispatch, getState, sdk) => {
       const accountToken = response.token.id;
       return sdk.stripeAccount.create(
         {
-          country,
+          country: 'US',
           accountToken,
           bankAccountToken,
           requestedCapabilities,

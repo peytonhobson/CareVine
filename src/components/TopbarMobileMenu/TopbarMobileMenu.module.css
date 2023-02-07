@@ -80,6 +80,7 @@
   composes: h2 from global;
   color: var(--marketplaceColor);
   position: relative;
+  cursor: pointer;
 
   margin-top: auto;
   margin-bottom: 13px;

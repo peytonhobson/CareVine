@@ -177,6 +177,7 @@ class TopbarComponent extends Component {
         onLogout={this.handleLogout}
         notificationCount={notificationCount}
         currentPage={currentPage}
+        onChangeModalValue={onChangeModalValue}
       />
     );
 
@@ -242,6 +243,7 @@ class TopbarComponent extends Component {
             notificationCount={notificationCount}
             onLogout={this.handleLogout}
             onSearchSubmit={this.handleSubmit}
+            onChangeModalValue={onChangeModalValue}
           />
         </div>
         <Modal
@@ -277,6 +279,7 @@ class TopbarComponent extends Component {
           containerClassName={css.missingInformationModal}
           currentUser={currentUser}
           currentUserHasListings={currentUserHasListings}
+          currentUserListing={currentUserListing}
           currentUserHasOrders={currentUserHasOrders}
           location={location}
           onManageDisableScrolling={onManageDisableScrolling}

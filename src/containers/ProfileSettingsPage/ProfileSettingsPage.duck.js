@@ -155,7 +155,9 @@ export const updateProfile = actionPayload => {
         }
         const currentUser = entities[0];
 
-        if (!!actionPayload.profileImageId) {
+        const sbAccessToken = currentUser.attributes.profile.privateData.sbAccessToken;
+
+        if (!!actionPayload.profileImageId && sbAccessToken) {
           sendbirdUser({ currentUser });
         }
 

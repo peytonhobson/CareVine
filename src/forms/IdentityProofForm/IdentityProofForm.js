@@ -102,7 +102,7 @@ const IdentityProofFormComponent = props => (
                   </option>
                   {options.map(option => {
                     return (
-                      <option key={option.id} value={option.label}>
+                      <option key={option.key} value={option.label}>
                         {option.label}
                       </option>
                     );
