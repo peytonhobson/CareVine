@@ -7,13 +7,18 @@ import { ensureCurrentUser } from '../../util/data';
 import { propTypes } from '../../util/types';
 import { pathByRouteName } from '../../util/routes';
 import { Modal } from '../../components';
+import {
+  MISSING_SUBSCRIPTION,
+  MISSING_REQUIREMENTS,
+  EMAIL_VERIFICATION,
+  PAYMENT_DETAILS,
+} from '../../util/constants';
 
 import EmailReminder from './EmailReminder';
 import PaymentDetailsReminder from './PaymentDetailsReminder';
+import MissingRequirementsReminder from './MissingRequirementsReminder';
+import MissingSubscriptionReminder from './MissingSubscriptionReminder';
 import css from './ModalMissingInformation.module.css';
-
-export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';
-export const PAYMENT_DETAILS = 'PAYMENT_DETAILS';
 
 class ModalMissingInformation extends Component {
   constructor(props) {
@@ -36,6 +41,7 @@ class ModalMissingInformation extends Component {
       onResendVerificationEmail,
       modalValue,
       onChangeModalValue,
+      currentUserListing,
     } = this.props;
 
     const user = ensureCurrentUser(currentUser);
@@ -62,6 +68,24 @@ class ModalMissingInformation extends Component {
             className={classes}
             currentUser={currentUser}
             onChangeModalValue={onChangeModalValue}
+          />
+        );
+      } else if (modalValue === MISSING_REQUIREMENTS) {
+        content = (
+          <MissingRequirementsReminder
+            className={classes}
+            currentUser={currentUser}
+            onChangeModalValue={onChangeModalValue}
+            currentUserListing={currentUserListing}
+          />
+        );
+      } else if (modalValue === MISSING_SUBSCRIPTION) {
+        content = (
+          <MissingSubscriptionReminder
+            className={classes}
+            currentUser={currentUser}
+            onChangeModalValue={onChangeModalValue}
+            currentUserListing={currentUserListing}
           />
         );
       } else {

@@ -176,6 +176,7 @@ class PaymentMethodsForm extends Component {
       className,
       createCreditCardError,
       createStripeCustomerError,
+      createCreditCardSuccess,
       deletePaymentMethodError,
       createCardPaymentError,
       form,
@@ -271,6 +272,7 @@ class PaymentMethodsForm extends Component {
             type="submit"
             inProgress={submitInProgress}
             disabled={submitDisabled}
+            ready={createCreditCardSuccess}
           >
             <FormattedMessage id="PaymentMethodsForm.submitPaymentInfo" />
           </PrimaryButton>

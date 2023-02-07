@@ -4,6 +4,12 @@ import { sanitizeEntity } from './sanitize';
 import { findOptionsForSelectFilter } from './search';
 import { filters } from '../marketplace-custom-config';
 import { property } from 'lodash';
+import {
+  CAREGIVER,
+  MISSING_SUBSCRIPTION,
+  MISSING_REQUIREMENTS,
+  EMAIL_VERIFICATION,
+} from './constants';
 
 /**
  * Combine the given relationships objects
@@ -429,4 +435,53 @@ export const cutTextToPreview = (text, length) => {
   }
 
   return textCutoff.length > 0 ? textCutoff + '...' : text.substring(0, length);
+};
+
+export const userCanMessage = currentUser => {
+  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+  const emailVerified = currentUser && currentUser.attributes.emailVerified;
+  const backgroundCheckApproved =
+    currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+  const backgroundCheckSubscription =
+    currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+  const stripeAccount = currentUser && currentUser.stripeAccount;
+
+  return userType === CAREGIVER
+    ? emailVerified &&
+        backgroundCheckApproved &&
+        backgroundCheckSubscription &&
+        backgroundCheckSubscription.status === 'active' &&
+        stripeAccount
+    : emailVerified;
+};
+
+export const getMissingInfoModalValue = currentUser => {
+  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+  const emailVerified = currentUser && currentUser.attributes.emailVerified;
+  const backgroundCheckApproved =
+    currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+  const backgroundCheckSubscription =
+    currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+  const stripeAccount = currentUser && currentUser.stripeAccount;
+
+  const canMessage =
+    userType === CAREGIVER
+      ? emailVerified &&
+        backgroundCheckApproved &&
+        backgroundCheckSubscription &&
+        backgroundCheckSubscription.status === 'active' &&
+        stripeAccount
+      : emailVerified;
+
+  if (!canMessage) {
+    if (userType === CAREGIVER) {
+      if (emailVerified && backgroundCheckApproved && stripeAccount) {
+        return MISSING_SUBSCRIPTION;
+      } else {
+        return MISSING_REQUIREMENTS;
+      }
+    }
+    return EMAIL_VERIFICATION;
+  }
+  return null;
 };

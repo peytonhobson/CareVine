@@ -40,7 +40,7 @@ const countryCurrency = countryCode => {
 };
 
 const CreateStripeAccountFields = props => {
-  const { disabled, countryLabel, showAsRequired, form, values, intl, currentUserId } = props;
+  const { disabled, showAsRequired, form, values, intl, currentUserId } = props;
 
   /*
   We pass some default values to Stripe when creating a new Stripe account in order to reduce couple of steps from Connect Onboarding form.
@@ -81,13 +81,6 @@ const CreateStripeAccountFields = props => {
     form.change('businessProfileMCC', defaultBusinessProfileMCC);
   }
 
-  const country = values.country;
-  const countryRequired = validators.required(
-    intl.formatMessage({
-      id: 'StripeConnectAccountForm.countryRequired',
-    })
-  );
-
   return (
     <div className={css.sectionContainer}>
       <h3 className={css.subTitle}>
@@ -110,36 +103,15 @@ const CreateStripeAccountFields = props => {
         />
       </div>
 
-      <FieldSelect
-        id="country"
-        name="country"
+      <StripeBankAccountTokenInputField
+        className={css.bankDetailsStripeField}
         disabled={disabled}
-        className={css.selectCountry}
-        autoComplete="country"
-        label={countryLabel}
-        validate={countryRequired}
-      >
-        <option disabled value="">
-          {intl.formatMessage({ id: 'StripeConnectAccountForm.countryPlaceholder' })}
-        </option>
-        {supportedCountries.map(c => (
-          <option key={c} value={c}>
-            {intl.formatMessage({ id: `StripeConnectAccountForm.countryNames.${c}` })}
-          </option>
-        ))}
-      </FieldSelect>
-
-      {country ? (
-        <StripeBankAccountTokenInputField
-          className={css.bankDetailsStripeField}
-          disabled={disabled}
-          name="bankAccountToken"
-          formName="StripeConnectAccountForm"
-          country={country}
-          currency={countryCurrency(country)}
-          validate={validators.required(' ')}
-        />
-      ) : null}
+        name="bankAccountToken"
+        formName="StripeConnectAccountForm"
+        country="US"
+        currency={countryCurrency('US')}
+        validate={validators.required(' ')}
+      />
     </div>
   );
 };

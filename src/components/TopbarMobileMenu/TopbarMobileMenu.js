@@ -8,7 +8,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';
 import { propTypes } from '../../util/types';
-import { ensureCurrentUser } from '../../util/data';
+import { ensureCurrentUser, userCanMessage, getMissingInfoModalValue } from '../../util/data';
 import {
   AvatarLarge,
   InlineTextButton,
@@ -29,6 +29,7 @@ const TopbarMobileMenu = props => {
     currentUser,
     notificationCount,
     onLogout,
+    onChangeModalValue,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -92,14 +93,24 @@ const TopbarMobileMenu = props => {
         <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>
           <FormattedMessage id="TopbarMobileMenu.logoutLink" />
         </InlineTextButton>
-        <NamedLink
-          className={classNames(css.inbox, currentPageClass('InboxPage'))}
-          name="InboxPage"
-          params={{ tab: 'messages' }}
-        >
-          <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-          {notificationCountBadge}
-        </NamedLink>
+        {userCanMessage(currentUser) ? (
+          <NamedLink
+            className={classNames(css.inbox, currentPageClass('InboxPage'))}
+            name="InboxPage"
+            params={{ tab: 'messages' }}
+          >
+            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
+            {notificationCountBadge}
+          </NamedLink>
+        ) : (
+          <span
+            className={classNames(css.inbox, currentPageClass('InboxPage'))}
+            onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
+          >
+            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
+            {notificationCountBadge}
+          </span>
+        )}
         <OwnListingLink
           listing={currentUserListing}
           listingFetched={currentUserListingFetched}

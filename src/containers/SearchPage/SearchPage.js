@@ -16,7 +16,6 @@ import { propTypes } from '../../util/types';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
-import { EMAIL_VERIFICATION } from '../../components/ModalMissingInformation/ModalMissingInformation';
 import { SearchMap, ModalInMobile, Page, Modal, SendbirdModal } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EnquiryForm } from '../../forms';
@@ -39,10 +38,14 @@ import MainPanel from './MainPanel';
 import css from './SearchPage.module.css';
 import { userDisplayNameAsString } from '../../util/data';
 const { UUID } = sdkTypes;
-import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import {
+  CAREGIVER,
+  EMPLOYER,
+  EMAIL_VERIFICATION,
+  MISSING_REQUIREMENTS,
+  MISSING_SUBSCRIPTION,
+} from '../../util/constants';
 import '@sendbird/uikit-react/dist/index.css';
-import SBProvider from '@sendbird/uikit-react/SendbirdProvider';
-import SBConversation from '@sendbird/uikit-react/Channel';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 const SEARCH_WITH_MAP_DEBOUNCE = 300; // Little bit of debounce before search is initiated.
@@ -90,6 +93,23 @@ export class SearchPageComponent extends Component {
 
     const { currentUser, history, callSetInitialValues, location } = this.props;
 
+    const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+    const emailVerified = currentUser && currentUser.attributes.emailVerified;
+    const backgroundCheckApproved =
+      currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+    const backgroundCheckSubscription =
+      currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+    const stripeAccount = currentUser && currentUser.stripeAccount;
+
+    const canMessage =
+      userType === CAREGIVER
+        ? emailVerified &&
+          backgroundCheckApproved &&
+          backgroundCheckSubscription &&
+          backgroundCheckSubscription.status === 'active' &&
+          stripeAccount
+        : emailVerified;
+
     if (!currentUser) {
       const state = { from: `${location.pathname}${location.search}${location.hash}` };
 
@@ -99,9 +119,21 @@ export class SearchPageComponent extends Component {
 
       // signup and return back to listingPage.
       history.push(createResourceLocatorString('SignupPage', routeConfiguration(), {}, {}), state);
-    } else if (currentUser.attributes) {
+    } else if (canMessage) {
       this.setState({ enquiryModalOpen: true });
     } else {
+      // TODO: caregiver should have two separate modals
+      // 1) something not approved
+      // 2) doesnt have a subcription but everythings approved
+      // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
+      if (userType === CAREGIVER) {
+        if (emailVerified && backgroundCheckApproved && stripeAccount) {
+          this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
+        } else {
+          this.props.onChangeModalValue(MISSING_REQUIREMENTS);
+        }
+        return;
+      }
       this.props.onChangeModalValue(EMAIL_VERIFICATION);
     }
   }

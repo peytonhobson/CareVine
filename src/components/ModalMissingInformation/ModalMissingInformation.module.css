@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   /* Adding empty .root class to enforce className overwrite */
 }
@@ -42,5 +44,33 @@
 }
 
 .reminderModalLinkButton {
-  composes: button buttonFont buttonText buttonBorders buttonColorsPrimary from global;
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+}
+
+.requirementsBottomWrapper {
+  margin-block: 40px;
+  align-items: center;
+}
+
+.listCircle {
+  display: flex;
+  height: 1.5rem;
+  width: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--matterColorAnti);
+  border-radius: 100%;
+  margin-right: 0.5rem;
+}
+
+.requirementsListItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  composes: h3 from global;
+}
+
+.checkmark {
+  width: 1rem;
+  height: 0.75rem;
 }

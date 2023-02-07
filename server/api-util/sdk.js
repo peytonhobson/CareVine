@@ -91,13 +91,13 @@ exports.handleStripeError = (res, error) => {
         name: 'Stripe API Request failed',
         status: statusCode,
         type,
-        message: raw.message,
+        message: raw && raw.message,
       })
       .end();
   } else {
     res
       .status(500)
-      .json({ error: raw.message })
+      .json({ error })
       .end();
   }
 };

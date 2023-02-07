@@ -18,6 +18,7 @@ import {
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { EMPLOYER } from '../../util/constants';
+import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
 
 import css from './TopbarDesktop.module.css';
 
@@ -36,6 +37,7 @@ const TopbarDesktop = props => {
     onLogout,
     onSearchSubmit,
     initialSearchFormValues,
+    onChangeModalValue,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -63,12 +65,24 @@ const TopbarDesktop = props => {
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
   const inboxLink = authenticatedOnClientSide ? (
-    <NamedLink className={css.inboxLink} name="InboxPage" params={{ tab: 'messages' }}>
-      <span className={css.inbox}>
-        <FormattedMessage id="TopbarDesktop.inbox" />
-        {notificationDot}
+    userCanMessage(currentUser) ? (
+      <NamedLink className={css.inboxLink} name="InboxPage" params={{ tab: 'messages' }}>
+        <span className={css.inbox}>
+          <FormattedMessage id="TopbarDesktop.inbox" />
+          {notificationDot}
+        </span>
+      </NamedLink>
+    ) : (
+      <span
+        className={css.inboxLink}
+        onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
+      >
+        <span className={css.inbox}>
+          <FormattedMessage id="TopbarDesktop.inbox" />
+          {notificationDot}
+        </span>
       </span>
-    </NamedLink>
+    )
   ) : null;
 
   const currentPageClass = page => {

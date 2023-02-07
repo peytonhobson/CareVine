@@ -154,6 +154,7 @@
   margin-top: 0;
   margin-bottom: 0;
   color: var(--matterColor);
+  cursor: pointer;
 
   &:hover {
     color: var(--matterColorDark);

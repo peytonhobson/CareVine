@@ -10,9 +10,21 @@ import { propTypes } from './util/types';
 import * as log from './util/log';
 import { canonicalRoutePath } from './util/routes';
 import routeConfiguration from './routeConfiguration';
+import { CAREGIVER } from './util/constants';
+import { changeModalValue } from './containers/TopbarContainer/TopbarContainer.duck';
+import {
+  MISSING_REQUIREMENTS,
+  MISSING_SUBSCRIPTION,
+  EMAIL_VERIFICATION,
+} from './components/ModalMissingInformation/ModalMissingInformation';
+import { userCanMessage, getMissingInfoModalValue } from './util/data';
 
 const canShowComponent = props => {
-  const { isAuthenticated, route } = props;
+  const { isAuthenticated, route, currentUser } = props;
+
+  if (route.name === 'InboxPage' && !userCanMessage(currentUser)) {
+    return false;
+  }
   const { auth } = route;
   return !auth || isAuthenticated;
 };
@@ -96,19 +108,24 @@ class RouteComponentRenderer extends Component {
   }
 
   render() {
-    const { route, match, location, staticContext } = this.props;
+    const { route, match, location, staticContext, currentUser } = this.props;
     const { component: RouteComponent, authPage = 'SignupPage', extraProps } = route;
     const canShow = canShowComponent(this.props);
     if (!canShow) {
       staticContext.unauthorized = true;
     }
+    const isInboxPage = route.name === 'InboxPage';
+    if (isInboxPage && !canShow) {
+      this.props.dispatch(changeModalValue(getMissingInfoModalValue(currentUser)));
+    }
+
     return canShow ? (
       <LoadableComponentErrorBoundary>
         <RouteComponent params={match.params} location={location} {...extraProps} />
       </LoadableComponentErrorBoundary>
     ) : (
       <NamedRedirect
-        name={authPage}
+        name={isInboxPage ? 'LandingPage' : authPage}
         state={{ from: `${location.pathname}${location.search}${location.hash}` }}
       />
     );
@@ -134,8 +151,10 @@ RouteComponentRenderer.propTypes = {
 
 const mapStateToProps = state => {
   const { isAuthenticated, logoutInProgress } = state.Auth;
-  return { isAuthenticated, logoutInProgress };
+  const { currentUser } = state.user;
+  return { isAuthenticated, logoutInProgress, currentUser };
 };
+
 const RouteComponentContainer = compose(connect(mapStateToProps))(RouteComponentRenderer);
 
 /**

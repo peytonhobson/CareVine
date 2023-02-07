@@ -13,6 +13,7 @@ export const STRIPE_CUSTOMER_ERROR = 'app/PaymentMethodsPage/STRIPE_CUSTOMER_ERR
 export const FETCH_DEFAULT_PAYMENT_REQUEST = 'app/PaymentMethodsPage/FETCH_DEFAULT_PAYMENT_REQUEST';
 export const FETCH_DEFAULT_PAYMENT_SUCCESS = 'app/PaymentMethodsPage/FETCH_DEFAULT_PAYMENT_SUCCESS';
 export const FETCH_DEFAULT_PAYMENT_ERROR = 'app/PaymentMethodsPage/FETCH_DEFAULT_PAYMENT_ERROR';
+export const DEFAULT_PAYMENT_FETCHED = 'app/PaymentMethodsPage/DEFAULT_PAYMENT_FETCHED';
 
 // ================ Reducer ================ //
 
@@ -56,6 +57,8 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         fetchDefaultPaymentError: payload,
         defaultPaymentFetched: true,
       };
+    case DEFAULT_PAYMENT_FETCHED:
+      return { ...state, defaultPaymentFetched: true };
 
     default:
       return state;
@@ -82,6 +85,7 @@ export const fetchDefaultPaymentError = e => ({
   error: true,
   payload: e,
 });
+export const defaultPaymentFetched = () => ({ type: DEFAULT_PAYMENT_FETCHED });
 
 // ================ Thunks ================ //
 
@@ -126,6 +130,8 @@ export const loadData = () => (dispatch, getState, sdk) => {
     dispatch(fetchCurrentUser());
     if (stripeCustomer) {
       return dispatch(fetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId));
+    } else {
+      return dispatch(defaultPaymentFetched());
     }
   });
 };

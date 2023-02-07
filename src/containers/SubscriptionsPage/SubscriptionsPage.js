@@ -39,12 +39,36 @@ import SubscriptionCard from './SubscriptionCard';
 import { VINE_CHECK_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
+import { useEffect } from 'react';
 
 const VINE = 'vine';
 const BASIC = 'basic';
 
 const TODAY = new Date();
 const todayTimestamp = TODAY.getTime();
+
+const getBillingDetails = (currentUser, formValues) => {
+  const { name, addressLine1, addressLine2, postal, city } = formValues;
+  const addressMaybe =
+    addressLine1 && postal
+      ? {
+          address: {
+            city: city,
+            country: 'US',
+            line1: addressLine1,
+            line2: addressLine2,
+            postal_code: postal,
+          },
+        }
+      : {};
+  const billingDetails = {
+    name,
+    email: ensureCurrentUser(currentUser).attributes.email,
+    ...addressMaybe,
+  };
+
+  return billingDetails;
+};
 
 const SubscriptionsPageComponent = props => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,29 +124,6 @@ const SubscriptionsPageComponent = props => {
     ensuredCurrentUser.attributes.profile.privateData &&
     ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscriptionSchedule;
 
-  const getBillingDetails = (currentUser, formValues) => {
-    const { name, addressLine1, addressLine2, postal, city } = formValues;
-    const addressMaybe =
-      addressLine1 && postal
-        ? {
-            address: {
-              city: city,
-              country: 'US',
-              line1: addressLine1,
-              line2: addressLine2,
-              postal_code: postal,
-            },
-          }
-        : {};
-    const billingDetails = {
-      name,
-      email: ensureCurrentUser(currentUser).attributes.email,
-      ...addressMaybe,
-    };
-
-    return billingDetails;
-  };
-
   const handleCardSubmit = params => {
     setIsSubmitting(true);
 
@@ -130,10 +131,15 @@ const SubscriptionsPageComponent = props => {
 
     const billingDetails = getBillingDetails(currentUser, formValues);
 
-    onCreateCreditCard(stripeCustomerId, stripe, billingDetails, card)
+    return onCreateCreditCard(stripeCustomerId, stripe, billingDetails, card)
       .then(() => {
         // Update default payment methods
-        onFetchDefaultPayment(stripeCustomerId);
+
+        if (stripeCustomerId) {
+          onFetchDefaultPayment(stripeCustomerId);
+        } else {
+          onFetchCurrentUser({ include: ['stripeCustomer'] });
+        }
         setIsSubmitting(false);
       })
       .catch(error => {
@@ -141,6 +147,10 @@ const SubscriptionsPageComponent = props => {
         setIsSubmitting(false);
       });
   };
+
+  useEffect(() => {
+    stripeCustomerId && onFetchDefaultPayment(stripeCustomerId);
+  }, [stripeCustomerId]);
 
   const title = intl.formatMessage({ id: 'SubscriptionsPage.title' });
 
@@ -451,9 +461,6 @@ const SubscriptionsPageComponent = props => {
     </div>
   );
 
-  // TODO: Add back as create susbcription or update errors
-  const reactivateSubscriptionError = null;
-
   return (
     <>
       <Page title={title} scrollingDisabled={scrollingDisabled}>
@@ -513,9 +520,12 @@ const SubscriptionsPageComponent = props => {
             handleCardSetupError={handleCardSetupError}
             initialValues={initalValuesForStripePayment}
             inProgress={isSubmitting}
-            onSubmit={() => {
-              handleCardSubmit();
-              setIsEditCardModalOpen(false);
+            onSubmit={values => {
+              handleCardSubmit(values).then(() => {
+                setTimeout(() => {
+                  setIsEditCardModalOpen(false);
+                }, 500);
+              });
             }}
           />
         </Modal>
