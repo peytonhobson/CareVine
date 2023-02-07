@@ -74,6 +74,10 @@ p {
   color: var(--failColor);
 }
 
+.upgradeButton {
+  margin-right: 1.5rem;
+}
+
 .reactivateButton {
   color: var(--marketplaceColor);
 }

@@ -329,14 +329,26 @@ const SubscriptionsPageComponent = props => {
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
     bcStatus === 'active' && !cancelAtPeriodEnd ? (
-      <InlineTextButton
-        className={css.cancelButton}
-        onClick={() => {
-          setIsCancelSubscriptionModalOpen(true);
-        }}
-      >
-        <FormattedMessage id="SubscriptionsPage.cancelButton" />
-      </InlineTextButton>
+      <>
+        {bcType === BASIC && (
+          <InlineTextButton
+            className={css.upgradeButton}
+            onClick={() => {
+              setIsReactivateSubscriptionPaymentModalOpen(VINE);
+            }}
+          >
+            <FormattedMessage id="SubscriptionsPage.upgradeButton" />
+          </InlineTextButton>
+        )}
+        <InlineTextButton
+          className={css.cancelButton}
+          onClick={() => {
+            setIsCancelSubscriptionModalOpen(true);
+          }}
+        >
+          <FormattedMessage id="SubscriptionsPage.cancelButton" />
+        </InlineTextButton>
+      </>
     ) : (
       <InlineTextButton
         className={css.reactivateButton}
@@ -576,6 +588,8 @@ const SubscriptionsPageComponent = props => {
           cancelSubscriptionInProgress={cancelSubscriptionInProgress}
           cancelSubscriptionError={cancelSubscriptionError}
           handleReactivateSubscription={handleReactivateSubscription}
+          bcStatus={bcStatus}
+          cancelAtPeriodEnd={cancelAtPeriodEnd}
         />
       ) : null}
     </>

@@ -31,6 +31,8 @@ const ReactivateSubscriptionPaymentModal = props => {
     stripeCustomer,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    bcStatus,
+    cancelAtPeriodEnd,
   } = props;
 
   const hasErrors = createSubscriptionError || updateSubscriptionError || cancelSubscriptionError;
@@ -47,7 +49,11 @@ const ReactivateSubscriptionPaymentModal = props => {
       usePortal
     >
       <p className={css.modalTitle}>
-        <FormattedMessage id="SubscriptionsPage.reactivateSubscriptionModalTitle" />
+        {bcType === BASIC && bcStatus === 'active' && !cancelAtPeriodEnd ? (
+          <FormattedMessage id="SubscriptionsPage.upgradeSubscriptionModalTitle" />
+        ) : (
+          <FormattedMessage id="SubscriptionsPage.reactivateSubscriptionModalTitle" />
+        )}
       </p>
       <div className={css.paymentContainer}>
         <div className={css.paymentCard}>
