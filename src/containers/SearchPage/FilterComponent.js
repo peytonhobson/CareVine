@@ -89,6 +89,7 @@ const FilterComponent = props => {
         <PriceFilter
           id={componentId}
           label={label}
+          name={name}
           queryParamNames={queryParamNames}
           initialValues={initialValues(queryParamNames)}
           onSubmit={getHandleChangedValueFn(useHistoryPush)}

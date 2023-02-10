@@ -142,18 +142,19 @@ module.exports = queryEvents = () => {
           });
       }
 
-      const backgroundCheckApproved = privateData && privateData.backgroundCheckApproved;
+      const backgroundCheckApprovedStatus =
+        metadata && metadata.backgroundCheckApproved && metadata.backgroundCheckApproved.status;
       const previousBCSubscription =
         previousValuesProfile &&
-        previousValuesProfile.privateData &&
-        previousValuesProfile.privateData.backgroundCheckSubscription;
-      const backgroundCheckSubscription = privateData && privateData.backgroundCheckSubscription;
+        previousValuesProfile.metadata &&
+        previousValuesProfile.metadata.backgroundCheckSubscription;
+      const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
       const tcmEnrolled = privateData && privateData.tcmEnrolled;
       const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
       const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
 
       if (
-        backgroundCheckApproved &&
+        backgroundCheckApprovedStatus &&
         !isDev &&
         !tcmEnrolled &&
         backgroundCheckSubscription.type === 'vine' &&

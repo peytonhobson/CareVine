@@ -237,11 +237,14 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
   };
 
   const { perPage, price, dates, minDuration, distance, bounds, ...rest } = searchParams;
-  const priceMaybe = priceSearchParams(price);
+  // const priceMaybe = priceSearchParams(price);
+
+  const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
 
   const params = {
     ...rest,
-    ...priceMaybe,
+    // ...priceMaybe,
+    ...minPriceMaybe,
     per_page: perPage,
     bounds: expandBounds(bounds, distance),
   };
@@ -373,7 +376,7 @@ export const loadData = (params, search) => {
     perPage: RESULT_PAGE_SIZE,
     include: ['author.profileImage', 'images'],
     'fields.listing': ['title', 'geolocation', 'description', 'publicData', 'metadata'],
-    'fields.user': ['profile.displayName', 'profile.abbreviatedName', 'email'],
+    'fields.user': ['profile.displayName', 'profile.abbreviatedName', 'email', 'profile.metadata'],
     'fields.image': ['variants.square-small', 'variants.square-small2x'],
     'limit.images': 1,
   });

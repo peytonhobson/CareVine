@@ -5,30 +5,52 @@ const VINE_CHECK_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
+const axios = require('axios');
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 // 'whsec_b88f8999d9d2c9f50c195babbb8b67eb6a33803a28f1e37a11e302e35af4ddc7';
 // process.env.STRIPE_WEBHOOK_SECRET;
 
+const apiBaseUrl = () => {
+  const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
+  const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
+
+  // In development, the dev API server is running in a different port
+  if (useDevApiServer) {
+    return `http://localhost:${port}`;
+  }
+
+  // Otherwise, use the same domain and port as the frontend
+  return process.env.REACT_APP_CANONICAL_ROOT_URL;
+};
+
 const updateBackgroundCheckSubscription = subscription => {
   const userId = subscription.metadata.userId;
 
-  integrationSdk.users
-    .updateProfile({
-      id: userId,
-      privateData: {
-        backgroundCheckSubscription: {
-          // May set this to null if webhooks work
-          status: subscription.status,
-          subscriptionId: subscription.id,
-          type: subscription.items.data[0].price.id === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
-          currentPeriodEnd: subscription.current_period_end,
-          amount: subscription.plan.amount,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+  axios
+    .post(
+      `${apiBaseUrl()}/api/update-user-metadata`,
+      {
+        userId,
+        metadata: {
+          backgroundCheckSubscription: {
+            // May set this to null if webhooks work
+            status: subscription.status,
+            subscriptionId: subscription.id,
+            type: subscription.items.data[0].price.id === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
+            currentPeriodEnd: subscription.current_period_end,
+            amount: subscription.plan.amount,
+            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          },
         },
       },
-    })
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    )
     .catch(e => log.error(e));
 };
 

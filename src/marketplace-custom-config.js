@@ -80,7 +80,7 @@ export const filters = [
   },
   {
     id: 'price',
-    label: 'Price',
+    label: 'Max Pay',
     type: 'PriceFilter',
     group: 'primary',
     // Note: PriceFilter is fixed filter,
@@ -90,8 +90,8 @@ export const filters = [
     // Note: unlike most prices this is not handled in subunits
     config: {
       min: 0,
-      max: 1000,
-      step: 5,
+      max: 50,
+      step: 1,
     },
   },
   {
@@ -148,22 +148,37 @@ export const filters = [
     },
   },
   {
-    id: 'availabilityTypes',
-    label: 'Availability Types',
-    type: 'SelectSingleFilter',
+    id: 'scheduleTypes',
+    label: 'Schedule Types',
+    type: 'SelectMultipleFilter',
     group: 'primary',
-    queryParamNames: ['pub_availabilityTypes'],
+    queryParamNames: ['pub_scheduleTypes'],
     config: {
+      searchMode: 'has_any',
       options: [
-        { key: 'oneTime', label: 'One time Jobs' },
-        { key: 'recurring', label: 'Recurring' },
+        { key: 'oneTime', label: 'One time' },
+        { key: 'recurring', label: 'Repeat' },
         { key: 'liveIn', label: 'Live-In' },
       ],
     },
   },
   {
+    id: 'scheduleType',
+    label: 'Schedule Type',
+    type: 'SelectSingleFilter',
+    group: 'primary',
+    queryParamNames: ['pub_scheduleType'],
+    config: {
+      options: [
+        { key: 'oneTime', label: 'One time' },
+        { key: 'repeat', label: 'Recurring' },
+        { key: '24hour', label: 'Live-In' },
+      ],
+    },
+  },
+  {
     id: 'detailedCareNeeds',
-    label: 'Detailed Care Needs',
+    label: 'Preferred Experience Areas',
     type: 'SelectMultipleFilter',
     group: 'secondary',
     queryParamNames: ['pub_detailedCareNeeds', 'pub_skills'],
@@ -392,7 +407,7 @@ export const filters = [
   },
   {
     id: 'languagesSpoken',
-    label: 'Languages Spoken',
+    label: 'Languages',
     type: 'SelectMultipleFilter',
     group: 'secondary',
     queryParamNames: ['pub_languagesSpoken'],
@@ -423,11 +438,11 @@ export const filters = [
       // Note: label is not added through the translation files
       // to make filter customizations a bit easier.
       options: [
-        { key: 'novice', label: '1-2 years' },
-        { key: 'competent', label: '3-4 years' },
-        { key: 'proficient', label: '5-9 years' },
-        { key: 'expert', label: '10+ years' },
-        { key: 'beginner', label: 'I am seeking my first senior care job' },
+        { key: '1-2', label: '1-2 years' },
+        { key: '3-4', label: '3-4 years' },
+        { key: '5-9', label: '5-9 years' },
+        { key: '10+', label: '10+ years' },
+        { key: '0', label: 'I am seeking my first senior care job' },
       ],
     },
   },

@@ -78,7 +78,8 @@ export const sanitizeListing = entity => {
     // Here's an example how you could sanitize location and rules from publicData:
     // TODO: If you add public data, you should probably sanitize it here.
     const { location, rules, ...restPublicData } = publicData || {};
-    const locationMaybe = location ? { location: sanitizeText(location) } : {};
+    const locationMaybe = { location } || {};
+    // ? { location: sanitizeText(location) } : {};
     const rulesMaybe = rules ? { rules: sanitizeText(rules) } : {};
 
     return publicData ? { publicData: { ...locationMaybe, ...rulesMaybe, ...restPublicData } } : {};

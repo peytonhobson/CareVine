@@ -37,13 +37,13 @@ const AvailabilityTypeForm = props => (
         onChange(formValues);
       };
 
-      const options = findOptionsForSelectFilter('availabilityTypes', filterConfig);
+      const options = findOptionsForSelectFilter('scheduleTypes', filterConfig);
       return (
         <Form onSubmit={handleSubmit} onChange={handleOnChange}>
           <FieldCheckboxGroup
             className={css.features}
-            id="availabilityTypes"
-            name="availabilityTypes"
+            id="scheduleTypes"
+            name="scheduleTypes"
             options={options}
             label={checkboxLabel}
             onChange={onChange}

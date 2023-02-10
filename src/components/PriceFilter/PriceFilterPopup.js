@@ -19,7 +19,7 @@ const getPriceQueryParamName = queryParamNames => {
     ? queryParamNames[0]
     : typeof queryParamNames === 'string'
     ? queryParamNames
-    : 'price';
+    : 'rates';
 };
 
 // Parse value, which should look like "0,1000"

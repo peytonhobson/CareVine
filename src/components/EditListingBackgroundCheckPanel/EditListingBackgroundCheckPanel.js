@@ -177,14 +177,14 @@ const EditListingBackgroundCheckPanel = props => {
 
   const authenticateUserAccessCode = privateData && privateData.authenticateUserAccessCode;
   const authenticateConsent = privateData && privateData.authenticateConsent;
-  const backgroundCheckSubscription = privateData && privateData.backgroundCheckSubscription;
+  const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
   const identityProofQuiz = privateData && privateData.identityProofQuiz;
   const identityProofQuizVerification = privateData && privateData.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
     privateData && privateData.authenticateCriminalBackgroundGenerated;
   const authenticateUserTestResult = privateData && privateData.authenticateUserTestResult;
   const authenticate7YearHistory = privateData && privateData.authenticate7YearHistory;
-  const backgroundCheckApproved = privateData && privateData.backgroundCheckApproved;
+  const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
   const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
   const stripeCustomerId =
     currentUser.stripeCustomer && currentUser.stripeCustomer.attributes.stripeCustomerId;
@@ -194,7 +194,7 @@ const EditListingBackgroundCheckPanel = props => {
   useEffect(() => {
     if (backgroundCheckRejected) {
       setStage(BACKGROUND_CHECK_REJECTED);
-    } else if (backgroundCheckApproved) {
+    } else if (backgroundCheckApproved && backgroundCheckApproved.status) {
       setStage(BACKGROUND_CHECK_COMPLETE);
     } else if (authenticate7YearHistory) {
       setStage(BACKGROUND_CHECK_IN_REVIEW);
@@ -305,6 +305,7 @@ const EditListingBackgroundCheckPanel = props => {
   const handleIdentityQuizSubmit = answers => {
     const IDMSessionId = identityProofQuiz.data.IDMSessionId;
     const currentAttempts = !!identityProofQuizAttempts ? identityProofQuizAttempts : 0;
+    console.log('here');
     if (!identityProofQuizVerification) {
       onVerifyIdentityProofQuiz(
         IDMSessionId,

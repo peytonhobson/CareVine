@@ -9,11 +9,7 @@ import config from '../../config';
 
 import IconHourGlass from './IconHourGlass';
 import IconCurrentLocation from './IconCurrentLocation';
-import Geocoder, {
-  GeocoderAttribution,
-  CURRENT_LOCATION_ID,
-  getPlaceAddress,
-} from './GeocoderMapbox';
+import Geocoder, { GeocoderAttribution, CURRENT_LOCATION_ID } from './GeocoderMapbox';
 // import Geocoder, { GeocoderAttribution, CURRENT_LOCATION_ID } from './GeocoderGoogleMaps';
 
 import css from './LocationAutocompleteInput.module.css';
@@ -27,8 +23,8 @@ export const defaultPredictions = (config.maps.search.suggestCurrentLocation
   : []
 ).concat(config.maps.search.defaults);
 
-const DEBOUNCE_WAIT_TIME = 200;
-const DEBOUNCE_WAIT_TIME_FOR_SHORT_QUERIES = 500;
+const DEBOUNCE_WAIT_TIME = 300;
+const DEBOUNCE_WAIT_TIME_FOR_SHORT_QUERIES = 1000;
 const KEY_CODE_ARROW_UP = 38;
 const KEY_CODE_ARROW_DOWN = 40;
 const KEY_CODE_ENTER = 13;
@@ -56,7 +52,6 @@ const LocationPredictionsList = props => {
     onSelectStart,
     onSelectMove,
     onSelectEnd,
-    usePostalCode,
   } = props;
   if (predictions.length === 0) {
     return null;
@@ -96,8 +91,6 @@ const LocationPredictionsList = props => {
             <IconCurrentLocation />
             <FormattedMessage id="LocationAutocompleteInput.currentLocation" />
           </span>
-        ) : usePostalCode ? (
-          prediction.text
         ) : (
           geocoder.getPredictionAddress(prediction)
         )}
@@ -144,16 +137,13 @@ const currentValue = props => {
 
 /*
   Location auto completion input component
-
   This component can work as the `component` prop to Final Form's
   <Field /> component. It takes a custom input value shape, and
   controls the onChange callback that is called with the input value.
-
   The component works by listening to the underlying input component
   and calling a Geocoder implementation for predictions. When the
   predictions arrive, those are passed to Final Form in the onChange
   callback.
-
   See the LocationAutocompleteInput.example.js file for a usage
   example within a form.
 */
@@ -216,13 +206,8 @@ class LocationAutocompleteInputImpl extends Component {
     const { useDefaultPredictions } = this.props;
     const hasFetchedPredictions = fetchedPredictions && fetchedPredictions.length > 0;
     const showDefaultPredictions = !search && !hasFetchedPredictions && useDefaultPredictions;
-    const currentLocationPrediction = [{ id: CURRENT_LOCATION_ID, predictionPlace: {} }];
 
-    return showDefaultPredictions
-      ? defaultPredictions
-      : this.props.useCurrentLocation && !hasFetchedPredictions
-      ? currentLocationPrediction
-      : fetchedPredictions;
+    return showDefaultPredictions ? defaultPredictions : fetchedPredictions;
   }
 
   // Interpret input key event
@@ -259,7 +244,7 @@ class LocationAutocompleteInputImpl extends Component {
     const predictions = this.currentPredictions();
     const newValue = e.target.value;
 
-    // Clear the current values since the input content is change
+    // Clear the current values since the input content is changed
     onChange({
       search: newValue,
       predictions: newValue ? predictions : [],
@@ -322,32 +307,18 @@ class LocationAutocompleteInputImpl extends Component {
       selectedPlace: null,
     });
 
-    if (this.props.onChangeLoading) {
-      this.props.onChangeLoading();
-    }
     this.setState({ fetchingPlaceDetails: true });
 
     this.getGeocoder()
       .getPlaceDetails(prediction)
-      .then(async place => {
+      .then(place => {
         if (!this._isMounted) {
           // Ignore if component already unmounted
           return;
         }
-        if (place.address === '') {
-          place.address = await getPlaceAddress(place);
-          if (this.props.onChangeLoading) {
-            this.props.onChangeLoading();
-          }
-        }
-
-        const splitAddress = place.address.split(' ');
-
         this.setState({ fetchingPlaceDetails: false });
         this.props.input.onChange({
-          search: this.props.usePostalCode
-            ? splitAddress[splitAddress.length - 1]
-            : place.address.replace(', United States', ''),
+          search: place.address,
           predictions: [],
           selectedPlace: place,
         });
@@ -383,22 +354,11 @@ class LocationAutocompleteInputImpl extends Component {
     const onChange = this.props.input.onChange;
     this.setState({ fetchingPredictions: true });
 
-    const searchFunction = this.props.usePostalCode
-      ? this.getGeocoder().getPostalCodePredictions(search)
-      : this.getGeocoder().getPlacePredictions(search);
-
-    return searchFunction
+    return this.getGeocoder()
+      .getPlacePredictions(search, this.props.searchType)
       .then(results => {
         const { search: currentSearch } = currentValue(this.props);
         this.setState({ fetchingPredictions: false });
-
-        let predictions = [];
-
-        results.predictions.forEach(prediction => {
-          prediction.place_name =
-            prediction.place_name && prediction.place_name.replace(', United States', '');
-          predictions.push(prediction);
-        });
 
         // If the earlier predictions arrive when the user has already
         // changed the search term, ignore and wait until the latest
@@ -411,7 +371,7 @@ class LocationAutocompleteInputImpl extends Component {
         if (results.search === currentSearch) {
           onChange({
             search: results.search,
-            predictions: predictions,
+            predictions: results.predictions,
             selectedPlace: null,
           });
         }
@@ -491,7 +451,6 @@ class LocationAutocompleteInputImpl extends Component {
       input,
       meta,
       inputRef,
-      usePostalCode,
     } = this.props;
     const { name, onFocus } = input;
     const { search } = currentValue(this.props);
@@ -554,7 +513,6 @@ class LocationAutocompleteInputImpl extends Component {
             onSelectStart={this.handlePredictionsSelectStart}
             onSelectMove={this.handlePredictionsSelectMove}
             onSelectEnd={this.handlePredictionsSelectEnd}
-            usePostalCode={usePostalCode}
           />
         ) : null}
       </div>
@@ -595,7 +553,8 @@ LocationAutocompleteInputImpl.propTypes = {
     value: oneOfType([
       shape({
         search: string,
-        selectedPlace: object,
+        predictions: any,
+        selectedPlace: propTypes.place,
       }),
       string,
     ]),

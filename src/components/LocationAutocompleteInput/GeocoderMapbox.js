@@ -157,7 +157,7 @@ class GeocoderMapbox {
    * and an array of predictions. The format of the predictions is
    * only relevant for the `getPlaceDetails` function below.
    */
-  getPlacePredictions(search) {
+  getPlacePredictions(search, searchType = ['address']) {
     const limitCountriesMaybe = config.maps.search.countryLimit
       ? { countries: config.maps.search.countryLimit }
       : {};
@@ -168,7 +168,7 @@ class GeocoderMapbox {
         limit: 5,
         ...limitCountriesMaybe,
         language: [config.locale],
-        types: ['place', 'postcode'],
+        types: searchType,
       })
       .send()
       .then(response => {

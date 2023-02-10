@@ -58,8 +58,8 @@ const EditListingExperiencePanel = props => {
     />
   );
 
-  const experience = publicData && publicData.experience; //;
-  const initialValues = { ...experience };
+  const { experienceLevel, experienceAreas } = publicData;
+  const initialValues = { experienceAreas, experienceLevel };
 
   const formProps = {
     className: css.form,
@@ -84,10 +84,8 @@ const EditListingExperiencePanel = props => {
 
           const updatedValues = {
             publicData: {
-              experience: {
-                experienceLevel,
-                experienceAreas,
-              },
+              experienceLevel,
+              experienceAreas,
             },
           };
           onSubmit(updatedValues);

@@ -110,8 +110,8 @@ const EditListingAvailabilityPanel = props => {
         availabilityPlan: {
           ...availabilityPlan,
           availabilityExceptions,
-          availabilityTypes: selectedAvailabilityTypes,
         },
+        scheduleTypes: selectedAvailabilityTypes,
       },
     })
       .then(() => {

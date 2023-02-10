@@ -9,6 +9,7 @@ import {
   identityProofQuizVerification,
   submitConsentAuthenticate,
   updateUserAuthenticate,
+  updateUserMetadata,
 } from '../util/api';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
 
@@ -461,15 +462,29 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
 export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, getState, sdk) => {
   dispatch(getAuthenticateTestResultRequest());
 
+  let hasCriminalRecord = null;
+
   return authenticateTestResult({ userAccessCode })
     .then(response => {
       if (response.data.backgroundCheck.hasCriminalRecord) {
         dispatch(authenticate7YearHistory(userAccessCode, userId));
       }
+      hasCriminalRecord = response.data.backgroundCheck.hasCriminalRecord;
       return sdk.currentUser.updateProfile({
         privateData: {
           authenticateUserTestResult: response.data,
-          backgroundCheckApproved: !response.data.backgroundCheck.hasCriminalRecord,
+        },
+      });
+    })
+    .then(() => {
+      const newDate = new Date();
+      return updateUserMetadata({
+        userId,
+        metadata: {
+          backgroundCheckApproved: {
+            status: !hasCriminalRecord,
+            date: newDate.getTime(),
+          },
         },
       });
     })
@@ -486,13 +501,27 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
 export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, getState, sdk) => {
   dispatch(authenticate7YearHistoryRequest());
 
+  let result = null;
+
   return getAuthenticate7YearHistory({ userAccessCode })
     .then(response => {
-      const { Candidate } = response.data.result.Candidates;
+      result = response.data;
       return sdk.currentUser.updateProfile({
         privateData: {
-          authenticate7YearHistory: response.data,
-          backgroundCheckApproved: !Candidate,
+          authenticate7YearHistory: result,
+        },
+      });
+    })
+    .then(() => {
+      const newDate = new Date();
+      const { Candidate } = result.result.Candidates;
+      return updateUserMetadata({
+        userId,
+        metadata: {
+          backgroundCheckApproved: {
+            status: !Candidate,
+            date: newDate.getTime(),
+          },
         },
       });
     })

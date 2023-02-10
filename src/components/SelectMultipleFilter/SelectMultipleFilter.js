@@ -13,8 +13,11 @@ import css from './SelectMultipleFilter.module.css';
 //       There's a mutation problem: formstate.dirty is not reliable with it.
 const GroupOfFieldCheckboxes = props => {
   const { id, className, name, options } = props;
+
+  const classes = classNames(css.root, className, options.length > 6 && css.twoColumns);
+
   return (
-    <fieldset className={className}>
+    <fieldset className={classes}>
       <ul className={css.list}>
         {options.map((option, index) => {
           const fieldId = `${id}.${option.key}`;

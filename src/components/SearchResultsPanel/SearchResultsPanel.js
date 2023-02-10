@@ -22,6 +22,7 @@ const SearchResultsPanel = props => {
     currentUserType,
     currentUser,
     onContactUser,
+    currentUserListing,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -58,6 +59,7 @@ const SearchResultsPanel = props => {
               setActiveListing={setActiveListing}
               currentUser={currentUser}
               onContactUser={onContactUser}
+              currentUserListing={currentUserListing}
             />
           ) : (
             <EmployerListingCard
@@ -68,6 +70,7 @@ const SearchResultsPanel = props => {
               setActiveListing={setActiveListing}
               currentUser={currentUser}
               onContactUser={onContactUser}
+              currentUserListing={currentUserListing}
             />
           )
         )}

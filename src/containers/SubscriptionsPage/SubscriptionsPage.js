@@ -118,8 +118,8 @@ const SubscriptionsPageComponent = props => {
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
   const backgroundCheckSubscription =
-    ensuredCurrentUser.attributes.profile.privateData &&
-    ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscription;
+    ensuredCurrentUser.attributes.profile.metadata &&
+    ensuredCurrentUser.attributes.profile.metadata.backgroundCheckSubscription;
   const backgroundCheckSubscriptionSchedule =
     ensuredCurrentUser.attributes.profile.privateData &&
     ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscriptionSchedule;

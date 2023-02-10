@@ -64,7 +64,8 @@ const EditListingPricingPanel = props => {
     />
   );
 
-  const rates = publicData && publicData.rates;
+  const { minPrice, maxPrice } = publicData;
+  const rates = minPrice && maxPrice ? [minPrice, maxPrice] : null;
 
   const initialValues = {
     rates: submittedValues
@@ -83,12 +84,10 @@ const EditListingPricingPanel = props => {
 
         setSubmittedValues(values);
 
-        rates[0] *= 100;
-        rates[1] *= 100;
-
         const updateValues = {
           publicData: {
-            rates,
+            minPrice: rates[0] * 100,
+            maxPrice: rates[1] * 100,
           },
         };
 
