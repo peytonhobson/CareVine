@@ -58,8 +58,18 @@ const EditListingAdditionalDetailsPanel = props => {
     />
   );
 
-  const additionalDetails = publicData.additionalDetails;
-  const initialValues = { ...additionalDetails };
+  const {
+    certificationsAndTraining,
+    additionalInfo,
+    covidVaccination,
+    languagesSpoken,
+  } = publicData;
+  const initialValues = {
+    certificationsAndTraining,
+    additionalInfo,
+    covidVaccination,
+    languagesSpoken,
+  };
 
   const formProps = {
     className: css.form,
@@ -82,7 +92,6 @@ const EditListingAdditionalDetailsPanel = props => {
         required={true}
         onSubmit={values => {
           const {
-            experienceWith,
             certificationsAndTraining,
             additionalInfo,
             covidVaccination,
@@ -91,13 +100,10 @@ const EditListingAdditionalDetailsPanel = props => {
 
           const updatedValues = {
             publicData: {
-              additionalDetails: {
-                experienceWith,
-                certificationsAndTraining,
-                additionalInfo,
-                covidVaccination,
-                languagesSpoken,
-              },
+              certificationsAndTraining,
+              additionalInfo,
+              covidVaccination,
+              languagesSpoken,
             },
           };
 

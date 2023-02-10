@@ -123,6 +123,7 @@ export const EditListingLocationFormComponent = props => (
                 autocompleteSearchRequired(addressRequiredMessage),
                 autocompletePlaceSelected(addressNotRecognizedMessage)
               )}
+              searchType={['address']}
               usePostalCode={true}
               required
             />

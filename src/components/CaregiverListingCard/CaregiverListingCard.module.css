@@ -1,16 +1,25 @@
 @import '../../styles/customMediaQueries.css';
 
+.container {
+  width: 100%;
+}
+
 .root {
   /* Layout */
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: row;
   width: 100%;
-  border-bottom: solid 1px;
-  border-color: var(--matterColor);
+  padding: 1rem;
+  border-bottom: solid 1px var(--matterColor);
 
   /* Remove link's hover effect */
   &:hover {
     text-decoration: none;
+  }
+
+  &.premium {
+    border: solid 3px #b3e9c7;
+    border-radius: 3rem;
   }
 }
 
@@ -57,14 +66,6 @@
   justify-content: center;
 }
 
-.price {
-  /* Layout */
-  display: block;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-}
-
 .priceValue {
   /* Font */
   composes: h2 from global;
@@ -95,22 +96,22 @@
 }
 
 .mainInfo {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  width: 100%;
+  padding-left: 1rem;
 }
 
 .title {
   /* Font */
-  composes: h3 from global;
+  composes: h2 from global;
   color: var(--matterColor);
+  position: relative;
 
   /* Remove default margins from font */
-  margin-top: 0;
+  margin-top: 0.5rem;
   margin-bottom: 0;
 
   @media (--viewportMedium) {
-    margin-top: 0;
+    margin-top: 0.5rem;
     margin-bottom: 0;
   }
 }
@@ -121,8 +122,10 @@
 
 .topInfo {
   display: flex;
-  flex-shrink: 1;
-  flex-direction: column;
+  flex-grow: 1;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 0.2rem;
 }
 
 .longWord {
@@ -143,24 +146,34 @@
 }
 
 .providedServices {
+  position: absolute;
+  bottom: 0;
+  color: var(--matterColor);
+  display: flex;
+  margin: 0.75rem 0;
+}
+
+.bold {
+  font-weight: var(--fontWeightBold);
   color: var(--matterColor);
 }
 
-.serviceBold {
-  font-weight: bold;
+.serviceCardList {
+  display: flex;
 }
 
-.description {
-  color: var(--matterColor);
-  line-height: 1rem;
-  margin-top: 0.2rem;
+.serviceCardItem {
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--matterColorNegative);
+  margin: 0 0.5rem;
 }
 
 .messageButton {
-  position: absolute;
   right: 0;
   top: 0;
   max-width: 8rem;
+  max-height: 2.5rem;
   min-height: 2.5rem;
   padding-block: 0px;
 }
@@ -168,4 +181,75 @@
 .container {
   position: relative;
   display: block;
+}
+
+.premiumIcon {
+  position: absolute;
+  left: 0.5rem;
+}
+
+.schedule {
+  display: flex;
+  flex-direction: row;
+  margin-block: 0.5rem;
+}
+
+.dayBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: solid 1px var(--matterColorAnti);
+  color: var(--matterColorAnti);
+  margin: 0 0.25rem;
+
+  &.active {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+    border: solid 1px var(--marketPlaceColor);
+  }
+}
+
+.badge {
+  padding: 0.1rem;
+  border: solid 2px var(--marketplaceColor);
+  margin-right: 1rem;
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.certAndTrainWrapper {
+  padding: 0.5rem;
+}
+
+.certAndTrainTitle {
+  composes: h3 from global;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.certAndTrainList {
+  list-style-type: disc;
+  text-align: center;
+}
+
+.note {
+  text-align: center;
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.yearsExperience {
+  composes: h4 from global;
+  margin: 0;
+  padding: 0;
+  color: var(--marketplaceColor);
 }

@@ -14,6 +14,8 @@ import css from './containers.module.css';
 
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+const REPEAT = 'repeat';
+
 const CareScheduleRecurringTimesContainerComponent = props => {
   const {
     availabilityPlan: savedAvailabilityPlan,
@@ -56,6 +58,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     // Final Form can wait for Promises to return.
     return onSubmit({
       publicData: {
+        scheduleType: REPEAT,
         availabilityPlan: {
           ...availabilityPlan,
           availabilityExceptions,

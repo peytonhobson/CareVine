@@ -74,7 +74,7 @@ const EditListingCareSchedulePanel = props => {
       endDate,
     };
 
-    return onSubmit({ publicData: { availabilityPlan } })
+    return onSubmit({ publicData: { scheduleType: TWENTY_FOUR_HOUR, availabilityPlan } })
       .then(() => {
         if (!isPublished) {
           onNextTab();
@@ -84,7 +84,7 @@ const EditListingCareSchedulePanel = props => {
   };
 
   const handleSelectDatesSubmit = availabilityPlan => {
-    return onSubmit({ publicData: { availabilityPlan } })
+    return onSubmit({ publicData: { scheduleType: ONE_TIME, availabilityPlan } })
       .then(() => {
         if (!isPublished) {
           onNextTab();

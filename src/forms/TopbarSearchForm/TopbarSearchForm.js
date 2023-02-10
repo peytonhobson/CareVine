@@ -88,6 +88,7 @@ class TopbarSearchFormComponent extends Component {
                       inputRef={node => {
                         this.searchInput = node;
                       }}
+                      searchType={['place']}
                       input={searchInput}
                       meta={meta}
                     />

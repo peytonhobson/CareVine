@@ -96,15 +96,16 @@ export class SearchPageComponent extends Component {
     const userType = currentUser && currentUser.attributes.profile.metadata.userType;
     const emailVerified = currentUser && currentUser.attributes.emailVerified;
     const backgroundCheckApproved =
-      currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+      currentUser && currentUser.attributes.profile.metadata.backgroundCheckApproved;
     const backgroundCheckSubscription =
-      currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+      currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
     const stripeAccount = currentUser && currentUser.stripeAccount;
 
     const canMessage =
       userType === CAREGIVER
         ? emailVerified &&
           backgroundCheckApproved &&
+          backgroundCheckApproved.status &&
           backgroundCheckSubscription &&
           backgroundCheckSubscription.status === 'active' &&
           stripeAccount
@@ -127,7 +128,12 @@ export class SearchPageComponent extends Component {
       // 2) doesnt have a subcription but everythings approved
       // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
       if (userType === CAREGIVER) {
-        if (emailVerified && backgroundCheckApproved && stripeAccount) {
+        if (
+          emailVerified &&
+          backgroundCheckApproved &&
+          backgroundCheckApproved.status &&
+          stripeAccount
+        ) {
           this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
         } else {
           this.props.onChangeModalValue(MISSING_REQUIREMENTS);
@@ -179,6 +185,7 @@ export class SearchPageComponent extends Component {
       searchInProgress,
       searchListingsError,
       searchParams,
+      currentUserListing,
       activeListingId,
       onActivateListing,
       currentUserType,
@@ -267,6 +274,7 @@ export class SearchPageComponent extends Component {
             currentUserType={currentUserType}
             currentUser={currentUser}
             onContactUser={this.onContactUser}
+            currentUserListing={currentUserListing}
           />
           {this.state.enquiryModalOpen && (
             <SendbirdModal
@@ -347,6 +355,7 @@ const mapStateToProps = state => {
     fetchChannelError,
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
+  const currentUserListing = state.user.currentUserListing;
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
   const oppositeUserType = currentUserType === CAREGIVER ? EMPLOYER : CAREGIVER;
 
@@ -370,6 +379,7 @@ const mapStateToProps = state => {
 
   return {
     currentUserTransactions: transactions,
+    currentUserListing,
     isAuthenticated,
     listings: pageListings,
     mapListings,

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { arrayOf, bool, func, node, object, shape, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
+import RadioButton from '../RadioButton/RadioButton';
 
 import css from './SelectSingleFilterPlain.module.css';
 
@@ -12,7 +13,7 @@ const getQueryParamName = queryParamNames => {
 class SelectSingleFilterPlain extends Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: true };
+    this.state = { isOpen: true, selected: null };
     this.selectOption = this.selectOption.bind(this);
     this.toggleIsOpen = this.toggleIsOpen.bind(this);
   }
@@ -21,6 +22,7 @@ class SelectSingleFilterPlain extends Component {
     const { queryParamNames, onSelect } = this.props;
     const queryParamName = getQueryParamName(queryParamNames);
     onSelect({ [queryParamName]: option });
+    this.setState({ ...this.state, selected: option });
 
     // blur event target if event is passed
     if (e && e.currentTarget) {
@@ -70,31 +72,22 @@ class SelectSingleFilterPlain extends Component {
           </button>
         </div>
         <div className={optionsContainerClass}>
-          {options.map(option => {
-            // check if this option is selected
-            const selected = initialValue === option.key;
-            const optionClass = hasBullets && selected ? css.optionSelected : css.option;
-            // menu item selected bullet or border class
-            const optionBorderClass = hasBullets
-              ? classNames({
-                  [css.optionBulletSelected]: selected,
-                  [css.optionBullet]: !selected,
-                })
-              : classNames({
-                  [css.optionBorderSelected]: selected,
-                  [css.optionBorder]: !selected,
-                });
-            return (
-              <button
-                key={option.key}
-                className={optionClass}
-                onClick={() => this.selectOption(option.key)}
-              >
-                <span className={optionBorderClass} />
-                {option.label}
-              </button>
-            );
-          })}
+          <ul>
+            {options.map((option, index) => {
+              // check if this option is selected
+              const initialSelected = initialValue === option.key;
+              return (
+                <li key={index} onClick={e => this.selectOption(option.key, e)}>
+                  <RadioButton
+                    label={option.label}
+                    value={option.key}
+                    showAsRequired={false}
+                    selected={this.state.selected === option.key || initialSelected}
+                  />
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     );

@@ -5,20 +5,19 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
 
 const InfoTooltip = props => {
-  const { title } = props;
+  const { title, icon, styles } = props;
 
   const IconButton = styled(MuiIconButton)({
     paddingBlock: '0',
     '&:hover': {
       backgroundColor: 'transparent',
     },
+    ...styles,
   });
 
   return (
-    <Tooltip title={title} disableInteractive placement="top">
-      <IconButton>
-        <InfoIcon />
-      </IconButton>
+    <Tooltip title={title} placement="top">
+      <IconButton>{icon || <InfoIcon />}</IconButton>
     </Tooltip>
   );
 };

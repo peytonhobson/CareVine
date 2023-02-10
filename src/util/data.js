@@ -440,15 +440,17 @@ export const cutTextToPreview = (text, length) => {
 export const userCanMessage = currentUser => {
   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
-  const backgroundCheckApproved =
-    currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+  const backgroundCheckApprovedStatus =
+    currentUser &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
   const backgroundCheckSubscription =
-    currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+    currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
   const stripeAccount = currentUser && currentUser.stripeAccount;
 
   return userType === CAREGIVER
     ? emailVerified &&
-        backgroundCheckApproved &&
+        backgroundCheckApprovedStatus &&
         backgroundCheckSubscription &&
         backgroundCheckSubscription.status === 'active' &&
         stripeAccount
@@ -458,16 +460,18 @@ export const userCanMessage = currentUser => {
 export const getMissingInfoModalValue = currentUser => {
   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
-  const backgroundCheckApproved =
-    currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+  const backgroundCheckApprovedStatus =
+    currentUser &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
   const backgroundCheckSubscription =
-    currentUser && currentUser.attributes.profile.privateData.backgroundCheckSubscription;
+    currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
   const stripeAccount = currentUser && currentUser.stripeAccount;
 
   const canMessage =
     userType === CAREGIVER
       ? emailVerified &&
-        backgroundCheckApproved &&
+        backgroundCheckApprovedStatus &&
         backgroundCheckSubscription &&
         backgroundCheckSubscription.status === 'active' &&
         stripeAccount
@@ -475,7 +479,7 @@ export const getMissingInfoModalValue = currentUser => {
 
   if (!canMessage) {
     if (userType === CAREGIVER) {
-      if (emailVerified && backgroundCheckApproved && stripeAccount) {
+      if (emailVerified && backgroundCheckApprovedStatus && stripeAccount) {
         return MISSING_SUBSCRIPTION;
       } else {
         return MISSING_REQUIREMENTS;

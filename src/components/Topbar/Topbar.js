@@ -98,7 +98,7 @@ class TopbarComponent extends Component {
     const { search, selectedPlace } = values.location;
     const { history } = this.props;
     const { origin, bounds } = selectedPlace;
-    const distance = 10;
+    const distance = 30;
     const originMaybe = config.sortSearchByDistance ? { origin } : {};
     const searchParams = {
       ...currentSearchParams,

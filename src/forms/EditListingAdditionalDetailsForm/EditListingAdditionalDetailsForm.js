@@ -45,15 +45,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
         fetchErrors,
       } = formRenderProps;
 
-      // Experience With
-      const experienceWithName = intl.formatMessage({
-        id: 'EditListingAdditionalDetailsForm.experienceWithName',
-      });
-      const experienceWithOptions = findOptionsForSelectFilter(experienceWithName, filterConfig);
-      const experienceWithLabel = intl.formatMessage({
-        id: 'EditListingAdditionalDetailsForm.experienceWithLabel',
-      });
-
       // Certifications and Training
       const certificationsName = intl.formatMessage({
         id: 'EditListingAdditionalDetailsForm.certificationsName',

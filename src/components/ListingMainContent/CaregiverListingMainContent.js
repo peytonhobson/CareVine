@@ -133,7 +133,8 @@ const CaregiverListingMainContent = props => {
   const {
     location = '',
     pricing,
-    experience,
+    experienceLevel,
+    experienceAreas,
     additionalDetails,
   } = currentListing?.attributes.publicData;
   const rates = (pricing && pricing.rates) || [0, 0];

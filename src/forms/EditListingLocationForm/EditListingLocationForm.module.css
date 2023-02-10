@@ -56,10 +56,6 @@
   display: none;
 }
 
-.inputContainer {
-  max-width: 12rem;
-}
-
 .predictionsRoot {
   position: absolute;
   width: 100%;

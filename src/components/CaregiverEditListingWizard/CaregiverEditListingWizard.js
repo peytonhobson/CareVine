@@ -102,8 +102,8 @@ const tabCompleted = (tab, listing, user) => {
 
   const backgroundCheckApproved =
     user &&
-    user.attributes.profile.privateData &&
-    user.attributes.profile.privateData.backgroundCheckApproved;
+    user.attributes.profile.metadata &&
+    user.attributes.profile.metadata.backgroundCheckApproved;
 
   switch (tab) {
     case SERVICES:
@@ -112,9 +112,9 @@ const tabCompleted = (tab, listing, user) => {
       return !!description;
     // TODO: Update publicData to be verified
     case EXPERIENCE:
-      return !!(publicData && publicData.experience);
+      return !!(publicData && publicData.experienceLevel);
     case ADDITIONAL_DETAILS:
-      return !!(publicData && publicData.additionalDetails);
+      return !!(publicData && publicData.covidVaccination && publicData.languagesSpoken);
     case LOCATION:
       return !!(
         geolocation &&
@@ -123,11 +123,11 @@ const tabCompleted = (tab, listing, user) => {
         publicData.travelDistance != undefined
       );
     case PRICING:
-      return !!(publicData && publicData.rates);
+      return !!(publicData && publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
-      return !!backgroundCheckApproved;
+      return !!(backgroundCheckApproved && backgroundCheckApproved.status);
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:
@@ -242,12 +242,13 @@ class CaregiverEditListingWizard extends Component {
       this.setState({ showPayoutDetails: true });
     }
 
-    const backgroundCheckApproved =
+    const backgroundCheckApprovedStatus =
       currentUser &&
       currentUser.attributes.profile.metadata &&
-      currentUser.attributes.profile.metadata.backgroundCheckApproved;
+      currentUser.attributes.profile.metadata.backgroundCheckApproved &&
+      currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
 
-    if (!isNewListingFlow && backgroundCheckApproved) {
+    if (!isNewListingFlow && backgroundCheckApprovedStatus) {
       const index = TABS.indexOf(BACKGROUND_CHECK);
       if (index > -1) {
         TABS.splice(index, 1);

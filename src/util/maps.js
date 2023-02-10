@@ -2,7 +2,7 @@ import memoize from 'lodash/memoize';
 import seedrandom from 'seedrandom';
 import { types as sdkTypes } from './sdkLoader';
 import config from '../config';
-import turf from 'turf';
+import { point, distance } from '@turf/turf';
 
 const { LatLng, LatLngBounds } = sdkTypes;
 
@@ -214,7 +214,9 @@ export const hasSameSDKBounds = (sdkBounds1, sdkBounds2) => {
  */
 export const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
   const options = { units: 'miles' };
-  return turf.distance(latlng1, latlng2, options);
+  const point1 = point([latlng1.lng, latlng1.lat]);
+  const point2 = point([latlng2.lng, latlng2.lat]);
+  return Number.parseFloat(distance(point1, point2, options)).toFixed(2);
 };
 
 /**

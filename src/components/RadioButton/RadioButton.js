@@ -3,7 +3,7 @@ import { node, string } from 'prop-types';
 import classNames from 'classnames';
 import { Field } from 'react-final-form';
 
-import css from './FieldRadioButton.module.css';
+import css from './RadioButton.module.css';
 
 export const IconRadioButton = props => {
   const { checkedClassName } = props;
@@ -39,7 +39,7 @@ IconRadioButton.defaultProps = { className: null };
 
 IconRadioButton.propTypes = { className: string };
 
-const FieldRadioButtonComponent = props => {
+const RadioButtonComponent = props => {
   const {
     rootClassName,
     className,
@@ -50,18 +50,9 @@ const FieldRadioButtonComponent = props => {
     showAsRequired,
     onChange,
     input,
+    selected,
     ...rest
   } = props;
-
-  // const handleChange = (value, item) => {
-  //   // If "onChange" callback is passed through the props,
-  //   // it can notify the parent when the content of the input has changed.
-  //   if (onChange) {
-  //     onChange(value);
-  //   }
-  //   // Notify Final Form that the input has changed.
-  //   input.onChange(value);
-  // };
 
   const classes = classNames(rootClassName || css.root, className);
   const radioButtonProps = {
@@ -69,13 +60,14 @@ const FieldRadioButtonComponent = props => {
     className: css.input,
     component: 'input',
     type: 'radio',
+    checked: selected,
     // onChange: handleChange,
     ...rest,
   };
 
   return (
     <span className={classes}>
-      <Field {...radioButtonProps} />
+      <input {...radioButtonProps}></input>
       <label htmlFor={id} className={css.label}>
         <span className={css.radioButtonWrapper}>
           <IconRadioButton
@@ -90,7 +82,7 @@ const FieldRadioButtonComponent = props => {
   );
 };
 
-FieldRadioButtonComponent.defaultProps = {
+RadioButtonComponent.defaultProps = {
   className: null,
   rootClassName: null,
   svgClassName: null,
@@ -98,7 +90,7 @@ FieldRadioButtonComponent.defaultProps = {
   label: null,
 };
 
-FieldRadioButtonComponent.propTypes = {
+RadioButtonComponent.propTypes = {
   className: string,
   rootClassName: string,
   svgClassName: string,
@@ -115,4 +107,4 @@ FieldRadioButtonComponent.propTypes = {
   value: string.isRequired,
 };
 
-export default FieldRadioButtonComponent;
+export default RadioButtonComponent;

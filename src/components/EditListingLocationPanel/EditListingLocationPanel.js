@@ -8,6 +8,7 @@ import { ListingLink } from '../../components';
 import { EditListingLocationForm } from '../../forms';
 import { CAREGIVER } from '../../util/constants';
 import zipcodeToTimezone from 'zipcode-to-timezone';
+import parser from 'parse-address';
 
 import css from './EditListingLocationPanel.module.css';
 
@@ -25,12 +26,11 @@ class EditListingLocationPanel extends Component {
   getInitialValues() {
     const { listing } = this.props;
     const currentListing = ensureOwnListing(listing);
-    const { geolocation, publicData } = currentListing.attributes;
+    const { geolocation, publicData, privateData } = currentListing.attributes;
 
     // Only render current search if full place object is available in the URL params
-    // TODO bounds are missing - those need to be queried directly from Google Places
-    const locationFieldsPresent = publicData && publicData.location && geolocation;
-    const location = publicData && publicData.location ? publicData.location : {};
+    const locationFieldsPresent = privateData && privateData.address && geolocation;
+    const address = privateData && privateData.address ? privateData.address : {};
 
     const travelDistanceFieldPresent = publicData && publicData.travelDistance;
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
@@ -41,8 +41,8 @@ class EditListingLocationPanel extends Component {
     return {
       location: locationFieldsPresent
         ? {
-            search: location.zipcode,
-            selectedPlace: { location, origin: geolocation },
+            search: address.fullAddress,
+            selectedPlace: { address, origin: geolocation },
           }
         : null,
       travelDistance: travelDistanceFieldPresent ? travelDistance : 15,
@@ -111,18 +111,9 @@ class EditListingLocationPanel extends Component {
               selectedPlace: { address, origin },
             } = location;
 
-            const splitCommaAddress = address.split(',');
+            const parsedAddress = parser.parseLocation(address);
 
-            const splitSpaceAddress = splitCommaAddress[1].split(' ');
-            const asdf = splitSpaceAddress.slice(1, splitSpaceAddress.length - 1);
-
-            const zipcode = address.split(' ')[address.split(' ').length - 1];
-            const city = splitCommaAddress[0];
-            const state = splitSpaceAddress
-              .slice(1, splitSpaceAddress.length - 1)
-              .join(' ')
-              .trim();
-            const timezone = zipcodeToTimezone.lookup(zipcode);
+            const timezone = zipcodeToTimezone.lookup(parsedAddress.zip);
 
             const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
 
@@ -138,30 +129,41 @@ class EditListingLocationPanel extends Component {
                     geolocation: origin,
                     publicData: {
                       location: {
-                        city,
-                        state,
-                        zipcode,
+                        city: parsedAddress.city,
+                        state: parsedAddress.state,
+                        zipcode: parsedAddress.zip,
                       },
                       travelDistance,
+                    },
+                    privateData: {
+                      address: { ...parsedAddress, fullAddress: address },
                     },
                   }
                 : {
                     geolocation: origin,
                     publicData: {
                       location: {
-                        city,
-                        state,
-                        zipcode,
+                        city: parsedAddress.city,
+                        state: parsedAddress.state,
+                        zipcode: parsedAddress.zip,
                       },
                       nearPublicTransit: nearPublicTransitValue,
                       availabilityPlan: availabilityPlanMaybe,
                       residenceType,
                     },
+                    privateData: {
+                      address: {
+                        ...parsedAddress,
+                        fullAddress: {
+                          ...address,
+                        },
+                      },
+                    },
                   };
 
             this.setState({
               initialValues: {
-                location: { search: zipcode, selectedPlace: { address, origin } },
+                location: { search: address, selectedPlace: { address, origin } },
                 travelDistance,
                 nearPublicTransit: nearPublicTransitValue,
                 residenceType,

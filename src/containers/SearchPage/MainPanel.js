@@ -15,6 +15,7 @@ import {
   SearchFiltersSecondary,
   SortBy,
 } from '../../components';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import FilterComponent from './FilterComponent';
 import { validFilterParams } from './SearchPage.helpers';
@@ -24,6 +25,36 @@ import css from './SearchPage.module.css';
 // Primary filters have their content in dropdown-popup.
 // With this offset we move the dropdown to the left a few pixels on desktop layout.
 const FILTER_DROPDOWN_OFFSET = -14;
+
+const employerSearchFilters = [
+  'distance',
+  'price',
+  'keyword',
+  'careTypes',
+  'scheduleTypes',
+  'experienceAreas',
+  'detailedCareNeeds',
+  'certificationsAndTraining',
+  'additionalInfo',
+  'languagesSpoken',
+  'experienceLevel',
+  'covidVaccination',
+];
+
+const caregiverSearchFilters = [
+  'distance',
+  'price',
+  'keyword',
+  'careTypes',
+  'residenceType',
+  'scheduleType',
+  'detailedCareNeeds',
+  'additionalInfo',
+  'recipientAge', // These may not be good filters for multiple recipients
+  'gender',
+  'languagesSpoken',
+  'covidVaccination',
+];
 
 const cleanSearchFromConflictingParams = (searchParams, sortConfig, filterConfig) => {
   // Single out filters that should disable SortBy when an active
@@ -171,11 +202,13 @@ class MainPanel extends Component {
       currentUserType,
       currentUser,
       onContactUser,
+      currentUserListing,
     } = this.props;
 
     const primaryFilters = filterConfig.filter(f => f.group === 'primary');
     const secondaryFilters = filterConfig.filter(f => f.group !== 'primary');
     const hasSecondaryFilters = !!(secondaryFilters && secondaryFilters.length > 0);
+    const userType = currentUser && currentUser.attributes.profile.metadata.userType;
 
     // Selected aka active filters
     const selectedFilters = validFilterParams(urlQueryParams, filterConfig);
@@ -249,20 +282,26 @@ class MainPanel extends Component {
           searchListingsError={searchListingsError}
           {...propsForSecondaryFiltersToggle}
         >
-          {primaryFilters.map(config => {
-            return (
-              <FilterComponent
-                key={`SearchFiltersPrimary.${config.id}`}
-                idPrefix="SearchFiltersPrimary"
-                filterConfig={config}
-                urlQueryParams={urlQueryParams}
-                initialValues={this.initialValues}
-                getHandleChangedValueFn={this.getHandleChangedValueFn}
-                showAsPopup
-                contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
-              />
-            );
-          })}
+          {primaryFilters
+            .filter(filter =>
+              userType === CAREGIVER
+                ? caregiverSearchFilters.includes(filter.id)
+                : employerSearchFilters.includes(filter.id)
+            )
+            .map(config => {
+              return (
+                <FilterComponent
+                  key={`SearchFiltersPrimary.${config.id}`}
+                  idPrefix="SearchFiltersPrimary"
+                  filterConfig={config}
+                  urlQueryParams={urlQueryParams}
+                  initialValues={this.initialValues}
+                  getHandleChangedValueFn={this.getHandleChangedValueFn}
+                  showAsPopup
+                  contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
+                />
+              );
+            })}
         </SearchFiltersPrimary>
         <SearchFiltersMobile
           className={css.searchFiltersMobile}
@@ -305,19 +344,26 @@ class MainPanel extends Component {
               resetAll={this.resetAll}
               onClosePanel={() => this.setState({ isSecondaryFiltersOpen: false })}
             >
-              {secondaryFilters.map(config => {
-                return (
-                  <FilterComponent
-                    key={`SearchFiltersSecondary.${config.id}`}
-                    idPrefix="SearchFiltersSecondary"
-                    filterConfig={config}
-                    urlQueryParams={urlQueryParams}
-                    initialValues={this.initialValues}
-                    getHandleChangedValueFn={this.getHandleChangedValueFn}
-                    showAsPopup={false}
-                  />
-                );
-              })}
+              {secondaryFilters
+                .filter(filter =>
+                  userType === CAREGIVER
+                    ? caregiverSearchFilters.includes(filter.id)
+                    : employerSearchFilters.includes(filter.id)
+                )
+                .map(config => {
+                  return (
+                    <FilterComponent
+                      key={`SearchFiltersSecondary.${config.id}`}
+                      idPrefix="SearchFiltersSecondary"
+                      filterConfig={config}
+                      urlQueryParams={urlQueryParams}
+                      initialValues={this.initialValues}
+                      getHandleChangedValueFn={this.getHandleChangedValueFn}
+                      showAsPopup={false}
+                      currentUserType={currentUserType}
+                    />
+                  );
+                })}
             </SearchFiltersSecondary>
           </div>
         ) : (
@@ -340,6 +386,7 @@ class MainPanel extends Component {
               currentUserType={currentUserType}
               currentUser={currentUser}
               onContactUser={onContactUser}
+              currentUserListing={currentUserListing}
             />
           </div>
         )}

@@ -9,8 +9,10 @@ import { createSlug } from '../../util/urlHelpers';
 const MissingRequirementsReminder = props => {
   const { className, currentUser, onChangeModalValue, currentUserListing } = props;
 
-  const backgroundCheckApproved =
-    currentUser && currentUser.attributes.profile.privateData.backgroundCheckApproved;
+  const backgroundCheckApprovedStatus =
+    currentUser &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
+    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
   const stripeAccount = currentUser && currentUser.stripeAccount;
 
@@ -53,10 +55,12 @@ const MissingRequirementsReminder = props => {
           </li>
           <li
             className={css.requirementsListItem}
-            onClick={() => closeModalOnLinkClick(backgroundCheckApproved)}
+            onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
           >
-            <span className={css.listCircle}>{backgroundCheckApproved && <IconCheckmark />}</span>
-            {backgroundCheckApproved ? (
+            <span className={css.listCircle}>
+              {backgroundCheckApprovedStatus && <IconCheckmark />}
+            </span>
+            {backgroundCheckApprovedStatus ? (
               <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
             ) : !!currentUserListing ? (
               <NamedLink
