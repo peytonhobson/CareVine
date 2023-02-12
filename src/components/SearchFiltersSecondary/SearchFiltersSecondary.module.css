@@ -63,34 +63,63 @@
   }
 }
 
+.fixedButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: var(--matterColorBright);
+  padding: 16px 0;
+  box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    padding: 16px 24px;
+  }
+}
+
+.rightFixedButtons {
+  display: flex;
+  flex-direction: row;
+}
+
 .cancelButton {
-  composes: filterButton;
-  color: var(--matterColorAnti);
+  composes: button marketplaceSearchFilterLabelFontStyles buttonText buttonBordersSecondary buttonColorsSecondary from global;
+  letter-spacing: 0.2px;
+  font-weight: var(--fontWeightSemiBold);
 
-  /* Layout */
-  margin: 0 24px 0 24px;
+  padding: var(--marketplaceButtonSmallDesktopPadding);
+  width: auto;
+  height: auto;
+  min-height: 0;
+  border-radius: 4px;
+  border: 1px solid var(--marketplaceColor);
 
-  /* Override button styles */
-  outline: none;
-
-  &:focus,
-  &:hover {
-    color: var(--matterColor);
+  &:hover,
+  &:focus {
+    border: 1px solid var(--marketplaceColorDark);
   }
 }
 
 .applyButton {
-  composes: filterButton;
-  color: var(--marketplaceColor);
+  composes: button marketplaceSearchFilterLabelFontStyles buttonText buttonBorders buttonColors from global;
+  letter-spacing: 0.2px;
+  font-weight: var(--fontWeightSemiBold);
 
-  /* Layout */
-  margin: 0;
+  padding: var(--marketplaceButtonSmallDesktopPadding);
+  width: auto;
+  height: auto;
+  min-height: 0;
+  border-radius: 4px;
+  border: 1px solid var(--marketplaceColor);
+  margin-left: 1rem;
 
-  /* Override button styles */
-  outline: none;
-
-  &:focus,
-  &:hover {
-    color: var(--marketplaceColorDark);
+  &:hover,
+  &:focus {
+    border: 1px solid var(--marketplaceColor);
   }
 }

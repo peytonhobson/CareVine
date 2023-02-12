@@ -152,7 +152,7 @@ export const filters = [
     label: 'Schedule Types',
     type: 'SelectMultipleFilter',
     group: 'primary',
-    queryParamNames: ['pub_scheduleTypes'],
+    queryParamNames: ['pub_scheduleTypes', 'pub_scheduleType'],
     config: {
       searchMode: 'has_any',
       options: [

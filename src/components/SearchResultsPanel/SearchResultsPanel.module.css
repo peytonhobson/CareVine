@@ -10,9 +10,8 @@
   position: relative;
 
   @media (--viewportMedium) {
-    display: block;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-auto-flow: row;
   }
 
   @media (--viewportLarge) {

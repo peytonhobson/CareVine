@@ -73,6 +73,7 @@ class DistanceFilter extends Component {
       queryParamNames,
       intl,
       showAsPopup,
+      form,
       ...rest
     } = this.props;
 
@@ -163,10 +164,12 @@ class DistanceFilter extends Component {
             className={css.field}
             name={name}
             id={`${id}-input`}
-            type="text"
+            type="number"
             label={filterText}
             placeholder={placeholder}
             autoComplete="off"
+            min="1"
+            max="100"
           />
           <label className={css.unitLabel}>
             {intl.formatMessage({ id: 'DistanceFilter.unit' })}

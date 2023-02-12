@@ -52,15 +52,21 @@ const TopbarDesktop = props => {
 
   const currentUserType = currentUser?.attributes.profile.metadata.userType || '';
 
-  const search = (
-    <TopbarSearchForm
-      className={css.searchLink}
-      currentUserType={currentUserType}
-      desktopInputRoot={css.topbarSearchWithLeftPadding}
-      onSubmit={onSearchSubmit}
-      initialValues={initialSearchFormValues}
-    />
-  );
+  const geolocation = (currentUserListing && currentUserListing.attributes.geolocation) || {};
+  const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
+  const distance = 'distance=30';
+  const location = currentUserListing && currentUserListing.attributes.publicData.location;
+
+  const myJobBoard =
+    isAuthenticatedOrJustHydrated && location ? (
+      <NamedLink
+        className={css.myJobBoardLink}
+        name="SearchPage"
+        to={{ search: `?${origin}&${distance}` }}
+      >
+        <span className={css.jobBoard}>My Job Board</span>
+      </NamedLink>
+    ) : null;
 
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
@@ -162,7 +168,7 @@ const TopbarDesktop = props => {
     ) : null;
 
   const createListingLink =
-    isAuthenticatedOrJustHydrated && !(currentUserListingFetched && !currentUserListing) ? null : (
+    !isAuthenticatedOrJustHydrated || !(currentUserListingFetched && !currentUserListing) ? null : (
       <NamedLink className={css.createListingLink} name="NewListingPage">
         <span className={css.createListing}>
           <FormattedMessage id="TopbarDesktop.createListing" />
@@ -179,13 +185,17 @@ const TopbarDesktop = props => {
           alt={intl.formatMessage({ id: 'TopbarDesktop.logo' })}
         />
       </NamedLink>
-      {search}
-      {listingLink}
-      {currentUserType === EMPLOYER && createListingLink}
-      {inboxLink}
+      <div className={css.authenticatedLinks}>
+        {myJobBoard}
+        {listingLink}
+        {createListingLink}
+        {inboxLink}
+      </div>
       {profileMenu}
-      {signupLink}
-      {loginLink}
+      <div className={css.unauthenticatedContainer}>
+        {signupLink}
+        {loginLink}
+      </div>
     </nav>
   );
 };

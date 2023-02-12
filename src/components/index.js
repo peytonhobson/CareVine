@@ -15,6 +15,7 @@ export { default as IconAdd } from './IconAdd/IconAdd';
 export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
 export { default as IconBank } from './IconBank/IconBank';
 export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
+export { default as IconCalendar } from './IconCalendar/IconCalendar'
 export { default as IconCar } from './IconCar/IconCar';
 export { default as IconCard } from './IconCard/IconCard';
 export { default as IconCertification } from './IconCertification/IconCertification';
@@ -26,6 +27,7 @@ export { default as IconEmailAttention } from './IconEmailAttention/IconEmailAtt
 export { default as IconEmailSent } from './IconEmailSent/IconEmailSent';
 export { default as IconEmailSuccess } from './IconEmailSuccess/IconEmailSuccess';
 export { default as IconEnquiry } from './IconEnquiry/IconEnquiry';
+export { default as IconHouse } from './IconHouse/IconHouse'
 export { default as IconKeys } from './IconKeys/IconKeys';
 export { default as IconKeysSuccess } from './IconKeysSuccess/IconKeysSuccess';
 export { default as IconReviewStar } from './IconReviewStar/IconReviewStar';

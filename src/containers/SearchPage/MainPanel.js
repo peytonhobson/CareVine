@@ -115,7 +115,7 @@ class MainPanel extends Component {
     this.setState({ currentQueryParams: {} });
 
     // Reset routing params
-    const queryParams = omit(urlQueryParams, filterQueryParamNames);
+    const queryParams = `${omit(urlQueryParams, filterQueryParamNames)}&distance=30`;
     history.push(createResourceLocatorString('SearchPage', routeConfiguration(), {}, queryParams));
   }
 

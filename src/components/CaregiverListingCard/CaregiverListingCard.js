@@ -19,6 +19,8 @@ import {
   IconSearch,
   IconCertification,
   IconCar,
+  IconHouse,
+  IconCalendar,
 } from '..';
 import { types } from 'sharetribe-flex-sdk';
 const { Money, User } = types;
@@ -102,6 +104,7 @@ export const CaregiverListingCardComponent = props => {
     experienceLevel,
     minPrice = 0,
     maxPrice = 0,
+    scheduleTypes,
   } = publicData;
   const slug = createSlug(userDisplayName);
 
@@ -117,11 +120,7 @@ export const CaregiverListingCardComponent = props => {
     authorMetadata.backgroundCheckApproved &&
     authorMetadata.backgroundCheckApproved.date;
 
-  const classes = classNames(
-    rootClassName || css.root,
-    className,
-    hasPremiumSubscription && css.premium
-  );
+  const classes = classNames(rootClassName || css.root, className);
 
   const geolocation = currentUserListing && currentUserListing.attributes.geolocation;
 
@@ -149,9 +148,11 @@ export const CaregiverListingCardComponent = props => {
     .filter(option => additionalInfo && additionalInfo.includes(option.key))
     .map(option => option.label);
 
+  const avatarClasses = classNames(css.avatar, hasPremiumSubscription && css.premium);
+
   const avatarComponent = (
     <Avatar
-      className={css.avatar}
+      className={avatarClasses}
       renderSizes="(max-width: 767px) 96px, 240px"
       user={currentAuthor}
       initialsClassName={css.avatarInitials}
@@ -237,54 +238,68 @@ export const CaregiverListingCardComponent = props => {
               Message
             </Button>
           </div>
-          <div className={css.schedule}>
-            <span className={css.bold}>Schedule: </span>
-            {weekdayAbbreviations.map(day => {
-              const dayInSchedule = daysInSchedule.find(
-                dayInSchedule => dayInSchedule.key === day.key
-              );
-              const dayClasses = classNames(css.dayBox, dayInSchedule && css.active);
-              return <div className={dayClasses}>{day.label}</div>;
-            })}
-          </div>
-          <div className={css.badges}>
-            <div className={css.badge}>
-              <InfoTooltip title={backgroundCheckTitle} icon={<IconSearch />} />
+          <div>
+            <div className={css.schedule}>
+              <span className={css.bold}>Availability: </span>
+              {weekdayAbbreviations.map(day => {
+                const dayInSchedule = daysInSchedule.find(
+                  dayInSchedule => dayInSchedule.key === day.key
+                );
+                const dayClasses = classNames(css.dayBox, dayInSchedule && css.active);
+                return <div className={dayClasses}>{day.label}</div>;
+              })}
             </div>
-            {certificationsAndTraining && (
+            <div className={css.badges}>
               <div className={css.badge}>
-                <InfoTooltip title={certificationsAndTrainingTitle} icon={<IconCertification />} />
+                <InfoTooltip title={backgroundCheckTitle} icon={<IconSearch />} />
               </div>
-            )}
-            {additionalInfo && additionalInfo.includes('hasCar') && (
+              {certificationsAndTraining && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={certificationsAndTrainingTitle}
+                    icon={<IconCertification />}
+                  />
+                </div>
+              )}
+              {additionalInfo && additionalInfo.includes('hasCar') && (
+                <div className={css.badge}>
+                  <InfoTooltip title={hasCarTitle} icon={<IconCar />} />
+                </div>
+              )}
               <div className={css.badge}>
-                <InfoTooltip title={hasCarTitle} icon={<IconCar />} />
-              </div>
-            )}
-            <div className={css.badge}>
-              <InfoTooltip
-                title={experienceLevelTitle}
-                icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
-              />
-            </div>
-          </div>
-
-          <div className={css.providedServices}>
-            <span className={css.bold}>Provides services for: </span>
-            <div className={css.serviceCardList}>
-              {providedServices.slice(0, 2).map(service => (
-                <p className={css.serviceCardItem}>{servicesMap.get(service)}</p>
-              ))}
-              {additionalServices && additionalServices.length > 0 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
-                  title={additionalServicesText}
-                  icon={<p className={css.serviceCardItem}>+{additionalServices.length} more</p>}
+                  title={experienceLevelTitle}
+                  icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
                 />
+              </div>
+              {scheduleTypes && scheduleTypes.includes('liveIn') && (
+                <div className={css.badge}>
+                  <InfoTooltip title="Open to live-in care" icon={<IconHouse />} />
+                </div>
+              )}
+              {scheduleTypes && scheduleTypes.includes('oneTime') && (
+                <div className={css.badge}>
+                  <InfoTooltip title="Open to one-time jobs" icon={<IconCalendar />} />
+                </div>
               )}
             </div>
+
+            <div className={css.providedServices}>
+              <span className={css.bold}>Provides services for: </span>
+              <div className={css.serviceCardList}>
+                {providedServices.slice(0, 2).map(service => (
+                  <p className={css.serviceCardItem}>{servicesMap.get(service)}</p>
+                ))}
+                {additionalServices && additionalServices.length > 0 && (
+                  <InfoTooltip
+                    styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                    title={additionalServicesText}
+                    icon={<p className={css.serviceCardItem}>+{additionalServices.length} more</p>}
+                  />
+                )}
+              </div>
+            </div>
           </div>
-          <div className={css.descriptionBox}></div>
         </div>
       </NamedLink>
     </div>

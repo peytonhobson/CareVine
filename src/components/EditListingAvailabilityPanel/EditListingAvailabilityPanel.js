@@ -59,12 +59,12 @@ const EditListingAvailabilityPanel = props => {
     timezone: defaultTimeZone(),
     entries: [],
   };
-  const savedAvailabilityPlan = currentListing.attributes.publicData.availabilityPlan;
+  const publicData = currentListing && currentListing.attributes.publicData;
+  const savedAvailabilityPlan = publicData && publicData.availabilityPlan;
 
   const savedAvailabilityExceptions =
     savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions;
-  const savedSelectedAvailabilityTypes =
-    savedAvailabilityPlan && savedAvailabilityPlan.availabilityTypes;
+  const savedSelectedAvailabilityTypes = publicData && publicData.scheduleTypes;
 
   // Hooks
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
@@ -126,7 +126,7 @@ const EditListingAvailabilityPanel = props => {
 
   const handleAvailabilityTypeChange = values => {
     // sessionStorage.setItem(, 'value');
-    setSelectedAvailabilityTypes(values.availabilityTypes);
+    setSelectedAvailabilityTypes(values.scheduleTypes);
   };
 
   const handleSaveAvailabilityException = exception => {
@@ -139,7 +139,7 @@ const EditListingAvailabilityPanel = props => {
     );
   };
 
-  const availabilityTypeFormInitialValues = { availabilityTypes: savedSelectedAvailabilityTypes };
+  const availabilityTypeFormInitialValues = { scheduleTypes: savedSelectedAvailabilityTypes };
 
   return (
     <main className={classes}>

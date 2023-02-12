@@ -5,7 +5,7 @@ import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
 import { formatDateStringToTz, getExclusiveEndDateWithTz } from '../../util/dates';
 import { parse } from '../../util/urlHelpers';
 import config from '../../config';
-import { expandBounds } from '../../util/maps';
+import { calculateDistanceBetweenOrigins, expandBounds } from '../../util/maps';
 import { TRANSITIONS } from '../../util/transaction';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
@@ -225,18 +225,7 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
 export const searchListings = searchParams => (dispatch, getState, sdk) => {
   dispatch(searchListingsRequest(searchParams));
 
-  const priceSearchParams = priceParam => {
-    const inSubunits = value =>
-      convertUnitToSubUnit(value, unitDivisor(config.currencyConfig.currency));
-    const values = priceParam ? priceParam.split(',') : [];
-    return priceParam && values.length === 2
-      ? {
-          price: [inSubunits(values[0]), inSubunits(values[1]) + 1].join(','),
-        }
-      : {};
-  };
-
-  const { perPage, price, dates, minDuration, distance, bounds, ...rest } = searchParams;
+  const { perPage, price, dates, minDuration, distance, origin, ...rest } = searchParams;
   // const priceMaybe = priceSearchParams(price);
 
   const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
@@ -246,7 +235,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     // ...priceMaybe,
     ...minPriceMaybe,
     per_page: perPage,
-    bounds: expandBounds(bounds, distance),
+    bounds: expandBounds(origin, distance),
   };
 
   return sdk.listings
