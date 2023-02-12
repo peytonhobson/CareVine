@@ -90,13 +90,11 @@ const EditListingCaregiverDetailsPanel = props => {
 
           const updatedValues = {
             publicData: {
-              caregiverDetails: {
-                certificationsAndTraining,
-                additionalInfo,
-                covidVaccination,
-                languagesSpoken,
-                idealCaregiverDetails,
-              },
+              certificationsAndTraining,
+              additionalInfo,
+              covidVaccination,
+              languagesSpoken,
+              idealCaregiverDetails,
             },
           };
 

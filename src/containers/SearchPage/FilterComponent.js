@@ -20,6 +20,7 @@ const FilterComponent = props => {
     urlQueryParams,
     initialValues,
     getHandleChangedValueFn,
+    form,
     ...rest
   } = props;
   const { id, type, queryParamNames, label, config } = filterConfig;
@@ -120,6 +121,7 @@ const FilterComponent = props => {
           queryParamNames={queryParamNames}
           initialValues={initialValues(queryParamNames)}
           onSubmit={getHandleChangedValueFn(useHistoryPush)}
+          form={form}
           {...config}
           {...rest}
         />

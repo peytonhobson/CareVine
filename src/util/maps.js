@@ -227,18 +227,22 @@ export const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
  *
  * @return {LatLngBounds} - New expanded bounds
  */
-export const expandBounds = (bounds, distance) => {
-  if (!bounds) {
+export const expandBounds = (origin, distance) => {
+  if (!origin) {
     return null;
   }
 
-  const neLatLngRads = degToRadians(bounds.ne);
-  const swLatLngRads = degToRadians(bounds.sw);
+  const latLngRads = degToRadians(origin);
 
-  bounds.ne.lat += distance / 69.171;
-  bounds.ne.lng += distance / (68.702 * Math.cos(neLatLngRads.lat));
-  bounds.sw.lat -= distance / 69.171;
-  bounds.sw.lng -= distance / (68.702 * Math.cos(swLatLngRads.lat));
+  const ne = new LatLng(
+    origin.lat + distance / 69.171,
+    origin.lng + distance / (68.702 * Math.cos(latLngRads.lat))
+  );
 
-  return bounds;
+  const sw = new LatLng(
+    origin.lat - distance / 69.171,
+    origin.lng - distance / (68.702 * Math.cos(latLngRads.lat))
+  );
+
+  return new LatLngBounds(ne, sw);
 };

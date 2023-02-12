@@ -90,11 +90,9 @@ module.exports = queryEvents = () => {
             if (user.attributes.emailVerified) {
               const listingId = event.attributes.resource.id.uuid;
 
-              integrationSdk.listings
-                .approve({
-                  id: listingId,
-                })
-                .catch(err => log.error(err));
+              integrationSdk.listings.approve({
+                id: listingId,
+              });
             }
           })
           .catch(err => log.error(err));
@@ -130,11 +128,9 @@ module.exports = queryEvents = () => {
             const listingState = res.data.data[0].attributes.state;
 
             if (listingState === 'pendingApproval') {
-              integrationSdk.listings
-                .approve({
-                  id: userListingId,
-                })
-                .catch(err => log.error(err.data));
+              integrationSdk.listings.approve({
+                id: userListingId,
+              });
             }
           })
           .catch(err => {

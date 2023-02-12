@@ -13,6 +13,7 @@ import routeConfiguration from '../../routeConfiguration';
 import { createResourceLocatorString, pathByRouteName } from '../../util/routes';
 import { parse, stringify } from '../../util/urlHelpers';
 import { propTypes } from '../../util/types';
+import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -178,7 +179,6 @@ export class SearchPageComponent extends Component {
       sortConfig,
       history,
       location,
-      mapListings,
       onManageDisableScrolling,
       pagination,
       scrollingDisabled,
@@ -359,30 +359,26 @@ const mapStateToProps = state => {
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
   const oppositeUserType = currentUserType === CAREGIVER ? EMPLOYER : CAREGIVER;
 
-  const pageListings = getListingsById(state, currentPageResultIds).filter(
-    listing =>
-      listing &&
-      listing.attributes &&
-      listing.attributes.metadata &&
-      listing.attributes.metadata.listingType === oppositeUserType
-  );
-  const mapListings = getListingsById(
-    state,
-    unionWith(currentPageResultIds, searchMapListingIds, (id1, id2) => id1.uuid === id2.uuid)
-  ).filter(
-    listing =>
-      listing &&
-      listing.attributes &&
-      listing.attributes.metadata &&
-      listing.attributes.metadata.listingType === oppositeUserType
-  );
+  const distance = searchParams.distance;
+  const origin = searchParams.origin;
+
+  const pageListings = getListingsById(state, currentPageResultIds)
+    .filter(
+      listing =>
+        listing &&
+        listing.attributes &&
+        listing.attributes.metadata &&
+        listing.attributes.metadata.listingType === oppositeUserType
+    )
+    .filter(
+      listing => calculateDistanceBetweenOrigins(origin, listing.attributes.geolocation) < distance
+    );
 
   return {
     currentUserTransactions: transactions,
     currentUserListing,
     isAuthenticated,
     listings: pageListings,
-    mapListings,
     pagination,
     scrollingDisabled: isScrollingDisabled(state),
     searchInProgress,

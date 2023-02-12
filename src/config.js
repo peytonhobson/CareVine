@@ -31,7 +31,7 @@ const i18n = {
 // Without the 'origin' parameter, search will not work correctly
 // NOTE: Keyword search and ordering search results by distance can't be used at the same time. You can turn keyword
 // search off by removing keyword filter config from filters array in marketplace-custom-config.js
-const sortSearchByDistance = false;
+const sortSearchByDistance = true;
 
 // API supports custom processes to be used in booking process.
 // We need to specify it when we are initiating a new order
