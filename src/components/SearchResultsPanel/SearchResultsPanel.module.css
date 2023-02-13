@@ -3,15 +3,20 @@
 .root {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .listingCards {
   padding: 0 24px 96px 24px;
   position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 80rem;
 
   @media (--viewportMedium) {
-    display: grid;
-    grid-auto-flow: row;
+    /* display: grid;
+    grid-auto-flow: row; */
   }
 
   @media (--viewportLarge) {

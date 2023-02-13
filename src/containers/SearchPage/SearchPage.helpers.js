@@ -4,6 +4,7 @@ import { createResourceLocatorString } from '../../util/routes';
 import { parseSelectFilterOptions } from '../../util/search';
 import { createSlug } from '../../util/urlHelpers';
 import routeConfiguration from '../../routeConfiguration';
+import { calculateDistanceBetweenOrigins } from '../../util/maps';
 
 const flatten = (acc, val) => acc.concat(val);
 
@@ -170,4 +171,84 @@ export const hasExistingTransaction = (transaction, currentUser, currentAuthor) 
     (txCustomerId === currentUserId && txProviderId === currentAuthorId) ||
     (txCustomerId === currentAuthorId && txProviderId === currentUserId)
   );
+};
+
+export const sortCaregiverMatch = (caregiverListing, employerListing) => {
+  let cgScore = 0;
+
+  const cgPublicData = caregiverListing.attributes.publicData;
+  const employerPublicData = employerListing.attributes.publicData;
+
+  const cgGeolocation = caregiverListing.attributes.geolocation;
+  const employerGeolocation = employerListing.attributes.geolocation;
+
+  if (
+    calculateDistanceBetweenOrigins(cgGeolocation, employerGeolocation) <
+    cgPublicData.travelDistance
+  ) {
+    cgScore += 10;
+  }
+
+  const cgCareTypes = cgPublicData.careTypes || [];
+  const employerCareTypes = employerPublicData.careTypes || [];
+
+  const cgCareTypesScore = cgCareTypes.filter(careType => employerCareTypes.includes(careType))
+    .length;
+
+  cgScore += 5 * cgCareTypesScore;
+
+  const cgLanguages = (cgPublicData.languagesSpoken && cgPublicData.languagesSpoken.provided) || [];
+  const employerLanguages =
+    (employerPublicData.languagesSpoken && employerPublicData.languagesSpoken.provided) || [];
+
+  const cgLanguagesScore = cgLanguages.filter(language => employerLanguages.includes(language))
+    .length;
+
+  cgScore += 5 * cgLanguagesScore;
+
+  const cgExperienceAreas = cgPublicData.experienceAreas || [];
+  const employerDetailedCareNeeds = employerPublicData.detailedCareNeeds || [];
+
+  const cgExperienceAreasScore =
+    cgExperienceAreas &&
+    cgExperienceAreas.filter(
+      experienceArea =>
+        employerDetailedCareNeeds && employerDetailedCareNeeds.includes(experienceArea)
+    ).length;
+
+  cgScore += cgExperienceAreasScore;
+
+  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
+  const employerScheduleType = employerPublicData.scheduleType;
+
+  if (cgScheduleTypes.includes(employerScheduleType)) {
+    cgScore += 10;
+  }
+
+  const cgAdditionalInfo = cgPublicData.additionalInfo || [];
+  const employerAdditionalInfo = employerPublicData.additionalInfo || [];
+
+  const cgAdditionalInfoScore = cgAdditionalInfo.filter(additionalInfo =>
+    employerAdditionalInfo.includes(additionalInfo)
+  ).length;
+
+  cgScore += 3 * cgAdditionalInfoScore;
+
+  const cgCertificationsAndTraining = cgPublicData.certificationsAndTraining || [];
+  const employerCertificationsAndTraining = employerPublicData.certificationsAndTraining || [];
+
+  const cgCertificationsAndTrainingScore = cgCertificationsAndTraining.filter(
+    certificationAndTraining => employerCertificationsAndTraining.includes(certificationAndTraining)
+  ).length;
+
+  cgScore += 3 * cgCertificationsAndTrainingScore;
+
+  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
+  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
+
+  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'yes') {
+    cgScore += 10;
+  }
+
+  return cgScore;
 };

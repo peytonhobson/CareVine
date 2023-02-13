@@ -40,9 +40,9 @@ const SearchResultsPanel = props => {
   const panelMediumWidth = 50;
   const panelLargeWidth = 62.5;
   const cardRenderSizes = [
-    '(max-width: 767px) 100vw',
-    `(max-width: 1023px) ${panelMediumWidth}vw`,
-    `(max-width: 1920px) ${panelLargeWidth / 2}vw`,
+    '(max-width: 400px) 100vw',
+    `(max-width: 600px) ${panelMediumWidth}vw`,
+    `(max-width: 800px) ${panelLargeWidth / 2}vw`,
     `${panelLargeWidth / 3}vw`,
   ].join(', ');
 
@@ -52,7 +52,6 @@ const SearchResultsPanel = props => {
         {listings.map(l =>
           currentUserType === EMPLOYER ? (
             <CaregiverListingCard
-              className={css.listingCard}
               key={l.id.uuid}
               listing={l}
               renderSizes={cardRenderSizes}
