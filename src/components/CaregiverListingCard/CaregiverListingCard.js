@@ -22,10 +22,13 @@ import {
   IconHouse,
   IconCalendar,
 } from '..';
+import { styled } from '@material-ui/styles';
 import { types } from 'sharetribe-flex-sdk';
 const { Money, User } = types;
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
+import { Card as MuiCard } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
 
 import css from './CaregiverListingCard.module.css';
 import { info } from 'autoprefixer';
@@ -144,9 +147,6 @@ export const CaregiverListingCardComponent = props => {
   )
     .filter(option => certificationsAndTraining && certificationsAndTraining.includes(option.key))
     .map(option => option.label);
-  const additionalInfoLabels = findOptionsForSelectFilter('additionalInfo', filtersConfig)
-    .filter(option => additionalInfo && additionalInfo.includes(option.key))
-    .map(option => option.label);
 
   const avatarClasses = classNames(css.avatar, hasPremiumSubscription && css.premium);
 
@@ -171,7 +171,7 @@ export const CaregiverListingCardComponent = props => {
   const additionalServicesText = (
     <ul>
       {additionalServices.map(service => (
-        <li>{service}</li>
+        <li>{service && service.split('/')[0]}</li>
       ))}
     </ul>
   );
@@ -199,48 +199,60 @@ export const CaregiverListingCardComponent = props => {
     </div>
   );
 
+  const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
+    width: '30rem',
+    height: '28rem',
+    marginBottom: '3rem',
+    marginInline: '1.5rem',
+
+    '&.MuiPaper-rounded': {
+      borderRadius: '3rem',
+    },
+  }));
+
+  const useStyles = makeStyles({
+    root: props => ({
+      border: props.border,
+    }),
+  });
+  const borderProps = {
+    border: '3px solid var(--marketplaceColorLight)',
+  };
+  const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
+
   return (
-    <div className={css.container}>
+    <Card className={cardClasses && cardClasses.root}>
       <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-        <div className={css.user}>
-          {avatarComponent}
-          <div className={css.title}>
-            {richText(userDisplayName, {
-              longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
-              longWordClass: css.longWord,
-            })}
-            {hasPremiumSubscription && (
-              <InfoTooltip
-                title={premiumIconTitle}
-                icon={<IconCheckmark className={css.premiumIcon} />}
-              />
-            )}
-          </div>
-        </div>
-        <div className={css.mainInfo}>
-          <div className={css.topInfo}>
-            <div>
-              <div className={css.priceValue} title={priceTitle}>
-                {formattedMinPrice}-{maxPrice / 100}
-                <span className={css.perUnit}>
-                  &nbsp;
-                  <FormattedMessage id={'CaregiverListingCard.perUnit'} />
-                </span>
-              </div>
-              <div className={css.location}>
-                {location.city} - {distanceFromLocation} miles away
-              </div>
+        <div className={css.topRow}>
+          <div className={css.user}>
+            {avatarComponent}
+            <div className={css.title}>
+              {richText(userDisplayName, {
+                longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+                longWordClass: css.longWord,
+              })}
+              {hasPremiumSubscription && (
+                <InfoTooltip
+                  title={premiumIconTitle}
+                  icon={<IconCheckmark className={css.premiumIcon} />}
+                />
+              )}
             </div>
-            <Button
-              className={css.messageButton}
-              onClick={() => onContactUser(currentAuthor, currentListing.id)}
-            >
-              Message
-            </Button>
           </div>
-          <div>
+
+          <div className={css.topInfo}>
+            <div className={css.priceValue} title={priceTitle}>
+              {formattedMinPrice}-{maxPrice / 100}
+              <span className={css.perUnit}>
+                &nbsp;
+                <FormattedMessage id={'CaregiverListingCard.perUnit'} />
+              </span>
+            </div>
+            <div>
+              <h3 className={css.location}>{location.city}</h3>
+              <h3 className={css.location}>{distanceFromLocation} miles away</h3>
+            </div>
             <div className={css.schedule}>
-              <span className={css.bold}>Availability: </span>
               {weekdayAbbreviations.map(day => {
                 const dayInSchedule = daysInSchedule.find(
                   dayInSchedule => dayInSchedule.key === day.key
@@ -249,60 +261,61 @@ export const CaregiverListingCardComponent = props => {
                 return <div className={dayClasses}>{day.label}</div>;
               })}
             </div>
-            <div className={css.badges}>
-              <div className={css.badge}>
-                <InfoTooltip title={backgroundCheckTitle} icon={<IconSearch />} />
-              </div>
-              {certificationsAndTraining && (
-                <div className={css.badge}>
-                  <InfoTooltip
-                    title={certificationsAndTrainingTitle}
-                    icon={<IconCertification />}
-                  />
-                </div>
-              )}
-              {additionalInfo && additionalInfo.includes('hasCar') && (
-                <div className={css.badge}>
-                  <InfoTooltip title={hasCarTitle} icon={<IconCar />} />
-                </div>
-              )}
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={experienceLevelTitle}
-                  icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
-                />
-              </div>
-              {scheduleTypes && scheduleTypes.includes('liveIn') && (
-                <div className={css.badge}>
-                  <InfoTooltip title="Open to live-in care" icon={<IconHouse />} />
-                </div>
-              )}
-              {scheduleTypes && scheduleTypes.includes('oneTime') && (
-                <div className={css.badge}>
-                  <InfoTooltip title="Open to one-time jobs" icon={<IconCalendar />} />
-                </div>
-              )}
+          </div>
+        </div>
+        <div className={css.mainInfo}>
+          <div className={css.badges}>
+            <div className={css.badge}>
+              <InfoTooltip title={backgroundCheckTitle} icon={<IconSearch />} />
             </div>
-
-            <div className={css.providedServices}>
-              <span className={css.bold}>Provides services for: </span>
-              <div className={css.serviceCardList}>
-                {providedServices.slice(0, 2).map(service => (
-                  <p className={css.serviceCardItem}>{servicesMap.get(service)}</p>
-                ))}
-                {additionalServices && additionalServices.length > 0 && (
-                  <InfoTooltip
-                    styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
-                    title={additionalServicesText}
-                    icon={<p className={css.serviceCardItem}>+{additionalServices.length} more</p>}
-                  />
-                )}
+            {certificationsAndTraining && (
+              <div className={css.badge}>
+                <InfoTooltip title={certificationsAndTrainingTitle} icon={<IconCertification />} />
               </div>
+            )}
+            {additionalInfo && additionalInfo.includes('hasCar') && (
+              <div className={css.badge}>
+                <InfoTooltip title={hasCarTitle} icon={<IconCar />} />
+              </div>
+            )}
+            <div className={css.badge}>
+              <InfoTooltip
+                title={experienceLevelTitle}
+                icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
+              />
+            </div>
+            {scheduleTypes && scheduleTypes.includes('liveIn') && (
+              <div className={css.badge}>
+                <InfoTooltip title="Open to live-in care" icon={<IconHouse />} />
+              </div>
+            )}
+            {scheduleTypes && scheduleTypes.includes('oneTime') && (
+              <div className={css.badge}>
+                <InfoTooltip title="Open to one-time jobs" icon={<IconCalendar />} />
+              </div>
+            )}
+          </div>
+
+          <div className={css.providedServices}>
+            <div className={css.serviceCardList}>
+              {providedServices.slice(0, 2).map(service => (
+                <p className={css.serviceCardItem}>{servicesMap.get(service).split('/')[0]}</p>
+              ))}
+              {additionalServices && additionalServices.length > 0 && (
+                <InfoTooltip
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  title={additionalServicesText}
+                  icon={<p className={css.serviceCardItem}>+{additionalServices.length} more</p>}
+                />
+              )}
             </div>
           </div>
         </div>
       </NamedLink>
-    </div>
+      <div className={css.buttonContainer} onClick={() => onContactUser(currentAuthor, id)}>
+        <Button className={css.messageButton}>Message</Button>
+      </div>
+    </Card>
   );
 };
 

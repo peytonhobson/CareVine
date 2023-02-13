@@ -18,6 +18,8 @@ import * as log from '../../util/log';
 // So, there's enough cards to fill all columns on full pagination pages
 const RESULT_PAGE_SIZE = 24;
 
+const searchableSortParams = ['createdAt', '-createdAt', '-price', 'price'];
+
 // ================ Action types ================ //
 
 export const SEARCH_LISTINGS_REQUEST = 'app/SearchPage/SEARCH_LISTINGS_REQUEST';
@@ -225,10 +227,11 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
 export const searchListings = searchParams => (dispatch, getState, sdk) => {
   dispatch(searchListingsRequest(searchParams));
 
-  const { perPage, price, dates, minDuration, distance, origin, ...rest } = searchParams;
+  const { perPage, price, dates, minDuration, distance, origin, sort, ...rest } = searchParams;
   // const priceMaybe = priceSearchParams(price);
 
   const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
+  const sortMaybe = searchableSortParams.includes(sort) ? { sort } : null;
 
   const params = {
     ...rest,
@@ -236,6 +239,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     ...minPriceMaybe,
     per_page: perPage,
     bounds: expandBounds(origin, distance),
+    ...sortMaybe,
   };
 
   return sdk.listings

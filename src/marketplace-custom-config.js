@@ -94,24 +94,24 @@ export const filters = [
       step: 1,
     },
   },
-  {
-    id: 'keyword',
-    label: 'Keyword',
-    type: 'KeywordFilter',
-    group: 'primary',
-    // Note: KeywordFilter is fixed filter,
-    // you can't change "queryParamNames: ['keywords'],"
-    queryParamNames: ['keywords'],
-    // NOTE: If you are ordering search results by distance
-    // the keyword search can't be used at the same time.
-    // You can turn on/off ordering by distance from config.js file.
-    config: {},
-  },
+  // {
+  //   id: 'keyword',
+  //   label: 'Keyword',
+  //   type: 'KeywordFilter',
+  //   group: 'primary',
+  //   // Note: KeywordFilter is fixed filter,
+  //   // you can't change "queryParamNames: ['keywords'],"
+  //   queryParamNames: ['keywords'],
+  //   // NOTE: If you are ordering search results by distance
+  //   // the keyword search can't be used at the same time.
+  //   // You can turn on/off ordering by distance from config.js file.
+  //   config: {},
+  // },
   {
     id: 'careTypes',
     label: 'Care Types',
     type: 'SelectMultipleFilter',
-    group: 'secondary',
+    group: 'primary',
     queryParamNames: ['pub_careTypes'],
     config: {
       // Optional modes: 'has_all', 'has_any'
@@ -409,7 +409,7 @@ export const filters = [
     id: 'languagesSpoken',
     label: 'Languages',
     type: 'SelectMultipleFilter',
-    group: 'secondary',
+    group: 'primary',
     queryParamNames: ['pub_languagesSpoken'],
     config: {
       // Optional modes: 'has_all', 'has_any'
@@ -481,14 +481,15 @@ export const sortConfig = {
   conflictingFilters: ['keyword'],
 
   options: [
+    { key: 'relevant', label: 'Most Relevant' },
     { key: 'createdAt', label: 'Newest' },
     { key: '-createdAt', label: 'Oldest' },
-    { key: '-price', label: 'Lowest price' },
-    { key: 'price', label: 'Highest price' },
+    { key: '-pub_minPrice', label: 'Lowest price' },
+    { key: 'pub_minPrice', label: 'Highest price' },
 
     // The relevance is only used for keyword search, but the
     // parameter isn't sent to the Marketplace API. The key is purely
     // for handling the internal state of the sorting dropdown.
-    { key: 'relevance', label: 'Relevance', longLabel: 'Relevance (Keyword search)' },
+    // { key: 'relevance', label: 'Relevance', longLabel: 'Relevance (Keyword search)' },
   ],
 };

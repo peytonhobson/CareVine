@@ -17,7 +17,14 @@ import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
-import { SearchMap, ModalInMobile, Page, Modal, SendbirdModal } from '../../components';
+import {
+  SearchMap,
+  ModalInMobile,
+  Page,
+  Modal,
+  SendbirdModal,
+  NamedRedirect,
+} from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EnquiryForm } from '../../forms';
 import { generateAccessToken } from '../../containers/InboxPage/InboxPage.duck';
@@ -33,6 +40,7 @@ import {
   validFilterParams,
   createSearchResultSchema,
   hasExistingTransaction,
+  sortCaregiverMatch,
 } from './SearchPage.helpers';
 import { sendEnquiry, setInitialValues } from '../ListingPage/ListingPage.duck';
 import MainPanel from './MainPanel';
@@ -49,7 +57,6 @@ import {
 import '@sendbird/uikit-react/dist/index.css';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
-const SEARCH_WITH_MAP_DEBOUNCE = 300; // Little bit of debounce before search is initiated.
 
 export class SearchPageComponent extends Component {
   constructor(props) {
@@ -216,6 +223,13 @@ export class SearchPageComponent extends Component {
     const paramsQueryString = stringify(
       pickSearchParamsOnly(searchParams, filterConfig, sortConfig)
     );
+
+    // if (urlQueryParams.distance < 1) {
+    //   return (
+    //     <NamedRedirect name="SearchPage" search={stringify({ ...urlQueryParams, distance: 10 })} />
+    //   );
+    // }
+
     const searchParamsAreInSync = true;
 
     const validQueryParams = validURLParamsForExtendedData(searchInURL, filterConfig);
@@ -374,11 +388,21 @@ const mapStateToProps = state => {
       listing => calculateDistanceBetweenOrigins(origin, listing.attributes.geolocation) < distance
     );
 
+  const sortByRelevant = searchParams.sort && searchParams.sort === 'relevant';
+
+  const sortedListings =
+    currentUserListing && sortByRelevant
+      ? pageListings.sort(
+          (a, b) =>
+            sortCaregiverMatch(a, currentUserListing) - sortCaregiverMatch(b, currentUserListing)
+        )
+      : pageListings;
+
   return {
     currentUserTransactions: transactions,
     currentUserListing,
     isAuthenticated,
-    listings: pageListings,
+    listings: sortedListings,
     pagination,
     scrollingDisabled: isScrollingDisabled(state),
     searchInProgress,
