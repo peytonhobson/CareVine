@@ -1,0 +1,76 @@
+.root {
+  padding-block: 2rem;
+  display: flex;
+  justify-content: center;
+  width: 60%;
+  border-bottom: 1px solid var(--matterColorAnti);
+}
+
+.userDisplay {
+  text-align: center;
+}
+
+.avatar {
+  width: 10rem;
+  height: 10rem;
+}
+
+.topInfo {
+  max-height: 10rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: 0.2rem;
+  margin-left: 1rem;
+}
+
+.priceValue {
+  /* Font */
+  composes: h1 from global;
+
+  color: var(--marketplaceColor);
+
+  /* Remove default margins from font */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.perUnit {
+  composes: marketplaceBodyFontStyles from global;
+  /* Font */
+  color: var(--matterColor);
+
+  /* Remove default margins from font */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.title {
+  /* Font */
+  composes: h1 from global;
+  color: var(--matterColor);
+  position: relative;
+  width: 100%;
+
+  /* Remove default margins from font */
+  margin: 0;
+
+  /* @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
+  } */
+}
+
+.location {
+  margin: 0;
+}

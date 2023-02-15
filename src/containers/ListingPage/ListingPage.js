@@ -40,12 +40,12 @@ import {
   LayoutWrapperFooter,
   Footer,
   BookingPanel,
-  CaregiverListingContainer,
-  EmployerListingContainer,
+  ListingSummary,
 } from '../../components';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { CAREGIVER } from '../../util/constants';
+import ActionBarMaybe from './ActionBarMaybe';
 
 import {
   sendEnquiry,
@@ -200,6 +200,7 @@ export class ListingPageComponent extends Component {
       lineItems,
       fetchLineItemsInProgress,
       fetchLineItemsError,
+      currentUserListing,
     } = this.props;
 
     const listingId = new UUID(rawParams.id);
@@ -301,14 +302,6 @@ export class ListingPageComponent extends Component {
       );
     }
 
-    const handleViewPhotosClick = e => {
-      // Stop event from bubbling up to prevent image click handler
-      // trying to open the carousel as well.
-      e.stopPropagation();
-      this.setState({
-        imageCarouselOpen: true,
-      });
-    };
     const authorAvailable = currentListing && currentListing.author;
     const userAndListingAuthorAvailable = !!(currentUser && authorAvailable);
     const isOwnListing =
@@ -372,42 +365,30 @@ export class ListingPageComponent extends Component {
     const userType = currentListing?.attributes.metadata.listingType;
     const mainContent =
       userType === CAREGIVER ? (
-        <CaregiverListingContainer
+        <ListingSummary
+          listing={currentListing}
           params={params}
-          currentAuthor={currentAuthor}
-          priceTitle={priceTitle}
-          formattedPrice={formattedPrice}
-          publicData={publicData}
-          hostLink={hostLink}
-          showContactUser={showContactUser}
-          onContactUser={this.onContactUser}
-          description={description}
-          geolocation={geolocation}
-          currentListing={currentListing}
-          reviews={reviews}
-          fetchReviewsError={fetchReviewsError}
-          isOwnListing={isOwnListing}
-          unitType={unitType}
-          onSubmit={handleBookingSubmit}
-          bookingTitle={bookingTitle}
-          authorDisplayName={authorDisplayName}
-          onManageDisableScrolling={onManageDisableScrolling}
-          monthlyTimeSlots={monthlyTimeSlots}
-          onFetchTimeSlots={onFetchTimeSlots}
-          onFetchTransactionLineItems={onFetchTransactionLineItems}
-          lineItems={lineItems}
-          fetchLineItemsInProgress={fetchLineItemsInProgress}
-          fetchLineItemsError={fetchLineItemsError}
-          listingId={listingId}
-          listingSlug={listingSlug}
-          listingType={listingType}
-          listingTab={listingTab}
-          intl={intl}
-          handleBookingSubmit={handleBookingSubmit}
+          currentUserListing={currentUserListing}
         />
       ) : (
         <div>hi</div>
       ); //)
+
+    const actionBar = listingId ? (
+      <div onClick={e => e.stopPropagation()}>
+        <ActionBarMaybe
+          className={css.actionBar}
+          isOwnListing={isOwnListing}
+          listing={currentListing}
+          editParams={{
+            id: listingId.uuid,
+            slug: listingSlug,
+            type: listingType,
+            tab: listingTab,
+          }}
+        />
+      </div>
+    ) : null;
 
     return (
       <Page
@@ -429,7 +410,8 @@ export class ListingPageComponent extends Component {
         <LayoutSingleColumn className={css.pageRoot}>
           <LayoutWrapperTopbar>{topbar}</LayoutWrapperTopbar>
           <LayoutWrapperMain>
-            {mainContent}
+            {actionBar}
+            <div className={css.mainContainer}>{mainContent}</div>
             <Modal
               id="ListingPage.enquiry"
               contentClassName={css.enquiryModalContent}
@@ -535,7 +517,7 @@ const mapStateToProps = state => {
     fetchLineItemsError,
     enquiryModalOpenForListingId,
   } = state.ListingPage;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const getListing = id => {
     const ref = { id, type: 'listing' };
@@ -565,6 +547,7 @@ const mapStateToProps = state => {
     fetchLineItemsError,
     sendEnquiryInProgress,
     sendEnquiryError,
+    currentUserListing,
   };
 };
 

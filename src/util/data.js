@@ -10,6 +10,9 @@ import {
   MISSING_REQUIREMENTS,
   EMAIL_VERIFICATION,
 } from './constants';
+import { types as sdkTypes } from '../util/sdkLoader';
+const { Money } = sdkTypes;
+import { formatMoneyInteger } from './currency';
 
 /**
  * Combine the given relationships objects
@@ -488,4 +491,36 @@ export const getMissingInfoModalValue = currentUser => {
     return EMAIL_VERIFICATION;
   }
   return null;
+};
+
+export const formatPrice = (rates, intl) => {
+  const minPriceMoney = new Money(rates[0], 'USD');
+  const maxPriceMoney = new Money(rates[1], 'USD');
+
+  if (minPriceMoney && maxPriceMoney) {
+    const formattedMinPrice = formatMoneyInteger(intl, minPriceMoney);
+    const formattedMaxPrice = formatMoneyInteger(intl, maxPriceMoney);
+
+    return {
+      formattedMinPrice,
+      formattedMaxPrice,
+      priceTitle: formattedMinPrice + ' - ' + formattedMaxPrice,
+    };
+  } else if (maxPriceMoney && minPriceMoney) {
+    return {
+      formattedMinPrice: intl.formatMessage(
+        { id: 'CaregiverListingCard.unsupportedPrice' },
+        { currency: minPriceMoney.currency }
+      ),
+      formattedMaxPrice: intl.formatMessage(
+        { id: 'CaregiverListingCard.unsupportedPrice' },
+        { currency: maxPriceMoney.currency }
+      ),
+      priceTitle: intl.formatMessage(
+        { id: 'CaregiverListingCard.unsupportedPriceTitle' },
+        { currency: maxPriceMoney.currency }
+      ),
+    };
+  }
+  return {};
 };

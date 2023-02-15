@@ -3,6 +3,25 @@
 .root {
 }
 
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  @media (--viewportMedium) {
+    padding: 0 24px;
+  }
+  @media (--viewportLarge) {
+    padding: 0 36px;
+  }
+  @media (--viewportXLarge) {
+    padding: 0;
+  }
+}
+
 .pageRoot {
   display: flex;
   padding-bottom: 90px;

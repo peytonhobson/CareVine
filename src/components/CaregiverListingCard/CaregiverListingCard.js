@@ -10,7 +10,6 @@ import { styled } from '@material-ui/styles';
 
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
-import { formatMoneyInteger } from '../../util/currency';
 import { ensureListing, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
@@ -30,42 +29,11 @@ import {
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
+import { formatPrice } from '../../util/data';
 
 import css from './CaregiverListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
-
-const priceData = (rates, intl) => {
-  const minPriceMoney = new Money(rates[0], 'USD');
-  const maxPriceMoney = new Money(rates[1], 'USD');
-
-  if (minPriceMoney && maxPriceMoney) {
-    const formattedMinPrice = formatMoneyInteger(intl, minPriceMoney);
-    const formattedMaxPrice = formatMoneyInteger(intl, maxPriceMoney);
-
-    return {
-      formattedMinPrice,
-      formattedMaxPrice,
-      priceTitle: formattedMinPrice + ' - ' + formattedMaxPrice,
-    };
-  } else if (maxPriceMoney && minPriceMoney) {
-    return {
-      formattedMinPrice: intl.formatMessage(
-        { id: 'CaregiverListingCard.unsupportedPrice' },
-        { currency: minPriceMoney.currency }
-      ),
-      formattedMaxPrice: intl.formatMessage(
-        { id: 'CaregiverListingCard.unsupportedPrice' },
-        { currency: maxPriceMoney.currency }
-      ),
-      priceTitle: intl.formatMessage(
-        { id: 'CaregiverListingCard.unsupportedPriceTitle' },
-        { currency: maxPriceMoney.currency }
-      ),
-    };
-  }
-  return {};
-};
 
 export const CaregiverListingCardComponent = props => {
   const { className, rootClassName, intl, listing, filtersConfig, currentUserListing } = props;
@@ -110,7 +78,7 @@ export const CaregiverListingCardComponent = props => {
       ? calculateDistanceBetweenOrigins(geolocation, otherGeolocation)
       : null;
 
-  const { formattedMinPrice, priceTitle } = priceData([minPrice, maxPrice], intl);
+  const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
   const servicesMap = new Map();
   findOptionsForSelectFilter('careTypes', filtersConfig).forEach(option =>
