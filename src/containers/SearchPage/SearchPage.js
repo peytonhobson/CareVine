@@ -1,58 +1,36 @@
 import React, { Component } from 'react';
+
 import { array, bool, func, oneOf, object, shape, string } from 'prop-types';
-import { injectIntl, intlShape } from '../../util/reactIntl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
-import { types as sdkTypes } from '../../util/sdkLoader';
-import debounce from 'lodash/debounce';
-import unionWith from 'lodash/unionWith';
 import classNames from 'classnames';
+
 import config from '../../config';
-import routeConfiguration from '../../routeConfiguration';
-import { createResourceLocatorString, pathByRouteName } from '../../util/routes';
 import { parse, stringify } from '../../util/urlHelpers';
 import { propTypes } from '../../util/types';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
-import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
-import {
-  SearchMap,
-  ModalInMobile,
-  Page,
-  Modal,
-  SendbirdModal,
-  NamedRedirect,
-} from '../../components';
+import { injectIntl, intlShape } from '../../util/reactIntl';
+import { Page } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { EnquiryForm } from '../../forms';
-import { generateAccessToken } from '../../containers/InboxPage/InboxPage.duck';
-import { setActiveListing, fetchCurrentUserTransactions, fetchChannel } from './SearchPage.duck';
+import { setActiveListing } from './SearchPage.duck';
 import {
   pickSearchParamsOnly,
   validURLParamsForExtendedData,
-  validFilterParams,
   createSearchResultSchema,
-  hasExistingTransaction,
   sortCaregiverMatch,
   sortEmployerMatch,
 } from './SearchPage.helpers';
-import { sendEnquiry, setInitialValues } from '../ListingPage/ListingPage.duck';
 import MainPanel from './MainPanel';
-import css from './SearchPage.module.css';
-import { userDisplayNameAsString } from '../../util/data';
-const { UUID } = sdkTypes;
-import {
-  CAREGIVER,
-  EMPLOYER,
-  EMAIL_VERIFICATION,
-  MISSING_REQUIREMENTS,
-  MISSING_SUBSCRIPTION,
-} from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
+
 import '@sendbird/uikit-react/dist/index.css';
+import css from './SearchPage.module.css';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
+const RELEVANT = 'relevant';
 
 export class SearchPageComponent extends Component {
   constructor(props) {
@@ -68,8 +46,6 @@ export class SearchPageComponent extends Component {
 
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
-    this.onContactUser = this.onContactUser.bind(this);
-    this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
   }
 
   componentWillReceiveProps = nextProps => {
@@ -123,120 +99,24 @@ export class SearchPageComponent extends Component {
     this.setState({ isMobileModalOpen: false });
   }
 
-  onContactUser(currentAuthor, listingId) {
-    this.setState({ currentListingAuthor: currentAuthor });
-    this.setState({ currentListingId: listingId });
-
-    this.props.onFetchCurrentUserTransactions();
-
-    const { currentUser, history, callSetInitialValues, location } = this.props;
-
-    const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-    const emailVerified = currentUser && currentUser.attributes.emailVerified;
-    const backgroundCheckApproved =
-      currentUser && currentUser.attributes.profile.metadata.backgroundCheckApproved;
-    const backgroundCheckSubscription =
-      currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
-    const stripeAccount = currentUser && currentUser.stripeAccount;
-
-    const canMessage =
-      userType === CAREGIVER
-        ? emailVerified &&
-          backgroundCheckApproved &&
-          backgroundCheckApproved.status &&
-          backgroundCheckSubscription &&
-          backgroundCheckSubscription.status === 'active' &&
-          stripeAccount
-        : emailVerified;
-
-    if (!currentUser) {
-      const state = { from: `${location.pathname}${location.search}${location.hash}` };
-
-      // We need to log in before showing the modal, but first we need to ensure
-      // that modal does open when user is redirected back to this listingpage
-      callSetInitialValues(setInitialValues, { enquiryModalOpenForListingId: listingId });
-
-      // signup and return back to listingPage.
-      history.push(createResourceLocatorString('SignupPage', routeConfiguration(), {}, {}), state);
-    } else if (canMessage) {
-      this.setState({ enquiryModalOpen: true });
-    } else {
-      // TODO: caregiver should have two separate modals
-      // 1) something not approved
-      // 2) doesnt have a subcription but everythings approved
-      // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
-      if (userType === CAREGIVER) {
-        if (
-          emailVerified &&
-          backgroundCheckApproved &&
-          backgroundCheckApproved.status &&
-          stripeAccount
-        ) {
-          this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
-        } else {
-          this.props.onChangeModalValue(MISSING_REQUIREMENTS);
-        }
-        return;
-      }
-      this.props.onChangeModalValue(EMAIL_VERIFICATION);
-    }
-  }
-
-  onSubmitEnquiry(values) {
-    const {
-      history,
-      params,
-      onSendEnquiry,
-      currentUserTransactions,
-      currentUser,
-      onSendMessage,
-    } = this.props;
-    const routes = routeConfiguration();
-    const listingId = this.state.currentListingId;
-    const { message } = values;
-
-    onSendEnquiry(this.state.currentListingAuthor, message.trim())
-      .then(txId => {
-        this.setState({ enquiryModalOpen: false });
-
-        // Redirect to InboxPage
-        history.push(createResourceLocatorString('InboxPage', routes));
-      })
-      .catch(() => {
-        // Ignore, error handling in duck file
-      });
-    // }
-  }
-
   render() {
     const {
+      currentUser,
+      currentUserListing,
+      currentUserType,
+      filterConfig,
+      history,
       intl,
       listings,
-      filterConfig,
-      sortConfig,
-      history,
       location,
+      onActivateListing,
       onManageDisableScrolling,
       pagination,
       scrollingDisabled,
       searchInProgress,
       searchListingsError,
       searchParams,
-      currentUserListing,
-      activeListingId,
-      onActivateListing,
-      currentUserType,
-      currentUser,
-      isAuthenticated,
-      sendEnquiryError,
-      sendEnquiryInProgress,
-      onFetchCurrentUserTransactions,
-      currentUserTransactions,
-      onFetchChannel,
-      messageChannel,
-      fetchChannelInProgress,
-      fetchChannelError,
-      onGenerateAccessToken,
+      sortConfig,
     } = this.props;
     // eslint-disable-next-line no-unused-vars
     const { mapSearch, page, ...searchInURL } = parse(location.search, {
@@ -248,40 +128,12 @@ export class SearchPageComponent extends Component {
     // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)
     const urlQueryParams = pickSearchParamsOnly(searchInURL, filterConfig, sortConfig);
 
-    // Page transition might initially use values from previous search
-    const urlQueryString = stringify(urlQueryParams);
-    const paramsQueryString = stringify(
-      pickSearchParamsOnly(searchParams, filterConfig, sortConfig)
-    );
-    const currentDistance = urlQueryParams?.distance;
-
-    // if (listings.length === 0 && currentDistance < 70) {
-    //   const currentDistance = Number(urlQueryParams?.distance);
-    //   return (
-    //     <NamedRedirect
-    //       name="SearchPage"
-    //       search={stringify({
-    //         ...urlQueryParams,
-    //         distance: currentDistance ? currentDistance + 10 : 30,
-    //       })}
-    //     />
-    //   );
-    // }
-
-    // if (urlQueryParams.distance < 1) {
-    //   return (
-    //     <NamedRedirect name="SearchPage" search={stringify({ ...urlQueryParams, distance: 10 })} />
-    //   );
-    // }
-
     const searchParamsAreInSync = true;
 
     const validQueryParams = validURLParamsForExtendedData(searchInURL, filterConfig);
 
     const isWindowDefined = typeof window !== 'undefined';
     const isMobileLayout = isWindowDefined && window.innerWidth < MODAL_BREAKPOINT;
-    const shouldShowSearchMap =
-      !isMobileLayout || (isMobileLayout && this.state.isSearchMapOpenOnMobile);
 
     const onMapIconClick = () => {
       this.useLocationSearchBounds = true;
@@ -315,41 +167,25 @@ export class SearchPageComponent extends Component {
         />
         <div className={css.container}>
           <MainPanel
-            urlQueryParams={validQueryParams}
+            currentUser={currentUser}
+            currentUserListing={currentUserListing}
+            currentUserType={currentUserType}
+            history={history}
             listings={listings}
+            onActivateListing={onActivateListing}
+            onCloseModal={this.onCloseMobileModal}
+            onContactUser={this.onContactUser}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onMapIconClick={onMapIconClick}
+            onOpenModal={this.onOpenMobileModal}
+            pagination={pagination}
             searchInProgress={searchInProgress}
             searchListingsError={searchListingsError}
             searchParamsAreInSync={searchParamsAreInSync}
-            onActivateListing={onActivateListing}
-            onManageDisableScrolling={onManageDisableScrolling}
-            onOpenModal={this.onOpenMobileModal}
-            onCloseModal={this.onCloseMobileModal}
-            onMapIconClick={onMapIconClick}
-            pagination={pagination}
             searchParamsForPagination={parse(location.search)}
             showAsModalMaxWidth={MODAL_BREAKPOINT}
-            history={history}
-            currentUserType={currentUserType}
-            currentUser={currentUser}
-            onContactUser={this.onContactUser}
-            currentUserListing={currentUserListing}
+            urlQueryParams={validQueryParams}
           />
-          {this.state.enquiryModalOpen && (
-            <SendbirdModal
-              contentClassName={css.enquiryModalContent}
-              isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
-              onClose={() => this.setState({ enquiryModalOpen: false })}
-              onManageDisableScrolling={onManageDisableScrolling}
-              currentUser={currentUser}
-              currentAuthor={this.state.currentListingAuthor}
-              onFetchChannel={onFetchChannel}
-              messageChannel={messageChannel}
-              fetchChannelInProgress={fetchChannelInProgress}
-              fetchChannelError={fetchChannelError}
-              history={history}
-              onGenerateAccessToken={onGenerateAccessToken}
-            />
-          )}
         </div>
       </Page>
     );
@@ -381,7 +217,6 @@ SearchPageComponent.propTypes = {
   tab: oneOf(['filters', 'listings', 'map']).isRequired,
   filterConfig: propTypes.filterConfig,
   sortConfig: propTypes.sortConfig,
-  onChangeModalValue: func.isRequired,
 
   // from withRouter
   history: shape({
@@ -431,7 +266,7 @@ const mapStateToProps = state => {
       listing => calculateDistanceBetweenOrigins(origin, listing.attributes.geolocation) < distance
     );
 
-  const sortByRelevant = searchParams && searchParams.sort === 'relevant';
+  const sortByRelevant = searchParams && searchParams.sort === RELEVANT;
   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
 
   const sortedListings =
@@ -473,14 +308,6 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onActivateListing: listingId => dispatch(setActiveListing(listingId)),
-  callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
-    dispatch(setInitialValues(values, saveToSessionStorage)),
-  onSendEnquiry: (listingId, message) => dispatch(sendEnquiry(listingId, message)),
-  onChangeModalValue: value => dispatch(changeModalValue(value)),
-  onFetchCurrentUserTransactions: () => dispatch(fetchCurrentUserTransactions()),
-  onFetchChannel: (currentAuthor, currentUser, accessToken) =>
-    dispatch(fetchChannel(currentAuthor, currentUser, accessToken)),
-  onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
