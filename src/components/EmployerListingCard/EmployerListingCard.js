@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { array, string, func } from 'prop-types';
-import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import classNames from 'classnames';
+import { Card as MuiCard } from '@mui/material';
+import { styled } from '@material-ui/styles';
+import { types } from 'sharetribe-flex-sdk';
+const { Money, User } = types;
+
+import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { formatMoneyInteger } from '../../util/currency';
 import { ensureListing, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
@@ -17,12 +22,8 @@ import {
   ViewCalendar,
   AvailabilityPreview,
 } from '..';
-import { styled } from '@material-ui/styles';
-import { types } from 'sharetribe-flex-sdk';
-const { Money, User } = types;
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { Card as MuiCard } from '@mui/material';
 import { propTypes } from '../../util/types';
 
 import css from './EmployerListingCard.module.css';
@@ -69,11 +70,7 @@ export const EmployerListingCardComponent = props => {
     rootClassName,
     intl,
     listing,
-    renderSizes,
     filtersConfig,
-    setActiveListing,
-    currentUser,
-    onContactUser,
     currentUserListing,
     onManageDisableScrolling,
   } = props;
@@ -83,20 +80,12 @@ export const EmployerListingCardComponent = props => {
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
   const currentAuthor = currentListing.author;
-  const authorMetadata = currentAuthor.attributes.profile.metadata;
   const userDisplayName = userDisplayNameAsString(currentAuthor) + '.';
-  const {
-    publicData,
-    description,
-    title,
-    geolocation: otherGeolocation,
-  } = currentListing.attributes;
+  const { publicData, title, geolocation: otherGeolocation } = currentListing.attributes;
   const {
     location = {},
     careTypes,
     availabilityPlan,
-    additionalInfo,
-    certificationsAndTraining,
     minPrice = 0,
     maxPrice = 0,
     scheduleType,
@@ -121,12 +110,6 @@ export const EmployerListingCardComponent = props => {
   findOptionsForSelectFilter('careTypes', filtersConfig).forEach(option =>
     servicesMap.set(option.key, option.label)
   );
-  const certificationsAndTrainingLabels = findOptionsForSelectFilter(
-    'certificationsAndTraining',
-    filtersConfig
-  )
-    .filter(option => certificationsAndTraining && certificationsAndTraining.includes(option.key))
-    .map(option => option.label);
 
   const avatarComponent = (
     <Avatar
@@ -190,9 +173,17 @@ export const EmployerListingCardComponent = props => {
               <div>
                 <div className={css.title}>{title}</div>
                 <h3 className={css.location}>
-                  {location.city} - {distanceFromLocation} miles away
+                  <FormattedMessage
+                    id="EmployerListingCard.location"
+                    values={{ city: location.city, miles: distanceFromLocation }}
+                  />
                 </h3>
-                <h3 className={css.scheduleType}>Schedule Type: {scheduleTypeLabel}</h3>
+                <h3 className={css.scheduleType}>
+                  <FormattedMessage
+                    id={'EmployerListingCard.scheduleType'}
+                    values={{ type: scheduleTypeLabel }}
+                  />
+                </h3>
                 {scheduleType === '24hour' ||
                   (scheduleType === 'repeat' ? (
                     <AvailabilityPreview entries={entries} />
@@ -216,7 +207,9 @@ export const EmployerListingCardComponent = props => {
                   </span>
                 </div>
                 <div className={css.buttonContainer}>
-                  <Button className={css.messageButton}>View Profile</Button>
+                  <Button className={css.messageButton}>
+                    <FormattedMessage id={'EmployerListingCard.viewProfile'} />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -230,7 +223,14 @@ export const EmployerListingCardComponent = props => {
                 <InfoTooltip
                   styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
                   title={additionalCareTypesText}
-                  icon={<p className={css.serviceCardItem}>+{careTypes.length - 3} more</p>}
+                  icon={
+                    <p className={css.serviceCardItem}>
+                      <FormattedMessage
+                        id={'EmployerListingCard.additionalCareTypes'}
+                        values={{ count: careTypes.length - 3 }}
+                      />
+                    </p>
+                  }
                 />
               )}
             </div>
@@ -246,7 +246,12 @@ export const EmployerListingCardComponent = props => {
           containerClassName={css.modalContainer}
           usePortal
         >
-          <h1 className={css.modalTitle}>{currentAuthorName}'s Care Schedule</h1>
+          <h1 className={css.modalTitle}>
+            <FormattedMessage
+              id={'EmployerListingCard.viewScheduleTitle'}
+              values={{ author: currentAuthorName }}
+            />
+          </h1>
           <ViewCalendar entries={selectedSessions} />
         </Modal>
       )}
