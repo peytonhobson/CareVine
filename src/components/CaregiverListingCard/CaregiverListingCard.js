@@ -1,17 +1,22 @@
-import React, { Fragment } from 'react';
+import React from 'react';
+
 import { array, string, func } from 'prop-types';
-import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { lazyLoadWithDimensions } from '../../util/contextHelpers';
-import { LINE_ITEM_DAY, LINE_ITEM_NIGHT, propTypes } from '../../util/types';
+import { types } from 'sharetribe-flex-sdk';
+const { Money } = types;
+import { Card as MuiCard } from '@mui/material';
+import { makeStyles } from '@material-ui/styles';
+import { styled } from '@material-ui/styles';
+
+import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
+import { propTypes } from '../../util/types';
 import { formatMoneyInteger } from '../../util/currency';
-import { ensureListing, userDisplayNameAsString, cutTextToPreview } from '../../util/data';
+import { ensureListing, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import config from '../../config';
 import {
   NamedLink,
-  ResponsiveImage,
   Avatar,
   Button,
   IconCheckmark,
@@ -23,26 +28,12 @@ import {
   IconCalendar,
   AvailabilityPreview,
 } from '..';
-import { styled } from '@material-ui/styles';
-import { types } from 'sharetribe-flex-sdk';
-const { Money, User } = types;
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { Card as MuiCard } from '@mui/material';
-import { makeStyles } from '@material-ui/styles';
 
 import css from './CaregiverListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
-const weekdayAbbreviations = [
-  { key: 'sun', label: 'Su' },
-  { key: 'mon', label: 'M' },
-  { key: 'tue', label: 'T' },
-  { key: 'wed', label: 'W' },
-  { key: 'thu', label: 'Th' },
-  { key: 'fri', label: 'F' },
-  { key: 'sat', label: 'Sa' },
-];
 
 const priceData = (rates, intl) => {
   const minPriceMoney = new Money(rates[0], 'USD');
@@ -76,28 +67,15 @@ const priceData = (rates, intl) => {
   return {};
 };
 
-// const LazyImage = lazyLoadWithDimensions(ListingImage, { loadAfterInitialRendering: 3000 });
-
 export const CaregiverListingCardComponent = props => {
-  const {
-    className,
-    rootClassName,
-    intl,
-    listing,
-    renderSizes,
-    filtersConfig,
-    setActiveListing,
-    currentUser,
-    onContactUser,
-    currentUserListing,
-  } = props;
+  const { className, rootClassName, intl, listing, filtersConfig, currentUserListing } = props;
 
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
   const currentAuthor = currentListing.author;
   const authorMetadata = currentAuthor.attributes.profile.metadata;
   const userDisplayName = userDisplayNameAsString(currentAuthor) + '.';
-  const { publicData, description, geolocation: otherGeolocation } = currentListing.attributes;
+  const { publicData, geolocation: otherGeolocation } = currentListing.attributes;
   const {
     location = {},
     careTypes: providedServices,
@@ -132,10 +110,7 @@ export const CaregiverListingCardComponent = props => {
       ? calculateDistanceBetweenOrigins(geolocation, otherGeolocation)
       : null;
 
-  const { formattedMinPrice, formattedMaxPrice, priceTitle } = priceData(
-    [minPrice, maxPrice],
-    intl
-  );
+  const { formattedMinPrice, priceTitle } = priceData([minPrice, maxPrice], intl);
 
   const servicesMap = new Map();
   findOptionsForSelectFilter('careTypes', filtersConfig).forEach(option =>
@@ -160,11 +135,11 @@ export const CaregiverListingCardComponent = props => {
     />
   );
 
-  const daysInSchedule = weekdayAbbreviations.filter(
-    day => availabilityPlan && availabilityPlan.entries.find(entry => entry.dayOfWeek === day.key)
+  const premiumIconTitle = (
+    <p>
+      <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
+    </p>
   );
-
-  const premiumIconTitle = <p>This caregiver is continuously verified by CareVine.</p>;
   const additionalServices = providedServices
     .filter((service, index) => index > 1)
     .map(service => servicesMap.get(service));
@@ -177,20 +152,43 @@ export const CaregiverListingCardComponent = props => {
   );
   const backgroundCheckTitle =
     backgroundCheckSubscription && backgroundCheckSubscription.type === 'vine' ? (
-      <p>This caregiver is continuously verified by CareVine.</p>
+      <p>
+        <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
+      </p>
     ) : (
       <p>
-        This caregiver was last background checked on{' '}
-        {backgroundCheckApprovedDate && new Date(backgroundCheckApprovedDate).toLocaleDateString()}
+        <FormattedMessage
+          id="CaregiverListingCard.lastBackgroundChecked"
+          values={{
+            date:
+              backgroundCheckApprovedDate &&
+              new Date(backgroundCheckApprovedDate).toLocaleDateString(),
+          }}
+        />
       </p>
     );
-  const hasCarTitle = <p>This caregiver has a car that can be used for transportation.</p>;
-  const experienceLevelTitle = <p>This caregiver has {experienceLevel} years of experience.</p>;
+  const hasCarTitle = (
+    <p>
+      <FormattedMessage id="CaregiverListingCard.hasCarTitle" />
+    </p>
+  );
+  const experienceLevelTitle = (
+    <p>
+      <FormattedMessage
+        id="CaregiverListingCard.experienceLevelTitle"
+        values={{ experienceLevel }}
+      />
+    </p>
+  );
 
   const certificationsAndTrainingTitle = (
     <div className={css.certAndTrainWrapper}>
-      <h3 className={css.certAndTrainTitle}>Certifications and Training</h3>
-      <p className={css.note}>*Not verified by CareVine</p>
+      <h3 className={css.certAndTrainTitle}>
+        <FormattedMessage id="CaregiverListingCard.certificationsAndTraining" />
+      </h3>
+      <p className={css.note}>
+        <FormattedMessage id="CaregiverListingCard.notVerified" />
+      </p>
       <ul className={css.certAndTrainList}>
         {certificationsAndTrainingLabels.map(value => (
           <li>{value}</li>
@@ -250,7 +248,12 @@ export const CaregiverListingCardComponent = props => {
             </div>
             <div>
               <h3 className={css.location}>{location.city}</h3>
-              <h3 className={css.location}>{distanceFromLocation} miles away</h3>
+              <h3 className={css.location}>
+                <FormattedMessage
+                  id={'CaregiverListingCard.distance'}
+                  values={{ distance: distanceFromLocation }}
+                />
+              </h3>
             </div>
             <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
           </div>
@@ -278,12 +281,26 @@ export const CaregiverListingCardComponent = props => {
             </div>
             {scheduleTypes && scheduleTypes.includes('liveIn') && (
               <div className={css.badge}>
-                <InfoTooltip title="Open to live-in care" icon={<IconHouse />} />
+                <InfoTooltip
+                  title={
+                    <p>
+                      <FormattedMessage id="CaregiverListingCard.liveInCare" />
+                    </p>
+                  }
+                  icon={<IconHouse />}
+                />
               </div>
             )}
             {scheduleTypes && scheduleTypes.includes('oneTime') && (
               <div className={css.badge}>
-                <InfoTooltip title="Open to one-time jobs" icon={<IconCalendar />} />
+                <InfoTooltip
+                  title={
+                    <p>
+                      <FormattedMessage id="CaregiverListingCard.oneTimeCare" />
+                    </p>
+                  }
+                  icon={<IconCalendar />}
+                />
               </div>
             )}
           </div>
@@ -297,7 +314,14 @@ export const CaregiverListingCardComponent = props => {
                 <InfoTooltip
                   styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
                   title={additionalServicesText}
-                  icon={<p className={css.serviceCardItem}>+{additionalServices.length} more</p>}
+                  icon={
+                    <p className={css.serviceCardItem}>
+                      <FormattedMessage
+                        id="CaregiverListingCard.additionalCareTypes"
+                        values={{ count: additionalServices.length }}
+                      />
+                    </p>
+                  }
                 />
               )}
             </div>
@@ -305,7 +329,9 @@ export const CaregiverListingCardComponent = props => {
         </div>
       </NamedLink>
       <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
-        <Button className={css.messageButton}>View Profile</Button>
+        <Button className={css.messageButton}>
+          <FormattedMessage id="CaregiverListingCard.viewProfile" />
+        </Button>
       </NamedLink>
     </Card>
   );
@@ -314,9 +340,7 @@ export const CaregiverListingCardComponent = props => {
 CaregiverListingCardComponent.defaultProps = {
   className: null,
   rootClassName: null,
-  renderSizes: null,
   filtersConfig: config.custom.filters,
-  setActiveListing: () => null,
 };
 
 CaregiverListingCardComponent.propTypes = {
@@ -325,11 +349,6 @@ CaregiverListingCardComponent.propTypes = {
   filtersConfig: array,
   intl: intlShape.isRequired,
   listing: propTypes.listing.isRequired,
-
-  // Responsive image sizes hint
-  renderSizes: string,
-
-  setActiveListing: func,
 };
 
 export default injectIntl(CaregiverListingCardComponent);
