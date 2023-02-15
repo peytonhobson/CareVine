@@ -291,17 +291,15 @@ module.exports = queryEvents = () => {
           const channels = apiResponse.data.channels;
 
           channels.forEach(channel => {
-            axios
-              .delete(
-                `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json; charset=utf8',
-                    'Api-Token': SB_API_TOKEN,
-                  },
-                }
-              )
-              .catch(e => log.error(e.data));
+            axios.delete(
+              `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
+              {
+                headers: {
+                  'Content-Type': 'application/json; charset=utf8',
+                  'Api-Token': SB_API_TOKEN,
+                },
+              }
+            );
           });
         })
         .catch(e => log.error(e.data));

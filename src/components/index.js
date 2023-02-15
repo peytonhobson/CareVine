@@ -135,6 +135,7 @@ export { default as UserNav } from './UserNav/UserNav';
 export { default as SimpleAccordion } from './Accordion/SimpleAccordion'
 export { default as ActivityFeed } from './ActivityFeed/ActivityFeed';
 export { default as AddImages } from './AddImages/AddImages';
+export {default as AvailabilityPreview} from './AvailabilityPreview/AvailabilityPreview';
 export { default as Avatar, AvatarMedium, AvatarLarge } from './Avatar/Avatar';
 export { default as BookingBreakdown } from './BookingBreakdown/BookingBreakdown';
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
@@ -176,6 +177,7 @@ export { default as SortBy } from './SortBy/SortBy';
 export { default as StripeConnectAccountStatusBox } from './StripeConnectAccountStatusBox/StripeConnectAccountStatusBox';
 export { default as StripePaymentAddress } from './StripePaymentAddress/StripePaymentAddress';
 export { default as UserCard } from './UserCard/UserCard';
+export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

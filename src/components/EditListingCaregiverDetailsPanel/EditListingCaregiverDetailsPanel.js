@@ -10,6 +10,7 @@ import { EditListingCaregiverDetailsForm } from '../../forms';
 import { ListingLink } from '..';
 
 import css from './EditListingCaregiverDetailsPanel.module.css';
+import { isArray } from 'lodash';
 
 const EditListingCaregiverDetailsPanel = props => {
   const {
@@ -57,8 +58,32 @@ const EditListingCaregiverDetailsPanel = props => {
     />
   );
 
-  const caregiverDetails = publicData.caregiverDetails;
-  const initialValues = { ...caregiverDetails };
+  const {
+    certificationsAndTraining,
+    additionalInfo,
+    covidVaccination,
+    languagesSpoken,
+    idealCaregiverDetails,
+  } = publicData;
+
+  const providedLanguagesSpoken =
+    languagesSpoken && isArray(languagesSpoken)
+      ? languagesSpoken.filter(lang => lang === 'english' || lang === 'spanish')
+      : [];
+  const additionalLanguagesSpoken =
+    languagesSpoken && isArray(languagesSpoken)
+      ? languagesSpoken.filter(lang => lang !== 'english' && lang !== 'spanish')
+      : [];
+  const initialValues = {
+    certificationsAndTraining,
+    additionalInfo,
+    covidVaccination,
+    languagesSpoken: {
+      provided: providedLanguagesSpoken,
+      additional: additionalLanguagesSpoken,
+    },
+    idealCaregiverDetails,
+  };
 
   const formProps = {
     className: css.form,
@@ -93,7 +118,7 @@ const EditListingCaregiverDetailsPanel = props => {
               certificationsAndTraining,
               additionalInfo,
               covidVaccination,
-              languagesSpoken,
+              languagesSpoken: [...languagesSpoken.provided, ...languagesSpoken.additional],
               idealCaregiverDetails,
             },
           };

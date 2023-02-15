@@ -6,20 +6,29 @@ import config from '../../config';
 
 import SortByPlain from './SortByPlain';
 import SortByPopup from './SortByPopup';
+import { CAREGIVER } from '../../util/constants';
+
+const caregiverSortBy = ['relevant', 'createdAt', '-createdAt', '-pub_minPrice', 'pub_maxPrice'];
+const employersSortBy = ['relevant', 'createdAt', '-createdAt', '-pub_maxPrice', 'pub_minPrice'];
 
 const SortBy = props => {
-  const { sort, showAsPopup, isConflictingFilterActive, intl, ...rest } = props;
+  const { sort, showAsPopup, isConflictingFilterActive, intl, currentUserType, ...rest } = props;
 
   const { relevanceKey, queryParamName } = config.custom.sortConfig;
 
-  const options = config.custom.sortConfig.options.map(option => {
-    const isRelevance = option.key === relevanceKey;
-    return {
-      ...option,
-      disabled:
-        (isRelevance && !isConflictingFilterActive) || (!isRelevance && isConflictingFilterActive),
-    };
-  });
+  const sortArray = currentUserType === CAREGIVER ? caregiverSortBy : employersSortBy;
+
+  const options = config.custom.sortConfig.options
+    .filter(option => sortArray.includes(option.key))
+    .map(option => {
+      const isRelevance = option.key === relevanceKey;
+      return {
+        ...option,
+        disabled:
+          (isRelevance && !isConflictingFilterActive) ||
+          (!isRelevance && isConflictingFilterActive),
+      };
+    });
   const defaultValue = 'createdAt';
   const componentProps = {
     urlParam: queryParamName,

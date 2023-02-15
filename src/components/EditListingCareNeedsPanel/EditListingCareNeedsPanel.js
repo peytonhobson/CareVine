@@ -8,6 +8,8 @@ import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing, ensureCurrentUser } from '../../util/data';
 import { EditListingFeaturesForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { findOptionsForSelectFilter } from '../../util/search';
+import config from '../../config';
 
 import css from './EditListingCareNeedsPanel.module.css';
 
@@ -26,6 +28,7 @@ const EditListingCareTypesPanel = props => {
     rootClassName,
     submitButtonText,
     updateInProgress,
+    filterConfig,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -85,7 +88,12 @@ const EditListingCareTypesPanel = props => {
       />
     );
 
-  const careTypes = publicData && publicData.careTypes;
+  const careTypes =
+    publicData &&
+    publicData.careTypes &&
+    publicData.careTypes.filter(careType =>
+      findOptionsForSelectFilter('careTypes', filterConfig).find(option => option.key === careType)
+    );
   const initialValues = { careTypes };
 
   const careTypesFeaturesLabel = intl.formatMessage(
@@ -133,6 +141,7 @@ EditListingCareTypesPanel.defaultProps = {
   rootClassName: null,
   className: null,
   listing: null,
+  filterConfig: config.custom.filters,
 };
 
 const { bool, func, object, string, shape } = PropTypes;

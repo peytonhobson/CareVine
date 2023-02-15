@@ -16,8 +16,8 @@ const InfoTooltip = props => {
   });
 
   return (
-    <Tooltip title={title} placement="top">
-      <IconButton>{icon || <InfoIcon />}</IconButton>
+    <Tooltip title={title} disableInteractive placement="top">
+      <IconButton disableTouchRipple>{icon || <InfoIcon />}</IconButton>
     </Tooltip>
   );
 };

@@ -69,7 +69,7 @@ const EditListingPricingPanel = props => {
 
   const initialValues = {
     rates: submittedValues
-      ? submittedValues.rates.map(rate => rate / 100)
+      ? submittedValues.rates.map(rate => rate)
       : rates
       ? rates.map(rate => rate / 100)
       : [15, 25],

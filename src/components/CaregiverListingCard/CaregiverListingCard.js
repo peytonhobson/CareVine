@@ -21,6 +21,7 @@ import {
   IconCar,
   IconHouse,
   IconCalendar,
+  AvailabilityPreview,
 } from '..';
 import { styled } from '@material-ui/styles';
 import { types } from 'sharetribe-flex-sdk';
@@ -31,7 +32,6 @@ import { Card as MuiCard } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
 
 import css from './CaregiverListingCard.module.css';
-import { info } from 'autoprefixer';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 const weekdayAbbreviations = [
@@ -252,15 +252,7 @@ export const CaregiverListingCardComponent = props => {
               <h3 className={css.location}>{location.city}</h3>
               <h3 className={css.location}>{distanceFromLocation} miles away</h3>
             </div>
-            <div className={css.schedule}>
-              {weekdayAbbreviations.map(day => {
-                const dayInSchedule = daysInSchedule.find(
-                  dayInSchedule => dayInSchedule.key === day.key
-                );
-                const dayClasses = classNames(css.dayBox, dayInSchedule && css.active);
-                return <div className={dayClasses}>{day.label}</div>;
-              })}
-            </div>
+            <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
           </div>
         </div>
         <div className={css.mainInfo}>
@@ -312,9 +304,9 @@ export const CaregiverListingCardComponent = props => {
           </div>
         </div>
       </NamedLink>
-      <div className={css.buttonContainer} onClick={() => onContactUser(currentAuthor, id)}>
-        <Button className={css.messageButton}>Message</Button>
-      </div>
+      <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
+        <Button className={css.messageButton}>View Profile</Button>
+      </NamedLink>
     </Card>
   );
 };

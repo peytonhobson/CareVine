@@ -5,6 +5,7 @@ import { parseSelectFilterOptions } from '../../util/search';
 import { createSlug } from '../../util/urlHelpers';
 import routeConfiguration from '../../routeConfiguration';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
+import { isArray } from 'lodash';
 
 const flatten = (acc, val) => acc.concat(val);
 
@@ -197,9 +198,10 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
 
   cgScore += 5 * cgCareTypesScore;
 
-  const cgLanguages = (cgPublicData.languagesSpoken && cgPublicData.languagesSpoken.provided) || [];
-  const employerLanguages =
-    (employerPublicData.languagesSpoken && employerPublicData.languagesSpoken.provided) || [];
+  const cgLanguages = isArray(cgPublicData.languagesSpoken) ? cgPublicData.languagesSpoken : [];
+  const employerLanguages = isArray(employerPublicData.languagesSpoken)
+    ? employerPublicData.languagesSpoken
+    : [];
 
   const cgLanguagesScore = cgLanguages.filter(language => employerLanguages.includes(language))
     .length;
@@ -251,4 +253,91 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
   }
 
   return cgScore;
+};
+
+export const sortEmployerMatch = (employerListing, caregiverListing) => {
+  let empScore = 0;
+
+  const cgPublicData = caregiverListing.attributes.publicData;
+  const employerPublicData = employerListing.attributes.publicData;
+
+  const cgGeolocation = caregiverListing.attributes.geolocation;
+  const employerGeolocation = employerListing.attributes.geolocation;
+
+  if (
+    calculateDistanceBetweenOrigins(cgGeolocation, employerGeolocation) <
+    cgPublicData.travelDistance
+  ) {
+    empScore += 10;
+  }
+
+  const cgCareTypes = cgPublicData.careTypes || [];
+  const employerCareTypes = employerPublicData.careTypes || [];
+
+  const employerCareTypesScore = employerCareTypes.filter(careType =>
+    cgCareTypes.includes(careType)
+  ).length;
+
+  empScore += 5 * employerCareTypesScore;
+
+  const cgLanguages = isArray(cgPublicData.languagesSpoken) ? cgPublicData.languagesSpoken : [];
+  const employerLanguages = isArray(employerPublicData.languagesSpoken)
+    ? employerPublicData.languagesSpoken
+    : [];
+
+  const employerLanguagesScore = employerLanguages.filter(language =>
+    cgLanguages.includes(language)
+  ).length;
+
+  empScore += 5 * employerLanguagesScore;
+
+  const cgExperienceAreas = cgPublicData.experienceAreas || [];
+  const employerDetailedCareNeeds = employerPublicData.detailedCareNeeds || [];
+
+  const employerExperienceAreasScore = employerDetailedCareNeeds.filter(experienceArea =>
+    cgExperienceAreas.includes(experienceArea)
+  ).length;
+
+  empScore += employerExperienceAreasScore;
+
+  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
+  const employerScheduleType = employerPublicData.scheduleType;
+
+  if (cgScheduleTypes.includes(employerScheduleType)) {
+    empScore += 10;
+  }
+
+  const cgAdditionalInfo = cgPublicData.additionalInfo || [];
+  const employerAdditionalInfo = employerPublicData.additionalInfo || [];
+
+  const employerAdditionalInfoScore = employerAdditionalInfo.filter(additionalInfo =>
+    cgAdditionalInfo.includes(additionalInfo)
+  ).length;
+
+  empScore += 3 * employerAdditionalInfoScore;
+
+  const empNearPublicTransit = employerPublicData.nearPublicTransit || 'no';
+  const cgHasCar = cgAdditionalInfo.includes('hasCar');
+
+  if (empNearPublicTransit === 'yes' && cgHasCar === false) {
+    empScore += 10;
+  }
+
+  const cgCertificationsAndTraining = cgPublicData.certificationsAndTraining || [];
+  const employerCertificationsAndTraining = employerPublicData.certificationsAndTraining || [];
+
+  const employerCertificationsAndTrainingScore = employerCertificationsAndTraining.filter(
+    certificationAndTraining => cgCertificationsAndTraining.includes(certificationAndTraining)
+  ).length;
+
+  empScore += 3 * employerCertificationsAndTrainingScore;
+
+  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
+  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
+
+  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'yes') {
+    empScore += 10;
+  }
+
+  return empScore;
 };

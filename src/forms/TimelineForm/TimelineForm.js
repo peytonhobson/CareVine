@@ -124,9 +124,9 @@ const TimelineForm = props => {
         const idPrefix = `${formId}` || 'TimelineForm';
         const { startDate, endDate } = values;
 
-        if (startDate && startDate.date && startDate.date < TODAY) {
-          form.change(startDate, null);
-          form.change(endDate, null);
+        if (startDate && startDate.date && startDate.date < moment().subtract(1, 'days')) {
+          form.change('startDate', null);
+          form.change('endDate', null);
         }
 
         const startDay = extractDateFromFieldDateInput(startDate);

@@ -1,5 +1,4 @@
 import React from 'react';
-import queryString from 'query-string';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -7,8 +6,8 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
-import { EditListingFeaturesForm, EditListingAdditionalDetailsForm } from '../../forms';
-import { ListingLink } from '..';
+import { EditListingAdditionalDetailsForm } from '../../forms';
+import { isArray } from 'lodash';
 
 import css from './EditListingAdditionalDetailsPanel.module.css';
 
@@ -17,7 +16,6 @@ const EditListingAdditionalDetailsPanel = props => {
     rootClassName,
     className,
     listing,
-    isNewListingFlow,
     disabled,
     ready,
     onSubmit,
@@ -64,11 +62,22 @@ const EditListingAdditionalDetailsPanel = props => {
     covidVaccination,
     languagesSpoken,
   } = publicData;
+  const providedLanguagesSpoken =
+    languagesSpoken && isArray(languagesSpoken)
+      ? languagesSpoken.filter(lang => lang === 'english' || lang === 'spanish')
+      : [];
+  const additionalLanguagesSpoken =
+    languagesSpoken && isArray(languagesSpoken)
+      ? languagesSpoken.filter(lang => lang !== 'english' && lang !== 'spanish')
+      : [];
   const initialValues = {
     certificationsAndTraining,
     additionalInfo,
     covidVaccination,
-    languagesSpoken,
+    languagesSpoken: {
+      provided: providedLanguagesSpoken,
+      additional: additionalLanguagesSpoken,
+    },
   };
 
   const formProps = {
@@ -103,7 +112,7 @@ const EditListingAdditionalDetailsPanel = props => {
               certificationsAndTraining,
               additionalInfo,
               covidVaccination,
-              languagesSpoken,
+              languagesSpoken: [...languagesSpoken.provided, ...languagesSpoken.additional],
             },
           };
 

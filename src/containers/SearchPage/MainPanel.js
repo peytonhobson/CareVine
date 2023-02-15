@@ -43,15 +43,13 @@ const employerSearchFilters = [
 
 const caregiverSearchFilters = [
   'distance',
-  'price',
+  'minPrice',
   'keyword',
   'careTypes',
   'residenceType',
   'scheduleType',
   'detailedCareNeeds',
   'additionalInfo',
-  'recipientAge', // These may not be good filters for multiple recipients
-  'gender',
   'languagesSpoken',
   'covidVaccination',
 ];
@@ -265,6 +263,7 @@ class MainPanel extends Component {
           onSelect={this.handleSortBy}
           showAsPopup
           contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
+          currentUserType={currentUserType}
         />
       ) : null;
     };
@@ -387,6 +386,7 @@ class MainPanel extends Component {
               currentUser={currentUser}
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
+              onManageDisableScrolling={onManageDisableScrolling}
             />
           </div>
         )}
