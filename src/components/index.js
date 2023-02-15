@@ -206,6 +206,7 @@ export { default as ListingAvailabilityPanel } from './ListingAvailabilityPanel/
 export { default as ListingBioPanel } from './ListingBioPanel/ListingBioPanel';
 export { default as ListingRecommendationsPanel } from './ListingRecommendationsPanel/ListingRecommendationsPanel';
 export { default as ListingServicesPanel } from './ListingServicesPanel/ListingServicesPanel';
+export { default as ListingSummary } from './ListingSummary/ListingSummary';
 export { default as MessagesInboxSideList } from './InboxSideLists/MessagesInboxSideList';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
 export { default as NotificationsInboxSideList } from './InboxSideLists/NotificationsInboxSideList';
