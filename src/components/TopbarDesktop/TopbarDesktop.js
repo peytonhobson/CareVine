@@ -62,7 +62,7 @@ const TopbarDesktop = props => {
       <NamedLink
         className={css.myJobBoardLink}
         name="SearchPage"
-        to={{ search: `?${origin}&${distance}` }}
+        to={{ search: `?${origin}&${distance}&sort=relevant` }}
       >
         <span className={css.jobBoard}>My Job Board</span>
       </NamedLink>

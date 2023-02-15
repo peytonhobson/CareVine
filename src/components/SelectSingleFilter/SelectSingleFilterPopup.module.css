@@ -15,6 +15,7 @@
   height: auto;
   min-height: 0;
   border-radius: 4px;
+  border: 1px solid var(--matterColorNegative);
 
   &:focus {
     outline: none;
@@ -36,9 +37,11 @@
   min-height: 0;
   border-radius: 4px;
   border: 1px solid var(--marketplaceColor);
+  background-color: var(--marketplaceColor);
 
   &:hover,
   &:focus {
+    background-color: var(--marketplaceColorDark);
     border: 1px solid var(--marketplaceColorDark);
   }
 }

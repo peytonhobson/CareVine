@@ -1,0 +1,24 @@
+.schedule {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-block: 0.5rem;
+}
+
+.dayBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: solid 1px var(--matterColorAnti);
+  color: var(--matterColorAnti);
+  margin-right: 0.35rem;
+
+  &.active {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+    border: solid 1px var(--marketPlaceColor);
+  }
+}

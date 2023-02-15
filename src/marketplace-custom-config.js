@@ -94,6 +94,22 @@ export const filters = [
       step: 1,
     },
   },
+  {
+    id: 'minPrice',
+    label: 'Minimum Pay',
+    type: 'PriceFilter',
+    group: 'primary',
+    // Note: PriceFilter is fixed filter,
+    // you can't change "queryParamNames: ['price'],"
+    queryParamNames: ['pub_maxPrice'],
+    // Price filter configuration
+    // Note: unlike most prices this is not handled in subunits
+    config: {
+      min: 0,
+      max: 50,
+      step: 1,
+    },
+  },
   // {
   //   id: 'keyword',
   //   label: 'Keyword',
@@ -152,7 +168,7 @@ export const filters = [
     label: 'Schedule Types',
     type: 'SelectMultipleFilter',
     group: 'primary',
-    queryParamNames: ['pub_scheduleTypes', 'pub_scheduleType'],
+    queryParamNames: ['pub_scheduleTypes'],
     config: {
       searchMode: 'has_any',
       options: [
@@ -171,7 +187,7 @@ export const filters = [
     config: {
       options: [
         { key: 'oneTime', label: 'One time' },
-        { key: 'repeat', label: 'Recurring' },
+        { key: 'repeat', label: 'Repeat' },
         { key: '24hour', label: 'Live-In' },
       ],
     },
@@ -478,14 +494,16 @@ export const sortConfig = {
 
   // Keyword filter is sorting the results already by relevance.
   // If keyword filter is active, we need to disable sorting.
-  conflictingFilters: ['keyword'],
+  conflictingFilters: [],
 
   options: [
     { key: 'relevant', label: 'Most Relevant' },
     { key: 'createdAt', label: 'Newest' },
     { key: '-createdAt', label: 'Oldest' },
-    { key: '-pub_minPrice', label: 'Lowest price' },
-    { key: 'pub_minPrice', label: 'Highest price' },
+    { key: '-pub_minPrice', label: 'Lowest pay' },
+    { key: 'pub_minPrice', label: 'Highest pay' },
+    { key: '-pub_maxPrice', label: 'Lowest pay' },
+    { key: 'pub_maxPrice', label: 'Highest pay' },
 
     // The relevance is only used for keyword search, but the
     // parameter isn't sent to the Marketplace API. The key is purely

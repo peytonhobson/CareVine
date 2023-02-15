@@ -18,7 +18,14 @@ import * as log from '../../util/log';
 // So, there's enough cards to fill all columns on full pagination pages
 const RESULT_PAGE_SIZE = 24;
 
-const searchableSortParams = ['createdAt', '-createdAt', '-price', 'price'];
+const searchableSortParams = [
+  'createdAt',
+  '-createdAt',
+  'pub_minPrice',
+  '-pub_minPrice',
+  'pub_maxPrice',
+  '-pub_maxPrice',
+];
 
 // ================ Action types ================ //
 
@@ -56,6 +63,7 @@ const initialState = {
   messageChannel: null,
   fetchChannelInProgress: false,
   fetchChannelError: null,
+  searchListingsSuccess: false,
 };
 
 const resultIds = data => data.data.map(l => l.id);
@@ -70,6 +78,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
         searchInProgress: true,
         searchMapListingIds: [],
         searchListingsError: null,
+        searchListingsSuccess: false,
       };
     case SEARCH_LISTINGS_SUCCESS:
       return {
@@ -77,6 +86,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
         currentPageResultIds: resultIds(payload.data),
         pagination: payload.data.meta,
         searchInProgress: false,
+        searchListingsSuccess: true,
       };
     case SEARCH_LISTINGS_ERROR:
       // eslint-disable-next-line no-console
@@ -227,16 +237,29 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
 export const searchListings = searchParams => (dispatch, getState, sdk) => {
   dispatch(searchListingsRequest(searchParams));
 
-  const { perPage, price, dates, minDuration, distance, origin, sort, ...rest } = searchParams;
+  const {
+    perPage,
+    price,
+    dates,
+    minDuration,
+    distance,
+    origin,
+    sort,
+    pub_maxPrice,
+    ...rest
+  } = searchParams;
   // const priceMaybe = priceSearchParams(price);
 
   const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
   const sortMaybe = searchableSortParams.includes(sort) ? { sort } : null;
 
+  const maxPriceMaybe = pub_maxPrice ? { pub_maxPrice: `${pub_maxPrice * 100},` } : {};
+
   const params = {
     ...rest,
     // ...priceMaybe,
     ...minPriceMaybe,
+    ...maxPriceMaybe,
     per_page: perPage,
     bounds: expandBounds(origin, distance),
     ...sortMaybe,
@@ -259,28 +282,6 @@ export const setActiveListing = listingId => ({
   type: SEARCH_MAP_SET_ACTIVE_LISTING,
   payload: listingId,
 });
-
-export const searchMapListings = searchParams => (dispatch, getState, sdk) => {
-  dispatch(searchMapListingsRequest(searchParams));
-
-  const { perPage, ...rest } = searchParams;
-  const params = {
-    ...rest,
-    per_page: perPage,
-  };
-
-  return sdk.listings
-    .query(params)
-    .then(response => {
-      dispatch(addMarketplaceEntities(response));
-      dispatch(searchMapListingsSuccess(response));
-      return response;
-    })
-    .catch(e => {
-      dispatch(searchMapListingsError(storableError(e)));
-      throw e;
-    });
-};
 
 export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
   dispatch,

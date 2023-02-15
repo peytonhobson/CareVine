@@ -28,12 +28,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { EnquiryForm } from '../../forms';
 import { generateAccessToken } from '../../containers/InboxPage/InboxPage.duck';
-import {
-  searchMapListings,
-  setActiveListing,
-  fetchCurrentUserTransactions,
-  fetchChannel,
-} from './SearchPage.duck';
+import { setActiveListing, fetchCurrentUserTransactions, fetchChannel } from './SearchPage.duck';
 import {
   pickSearchParamsOnly,
   validURLParamsForExtendedData,
@@ -41,6 +36,7 @@ import {
   createSearchResultSchema,
   hasExistingTransaction,
   sortCaregiverMatch,
+  sortEmployerMatch,
 } from './SearchPage.helpers';
 import { sendEnquiry, setInitialValues } from '../ListingPage/ListingPage.duck';
 import MainPanel from './MainPanel';
@@ -70,13 +66,47 @@ export class SearchPageComponent extends Component {
       currentListingId: '',
     };
 
-    this.searchMapListingsInProgress = false;
-
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
     this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
   }
+
+  componentWillReceiveProps = nextProps => {
+    const {
+      location,
+      filterConfig,
+      sortConfig,
+      listings,
+      history,
+      searchListingsSuccess,
+    } = nextProps;
+
+    const { mapSearch, page, ...searchInURL } = parse(location.search, {
+      latlng: ['origin'],
+      latlngBounds: ['bounds'],
+    });
+
+    // urlQueryParams doesn't contain page specific url params
+    // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)
+    const urlQueryParams = pickSearchParamsOnly(searchInURL, filterConfig, sortConfig);
+    const currentDistance = Number(urlQueryParams?.distance);
+
+    if (
+      !this.props.searchListingsSuccess &&
+      searchListingsSuccess &&
+      listings.length === 0 &&
+      currentDistance < 50
+    ) {
+      history.replace({
+        pathname: this.props.history.location.pathname,
+        search: stringify({
+          ...urlQueryParams,
+          distance: currentDistance ? currentDistance + 10 : 30,
+        }),
+      });
+    }
+  };
 
   // Callback to determine if new search is needed
   // when map is moved by user or viewport has change
@@ -223,6 +253,20 @@ export class SearchPageComponent extends Component {
     const paramsQueryString = stringify(
       pickSearchParamsOnly(searchParams, filterConfig, sortConfig)
     );
+    const currentDistance = urlQueryParams?.distance;
+
+    // if (listings.length === 0 && currentDistance < 70) {
+    //   const currentDistance = Number(urlQueryParams?.distance);
+    //   return (
+    //     <NamedRedirect
+    //       name="SearchPage"
+    //       search={stringify({
+    //         ...urlQueryParams,
+    //         distance: currentDistance ? currentDistance + 10 : 30,
+    //       })}
+    //     />
+    //   );
+    // }
 
     // if (urlQueryParams.distance < 1) {
     //   return (
@@ -329,7 +373,6 @@ SearchPageComponent.propTypes = {
   mapListings: array,
   onActivateListing: func.isRequired,
   onManageDisableScrolling: func.isRequired,
-  onSearchMapListings: func.isRequired,
   pagination: propTypes.pagination,
   scrollingDisabled: bool.isRequired,
   searchInProgress: bool.isRequired,
@@ -361,20 +404,20 @@ const mapStateToProps = state => {
     searchInProgress,
     searchListingsError,
     searchParams,
-    searchMapListingIds,
     activeListingId,
     transactions,
     messageChannel,
     fetchChannelInProgress,
     fetchChannelError,
+    searchListingsSuccess,
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
   const currentUserListing = state.user.currentUserListing;
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
   const oppositeUserType = currentUserType === CAREGIVER ? EMPLOYER : CAREGIVER;
 
-  const distance = searchParams.distance;
-  const origin = searchParams.origin;
+  const distance = searchParams && searchParams.distance;
+  const origin = searchParams && searchParams.origin;
 
   const pageListings = getListingsById(state, currentPageResultIds)
     .filter(
@@ -388,14 +431,20 @@ const mapStateToProps = state => {
       listing => calculateDistanceBetweenOrigins(origin, listing.attributes.geolocation) < distance
     );
 
-  const sortByRelevant = searchParams.sort && searchParams.sort === 'relevant';
+  const sortByRelevant = searchParams && searchParams.sort === 'relevant';
+  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
 
   const sortedListings =
     currentUserListing && sortByRelevant
-      ? pageListings.sort(
-          (a, b) =>
-            sortCaregiverMatch(a, currentUserListing) - sortCaregiverMatch(b, currentUserListing)
-        )
+      ? userType === EMPLOYER
+        ? pageListings.sort(
+            (a, b) =>
+              sortCaregiverMatch(b, currentUserListing) - sortCaregiverMatch(a, currentUserListing)
+          )
+        : pageListings.sort(
+            (a, b) =>
+              sortEmployerMatch(b, currentUserListing) - sortEmployerMatch(a, currentUserListing)
+          )
       : pageListings;
 
   return {
@@ -416,13 +465,13 @@ const mapStateToProps = state => {
     messageChannel,
     fetchChannelInProgress,
     fetchChannelError,
+    searchListingsSuccess,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSearchMapListings: searchParams => dispatch(searchMapListings(searchParams)),
   onActivateListing: listingId => dispatch(setActiveListing(listingId)),
   callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
     dispatch(setInitialValues(values, saveToSessionStorage)),

@@ -3,15 +3,30 @@
 .root {
   /* Layout */
   display: flex;
-  /* flex-direction: column; */
-  width: 100%;
-  border-bottom: solid 1px;
-  border-color: var(--matterColor);
+  flex-direction: column;
+  padding: 1rem;
+  height: 22rem;
+  /* justify-content: space-between; */
+
+  color: var(--marketplaceColor);
 
   /* Remove link's hover effect */
   &:hover {
     text-decoration: none;
   }
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 .threeToTwoWrapper {
@@ -52,36 +67,30 @@
 
 .user {
   width: 10rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.price {
-  /* Layout */
-  display: block;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 0.2rem;
 }
 
 .priceValue {
   /* Font */
   composes: h2 from global;
+  font-size: 1.75rem;
+  line-height: 2rem;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 
   /* Remove default margins from font */
-  margin-top: 0;
+  margin-top: 0.5rem;
   margin-bottom: 0;
 
   @media (--viewportMedium) {
-    margin-top: 0;
+    margin-top: 0.5rem;
     margin-bottom: 0;
   }
 }
 
 .perUnit {
+  composes: marketplaceBodyFontStyles from global;
   /* Font */
-  composes: marketplaceTinyFontStyles from global;
   color: var(--matterColor);
 
   /* Remove default margins from font */
@@ -92,37 +101,61 @@
     margin-top: 0;
     margin-bottom: 0;
   }
+}
+
+.startDate {
+  text-align: center;
+  margin-top: 0.5rem;
+  color: var(--matterColor);
 }
 
 .mainInfo {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  /* align-items: center; */
+  padding-left: 1rem;
 }
 
 .title {
   /* Font */
-  composes: h3 from global;
+  composes: h2 from global;
   color: var(--matterColor);
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  width: 100%;
 
   /* Remove default margins from font */
-  margin-top: 0;
+  margin-top: 0.5rem;
   margin-bottom: 0;
 
   @media (--viewportMedium) {
-    margin-top: 0;
+    margin-top: 0.5rem;
     margin-bottom: 0;
   }
 }
 
+.userTitle {
+  composes: title;
+  text-align: center;
+}
+
 .location {
-  display: flex;
+  margin-block: 0.5rem;
 }
 
 .topInfo {
-  display: flex;
-  flex-shrink: 1;
-  flex-direction: column;
+  max-height: 10rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 65% 30%;
+  column-gap: 2rem;
+  margin-top: 0.2rem;
+  margin-left: 1rem;
+}
+
+.topText {
+  padding-left: 1rem;
 }
 
 .longWord {
@@ -136,7 +169,11 @@
 .avatar {
   width: 10rem;
   height: 10rem;
-  font-size: xx-large;
+  /*
+  &.premium {
+    border: solid 5px var(--marketplaceColorLight);
+    border-radius: 3rem;
+  } */
 }
 
 .avatarInitials {
@@ -145,28 +182,101 @@
 
 .providedServices {
   color: var(--matterColor);
+  display: flex;
+  margin-top: 1.5rem;
+  margin-left: 11rem;
 }
 
-.serviceBold {
-  font-weight: bold;
-}
-
-.description {
+.bold {
+  font-weight: var(--fontWeightBold);
   color: var(--matterColor);
-  line-height: 1rem;
-  margin-top: 0.2rem;
+}
+
+.serviceCardList {
+  display: flex;
+}
+
+.serviceCardItem {
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--matterColorNegative);
+  margin-right: 0.7rem;
+  margin-block: 0;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .messageButton {
-  position: absolute;
-  right: 0;
-  top: 0;
-  max-width: 8rem;
-  min-height: 2.5rem;
-  padding-block: 0px;
+  min-height: 0;
+
+  padding: 0.75rem;
+  max-width: 10rem;
+  text-decoration: none;
 }
 
 .container {
   position: relative;
   display: block;
+}
+
+.premiumIcon {
+  position: absolute;
+  left: 0.5rem;
+}
+
+.scheduleType {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  color: var(--matterColor);
+}
+
+.badge {
+  padding: 0.1rem;
+  border: solid 2px var(--marketplaceColor);
+  margin-right: 1rem;
+}
+
+.badges {
+  display: flex;
+  flex-direction: row;
+  margin-block: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
+.certAndTrainWrapper {
+  padding: 0.5rem;
+}
+
+.certAndTrainTitle {
+  composes: h3 from global;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.certAndTrainList {
+  list-style-type: disc;
+  text-align: center;
+}
+
+.note {
+  text-align: center;
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.yearsExperience {
+  composes: h4 from global;
+  margin: 0;
+  padding: 0;
+  color: var(--marketplaceColor);
 }

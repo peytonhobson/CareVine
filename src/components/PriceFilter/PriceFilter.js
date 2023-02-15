@@ -83,7 +83,12 @@ class PriceFilter extends Component {
       !!initialValues && !!initialValues[urlParam] && initialValues[urlParam].length > 0;
     const labelForPopup = hasInitialValues
       ? intl.formatMessage(
-          { id: 'PriceFilter.labelSelected' },
+          {
+            id:
+              urlParam === 'price'
+                ? 'PriceFilter.labelSelected'
+                : 'PriceFilter.labelSelectedMinimum',
+          },
           { labelText: initialValues[urlParam] }
         )
       : label;
@@ -95,7 +100,12 @@ class PriceFilter extends Component {
         )
       : label;
 
-    const filterText = intl.formatMessage({ id: 'PriceFilter.filterText' });
+    const filterText = intl.formatMessage(
+      {
+        id: 'PriceFilter.filterText',
+      },
+      { priceType: urlParam === 'price' ? 'max' : 'min' }
+    );
 
     const placeholder = intl.formatMessage({ id: 'PriceFilter.placeholder' });
 

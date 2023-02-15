@@ -23,6 +23,7 @@ const SearchResultsPanel = props => {
     currentUser,
     onContactUser,
     currentUserListing,
+    onManageDisableScrolling,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -70,6 +71,7 @@ const SearchResultsPanel = props => {
               currentUser={currentUser}
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
+              onManageDisableScrolling={onManageDisableScrolling}
             />
           )
         )}

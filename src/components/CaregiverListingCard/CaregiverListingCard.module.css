@@ -185,6 +185,10 @@
   height: 6rem;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .messageButton {
