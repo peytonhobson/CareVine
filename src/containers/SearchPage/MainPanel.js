@@ -26,6 +26,7 @@ import css from './SearchPage.module.css';
 // With this offset we move the dropdown to the left a few pixels on desktop layout.
 const FILTER_DROPDOWN_OFFSET = -14;
 
+// Search filters that can be used to filter employers as a caregiver
 const employerSearchFilters = [
   'distance',
   'price',
@@ -41,6 +42,7 @@ const employerSearchFilters = [
   'covidVaccination',
 ];
 
+// Search filters that can be used to filter caregivers as an employer
 const caregiverSearchFilters = [
   'distance',
   'minPrice',
@@ -181,26 +183,26 @@ class MainPanel extends Component {
   render() {
     const {
       className,
-      rootClassName,
-      urlQueryParams,
+      currentUser,
+      currentUserListing,
+      currentUserType,
+      filterConfig,
       listings,
+      onActivateListing,
+      onCloseModal,
+      onContactUser,
+      onManageDisableScrolling,
+      onMapIconClick,
+      onOpenModal,
+      pagination,
+      rootClassName,
       searchInProgress,
       searchListingsError,
       searchParamsAreInSync,
-      onActivateListing,
-      onManageDisableScrolling,
-      onOpenModal,
-      onCloseModal,
-      onMapIconClick,
-      pagination,
       searchParamsForPagination,
       showAsModalMaxWidth,
-      filterConfig,
       sortConfig,
-      currentUserType,
-      currentUser,
-      onContactUser,
-      currentUserListing,
+      urlQueryParams,
     } = this.props;
 
     const primaryFilters = filterConfig.filter(f => f.group === 'primary');
