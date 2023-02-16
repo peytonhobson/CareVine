@@ -81,6 +81,7 @@ module.exports = queryEvents = () => {
       const newListingState = event.attributes.resource.attributes.state;
 
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
+        console.log('approve listing');
         integrationSdk.users
           .show({
             id: userId,
@@ -113,12 +114,12 @@ module.exports = queryEvents = () => {
         previousValues.attributes && previousValues.attributes.emailVerified;
       const emailVerified = event.attributes.resource.attributes.emailVerified;
 
-      // Maybe rewrite as (!!!undefined)
       if (prevEmailVerified !== undefined && !prevEmailVerified && emailVerified) {
         const userId = event.attributes.resource.id.uuid;
 
         let userListingId = null;
 
+        console.log('approve listing 2');
         integrationSdk.listings
           .query({
             authorId: userId,
@@ -158,6 +159,7 @@ module.exports = queryEvents = () => {
       ) {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
+        console.log('enroll tcm');
         axios
           .post(
             `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
@@ -190,6 +192,7 @@ module.exports = queryEvents = () => {
       ) {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
+        console.log('deenroll tcm');
         axios
           .post(
             `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
@@ -230,6 +233,7 @@ module.exports = queryEvents = () => {
         backgroundCheckSubscription &&
         backgroundCheckSubscription.status === 'active'
       ) {
+        console.log('cancel subscription');
         axios
           .post(
             `${apiBaseUrl()}/api/stripe-update-subscription`,
@@ -255,6 +259,7 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event.attributes.resource.id.uuid;
 
+        console.log('close listing');
         integrationSdk.listings
           .query({ authorId: userId })
           .then(res => {
@@ -280,6 +285,7 @@ module.exports = queryEvents = () => {
       const previousValues = event.attributes.previousValues;
       const userId = previousValues && previousValues.id && previousValues.id.uuid;
 
+      console.log('delete user channels');
       axios
         .get(`https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`, {
           headers: {
