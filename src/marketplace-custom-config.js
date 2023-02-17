@@ -338,7 +338,6 @@ export const filters = [
         { key: 'lpc', label: 'Licensed Practical Nurse' },
         { key: 'ma', label: 'Medical Assistant' },
         { key: 'pca', label: 'Personal Care Assistant' },
-        { key: 'emt', label: 'Paramedic/EMT' },
       ],
     },
   },

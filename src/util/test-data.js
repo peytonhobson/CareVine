@@ -123,7 +123,7 @@ export const createOwnListing = (id, attributes = {}, includes = {}) => ({
     state: LISTING_STATE_PUBLISHED,
     price: new Money(5500, 'USD'),
     availabilityPlan: {
-      type: 'availability-plan/day',
+      type: 'day',
       entries: [
         { dayOfWeek: 'mon', seats: 1 },
         { dayOfWeek: 'tue', seats: 1 },

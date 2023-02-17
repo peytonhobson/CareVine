@@ -12,7 +12,7 @@ import { TimelineForm } from '../../forms';
 
 import css from './Care24HourForm.module.css';
 
-const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
+const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 const weekdayButtons = [
   { day: 'monday', label: 'Monday' },
   { day: 'tuesday', label: 'Tuesday' },

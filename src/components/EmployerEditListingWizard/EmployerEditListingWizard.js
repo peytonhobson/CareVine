@@ -82,7 +82,7 @@ const tabLabel = (intl, tab) => {
  * @return true if tab / step is completed.
  */
 const tabCompleted = (tab, listing) => {
-  const { geolocation, title, publicData } = listing.attributes;
+  const { geolocation, title, publicData, description } = listing.attributes;
 
   switch (tab) {
     case CARE_TYPE:
@@ -98,7 +98,7 @@ const tabCompleted = (tab, listing) => {
     case CAREIGVER_PREFERENCES:
       return !!(publicData && publicData.languagesSpoken && publicData.covidVaccination);
     case JOB_DESCRIPTION:
-      return !!(title && title !== 'Title');
+      return !!description;
     default:
       return false;
   }

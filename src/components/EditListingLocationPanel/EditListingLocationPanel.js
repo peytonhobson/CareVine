@@ -154,9 +154,7 @@ class EditListingLocationPanel extends Component {
                     privateData: {
                       address: {
                         ...parsedAddress,
-                        fullAddress: {
-                          ...address,
-                        },
+                        fullAddress: address,
                       },
                     },
                   };

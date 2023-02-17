@@ -10,7 +10,7 @@ import { CareScheduleSelectDatesForm } from '../../../forms';
 
 import css from './containers.module.css';
 
-const AVAILABILITY_PLAN_TYPE_ONE_TIME = 'availability-plan/oneTime';
+const AVAILABILITY_PLAN_TYPE_ONE_TIME = 'oneTime';
 
 // Ensure that the AvailabilityExceptions are in sensible order.
 //

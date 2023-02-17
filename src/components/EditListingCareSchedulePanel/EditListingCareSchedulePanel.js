@@ -15,8 +15,8 @@ import CareScheduleSelectDatesContainer from './containers/CareScheduleSelectDat
 import css from './EditListingCareSchedulePanel.module.css';
 import { useEffect } from 'react';
 
-const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
-const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
+const AVAILABILITY_PLAN_TYPE_REPEAT = 'repeat';
+const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 
 const ONE_TIME = 'oneTime';
 const REPEAT = 'repeat';
@@ -47,16 +47,19 @@ const EditListingCareSchedulePanel = props => {
     updateInProgress,
   } = props;
 
-  const [selectedScheduleType, setSelectedScheduleType] = useState(null);
+  const classes = classNames(className, rootClassName || css.root);
+  const currentListing = ensureOwnListing(listing);
+  const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
+  const availabilityPlanMaybe = currentListing?.attributes?.publicData?.availabilityPlan;
+
+  const [selectedScheduleType, setSelectedScheduleType] = useState(
+    availabilityPlanMaybe?.type || ONE_TIME
+  );
   const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     setShowErrors(true);
   }, [errors.updateListingError]);
-
-  const classes = classNames(className, rootClassName || css.root);
-  const currentListing = ensureOwnListing(listing);
-  const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
   const handle24HourCareSubmit = values => {
     const { liveIn, availableDays, availabilityExceptions, startDate, endDate } = values;
@@ -217,7 +220,7 @@ const EditListingCareSchedulePanel = props => {
       ) : null}
       <ButtonGroup
         className={css.buttonGroup}
-        initialSelect={ONE_TIME}
+        initialSelect={availabilityPlanMaybe?.type || ONE_TIME}
         onChange={handleScheduleTypeChange}
         options={buttonGroupOptions}
         rootClassName={css.buttonGroupRoot}

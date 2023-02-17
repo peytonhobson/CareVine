@@ -245,7 +245,7 @@ export const ensureTimeSlot = timeSlot => {
  * @param {Object} availability exception entity object, which is to be ensured against null values
  */
 export const ensureDayAvailabilityPlan = availabilityPlan => {
-  const empty = { type: 'availability-plan/day', entries: [] };
+  const empty = { type: 'day', entries: [] };
   return { ...empty, ...availabilityPlan };
 };
 

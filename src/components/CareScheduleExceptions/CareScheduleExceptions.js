@@ -15,8 +15,8 @@ import { timestampToDate } from '../../util/dates';
 import css from './CareScheduleExceptions.module.css';
 
 const MAX_EXCEPTIONS_COUNT = 20;
-const AVAILABILITY_PLAN_TYPE_REPEAT = 'availability-plan/repeat';
-const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
+const AVAILABILITY_PLAN_TYPE_REPEAT = 'repeat';
+const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 
 // Ensure that the AvailabilityExceptions are in sensible order.
 //
