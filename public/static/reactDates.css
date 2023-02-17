@@ -404,7 +404,9 @@
 }
 .CalendarMonthGrid__horizontal {
   position: absolute;
-  left: 9px
+  left: 9px;
+  overflow: hidden;
+  width: auto !important;
 }
 .CalendarMonthGrid__vertical {
   margin: 0 auto
@@ -580,7 +582,7 @@
 }
 .DayPicker_transitionContainer {
   position: relative;
-  overflow: hidden;
+  overflow: hidden !important;
   border-radius: 3px
 }
 .DayPicker_transitionContainer__horizontal {

@@ -55,7 +55,7 @@ const EditListingAvailabilityPanel = props => {
 
   const currentListing = ensureOwnListing(listing);
   const defaultAvailabilityPlan = {
-    type: 'availability-plan/recurring',
+    type: 'repeat',
     timezone: defaultTimeZone(),
     entries: [],
   };

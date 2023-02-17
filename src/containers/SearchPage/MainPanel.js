@@ -171,6 +171,18 @@ class MainPanel extends Component {
     };
   }
 
+  componentWillReceiveProps = nextProps => {
+    const { urlQueryParams } = nextProps;
+
+    if (urlQueryParams?.distance > this.props?.urlQueryParams?.distance) {
+      const distance = urlQueryParams?.distance;
+      this.setState((prevState, props) => {
+        const newQueryParams = { ...prevState.currentQueryParams, distance };
+        return { currentQueryParams: { ...newQueryParams } };
+      });
+    }
+  };
+
   handleSortBy(urlParam, values) {
     const { history, urlQueryParams } = this.props;
     const queryParams = values

@@ -42,6 +42,8 @@ import css from './EditListingAvailabilityExceptionForm.module.css';
 const TODAY = new Date();
 const MAX_AVAILABILITY_EXCEPTIONS_RANGE = 365;
 
+const AVAILABILITY_PLAN_TYPE_REPEAT = 'repeat';
+
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
@@ -252,7 +254,7 @@ const getAllTimeValues = (
 
   const endTimes = getAvailableEndTimes(startTime, endDate, selectedTimeRange, intl, timeZone);
   const endTime =
-    planType === 'availability-plan/recurring'
+    planType === 'repeat'
       ? endTimes.length > 0 && endTimes[0] && endTimes[0].timestamp
         ? endTimes[0].timestamp
         : null
@@ -318,7 +320,7 @@ const isOutsideRange = (exceptionStartDate, selectedTimeRange, timeZone) => day 
 const onExceptionStartDateChange = (value, timeRanges, props) => {
   const { timeZone, intl, form, planType } = props;
 
-  const is24Hour = planType === 'availability-plan/24hour';
+  const is24Hour = planType === '24hour';
 
   if (!value || !value.date) {
     form.batch(() => {
@@ -552,7 +554,7 @@ const EditListingAvailabilityExceptionForm = props => {
                 id={`${idPrefix}.available`}
                 name="availability"
                 label={
-                  planType === 'availability-plan/recurring'
+                  planType === AVAILABILITY_PLAN_TYPE_REPEAT
                     ? intl.formatMessage({
                         id: 'EditListingAvailabilityExceptionForm.available',
                       })
@@ -560,7 +562,7 @@ const EditListingAvailabilityExceptionForm = props => {
                         id: 'EditListingAvailabilityExceptionForm.careNeeded',
                       })
                 }
-                value={planType === 'availability-plan/recurring' ? 'available' : 'care-needed'}
+                value={planType === AVAILABILITY_PLAN_TYPE_REPEAT ? 'available' : 'care-needed'}
                 checkedClassName={css.checkedAvailable}
                 showAsRequired={pristine}
               />
@@ -568,7 +570,7 @@ const EditListingAvailabilityExceptionForm = props => {
                 id={`${idPrefix}.not-available`}
                 name="availability"
                 label={
-                  planType === 'availability-plan/recurring'
+                  planType === AVAILABILITY_PLAN_TYPE_REPEAT
                     ? intl.formatMessage({
                         id: 'EditListingAvailabilityExceptionForm.notAvailable',
                       })
@@ -577,14 +579,14 @@ const EditListingAvailabilityExceptionForm = props => {
                       })
                 }
                 value={
-                  planType === 'availability-plan/recurring' ? 'not-available' : 'care-not-needed'
+                  planType === AVAILABILITY_PLAN_TYPE_REPEAT ? 'not-available' : 'care-not-needed'
                 }
                 checkedClassName={css.checkedNotAvailable}
                 showAsRequired={pristine}
               />
             </div>
             <div className={css.section}>
-              {planType === 'availability-plan/repeat' ? (
+              {planType === AVAILABILITY_PLAN_TYPE_REPEAT ? (
                 <>
                   <div className={css.formRow}>
                     <div className={css.field}>

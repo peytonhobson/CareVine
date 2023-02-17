@@ -33,7 +33,7 @@ export const createAvailabilityPlan = (values, currentListing) => {
   const isFlexible = values.isFlexible;
 
   return {
-    type: 'availability-plan/repeat',
+    type: 'repeat',
     timezone,
     entries: createEntriesFromSubmitValues(values),
     ...isFlexible,

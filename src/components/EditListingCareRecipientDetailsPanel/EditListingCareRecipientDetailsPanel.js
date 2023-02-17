@@ -196,6 +196,7 @@ const EditListingCareRecipientDetailsPanel = props => {
         saveActionMsg={submitButtonText}
         required={true}
         onSubmit={handleSubmit}
+        careRecipients={careRecipients}
       />
       {onManageDisableScrolling && isCareRecipientFormVisible ? (
         <Modal

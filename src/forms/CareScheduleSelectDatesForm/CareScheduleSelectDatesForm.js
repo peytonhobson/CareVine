@@ -617,7 +617,7 @@ const CareScheduleSelectDatesForm = props => {
 
             <div className={css.submitButton}>
               <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-                <FormattedMessage id="CareScheduleSelectDatesForm.addSession" />
+                <FormattedMessage id="CareScheduleSelectDatesForm.addSchedule" />
               </PrimaryButton>
             </div>
           </Form>

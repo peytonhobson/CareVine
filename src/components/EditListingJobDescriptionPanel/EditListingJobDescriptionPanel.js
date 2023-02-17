@@ -12,9 +12,9 @@ import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingJobDescriptionPanel.module.css';
 
-const AVAILABILITY_PLAN_TYPE_SELECT_DATES = 'availability-plan/selectDates';
-const AVAILABILITY_PLAN_TYPE_RECURRING = 'availability-plan/recurring';
-const AVAILABILITY_PLAN_TYPE_24HOUR = 'availability-plan/24hour';
+const AVAILABILITY_PLAN_TYPE_SELECT_DATES = 'oneTime';
+const AVAILABILITY_PLAN_TYPE_RECURRING = 'repeat';
+const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 
 const SELECT_DATES = 'Select Dates';
 const RECURRING = 'Recurring';
@@ -151,7 +151,7 @@ const EditListingJobDescriptionPanel = props => {
     />
   );
 
-  const initialTitle = title || generateTitle(currentListing, filterConfig);
+  const initialTitle = title !== 'Title' ? title : generateTitle(currentListing, filterConfig);
   const initialValues = { title: initialTitle, description };
 
   const formProps = {
