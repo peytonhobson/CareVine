@@ -94,7 +94,7 @@ const tabCompleted = (tab, listing) => {
     case PRICING:
       return !!(publicData && publicData.minPrice && publicData.maxPrice);
     case CARE_RECIPIENT:
-      return !!(publicData && publicData.careRecipients);
+      return !!(publicData && publicData?.careRecipients?.length > 0);
     case CAREIGVER_PREFERENCES:
       return !!(publicData && publicData.languagesSpoken && publicData.covidVaccination);
     case JOB_DESCRIPTION:

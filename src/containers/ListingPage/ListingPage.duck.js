@@ -43,6 +43,10 @@ export const SEND_ENQUIRY_REQUEST = 'app/ListingPage/SEND_ENQUIRY_REQUEST';
 export const SEND_ENQUIRY_SUCCESS = 'app/ListingPage/SEND_ENQUIRY_SUCCESS';
 export const SEND_ENQUIRY_ERROR = 'app/ListingPage/SEND_ENQUIRY_ERROR';
 
+export const FETCH_CHANNEL_REQUEST = 'app/SearchPage/FETCH_CHANNEL_REQUEST';
+export const FETCH_CHANNEL_SUCCESS = 'app/SearchPage/FETCH_CHANNEL_SUCCESS';
+export const FETCH_CHANNEL_ERROR = 'app/SearchPage/FETCH_CHANNEL_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -63,6 +67,9 @@ const initialState = {
   sendEnquiryInProgress: false,
   sendEnquiryError: null,
   enquiryModalOpenForListingId: null,
+  messageChannel: null,
+  fetchChannelInProgress: false,
+  fetchChannelError: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -133,6 +140,22 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case SEND_ENQUIRY_ERROR:
       return { ...state, sendEnquiryInProgress: false, sendEnquiryError: payload };
 
+    case FETCH_CHANNEL_REQUEST: {
+      return {
+        ...state,
+        fetchChannelInProgress: true,
+        fetchChannelError: false,
+      };
+    }
+    case FETCH_CHANNEL_SUCCESS:
+      return { ...state, fetchChannelInProgress: false, messageChannel: payload };
+
+    case FETCH_CHANNEL_ERROR:
+      return {
+        ...state,
+        fetchChannelInProgress: false,
+        fetchChannelError: true,
+      };
     default:
       return state;
   }
@@ -194,6 +217,19 @@ export const fetchLineItemsError = error => ({
 export const sendEnquiryRequest = () => ({ type: SEND_ENQUIRY_REQUEST });
 export const sendEnquirySuccess = () => ({ type: SEND_ENQUIRY_SUCCESS });
 export const sendEnquiryError = e => ({ type: SEND_ENQUIRY_ERROR, error: true, payload: e });
+
+export const fetchChannelRequest = () => ({
+  type: FETCH_CHANNEL_REQUEST,
+});
+export const fetchChannelSuccess = channel => ({
+  type: FETCH_CHANNEL_SUCCESS,
+  payload: channel,
+});
+export const fetchChannelError = e => ({
+  type: FETCH_CHANNEL_ERROR,
+  error: true,
+  payload: e,
+});
 
 // ================ Thunks ================ //
 
@@ -282,85 +318,75 @@ export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, ge
     });
 };
 
-export const sendEnquiry = (currentAuthor, message) => (dispatch, getState, sdk) => {
-  dispatch(sendEnquiryRequest());
+export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(fetchChannelRequest());
 
-  const currentUserEmail = getState().user.currentUser.attributes.email;
-  const currentUserId = getState().user.currentUser.id.uuid;
   const currentAuthorId = currentAuthor.id.uuid;
+  const currentUserId = currentUser.id.uuid;
 
-  return fetchUserEmail({ userId: currentAuthorId })
-    .then(async res => {
-      const params = {
-        appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-        modules: [new GroupChannelModule()],
-      };
-      const sb = SendbirdChat.init(params);
+  const params = {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
+  };
+  const sb = SendbirdChat.init(params);
 
-      const userListQueryParams = {
-        userIdsFilter: [currentAuthorId],
-      };
-      const query = sb.createApplicationUserListQuery(userListQueryParams);
+  const userListQueryParams = {
+    userIdsFilter: [currentAuthorId],
+  };
+  const query = sb.createApplicationUserListQuery(userListQueryParams);
 
-      const users = await query.next();
-      if (users.length === 0) {
-        await sb.connect(currentAuthorId);
-        const userUpdateParams = {
-          nickname: userDisplayNameAsString(currentAuthor.attributes.profile.displayName),
-          profileUrl:
-            currentAuthor.profileImage &&
-            currentAuthor.profileImage.attributes.variants['square-small'].url,
-        };
-        await sb.updateCurrentUserInfo(userUpdateParams);
-      }
-      await sb.connect(currentUserId);
+  return sb
+    .connect(currentUserId, accessToken)
+    .then(() => {
+      return query.next().then(async users => {
+        if (users.length === 0) {
+          dispatch(generateAccessToken(currentAuthor));
+        }
 
-      let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
+        let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
 
-      let channel = null;
+        let channel = null;
 
-      try {
-        channel = await sb.groupChannel.getChannel(CHANNEL_URL);
-      } catch (e) {
-        console.log(e);
-      }
-
-      if (!channel) {
-        CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
         try {
           channel = await sb.groupChannel.getChannel(CHANNEL_URL);
         } catch (e) {
           console.log(e);
         }
-      }
 
-      if (!channel) {
-        const channelParams = {
-          invitedUserIds: [currentUserId, currentAuthorId],
-          channelUrl: CHANNEL_URL,
-        };
-        channel = await sb.groupChannel.createChannel(channelParams);
-      }
+        if (!channel) {
+          CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
+          try {
+            channel = await sb.groupChannel.getChannel(CHANNEL_URL);
+          } catch (e) {
+            // TODO: remove in production
+            console.log(e);
+          }
+        }
 
-      const messageParams = {
-        message,
-      };
-      return channel
-        .sendUserMessage(messageParams)
-        .onFailed((err, message) => {
-          throw err;
-        })
-        .onSucceeded(message => {
-          return message;
-        });
-    })
-    .then(() => {
-      dispatch(sendEnquirySuccess());
+        if (!channel) {
+          const channelParams = {
+            invitedUserIds: [currentUserId, currentAuthorId],
+            channelUrl: CHANNEL_URL,
+          };
+          try {
+            channel = await sb.groupChannel.createChannel(channelParams);
+          } catch (e) {
+            dispatch(fetchChannelError(e));
+          }
+        }
+
+        if (channel) {
+          dispatch(fetchChannelSuccess(channel));
+        }
+      });
     })
     .catch(e => {
-      console.log(e);
       log.error(e);
-      dispatch(sendEnquiryError(e));
+      dispatch(fetchChannelError(e));
     });
 };
 

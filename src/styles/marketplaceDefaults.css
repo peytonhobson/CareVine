@@ -616,8 +616,8 @@ textarea {
 .marketplaceTinyFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightRegular);
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
   margin-top: 9.5px;
   margin-bottom: 8.5px;

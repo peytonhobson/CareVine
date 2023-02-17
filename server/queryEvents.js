@@ -7,6 +7,7 @@ module.exports = queryEvents = () => {
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
   const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
+  const CAREGIVER = 'caregiver';
 
   const apiBaseUrl = () => {
     const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -36,7 +37,7 @@ module.exports = queryEvents = () => {
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 10000; // 1 minute
+  const pollIdleWait = 10000; // 10 seconds
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -72,23 +73,28 @@ module.exports = queryEvents = () => {
     const eventType = event.attributes.eventType;
 
     if (eventType === 'listing/updated') {
-      const userId = event.attributes.resource.relationships.author.data.id.uuid;
+      const userId = event?.attributes?.resource?.relationships?.author?.data?.id?.uuid;
 
-      const prevListingState =
-        event.attributes.previousValues &&
-        event.attributes.previousValues.attributes &&
-        event.attributes.previousValues.attributes.state;
-      const newListingState = event.attributes.resource.attributes.state;
+      const prevListingState = event?.attributes?.previousValues?.attributes?.state;
+      const newListingState = event?.attributes?.resource?.attributes?.state;
 
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
         console.log('approve listing');
         integrationSdk.users
           .show({
             id: userId,
+            include: ['stripeAccount'],
           })
           .then(res => {
-            const user = res.data.data;
-            if (user.attributes.emailVerified) {
+            const user = res?.data?.data;
+            const metadata = user?.attributes?.profile?.metadata;
+            const openListing =
+              metadata?.userType === CAREGIVER
+                ? metadata?.backgroundCheckSubscription?.status === 'active' &&
+                  user?.relationships?.stripeAccount?.data &&
+                  user?.attributes?.emailVerified
+                : user?.attributes?.emailVerified;
+            if (openListing) {
               const listingId = event.attributes.resource.id.uuid;
 
               integrationSdk.listings.approve({
@@ -101,23 +107,33 @@ module.exports = queryEvents = () => {
     }
 
     if (eventType === 'user/updated') {
-      const previousValues = event.attributes.previousValues;
-      const currentAttributes = event.attributes.resource.attributes;
-      const metadata =
-        currentAttributes && currentAttributes.profile && currentAttributes.profile.metadata;
-      const privateData =
-        currentAttributes && currentAttributes.profile && currentAttributes.profile.privateData;
-      const previousValuesProfile =
-        previousValues && previousValues.attributes && previousValues.attributes.profile;
+      const previousValues = event?.attributes?.previousValues;
+      const currentAttributes = event?.attributes?.resource?.attributes;
+      const metadata = currentAttributes?.profile?.metadata;
+      const privateData = currentAttributes?.profile?.privateData;
+      const previousValuesProfile = previousValues?.attributes?.profile;
 
-      const prevEmailVerified =
-        previousValues.attributes && previousValues.attributes.emailVerified;
-      const emailVerified = event.attributes.resource.attributes.emailVerified;
+      const prevEmailVerified = previousValues?.attributes?.emailVerified;
+      const emailVerified = event?.attributes?.resource?.attributes?.emailVerified;
+      const backgroundCheckApprovedStatus = metadata?.backgroundCheckApproved?.status;
+      const previousBCSubscription = previousValuesProfile?.metadata?.backgroundCheckSubscription;
+      const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
+      const prevBackgroundCheckSubscription =
+        previousValuesProfile?.metadata?.backgroundCheckSubscription;
+      const stripeAccount = event?.attributes?.resource?.relationships?.stripeAccount?.data;
+      const prevStripeAccount = previousValues?.attributes?.relationships?.stripeAccount?.data;
+      const openListing =
+        metadata?.userType === CAREGIVER
+          ? backgroundCheckSubscription?.status === 'active' &&
+            stripeAccount &&
+            emailVerified &&
+            (!prevStripeAccount ||
+              prevBackgroundCheckSubscription?.status !== 'active' ||
+              (prevEmailVerified !== undefined && !prevEmailVerified))
+          : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
-      if (prevEmailVerified !== undefined && !prevEmailVerified && emailVerified) {
-        const userId = event.attributes.resource.id.uuid;
-
-        let userListingId = null;
+      if (openListing) {
+        const userId = event?.attributes?.resource?.id?.uuid;
 
         console.log('approve listing 2');
         integrationSdk.listings
@@ -125,13 +141,17 @@ module.exports = queryEvents = () => {
             authorId: userId,
           })
           .then(res => {
-            userListingId = res.data.data[0] && res.data.data.id && res.data.data.id.uuid;
-            const listingState = res.data.data[0].attributes.state;
+            console.log('approve listing 2 past query 1');
+            const userListingId = res?.data?.data[0]?.id?.uuid;
+            const listingState = res?.data?.data[0]?.attributes?.state;
 
             if (listingState === 'pendingApproval') {
-              integrationSdk.listings.approve({
-                id: userListingId,
-              });
+              console.log('approve listing 2 at approve');
+              integrationSdk.listings
+                .approve({
+                  id: userListingId,
+                })
+                .catch(err => log.error(err));
             }
           })
           .catch(err => {
@@ -139,16 +159,9 @@ module.exports = queryEvents = () => {
           });
       }
 
-      const backgroundCheckApprovedStatus =
-        metadata && metadata.backgroundCheckApproved && metadata.backgroundCheckApproved.status;
-      const previousBCSubscription =
-        previousValuesProfile &&
-        previousValuesProfile.metadata &&
-        previousValuesProfile.metadata.backgroundCheckSubscription;
-      const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
-      const tcmEnrolled = privateData && privateData.tcmEnrolled;
-      const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
-      const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
+      const tcmEnrolled = privateData?.tcmEnrolled;
+      const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
+      const backgroundCheckRejected = privateData?.backgroundCheckRejected;
 
       if (
         backgroundCheckApprovedStatus &&
@@ -173,7 +186,7 @@ module.exports = queryEvents = () => {
             }
           )
           .then(() => {
-            const userId = event.attributes.resource.id.uuid;
+            const userId = event?.attributes?.resource?.id?.uuid;
             integrationSdk.users.updateProfile({
               id: userId,
               privateData: {
@@ -190,7 +203,7 @@ module.exports = queryEvents = () => {
         (backgroundCheckSubscription.type !== 'vine' ||
           backgroundCheckSubscription.status !== 'active')
       ) {
-        const userAccessCode = privateData.authenticateUserAccessCode;
+        const userAccessCode = privateData?.authenticateUserAccessCode;
 
         console.log('deenroll tcm');
         axios
@@ -217,28 +230,22 @@ module.exports = queryEvents = () => {
           .catch(err => log.error(err));
       }
 
-      const previousQuizAttempts =
-        previousValuesProfile &&
-        previousValuesProfile.privateData &&
-        previousValuesProfile.privateData.identityProofQuizAttempts;
+      const previousQuizAttempts = previousValuesProfile?.privateData?.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
-        previousValuesProfile &&
-        previousValuesProfile.privateData &&
-        previousValuesProfile.privateData.backgroundCheckRejected;
+        previousValuesProfile?.privateData?.backgroundCheckRejected;
 
       // If failed background check, set subscription to cancel at end of period
       if (
         ((identityProofQuizAttempts >= 3 && previousQuizAttempts < 3) ||
           (backgroundCheckRejected && !previousBackgroundCheckRejected)) &&
-        backgroundCheckSubscription &&
-        backgroundCheckSubscription.status === 'active'
+        backgroundCheckSubscription?.status === 'active'
       ) {
         console.log('cancel subscription');
         axios
           .post(
             `${apiBaseUrl()}/api/stripe-update-subscription`,
             {
-              subscriptionId: backgroundCheckSubscription.subscriptionId,
+              subscriptionId: backgroundCheckSubscription?.subscriptionId,
               params: { cancel_at_period_end: true },
             },
             {
@@ -252,38 +259,36 @@ module.exports = queryEvents = () => {
 
       // Close user listing if background check subscription is cancelled
       if (
-        backgroundCheckSubscription &&
-        backgroundCheckSubscription.status !== 'active' &&
-        previousBCSubscription &&
-        previousBCSubscription.status === 'active'
+        backgroundCheckSubscription?.status !== 'active' &&
+        previousBCSubscription?.status === 'active'
       ) {
-        const userId = event.attributes.resource.id.uuid;
+        const userId = event?.attributes?.resource?.id?.uuid;
 
         console.log('close listing');
         integrationSdk.listings
           .query({ authorId: userId })
           .then(res => {
-            const listing = res.data.data[0];
+            const listing = res?.data?.data[0];
             if (listing.state === 'published') {
               integrationSdk.listings
                 .close(
                   {
-                    id: listing.id.uuid,
+                    id: listing?.id?.uuid,
                   },
                   {
                     expand: true,
                   }
                 )
-                .catch(e => log.error(e.data.errors));
+                .catch(e => log.error(e?.data?.errors));
             }
           })
-          .catch(e => log.error(e.data.errors));
+          .catch(e => log.error(e?.data?.errors));
       }
     }
 
     if (eventType === 'user/deleted') {
-      const previousValues = event.attributes.previousValues;
-      const userId = previousValues && previousValues.id && previousValues.id.uuid;
+      const previousValues = event?.attributes?.previousValues;
+      const userId = previousValues?.id?.uuid;
 
       console.log('delete user channels');
       axios
@@ -294,9 +299,9 @@ module.exports = queryEvents = () => {
           },
         })
         .then(apiResponse => {
-          const channels = apiResponse.data.channels;
+          const channels = apiResponse?.data?.channels;
 
-          if (channels && channels.length > 0) {
+          if (channels?.length > 0) {
             channels.forEach(channel => {
               axios.delete(
                 `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,

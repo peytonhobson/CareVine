@@ -91,10 +91,10 @@ export const InboxPageComponent = props => {
     ensuredCurrentUser.attributes.profile.privateData.sbAccessToken;
 
   useEffect(() => {
-    if (!!ensuredCurrentUser.id && !accessToken) {
+    if (!!ensuredCurrentUser.id && !accessToken && !generateAccessTokenInProgress) {
       onGenerateAccessToken(ensuredCurrentUser);
     }
-  }, [ensuredCurrentUser, accessToken]);
+  }, [ensuredCurrentUser, accessToken, generateAccessTokenInProgress]);
 
   const sendbirdColorSet = {
     '--sendbird-light-primary-500': '#043c2c',

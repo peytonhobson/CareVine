@@ -21,6 +21,7 @@ const SendbirdModal = props => {
     fetchChannelError,
     history,
     onGenerateAccessToken,
+    generateAccessTokenInProgress,
   } = props;
 
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
@@ -48,17 +49,16 @@ const SendbirdModal = props => {
     currentAuthor && currentAuthor.attributes && currentAuthor.attributes.profile.displayName;
 
   useEffect(() => {
-    currentAuthor &&
-      currentUser &&
-      accessToken &&
+    if (currentAuthor && currentUser && accessToken && !messageChannel && !fetchChannelInProgress) {
       onFetchChannel(currentAuthor, currentUser, accessToken);
-  }, [currentAuthor, currentUser, accessToken]);
+    }
+  }, [currentAuthor, currentUser, accessToken, messageChannel, fetchChannelInProgress]);
 
   useEffect(() => {
-    if (!!currentUser && !!currentUser.id && !accessToken) {
+    if (!!currentUser && !!currentUser.id && !accessToken && !generateAccessTokenInProgress) {
       onGenerateAccessToken(currentUser);
     }
-  }, [currentUser, accessToken]);
+  }, [currentUser, accessToken, generateAccessTokenInProgress]);
 
   const redirectToInbox = () => {
     history.push('/inbox');

@@ -12,6 +12,7 @@ import { maxLength } from '../../util/validators';
 import config from '../../config';
 import { Form, Button, FieldCheckboxGroup, FieldTextInput } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
+import { requiredFieldArrayCheckbox } from '../../util/validators';
 
 import css from './EditListingCareRecipientDetailsForm.module.css';
 
@@ -99,6 +100,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
             options={careNeedsOptions}
             label={careNeedsLabel}
             twoColumns={true}
+            validate={requiredFieldArrayCheckbox('Please select at least one option')}
             required
           />
           <FieldTextInput

@@ -51,10 +51,10 @@ export class BookingTimeFormComponent extends Component {
   }
 
   render() {
-    const { rootClassName, className, price: unitPrice, ...rest } = this.props;
+    const { rootClassName, className, price: unitPrice, minPrice, maxPrice, ...rest } = this.props;
     const classes = classNames(rootClassName || css.root, className);
 
-    if (!unitPrice) {
+    if (!minPrice && !maxPrice) {
       return (
         <div className={classes}>
           <p className={css.error}>
@@ -63,15 +63,15 @@ export class BookingTimeFormComponent extends Component {
         </div>
       );
     }
-    if (unitPrice.currency !== config.currency) {
-      return (
-        <div className={classes}>
-          <p className={css.error}>
-            <FormattedMessage id="BookingTimeForm.listingCurrencyInvalid" />
-          </p>
-        </div>
-      );
-    }
+    // if (unitPrice.currency !== config.currency) {
+    //   return (
+    //     <div className={classes}>
+    //       <p className={css.error}>
+    //         <FormattedMessage id="BookingTimeForm.listingCurrencyInvalid" />
+    //       </p>
+    //     </div>
+    //   );
+    // }
 
     return (
       <FinalForm
