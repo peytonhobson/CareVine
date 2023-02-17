@@ -41,18 +41,27 @@ import {
   Footer,
   BookingPanel,
   ListingSummary,
+  ListingTabs,
+  SendbirdModal,
 } from '../../components';
+import { generateAccessToken } from '../../ducks/sendbird.duck';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { CAREGIVER } from '../../util/constants';
 import ActionBarMaybe from './ActionBarMaybe';
-
+import {
+  MISSING_SUBSCRIPTION,
+  MISSING_REQUIREMENTS,
+  EMAIL_VERIFICATION,
+} from '../../util/constants';
 import {
   sendEnquiry,
   setInitialValues,
   fetchTimeSlots,
   fetchTransactionLineItems,
+  fetchChannel,
 } from './ListingPage.duck';
+import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import css from './ListingPage.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
@@ -79,12 +88,11 @@ export class ListingPageComponent extends Component {
     this.state = {
       pageClassNames: [],
       imageCarouselOpen: false,
-      enquiryModalOpen: enquiryModalOpenForListingId === params.id,
+      enquiryModalOpen: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
-    this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
   }
 
   handleSubmit(values) {
@@ -140,40 +148,54 @@ export class ListingPageComponent extends Component {
   }
 
   onContactUser() {
-    const { currentUser, history, callSetInitialValues, params, location } = this.props;
+    const { listing } = this.props;
+
+    const listingId = listing?.id?.uuid;
+
+    const { currentUser, history, callSetInitialValues, location } = this.props;
+
+    const userType = currentUser?.attributes?.profile?.metadata?.userType;
+    const emailVerified = currentUser?.attributes?.emailVerified;
+    const backgroundCheckApproved =
+      currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved;
+    const backgroundCheckSubscription =
+      currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
+    const stripeAccount = currentUser?.stripeAccount;
+
+    const canMessage =
+      userType === CAREGIVER
+        ? emailVerified &&
+          backgroundCheckApproved?.status &&
+          backgroundCheckSubscription?.status === 'active' &&
+          stripeAccount
+        : emailVerified;
 
     if (!currentUser) {
       const state = { from: `${location.pathname}${location.search}${location.hash}` };
 
       // We need to log in before showing the modal, but first we need to ensure
       // that modal does open when user is redirected back to this listingpage
-      callSetInitialValues(setInitialValues, { enquiryModalOpenForListingId: params.id });
+      callSetInitialValues(setInitialValues, { enquiryModalOpenForListingId: listingId });
 
       // signup and return back to listingPage.
       history.push(createResourceLocatorString('SignupPage', routeConfiguration(), {}, {}), state);
-    } else {
+    } else if (canMessage) {
       this.setState({ enquiryModalOpen: true });
+    } else {
+      // TODO: caregiver should have two separate modals
+      // 1) something not approved
+      // 2) doesnt have a subcription but everythings approved
+      // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
+      if (userType === CAREGIVER) {
+        if (emailVerified && backgroundCheckApproved?.status && stripeAccount) {
+          this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
+        } else {
+          this.props.onChangeModalValue(MISSING_REQUIREMENTS);
+        }
+        return;
+      }
+      this.props.onChangeModalValue(EMAIL_VERIFICATION);
     }
-  }
-
-  onSubmitEnquiry(values) {
-    const { history, params, onSendEnquiry } = this.props;
-    const routes = routeConfiguration();
-    const listingId = new UUID(params.id);
-    const { message } = values;
-
-    onSendEnquiry(listingId, message.trim())
-      .then(txId => {
-        this.setState({ enquiryModalOpen: false });
-
-        // Redirect to OrderDetailsPage
-        history.push(
-          createResourceLocatorString('OrderDetailsPage', routes, { id: txId.uuid }, {})
-        );
-      })
-      .catch(() => {
-        // Ignore, error handling in duck file
-      });
   }
 
   render() {
@@ -190,17 +212,13 @@ export class ListingPageComponent extends Component {
       location,
       scrollingDisabled,
       showListingError,
-      reviews,
-      fetchReviewsError,
-      sendEnquiryInProgress,
-      sendEnquiryError,
-      monthlyTimeSlots,
-      filterConfig,
-      onFetchTransactionLineItems,
-      lineItems,
-      fetchLineItemsInProgress,
-      fetchLineItemsError,
       currentUserListing,
+      messageChannel,
+      fetchChannelInProgress,
+      fetchChannelError,
+      onFetchChannel,
+      onGenerateAccessToken,
+      generateAccessTokenInProgress,
     } = this.props;
 
     const listingId = new UUID(rawParams.id);
@@ -362,18 +380,6 @@ export class ListingPageComponent extends Component {
       </NamedLink>
     );
 
-    const userType = currentListing?.attributes.metadata.listingType;
-    const mainContent =
-      userType === CAREGIVER ? (
-        <ListingSummary
-          listing={currentListing}
-          params={params}
-          currentUserListing={currentUserListing}
-        />
-      ) : (
-        <div>hi</div>
-      ); //)
-
     const actionBar = listingId ? (
       <div onClick={e => e.stopPropagation()}>
         <ActionBarMaybe
@@ -411,24 +417,40 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperTopbar>{topbar}</LayoutWrapperTopbar>
           <LayoutWrapperMain>
             {actionBar}
-            <div className={css.mainContainer}>{mainContent}</div>
-            <Modal
-              id="ListingPage.enquiry"
-              contentClassName={css.enquiryModalContent}
-              isOpen={isAuthenticated && this.state.enquiryModalOpen}
-              onClose={() => this.setState({ enquiryModalOpen: false })}
-              onManageDisableScrolling={onManageDisableScrolling}
-            >
-              <EnquiryForm
-                className={css.enquiryForm}
-                submitButtonWrapperClassName={css.enquirySubmitButtonWrapper}
-                listingTitle={title}
-                authorDisplayName={authorDisplayName}
-                sendEnquiryError={sendEnquiryError}
-                onSubmit={this.onSubmitEnquiry}
-                inProgress={sendEnquiryInProgress}
+            <div className={css.mainContainer}>
+              <div className={css.subContainer}>
+                <ListingSummary
+                  listing={currentListing}
+                  params={params}
+                  currentUserListing={currentUserListing}
+                  onContactUser={this.onContactUser}
+                  isOwnListing={isOwnListing}
+                />
+                <ListingTabs
+                  currentUser={currentUser}
+                  listing={currentListing}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                  currentUserListing={currentUserListing}
+                />
+              </div>
+            </div>
+            {this.state.enquiryModalOpen && (
+              <SendbirdModal
+                contentClassName={css.enquiryModalContent}
+                isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
+                onClose={() => this.setState({ enquiryModalOpen: false })}
+                onManageDisableScrolling={onManageDisableScrolling}
+                currentUser={currentUser}
+                currentAuthor={currentAuthor}
+                onFetchChannel={onFetchChannel}
+                messageChannel={messageChannel}
+                fetchChannelInProgress={fetchChannelInProgress}
+                fetchChannelError={fetchChannelError}
+                history={history}
+                onGenerateAccessToken={onGenerateAccessToken}
+                generateAccessTokenInProgress={generateAccessTokenInProgress}
               />
-            </Modal>
+            )}
           </LayoutWrapperMain>
           <LayoutWrapperFooter>
             <Footer />
@@ -516,7 +538,11 @@ const mapStateToProps = state => {
     fetchLineItemsInProgress,
     fetchLineItemsError,
     enquiryModalOpenForListingId,
+    messageChannel,
+    fetchChannelInProgress,
+    fetchChannelError,
   } = state.ListingPage;
+  const { generateAccessTokenInProgress } = state.sendbird;
   const { currentUser, currentUserListing } = state.user;
 
   const getListing = id => {
@@ -548,6 +574,10 @@ const mapStateToProps = state => {
     sendEnquiryInProgress,
     sendEnquiryError,
     currentUserListing,
+    messageChannel,
+    fetchChannelInProgress,
+    fetchChannelError,
+    generateAccessTokenInProgress,
   };
 };
 
@@ -558,10 +588,13 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setInitialValues(values, saveToSessionStorage)),
   onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
     dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
-  onSendEnquiry: (listingId, message) => dispatch(sendEnquiry(listingId, message)),
+  onFetchChannel: (currentAuthor, currentUser, accessToken) =>
+    dispatch(fetchChannel(currentAuthor, currentUser, accessToken)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+  onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
+  onChangeModalValue: value => dispatch(changeModalValue(value)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

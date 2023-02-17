@@ -1,0 +1,146 @@
+.nav {
+  /* Layout */
+  display: flex;
+  position: sticky;
+  top: var(--topbarHeightDesktop);
+  z-index: 90;
+  flex-direction: row;
+  padding: 0 0.5rem;
+  flex-shrink: 0;
+  background-color: var(--matterColorLight);
+  box-shadow: var(--boxShadowLight);
+  border-top: 2px solid var(--matterColorNegative);
+  overflow-x: scroll;
+  width: 100%;
+  justify-content: space-between;
+
+  @media (--viewportLarge) {
+    /* padding: 128px 0 82px 36px; */
+    /* flex-direction: column; */
+    overflow-x: auto;
+    background-color: var(--matterColorBright);
+    box-shadow: none;
+    border-bottom: 2px solid var(--matterColorNegative);
+  }
+
+  @media (--viewportLargeWithPaddings) {
+    /* padding: 128px 0 82px calc((100% - 1056px) / 2); */
+  }
+}
+
+.tab {
+  margin-left: 16px;
+  white-space: nowrap;
+  font-size: x-large;
+
+  &:first-child {
+    margin-left: 0;
+
+    /* Padding added to tab so that it will be visible after call to scrollToTab */
+    padding-left: 24px;
+  }
+
+  &:last-child {
+    /* Padding added to tab so that it will be visible after call to scrollToTab */
+    padding-right: 24px;
+  }
+
+  @media (--viewportLarge) {
+    margin-left: 0;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+.tabContent {
+  /* Font */
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.section {
+  padding: 2rem 0 0 0;
+}
+
+.title {
+  composes: h1 from global;
+
+  margin: 0;
+}
+
+.lowerSchedule {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 50% 50%;
+}
+
+.scheduleContainer {
+  padding: 0 1rem;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.weekdays {
+  display: grid;
+  column-gap: 2rem;
+}
+
+.weekdayColumnOne {
+  grid-column-start: 1;
+}
+
+.weekdayColumnTwo {
+  grid-column-start: 2;
+}
+
+.weekday {
+  width: 50%;
+}
+
+.scheduleTitle {
+  text-align: left;
+  width: auto;
+  margin-bottom: 0.5rem;
+}
+
+.weekdayTitle {
+  margin-bottom: 0.5rem;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.includedArea {
+  color: var(--marketplaceColor);
+}
+
+.experiencesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+}
+
+.sharedItem {
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--marketplaceColor);
+  margin: 0.5rem;
+  color: var(--matterColorBright);
+}
+
+.item {
+  padding-inline: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--matterColorNegative);
+  margin: 0.5rem;
+}

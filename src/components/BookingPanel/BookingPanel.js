@@ -92,6 +92,9 @@ const BookingPanel = props => {
   const isNightly = unitType === LINE_ITEM_NIGHT;
   const isDaily = unitType === LINE_ITEM_DAY;
 
+  const minPrice = listing.attributes.publicData.minPrice;
+  const maxPrice = listing.attributes.publicData.maxPrice;
+
   const unitTranslationKey = isNightly
     ? 'BookingPanel.perNight'
     : isDaily
@@ -131,6 +134,8 @@ const BookingPanel = props => {
 
         {showBookingTimeForm ? (
           <BookingTimeForm
+            minPrice={minPrice}
+            maxPrice={maxPrice}
             className={css.bookingForm}
             formId="BookingPanel"
             submitButtonWrapperClassName={css.submitButtonWrapper}

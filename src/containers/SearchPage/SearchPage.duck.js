@@ -60,9 +60,6 @@ const initialState = {
   transactions: [],
   fetchTransactionInProgress: false,
   fetchTransactionsError: false,
-  messageChannel: null,
-  fetchChannelInProgress: false,
-  fetchChannelError: null,
   searchListingsSuccess: false,
 };
 
@@ -136,22 +133,6 @@ const listingPageReducer = (state = initialState, action = {}) => {
         fetchTransactionsError: true,
       };
 
-    case FETCH_CHANNEL_REQUEST: {
-      return {
-        ...state,
-        fetchChannelInProgress: true,
-        fetchChannelError: false,
-      };
-    }
-    case FETCH_CHANNEL_SUCCESS:
-      return { ...state, fetchChannelInProgress: false, messageChannel: payload };
-
-    case FETCH_CHANNEL_ERROR:
-      return {
-        ...state,
-        fetchChannelInProgress: false,
-        fetchChannelError: true,
-      };
     default:
       return state;
   }
@@ -197,19 +178,6 @@ export const fetchTransactionsSuccess = response => ({
 });
 export const fetchTransactionsError = e => ({
   type: FETCH_TRANSACTIONS_ERROR,
-  error: true,
-  payload: e,
-});
-
-export const fetchChannelRequest = () => ({
-  type: FETCH_CHANNEL_REQUEST,
-});
-export const fetchChannelSuccess = channel => ({
-  type: FETCH_CHANNEL_SUCCESS,
-  payload: channel,
-});
-export const fetchChannelError = e => ({
-  type: FETCH_CHANNEL_ERROR,
   error: true,
   payload: e,
 });
@@ -282,78 +250,6 @@ export const setActiveListing = listingId => ({
   type: SEARCH_MAP_SET_ACTIVE_LISTING,
   payload: listingId,
 });
-
-export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
-  dispatch,
-  getState,
-  sdk
-) => {
-  dispatch(fetchChannelRequest());
-
-  const currentAuthorId = currentAuthor.id.uuid;
-  const currentUserId = currentUser.id.uuid;
-
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
-  };
-  const sb = SendbirdChat.init(params);
-
-  const userListQueryParams = {
-    userIdsFilter: [currentAuthorId],
-  };
-  const query = sb.createApplicationUserListQuery(userListQueryParams);
-
-  return sb
-    .connect(currentUserId, accessToken)
-    .then(() => {
-      return query.next().then(async users => {
-        if (users.length === 0) {
-          dispatch(generateAccessToken(currentAuthor));
-        }
-
-        let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
-
-        let channel = null;
-
-        try {
-          channel = await sb.groupChannel.getChannel(CHANNEL_URL);
-        } catch (e) {
-          console.log(e);
-        }
-
-        if (!channel) {
-          CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
-          try {
-            channel = await sb.groupChannel.getChannel(CHANNEL_URL);
-          } catch (e) {
-            // TODO: remove in production
-            console.log(e);
-          }
-        }
-
-        if (!channel) {
-          const channelParams = {
-            invitedUserIds: [currentUserId, currentAuthorId],
-            channelUrl: CHANNEL_URL,
-          };
-          try {
-            channel = await sb.groupChannel.createChannel(channelParams);
-          } catch (e) {
-            dispatch(fetchChannelError(e));
-          }
-        }
-
-        if (channel) {
-          dispatch(fetchChannelSuccess(channel));
-        }
-      });
-    })
-    .catch(e => {
-      log.error(e);
-      dispatch(fetchChannelError(e));
-    });
-};
 
 export const loadData = (params, search) => {
   const queryParams = parse(search, {

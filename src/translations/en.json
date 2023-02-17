@@ -597,6 +597,8 @@
   "ListingPage.viewImagesButton": "View photos ({count})",
   "ListingPage.viewType": "Cottage with {view}",
   "ListingPage.yourHostHeading": "Your host",
+  "ListingSummary.bookNow": "Book now",
+  "ListingSummary.message": "Message",
   "LoadableComponentErrorBoundaryPage.description": "It looks like the app needs to be updated! Please, refresh the current page or go back to {link}.",
   "LoadableComponentErrorBoundaryPage.heading": "Oops, we couldn't fetch the page.",
   "LoadableComponentErrorBoundaryPage.landingPageLink": "landing page",
