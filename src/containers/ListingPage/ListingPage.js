@@ -219,6 +219,7 @@ export class ListingPageComponent extends Component {
       onFetchChannel,
       onGenerateAccessToken,
       generateAccessTokenInProgress,
+      history,
     } = this.props;
 
     const listingId = new UUID(rawParams.id);

@@ -174,7 +174,7 @@ export const filters = [
       options: [
         { key: 'oneTime', label: 'One time' },
         { key: 'recurring', label: 'Repeat' },
-        { key: 'liveIn', label: 'Live-In' },
+        { key: 'liveIn', label: '24 Hour' },
       ],
     },
   },
@@ -188,7 +188,7 @@ export const filters = [
       options: [
         { key: 'oneTime', label: 'One time' },
         { key: 'repeat', label: 'Repeat' },
-        { key: '24hour', label: 'Live-In' },
+        { key: '24hour', label: '24 Hour' },
       ],
     },
   },

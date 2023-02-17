@@ -63,7 +63,7 @@ const ViewCalendar = props => {
       ) : (
         <div style={{ textAlign: 'center' }}>
           {startTimes.map((startTime, index) => (
-            <p>
+            <p key={index}>
               {startTime} - {endTimes[index]}
             </p>
           ))}

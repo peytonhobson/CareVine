@@ -25,13 +25,17 @@ const CertificationsSection = forwardRef((props, ref) => {
     <SectionCard title={certificationsAndTrainingCardTitle} ref={ref}>
       {certificationsAndTraining?.length > 0 ? (
         <ul className={css.itemContainer}>
-          {certificationsAndTraining?.map(certification => {
+          {certificationsAndTraining?.map((certification, index) => {
             return currentUserListing?.attributes?.publicData?.certificationsAndTraining?.includes(
               certification
             ) ? (
-              <li className={css.sharedItem}>{findLabel(certification, certificationsOptions)}</li>
+              <li key={index} className={css.sharedItem}>
+                {findLabel(certification, certificationsOptions)}
+              </li>
             ) : (
-              <li className={css.item}>{findLabel(certification, certificationsOptions)}</li>
+              <li key={index} className={css.item}>
+                {findLabel(certification, certificationsOptions)}
+              </li>
             );
           })}
         </ul>

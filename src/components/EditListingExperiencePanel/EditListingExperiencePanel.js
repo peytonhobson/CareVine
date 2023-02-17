@@ -1,5 +1,4 @@
 import React from 'react';
-import queryString from 'query-string';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -8,7 +7,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
 import { EditListingExperienceForm } from '../../forms';
-import { ListingLink } from '..';
+import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingExperiencePanel.module.css';
 
@@ -27,6 +26,7 @@ const EditListingExperiencePanel = props => {
     errors,
     intl,
     submitButtonText,
+    filterConfig,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -85,12 +85,16 @@ const EditListingExperiencePanel = props => {
           const updatedValues = {
             publicData: {
               experienceLevel,
-              experienceAreas,
+              experienceAreas: experienceAreas.filter(area =>
+                findOptionsForSelectFilter('experienceAreas', filterConfig).find(
+                  el => el.key === area
+                )
+              ),
             },
           };
           onSubmit(updatedValues);
         }}
-        name="experienceLevel"
+        name="experience"
       />
     </div>
   );
