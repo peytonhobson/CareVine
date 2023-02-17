@@ -127,6 +127,8 @@ const TimelineForm = props => {
         if (startDate && startDate.date && startDate.date < moment().subtract(1, 'days')) {
           form.change('startDate', null);
           form.change('endDate', null);
+          onStartDateChange(null);
+          onEndDateChange(null);
         }
 
         const startDay = extractDateFromFieldDateInput(startDate);
@@ -143,11 +145,14 @@ const TimelineForm = props => {
 
         const onDeleteEndDate = () => {
           form.change('endDate', null);
+          onEndDateChange(null);
         };
 
         const onDeleteStartDate = () => {
           form.change('startDate', null);
           form.change('endDate', null);
+          onStartDateChange(null);
+          onEndDateChange(null);
         };
 
         const classes = classNames(rootClassName || css.root, className);

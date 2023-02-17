@@ -35,3 +35,114 @@
   background-color: var(--matterColorNegative);
   margin: 0.5rem;
 }
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.datesContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.dateContainer {
+  display: flex;
+}
+
+.bold {
+  composes: h2 from global;
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.buttonContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.buttonRowContainer {
+  display: flex;
+  padding-block: 20px;
+  justify-content: center;
+}
+
+.weekdayButton {
+  composes: buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--matterColorNegative);
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--matterColorAnti);
+  color: var(--matterColorNegative);
+
+  border-radius: 100%;
+
+  width: 8rem;
+  height: 5rem;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+  margin: 0 0.5rem;
+
+  &.selected {
+    background-color: var(--marketplaceColor);
+    border: 1px solid var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+}
+
+.liveInContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.recipients {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 600px;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-top: 0;
+  margin-bottom: 11px;
+
+  & > .recipient {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
+
+.recipient {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px 12px 0px;
+}
+
+.recipientTraitsContainer {
+  display: inline-grid;
+  width: 60%;
+  padding-left: 30px;
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.recipientTrait {
+  color: var(--matterColorAnti);
+  white-space: nowrap;
+}
+
+.recipientLabel {
+  color: var(--marketplaceColor);
+  width: 40%;
+  text-align: center;
+}

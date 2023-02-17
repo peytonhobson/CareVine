@@ -104,11 +104,11 @@ const Care24HourFormComponent = props => {
   };
 
   const onStartDateChange = date => {
-    setStartDate(date.date.getTime());
+    setStartDate(date?.date?.getTime());
   };
 
   const onEndDateChange = date => {
-    setEndDate(date.date.getTime());
+    setEndDate(date?.date?.getTime());
   };
 
   return (

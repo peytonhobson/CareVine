@@ -55,7 +55,9 @@ const EditListingCareRecipientDetailsPanel = props => {
     const updatedValues = {
       publicData: {
         careRecipients,
-        detailedCareNeeds,
+        detailedCareNeeds: detailedCareNeeds.filter(need =>
+          findOptionsForSelectFilter('detailedCareNeeds', filterConfig).find(el => el.key === need)
+        ),
         recipientDetails,
       },
     };

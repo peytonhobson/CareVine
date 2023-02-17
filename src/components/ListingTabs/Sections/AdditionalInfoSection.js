@@ -23,13 +23,13 @@ const AdditionalInfoSection = forwardRef((props, ref) => {
         <>
           <h2 className={css.subTitle}>Additional</h2>
           <ul className={css.itemContainer}>
-            {additionalInfo?.map(info => {
+            {additionalInfo?.map((info, index) => {
               return currentUserListing?.attributes?.publicData?.additionalInfo?.includes(info) ? (
-                <li className={css.sharedItem}>
+                <li key={index} className={css.sharedItem}>
                   {findLabel(info, additionalInfoOptions).replace('Have', 'Has')}
                 </li>
               ) : (
-                <li className={css.item}>
+                <li key={index} className={css.item}>
                   {findLabel(info, additionalInfoOptions).replace('Have', 'Has')}
                 </li>
               );
@@ -41,14 +41,18 @@ const AdditionalInfoSection = forwardRef((props, ref) => {
         <>
           <h2 className={css.subTitle}>Languages</h2>
           <ul className={css.itemContainer}>
-            {languagesSpoken?.map(language => {
+            {languagesSpoken?.map((language, index) => {
               const label = findLabel(language, languageOptions);
               return currentUserListing?.attributes?.publicData?.languagesSpoken?.includes(
                 language
               ) ? (
-                <li className={css.sharedItem}>{label ? label : language}</li>
+                <li key={index} className={css.sharedItem}>
+                  {label ? label : language}
+                </li>
               ) : (
-                <li className={css.item}>{label ? label : language}</li>
+                <li key={index} className={css.item}>
+                  {label ? label : language}
+                </li>
               );
             })}
           </ul>
