@@ -74,6 +74,9 @@ const SignupFormComponent = props => (
       const passwordRequiredMessage = intl.formatMessage({
         id: 'SignupForm.passwordRequired',
       });
+      const passwordValidMessage = intl.formatMessage({
+        id: 'SignupForm.passwordInvalid',
+      });
       const passwordMinLengthMessage = intl.formatMessage(
         {
           id: 'SignupForm.passwordTooShort',
@@ -99,8 +102,10 @@ const SignupFormComponent = props => (
         validators.PASSWORD_MAX_LENGTH
       );
       const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
+      const passwordValid = validators.validPasswordFormat(passwordValidMessage);
       const passwordValidators = validators.composeValidators(
         passwordRequired,
+        passwordValid,
         passwordMinLength,
         passwordMaxLength
       );

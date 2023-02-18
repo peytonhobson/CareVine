@@ -181,6 +181,12 @@ export const validSsnLast4 = message => value => {
   return value.length === 4 ? VALID : message;
 };
 
+const PASSWORD_RE = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+
+export const validPasswordFormat = message => value => {
+  return value && PASSWORD_RE.test(value) ? VALID : message;
+};
+
 export const validHKID = message => value => {
   // Accept value 000000000 for testing Stripe
   if (value.length === 9 && value.match(/([0]{9})/)) {
