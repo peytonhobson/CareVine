@@ -1060,6 +1060,7 @@
   "SignupForm.passwordRequired": "You need to add a password.",
   "SignupForm.passwordTooLong": "The password should be at most {maxLength} characters.",
   "SignupForm.passwordTooShort": "The password should be at least {minLength} characters.",
+  "SignupForm.passwordInvalid": "The password should contain: a minimum of eight characters, at least one uppercase letter, one lowercase letter, one number, and one special character",
   "SignupForm.phoneLabel": "Phone number",
   "SignupForm.phonePlaceholder": "+358 12 3456789",
   "SignupForm.phoneRequired": "You need to add your phone number",
