@@ -16,6 +16,7 @@ import {
   SortBy,
 } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import ChangeLocationFilter from '../../components/ChangeLocationFilter/ChangeLocationFilter';
 
 import FilterComponent from './FilterComponent';
 import { validFilterParams } from './SearchPage.helpers';
@@ -295,6 +296,16 @@ class MainPanel extends Component {
           searchListingsError={searchListingsError}
           {...propsForSecondaryFiltersToggle}
         >
+          <ChangeLocationFilter
+            id="SearchFiltersPrimary.changeLocation"
+            name="location"
+            filterConfig={config}
+            urlQueryParams={urlQueryParams}
+            initialValues={this.initialValues(['location'])}
+            showAsPopup
+            contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
+            onSubmit={this.getHandleChangedValueFn(true)}
+          />
           {primaryFilters
             .filter(filter =>
               userType === CAREGIVER
