@@ -1,0 +1,72 @@
+.root {
+  position: relative;
+  display: inline-block;
+}
+
+.popupSize {
+  display: flex;
+
+  padding: 15px 30px 17px 30px;
+}
+
+.locationAutocompleteInput {
+  flex-grow: 1;
+  height: 36px;
+  line-height: unset;
+  padding-left: 0.5rem;
+  margin: 0;
+  border-bottom: 2px solid var(--attentionColor);
+  font-size: 1rem;
+  min-width: 20rem;
+
+  &:hover,
+  &:focus {
+    border-bottom-color: var(--matterColorDark);
+    outline: none;
+  }
+
+  /* Safari bugfix: without this Safari will print placeholder to a wrong place */
+  &::-webkit-input-placeholder {
+    line-height: normal;
+  }
+
+  @media (--viewportMedium) {
+    height: 40px;
+  }
+}
+
+.predictionsRoot {
+  position: absolute;
+  width: 100%;
+  /* padding-bottom: var(--locationAutocompleteBottomPadding); */
+  top: 36px;
+  left: 0;
+  background-color: var(--marketplaceColor);
+  border-bottom-left-radius: var(--borderRadius);
+  border-bottom-right-radius: var(--borderRadius);
+  box-shadow: var(--boxShadowPopup);
+  z-index: calc(var(--zIndexPopup) + 1);
+
+  @media (--viewportMedium) {
+    top: 40px;
+  }
+
+  & li {
+    padding-inline: 0;
+    text-align: center;
+  }
+}
+
+.validLocation {
+  border-bottom-color: var(--successColor);
+}
+
+.locationAddress,
+.building {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 16px;
+  }
+}

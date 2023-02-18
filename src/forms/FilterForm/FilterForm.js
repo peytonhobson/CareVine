@@ -37,6 +37,7 @@ const FilterFormComponent = props => {
         const {
           id,
           form,
+          values,
           handleSubmit,
           onClear,
           onCancel,
@@ -77,6 +78,15 @@ const FilterFormComponent = props => {
           </div>
         ) : null;
 
+        const childrenWithProps = React.Children.map(children, child => {
+          // Checking isValidElement is the safe way and avoids a
+          // typescript error too.
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child, { formValues: values });
+          }
+          return child;
+        });
+
         return (
           <Form
             id={id}
@@ -85,7 +95,9 @@ const FilterFormComponent = props => {
             tabIndex="0"
             style={{ ...style }}
           >
-            <div className={classNames(paddingClasses || css.contentWrapper)}>{children}</div>
+            <div className={classNames(paddingClasses || css.contentWrapper)}>
+              {childrenWithProps}
+            </div>
             {spy}
             {buttons}
           </Form>

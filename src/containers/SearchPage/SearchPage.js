@@ -71,8 +71,9 @@ export class SearchPageComponent extends Component {
     if (
       !this.props.searchListingsSuccess &&
       searchListingsSuccess &&
-      listings.length === 0 &&
-      currentDistance < 50
+      listings?.length === 0 &&
+      currentDistance < 50 &&
+      !this?.props?.searchParams?.location
     ) {
       history.replace({
         pathname: this.props.history.location.pathname,

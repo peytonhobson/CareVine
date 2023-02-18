@@ -12,6 +12,8 @@ import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 import { userDisplayNameAsString } from '../../util/data';
 import { generateAccessToken } from '../InboxPage/InboxPage.duck';
 import * as log from '../../util/log';
+import { types as sdkTypes } from '../../util/sdkLoader';
+const { LatLng } = sdkTypes;
 
 // Pagination page size might need to be dynamic on responsive page layouts
 // Current design has max 3 columns 12 is divisible by 2 and 3
@@ -212,6 +214,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     minDuration,
     distance,
     origin,
+    location,
     sort,
     pub_maxPrice,
     ...rest
@@ -223,13 +226,20 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
 
   const maxPriceMaybe = pub_maxPrice ? { pub_maxPrice: `${pub_maxPrice * 100},` } : {};
 
+  const selectedLocation =
+    location &&
+    new LatLng(
+      Number(JSON.parse(location)?.origin?.lat),
+      Number(JSON.parse(location)?.origin?.lng)
+    );
+
   const params = {
     ...rest,
     // ...priceMaybe,
     ...minPriceMaybe,
     ...maxPriceMaybe,
     per_page: perPage,
-    bounds: expandBounds(origin, distance),
+    bounds: expandBounds(selectedLocation || origin, distance),
     ...sortMaybe,
   };
 

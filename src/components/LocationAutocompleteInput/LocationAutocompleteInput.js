@@ -26,7 +26,7 @@ class LocationAutocompleteInputComponent extends Component {
 
   render() {
     /* eslint-disable no-unused-vars */
-    const { rootClassName, labelClassName, required, ...restProps } = this.props;
+    const { rootClassName, labelClassName, required, formValues, ...restProps } = this.props;
     const { input, label, meta, valueFromForm, useCurrentLocation, ...otherProps } = restProps;
     /* eslint-enable no-unused-vars */
 
@@ -35,7 +35,7 @@ class LocationAutocompleteInputComponent extends Component {
       label,
       meta,
       ...otherProps,
-      input: { ...input, value },
+      input: { ...input, value: formValues.location || value },
       useCurrentLocation,
       onChangeLoading: this.onChangeLoading,
     };
