@@ -139,6 +139,10 @@ const EditListingBackgroundCheckPanel = props => {
     onGetAuthenticateTestResult,
     onGenerateCriminalBackground,
     onGet7YearHistory,
+    onApplyBCPromoCode,
+    onUpdateSubscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
   } = props;
 
   const {
@@ -159,6 +163,9 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
+    applyBCPromoInProgress,
+    applyBCPromoError,
+    bcPromo,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
@@ -189,6 +196,7 @@ const EditListingBackgroundCheckPanel = props => {
   const stripeCustomerId =
     currentUser.stripeCustomer && currentUser.stripeCustomer.attributes.stripeCustomerId;
   const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
+  const backgroundCheckPromo = metadata?.backgroundCheckPromo;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
@@ -305,7 +313,6 @@ const EditListingBackgroundCheckPanel = props => {
   const handleIdentityQuizSubmit = answers => {
     const IDMSessionId = identityProofQuiz.data.IDMSessionId;
     const currentAttempts = !!identityProofQuizAttempts ? identityProofQuizAttempts : 0;
-    console.log('here');
     if (!identityProofQuizVerification) {
       onVerifyIdentityProofQuiz(
         IDMSessionId,
@@ -359,7 +366,8 @@ const EditListingBackgroundCheckPanel = props => {
             onCreateSubscription(
               stripeCustomerId,
               bcType === BASIC ? BASIC_CHECK_PRICE_ID : VINE_CHECK_PRICE_ID,
-              currentUser.id.uuid
+              currentUser.id.uuid,
+              backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
             );
           }}
         />
@@ -375,17 +383,31 @@ const EditListingBackgroundCheckPanel = props => {
         subscription && subscription.latest_invoice.payment_intent.client_secret ? (
           <div className={css.paymentContainer}>
             <div className={css.paymentForm}>
-              <Elements options={options} stripe={stripePromise}>
-                <PayCreditCardForm
-                  createPaymentError={createPaymentError}
-                  createPaymentInProgress={createPaymentInProgress}
-                  formId="PayCreditCardForm"
-                  intl={intl}
-                  onSubmit={handleCardSubmit}
-                />
-              </Elements>
+              {!updateSubscriptionError && (
+                <Elements options={options} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    createPaymentError={createPaymentError}
+                    createPaymentInProgress={createPaymentInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
             </div>
-            <PaymentInfo backgroundCheckType={backgroundCheckType} subscription={subscription} />
+            <PaymentInfo
+              backgroundCheckType={backgroundCheckType}
+              subscription={subscription}
+              onApplyBCPromoCode={onApplyBCPromoCode}
+              currentUser={currentUser}
+              applyBCPromoInProgress={applyBCPromoInProgress}
+              applyBCPromoError={applyBCPromoError}
+              bcPromo={bcPromo}
+              backgroundCheckPromo={backgroundCheckPromo}
+              onUpdateSubscription={onUpdateSubscription}
+              updateSubscriptionError={updateSubscriptionError}
+              updateSubscriptionInProgress={updateSubscriptionInProgress}
+            />
           </div>
         ) : (
           <div className={css.spinnerContainer}>

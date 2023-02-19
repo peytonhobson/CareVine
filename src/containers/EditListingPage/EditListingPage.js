@@ -24,7 +24,12 @@ import {
 } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
 import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
-import { handleCardSetup, createPayment, createSubscription } from '../../ducks/stripe.duck';
+import {
+  handleCardSetup,
+  createPayment,
+  createSubscription,
+  updateSubscription,
+} from '../../ducks/stripe.duck';
 import {
   CaregiverEditListingWizard,
   EmployerEditListingWizard,
@@ -59,6 +64,7 @@ import {
   getAuthenticateTestResult,
   authenticateGenerateCriminalBackground,
   authenticate7YearHistory,
+  applyBCPromo,
 } from '../../ducks/authenticate.duck';
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -132,6 +138,10 @@ export const EditListingPageComponent = props => {
     onGetAuthenticateTestResult,
     onGenerateCriminalBackground,
     onGet7YearHistory,
+    onApplyBCPromoCode,
+    onUpdateSubscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -330,6 +340,10 @@ export const EditListingPageComponent = props => {
           onGetAuthenticateTestResult={onGetAuthenticateTestResult}
           onGenerateCriminalBackground={onGenerateCriminalBackground}
           onGet7YearHistory={onGet7YearHistory}
+          onApplyBCPromoCode={onApplyBCPromoCode}
+          onUpdateSubscription={onUpdateSubscription}
+          updateSubscriptionError={updateSubscriptionError}
+          updateSubscriptionInProgress={updateSubscriptionInProgress}
         />
       );
     } else if (userType === EMPLOYER) {
@@ -530,6 +544,8 @@ const mapStateToProps = state => {
     createSubscriptionError,
     createSubscriptionInProgress,
     subscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
   } = state.stripe;
 
   return {
@@ -560,6 +576,8 @@ const mapStateToProps = state => {
     createSubscriptionInProgress,
     subscription,
     authenticate,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
   };
 };
 
@@ -606,6 +624,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
   onGet7YearHistory: (userAccessCode, userId) =>
     dispatch(authenticate7YearHistory(userAccessCode, userId)),
+  onApplyBCPromoCode: (promoCode, userId) => dispatch(applyBCPromo(promoCode, userId)),
+  onUpdateSubscription: (subscriptionId, params) =>
+    dispatch(updateSubscription(subscriptionId, params)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

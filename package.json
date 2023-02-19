@@ -26,6 +26,8 @@
     "array-includes": "^3.1.5",
     "array.prototype.find": "^2.2.0",
     "autosize": "^5.0.1",
+    "aws-config": "^1.4.0",
+    "aws-sdk": "^2.1318.0",
     "axios": "^1.2.1",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.20.0",
