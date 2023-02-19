@@ -10,12 +10,14 @@ import {
   submitConsentAuthenticate,
   updateUserAuthenticate,
   updateUserMetadata,
+  applyPromo,
 } from '../util/api';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const requestAction = actionType => params => ({ type: actionType, payload: { params } });
 
-const successAction = actionType => () => ({
+const successAction = actionType => payload => ({
+  payload,
   type: actionType,
 });
 
@@ -71,6 +73,10 @@ export const AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_SUCCESS =
 export const AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR =
   'app/Authenticate/AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR';
 
+export const APPLY_BC_PROMO_REQUEST = 'app/Authenticate/APPLY_BC_PROMO';
+export const APPLY_BC_PROMO_SUCCESS = 'app/Authenticate/APPLY_BC_PROMO_SUCCESS';
+export const APPLY_BC_PROMO_ERROR = 'app/Authenticate/APPLY_BC_PROMO_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -94,6 +100,9 @@ const initialState = {
   verifyIdentityProofQuizFailure: false,
   enrollTCMInProgress: false,
   enrollTCMError: null,
+  applyBCPromoInProgress: false,
+  applyBCPromoError: null,
+  bcPromo: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -250,6 +259,25 @@ export default function reducer(state = initialState, action = {}) {
         authenticateGenerateCriminalBackgroundInProgress: false,
       };
 
+    case APPLY_BC_PROMO_REQUEST:
+      return {
+        ...state,
+        applyBCPromoInProgress: true,
+        applyBCPromoError: null,
+      };
+    case APPLY_BC_PROMO_ERROR:
+      return {
+        ...state,
+        applyBCPromoInProgress: false,
+        applyBCPromoError: payload,
+      };
+    case APPLY_BC_PROMO_SUCCESS:
+      return {
+        ...state,
+        applyBCPromoInProgress: false,
+        bcPromo: payload,
+      };
+
     default:
       return state;
   }
@@ -287,6 +315,10 @@ export const getAuthenticateTestResultError = errorAction(GET_AUTHENTICATE_TEST_
 export const authenticate7YearHistoryRequest = requestAction(AUTHENTICATE_7_YEAR_HISTORY_REQUEST);
 export const authenticate7YearHistorySuccess = successAction(AUTHENTICATE_7_YEAR_HISTORY_SUCCESS);
 export const authenticate7YearHistoryError = errorAction(AUTHENTICATE_7_YEAR_HISTORY_ERROR);
+
+export const applyBCPromoRequest = requestAction(APPLY_BC_PROMO_REQUEST);
+export const applyBCPromoSuccess = successAction(APPLY_BC_PROMO_SUCCESS);
+export const applyBCPromoError = errorAction(APPLY_BC_PROMO_ERROR);
 
 export const authenticateGenerateCriminalBackgroundRequest = requestAction(
   AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_REQUEST
@@ -532,5 +564,33 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
     })
     .catch(e => {
       dispatch(authenticate7YearHistoryError(storableError(e)));
+    });
+};
+
+export const applyBCPromo = (promoCode, userId) => (dispatch, getState, sdk) => {
+  dispatch(applyBCPromoRequest());
+
+  return applyPromo({ promoCode })
+    .then(response => {
+      const result = {
+        promoCode,
+        discount: response?.data?.discount,
+        date: new Date().getTime(),
+      };
+
+      return updateUserMetadata({
+        userId,
+        metadata: {
+          backgroundCheckPromo: result,
+        },
+      }).then(() => result);
+    })
+    .then(result => {
+      dispatch(fetchCurrentUser());
+      dispatch(applyBCPromoSuccess(result));
+      return result;
+    })
+    .catch(e => {
+      dispatch(applyBCPromoError(storableError(e)));
     });
 };

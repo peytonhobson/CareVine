@@ -124,6 +124,10 @@ const EditListingWizardTab = props => {
     onGetAuthenticateTestResult,
     onGenerateCriminalBackground,
     onGet7YearHistory,
+    onApplyBCPromoCode,
+    onUpdateSubscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
   } = props;
 
   const { type } = params;
@@ -408,6 +412,10 @@ const EditListingWizardTab = props => {
           onGetAuthenticateTestResult={onGetAuthenticateTestResult}
           onGenerateCriminalBackground={onGenerateCriminalBackground}
           onGet7YearHistory={onGet7YearHistory}
+          onApplyBCPromoCode={onApplyBCPromoCode}
+          onUpdateSubscription={onUpdateSubscription}
+          updateSubscriptionError={updateSubscriptionError}
+          updateSubscriptionInProgress={updateSubscriptionInProgress}
         />
       );
     }
