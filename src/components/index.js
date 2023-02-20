@@ -138,6 +138,7 @@ export { default as Avatar, AvatarMedium, AvatarLarge } from './Avatar/Avatar';
 export { default as BookingBreakdown } from './BookingBreakdown/BookingBreakdown';
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
 export { default as BookingDateRangeLengthFilter } from './BookingDateRangeLengthFilter/BookingDateRangeLengthFilter';
+export { default as BookingContainer } from './BookingContainer/BookingContainer';
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';

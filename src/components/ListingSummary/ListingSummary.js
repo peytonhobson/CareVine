@@ -13,7 +13,15 @@ import css from './ListingSummary.module.css';
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
 
 const ListingSummaryComponent = props => {
-  const { listing, currentUserListing, params, intl, onContactUser, isOwnListing } = props;
+  const {
+    listing,
+    currentUserListing,
+    params,
+    intl,
+    onContactUser,
+    isOwnListing,
+    onOpenBookingModal,
+  } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
@@ -75,7 +83,7 @@ const ListingSummaryComponent = props => {
       </div>
       {!isOwnListing ? (
         <div className={css.buttonContainer}>
-          <Button className={css.button} onClick={() => {}}>
+          <Button className={css.button} onClick={onOpenBookingModal}>
             <FormattedMessage id="ListingSummary.bookNow" />
           </Button>
           <Button className={css.secondaryButton} onClick={onContactUser}>

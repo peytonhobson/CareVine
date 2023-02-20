@@ -30,6 +30,7 @@ const EditListingBioFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
+        values,
       } = formRenderProps;
 
       const descriptionMessage = intl.formatMessage({
@@ -89,6 +90,9 @@ const EditListingBioFormComponent = props => (
             )}
             required
           />
+          <span className={css.characterCount}>
+            {values?.description?.length}/{DESCRIPTION_MAX_LENGTH} characters
+          </span>
 
           {errorMessageUpdateListing}
 

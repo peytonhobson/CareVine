@@ -46,6 +46,7 @@ const EditListingCaregiverDetailsFormComponent = props => (
         fetchErrors,
         filterConfig,
         form,
+        values,
       } = formRenderProps;
 
       const certificationsAndTrainingLabel = intl.formatMessage({
@@ -168,6 +169,9 @@ const EditListingCaregiverDetailsFormComponent = props => (
             validate={maxLength700Message}
             label={caregiverDetailsLabel}
           />
+          <span className={css.characterCount}>
+            {values?.idealCaregiverDetails?.length}/{CAREGIVER_DETAILS_MAX_LENGTH} characters
+          </span>
 
           {errorMessageUpdateListing}
 

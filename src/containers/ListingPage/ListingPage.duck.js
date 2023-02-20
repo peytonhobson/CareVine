@@ -55,11 +55,11 @@ const initialState = {
   reviews: [],
   fetchReviewsError: null,
   monthlyTimeSlots: {
-    // '2019-12': {
-    //   timeSlots: [],
-    //   fetchTimeSlotsError: null,
-    //   fetchTimeSlotsInProgress: null,
-    // },
+    '2019-12': {
+      timeSlots: [],
+      fetchTimeSlotsError: null,
+      fetchTimeSlotsInProgress: null,
+    },
   },
   lineItems: null,
   fetchLineItemsInProgress: false,
