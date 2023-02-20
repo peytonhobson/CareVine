@@ -14,6 +14,10 @@ import { loadData as SearchPageLoader } from './SearchPage/SearchPage.duck';
 import { loadData as StripePayoutPageLoader } from './StripePayoutPage/StripePayoutPage.duck';
 import { loadData as TopbarContainerLoader } from './TopbarContainer/TopbarContainer.duck';
 import { loadData as SubscriptionsPageLoader } from './SubscriptionsPage/SubscriptionsPage.duck';
+import {
+  loadData as TransactionPageLoader,
+  setInitialValues as TransactionPageInitialValues,
+} from './TransactionPage/TransactionPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
@@ -55,6 +59,10 @@ const getPageDataLoadingAPI = () => {
     },
     TopbarContainer: {
       loadData: TopbarContainerLoader,
+    },
+    TransactionPage: {
+      loadData: TransactionPageLoader,
+      setInitialValues: TransactionPageInitialValues,
     },
   };
 };

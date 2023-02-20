@@ -176,6 +176,7 @@ export { default as SimpleAccordion } from './Accordion/SimpleAccordion'
 export { default as SortBy } from './SortBy/SortBy';
 export { default as StripeConnectAccountStatusBox } from './StripeConnectAccountStatusBox/StripeConnectAccountStatusBox';
 export { default as StripePaymentAddress } from './StripePaymentAddress/StripePaymentAddress';
+export { default as TransactionPanel } from './TransactionPanel/TransactionPanel';
 export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export {default as AvailabilityPreview} from './AvailabilityPreview/AvailabilityPreview';

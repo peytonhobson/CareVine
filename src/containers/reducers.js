@@ -20,6 +20,7 @@ import StripePaymentModal from './StripePaymentModal/StripePaymentModal.duck';
 import StripePayoutPage from './StripePayoutPage/StripePayoutPage.duck';
 import SubscriptionsPage from './SubscriptionsPage/SubscriptionsPage.duck';
 import TopbarContainer from './TopbarContainer/TopbarContainer.duck';
+import TransactionPage from './TransactionPage/TransactionPage.duck';
 
 export {
   CheckoutPage,
@@ -39,4 +40,5 @@ export {
   StripePayoutPage,
   SubscriptionsPage,
   TopbarContainer,
+  TransactionPage,
 };

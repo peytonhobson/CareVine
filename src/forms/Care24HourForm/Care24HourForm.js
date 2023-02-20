@@ -14,13 +14,13 @@ import css from './Care24HourForm.module.css';
 
 const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 const weekdayButtons = [
-  { day: 'monday', label: 'Monday' },
-  { day: 'tuesday', label: 'Tuesday' },
-  { day: 'wednesday', label: 'Wednesday' },
-  { day: 'thursday', label: 'Thursday' },
-  { day: 'friday', label: 'Friday' },
-  { day: 'saturday', label: 'Saturday' },
-  { day: 'sunday', label: 'Sunday' },
+  { day: 'mon', label: 'Monday' },
+  { day: 'tue', label: 'Tuesday' },
+  { day: 'wed', label: 'Wednesday' },
+  { day: 'thu', label: 'Thursday' },
+  { day: 'fri', label: 'Friday' },
+  { day: 'sat', label: 'Saturday' },
+  { day: 'sun', label: 'Sunday' },
 ];
 
 const Care24HourFormComponent = props => {
