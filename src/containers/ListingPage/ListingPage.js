@@ -220,6 +220,16 @@ export class ListingPageComponent extends Component {
       onGenerateAccessToken,
       generateAccessTokenInProgress,
       history,
+      reviews,
+      fetchReviewsError,
+      monthlyTimeSlots,
+      sendEnquiryInProgress,
+      sendEnquiryError,
+      lineItems,
+      fetchLineItemsInProgress,
+      fetchLineItemsError,
+      enquiryModalOpenForListingId,
+      onFetchTransactionLineItems,
     } = this.props;
 
     const listingId = new UUID(rawParams.id);
@@ -418,6 +428,23 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperTopbar>{topbar}</LayoutWrapperTopbar>
           <LayoutWrapperMain>
             {actionBar}
+
+            <BookingPanel
+              className={css.bookingPanel}
+              listing={currentListing}
+              isOwnListing={isOwnListing}
+              unitType={unitType}
+              onSubmit={handleBookingSubmit}
+              title={bookingTitle}
+              authorDisplayName={authorDisplayName}
+              onManageDisableScrolling={onManageDisableScrolling}
+              monthlyTimeSlots={monthlyTimeSlots}
+              onFetchTimeSlots={onFetchTimeSlots}
+              onFetchTransactionLineItems={onFetchTransactionLineItems}
+              lineItems={lineItems}
+              fetchLineItemsInProgress={fetchLineItemsInProgress}
+              fetchLineItemsError={fetchLineItemsError}
+            />
             <div className={css.mainContainer}>
               <div className={css.subContainer}>
                 <ListingSummary
@@ -596,6 +623,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
   onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
   onChangeModalValue: value => dispatch(changeModalValue(value)),
+  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
+    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
