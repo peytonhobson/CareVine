@@ -151,8 +151,8 @@ export const EmployerListingCardComponent = props => {
     },
   }));
 
-  const selectedSessions = availabilityPlan && availabilityPlan.selectedSessions;
-  const entries = availabilityPlan && availabilityPlan.entries;
+  const selectedSessions = availabilityPlan?.selectedSessions;
+  const entries = availabilityPlan?.entries || availabilityPlan?.availableDays;
 
   return (
     <>

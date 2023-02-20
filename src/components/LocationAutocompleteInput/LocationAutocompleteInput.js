@@ -35,7 +35,7 @@ class LocationAutocompleteInputComponent extends Component {
       label,
       meta,
       ...otherProps,
-      input: { ...input, value: formValues.location || value },
+      input: { ...input, value: formValues?.location || value },
       useCurrentLocation,
       onChangeLoading: this.onChangeLoading,
     };
