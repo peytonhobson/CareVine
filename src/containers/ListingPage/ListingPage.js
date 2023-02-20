@@ -43,6 +43,7 @@ import {
   ListingSummary,
   ListingTabs,
   SendbirdModal,
+  BookingContainer,
 } from '../../components';
 import { generateAccessToken } from '../../ducks/sendbird.duck';
 import { EnquiryForm } from '../../forms';
@@ -89,6 +90,7 @@ export class ListingPageComponent extends Component {
       pageClassNames: [],
       imageCarouselOpen: false,
       enquiryModalOpen: false,
+      bookingModalOpen: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -453,6 +455,7 @@ export class ListingPageComponent extends Component {
                   currentUserListing={currentUserListing}
                   onContactUser={this.onContactUser}
                   isOwnListing={isOwnListing}
+                  onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
                 />
                 <ListingTabs
                   currentUser={currentUser}
@@ -478,6 +481,18 @@ export class ListingPageComponent extends Component {
                 onGenerateAccessToken={onGenerateAccessToken}
                 generateAccessTokenInProgress={generateAccessTokenInProgress}
               />
+            )}
+            {this.state.bookingModalOpen && (
+              <Modal
+                id="BookingPanel"
+                isOpen={isAuthenticated && !!this.state.bookingModalOpen}
+                onClose={() => this.setState({ bookingModalOpen: false })}
+                onManageDisableScrolling={onManageDisableScrolling}
+                containerClassName={css.bookingModalContainer}
+                usePortal
+              >
+                <BookingContainer />
+              </Modal>
             )}
           </LayoutWrapperMain>
           <LayoutWrapperFooter>
@@ -559,7 +574,6 @@ const mapStateToProps = state => {
     showListingError,
     reviews,
     fetchReviewsError,
-    monthlyTimeSlots,
     sendEnquiryInProgress,
     sendEnquiryError,
     lineItems,
@@ -569,6 +583,7 @@ const mapStateToProps = state => {
     messageChannel,
     fetchChannelInProgress,
     fetchChannelError,
+    monthlyTimeSlots,
   } = state.ListingPage;
   const { generateAccessTokenInProgress } = state.sendbird;
   const { currentUser, currentUserListing } = state.user;
@@ -606,6 +621,7 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     generateAccessTokenInProgress,
+    monthlyTimeSlots,
   };
 };
 

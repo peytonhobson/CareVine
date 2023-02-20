@@ -44,12 +44,12 @@
 }
 
 .textarea {
-  composes: formMargins;
   flex-shrink: 0;
 }
 
 .textareaRoot {
   margin-top: 1rem;
+  margin-bottom: 0;
 }
 
 .submitButton {
@@ -60,11 +60,15 @@
   @media (--viewportLarge) {
     display: inline-block;
     width: 241px;
-    margin-top: 60px;
+    margin-top: 5rem;
   }
 }
 
 .checkboxGroup {
   composes: formMargins;
   flex-shrink: 0;
+}
+
+.characterCount {
+  composes: marketplaceTinyFontStyles from global;
 }

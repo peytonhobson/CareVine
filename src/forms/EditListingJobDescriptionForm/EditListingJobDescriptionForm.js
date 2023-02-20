@@ -39,6 +39,7 @@ const EditListingJobDescriptionFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
+        values,
         filterConfig,
       } = formRenderProps;
 
@@ -116,6 +117,9 @@ const EditListingJobDescriptionFormComponent = props => (
             required
             validate={composeValidators(maxLength700Message, minLength100Message)}
           />
+          <span className={css.characterCount}>
+            {values?.description?.length}/{DESCRIPTION_MAX_LENGTH} characters
+          </span>
 
           {errorMessageUpdateListing}
 

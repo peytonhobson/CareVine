@@ -67,15 +67,10 @@ const BookingPanel = props => {
     history,
     location,
     intl,
-    onFetchTransactionLineItems,
-    lineItems,
-    fetchLineItemsInProgress,
-    fetchLineItemsError,
   } = props;
 
   const price = listing.attributes.price;
-  const timeZone =
-    listing.attributes.availabilityPlan && listing.attributes.availabilityPlan.timezone;
+  const timeZone = listing.attributes.publicData.availabilityPlan.timezone;
   const hasListingState = !!listing.attributes.state;
   const isClosed = hasListingState && listing.attributes.state === LISTING_STATE_CLOSED;
   const showBookingTimeForm = hasListingState && !isClosed;
@@ -149,10 +144,6 @@ const BookingPanel = props => {
             startDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
             endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
             timeZone={timeZone}
-            onFetchTransactionLineItems={onFetchTransactionLineItems}
-            lineItems={lineItems}
-            fetchLineItemsInProgress={fetchLineItemsInProgress}
-            fetchLineItemsError={fetchLineItemsError}
           />
         ) : null}
       </ModalInMobile>

@@ -42,6 +42,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
         fetchErrors,
         history,
         careRecipients,
+        values,
       } = formRenderProps;
 
       // Recipient Relationship
@@ -115,6 +116,9 @@ const EditListingCareRecipientDetailsFormComponent = props => (
             validate={maxLength700Message}
             label={recipientDetailsMessage}
           />
+          <span className={css.characterCount}>
+            {values?.recipientDetails?.length}/{RECIPIENT_DETAILS_MAX_LENGTH} characters
+          </span>
 
           {errorMessageUpdateListing}
 
