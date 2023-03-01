@@ -4,7 +4,14 @@ import zipcodeToTimezone from 'zipcode-to-timezone';
 import { compose } from 'redux';
 
 import { FormattedMessage, injectIntl } from '../../../util/reactIntl';
-import { InlineTextButton, IconEdit, Modal, CareScheduleExceptions, Button } from '../..';
+import {
+  InlineTextButton,
+  IconEdit,
+  Modal,
+  CareScheduleExceptions,
+  Button,
+  WeekPanel,
+} from '../..';
 import Weekday from '../Weekday';
 import { createAvailabilityPlan, createInitialValues } from '../EditListingCareSchedule.helpers';
 import { EditListingAvailabilityPlanForm, TimelineForm } from '../../../forms';
@@ -32,17 +39,18 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     showErrors,
     panelUpdated,
     intl,
+    isBooking,
   } = props;
 
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
   const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
   const [availabilityExceptions, setAvailabilityExceptions] = useState(
-    (savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions) || []
+    savedAvailabilityPlan?.availabilityExceptions || []
   );
   const [availabilityPlan, setAvailabilityPlan] = useState(savedAvailabilityPlan);
 
-  const savedStartDate = savedAvailabilityPlan && savedAvailabilityPlan.startDate;
-  const savedEndDate = savedAvailabilityPlan && savedAvailabilityPlan.endDate;
+  const savedStartDate = savedAvailabilityPlan?.startDate;
+  const savedEndDate = savedAvailabilityPlan?.endDate;
   const [startDate, setStartDate] = useState(savedStartDate);
   const [endDate, setEndDate] = useState(savedEndDate);
 
@@ -56,6 +64,16 @@ const CareScheduleRecurringTimesContainerComponent = props => {
 
   const handleSubmit = () => {
     // Final Form can wait for Promises to return.
+
+    if (isBooking) {
+      return onSubmit({
+        ...availabilityPlan,
+        availabilityExceptions,
+        startDate,
+        endDate,
+      });
+    }
+
     return onSubmit({
       publicData: {
         scheduleType: REPEAT,
@@ -81,7 +99,12 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     ? valuesFromLastSubmit
     : createInitialValues(availabilityPlan);
 
-  const submitDisabled = !valuesFromLastSubmit;
+  const submitDisabled =
+    (!valuesFromLastSubmit &&
+      startDate === savedStartDate &&
+      endDate === savedEndDate &&
+      availabilityExceptions === availabilityPlan?.availabilityExceptions) ||
+    availabilityPlan?.entries?.length === 0;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -143,29 +166,26 @@ const CareScheduleRecurringTimesContainerComponent = props => {
             <FormattedMessage id="CareScheduleRecurringTimesContainer.edit" />
           </InlineTextButton>
         </header>
-        <div className={css.week}>
-          {WEEKDAYS.map(w => (
-            <Weekday
-              dayOfWeek={w}
-              key={w}
-              availabilityPlan={availabilityPlan}
-              openEditModal={setIsEditPlanModalOpen}
-            />
-          ))}
-        </div>
+        <WeekPanel
+          availabilityPlan={availabilityPlan}
+          openEditModal={() => setIsEditPlanModalOpen(true)}
+        />
       </section>
-      <CareScheduleExceptions
-        availabilityExceptions={availabilityExceptions}
-        onManageDisableScrolling={onManageDisableScrolling}
-        availabilityPlan={availabilityPlan}
-        updateInProgress={updateInProgress}
-        errors={errors}
-        disabled={disabled}
-        ready={ready}
-        listing={currentListing}
-        onSave={handleSaveAvailabilityException}
-        onDelete={handleDeleteException}
-      />
+      <div className={css.scheduleExceptionsContainer}>
+        <h2 className={css.scheduleExceptionsTitle}>Are there any exceptions to this schedule?</h2>
+        <CareScheduleExceptions
+          availabilityExceptions={availabilityExceptions}
+          onManageDisableScrolling={onManageDisableScrolling}
+          availabilityPlan={availabilityPlan}
+          updateInProgress={updateInProgress}
+          errors={errors}
+          disabled={disabled}
+          ready={ready}
+          listing={currentListing}
+          onSave={handleSaveAvailabilityException}
+          onDelete={handleDeleteException}
+        />
+      </div>
       <Button
         className={css.goToNextTabButton}
         onClick={handleSubmit}

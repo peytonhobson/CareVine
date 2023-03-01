@@ -130,10 +130,10 @@ const PaymentMethodSelector = props => {
     paymentMethod,
     intl,
   } = props;
-  const last4Digits = defaultPaymentMethod.attributes.card.last4Digits;
+  const last4 = defaultPaymentMethod.card.last4;
   const labelText = intl.formatMessage(
     { id: 'StripePaymentForm.replaceAfterOnetimePayment' },
-    { last4Digits }
+    { last4 }
   );
 
   return (
@@ -143,7 +143,7 @@ const PaymentMethodSelector = props => {
       </h3>
       <SavedCardDetails
         className={css.paymentMethodSelector}
-        card={defaultPaymentMethod.attributes.card}
+        card={defaultPaymentMethod?.card}
         onChange={changePaymentMethod}
       />
       {paymentMethod === 'replaceCard' ? (
@@ -336,10 +336,7 @@ class StripePaymentForm extends Component {
       card: this.card,
       formId,
       formValues: values,
-      paymentMethod: getPaymentMethod(
-        paymentMethod,
-        ensurePaymentMethodCard(defaultPaymentMethod).id
-      ),
+      paymentMethod: getPaymentMethod(paymentMethod, defaultPaymentMethod?.id),
     };
     onSubmit(params);
   }

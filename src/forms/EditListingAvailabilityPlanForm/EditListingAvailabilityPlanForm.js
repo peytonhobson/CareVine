@@ -384,12 +384,12 @@ const EditListingAvailabilityPlanFormComponent = props => {
             <h2 className={css.heading}>
               <FormattedMessage id="EditListingAvailabilityPlanForm.title" />
             </h2>
-            <div className={listingType === 'caregiver' ? css.caregiverWeek : css.week}>
+            <div className={css.week}>
               {weekdays.map(w => {
                 return <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} />;
               })}
             </div>
-            {listingType === 'caregiver' ? (
+            {/* {listingType === 'caregiver' ? (
               <div className={css.isFlexibleContainer}>
                 <FieldCheckbox
                   id="isFlexible"
@@ -402,7 +402,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
                 />
                 <InfoTooltip title={isFlexibleTooltipText} />
               </div>
-            ) : null}
+            ) : null} */}
 
             <div className={css.submitButton}>
               {updateListingError && showErrors ? (

@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .customizedApp {
   height: calc(100vh - var(--topbarHeightDesktop));
   width: 100vw;
@@ -19,8 +21,32 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+
   &:hover {
     text-decoration: none;
     cursor: pointer;
+  }
+}
+
+.channelListMobileContainer {
+  width: 100vw !important;
+  height: 100vh;
+  margin: 0 !important;
+  padding: 0;
+}
+
+.customizedApp {
+  & :global(.sendbird-channel-header) {
+    width: 100%;
+  }
+
+  & :global(.sendbird-chat-header__left) {
+    flex-grow: 1;
+
+    @media (--viewportMedium) {
+      flex-grow: 0;
+    }
   }
 }

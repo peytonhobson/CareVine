@@ -15,6 +15,7 @@ import MessageStatus from '@sendbird/uikit-react/ui/MessageStatus';
 import { useMediaQuery } from '@mui/material';
 import { u as useLongPress } from '@sendbird/uikit-react/useLongPress-e7b1aee7.js';
 import { t as truncateString, d as isEditedMessage } from '@sendbird/uikit-react/index-c45e5f15.js';
+import classNames from 'classnames';
 import {
   i as isToday,
   a as isYesterday,
@@ -172,13 +173,14 @@ const CustomChannelPreview = ({
         ].join(' ')}
         role="link"
         tabIndex={tabIndex}
+        style={{ width: isMobile ? '100%' : 'auto' }}
         {...(isMobile ? { ...onLongPress } : { onClick })}
       >
         <div className="sendbird-channel-preview__avatar">
           <ChannelAvatar channel={channel} userId={userId} theme={theme} />
         </div>
         <div className="sendbird-channel-preview__content">
-          <div className="sendbird-channel-preview__content__upper">
+          <div className="sendbird-channel-preview__content__upper " style={{ width: '100%' }}>
             <div className="sendbird-channel-preview__content__upper__header">
               {isBroadcast && (
                 <div className="sendbird-channel-preview__content__upper__header__broadcast-icon">
@@ -229,7 +231,7 @@ const CustomChannelPreview = ({
               </span>
             )}
           </div>
-          <div className="sendbird-channel-preview__content__lower" style={{ maxWidth: '80%' }}>
+          <div className="sendbird-channel-preview__content__lower" style={{ width: '80%' }}>
             <span
               className="sendbird-channel-preview__content__lower__last-message sendbird-label--color-onbackground-2 sendbird-label--body-2"
               style={{ color: isActive && '#ffffff' }}

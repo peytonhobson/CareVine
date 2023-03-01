@@ -50,6 +50,7 @@ const CareScheduleExceptions = props => {
     listing,
     onSave,
     onDelete,
+    isCaregiver,
   } = props;
 
   const [isEditExceptionsModalOpen, setIsEditExceptionsModalOpen] = useState(false);
@@ -134,22 +135,22 @@ const CareScheduleExceptions = props => {
             {sortedAvailabilityExceptions.map(availabilityException => {
               const { start, end, seats } = availabilityException.attributes;
               return (
-                <div key={availabilityException.start} className={css.exception}>
+                <div key={start} className={css.exception}>
                   <div className={css.exceptionHeader}>
                     <div className={css.exceptionAvailability}>
                       <div
                         className={classNames(css.exceptionAvailabilityDot, {
-                          [css.isAvailable]: seats > 0,
+                          [css.isAvailable]: seats % 2 !== 0,
                         })}
                       />
                       <div className={css.exceptionAvailabilityStatus}>
-                        {isRecurring ? (
-                          seats > 0 ? (
+                        {isCaregiver ? (
+                          seats % 2 !== 0 ? (
                             <FormattedMessage id="CareScheduleExceptions.exceptionAvailable" />
                           ) : (
                             <FormattedMessage id="CareScheduleExceptions.exceptionNotAvailable" />
                           )
-                        ) : seats > 0 ? (
+                        ) : seats % 2 !== 0 ? (
                           <FormattedMessage id="CareScheduleExceptions.exceptionCareNeeded" />
                         ) : (
                           <FormattedMessage id="CareScheduleExceptions.exceptionCareNotNeeded" />
@@ -164,13 +165,23 @@ const CareScheduleExceptions = props => {
                       <IconClose size="normal" className={css.removeIcon} />
                     </button>
                   </div>
-                  <TimeRange
-                    className={css.timeRange}
-                    startDate={timestampToDate(start)}
-                    endDate={isRecurring ? timestampToDate(end) : timestampToDate(end) - 1}
-                    dateType={isRecurring ? DATE_TYPE_DATETIME : DATE_TYPE_DATE}
-                    timeZone={availabilityPlan.timezone}
-                  />
+                  {seats === 1 ? (
+                    <TimeRange
+                      className={css.timeRange}
+                      startDate={timestampToDate(start)}
+                      endDate={timestampToDate(end)}
+                      dateType={DATE_TYPE_DATETIME}
+                      timeZone={availabilityPlan.timezone}
+                    />
+                  ) : (
+                    <TimeRange
+                      className={css.timeRange}
+                      startDate={timestampToDate(start)}
+                      endDate={timestampToDate(end)}
+                      dateType={DATE_TYPE_DATE}
+                      timeZone={availabilityPlan.timezone}
+                    />
+                  )}
                 </div>
               );
             })}
@@ -205,6 +216,7 @@ const CareScheduleExceptions = props => {
             updateInProgress={updateInProgress}
             fetchErrors={errors}
             planType={planType}
+            isCaregiver={isCaregiver}
           />
         </Modal>
       ) : null}

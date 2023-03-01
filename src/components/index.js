@@ -173,6 +173,7 @@ export { default as SearchResultsPanel } from './SearchResultsPanel/SearchResult
 export { default as SelectMultipleFilter } from './SelectMultipleFilter/SelectMultipleFilter';
 export { default as SelectSingleFilter } from './SelectSingleFilter/SelectSingleFilter';
 export { default as SendbirdApp } from './SendbirdApp/SendbirdApp'
+export { default as SendbirdAppMobile } from './SendbirdApp/SendbirdAppMobile'
 export { default as SimpleAccordion } from './Accordion/SimpleAccordion'
 export { default as SortBy } from './SortBy/SortBy';
 export { default as StripeConnectAccountStatusBox } from './StripeConnectAccountStatusBox/StripeConnectAccountStatusBox';
@@ -180,7 +181,8 @@ export { default as StripePaymentAddress } from './StripePaymentAddress/StripePa
 export { default as TransactionPanel } from './TransactionPanel/TransactionPanel';
 export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
-export {default as AvailabilityPreview} from './AvailabilityPreview/AvailabilityPreview';
+export { default as AvailabilityPreview } from './AvailabilityPreview/AvailabilityPreview';
+export { default as WeekPanel } from './WeekPanel/WeekPanel';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

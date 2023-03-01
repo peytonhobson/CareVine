@@ -52,7 +52,7 @@
   margin-bottom: 23px;
 
   @media (--viewportLarge) {
-    margin-bottom: 95px;
+    margin-bottom: 60px;
   }
 }
 

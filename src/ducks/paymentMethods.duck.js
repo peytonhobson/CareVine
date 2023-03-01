@@ -6,6 +6,7 @@ import {
   stripeUpdateCustomer,
 } from '../util/api';
 import * as log from '../util/log';
+import { stripePaymentMethods } from '../util/api';
 
 // ================ Action types ================ //
 
@@ -31,6 +32,10 @@ export const CREATE_CREDIT_CARD_REQUEST = 'app/paymentMethods/CREATE_CREDIT_CARD
 export const CREATE_CREDIT_CARD_SUCCESS = 'app/paymentMethods/CREATE_CREDIT_CARD_SUCCESS';
 export const CREATE_CREDIT_CARD_ERROR = 'app/paymentMethods/CREATE_CREDIT_CARD_ERROR';
 
+export const FETCH_DEFAULT_PAYMENT_REQUEST = 'app/paymentMethods/FETCH_DEFAULT_PAYMENT_REQUEST';
+export const FETCH_DEFAULT_PAYMENT_SUCCESS = 'app/paymentMethods/FETCH_DEFAULT_PAYMENT_SUCCESS';
+export const FETCH_DEFAULT_PAYMENT_ERROR = 'app/paymentMethods/FETCH_DEFAULT_PAYMENT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -46,6 +51,10 @@ const initialState = {
   deletePaymentMethodInProgress: null,
   deletePaymentMethodSuccess: false,
   stripeCustomer: null,
+  defaultPaymentMethods: null,
+  defaultPaymentFetched: false,
+  fetchDefaultPaymentError: null,
+  fetchDefaultPaymentInProgress: false,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -147,6 +156,28 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         createCreditCardInProgress: false,
       };
 
+    case FETCH_DEFAULT_PAYMENT_REQUEST:
+      return { ...state, fetchDefaultPaymentInProgress: true, fetchDefaultPaymentError: null };
+    case FETCH_DEFAULT_PAYMENT_SUCCESS:
+      const card = payload.find(p => p.type === 'card');
+      const bankAccount = payload.find(p => p.type === 'us_bank_account');
+      return {
+        ...state,
+        fetchDefaultPaymentInProgress: false,
+        defaultPaymentMethods: {
+          card,
+          bankAccount,
+        },
+        defaultPaymentFetched: true,
+      };
+    case FETCH_DEFAULT_PAYMENT_ERROR:
+      return {
+        ...state,
+        fetchDefaultPaymentInProgress: false,
+        fetchDefaultPaymentError: payload,
+        defaultPaymentFetched: true,
+      };
+
     default:
       return state;
   }
@@ -221,6 +252,17 @@ export const createCreditCardError = e => ({
   error: true,
 });
 
+export const fetchDefaultPaymentRequest = () => ({ type: FETCH_DEFAULT_PAYMENT_REQUEST });
+export const fetchDefaultPaymentSuccess = defaultPayment => ({
+  type: FETCH_DEFAULT_PAYMENT_SUCCESS,
+  payload: defaultPayment,
+});
+export const fetchDefaultPaymentError = e => ({
+  type: FETCH_DEFAULT_PAYMENT_ERROR,
+  error: true,
+  payload: e,
+});
+
 // ================ Thunks ================ //
 
 export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState, sdk) => {
@@ -253,12 +295,11 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
     return sdk.stripeCustomer
       .create({}, { expand: true })
       .then(response => {
-        const stripeCustomer = response.data.data;
         return sdk.ownListings.query({}).then(res => {
           // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
           return stripeUpdateCustomer({
             stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
-            update: {
+            params: {
               address: {
                 // postal_code,
                 country: 'US',
@@ -409,4 +450,23 @@ export const createCreditCard = (
       log.error(storableError(e), 'create-credit-card-failed');
       dispatch(createCreditCardError(storableError(e)));
     });
+};
+
+export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk) => {
+  dispatch(fetchDefaultPaymentRequest());
+
+  const handleSuccess = response => {
+    dispatch(fetchDefaultPaymentSuccess(response.data.data));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(fetchDefaultPaymentError(storableError(e)));
+    log.error(e, 'fetch-default-payment-failed', {});
+    throw e;
+  };
+
+  return stripePaymentMethods({ stripeCustomerId })
+    .then(handleSuccess)
+    .catch(handleError);
 };

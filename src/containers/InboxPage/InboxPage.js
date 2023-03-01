@@ -5,7 +5,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import StripePaymentModal from '../StripePaymentModal/StripePaymentModal';
-import { IconSpinner, SendbirdApp } from '../../components';
+import { IconSpinner, SendbirdApp, SendbirdAppMobile } from '../../components';
 import '@sendbird/uikit-react/dist/index.css';
 import SBProvider from '@sendbird/uikit-react/SendbirdProvider';
 import { FormattedMessage } from 'react-intl';
@@ -22,17 +22,12 @@ import {
   sendRequestForPayment,
   generateAccessToken,
 } from './InboxPage.duck';
-import {
-  Page,
-  LayoutWrapperMain,
-  LayoutWrapperTopbar,
-  LayoutWrapperFooter,
-  Footer,
-  FullPageError,
-} from '../../components';
+import { Page, LayoutWrapperMain, LayoutWrapperTopbar, FullPageError } from '../../components';
 import { TopbarContainer } from '..';
 
 import css from './InboxPage.module.css';
+
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const InboxPageComponent = props => {
   const {
@@ -130,29 +125,55 @@ export const InboxPageComponent = props => {
               profileUrl={profileUrl}
               userId={userId}
             >
-              <SendbirdApp
-                currentUser={ensuredCurrentUser}
-                fetchOtherUserListingError={fetchOtherUserListingError}
-                fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
-                fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
-                fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
-                history={history}
-                isPaymentModalOpen={isPaymentModalOpen}
-                onFetchOtherUserListing={onFetchOtherUserListing}
-                onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
-                onOpenPaymentModal={onOpenPaymentModal}
-                onRequestPayment={onTransitionToRequestPayment}
-                onSendRequestForPayment={onSendRequestForPayment}
-                otherUser={otherUser}
-                otherUserListing={otherUserListing}
-                ownListing={currentUserListing}
-                sendRequestForPaymentError={sendRequestForPaymentError}
-                sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-                sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-                transitionToRequestPaymentError={transitionToRequestPaymentError}
-                transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
-                transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
-              />
+              {isMobile ? (
+                <SendbirdAppMobile
+                  currentUser={ensuredCurrentUser}
+                  fetchOtherUserListingError={fetchOtherUserListingError}
+                  fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
+                  fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
+                  fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+                  history={history}
+                  isPaymentModalOpen={isPaymentModalOpen}
+                  onFetchOtherUserListing={onFetchOtherUserListing}
+                  onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
+                  onOpenPaymentModal={onOpenPaymentModal}
+                  onRequestPayment={onTransitionToRequestPayment}
+                  onSendRequestForPayment={onSendRequestForPayment}
+                  otherUser={otherUser}
+                  otherUserListing={otherUserListing}
+                  ownListing={currentUserListing}
+                  sendRequestForPaymentError={sendRequestForPaymentError}
+                  sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+                  sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+                  transitionToRequestPaymentError={transitionToRequestPaymentError}
+                  transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+                  transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
+                />
+              ) : (
+                <SendbirdApp
+                  currentUser={ensuredCurrentUser}
+                  fetchOtherUserListingError={fetchOtherUserListingError}
+                  fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
+                  fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
+                  fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
+                  history={history}
+                  isPaymentModalOpen={isPaymentModalOpen}
+                  onFetchOtherUserListing={onFetchOtherUserListing}
+                  onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
+                  onOpenPaymentModal={onOpenPaymentModal}
+                  onRequestPayment={onTransitionToRequestPayment}
+                  onSendRequestForPayment={onSendRequestForPayment}
+                  otherUser={otherUser}
+                  otherUserListing={otherUserListing}
+                  ownListing={currentUserListing}
+                  sendRequestForPaymentError={sendRequestForPaymentError}
+                  sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+                  sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+                  transitionToRequestPaymentError={transitionToRequestPaymentError}
+                  transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
+                  transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
+                />
+              )}
             </SBProvider>
           ) : (
             <IconSpinner className={css.spinner} />

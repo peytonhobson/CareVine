@@ -430,23 +430,6 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperTopbar>{topbar}</LayoutWrapperTopbar>
           <LayoutWrapperMain>
             {actionBar}
-
-            <BookingPanel
-              className={css.bookingPanel}
-              listing={currentListing}
-              isOwnListing={isOwnListing}
-              unitType={unitType}
-              onSubmit={handleBookingSubmit}
-              title={bookingTitle}
-              authorDisplayName={authorDisplayName}
-              onManageDisableScrolling={onManageDisableScrolling}
-              monthlyTimeSlots={monthlyTimeSlots}
-              onFetchTimeSlots={onFetchTimeSlots}
-              onFetchTransactionLineItems={onFetchTransactionLineItems}
-              lineItems={lineItems}
-              fetchLineItemsInProgress={fetchLineItemsInProgress}
-              fetchLineItemsError={fetchLineItemsError}
-            />
             <div className={css.mainContainer}>
               <div className={css.subContainer}>
                 <ListingSummary
@@ -456,6 +439,7 @@ export class ListingPageComponent extends Component {
                   onContactUser={this.onContactUser}
                   isOwnListing={isOwnListing}
                   onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
+                  onBookNow={handleBookingSubmit}
                 />
                 <ListingTabs
                   currentUser={currentUser}
@@ -491,7 +475,14 @@ export class ListingPageComponent extends Component {
                 containerClassName={css.bookingModalContainer}
                 usePortal
               >
-                <BookingContainer />
+                <BookingContainer
+                  listing={currentListing}
+                  currentUserListing={currentUserListing}
+                  currentUser={currentUser}
+                  intl={intl}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                  onBookNow={handleBookingSubmit}
+                />
               </Modal>
             )}
           </LayoutWrapperMain>

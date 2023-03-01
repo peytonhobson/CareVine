@@ -218,3 +218,17 @@
   justify-content: center;
   margin-top: 20px;
 }
+
+.scheduleExceptionsContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.scheduleExceptionsTitle {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 0;
+}

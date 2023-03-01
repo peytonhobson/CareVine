@@ -1,0 +1,36 @@
+.checkoutButton {
+  composes: marketplaceButtonStyles from global;
+  margin-top: 2rem;
+}
+
+.currencyContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.currencyInput {
+  display: flex;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  font-size: 40px;
+  margin-inline: 20%;
+}
+
+.currencyRoot {
+  display: flex;
+  width: 60%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.overtimeLabel {
+  width: 100%;
+  text-align: center;
+}
+
+.overtimeTextContainer {
+  composes: marketplaceTinyFontStyles from global;
+}

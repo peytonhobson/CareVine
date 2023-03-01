@@ -7,7 +7,6 @@ module.exports = (req, res) => {
   const listingId = bodyParams && bodyParams.params ? bodyParams.params.listingId : null;
 
   const sdk = getSdk(req, res);
-  let lineItems = null;
 
   sdk.listings
     .show({ id: listingId })
@@ -32,6 +31,7 @@ module.exports = (req, res) => {
       if (isSpeculative) {
         return trustedSdk.transactions.initiateSpeculative(body, queryParams);
       }
+      console.log(body);
       return trustedSdk.transactions.initiate(body, queryParams);
     })
     .then(apiResponse => {

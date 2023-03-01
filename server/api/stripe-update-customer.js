@@ -1,14 +1,12 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleStripeError, serialize } = require('../api-util/sdk');
+const { integrationSdk, handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { stripeCustomerId, update } = req.body;
+  const { stripeCustomerId, params } = req.body;
 
-  stripe.customers
-    .update(stripeCustomerId, {
-      ...update,
-    })
+  return stripe.customers
+    .update(stripeCustomerId, { ...params })
     .then(apiResponse => {
       res
         .set('Content-Type', 'application/transit+json')

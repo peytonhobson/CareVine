@@ -15,6 +15,7 @@ import {
   Modal,
   TimeRange,
   CareScheduleExceptions,
+  WeekPanel,
 } from '../../components';
 import Weekday from '../EditListingCareSchedulePanel/Weekday';
 import { EditListingAvailabilityPlanForm } from '../../forms';
@@ -59,12 +60,11 @@ const EditListingAvailabilityPanel = props => {
     timezone: defaultTimeZone(),
     entries: [],
   };
-  const publicData = currentListing && currentListing.attributes.publicData;
-  const savedAvailabilityPlan = publicData && publicData.availabilityPlan;
+  const publicData = currentListing?.attributes?.publicData;
+  const savedAvailabilityPlan = publicData?.availabilityPlan;
 
-  const savedAvailabilityExceptions =
-    savedAvailabilityPlan && savedAvailabilityPlan.availabilityExceptions;
-  const savedSelectedAvailabilityTypes = publicData && publicData.scheduleTypes;
+  const savedAvailabilityExceptions = savedAvailabilityPlan?.availabilityExceptions;
+  const savedSelectedAvailabilityTypes = publicData?.scheduleTypes;
 
   // Hooks
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
@@ -83,7 +83,10 @@ const EditListingAvailabilityPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
   const submitDisabled =
-    (selectedAvailabilityTypes && selectedAvailabilityTypes.length === 0) || !valuesFromLastSubmit;
+    selectedAvailabilityTypes?.length === 0 ||
+    !valuesFromLastSubmit ||
+    selectedAvailabilityTypes !== savedSelectedAvailabilityTypes ||
+    availabilityExceptions !== savedAvailabilityExceptions;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -188,30 +191,28 @@ const EditListingAvailabilityPanel = props => {
             <FormattedMessage id="EditListingAvailabilityPanel.edit" />
           </InlineTextButton>
         </header>
-        <div className={css.week}>
-          {WEEKDAYS.map(w => (
-            <Weekday
-              dayOfWeek={w}
-              key={w}
-              availabilityPlan={availabilityPlan}
-              openEditModal={setIsEditPlanModalOpen}
-            />
-          ))}
-        </div>
+        <WeekPanel
+          availabilityPlan={availabilityPlan}
+          openEditModal={() => setIsEditPlanModalOpen(true)}
+        />
       </section>
-      <CareScheduleExceptions
-        fetchExceptionsInProgress={fetchExceptionsInProgress}
-        availabilityExceptions={availabilityExceptions}
-        onManageDisableScrolling={onManageDisableScrolling}
-        availabilityPlan={availabilityPlan}
-        updateInProgress={updateInProgress}
-        errors={errors}
-        disabled={disabled}
-        ready={ready}
-        listing={currentListing}
-        onSave={handleSaveAvailabilityException}
-        onDelete={handleDeleteException}
-      />
+      <div className={css.exceptionsContainer}>
+        <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
+        <CareScheduleExceptions
+          fetchExceptionsInProgress={fetchExceptionsInProgress}
+          availabilityExceptions={availabilityExceptions}
+          onManageDisableScrolling={onManageDisableScrolling}
+          availabilityPlan={availabilityPlan}
+          updateInProgress={updateInProgress}
+          errors={errors}
+          disabled={disabled}
+          ready={ready}
+          listing={currentListing}
+          onSave={handleSaveAvailabilityException}
+          onDelete={handleDeleteException}
+          isCaregiver
+        />
+      </div>
 
       {errors.showListingsError ? (
         <p className={css.error}>

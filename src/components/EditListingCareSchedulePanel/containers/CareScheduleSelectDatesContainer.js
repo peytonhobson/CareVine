@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import zipcodeToTimezone from 'zipcode-to-timezone';
+import classNames from 'classnames';
 
 import { DATE_TYPE_DATETIME } from '../../../util/types';
 import { timestampToDate } from '../../../util/dates';
@@ -34,6 +35,7 @@ const CareScheduleSelectDatesContainer = props => {
     updated,
     updateInProgress,
     showErrors,
+    exceptionsClassName,
   } = props;
 
   // Hooks
@@ -83,11 +85,13 @@ const CareScheduleSelectDatesContainer = props => {
   const submitReady =
     (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME;
 
+  const exceptionsClasses = classNames(css.exceptions, exceptionsClassName);
+
   return (
     <div className={css.root}>
       {selectedSessions.length !== 0 ? (
         <div className={css.exceptionsContainer}>
-          <div className={css.exceptions}>
+          <div className={exceptionsClasses}>
             {selectedSessions.map(session => {
               const { start, end } = session;
               return (
