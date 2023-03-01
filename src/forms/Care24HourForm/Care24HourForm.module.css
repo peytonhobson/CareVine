@@ -103,3 +103,45 @@
   flex-wrap: wrap;
   max-width: 600px;
 }
+
+.hoursPerDayContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4rem;
+}
+
+.hoursPerDayInput {
+  display: flex;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  font-size: 40px;
+  margin-inline: 30%;
+}
+
+.hoursPerDayRoot {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hoursPerDayField {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.exceptionsContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4rem;
+  flex-wrap: wrap;
+}
+
+.exceptionsTitle {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 0;
+}

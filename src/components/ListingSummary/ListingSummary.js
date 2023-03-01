@@ -6,7 +6,7 @@ import { richText } from '../../util/richText';
 import { compose } from 'redux';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { CAREGIVER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './ListingSummary.module.css';
 
@@ -21,6 +21,7 @@ const ListingSummaryComponent = props => {
     onContactUser,
     isOwnListing,
     onOpenBookingModal,
+    onBookNow,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -48,6 +49,16 @@ const ListingSummaryComponent = props => {
     geolocation && currentUserGeolocation
       ? calculateDistanceBetweenOrigins(currentUserGeolocation, geolocation)
       : null;
+
+  const handleBook = () => {
+    const initialValues = {
+      listing,
+      bookingStartTime: new Date().getTime(),
+      bookingEndTime: new Date().getTime() + 360000000,
+    };
+
+    onBookNow(initialValues);
+  };
 
   return (
     <div className={css.root}>
@@ -83,9 +94,12 @@ const ListingSummaryComponent = props => {
       </div>
       {!isOwnListing ? (
         <div className={css.buttonContainer}>
-          <Button className={css.button} onClick={onOpenBookingModal}>
-            <FormattedMessage id="ListingSummary.bookNow" />
-          </Button>
+          {/* TODO: Add booking functionality back in when complete */}
+          {/* {userType === CAREGIVER && (
+            <Button className={css.button} onClick={onOpenBookingModal}>
+              <FormattedMessage id="ListingSummary.bookNow" />
+            </Button>
+          )} */}
           <Button className={css.secondaryButton} onClick={onContactUser}>
             <FormattedMessage id="ListingSummary.message" />
           </Button>

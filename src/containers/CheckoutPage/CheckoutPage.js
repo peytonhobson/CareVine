@@ -44,7 +44,7 @@ import {
 import { StripePaymentForm } from '../../forms';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { confirmCardPayment, retrievePaymentIntent } from '../../ducks/stripe.duck';
-import { addPaymentMethod } from '../../ducks/paymentMethods.duck';
+import { addPaymentMethod, fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
 
 import {
   initiateOrder,
@@ -174,11 +174,11 @@ export class CheckoutPageComponent extends Component {
       pageData &&
       pageData.listing &&
       pageData.listing.id &&
-      pageData.bookingData &&
-      pageData.bookingDates &&
+      // pageData.bookingData &&
+      // pageData.bookingDates &&
       pageData.bookingDates.bookingStart &&
       pageData.bookingDates.bookingEnd &&
-      pageData.bookingData.quantity &&
+      // pageData.bookingData.quantity &&
       !isBookingCreated;
 
     if (shouldFetchSpeculatedTransaction) {
@@ -211,6 +211,7 @@ export class CheckoutPageComponent extends Component {
       onConfirmPayment,
       onSendMessage,
       onSavePaymentMethod,
+      defaultPaymentMethods,
     } = this.props;
     const {
       pageData,
@@ -222,22 +223,15 @@ export class CheckoutPageComponent extends Component {
     } = handlePaymentParams;
     const storedTx = ensureTransaction(pageData.transaction);
 
+    // TODO: This needs to be adapted to bank accounts
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
     const ensuredStripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
-    const ensuredDefaultPaymentMethod = ensurePaymentMethodCard(
-      ensuredStripeCustomer.defaultPaymentMethod
-    );
+    const ensuredDefaultPaymentMethod = ensurePaymentMethodCard(defaultPaymentMethods?.card);
 
     let createdPaymentIntent = null;
 
-    const hasDefaultPaymentMethod = !!(
-      stripeCustomerFetched &&
-      ensuredStripeCustomer.attributes.stripeCustomerId &&
-      ensuredDefaultPaymentMethod.id
-    );
-    const stripePaymentMethodId = hasDefaultPaymentMethod
-      ? ensuredDefaultPaymentMethod.attributes.stripePaymentMethodId
-      : null;
+    const hasDefaultPaymentMethod = !!defaultPaymentMethods?.card;
+    const stripePaymentMethodId = hasDefaultPaymentMethod ? defaultPaymentMethods?.card?.id : null;
 
     const selectedPaymentFlow = paymentFlow(selectedPaymentMethod, saveAfterOnetimePayment);
 
@@ -502,7 +496,18 @@ export class CheckoutPageComponent extends Component {
       paymentIntent,
       retrievePaymentIntentError,
       stripeCustomerFetched,
+      onFetchDefaultPayment,
+      defaultPaymentMethods,
+      defaultPaymentFetched,
+      fetchDefaultPaymentError,
+      fetchDefaultPaymentInProgress,
     } = this.props;
+
+    if (stripeCustomerFetched && !fetchDefaultPaymentInProgress && !defaultPaymentFetched) {
+      onFetchDefaultPayment(
+        ensureStripeCustomer(currentUser.stripeCustomer)?.attributes?.stripeCustomerId
+      );
+    }
 
     // Since the listing data is already given from the ListingPage
     // and stored to handle refreshes, it might not have the possible
@@ -599,8 +604,7 @@ export class CheckoutPageComponent extends Component {
     const isPaymentExpired = checkIsPaymentExpired(existingTransaction);
     const hasDefaultPaymentMethod = !!(
       stripeCustomerFetched &&
-      ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId &&
-      ensurePaymentMethodCard(currentUser.stripeCustomer.defaultPaymentMethod).id
+      (defaultPaymentMethods?.card || defaultPaymentMethods?.bankAccount)
     );
 
     // Allow showing page when currentUser is still being downloaded,
@@ -803,8 +807,9 @@ export class CheckoutPageComponent extends Component {
                   confirmPaymentError={confirmPaymentError}
                   hasHandledCardPayment={hasPaymentIntentUserActionsDone}
                   loadingData={!stripeCustomerFetched}
+                  // TODO; Change to work with bank account also
                   defaultPaymentMethod={
-                    hasDefaultPaymentMethod ? currentUser.stripeCustomer.defaultPaymentMethod : null
+                    hasDefaultPaymentMethod ? defaultPaymentMethods?.card : null
                   }
                   paymentIntent={paymentIntent}
                   onStripeInitialized={this.onStripeInitialized}
@@ -918,6 +923,12 @@ const mapStateToProps = state => {
   } = state.CheckoutPage;
   const { currentUser } = state.user;
   const { confirmCardPaymentError, paymentIntent, retrievePaymentIntentError } = state.stripe;
+  const {
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+  } = state.paymentMethods;
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
@@ -934,6 +945,10 @@ const mapStateToProps = state => {
     confirmPaymentError,
     paymentIntent,
     retrievePaymentIntentError,
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
   };
 };
 
@@ -948,6 +963,7 @@ const mapDispatchToProps = dispatch => ({
   onConfirmPayment: params => dispatch(confirmPayment(params)),
   onSendMessage: params => dispatch(sendMessage(params)),
   onSavePaymentMethod: stripePaymentMethodId => dispatch(addPaymentMethod(stripePaymentMethodId)),
+  onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
 });
 
 const CheckoutPage = compose(

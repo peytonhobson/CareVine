@@ -1,5 +1,7 @@
 export const EMPLOYER = 'employer';
 export const CAREGIVER = 'caregiver';
+
+// Price IDs for Stripe
 export const VINE_CHECK_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
@@ -8,9 +10,47 @@ export const BASIC_CHECK_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTzRJsU2TVwfKBbucAL3ns'
     : 'price_1MXTz5JsU2TVwfKB0Dt67n8s';
+export const FREE_FIRST_PERIOD_ID =
+  process.env.REACT_APP_ENV === 'development' ? '2wY0citm' : 'Fx2yQHtC';
+export const HOURLY_RATE_PRICE_ID =
+  process.env.REACT_APP_ENV === 'development'
+    ? 'price_1MefLwJsU2TVwfKBJmeA4Bew'
+    : 'price_1MefMNJsU2TVwfKBzID0s85E';
+
+// Modal Missing Information Types
 export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';
 export const PAYMENT_DETAILS = 'PAYMENT_DETAILS';
 export const MISSING_REQUIREMENTS = 'MISSING_REQUIREMENTS';
 export const MISSING_SUBSCRIPTION = 'MISSING_SUBSCRIPTION';
-export const FREE_FIRST_PERIOD_ID =
-  process.env.REACT_APP_ENV === 'development' ? '2wY0citm' : 'Fx2yQHtC';
+
+// Availability Plan Types
+export const AVAILABILITY_PLAN_ONE_TIME = 'oneTime';
+export const AVAILABILITY_PLAN_REPEAT = 'repeat';
+export const AVAILABILITY_PLAN_24_HOUR = '24hour';
+
+export const timeOrderMap = new Map([
+  ['12:00am', 0],
+  ['1:00am', 1],
+  ['2:00am', 2],
+  ['3:00am', 3],
+  ['4:00am', 4],
+  ['5:00am', 5],
+  ['6:00am', 6],
+  ['7:00am', 7],
+  ['8:00am', 8],
+  ['9:00am', 9],
+  ['10:00am', 10],
+  ['11:00am', 11],
+  ['12:00pm', 12],
+  ['1:00pm', 13],
+  ['2:00pm', 14],
+  ['3:00pm', 15],
+  ['4:00pm', 16],
+  ['5:00pm', 17],
+  ['6:00pm', 18],
+  ['7:00pm', 19],
+  ['8:00pm', 20],
+  ['9:00pm', 21],
+  ['10:00pm', 22],
+  ['11:00pm', 23],
+]);

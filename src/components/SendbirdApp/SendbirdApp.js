@@ -17,6 +17,8 @@ import CustomChannelPreviewAction from './CustomChannelPreviewAction';
 
 import css from './SendbirdApp.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const SendbirdApp = props => {
   const {
     config: { isOnline, userId, appId, accessToken, theme, userListQuery, logger, pubSub },

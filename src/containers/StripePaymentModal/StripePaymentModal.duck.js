@@ -7,6 +7,7 @@ import {
   stripePaymentMethods,
   stripeDetachPaymentMethod,
   stripeUpdatePaymentIntent,
+  stripeUpdateCustomer,
 } from '../../util/api';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
@@ -465,13 +466,26 @@ export const confirmPayment = (
         .catch(handleError);
     }
   } else if (!!saveCardAsDefault) {
+    let stripeCustomerId = null;
     // If user is saving card as default
     return stripeUpdatePaymentIntent({
       paymentIntentId,
       update: { setup_future_usage: 'off_session' },
     })
-      .then(() => {
+      .then(res => {
+        stripeCustomerId = res?.customer;
         return stripe.confirmPayment(confirmParams);
+      })
+      .then(res => {
+        const paymentMethodId = res?.paymentIntent?.payment_method;
+        return stripeUpdateCustomer({
+          stripeCustomerId,
+          params: {
+            invoice_settings: {
+              default_payment_method: paymentMethodId,
+            },
+          },
+        });
       })
       .then(res => {
         if (res.error) {

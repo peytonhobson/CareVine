@@ -12,7 +12,7 @@ class AddSubtractComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentCount: 15,
+      currentCount: props.startingCount || 15,
     };
   }
 
@@ -37,6 +37,8 @@ class AddSubtractComponent extends Component {
       input,
       meta,
       increment,
+      max,
+      min,
       ...rest
     } = this.props;
 
@@ -45,21 +47,31 @@ class AddSubtractComponent extends Component {
     const countIncrement = increment || 1;
 
     const add = () => {
-      this.setState(state => ({
-        currentCount:
-          state.currentCount < 100 ? state.currentCount + countIncrement : state.currentCount,
-      }));
+      this.setState(state => {
+        const newCount =
+          state.currentCount < (max || 100)
+            ? state.currentCount + countIncrement
+            : state.currentCount;
 
-      inputOnChange(this.state.currentCount);
+        inputOnChange(newCount);
+        return {
+          currentCount: newCount,
+        };
+      });
     };
 
     const subtract = () => {
-      this.setState(state => ({
-        currentCount:
-          state.currentCount > 0 ? state.currentCount - countIncrement : state.currentCount,
-      }));
+      this.setState(state => {
+        const newCount =
+          state.currentCount > (min || 100)
+            ? state.currentCount - countIncrement
+            : state.currentCount;
 
-      inputOnChange(this.state.currentCount);
+        inputOnChange(newCount);
+        return {
+          currentCount: newCount,
+        };
+      });
     };
 
     const spanProps = {

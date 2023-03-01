@@ -1,0 +1,64 @@
+@import '../../styles/customMediaQueries.css';
+
+.weekPanel {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-bottom: 23px;
+
+  & > .weekDay {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
+
+.weekDay {
+  composes: marketplaceTabNavHorizontalFontStyles from global;
+  display: flex;
+  /* justify-content: space-between; */
+  flex-direction: row;
+  padding: 24px 24px 23px 24px;
+}
+
+.blockedWeekDay {
+  background-color: #f3f3f3;
+  & > .dayOfWeek {
+    color: var(--matterColorAnti);
+  }
+
+  &:hover > .dayOfWeek:not(.viewOnly) {
+    color: var(--matterColor);
+  }
+}
+
+.entries {
+}
+
+.entry {
+  display: block;
+}
+
+@media (--viewportMedium) {
+  .weekDay {
+    padding-top: 22px;
+    padding-bottom: 25px;
+    padding-right: 24px;
+    padding-left: 24px;
+    cursor: pointer;
+
+    &:hover:not(.viewOnly) {
+      color: var(--matterColorDark);
+    }
+
+    &.viewOnly {
+      cursor: default;
+    }
+  }
+
+  .dayOfWeek {
+    width: 200px;
+  }
+}

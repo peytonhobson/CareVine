@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { compose } from 'redux';
-import classNames from 'classnames';
-import { Form as FinalForm, Field } from 'react-final-form';
 import zipcodeToTimezone from 'zipcode-to-timezone';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 
-import { Checkbox, Button, Form, CareScheduleExceptions } from '../../components';
+import {
+  Checkbox,
+  Button,
+  Form,
+  CareScheduleExceptions,
+  FieldTextInput,
+  FieldAddSubtract,
+} from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { timestampToDate } from '../../util/dates';
 import { TimelineForm } from '../../forms';
@@ -22,6 +28,16 @@ const weekdayButtons = [
   { day: 'sat', label: 'Saturday' },
   { day: 'sun', label: 'Sunday' },
 ];
+
+const formatHours = value => {
+  // if input value is falsy eg if the user deletes the input, then just return
+  if (!value) return value;
+
+  // clean the input for any non-digit values.
+  const hours = value.replace(/[^\d]/g, '');
+
+  return hours;
+};
 
 const Care24HourFormComponent = props => {
   const {
@@ -40,15 +56,15 @@ const Care24HourFormComponent = props => {
     submitButtonText,
     updated,
     updateInProgress,
+    submitButtonType,
   } = props;
 
-  const [selectedWeekdays, setSelectedWeekdays] = useState(
-    (availabilityPlan && availabilityPlan.availableDays) || []
-  );
+  const [selectedWeekdays, setSelectedWeekdays] = useState(availabilityPlan?.availableDays || []);
   const [availabilityExceptions, setAvailabilityExceptions] = useState(
-    (availabilityPlan && availabilityPlan.availabilityExceptions) || []
+    availabilityPlan?.availabilityExceptions || []
   );
-  const [liveIn, setLiveIn] = useState(availabilityPlan && !!availabilityPlan.liveIn);
+  const [liveIn, setLiveIn] = useState(availabilityPlan?.liveIn);
+  const [hoursPerDay, setHoursPerDay] = useState(availabilityPlan?.hoursPerDay || 8);
 
   const savedStartDate = availabilityPlan && availabilityPlan.startDate;
   const savedEndDate = availabilityPlan && availabilityPlan.endDate;
@@ -59,7 +75,14 @@ const Care24HourFormComponent = props => {
 
   const submitInProgress = updateInProgress;
   const submitReady = (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR;
-  const submitDisabled = selectedWeekdays.length === 0;
+  const submitDisabled =
+    (selectedWeekdays === availabilityPlan?.availableDays &&
+      startDate === savedStartDate &&
+      endDate === savedEndDate &&
+      liveIn === !!availabilityPlan?.liveIn &&
+      availabilityExceptions === availabilityPlan?.availabilityExceptions &&
+      hoursPerDay === availabilityPlan?.hoursPerDay) ||
+    selectedWeekdays.length === 0;
 
   const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
 
@@ -71,6 +94,12 @@ const Care24HourFormComponent = props => {
       date: savedEndDate ? timestampToDate(savedEndDate) : null,
     },
   };
+
+  const hoursPerDayLabel = (
+    <h2>
+      How many hours will they be working per day?<span className={css.error}>*</span>
+    </h2>
+  );
 
   const handleButtonClick = day => {
     setSelectedWeekdays(prevState => {
@@ -87,6 +116,7 @@ const Care24HourFormComponent = props => {
     onSubmit({
       availableDays: selectedWeekdays,
       liveIn,
+      hoursPerDay,
       availabilityExceptions,
       startDate,
       endDate,
@@ -181,7 +211,27 @@ const Care24HourFormComponent = props => {
         value={liveIn}
         onClick={() => setLiveIn(prevLiveIn => !prevLiveIn)}
       />
-      <div className={css.children}>
+      <FinalForm
+        onSubmit={() => {}}
+        render={() => {
+          return (
+            <div className={css.hoursPerDayContainer}>
+              <FormSpy onChange={e => setHoursPerDay(e.values.hoursPerDay)} />
+              <FieldAddSubtract
+                name="hoursPerDay"
+                fieldClassName={css.hoursPerDayField}
+                startingCount={8}
+                max={24}
+                min={1}
+                label={hoursPerDayLabel}
+                countLabel="hours"
+              />
+            </div>
+          );
+        }}
+      />
+      <div className={css.exceptionsContainer}>
+        <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
         <CareScheduleExceptions
           fetchExceptionsInProgress={fetchExceptionsInProgress}
           availabilityExceptions={availabilityExceptions}
@@ -198,7 +248,7 @@ const Care24HourFormComponent = props => {
           onSave={handleSaveAvailabilityException}
         />
       </div>
-      {fetchErrors.updateListingError && showErrors ? (
+      {fetchErrors?.updateListingError && showErrors ? (
         <p className={css.error}>
           <FormattedMessage id="Care24HourForm.updateFailed" />
         </p>
@@ -206,7 +256,8 @@ const Care24HourFormComponent = props => {
       <Button
         className={css.submitButton}
         disabled={submitDisabled}
-        type="submit"
+        type={submitButtonType || 'submit'}
+        onClick={submitButtonType === 'button' ? handleSubmit : null}
         inProgress={submitInProgress}
         ready={submitReady}
       >

@@ -115,7 +115,7 @@ const STATE_PAYMENT_REQUESTED = 'payment-requested';
  *       but this description format is following Xstate (FSM library)
  *       https://xstate.js.org/docs/
  */
-const stateDescription = {
+const stateDescriptionSingle = {
   // id is defined only to support Xstate format.
   // However if you have multiple transaction processes defined,
   // it is best to keep them in sync with transaction process aliases.
@@ -133,6 +133,78 @@ const stateDescription = {
         [TRANSITION_CONFIRM_PAYMENT]: STATE_PAYMENT_CONFIRMED,
       },
     },
+  },
+};
+
+const stateDescription = {
+  // id is defined only to support Xstate format.
+  // However if you have multiple transaction processes defined,
+  // it is best to keep them in sync with transaction process aliases.
+  id: 'flex-hourly-default-process/release-1',
+
+  // This 'initial' state is a starting point for new transaction
+  initial: STATE_INITIAL,
+
+  // States
+  states: {
+    [STATE_INITIAL]: {
+      on: {
+        [TRANSITION_ENQUIRE]: STATE_ENQUIRY,
+        [TRANSITION_REQUEST_PAYMENT]: STATE_PAYMENT_PENDING,
+      },
+    },
+    [STATE_ENQUIRY]: {
+      on: {
+        [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_PENDING,
+      },
+    },
+
+    [STATE_PAYMENT_PENDING]: {
+      on: {
+        [TRANSITION_EXPIRE_PAYMENT]: STATE_PAYMENT_EXPIRED,
+        [TRANSITION_CONFIRM_PAYMENT]: STATE_PREAUTHORIZED,
+      },
+    },
+
+    [STATE_PAYMENT_EXPIRED]: {},
+    [STATE_PREAUTHORIZED]: {
+      on: {
+        [TRANSITION_DECLINE]: STATE_DECLINED,
+        [TRANSITION_EXPIRE]: STATE_DECLINED,
+        [TRANSITION_ACCEPT]: STATE_ACCEPTED,
+      },
+    },
+
+    [STATE_DECLINED]: {},
+    [STATE_ACCEPTED]: {
+      on: {
+        [TRANSITION_CANCEL]: STATE_CANCELED,
+        [TRANSITION_COMPLETE]: STATE_DELIVERED,
+      },
+    },
+
+    [STATE_CANCELED]: {},
+    [STATE_DELIVERED]: {
+      on: {
+        [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
+        [TRANSITION_REVIEW_1_BY_CUSTOMER]: STATE_REVIEWED_BY_CUSTOMER,
+        [TRANSITION_REVIEW_1_BY_PROVIDER]: STATE_REVIEWED_BY_PROVIDER,
+      },
+    },
+
+    [STATE_REVIEWED_BY_CUSTOMER]: {
+      on: {
+        [TRANSITION_REVIEW_2_BY_PROVIDER]: STATE_REVIEWED,
+        [TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD]: STATE_REVIEWED,
+      },
+    },
+    [STATE_REVIEWED_BY_PROVIDER]: {
+      on: {
+        [TRANSITION_REVIEW_2_BY_CUSTOMER]: STATE_REVIEWED,
+        [TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD]: STATE_REVIEWED,
+      },
+    },
+    [STATE_REVIEWED]: { type: 'final' },
   },
 };
 

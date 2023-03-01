@@ -47,6 +47,7 @@ const CustomChannelHeader = props => {
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
     fetchOtherUserListingInProgress,
+    onReturnToChannelList,
   } = props;
 
   const slug = listing && createSlug(listing);
@@ -75,39 +76,48 @@ const CustomChannelHeader = props => {
           height="24px"
           type={IconTypes.ARROW_LEFT}
           width="24px"
+          onClick={onReturnToChannelList}
         />
       )}
-      <ChannelAvatar
-        channel={currentGroupChannel}
-        height={32}
-        theme={theme}
-        userId={userId}
-        width={32}
-      />
-      <label
-        className="sendbird-chat-header__left__title sendbird-label sendbird-label--h-2 sendbird-label--color-onbackground-1"
-        style={{ cursor: 'pointer' }}
-      >
-        {getChannelTitle(currentGroupChannel, userId)}
-      </label>
+      {!!listing ? (
+        <NamedLink className={css.listingLink} name="ListingPage" params={{ id: listingId, slug }}>
+          <ChannelAvatar
+            channel={currentGroupChannel}
+            height={32}
+            theme={theme}
+            userId={userId}
+            width={32}
+          />
+          <label
+            className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
+            style={{ cursor: 'pointer' }}
+          >
+            {getChannelTitle(currentGroupChannel, userId)}
+          </label>
+        </NamedLink>
+      ) : (
+        <div className={css.listingLink}>
+          <ChannelAvatar
+            channel={currentGroupChannel}
+            height={32}
+            theme={theme}
+            userId={userId}
+            width={32}
+          />
+          <label
+            className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
+            style={{ cursor: 'pointer' }}
+          >
+            {getChannelTitle(currentGroupChannel, userId)}
+          </label>
+        </div>
+      )}
     </>
   );
 
   return (
     <div className="sendbird-chat-header">
-      <div className="sendbird-chat-header__left">
-        {!!listing ? (
-          <NamedLink
-            className={css.listingLink}
-            name="ListingPage"
-            params={{ id: listingId, slug }}
-          >
-            {userContent}
-          </NamedLink>
-        ) : (
-          <div className={css.listingLink}>{userContent}</div>
-        )}
-      </div>
+      <div className="sendbird-chat-header__left">{userContent}</div>
       <div className="sendbird-chat-header__right">
         {currentUserType === EMPLOYER ? (
           <PaymentButton

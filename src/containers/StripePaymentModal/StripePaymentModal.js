@@ -119,12 +119,10 @@ const StripePaymentModalComponent = props => {
     methodType
   ) => {
     const defaultPaymentId =
-      methodType === 'card'
-        ? defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id
-        : defaultPaymentMethods &&
-          defaultPaymentMethods.bankAccount &&
-          defaultPaymentMethods.bankAccount.id;
-    const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
+      methodType === 'creditCard'
+        ? defaultPaymentMethods?.card?.id
+        : defaultPaymentMethods?.bankAccount?.id;
+    const currentUserId = currentUser?.id?.uuid;
     const providerName = userDisplayNameAsString(provider);
     onConfirmPayment(
       stripe,

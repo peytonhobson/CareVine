@@ -38,26 +38,28 @@ const weekdayTooltipTitle = entries => {
 };
 
 const AvailabilityPreview = props => {
-  const { entries } = props;
+  const { className, entries, availableDays } = props;
 
   const weekdayTooltipTitles = entries && weekdayTooltipTitle(entries);
 
-  const daysInSchedule = weekdayAbbreviations.filter(
-    day => entries && entries.find(entry => entry.dayOfWeek === day.key)
+  const daysInSchedule = weekdayAbbreviations.filter(day =>
+    entries
+      ? entries?.find(entry => entry?.dayOfWeek === day.key || entry === day.key)
+      : availableDays.includes(day.key)
   );
 
   return (
     <div className={css.schedule}>
       {weekdayAbbreviations.map(day => {
         const dayInSchedule = daysInSchedule.find(dayInSchedule => dayInSchedule.key === day.key);
-        const dayClasses = classNames(css.dayBox, dayInSchedule && css.active);
+        const dayClasses = classNames(css.dayBox, dayInSchedule && css.active, className);
         const title = weekdayTooltipTitles && weekdayTooltipTitles[day.key];
         const styles = {
           fontSize: '1rem',
           fontFamily: 'var(--fontFamily)',
           paddingInline: '0',
         };
-        return weekdayTooltipTitles && dayInSchedule ? (
+        return weekdayTooltipTitles && dayInSchedule && entries ? (
           <InfoTooltip
             title={title}
             icon={<div className={dayClasses}>{day.label}</div>}

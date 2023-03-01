@@ -1,5 +1,7 @@
 
+export { default as BookingPriceForm } from './BookingPriceForm/BookingPriceForm';
 export { default as BookingTimeForm } from './BookingTimeForm/BookingTimeForm';
+export { default as BookingScheduleForm } from './BookingScheduleForm/BookingScheduleForm';
 export { default as Care24HourForm } from './Care24HourForm/Care24HourForm';
 export { default as CareScheduleSelectDatesForm } from './CareScheduleSelectDatesForm/CareScheduleSelectDatesForm';
 export { default as ConsentModalForm } from './ConsentModalForm/ConsentModalForm';

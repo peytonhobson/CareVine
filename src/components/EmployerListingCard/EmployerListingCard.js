@@ -152,7 +152,9 @@ export const EmployerListingCardComponent = props => {
   }));
 
   const selectedSessions = availabilityPlan?.selectedSessions;
-  const entries = availabilityPlan?.entries || availabilityPlan?.availableDays;
+  const entries = availabilityPlan?.entries;
+  const availableDays = availabilityPlan?.availableDays;
+  const isLiveIn = availabilityPlan?.liveIn;
 
   return (
     <>
@@ -181,22 +183,21 @@ export const EmployerListingCardComponent = props => {
                 <h3 className={css.scheduleType}>
                   <FormattedMessage
                     id={'EmployerListingCard.scheduleType'}
-                    values={{ type: scheduleTypeLabel }}
+                    values={{ type: `${scheduleTypeLabel}${isLiveIn ? ' (Live-In)' : ''}` }}
                   />
                 </h3>
-                {scheduleType === '24hour' ||
-                  (scheduleType === 'repeat' ? (
-                    <AvailabilityPreview entries={entries} />
-                  ) : (
-                    <InlineTextButton
-                      onClick={e => {
-                        e.preventDefault();
-                        setIsOneTimeScheduleModalOpen(true);
-                      }}
-                    >
-                      <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                    </InlineTextButton>
-                  ))}
+                {scheduleType === '24hour' || scheduleType === 'repeat' ? (
+                  <AvailabilityPreview entries={entries} availableDays={availableDays} />
+                ) : (
+                  <InlineTextButton
+                    onClick={e => {
+                      e.preventDefault();
+                      setIsOneTimeScheduleModalOpen(true);
+                    }}
+                  >
+                    <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
+                  </InlineTextButton>
+                )}
               </div>
               <div>
                 <div className={css.priceValue} title={priceTitle}>

@@ -1,0 +1,42 @@
+.checkbox {
+  padding: 2rem 0;
+}
+
+.currencyContainer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.currencyInput {
+  display: flex;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  font-size: 40px;
+  margin-inline: 20%;
+}
+
+.currencyRoot {
+  display: flex;
+  width: 60%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nextButton {
+  composes: marketplaceButtonStyles from global;
+  margin-top: 5rem;
+}
+
+.scheduleSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-block: 1rem;
+}
+
+.title {
+  composes: marketplaceModalTitleStyles from global;
+}
