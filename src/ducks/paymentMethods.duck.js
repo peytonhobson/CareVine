@@ -274,17 +274,14 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .then(response => {
         const stripeCustomer = response.data.data;
         dispatch(stripeCustomerCreateSuccess(response));
-        return sdk.ownListings.query({ include: ['author'] }).then(res => {
-          // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
-          return stripeUpdateCustomer({
-            stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
-            update: {
-              address: {
-                // postal_code,
-                country: 'US',
-              },
+        return stripeUpdateCustomer({
+          stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
+          update: {
+            address: {
+              // postal_code,
+              country: 'US',
             },
-          });
+          },
         });
       })
       .catch(e => {
@@ -294,19 +291,16 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
   } else {
     return sdk.stripeCustomer
       .create({}, { expand: true })
-      .then(response => {
-        return sdk.ownListings.query({}).then(res => {
-          // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
-          console.log(res);
-          return stripeUpdateCustomer({
-            stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
-            params: {
-              address: {
-                // postal_code,
-                country: 'US',
-              },
+      .then(res => {
+        const stripeCustomerId = res.data?.data?.attributes?.stripeCustomerId;
+        return stripeUpdateCustomer({
+          stripeCustomerId,
+          params: {
+            address: {
+              // postal_code,
+              country: 'US',
             },
-          });
+          },
         });
       })
       .then(response => {

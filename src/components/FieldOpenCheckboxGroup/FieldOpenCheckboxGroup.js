@@ -12,9 +12,9 @@ const OpenCheckboxGroup = props => {
   const additionalValues = input.value && input.value.additional;
   const providedValues = input.value && input.value.provided;
 
-  useEffect(() => {
-    input.onChange({ additional: [], provided: [] });
-  }, []);
+  // useEffect(() => {
+  //   input.onChange({ additional: [], provided: [] });
+  // }, []);
 
   const handleAddOption = () => {
     const additional = additionalValues ? additionalValues : [];

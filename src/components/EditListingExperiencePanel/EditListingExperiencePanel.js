@@ -8,6 +8,7 @@ import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
 import { EditListingExperienceForm } from '../../forms';
 import { findOptionsForSelectFilter } from '../../util/search';
+import config from '../../config';
 
 import css from './EditListingExperiencePanel.module.css';
 
@@ -104,6 +105,7 @@ EditListingExperiencePanel.defaultProps = {
   rootClassName: null,
   className: null,
   listing: null,
+  filterConfig: config.custom.filters,
 };
 
 const { bool, func, object, string, shape } = PropTypes;

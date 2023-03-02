@@ -6,23 +6,9 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import {
-  requiredFieldArrayCheckbox,
-  requiredFieldArrayRadio,
-  required,
-  maxLength,
-  minLength,
-  composeValidators,
-} from '../../util/validators';
+import { requiredFieldArrayRadio } from '../../util/validators';
 import config from '../../config';
-import {
-  Form,
-  Button,
-  FieldCheckboxGroup,
-  FieldRadioButtonGroup,
-  FieldTextInput,
-  FieldSelect,
-} from '../../components';
+import { Form, Button, FieldRadioButtonGroup, FieldSelect } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
 
 import css from './EditListingAddCareRecipientForm.module.css';

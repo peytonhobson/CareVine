@@ -43,6 +43,8 @@ const EditListingAdditionalDetailsFormComponent = props => (
         updateInProgress,
         filterConfig,
         fetchErrors,
+        values,
+        initialValues,
       } = formRenderProps;
 
       // Certifications and Training
@@ -143,7 +145,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
             name={covidVaccinationName}
             options={covidVaccinationOptions}
             label={covidVaccinationLabel}
-            required={true}
+            required
             validate={requiredFieldArrayRadio(errorVaccineNotSelected)}
           />
           <FieldOpenCheckboxGroup
