@@ -112,6 +112,7 @@ export const EditListingLocationFormComponent = props => (
               inputClassName={css.locationAutocompleteInput}
               predictionsClassName={css.predictionsRoot}
               validClassName={css.validLocation}
+              rootClassName={css.locationAutocompleteRoot}
               name="location"
               label={addressTitleRequiredMessage}
               placeholder={addressPlaceholderMessage}
@@ -131,6 +132,8 @@ export const EditListingLocationFormComponent = props => (
           {userType === CAREGIVER && (
             <FieldAddSubtract
               id={formId ? `${formId}.travelDistance` : 'travelDistance'}
+              rootClassName={css.travelDistance}
+              buttonClassName={css.travelDistanceButton}
               name="travelDistance"
               startingCount={values.travelDistance}
               countLabel={distanceCountLabel}

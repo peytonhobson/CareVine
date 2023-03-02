@@ -75,7 +75,8 @@ const FieldSelectComponent = props => {
     <div className={classes}>
       {label ? (
         <label htmlFor={id}>
-          {label} {required && <span className={css.error}>*</span>}{' '}
+          {label}
+          {required && <span className={css.error}>*</span>}{' '}
         </label>
       ) : null}
       <select {...selectProps}>{children}</select>

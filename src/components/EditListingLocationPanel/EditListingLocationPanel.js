@@ -35,18 +35,19 @@ class EditListingLocationPanel extends Component {
     const travelDistanceFieldPresent = publicData && publicData.travelDistance;
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
 
-    const nearBusLine = publicData && publicData.nearBusLine ? publicData.nearBusLine : null;
+    const nearPublicTransit =
+      publicData && publicData.nearPublicTransit ? publicData.nearPublicTransit : null;
     const residenceType = publicData && publicData.residenceType ? publicData.residenceType : null;
 
     return {
       location: locationFieldsPresent
         ? {
             search: address.fullAddress,
-            selectedPlace: { address, origin: geolocation },
+            selectedPlace: { address: address.fullAddress, origin: geolocation },
           }
         : null,
       travelDistance: travelDistanceFieldPresent ? travelDistance : 15,
-      nearBusLine,
+      nearPublicTransit: nearPublicTransit ? ['nearPublicTransit'] : [],
       residenceType,
     };
   }

@@ -18,9 +18,13 @@
 .weekDay {
   composes: marketplaceTabNavHorizontalFontStyles from global;
   display: flex;
-  /* justify-content: space-between; */
+  justify-content: space-between;
   flex-direction: row;
   padding: 24px 24px 23px 24px;
+
+  @media (--viewportMedium) {
+    justify-content: flex-start;
+  }
 }
 
 .blockedWeekDay {
@@ -59,6 +63,6 @@
   }
 
   .dayOfWeek {
-    width: 200px;
+    width: 12.5rem;
   }
 }

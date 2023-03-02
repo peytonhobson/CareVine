@@ -16,9 +16,9 @@
 :root {
   /* ================ Colors ================ */
 
-  --marketplaceColor: #77a08a;
+  --marketplaceColor: #6ba0b6;
   --marketplaceColorLight: #74ad8a;
-  --marketplaceColorDark: #043c2c;
+  --marketplaceColorDark: #5684a3;
 
   /* Used with inline CSS SVGs */
   --marketplaceColorEncoded: %230095b3;
@@ -55,22 +55,22 @@
   /* ================ Spacing unites ================ */
 
   /* Multiples of mobile and desktop spacing units should be used with margins and paddings. */
-  --spacingUnit: 6px;
-  --spacingUnitDesktop: 8px;
+  --spacingUnit: 0.375rem;
+  --spacingUnitDesktop: 0.5rem;
 
   /* Shadows */
-  --boxShadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowTop: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowLight: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-  --boxShadowPopup: 0 8px 16px 0 rgba(0, 0, 0, 0.3);
-  --boxShadowPopupLight: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
-  --boxShadowBreakdown: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
-  --boxShadowButton: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowListingCard: 0 0 50px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowNotFoundPageSearch: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  --boxShadowSectionLocationHover: 0 10px 30px 0 rgba(0, 0, 0, 0.1);
-  --boxShadowBottomForm: 0 -2px 4px 0 rgba(0, 0, 0, 0.05);
-  --boxShadowFilterButton: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+  --boxShadow: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.1);
+  --boxShadowTop: 0 -0.125rem 0.25rem 0 rgba(0, 0, 0, 0.1);
+  --boxShadowLight: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.05);
+  --boxShadowPopup: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
+  --boxShadowPopupLight: 0 0.188rem 0.375rem 0 rgba(0, 0, 0, 0.2);
+  --boxShadowBreakdown: 0 0.188rem 0.375rem 0 rgba(0, 0, 0, 0.2);
+  --boxShadowButton: 0 0.25rem 0.5rem 0 rgba(0, 0, 0, 0.1);
+  --boxShadowListingCard: 0 0 3.125rem 0 rgba(0, 0, 0, 0.1);
+  --boxShadowNotFoundPageSearch: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.5);
+  --boxShadowSectionLocationHover: 0 0.625rem 1.875rem 0 rgba(0, 0, 0, 0.1);
+  --boxShadowBottomForm: 0 -0.125rem 0.25rem 0 rgba(0, 0, 0, 0.05);
+  --boxShadowFilterButton: 0 0.25rem 1rem 0 rgba(0, 0, 0, 0.2);
 
   /* ================ Z-index base levels ================ */
 
@@ -85,8 +85,8 @@
 
   /* ================ Border radius ================ */
 
-  --borderRadius: 2px;
-  --borderRadiusMobileSearch: 3px;
+  --borderRadius: 0.125rem;
+  --borderRadiusMobileSearch: 0.188rem;
 
   /* ================ Transition styles ================ */
 
@@ -97,6 +97,8 @@
 
   --topbarHeight: 3.75rem;
   --topbarHeightDesktop: 4.5rem;
+
+  --userNavHeight: 3.563rem;
 
   --TopbarMobileMenu_topMargin: 6rem;
 
@@ -119,16 +121,16 @@
   /* Google Maps needs 72px bottom padding to accommodate logo, Mapbox doesn't have one */
   --locationAutocompleteBottomPadding: 0.5rem;
 
-  --LocationAutocompleteInput_inputHeight: 50px;
-  --LocationAutocompleteInput_sidePaddingDesktop: 36px;
-  --LocationAutocompleteInput_widthDesktopLocationForm: 300px;
-  --LocationAutocompleteInputIcon_widthDesktopLocationForm: 400px;
+  --LocationAutocompleteInput_inputHeight: 3.125rem;
+  --LocationAutocompleteInput_sidePaddingDesktop: 2.25rem;
+  --LocationAutocompleteInput_widthDesktopLocationForm: 18.75rem;
+  --LocationAutocompleteInputIcon_widthDesktopLocationForm: 25rem;
 
   /* ================ Filters ================ */
-  --marketplaceButtonSmallDesktopPadding: 9px 16px 9px 16px;
+  --marketplaceButtonSmallDesktopPadding: 0.563rem 1rem 0.563rem 1rem;
 
   /* ================ DateInput, DateRangeInput, DateRangeController ================ */
-  --ReactDates_selectionHeight: 36px;
+  --ReactDates_selectionHeight: 2.25rem;
   --ReactDates_hoveredOverlayColor: rgba(255, 255, 255, 0.2);
 
   --DateInput_selectionHeight: var(--ReactDates_selectionHeight);
@@ -139,15 +141,15 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 625px;
+  --SectionHero_desktopTitleMaxWidth: 39.063rem;
 
   /* ================ TabNav ================ */
-  --TabNav_linkWidth: 240px;
+  --TabNav_linkWidth: 15rem;
 
   /* ================ LandingPage ================ */
-  --LandingPage_sectionMarginTop: 40px;
-  --LandingPage_sectionMarginTopMedium: 60px;
-  --LandingPage_sectionMarginTopLarge: 94px;
+  --LandingPage_sectionMarginTop: 2.5rem;
+  --LandingPage_sectionMarginTopMedium: 3.75rem;
+  --LandingPage_sectionMarginTopLarge: 5.875rem;
 
   /* ================ EditListingAvailabilityForm, ManageAvailabilityCalendar ================ */
   --ManageAvailabilityCalendar_gridColor: #e0e0e0;
@@ -160,8 +162,8 @@
   --ManageAvailabilityCalendar_failedColor: #fff2f2;
 
   /* ================ ProfileSettingsForm ================ */
-  --ProfileSettingsForm_avatarSize: 96px;
-  --ProfileSettingsForm_avatarSizeDesktop: 240px;
+  --ProfileSettingsForm_avatarSize: 6rem;
+  --ProfileSettingsForm_avatarSizeDesktop: 15rem;
 }
 
 /* ================ Global element styles ================ */
@@ -254,71 +256,71 @@ h2,
 h3,
 .h3 {
   font-weight: var(--fontWeightSemiBold);
-  font-size: 18px;
-  line-height: 24px;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 16px;
-  margin-bottom: 14px;
+  margin-top: 1rem;
+  margin-bottom: 0.875rem;
 
   @media (--viewportMedium) {
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
 
 h4,
 .h4 {
   font-weight: var(--fontWeightMedium);
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 0.938rem;
+  line-height: 1.5rem;
   letter-spacing: 0;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightMedium);
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 17px;
-    margin-bottom: 15px;
+    margin-top: 1.063rem;
+    margin-bottom: 0.938rem;
   }
 }
 
 h5,
 .h5 {
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
   letter-spacing: 0;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 10px;
-  margin-bottom: 8px;
+  margin-top: 0.625rem;
+  margin-bottom: 0.5rem;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 10px;
-    margin-bottom: 14px;
+    margin-top: 0.625rem;
+    margin-bottom: 0.875rem;
   }
 }
 
 h6,
 .h6 {
   font-weight: var(--fontWeightBold);
-  font-size: 12px;
-  line-height: 18px;
-  letter-spacing: 1.5px;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  letter-spacing: 0.094rem;
   text-transform: uppercase;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 10px;
-  margin-bottom: 8px;
+  margin-top: 0.625rem;
+  margin-bottom: 0.5rem;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 10px;
-    margin-bottom: 6px;
+    margin-top: 0.625rem;
+    margin-bottom: 0.375rem;
   }
 }
 
@@ -327,19 +329,19 @@ pre,
 .marketplaceBodyFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.1px;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.006rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 12px;
-  margin-bottom: 12px;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 
   @media (--viewportMedium) {
-    font-size: 16px;
-    line-height: 32px;
+    font-size: 1rem;
+    line-height: 2rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
 
@@ -348,14 +350,14 @@ li,
 .marketplaceDefaultFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.1px;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.006rem;
   /* No margins for default font */
 
   @media (--viewportMedium) {
-    font-size: 16px;
-    line-height: 32px;
+    font-size: 1rem;
+    line-height: 2rem;
   }
 }
 
@@ -376,10 +378,6 @@ ul {
 legend,
 label {
   display: block;
-
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 14px;
-  line-height: 18px;
   letter-spacing: 0;
 
   margin-top: 0;
@@ -387,11 +385,11 @@ label {
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
-    line-height: 16px;
+    line-height: 1rem;
     margin-top: 0;
     margin-bottom: 0;
-    padding-top: 6px;
-    padding-bottom: 2px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.125rem;
   }
 }
 
@@ -405,14 +403,14 @@ input,
 textarea {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 16px;
-  line-height: 24px;
-  letter-spacing: -0.1px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.006rem;
   /* No margins for default font */
 
   @media (--viewportMedium) {
-    font-size: 16px;
-    line-height: 32px;
+    font-size: 1rem;
+    line-height: 2rem;
   }
 }
 
@@ -421,21 +419,21 @@ select {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 5px 0 5px 0;
+  padding: 0.313rem 0 0.313rem 0;
 
   /* Unset user agent styles */
   appearance: none;
 
   /* Borders */
   border: none;
-  border-bottom-width: 2px;
+  border-bottom-width: 0.125rem;
   border-bottom-style: solid;
   border-bottom-color: var(--marketplaceColor);
   border-radius: 0;
 
   /* Background */
   background-image: url('data:image/svg+xml;utf8,<svg width="14" height="9" viewBox="0 0 14 9" xmlns="http://www.w3.org/2000/svg"><path d="M6.53 7.472c.26.26.68.26.94 0l5.335-5.333c.26-.263.26-.684 0-.944-.26-.26-.683-.26-.943 0L7 6.056l-4.862-4.86c-.26-.26-.683-.26-.943 0-.26.26-.26.68 0 .943L6.53 7.47z" stroke="%234A4A4A" fill="%234A4A4A" fill-rule="evenodd"/></svg>');
-  background-size: 16px 16px;
+  background-size: 1rem 1rem;
   background-position: center right;
 
   /* Effects */
@@ -444,7 +442,7 @@ select {
   transition: border-bottom-color var(--transitionStyle);
 
   @media (--viewportMedium) {
-    padding: 4px 0 2px 0;
+    padding: 0.25rem 0 0.125rem 0;
   }
 }
 select:hover,
@@ -459,11 +457,11 @@ input,
   display: block;
   width: 100%;
   margin: 0;
-  padding: 5px 0 5px 0;
+  padding: 0.313rem 0 0.313rem 0;
 
   /* Borders */
   border: none;
-  border-bottom-width: 2px;
+  border-bottom-width: 0.125rem;
   border-bottom-style: solid;
   border-bottom-color: var(--marketplaceColor);
   border-radius: 0;
@@ -477,7 +475,7 @@ input,
   transition: border-bottom-color var(--transitionStyle);
 
   @media (--viewportMedium) {
-    padding: 4px 0 2px 0;
+    padding: 0.25rem 0 0.125rem 0;
   }
 }
 
@@ -486,11 +484,11 @@ textarea {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 5px 0 5px 0;
+  padding: 0.313rem 0 0.313rem 0;
 
   /* Borders */
   border: none;
-  border-bottom-width: 2px;
+  border-bottom-width: 0.125rem;
   border-bottom-style: solid;
   border-radius: 0;
 
@@ -503,7 +501,7 @@ textarea {
   transition: border-color var(--transitionStyle);
 
   @media (--viewportMedium) {
-    padding: 4px 0 2px 0;
+    padding: 0.25rem 0 0.125rem 0;
   }
 }
 
@@ -772,8 +770,8 @@ textarea {
 .buttonFont {
   font-family: 'poppins', Helvetica, Arial, sans-serif;
   font-weight: var(--fontWeightSemiBold);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   letter-spacing: 0.2px;
 }
 

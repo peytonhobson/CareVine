@@ -16,15 +16,23 @@
 }
 
 .formMargins {
-  margin-bottom: 24px;
+  margin-bottom: 2.5rem;
 
   @media (--viewportMedium) {
-    margin-bottom: 32px;
+    margin-bottom: 3rem;
   }
 }
 
 .error {
   color: var(--failColor);
+}
+
+.travelDistance {
+  margin-top: 2rem;
+}
+
+.travelDistanceButton {
+  padding: 0.5rem 1rem;
 }
 
 .locationAutocompleteInput {
@@ -60,7 +68,7 @@
   position: absolute;
   width: 100%;
   /* padding-bottom: var(--locationAutocompleteBottomPadding); */
-  top: 36px;
+  top: 2rem;
   left: 0;
   background-color: var(--marketplaceColor);
   border-bottom-left-radius: var(--borderRadius);
@@ -85,15 +93,24 @@
 .locationAddress,
 .building {
   flex-shrink: 0;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 
   @media (--viewportMedium) {
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
+  }
+}
+
+.locationAutocompleteRoot {
+  margin-top: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }
 
 .submitButton {
-  margin-top: auto;
+  margin-top: 5rem;
   margin-bottom: 24px;
 
   @media (--viewportLarge) {

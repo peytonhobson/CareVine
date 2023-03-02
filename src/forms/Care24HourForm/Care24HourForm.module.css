@@ -1,7 +1,7 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
-  padding: 20px 0 0 0;
+  padding: 1.25rem 0 0 0;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -11,24 +11,38 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  margin-top: 4rem;
+
+  @media (--viewportMedium) {
+    margin-top: 2rem;
+  }
 }
 
 .buttonRowContainer {
   display: flex;
-  padding-block: 20px;
+  padding-block: 1.25rem;
   justify-content: center;
 }
 
 .weekdayButton {
-  composes: buttonFont buttonText buttonColorsSecondary from global;
+  composes: buttonColorsSecondary from global;
 
-  border: 1px solid var(--marketplaceColor);
+  border: 0.063rem solid var(--marketplaceColor);
   min-height: 0;
 
   border-radius: 100%;
 
-  width: 8rem;
-  height: 5rem;
+  width: 6rem;
+  height: 4rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+
+  @media (--viewportMedium) {
+    width: 8rem;
+    height: 5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 
   /* Clear padding that is set for link elements looking like buttons */
   padding: 0;
@@ -52,8 +66,17 @@
 
   border-radius: 100%;
 
-  width: 8rem;
-  height: 5rem;
+  width: 6rem;
+  height: 4rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+
+  @media (--viewportMedium) {
+    width: 8rem;
+    height: 5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 
   /* Clear padding that is set for link elements looking like buttons */
   padding: 0;
@@ -68,18 +91,19 @@
 
 .checkbox {
   display: flex;
-  margin-top: 20px;
+  margin-top: 1.25rem;
   width: 100%;
   justify-content: center;
 }
 
 .submitButton {
   margin-top: auto;
-  margin-bottom: 24px;
+  margin-bottom: 4rem;
+  margin-top: 2.5rem;
 
   @media (--viewportLarge) {
     display: inline-block;
-    margin-top: 40px;
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -101,7 +125,7 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 600px;
+  max-width: 37.5rem;
 }
 
 .hoursPerDayContainer {
@@ -114,8 +138,8 @@
 .hoursPerDayInput {
   display: flex;
   text-align: center;
-  padding: 5px 0 5px 0;
-  font-size: 40px;
+  padding: 0.313rem 0 0.313rem 0;
+  font-size: 2.5rem;
   margin-inline: 30%;
 }
 
@@ -130,6 +154,15 @@
   justify-content: center;
   flex-wrap: nowrap;
   width: 100%;
+  margin-top: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.hoursPerDayLabel {
+  text-align: center;
 }
 
 .exceptionsContainer {

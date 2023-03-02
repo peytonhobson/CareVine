@@ -6,11 +6,14 @@ import { types as sdkTypes, transit } from './sdkLoader';
 import config from '../config';
 import Decimal from 'decimal.js';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 export const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
   const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
 
   // In development, the dev API server is running in a different port
+
   if (useDevApiServer) {
     return `http://localhost:${port}`;
   }
@@ -236,7 +239,7 @@ export const authenticateEnrollTCM = body => {
 };
 
 export const stripeCreateSubscription = body => {
-  return post('/api/stripe-create-subscription', body);
+  return post('/api/stripe-create-subscription/', body);
 };
 
 export const stripeUpdateCustomer = body => {

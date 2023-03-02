@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   display: flex;
   justify-content: center;
@@ -5,13 +7,19 @@
 }
 
 .consentTextWrapper {
-  width: 60rem;
-  height: 20rem;
   border: 3px solid var(--matterColorDark);
   overflow: scroll;
   padding: 1rem;
   margin-top: 10px;
   margin-bottom: 40px;
+
+  width: 100%;
+  height: 50vh;
+
+  @media (--viewportLarge) {
+    width: 60rem;
+    height: 20rem;
+  }
 }
 
 .modalTitle {

@@ -63,7 +63,7 @@ class AddSubtractComponent extends Component {
     const subtract = () => {
       this.setState(state => {
         const newCount =
-          state.currentCount > (min || 100)
+          state.currentCount > (min || 0)
             ? state.currentCount - countIncrement
             : state.currentCount;
 

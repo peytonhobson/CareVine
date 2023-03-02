@@ -86,7 +86,7 @@ const EditListingExperiencePanel = props => {
             publicData: {
               experienceLevel,
               experienceAreas: experienceAreas.filter(area =>
-                findOptionsForSelectFilter('experienceAreas', filterConfig).find(
+                findOptionsForSelectFilter('detailedCareNeeds', filterConfig)?.find(
                   el => el.key === area
                 )
               ),

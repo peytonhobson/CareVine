@@ -1,3 +1,5 @@
+@import '../../../styles/customMediaQueries.css';
+
 .root {
   display: flex;
   justify-content: center;
@@ -39,7 +41,7 @@
 .exceptions {
   display: flex;
   flex-direction: row;
-  flex-basis: 50%;
+  flex-basis: 80%;
   flex-wrap: wrap;
   border-top: solid 1px var(--matterColorNegative);
   border-right: solid 1px var(--matterColorNegative);
@@ -50,6 +52,10 @@
 
   & > .exception {
     border-bottom: solid 1px var(--matterColorNegative);
+  }
+
+  @media (--viewportMedium) {
+    flex-basis: 50%;
   }
 }
 
@@ -144,6 +150,17 @@
   background-color: var(--matterColorBright);
 }
 
+.goToNextTabButton {
+  margin-top: auto;
+  margin-bottom: 4rem;
+  margin-top: 2.5rem;
+
+  @media (--viewportLarge) {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+}
+
 @media (--viewportMedium) {
   .sectionHeader {
     padding-top: 3px;
@@ -216,14 +233,13 @@
   display: flex;
   width: 100%;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 1.25rem;
 }
 
 .scheduleExceptionsContainer {
   display: flex;
   width: 100%;
   justify-content: center;
-  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 

@@ -29,6 +29,8 @@ const weekdayButtons = [
   { day: 'sun', label: 'Sunday' },
 ];
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const formatHours = value => {
   // if input value is falsy eg if the user deletes the input, then just return
   if (!value) return value;
@@ -96,7 +98,7 @@ const Care24HourFormComponent = props => {
   };
 
   const hoursPerDayLabel = (
-    <h2>
+    <h2 className={css.hoursPerDayLabel}>
       How many hours will they be working per day?<span className={css.error}>*</span>
     </h2>
   );
@@ -155,10 +157,10 @@ const Care24HourFormComponent = props => {
         onSubmit={() => {}}
         keepDirtyOnReinitialize
       />
-      <h2>
-        <FormattedMessage id="Care24HourForm.whichCareDays" />
-      </h2>
       <div className={css.buttonContainer}>
+        <h2>
+          <FormattedMessage id="Care24HourForm.whichCareDays" />
+        </h2>
         <div className={css.buttonRowContainer}>
           {weekdayButtons.map((button, index) => {
             if (index < 4) {

@@ -9,33 +9,34 @@
   & :global(.SingleDatePicker_picker__directionLeft) {
     /* !important is added to top because react-dates uses inline style for height */
     /* Similar problem as in issue: https://github.com/airbnb/react-dates/issues/947 */
-    top: 36px !important;
+    top: 2rem !important;
     width: 100%;
-    min-height: calc(100vh - 252px);
+    min-height: 0 !important;
+    /* min-height: auto; */
     background-color: var(--marketplaceColor);
 
     @media (--viewportMedium) {
       /* !important is added to top because react-dates uses inline style for height */
       /* Similar problem as in issue: https://github.com/airbnb/react-dates/issues/947 */
-      top: 40px !important;
+      top: 2.5rem !important;
       min-height: auto;
       box-shadow: var(--boxShadowPopup);
-      border-radius: 0 0 2px 2px;
+      border-radius: 0 0 0.125rem 0.125rem;
     }
   }
 
   & :global(.DateInput_input) {
     font-family: var(--fontFamily);
     font-weight: var(--fontWeightMedium);
-    font-size: 16px;
-    line-height: 24px;
-    letter-spacing: -0.1px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.006rem;
 
     /* Dimensions */
     display: block;
     width: 100%;
     margin: 0;
-    padding: 5px 0 5px 0;
+    padding: 0.313rem 0 0.313rem 0;
 
     /* Borders */
     border: none;
@@ -49,17 +50,17 @@
     background: none;
     background-image: url('data:image/svg+xml;utf8,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g stroke="%234A4A4A" transform="translate(1 1)"><rect stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" x=".292" y="1.459" width="13.417" height="12.25" rx="1"/><path d="M3.208.292V3.21M10.792.292V3.21M.292 4.376h13.416" stroke-linecap="round" stroke-linejoin="round"/><rect x="3.5" y="6.5" width="1" height="1" rx=".5"/><rect x="6.5" y="6.5" width="1" height="1" rx=".5"/><rect x="9.5" y="6.5" width="1" height="1" rx=".5"/><rect x="3.5" y="9.5" width="1" height="1" rx=".5"/><rect x="6.5" y="9.5" width="1" height="1" rx=".5"/><rect x="9.5" y="9.5" width="1" height="1" rx=".5"/></g></g></svg>');
     background-repeat: no-repeat;
-    background-position: 0 10px;
-    padding-left: 24px;
+    background-position: 0 0.625rem;
+    padding-left: 1.5rem;
 
     &::placeholder {
       color: var(--matterColorAnti);
     }
 
     @media (--viewportMedium) {
-      line-height: 32px;
-      padding: 4px 0 1px 26px;
-      border-bottom-width: 3px;
+      line-height: 2rem;
+      padding: 0.25rem 0 0.063rem 1.625rem;
+      border-bottom-width: 0.188rem;
     }
   }
 
@@ -88,18 +89,18 @@
   }
 
   & :global(.DayPickerNavigation_button__horizontal) {
-    padding: 6px 9px;
-    top: 16px;
+    padding: 0.375rem 0.563rem;
+    top: 1rem;
     position: absolute;
     cursor: pointer;
     display: inline;
 
     &:first-of-type {
-      left: 24px;
+      left: 1.5rem;
     }
 
     &:last-of-type {
-      right: 24px;
+      right: 1.5rem;
     }
   }
 
@@ -118,7 +119,7 @@
   }
   & :global(.DayPicker_weekHeader) {
     color: var(--matterColorLight);
-    top: 57px;
+    top: 3.563rem;
   }
 
   & :global(.DayPicker_weekHeader_li) {
@@ -127,14 +128,14 @@
 
   & :global(.CalendarMonth_caption) {
     font-weight: 400;
-    font-size: 21px;
-    line-height: 24px;
+    font-size: 1.313rem;
+    line-height: 1.5rem;
     color: var(--matterColorLight);
 
-    margin: 1px 0 14px;
+    margin: 0.063rem 0 0.875rem;
 
     @media (--viewportMedium) {
-      line-height: 32px;
+      line-height: 2rem;
       margin-top: 0;
       margin-bottom: 0;
     }
@@ -149,8 +150,8 @@
   }
   & :global(.CalendarDay) {
     font-weight: var(--fontWeightMedium);
-    font-size: 15px;
-    line-height: 24px;
+    font-size: 0.938rem;
+    line-height: 1.5rem;
     letter-spacing: 0;
 
     color: var(--matterColorLight);
@@ -173,7 +174,7 @@
     width: 100%;
     height: var(--DateInput_selectionHeight);
     background-image: url("data:image/svg+xml;utf8,<svg width='14' height='2' viewBox='0 0 14 2' xmlns='http://www.w3.org/2000/svg'><path d='M0 0h14v2H0z' fill='%23FFF' fill-rule='evenodd'/></svg>");
-    background-position: center 28px;
+    background-position: center 1.75rem;
   }
 
   /* Remove default bg-color and use our extra span instead '.renderedDay' */
@@ -265,20 +266,20 @@
   & :global(.DateInput_input__disabled) {
     font-family: var(--fontFamily);
     font-weight: var(--fontWeightMedium);
-    font-size: 16px;
-    line-height: 24px;
-    letter-spacing: -0.1px;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.006rem;
 
     /* Dimensions */
     display: block;
     width: 100%;
     margin: 0;
-    padding: 5px 0 5px 24px;
+    padding: 0.313rem 0 0.313rem 1.5rem;
 
     /* Borders */
     border: none;
     border-bottom-style: solid;
-    border-bottom-width: 2px;
+    border-bottom-width: 0.125rem;
     border-bottom-color: var(--matterColorNegative);
     border-radius: 0;
 
@@ -289,16 +290,16 @@
     background: none;
     background-image: url('data:image/svg+xml;utf8,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g stroke="%23E6E6E6" transform="translate(1 1)"><rect stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" x=".292" y="1.459" width="13.417" height="12.25" rx="1"/><path d="M3.208.292V3.21M10.792.292V3.21M.292 4.376h13.416" stroke-linecap="round" stroke-linejoin="round"/><rect x="3.5" y="6.5" width="1" height="1" rx=".5"/><rect x="6.5" y="6.5" width="1" height="1" rx=".5"/><rect x="9.5" y="6.5" width="1" height="1" rx=".5"/><rect x="3.5" y="9.5" width="1" height="1" rx=".5"/><rect x="6.5" y="9.5" width="1" height="1" rx=".5"/><rect x="9.5" y="9.5" width="1" height="1" rx=".5"/></g></g></svg>');
     background-repeat: no-repeat;
-    background-position: 0 10px;
+    background-position: 0 0.625rem;
 
     &:hover {
       border-bottom-color: var(--matterColorNegative);
     }
 
     @media (--viewportMedium) {
-      line-height: 32px;
-      padding: 4px 0 9px 24px;
-      border-bottom-width: 3px;
+      line-height: 2rem;
+      padding: 0.25rem 0 0.563rem 1.5rem;
+      border-bottom-width: 0.188rem;
     }
   }
 
@@ -314,7 +315,7 @@
  */
 .withMobileMargins {
   & :global(.SingleDatePickerInput) {
-    width: calc(100vw - 48px);
+    width: calc(100vw - 3rem);
     margin: 0 24px;
 
     @media (--viewportMedium) {
@@ -328,12 +329,12 @@
     /* Similar problem as in issue: https://github.com/airbnb/react-dates/issues/947 */
     top: 34px !important;
     border-top: 2px solid var(--matterColorDark);
-    min-height: calc(100vh - 252px + 2px);
+    min-height: calc(100vh - 15.625rem);
 
     @media (--viewportMedium) {
       /* !important is added to top because react-dates uses inline style for height */
       /* Similar problem as in issue: https://github.com/airbnb/react-dates/issues/947 */
-      top: 40px !important;
+      top: 2.5rem !important;
       border-top: 0;
       min-height: auto;
     }

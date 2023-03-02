@@ -111,7 +111,7 @@ const EditListingAddCareRecipientFormComponent = props => (
           </h1>
           <FieldRadioButtonGroup
             rootClassName={css.radioRoot}
-            className={css.features}
+            className={css.formMargins}
             id={recipientRelationshipName}
             name={recipientRelationshipName}
             options={recipientRelationshipOptions}
@@ -121,7 +121,7 @@ const EditListingAddCareRecipientFormComponent = props => (
           />
           <FieldRadioButtonGroup
             rootClassName={css.radioRoot}
-            className={css.features}
+            className={css.formMargins}
             id={genderName}
             name={genderName}
             options={genderOptions}
