@@ -236,6 +236,10 @@ class LocationAutocompleteInputImpl extends Component {
     } else if (e.keyCode === KEY_CODE_ESC && this.input) {
       this.input.blur();
     }
+
+    if (!this.state.inputHasFocus) {
+      this.setState({ inputHasFocus: true });
+    }
   }
 
   // Handle input text change, fetch predictions if the value isn't empty

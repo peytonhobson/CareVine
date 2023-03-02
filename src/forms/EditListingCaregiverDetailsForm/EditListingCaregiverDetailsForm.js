@@ -170,7 +170,7 @@ const EditListingCaregiverDetailsFormComponent = props => (
             label={caregiverDetailsLabel}
           />
           <span className={css.characterCount}>
-            {values?.idealCaregiverDetails?.length}/{CAREGIVER_DETAILS_MAX_LENGTH} characters
+            {values?.idealCaregiverDetails?.length || 0}/{CAREGIVER_DETAILS_MAX_LENGTH} characters
           </span>
 
           {errorMessageUpdateListing}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -80,11 +80,13 @@ const EditListingAdditionalDetailsPanel = props => {
     },
   };
 
+  const [initialState, setInitialState] = useState(initialValues);
+
   const formProps = {
     className: css.form,
     onChange,
     disabled,
-    initialValues,
+    initialValues: initialState,
     ready,
     updated: panelUpdated,
     updateInProgress,
@@ -98,7 +100,7 @@ const EditListingAdditionalDetailsPanel = props => {
       <EditListingAdditionalDetailsForm
         {...formProps}
         saveActionMsg={submitButtonText}
-        required={true}
+        required
         onSubmit={values => {
           const {
             certificationsAndTraining,
@@ -115,6 +117,16 @@ const EditListingAdditionalDetailsPanel = props => {
               languagesSpoken: [...languagesSpoken.provided, ...languagesSpoken.additional],
             },
           };
+
+          setInitialState({
+            certificationsAndTraining,
+            additionalInfo,
+            covidVaccination,
+            languagesSpoken: {
+              provided: languagesSpoken.provided,
+              additional: languagesSpoken.additional,
+            },
+          });
 
           onSubmit(updatedValues);
         }}
