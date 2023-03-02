@@ -16,6 +16,7 @@ import {
   NotificationBadge,
   OwnListingLink,
 } from '../../components';
+import { CAREGIVER } from '../../util/constants';
 
 import css from './TopbarMobileMenu.module.css';
 
@@ -33,6 +34,8 @@ const TopbarMobileMenu = props => {
   } = props;
 
   const user = ensureCurrentUser(currentUser);
+
+  const userType = user?.attributes?.profile?.metadata?.userType;
 
   if (!isAuthenticated) {
     const signup = (
@@ -100,7 +103,7 @@ const TopbarMobileMenu = props => {
             params={{ tab: 'messages' }}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {notificationCountBadge}
+            {/* {notificationCountBadge} */}
           </NamedLink>
         ) : (
           <span
@@ -108,7 +111,7 @@ const TopbarMobileMenu = props => {
             onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {notificationCountBadge}
+            {/* {notificationCountBadge} */}
           </span>
         )}
         <OwnListingLink
@@ -116,12 +119,6 @@ const TopbarMobileMenu = props => {
           listingFetched={currentUserListingFetched}
           className={css.navigationLink}
         />
-        <NamedLink
-          className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}
-          name="ProfileSettingsPage"
-        >
-          <FormattedMessage id="TopbarMobileMenu.profileSettingsLink" />
-        </NamedLink>
         <NamedLink
           className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}
           name="AccountSettingsPage"
@@ -131,7 +128,11 @@ const TopbarMobileMenu = props => {
       </div>
       <div className={css.footer}>
         <NamedLink className={css.createNewListingLink} name="NewListingPage">
-          <FormattedMessage id="TopbarMobileMenu.newListingLink" />
+          {userType === CAREGIVER ? (
+            <FormattedMessage id="TopbarMobileMenu.newListingLinkCaregiver" />
+          ) : (
+            <FormattedMessage id="TopbarMobileMenu.newListingLinkEmployer" />
+          )}
         </NamedLink>
       </div>
     </div>

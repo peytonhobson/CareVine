@@ -17,14 +17,6 @@
   }
 }
 
-.features {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
-}
-
 .select {
   margin-top: 1.5rem;
   margin-bottom: 2.5rem;
@@ -36,11 +28,7 @@
 }
 
 .formMargins {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
+  margin-bottom: 2rem;
 }
 
 .textarea {
@@ -53,14 +41,15 @@
 }
 
 .submitButton {
-  margin-top: auto;
-  margin-bottom: 24px;
+  margin-top: 4rem;
+  margin-bottom: 2rem;
   flex-shrink: 0;
 
-  @media (--viewportLarge) {
+  @media (--viewportMedium) {
     display: inline-block;
     width: 241px;
     margin-top: 5rem;
+    margin-bottom: 0;
   }
 }
 

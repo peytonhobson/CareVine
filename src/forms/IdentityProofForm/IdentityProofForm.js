@@ -86,7 +86,7 @@ const IdentityProofFormComponent = props => (
                   key={index}
                   id={`question${index}`}
                   name={`question${index}`}
-                  label={question.Question}
+                  label={question.Question.trim()}
                   options={options}
                   required
                   validate={composeValidators(required('Please select an option'))}

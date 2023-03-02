@@ -14,10 +14,10 @@
 }
 
 .title {
-  margin-bottom: 19px;
+  margin-bottom: 3rem;
 
   @media (--viewportLarge) {
-    margin-bottom: 38px;
+    margin-bottom: 2.375rem;
     padding: 1px 0 7px 0;
   }
 }
@@ -66,7 +66,7 @@
 .recipients {
   display: flex;
   flex-wrap: wrap;
-  max-width: 600px;
+  flex-shrink: 1;
   border-top: solid 1px var(--matterColorNegative);
   border-right: solid 1px var(--matterColorNegative);
   border-left: solid 1px var(--matterColorNegative);
@@ -77,6 +77,10 @@
   & > .recipient {
     border-bottom: solid 1px var(--matterColorNegative);
   }
+
+  @media (--viewportMedium) {
+    max-width: 40rem;
+  }
 }
 
 .recipient {
@@ -84,22 +88,42 @@
   flex: 1;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px 12px 0px;
+
+  @media (--viewportMedium) {
+    padding: 12px 24px 12px 0px;
+  }
 }
 
 .recipientTraitsContainer {
   display: inline-grid;
-  width: 60%;
-  padding-left: 30px;
+  width: 55%;
   border-left: 1px solid var(--matterColorNegative);
+  padding-left: 1rem;
+
+  @media (--viewportMedium) {
+    padding-left: 2rem;
+  }
 }
 
 .recipientTrait {
   color: var(--matterColorAnti);
   white-space: nowrap;
+  font-size: 0.75rem;
+
+  @media (--viewportMedium) {
+    font-size: 1rem;
+  }
 }
 
 .recipientLabel {
+  font-size: 1rem;
+  margin-right: 1rem;
+  white-space: nowrap;
+
+  @media (--viewportMedium) {
+    font-size: 1.125rem;
+  }
+
   color: var(--marketplaceColor);
 }
 

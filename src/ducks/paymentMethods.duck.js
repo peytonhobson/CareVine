@@ -274,7 +274,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .then(response => {
         const stripeCustomer = response.data.data;
         dispatch(stripeCustomerCreateSuccess(response));
-        return sdk.ownListings.query({}).then(res => {
+        return sdk.ownListings.query({ include: ['author'] }).then(res => {
           // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
           return stripeUpdateCustomer({
             stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
@@ -297,6 +297,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
       .then(response => {
         return sdk.ownListings.query({}).then(res => {
           // const postal_code = res.data.data[0].attributes.publicData.location.zipcode;
+          console.log(res);
           return stripeUpdateCustomer({
             stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
             params: {

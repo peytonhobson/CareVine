@@ -1,5 +1,12 @@
+@import '../../styles/customMediaQueries.css';
+
 .section {
-  padding-block: 20px;
+  padding-block: 1.25rem;
+  padding-left: 2rem;
+
+  @media (--viewportMedium) {
+    padding-left: 0;
+  }
 }
 
 .error {

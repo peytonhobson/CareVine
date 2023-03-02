@@ -6,17 +6,21 @@
 .heading,
 .radioButtons,
 .submitButton {
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 
   @media (--viewportMedium) {
-    padding-left: 60px;
-    padding-right: 60px;
+    padding-left: 3.75rem;
+    padding-right: 3.75rem;
   }
 }
 
 .heading {
-  margin-bottom: 11px;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    margin-bottom: 0.625rem;
+  }
 }
 
 .radioButtons {
@@ -43,8 +47,6 @@
 
   @media (--viewportMedium) {
     margin-bottom: 40px;
-    /* padding-left: 60px;
-    padding-right: 60px; */
   }
 }
 
@@ -72,8 +74,7 @@
   display: flex;
   align-items: flex-end;
   position: relative;
-  width: 50%;
-  margin-inline: 20px;
+  margin-inline: 0.75rem;
 
   &:nth-child(2n) {
     margin-top: 12px;
@@ -81,6 +82,7 @@
 
   @media (--viewportMedium) {
     width: 50%;
+    margin-inline: 1.25rem;
 
     &:nth-child(2n) {
       margin-top: unset;

@@ -88,12 +88,12 @@ const CustomChannelHeader = props => {
             userId={userId}
             width={32}
           />
-          <label
+          <h2
             className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
             style={{ cursor: 'pointer' }}
           >
             {getChannelTitle(currentGroupChannel, userId)}
-          </label>
+          </h2>
         </NamedLink>
       ) : (
         <div className={css.listingLink}>
@@ -104,12 +104,12 @@ const CustomChannelHeader = props => {
             userId={userId}
             width={32}
           />
-          <label
+          <h2
             className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
             style={{ cursor: 'pointer' }}
           >
             {getChannelTitle(currentGroupChannel, userId)}
-          </label>
+          </h2>
         </div>
       )}
     </>

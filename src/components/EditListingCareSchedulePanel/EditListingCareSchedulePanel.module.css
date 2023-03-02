@@ -209,6 +209,7 @@
 
 .buttonGroupRoot {
   display: flex;
+  width: 100%;
   flex-wrap: nowrap;
   margin-block: 1rem;
   height: 3rem;
@@ -256,7 +257,7 @@
 .addSelectDateButton {
   composes: h4 from global;
   padding: 1px 0 5px 0;
-  margin: 0 0 24px 0;
+  margin: 0 0 1.5rem 0;
   display: flex;
   flex-grow: 1;
   flex-direction: row;

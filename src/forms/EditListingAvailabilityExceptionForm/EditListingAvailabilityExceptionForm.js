@@ -69,8 +69,8 @@ const sortExceptionsByStartTime = (a, b) => {
 
 // Convert exceptions list to inverted array of time-ranges that are available for new exceptions.
 const getAvailableTimeRangesForExceptions = (exceptions, timeZone, availability) => {
-  const nextBoundary = findNextBoundary(timeZone, TODAY);
-  const lastBoundary = endOfAvailabilityExceptionRange(timeZone, TODAY);
+  const nextBoundary = findNextBoundary(timeZone || 'America/Denver', TODAY);
+  const lastBoundary = endOfAvailabilityExceptionRange(timeZone || 'America/Denver', TODAY);
 
   const isAvailable = availability === 'available' || availability === 'care-needed';
 
@@ -96,7 +96,13 @@ const getAvailableTimeRangesForExceptions = (exceptions, timeZone, availability)
         ...exception,
         attributes: {
           start: new Date(exception.attributes.start.setHours(0, 0, 0, 0)),
-          end: new Date(resetToEndOfDay(exception.attributes.end.getTime(), timeZone, 5).getTime()),
+          end: new Date(
+            resetToEndOfDay(
+              exception.attributes.end.getTime(),
+              timeZone || 'America/Denver',
+              5
+            ).getTime()
+          ),
           seat: 0,
         },
       };

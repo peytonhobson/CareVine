@@ -58,7 +58,7 @@
 
 .submitButton {
   margin-top: 4rem;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
   flex-shrink: 0;
 
   @media (--viewportLarge) {

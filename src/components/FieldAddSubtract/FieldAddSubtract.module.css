@@ -4,18 +4,14 @@
 .fieldRoot {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 35%;
 }
 
 .button {
   margin-inline: 1.5rem;
-  width: 3rem;
   font-size: xx-large;
-  min-height: 3rem;
-  @media (--viewportMedium) {
-    min-height: 3rem;
-  }
+  min-height: 0;
+  padding: 1rem;
+  width: auto;
 }
 
 .count {

@@ -33,6 +33,14 @@
   composes: formMargins;
 
   /* max-width: 25rem; */
+
+  & > label {
+    font-size: 0.875rem;
+
+    @media (--viewportMedium) {
+      font-size: 1rem;
+    }
+  }
 }
 
 .submitButton {

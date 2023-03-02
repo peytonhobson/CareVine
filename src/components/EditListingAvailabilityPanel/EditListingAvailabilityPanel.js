@@ -83,10 +83,10 @@ const EditListingAvailabilityPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
   const submitDisabled =
-    selectedAvailabilityTypes?.length === 0 ||
-    !valuesFromLastSubmit ||
-    selectedAvailabilityTypes !== savedSelectedAvailabilityTypes ||
-    availabilityExceptions !== savedAvailabilityExceptions;
+    selectedAvailabilityTypes.length === 0 ||
+    (!valuesFromLastSubmit &&
+      selectedAvailabilityTypes === savedSelectedAvailabilityTypes &&
+      availabilityExceptions === savedAvailabilityExceptions);
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 

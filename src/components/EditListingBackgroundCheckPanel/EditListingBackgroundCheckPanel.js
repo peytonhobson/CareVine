@@ -284,10 +284,13 @@ const EditListingBackgroundCheckPanel = props => {
     };
 
     if (stage === CREATE_USER) {
-      onAuthenticateCreateUser(userInfo, currentUser.id.uuid);
+      onAuthenticateCreateUser(userInfo, currentUser.id.uuid).then(() =>
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      );
     } else if (stage === UPDATE_USER) {
       onAuthenticateUpdateUser(userInfo, authenticateUserAccessCode).then(() => {
         onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser.id.uuid);
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     }
   };
@@ -297,6 +300,7 @@ const EditListingBackgroundCheckPanel = props => {
     const userId = currentUser.id.uuid;
     onAuthenticateSubmitConsent(authenticateUserAccessCode, fullName, userId).then(() => {
       onGetIdentityProofQuiz(authenticateUserAccessCode, userId);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     });
   };
 
@@ -307,7 +311,7 @@ const EditListingBackgroundCheckPanel = props => {
       elements,
       userId,
     };
-    onCreatePayment(params);
+    onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
   };
 
   const handleIdentityQuizSubmit = answers => {
@@ -369,6 +373,7 @@ const EditListingBackgroundCheckPanel = props => {
               currentUser.id.uuid,
               backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
             );
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
           }}
         />
       );
@@ -573,7 +578,7 @@ const EditListingBackgroundCheckPanel = props => {
       {content}
       <Modal
         id="EditListingBackgroundCheckPanel.consentModal"
-        isOpen={stage === SUBMIT_CONSENT}
+        isOpen={stage === SUBMIT_CONSENT && !getIdentityProofQuizInProgress}
         onClose={() => {}}
         onManageDisableScrolling={onManageDisableScrolling}
         containerClassName={css.consentModal}

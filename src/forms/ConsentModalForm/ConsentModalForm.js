@@ -105,6 +105,7 @@ const ConsentModalForm = props => (
             <FieldCheckbox
               id="consent"
               name="consent"
+              value="consent"
               label="I agree to the above terms and conditions"
               className={css.consentCheckbox}
               textClassName={css.consentCheckboxText}
