@@ -28,6 +28,8 @@ import css from './Topbar.module.css';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const redirectToURLWithModalState = (props, modalStateParam) => {
   const { history, location } = props;
   const { pathname, search, state } = location;
@@ -205,47 +207,50 @@ class TopbarComponent extends Component {
           onLogout={this.handleLogout}
           currentPage={currentPage}
         />
-        <div className={classNames(mobileRootClassName || css.container, mobileClassName)}>
-          <Button
-            rootClassName={css.menu}
-            onClick={this.handleMobileMenuOpen}
-            title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
-          >
-            <MenuIcon className={css.menuIcon} />
-            {notificationDot}
-          </Button>
-          <NamedLink
-            className={css.home}
-            name="LandingPage"
-            title={intl.formatMessage({ id: 'Topbar.logoIcon' })}
-          >
-            <Logo format="mobile" />
-          </NamedLink>
-          <Button
-            rootClassName={css.searchMenu}
-            onClick={this.handleMobileSearchOpen}
-            title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
-          >
-            <SearchIcon className={css.searchMenuIcon} />
-          </Button>
-        </div>
-        <div className={css.desktop}>
-          <TopbarDesktop
-            className={desktopClassName}
-            currentUserHasListings={currentUserHasListings}
-            currentUserListing={currentUserListing}
-            currentUserListingFetched={currentUserListingFetched}
-            currentUser={currentUser}
-            currentPage={currentPage}
-            initialSearchFormValues={initialSearchFormValues}
-            intl={intl}
-            isAuthenticated={isAuthenticated}
-            notificationCount={notificationCount}
-            onLogout={this.handleLogout}
-            onSearchSubmit={this.handleSubmit}
-            onChangeModalValue={onChangeModalValue}
-          />
-        </div>
+        {isMobile ? (
+          <div className={classNames(mobileRootClassName || css.container, mobileClassName)}>
+            <Button
+              rootClassName={css.menu}
+              onClick={this.handleMobileMenuOpen}
+              title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
+            >
+              <MenuIcon className={css.menuIcon} />
+              {notificationDot}
+            </Button>
+            <NamedLink
+              className={css.home}
+              name="LandingPage"
+              title={intl.formatMessage({ id: 'Topbar.logoIcon' })}
+            >
+              <Logo format="mobile" />
+            </NamedLink>
+            <Button
+              rootClassName={css.searchMenu}
+              onClick={this.handleMobileSearchOpen}
+              title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
+            >
+              <SearchIcon className={css.searchMenuIcon} />
+            </Button>
+          </div>
+        ) : (
+          <div className={css.desktop}>
+            <TopbarDesktop
+              className={desktopClassName}
+              currentUserHasListings={currentUserHasListings}
+              currentUserListing={currentUserListing}
+              currentUserListingFetched={currentUserListingFetched}
+              currentUser={currentUser}
+              currentPage={currentPage}
+              initialSearchFormValues={initialSearchFormValues}
+              intl={intl}
+              isAuthenticated={isAuthenticated}
+              notificationCount={notificationCount}
+              onLogout={this.handleLogout}
+              onSearchSubmit={this.handleSubmit}
+              onChangeModalValue={onChangeModalValue}
+            />
+          </div>
+        )}
         <Modal
           id="TopbarMobileMenu"
           isOpen={isMobileMenuOpen}
