@@ -1,6 +1,114 @@
-/*
-If you need to add css to the Logo you can do it here.
-
-.logoMobile {
+.cls1 {
+  fill: none;
 }
-*/
+
+.cls2 {
+  fill: url(#linear-gradient);
+}
+
+.cls3 {
+  clip-path: url(#clippath);
+}
+
+.cls4,
+.cls5 {
+  fill: #6ba0b6;
+}
+
+.cls6 {
+  clip-path: url(#clippath-1);
+}
+
+.cls7 {
+  fill: url(#linear-gradient-13);
+}
+
+.cls7,
+.cls8,
+.cls9,
+.cls10,
+.cls11,
+.cls12,
+.cls13,
+.cls14,
+.cls15,
+.cls16,
+.cls17,
+.cls18,
+.cls19,
+.cls20 {
+  fill-rule: evenodd;
+}
+
+.cls8 {
+  fill: url(#linear-gradient-10);
+}
+
+.cls9 {
+  fill: url(#New_Gradient_Swatch_2);
+}
+
+.cls9,
+.cls10,
+.cls13,
+.cls14,
+.cls15,
+.cls16,
+.cls17,
+.cls18,
+.cls20 {
+  opacity: 0.8;
+}
+
+.cls10 {
+  fill: url(#linear-gradient-12);
+}
+
+.cls11 {
+  fill: #a8d982;
+}
+
+.cls21 {
+  fill: url(#linear-gradient-11);
+}
+
+.cls12 {
+  fill: url(#linear-gradient-4);
+}
+
+.cls13 {
+  fill: url(#linear-gradient-9);
+}
+
+.cls14 {
+  fill: url(#linear-gradient-8);
+}
+
+.cls15 {
+  fill: url(#linear-gradient-3);
+}
+
+.cls16 {
+  fill: url(#linear-gradient-5);
+}
+
+.cls17 {
+  fill: url(#linear-gradient-7);
+}
+
+.cls18 {
+  fill: url(#linear-gradient-6);
+}
+
+.cls19 {
+  fill: url(#linear-gradient-2);
+  opacity: 0.9;
+}
+
+.cls20 {
+  fill: url(#New_Gradient_Swatch_2-2);
+}
+
+.cls5 {
+  opacity: 0.95;
+}
