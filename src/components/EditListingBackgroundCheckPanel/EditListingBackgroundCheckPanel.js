@@ -213,7 +213,9 @@ const EditListingBackgroundCheckPanel = props => {
     } else if (authenticateConsent && !getIdentityProofQuizInProgress) {
       setStage(UPDATE_USER);
     } else if (authenticateUserAccessCode) {
-      setStage(SUBMIT_CONSENT);
+      if (!getIdentityProofQuizInProgress) {
+        setStage(SUBMIT_CONSENT);
+      }
     } else if (backgroundCheckSubscription && backgroundCheckSubscription.status === 'active') {
       setStage(CREATE_USER);
     } else if (createPaymentSuccess && stage === PAYMENT) {
@@ -578,7 +580,7 @@ const EditListingBackgroundCheckPanel = props => {
       {content}
       <Modal
         id="EditListingBackgroundCheckPanel.consentModal"
-        isOpen={stage === SUBMIT_CONSENT && !getIdentityProofQuizInProgress}
+        isOpen={stage === SUBMIT_CONSENT}
         onClose={() => {}}
         onManageDisableScrolling={onManageDisableScrolling}
         containerClassName={css.consentModal}
