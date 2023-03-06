@@ -24,6 +24,7 @@ export { default as EditListingPoliciesForm } from './EditListingPoliciesForm/Ed
 export { default as EditListingPricingForm } from './EditListingPricingForm/EditListingPricingForm';
 export { default as EmailVerificationForm } from './EmailVerificationForm/EmailVerificationForm';
 export { default as EnquiryForm } from './EnquiryForm/EnquiryForm';
+export { default as FeedbackForm } from './FeedbackForm/FeedbackForm';
 export { default as FilterForm } from './FilterForm/FilterForm';
 export { default as IdentityProofForm } from './IdentityProofForm/IdentityProofForm';
 export { default as LocationSearchForm } from './LocationSearchForm/LocationSearchForm';

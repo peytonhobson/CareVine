@@ -8,6 +8,14 @@ import css from './FieldTextInput.module.css';
 
 const CONTENT_MAX_LENGTH = 5000;
 
+const isIOS = () => {
+  return (
+    (/iPad|iPhone|iPod/.test(navigator.platform) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+    !window.MSStream
+  );
+};
+
 class FieldTextInputComponent extends Component {
   render() {
     /* eslint-disable no-unused-vars */
@@ -42,6 +50,22 @@ class FieldTextInputComponent extends Component {
     const hasError = !!customErrorText || !!(touched && invalid && error);
 
     const fieldMeta = { touched: hasError, error: errorText };
+
+    const getIOSInputEventHandlers = () => {
+      if (!isIOS()) {
+        return {};
+      }
+
+      return {
+        onTouchStart: e => {
+          e.currentTarget.style.fontSize = '16px';
+        },
+        onBlur: e => {
+          input.onBlur();
+          e.currentTarget.style.fontSize = '';
+        },
+      };
+    };
 
     // Textarea doesn't need type.
     const { type, ...inputWithoutType } = input;
@@ -87,7 +111,11 @@ class FieldTextInputComponent extends Component {
             {required && <span className={css.error}>*</span>}
           </label>
         ) : null}
-        {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
+        {isTextarea ? (
+          <ExpandingTextarea {...inputProps} {...getIOSInputEventHandlers()} />
+        ) : (
+          <input {...inputProps} {...getIOSInputEventHandlers()} />
+        )}
         <ValidationError fieldMeta={fieldMeta} />
       </div>
     );

@@ -42,6 +42,7 @@ export const LandingPageComponent = props => {
   const siteTitle = config.siteTitle;
   const schemaTitle = intl.formatMessage({ id: 'LandingPage.schemaTitle' }, { siteTitle });
   const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
+  // TODO: Need to change facebook and twitter photos
   const schemaImage = `${config.canonicalRootURL}${facebookImage}`;
 
   const { userType } = (currentUser && currentUser.attributes.profile.metadata) || EMPLOYER;

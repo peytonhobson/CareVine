@@ -70,7 +70,7 @@ export { default as ValidationError } from './ValidationError/ValidationError';
 // First components that include only atomic components //
 //////////////////////////////////////////////////////////
 
-export { default as Button, PrimaryButton, SecondaryButton, InlineTextButton, SocialLoginButton } from './Button/Button';
+export { default as Button, PrimaryButton, SecondaryButton, InlineTextButton, SocialLoginButton, GradientButton } from './Button/Button';
 export { default as ButtonGroup } from './ButtonGroup/ButtonGroup';
 export { default as CookieConsent } from './CookieConsent/CookieConsent';
 export { default as ImageCarousel } from './ImageCarousel/ImageCarousel';
@@ -99,6 +99,7 @@ export { default as ModalInMobile } from './ModalInMobile/ModalInMobile';
 
 // Fields (for Final Form)
 export { default as FieldBirthdayInput } from './FieldBirthdayInput/FieldBirthdayInput';
+export { default as FieldButtonGroup} from './FieldButtonGroup/FieldButtonGroup'
 export { default as FieldCheckbox } from './FieldCheckbox/FieldCheckbox';
 export { default as FieldCurrencyInput } from './FieldCurrencyInput/FieldCurrencyInput';
 export { default as FieldDateInput } from './FieldDateInput/FieldDateInput';

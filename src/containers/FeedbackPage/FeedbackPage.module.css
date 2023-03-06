@@ -1,0 +1,64 @@
+@import '../../styles/customMediaQueries.css';
+
+.mainTitle {
+  font-weight: var(--fontWeightBold);
+  font-size: 60px;
+  line-height: 60px;
+  letter-spacing: -0.7px;
+
+  margin-top: 1.5rem;
+
+  width: 100%;
+  text-align: center;
+  background: -webkit-linear-gradient(
+    90deg,
+    var(--marketplaceColorLight) 50%,
+    var(--marketplaceColor)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  @media (--viewportMedium) {
+    font-size: 80px;
+    line-height: 80px;
+    letter-spacing: -1.5px;
+
+    margin-top: 25px;
+  }
+}
+
+.mainWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.descriptionContainer {
+  padding: 0 3rem;
+
+  @media (--viewportMedium) {
+    padding: 0 0;
+    max-width: 50rem;
+  }
+}
+
+.continueButtonContainer {
+  padding: 2rem 3rem;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    max-width: 50rem;
+    padding: 4rem 0;
+  }
+}
+
+.feedbackFormContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+}
