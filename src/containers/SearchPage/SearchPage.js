@@ -252,23 +252,18 @@ const mapStateToProps = state => {
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
   const oppositeUserType = currentUserType === CAREGIVER ? EMPLOYER : CAREGIVER;
 
-  const distance = searchParams && searchParams.distance;
-  const origin = searchParams && searchParams.origin;
+  const distance = searchParams?.distance;
+  const origin = searchParams?.origin;
 
   const pageListings = getListingsById(state, currentPageResultIds)
+    .filter(listing => listing?.attributes?.metadata?.listingType === oppositeUserType)
     .filter(
       listing =>
-        listing &&
-        listing.attributes &&
-        listing.attributes.metadata &&
-        listing.attributes.metadata.listingType === oppositeUserType
-    )
-    .filter(
-      listing => calculateDistanceBetweenOrigins(origin, listing.attributes.geolocation) < distance
+        calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
     );
 
-  const sortByRelevant = searchParams && searchParams.sort === RELEVANT;
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
+  const sortByRelevant = searchParams?.sort === RELEVANT;
+  const userType = currentUser?.attributes?.profile?.metadata?.userType;
 
   const sortedListings =
     currentUserListing && sortByRelevant
