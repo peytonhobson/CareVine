@@ -1,13 +1,17 @@
 diff --git a/node_modules/sharetribe-scripts/config/sharetribeWebpackConfig.js b/node_modules/sharetribe-scripts/config/sharetribeWebpackConfig.js
-index c2c2d6c..087632a 100644
+index c2c2d6c..eb8cc70 100644
 --- a/node_modules/sharetribe-scripts/config/sharetribeWebpackConfig.js
 +++ b/node_modules/sharetribe-scripts/config/sharetribeWebpackConfig.js
-@@ -94,7 +94,7 @@ const applySharetribeConfigs = (config, options) => {
+@@ -94,7 +94,11 @@ const applySharetribeConfigs = (config, options) => {
      // Add custom externals as server doesn't need to bundle everything
      newConfig.externals = [
        '@loadable/component',
 -      nodeExternals(), // Ignore all modules in node_modules folder
-+      // nodeExternals(), // Ignore all modules in node_modules folder
++      nodeExternals({
++        // this WILL include `jquery` and `webpack/hot/dev-server` in the bundle, as well as `lodash/*`
++        whitelist: [/^@sendbird/],
++        allowlist: [/^@sendbird/]
++    }), // Ignore all modules in node_modules folder
      ];
  
      // Use a 'node' subdirectory for the server build
