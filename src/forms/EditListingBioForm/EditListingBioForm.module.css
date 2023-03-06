@@ -62,7 +62,3 @@
     width: 15rem;
   }
 }
-
-.characterCount {
-  composes: marketplaceTinyFontStyles from global;
-}

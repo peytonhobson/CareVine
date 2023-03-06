@@ -116,9 +116,6 @@ const EditListingCareRecipientDetailsFormComponent = props => (
             validate={maxLength700Message}
             label={recipientDetailsMessage}
           />
-          <span className={css.characterCount}>
-            {values?.recipientDetails?.length || 0}/{RECIPIENT_DETAILS_MAX_LENGTH} characters
-          </span>
 
           {errorMessageUpdateListing}
 

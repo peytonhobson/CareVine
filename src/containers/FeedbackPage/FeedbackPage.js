@@ -39,10 +39,7 @@ const FeedbackPageComponent = props => {
   const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
 
   const handleSubmit = values => {
-    onSendFeedbackEmail(values).then(res => {
-      console.log(res);
-      localStorage.setItem('carevineLastFeedback', Date.now());
-    });
+    onSendFeedbackEmail(values);
   };
 
   return (

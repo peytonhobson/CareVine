@@ -81,6 +81,7 @@ const FeedbackForm = props => (
       useEffect(() => {
         if (sendFeedbackEmailSuccess && stage === EMAIL) {
           nextStage();
+          localStorage.setItem('carevineLastFeedback', Date.now());
         }
       }, [sendFeedbackEmailSuccess]);
 

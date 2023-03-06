@@ -67,7 +67,3 @@
     /* margin-top: 100px; */
   }
 }
-
-.characterCount {
-  composes: marketplaceTinyFontStyles from global;
-}

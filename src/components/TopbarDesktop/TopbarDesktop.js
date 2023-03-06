@@ -19,7 +19,7 @@ import {
 import { TopbarSearchForm } from '../../forms';
 import { EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 import css from './TopbarDesktop.module.css';
 
