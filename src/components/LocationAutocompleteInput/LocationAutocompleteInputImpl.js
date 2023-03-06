@@ -6,6 +6,7 @@ import debounce from 'lodash/debounce';
 import { IconSpinner } from '../../components';
 import { propTypes } from '../../util/types';
 import config from '../../config';
+import { isIOS } from '../../util/userAgent';
 
 import IconHourGlass from './IconHourGlass';
 import IconCurrentLocation from './IconCurrentLocation';
@@ -38,14 +39,6 @@ const TOUCH_TAP_RADIUS = 5; // Movement within 5px from touch start is considere
 const getTouchCoordinates = nativeEvent => {
   const touch = nativeEvent && nativeEvent.changedTouches ? nativeEvent.changedTouches[0] : null;
   return touch ? { x: touch.screenX, y: touch.screenY } : null;
-};
-
-const isIOS = () => {
-  return (
-    (/iPad|iPhone|iPod/.test(navigator.platform) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
-    !window.MSStream
-  );
 };
 
 // Renders the autocompletion prediction results in a list
