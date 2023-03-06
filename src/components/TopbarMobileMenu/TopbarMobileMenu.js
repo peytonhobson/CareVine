@@ -20,7 +20,7 @@ import { CAREGIVER } from '../../util/constants';
 
 import css from './TopbarMobileMenu.module.css';
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const TopbarMobileMenu = props => {
   const {

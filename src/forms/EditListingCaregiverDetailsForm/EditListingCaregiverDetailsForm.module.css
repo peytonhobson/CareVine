@@ -57,7 +57,3 @@
   composes: formMargins;
   flex-shrink: 0;
 }
-
-.characterCount {
-  composes: marketplaceTinyFontStyles from global;
-}

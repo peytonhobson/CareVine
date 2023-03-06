@@ -90,9 +90,6 @@ const EditListingBioFormComponent = props => (
             )}
             required
           />
-          <span className={css.characterCount}>
-            {values?.description?.length || 0}/{DESCRIPTION_MAX_LENGTH} characters
-          </span>
 
           {errorMessageUpdateListing}
 

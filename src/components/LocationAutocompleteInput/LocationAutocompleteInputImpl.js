@@ -40,6 +40,14 @@ const getTouchCoordinates = nativeEvent => {
   return touch ? { x: touch.screenX, y: touch.screenY } : null;
 };
 
+const isIOS = () => {
+  return (
+    (/iPad|iPhone|iPod/.test(navigator.platform) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
+    !window.MSStream
+  );
+};
+
 // Renders the autocompletion prediction results in a list
 const LocationPredictionsList = props => {
   const {
@@ -478,6 +486,22 @@ class LocationAutocompleteInputImpl extends Component {
     // list will disappear.
     const renderPredictions = this.state.inputHasFocus;
 
+    const getIOSInputEventHandlers = () => {
+      if (!isIOS()) {
+        return {};
+      }
+
+      return {
+        onTouchStart: e => {
+          e.currentTarget.style.fontSize = '16px';
+        },
+        onBlur: e => {
+          this.handleOnBlur(e);
+          e.currentTarget.style.fontSize = '';
+        },
+      };
+    };
+
     return (
       <div className={rootClass}>
         <div className={iconClass}>
@@ -506,6 +530,7 @@ class LocationAutocompleteInputImpl extends Component {
               inputRef(node);
             }
           }}
+          {...getIOSInputEventHandlers()}
         />
         {renderPredictions ? (
           <LocationPredictionsList

@@ -117,9 +117,6 @@ const EditListingJobDescriptionFormComponent = props => (
             required
             validate={composeValidators(maxLength700Message, minLength100Message)}
           />
-          <span className={css.characterCount}>
-            {values?.description?.length || 0}/{DESCRIPTION_MAX_LENGTH} characters
-          </span>
 
           {errorMessageUpdateListing}
 

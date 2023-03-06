@@ -79,6 +79,7 @@ class FieldTextInputComponent extends Component {
       [css.inputError]: hasError,
       [css.textarea]: isTextarea,
     });
+
     const maxLength = CONTENT_MAX_LENGTH;
     const inputProps = isTextarea
       ? {
@@ -89,6 +90,7 @@ class FieldTextInputComponent extends Component {
           ...refMaybe,
           ...inputWithoutType,
           ...rest,
+          ...getIOSInputEventHandlers(),
         }
       : isUncontrolled
       ? {
@@ -99,8 +101,17 @@ class FieldTextInputComponent extends Component {
           ...refMaybe,
           ...inputWithoutValue,
           ...rest,
+          ...getIOSInputEventHandlers(),
         }
-      : { className: inputClasses, id, type, ...refMaybe, ...input, ...rest };
+      : {
+          className: inputClasses,
+          id,
+          type,
+          ...refMaybe,
+          ...input,
+          ...rest,
+          ...getIOSInputEventHandlers(),
+        };
 
     const classes = classNames(rootClassName || css.root, className);
     return (
@@ -112,9 +123,16 @@ class FieldTextInputComponent extends Component {
           </label>
         ) : null}
         {isTextarea ? (
-          <ExpandingTextarea {...inputProps} {...getIOSInputEventHandlers()} />
+          <>
+            <ExpandingTextarea {...inputProps} />
+            {this.props.maxLength && (
+              <span className={css.characterCount}>
+                {input.value?.length || 0}/{this.props.maxLength} characters
+              </span>
+            )}
+          </>
         ) : (
-          <input {...inputProps} {...getIOSInputEventHandlers()} />
+          <input {...inputProps} />
         )}
         <ValidationError fieldMeta={fieldMeta} />
       </div>
