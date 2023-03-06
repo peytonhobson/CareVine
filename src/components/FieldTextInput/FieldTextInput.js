@@ -3,18 +3,11 @@ import { bool, func, object, shape, string } from 'prop-types';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { ValidationError, ExpandingTextarea } from '../../components';
+import { isIOS } from '../../util/userAgent';
 
 import css from './FieldTextInput.module.css';
 
 const CONTENT_MAX_LENGTH = 5000;
-
-const isIOS = () => {
-  return (
-    (/iPad|iPhone|iPod/.test(navigator.platform) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) &&
-    !window.MSStream
-  );
-};
 
 class FieldTextInputComponent extends Component {
   render() {

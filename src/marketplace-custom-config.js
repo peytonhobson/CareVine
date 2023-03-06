@@ -395,6 +395,7 @@ export const filters = [
     id: 'recipientRelationship',
     label: 'Recipient Relationship',
     type: 'SelectMultipleFilter',
+    group: 'secondary',
     queryParamNames: ['pub_recipientRelationship'],
     config: {
       searchMode: 'has_any',

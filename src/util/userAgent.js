@@ -12,3 +12,11 @@ export const isMobileSafari = () => {
   // an extra condition.
   return iOS && webkit;
 };
+
+export const isIOS = () => {
+  return (
+    (/iPad|iPhone|iPod/.test(window.navigator.platform) ||
+      (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)) &&
+    !window.MSStream
+  );
+};
