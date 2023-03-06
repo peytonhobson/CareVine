@@ -21,7 +21,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
 
-import backgroundImage from '../../assets/CVLogo.jpg';
+import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
 
 export const LandingPageComponent = props => {
