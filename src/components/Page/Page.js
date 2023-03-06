@@ -12,6 +12,7 @@ import { CookieConsent } from '../../components';
 
 import facebookImage from '../../assets/yogatimeFacebook-1200x630.jpg';
 import twitterImage from '../../assets/yogatimeTwitter-600x314.jpg';
+import logoImage from '../../assets/CVLogo.jpg';
 import css from './Page.module.css';
 
 const preventDefault = e => {
@@ -110,7 +111,7 @@ class PageComponent extends Component {
     const facebookImgs = facebookImages || [
       {
         name: 'facebook',
-        url: `${canonicalRootURL}${facebookImage}`,
+        url: `${canonicalRootURL}${logoImage}`,
         width: 1200,
         height: 630,
       },
@@ -118,7 +119,7 @@ class PageComponent extends Component {
     const twitterImgs = twitterImages || [
       {
         name: 'twitter',
-        url: `${canonicalRootURL}${twitterImage}`,
+        url: `${canonicalRootURL}${logoImage}`,
         width: 600,
         height: 314,
       },
@@ -164,7 +165,7 @@ class PageComponent extends Component {
         url: canonicalRootURL,
         name: siteTitle,
         sameAs: sameOrganizationAs,
-        logo: `${canonicalRootURL}/static/webapp-icon-192x192.png`,
+        logo: `${canonicalRootURL}${logoImage}`,
         address: config.address,
       },
       {
