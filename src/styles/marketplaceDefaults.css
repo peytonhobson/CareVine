@@ -20,6 +20,10 @@
   --marketplaceColorLight: #74ad8a;
   --marketplaceColorDark: #5684a3;
 
+  --secondaryMarketplaceColor: #77a08a;
+  --secondaryMarketplaceColorLight: #74ad8a;
+  --secondaryMarketplaceColorDark: #043c2c;
+
   /* Used with inline CSS SVGs */
   --marketplaceColorEncoded: %230095b3;
 
@@ -385,7 +389,7 @@ label {
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
-    line-height: 1rem;
+    line-height: 1.5rem;
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 0.375rem;
@@ -1018,12 +1022,12 @@ textarea {
   width: auto;
 
   /* Sizing (touch area) */
-  padding: 24px;
+  padding: 1.5rem;
   margin: 0;
   border: 0;
 
   @media (--viewportMedium) {
-    padding: 27px 30px;
+    padding: 1.688rem 1.875rem;
     position: absolute;
   }
 

@@ -19,6 +19,7 @@ import {
 import { TopbarSearchForm } from '../../forms';
 import { EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
+const isDev = process.env.NODE_ENV === 'development';
 
 import css from './TopbarDesktop.module.css';
 
@@ -60,11 +61,11 @@ const TopbarDesktop = props => {
   const myJobBoard =
     isAuthenticatedOrJustHydrated && location ? (
       <NamedLink
-        className={css.myJobBoardLink}
+        className={css.regularLink}
         name="SearchPage"
         to={{ search: `?${origin}&${distance}&sort=relevant` }}
       >
-        <span className={css.jobBoard}>My Job Board</span>
+        <span className={css.linkText}>My Job Board</span>
       </NamedLink>
     ) : null;
 
@@ -80,15 +81,23 @@ const TopbarDesktop = props => {
       </NamedLink>
     ) : (
       <span
-        className={css.inboxLink}
+        className={css.regularLink}
         onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
       >
-        <span className={css.inbox}>
+        <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />
           {notificationDot}
         </span>
       </span>
     )
+  ) : null;
+
+  const feedbackLink = isDev ? (
+    <NamedLink className={css.regularLink} name="FeedbackPage">
+      <span className={css.feedbackText}>
+        <FormattedMessage id="TopbarDesktop.feedback" />
+      </span>
+    </NamedLink>
   ) : null;
 
   const currentPageClass = page => {
@@ -186,8 +195,10 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
+        {feedbackLink}
       </div>
       {profileMenu}
+
       <div className={css.unauthenticatedContainer}>
         {signupLink}
         {loginLink}

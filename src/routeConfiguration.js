@@ -16,6 +16,7 @@ const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" *
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
+const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
 const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPage/InboxPage'))
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
 const ListingPage = loadable(() => import(/* webpackChunkName: "ListingPage" */ /* webpackPrefetch: true */ './containers/ListingPage/ListingPage'));
@@ -82,6 +83,11 @@ const routeConfiguration = () => {
       auth: true,
       component: CheckoutPage,
       setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
+    },
+    {
+      path: '/feedback',
+      name: 'FeedbackPage',
+      component: FeedbackPage,
     },
     {
       path: '/s',

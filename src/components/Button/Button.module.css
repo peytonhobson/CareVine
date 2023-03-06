@@ -140,5 +140,36 @@
   }
 }
 
-.socialButton {
+.GradientButton {
+}
+
+.GradientButtonRoot {
+  composes: button buttonFont buttonText buttonBorders from global;
+
+  min-height: 3rem;
+
+  background-image: linear-gradient(
+    to right,
+    var(--secondaryMarketplaceColorLight),
+    var(--marketplaceColor)
+  );
+  color: var(--matterColorLight);
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
+
+  &:hover,
+  &:focus {
+    background-image: linear-gradient(
+      to right,
+      var(--secondaryMarketplaceColorDark),
+      var(--marketplaceColor)
+    );
+  }
+  &:disabled {
+    background-image: none;
+    background-color: var(--matterColorNegative);
+    color: var(--matterColorLight);
+  }
 }

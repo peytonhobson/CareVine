@@ -144,3 +144,14 @@
   margin-left: -24px;
   padding-left: 19px;
 }
+
+.feedbackText {
+  background: -webkit-linear-gradient(
+    90deg,
+    var(--marketplaceColorLight) 50%,
+    var(--marketplaceColor)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

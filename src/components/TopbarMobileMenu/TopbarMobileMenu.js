@@ -20,6 +20,8 @@ import { CAREGIVER } from '../../util/constants';
 
 import css from './TopbarMobileMenu.module.css';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const TopbarMobileMenu = props => {
   const {
     isAuthenticated,
@@ -74,6 +76,14 @@ const TopbarMobileMenu = props => {
     );
   }
 
+  const feedbackLink = isDev ? (
+    <NamedLink className={css.navigationLink} name="FeedbackPage">
+      <span className={css.feedbackText}>
+        <FormattedMessage id="TopbarMobileMenu.feedback" />
+      </span>
+    </NamedLink>
+  ) : null;
+
   const notificationCountBadge =
     notificationCount > 0 ? (
       <NotificationBadge className={css.notificationBadge} count={notificationCount} />
@@ -125,6 +135,7 @@ const TopbarMobileMenu = props => {
         >
           <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
         </NamedLink>
+        {feedbackLink}
       </div>
       <div className={css.footer}>
         <NamedLink className={css.createNewListingLink} name="NewListingPage">

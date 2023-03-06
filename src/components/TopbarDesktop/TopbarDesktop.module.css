@@ -153,43 +153,8 @@
   composes: topbarDesktopLabel;
 }
 
-.myJobBoardLink {
-  border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
-
-  font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 18px;
-  letter-spacing: 0;
-
-  height: 100%;
-  padding: 0 12px 0 12px;
-  margin-top: 0;
-  margin-bottom: 0;
-  color: var(--matterColor);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--matterColorDark);
-    border-bottom: 4px solid var(--marketplaceColor);
-    border-radius: 0;
-    text-decoration: none;
-  }
-
-  @media (--viewportMedium) {
-    line-height: 16px;
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-
-.jobBoard {
-  composes: topbarDesktopLabel;
-  position: relative;
-}
-
 /* Inbox */
-.inboxLink {
+.regularLink {
   border-bottom: 0px solid;
   transition: var(--transitionStyleButton);
 
@@ -219,12 +184,24 @@
   }
 }
 
-.inbox {
+.linkText {
   composes: topbarDesktopLabel;
   position: relative;
 }
 
-.notificationDot {
+.feedbackText {
+  composes: topbarDesktopLabel;
+  background: -webkit-linear-gradient(
+    90deg,
+    var(--marketplaceColorLight) 50%,
+    var(--marketplaceColor)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.feedbackText .notificationDot {
   /* Dimensions */
   width: 7px;
   height: 7px;

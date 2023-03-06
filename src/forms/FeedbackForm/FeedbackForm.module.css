@@ -1,0 +1,159 @@
+@import '../../styles/customMediaQueries.css';
+
+.cssanimation,
+.cssanimation span {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+.cssanimation span {
+  display: inline-block;
+}
+
+.fadeInBottom {
+  animation-name: fadeInBottom;
+}
+@keyframes fadeInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.root {
+  width: 100%;
+  padding-inline: 3rem;
+  margin-top: 15%;
+
+  @media (--viewportMedium) {
+    width: 40rem;
+    padding-inline: 0;
+    margin-top: 5%;
+  }
+}
+
+.field {
+  composes: fadeInBottom cssanimation;
+  overflow: visible;
+}
+
+.nextButton {
+  width: 5rem;
+  margin-top: 2rem;
+  min-height: 0;
+  padding: 0.75rem 1rem;
+
+  @media (--viewportMedium) {
+    min-height: 3rem;
+  }
+}
+
+.submitButton {
+  width: 7rem;
+  min-height: 3rem;
+  margin-top: 2rem;
+}
+
+.buttonGroupRoot {
+  margin-top: 2rem;
+}
+
+.buttonGroup {
+  composes: button buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+  min-height: 3rem;
+  margin-right: 1rem;
+  border-radius: 3rem;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0.5rem;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-right: 3rem;
+  }
+}
+
+.buttonGroupSelected {
+  composes: button buttonFont buttonText buttonColors from global;
+
+  min-height: 3rem;
+  margin-right: 1rem;
+  border-radius: 3rem;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0.5rem;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-right: 3rem;
+  }
+}
+
+.deviceType {
+  @media (--viewportMedium) {
+    padding-top: 4rem;
+  }
+  padding-top: 4.376rem;
+}
+
+.textAreaRoot {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  overflow: visible !important;
+  max-width: 100%;
+}
+
+.goBackButton {
+  composes: marketplaceModalCloseStyles from global;
+  position: static;
+  padding-left: 0;
+}
+
+.goBackText {
+  composes: marketplaceModalCloseText from global;
+  color: var(--matterColorAnti);
+}
+
+.arrowIcon {
+  composes: marketplaceModalCloseIcon from global;
+  margin-right: 0.5rem;
+  stroke-width: 3px;
+  margin-left: 0;
+  fill: var(--matterColorAnti);
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.thankYou {
+  background: -webkit-linear-gradient(
+    90deg,
+    var(--marketplaceColorLight) 50%,
+    var(--marketplaceColor)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

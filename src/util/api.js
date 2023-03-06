@@ -269,3 +269,7 @@ export const stripeCancelSubscriptionSchedule = body => {
 export const applyPromo = body => {
   return post('/api/apply-promo', body);
 };
+
+export const sendFeedbackEmail = body => {
+  return post('/api/send-feedback-email', body);
+};
