@@ -3,7 +3,7 @@
   display: flex;
   position: sticky;
   top: var(--topbarHeightDesktop);
-  z-index: 90;
+  z-index: 1;
   flex-direction: row;
   padding: 0 0.5rem;
   flex-shrink: 0;
