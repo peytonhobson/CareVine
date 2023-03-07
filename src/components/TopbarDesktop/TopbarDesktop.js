@@ -19,7 +19,10 @@ import {
 import { TopbarSearchForm } from '../../forms';
 import { EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 const isDev = process.env.REACT_APP_ENV === 'development';
+
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 import css from './TopbarDesktop.module.css';
 
@@ -106,6 +109,8 @@ const TopbarDesktop = props => {
     return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
   };
 
+  const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
+
   const profileMenu = authenticatedOnClientSide ? (
     <Menu>
       <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
@@ -121,7 +126,11 @@ const TopbarDesktop = props => {
             <div>
               <span className={css.menuItemBorder} />
               {currentUserListing ? (
-                <FormattedMessage id="TopbarDesktop.editYourListingLink" />
+                isNewListing ? (
+                  <FormattedMessage id="TopbarDesktop.finishYourListingLink" />
+                ) : (
+                  <FormattedMessage id="TopbarDesktop.editYourListingLink" />
+                )
               ) : (
                 <FormattedMessage id="TopbarDesktop.addYourListingLink" />
               )}
@@ -164,7 +173,10 @@ const TopbarDesktop = props => {
   );
 
   const listingLink =
-    authenticatedOnClientSide && currentUserListingFetched && currentUserListing ? (
+    authenticatedOnClientSide &&
+    currentUserListingFetched &&
+    currentUserListing &&
+    !isNewListing ? (
       <ListingLink
         className={css.createListingLink}
         listing={currentUserListing}
@@ -177,7 +189,19 @@ const TopbarDesktop = props => {
     ) : null;
 
   const createListingLink =
-    !isAuthenticatedOrJustHydrated || !(currentUserListingFetched && !currentUserListing) ? null : (
+    !isAuthenticatedOrJustHydrated || !(currentUserListingFetched && !currentUserListing) ? (
+      isNewListing ? (
+        <OwnListingLink
+          className={css.createListingLink}
+          listingFetched={currentUserListingFetched}
+          listing={currentUserListing}
+        >
+          <span className={css.createListing}>
+            <FormattedMessage id="TopbarDesktop.finishYourListingLink" />
+          </span>
+        </OwnListingLink>
+      ) : null
+    ) : (
       <NamedLink className={css.createListingLink} name="NewListingPage">
         <span className={css.createListing}>
           <FormattedMessage id="TopbarDesktop.createListing" />

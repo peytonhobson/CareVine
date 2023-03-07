@@ -24,7 +24,6 @@ const convertFilterKeyToLabel = (key, property, filter) => {
   const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
     return key === data.key;
   });
-  s;
 
   return filterOption ? filterOption.label : null;
 };

@@ -62,19 +62,13 @@ const EditListingCareSchedulePanel = props => {
   }, [errors.updateListingError]);
 
   const handle24HourCareSubmit = values => {
-    const { liveIn, availableDays, availabilityExceptions, startDate, endDate } = values;
-
-    const currentZipcode = currentListing.attributes.publicData.location.zipcode;
+    const currentZipcode = currentListing?.attributes.publicData?.location?.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
 
     const availabilityPlan = {
       type: AVAILABILITY_PLAN_TYPE_24HOUR,
-      liveIn,
-      availableDays,
       timezone,
-      availabilityExceptions,
-      startDate,
-      endDate,
+      ...values,
     };
 
     return onSubmit({ publicData: { scheduleType: TWENTY_FOUR_HOUR, availabilityPlan } })

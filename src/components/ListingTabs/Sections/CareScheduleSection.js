@@ -13,13 +13,13 @@ const AVAILABILITY_PLAN_TYPE_REPEAT = 'repeat';
 const AVAILABILITY_PLAN_TYPE_24_HOUR = '24hour';
 
 const weekdayMap = [
-  { day: 'monday', label: 'Monday' },
-  { day: 'tuesday', label: 'Tuesday' },
-  { day: 'wednesday', label: 'Wednesday' },
-  { day: 'thursday', label: 'Thursday' },
-  { day: 'friday', label: 'Friday' },
-  { day: 'saturday', label: 'Saturday' },
-  { day: 'sunday', label: 'Sunday' },
+  { day: 'mon', label: 'Monday' },
+  { day: 'tue', label: 'Tuesday' },
+  { day: 'wed', label: 'Wednesday' },
+  { day: 'thu', label: 'Thursday' },
+  { day: 'fr', label: 'Friday' },
+  { day: 'sat', label: 'Saturday' },
+  { day: 'sun', label: 'Sunday' },
 ];
 
 const CareScheduleSection = forwardRef((props, ref) => {
@@ -29,13 +29,13 @@ const CareScheduleSection = forwardRef((props, ref) => {
 
   const careScheduleCardTitle = (
     <h1 className={css.title}>
-      Care Schedule ({scheduleTypes.find(s => s.key === availabilityPlan.type).label})
+      Care Schedule ({scheduleTypes.find(s => s.key === availabilityPlan?.type)?.label})
     </h1>
   );
 
   let content = null;
 
-  switch (availabilityPlan.type) {
+  switch (availabilityPlan?.type) {
     case AVAILABILITY_PLAN_TYPE_ONE_TIME:
       const { selectedSessions } = availabilityPlan;
       content = (
@@ -56,10 +56,11 @@ const CareScheduleSection = forwardRef((props, ref) => {
         sat: [],
       };
 
-      entries.forEach(entry => {
+      entries?.forEach(entry => {
         const { dayOfWeek, startTime, endTime } = entry;
         mappedTimesToDay[dayOfWeek].push({ startTime, endTime });
       });
+
       content = (
         <div>
           <WeekCalendar mappedTimesToDay={mappedTimesToDay} />
@@ -68,7 +69,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
               <p>
                 <span className={css.bold}>Start Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan.startDate
+                  {availabilityPlan?.startDate
                     ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
                     : 'NA'}
                 </span>
@@ -78,7 +79,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
               <p>
                 <span className={css.bold}>End Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan.endDate
+                  {availabilityPlan?.endDate
                     ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
                     : 'NA'}
                 </span>
@@ -89,7 +90,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
       );
       break;
     case AVAILABILITY_PLAN_TYPE_24_HOUR:
-      const availableDays = availabilityPlan.availableDays;
+      const availableDays = availabilityPlan?.availableDays;
       content = (
         <div className={css.liveInContainer}>
           <div className={css.buttonContainer}>
@@ -101,7 +102,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
                       key={index}
                       className={classNames(
                         css.weekdayButton,
-                        availableDays.includes(day.day) && css.selected
+                        availableDays?.includes(day.day) && css.selected
                       )}
                     >
                       {day.label}
@@ -118,7 +119,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
                       key={index}
                       className={classNames(
                         css.weekdayButton,
-                        availableDays.includes(day.day) && css.selected
+                        availableDays?.includes(day.day) && css.selected
                       )}
                     >
                       {day.label}
@@ -128,13 +129,17 @@ const CareScheduleSection = forwardRef((props, ref) => {
               })}
             </div>
           </div>
-          {availabilityPlan.liveIn && <p>*This is a live-in position</p>}
+          <div className={css.hoursPerDayContainer}>
+            <h1 className={css.hoursPerDay}>{availabilityPlan?.hoursPerDay}</h1>
+            <span>Working hours per day</span>
+          </div>
+          {availabilityPlan?.liveIn && <p className={css.liveIn}>*This is a live-in position</p>}
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
               <p>
                 <span className={css.bold}>Start Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan.startDate
+                  {availabilityPlan?.startDate
                     ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
                     : 'NA'}
                 </span>
@@ -144,7 +149,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
               <p>
                 <span className={css.bold}>End Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan.endDate
+                  {availabilityPlan?.endDate
                     ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
                     : 'NA'}
                 </span>
@@ -161,7 +166,6 @@ const CareScheduleSection = forwardRef((props, ref) => {
   return (
     <SectionCard title={careScheduleCardTitle} ref={ref}>
       {content}
-      {/* <WeekCalendar mappedTimesToDay={mappedTimesToDay} /> */}
     </SectionCard>
   );
 });
