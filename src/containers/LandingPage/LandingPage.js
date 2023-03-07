@@ -76,13 +76,9 @@ export const LandingPageComponent = props => {
           </div>
           <ul className={css.sections}>
             <li className={css.section}>
-              <div className={css.sectionContentFirstChild}>
-                <SectionLocations />
-              </div>
-            </li>
-            <li className={css.section}>
               <div className={css.sectionContent}>
                 <SectionHowItWorks
+                  currentUser={currentUser}
                   currentUserListing={currentUserListing}
                   currentUserListingFetched={currentUserListingFetched}
                 />

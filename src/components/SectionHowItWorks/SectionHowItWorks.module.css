@@ -1,30 +1,30 @@
 @import '../../styles/customMediaQueries.css';
 
+.root {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .title {
   composes: h1 from global;
   margin-top: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-
-  @media (--viewportMedium) {
-    flex-direction: row;
-  }
+  margin-top: 3rem;
 }
 
 .step {
-  @media (--viewportMedium) {
-    width: 324px;
-    margin-right: 40px;
-  }
+  margin-bottom: 3rem;
 }
 
-.step:last-of-type {
-  @media (--viewportMedium) {
-    margin-right: 0;
-  }
+.stepContent {
+  padding-left: 2rem;
 }
 
 .stepTitle {
@@ -37,10 +37,88 @@
   }
 }
 
-.createListingLink {
-  margin-top: 18px;
+.createProfileImage {
+  max-height: 15rem;
+  border: 1px solid var(--marketplaceColor);
+}
+
+.employerListingImage {
+  max-height: 15rem;
+}
+
+.caregiverListingImage {
+  max-height: 30rem;
+}
+
+.caregiverInquiryImage {
+  max-width: 30rem;
+  border: 1px solid var(--marketplaceColor);
+}
+
+.getStartedLink {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  width: 100%;
+}
+
+.getStartedButton {
+  composes: button buttonBorders buttonColors h2 from global;
+  color: var(--matterColorLight);
+  text-align: center;
+
+  &:hover {
+    text-decoration: none;
+  }
 
   @media (--viewportMedium) {
-    margin-top: 24px;
+    display: block;
+    width: 20rem;
+  }
+}
+
+.userButtons {
+  width: 100%;
+}
+
+.buttonGroupRoot {
+  display: flex;
+  max-width: 30rem;
+  flex-wrap: nowrap;
+  margin-block: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.buttonGroup {
+  composes: button buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+}
+
+.buttonGroupSelected {
+  composes: button buttonFont buttonText buttonColors from global;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
   }
 }

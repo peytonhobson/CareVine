@@ -243,10 +243,7 @@ class CaregiverEditListingWizard extends Component {
     }
 
     const backgroundCheckApprovedStatus =
-      currentUser &&
-      currentUser.attributes.profile.metadata &&
-      currentUser.attributes.profile.metadata.backgroundCheckApproved &&
-      currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
+      currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
 
     if (!isNewListingFlow && backgroundCheckApprovedStatus) {
       const index = TABS.indexOf(BACKGROUND_CHECK);

@@ -9,8 +9,6 @@ const axios = require('axios');
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-// 'whsec_b88f8999d9d2c9f50c195babbb8b67eb6a33803a28f1e37a11e302e35af4ddc7';
-// process.env.STRIPE_WEBHOOK_SECRET;
 
 const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -134,7 +132,7 @@ module.exports = (request, response) => {
       ) {
         updateBackgroundCheckSubscription(customerSubscriptionUpdated);
       }
-
+      break;
     case 'invoice.paid':
       const invoicePaid = event.data.object;
       // TODO: Send email to user that their subscription has been paid

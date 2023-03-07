@@ -17,6 +17,7 @@ import { CAREGIVER } from '../../util/constants';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 import { userDisplayNameAsString } from '../../util/data';
+import { generateAccessToken } from '../../ducks/sendbird.duck';
 
 const { UUID } = sdkTypes;
 
