@@ -102,6 +102,7 @@ const FeedbackForm = props => (
             <div className={classNames(css.field, css.deviceType)}>
               <FieldButtonGroup
                 className={css.buttonGroup}
+                buttonRootClassName={css.buttonGroupRoot}
                 name="deviceType"
                 options={deviceOptions}
                 selectedClassName={css.buttonGroupSelected}
@@ -130,6 +131,7 @@ const FeedbackForm = props => (
               </Button>
               <FieldButtonGroup
                 className={css.buttonGroup}
+                buttonRootClassName={css.buttonGroupRoot}
                 name="userType"
                 options={userTypeOptions}
                 selectedClassName={css.buttonGroupSelected}
@@ -227,7 +229,8 @@ const FeedbackForm = props => (
                 inputRootClass={css.textAreaRoot}
               />
               <FieldButtonGroup
-                rootClassName={css.buttonGroupRoot}
+                rootClassName={css.bgRoot}
+                buttonRootClassName={css.buttonGroupRoot}
                 className={css.buttonGroup}
                 name="willingToContact"
                 options={yesNoOptions}

@@ -29,7 +29,7 @@
   margin-top: 15%;
 
   @media (--viewportMedium) {
-    width: 40rem;
+    width: 30rem;
     padding-inline: 0;
     margin-top: 5%;
   }
@@ -57,8 +57,14 @@
   margin-top: 2rem;
 }
 
-.buttonGroupRoot {
+.bgRoot {
   margin-top: 2rem;
+}
+
+.buttonGroupRoot {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .buttonGroup {
@@ -66,8 +72,8 @@
 
   border: 1px solid var(--marketplaceColor);
   min-height: 3rem;
-  margin-right: 1rem;
   border-radius: 3rem;
+  max-width: 45%;
 
   /* Clear padding that is set for link elements looking like buttons */
   padding: 0.5rem;
@@ -84,7 +90,6 @@
 
   @media (--viewportMedium) {
     padding: 0;
-    margin-right: 3rem;
   }
 }
 
@@ -92,8 +97,8 @@
   composes: button buttonFont buttonText buttonColors from global;
 
   min-height: 3rem;
-  margin-right: 1rem;
   border-radius: 3rem;
+  max-width: 45%;
 
   /* Clear padding that is set for link elements looking like buttons */
   padding: 0.5rem;
@@ -106,7 +111,6 @@
 
   @media (--viewportMedium) {
     padding: 0;
-    margin-right: 3rem;
   }
 }
 

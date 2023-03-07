@@ -16,14 +16,15 @@ const AVAILABILITY_PLAN_TYPE_SELECT_DATES = 'oneTime';
 const AVAILABILITY_PLAN_TYPE_RECURRING = 'repeat';
 const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 
-const SELECT_DATES = 'Select Dates';
-const RECURRING = 'Recurring';
+const SELECT_DATES = 'One Time Care';
+const RECURRING = 'Repeat Care';
 const TWENTY_FOUR_HOUR = '24 Hour Care';
 
 const convertFilterKeyToLabel = (key, property, filter) => {
   const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
     return key === data.key;
   });
+  s;
 
   return filterOption ? filterOption.label : null;
 };
