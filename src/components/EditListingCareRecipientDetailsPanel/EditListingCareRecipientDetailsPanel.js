@@ -211,7 +211,7 @@ const EditListingCareRecipientDetailsPanel = props => {
         >
           <EditListingAddCareRecipientForm
             {...addCareFormProps}
-            saveActionMsg={submitButtonText}
+            saveActionMsg="Add care recipient"
             required={true}
             onSubmit={handleAddRecipient}
             isFormVisible={isCareRecipientFormVisible}

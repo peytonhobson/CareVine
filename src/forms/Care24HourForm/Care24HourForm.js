@@ -222,7 +222,7 @@ const Care24HourFormComponent = props => {
               <FieldAddSubtract
                 name="hoursPerDay"
                 fieldClassName={css.hoursPerDayField}
-                startingCount={8}
+                startingCount={hoursPerDay}
                 max={24}
                 min={1}
                 label={hoursPerDayLabel}

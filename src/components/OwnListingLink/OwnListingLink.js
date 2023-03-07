@@ -5,8 +5,11 @@ import { ensureOwnListing } from '../../util/data';
 import { propTypes, LISTING_STATE_DRAFT } from '../../util/types';
 import { getListingType, createSlug } from '../../util/urlHelpers';
 import { NamedLink } from '../../components';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 
 import css from './OwnListingLink.module.css';
+
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 const OwnListingLink = props => {
   const { className, listing, listingFetched, children } = props;
@@ -31,6 +34,8 @@ const OwnListingLink = props => {
 
   const listingType = currentListing.attributes.metadata.listingType;
 
+  const isNewListing = newListingStates.includes(state);
+
   return (
     <NamedLink
       className={className ? className : css.yourListingsLink}
@@ -43,7 +48,13 @@ const OwnListingLink = props => {
       }}
     >
       <span className={css.menuItemBorder} />
-      {children ? children : <FormattedMessage id="OwnListingLink.editYourListingLink" />}
+      {children ? (
+        children
+      ) : isNewListing ? (
+        <FormattedMessage id="OwnListingLink.finishYourListingLink" />
+      ) : (
+        <FormattedMessage id="OwnListingLink.editYourListingLink" />
+      )}
     </NamedLink>
   );
 };

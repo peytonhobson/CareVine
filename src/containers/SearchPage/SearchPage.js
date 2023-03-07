@@ -257,9 +257,10 @@ const mapStateToProps = state => {
 
   const pageListings = getListingsById(state, currentPageResultIds)
     .filter(listing => listing?.attributes?.metadata?.listingType === oppositeUserType)
-    .filter(
-      listing =>
-        calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
+    .filter(listing =>
+      origin && listing?.attributes?.geolocation
+        ? calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
+        : false
     );
 
   const sortByRelevant = searchParams?.sort === RELEVANT;

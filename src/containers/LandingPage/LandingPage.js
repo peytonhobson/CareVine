@@ -72,6 +72,7 @@ export const LandingPageComponent = props => {
               history={history}
               location={location}
               userType={userType}
+              currentUserListing={currentUserListing}
             />
           </div>
           <ul className={css.sections}>
