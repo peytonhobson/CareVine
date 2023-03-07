@@ -6,14 +6,22 @@ import css from './Logo.module.css';
 const IconLogo = props => {
   const { className, format, ...rest } = props;
 
+  let width = '8em';
+  let height = '3em';
+
+  if (format === 'hero') {
+    width = '25em';
+    height = '10em';
+  }
+
   return (
     <svg
       id="Layer_2"
       data-name="Layer 2"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1200 343.22"
-      height="3rem"
-      width="10rem"
+      height={height}
+      width={width}
     >
       <defs>
         <linearGradient

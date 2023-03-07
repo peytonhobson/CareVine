@@ -145,15 +145,15 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 39.063rem;
+  --SectionHero_desktopTitleMaxWidth: 30rem;
 
   /* ================ TabNav ================ */
   --TabNav_linkWidth: 15rem;
 
   /* ================ LandingPage ================ */
   --LandingPage_sectionMarginTop: 2.5rem;
-  --LandingPage_sectionMarginTopMedium: 3.75rem;
-  --LandingPage_sectionMarginTopLarge: 5.875rem;
+  --LandingPage_sectionMarginTopMedium: 2.5rem;
+  --LandingPage_sectionMarginTopLarge: 0rem;
 
   /* ================ EditListingAvailabilityForm, ManageAvailabilityCalendar ================ */
   --ManageAvailabilityCalendar_gridColor: #e0e0e0;
@@ -596,20 +596,20 @@ textarea {
 
 .marketplaceHeroTitleFontStyles {
   font-weight: var(--fontWeightBold);
-  font-size: 36px;
-  line-height: 36px;
-  letter-spacing: -0.7px;
+  font-size: 2.25rem;
+  line-height: 2.25rem;
+  letter-spacing: -0.044rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 25px;
-  margin-bottom: 14px;
+  margin-top: 1.563rem;
+  margin-bottom: 0.875rem;
 
   @media (--viewportMedium) {
-    font-size: 64px;
-    line-height: 64px;
-    letter-spacing: -1.5px;
+    font-size: 4rem;
+    line-height: 4rem;
+    letter-spacing: 0rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 25px;
-    margin-bottom: 23px;
+    padding-top: 1.563rem;
+    padding-bottom: 1.438rem;
   }
 }
 

@@ -474,11 +474,11 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
 
   return authenticateGenerateCriminalBackgroundCheck({ userAccessCode })
     .then(response => {
-      if (response.data.success) {
+      if (response?.data?.success) {
         dispatch(getAuthenticateTestResult(userAccessCode, userId));
       }
       return sdk.currentUser.updateProfile({
-        privateData: { authenticateCriminalBackgroundGenerated: response.data.success },
+        privateData: { authenticateCriminalBackgroundGenerated: response?.data?.success },
       });
     })
     .then(response => {

@@ -38,11 +38,11 @@ const SendbirdModal = props => {
     currentUser.attributes.profile.privateData &&
     currentUser.attributes.profile.privateData.sbAccessToken;
   const sendbirdColorSet = {
-    '--sendbird-light-primary-500': '#043c2c',
-    '--sendbird-light-primary-400': '#043c2c',
-    '--sendbird-light-primary-300': '#568a6e',
-    '--sendbird-light-primary-200': '#568a6e',
-    '--sendbird-light-primary-100': '#74ad8a',
+    '--sendbird-light-primary-500': '#5684a3',
+    '--sendbird-light-primary-400': '#5684a3',
+    '--sendbird-light-primary-300': '#6ba0b6',
+    '--sendbird-light-primary-200': '#6ba0b6',
+    '--sendbird-light-primary-100': '#6ba0b6',
   };
 
   const authorDisplayName =
