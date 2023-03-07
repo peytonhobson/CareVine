@@ -46,7 +46,7 @@ module.exports = queryEvents = () => {
   const stateFile = 'server/last-sequence-id.state';
 
   const queryEvents = args => {
-    var filter = { eventTypes: 'user/updated, listing/updated, user/deleted' };
+    var filter = { eventTypes: ['user/updated, listing/updated, user/deleted', 'user/created'] };
     return integrationSdk.events.query({ ...args, ...filter });
   };
 
@@ -132,6 +132,7 @@ module.exports = queryEvents = () => {
               (prevEmailVerified !== undefined && !prevEmailVerified))
           : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
+      // If user meets requirements to open listing, approve listing
       if (openListing) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
@@ -283,6 +284,29 @@ module.exports = queryEvents = () => {
             }
           })
           .catch(e => log.error(e?.data?.errors));
+      }
+    }
+
+    if (eventType === 'user/created') {
+      // If user has userType in publicData, but not in metadata, add userType to metadata
+      // This indicates the update user metadata call failed
+
+      const currentAttributes = event?.attributes?.resource?.attributes;
+      const metadata = currentAttributes?.profile?.metadata;
+      const publicData = currentAttributes?.profile?.publicData;
+
+      if (publicData?.userType && !metadata?.userType) {
+        const userId = event?.attributes?.resource?.id?.uuid;
+
+        console.log('update user metadata userType');
+        integrationSdk.users
+          .updateProfile({
+            id: userId,
+            metadata: {
+              userType: publicData?.userType,
+            },
+          })
+          .catch(err => log.error(err));
       }
     }
 

@@ -18,8 +18,6 @@ module.exports = (req, res) => {
 
   const mockString = isDev ? 'mock/' : '';
 
-  console.log(userAccessCode);
-
   axios
     .post(
       `https://api-v3.authenticating.com/${mockString}identity/kba`,

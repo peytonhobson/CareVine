@@ -28,6 +28,7 @@ const FieldButtonGroup = props => {
     required,
     meta,
     selectedClassName,
+    buttonRootClassName,
     ...rest
   } = props;
 
@@ -59,6 +60,7 @@ const FieldButtonGroup = props => {
               {...input}
               onChange={event => handleOnChange(input, event)}
               initialSelect={initialSelect}
+              rootClassName={buttonRootClassName}
             />
           );
         }}

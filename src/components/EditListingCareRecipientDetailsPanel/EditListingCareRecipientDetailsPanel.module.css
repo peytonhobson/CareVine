@@ -107,7 +107,6 @@
 
 .recipientTrait {
   color: var(--matterColorAnti);
-  white-space: nowrap;
   font-size: 0.75rem;
 
   @media (--viewportMedium) {
