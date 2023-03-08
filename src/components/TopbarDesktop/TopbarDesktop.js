@@ -17,7 +17,7 @@ import {
   OwnListingLink,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
-import { EMPLOYER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 const isDev = process.env.REACT_APP_ENV === 'development';
@@ -54,21 +54,25 @@ const TopbarDesktop = props => {
 
   const classes = classNames(rootClassName || css.root, className);
 
-  const currentUserType = currentUser?.attributes.profile.metadata.userType || '';
+  const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
 
   const geolocation = (currentUserListing && currentUserListing.attributes.geolocation) || {};
   const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
   const distance = 'distance=30';
   const location = currentUserListing && currentUserListing.attributes.publicData.location;
 
-  const myJobBoard =
+  const searchListings =
     isAuthenticatedOrJustHydrated && location ? (
       <NamedLink
         className={css.regularLink}
         name="SearchPage"
         to={{ search: `?${origin}&${distance}&sort=relevant` }}
       >
-        <span className={css.linkText}>My Job Board</span>
+        {currentUserType === CAREGIVER ? (
+          <span className={css.linkText}>My Job Board</span>
+        ) : (
+          <span className={css.linkText}>Find Caregivers</span>
+        )}
       </NamedLink>
     ) : null;
 
@@ -215,7 +219,7 @@ const TopbarDesktop = props => {
         <Logo format="desktop" className={css.logo} alt="CareVine" />
       </NamedLink>
       <div className={css.authenticatedLinks}>
-        {myJobBoard}
+        {searchListings}
         {listingLink}
         {createListingLink}
         {inboxLink}
