@@ -17,10 +17,13 @@ import {
   OwnListingLink,
 } from '../../components';
 import { CAREGIVER } from '../../util/constants';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 
 import css from './TopbarMobileMenu.module.css';
 
 const isDev = process.env.REACT_APP_ENV === 'development';
+
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 const TopbarMobileMenu = props => {
   const {
@@ -38,6 +41,7 @@ const TopbarMobileMenu = props => {
   const user = ensureCurrentUser(currentUser);
 
   const userType = user?.attributes?.profile?.metadata?.userType;
+  const isNewListing = newListingStates.includes(currentPage) || !currentUserListing;
 
   if (!isAuthenticated) {
     const signup = (
@@ -96,6 +100,22 @@ const TopbarMobileMenu = props => {
     return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
   };
 
+  const geolocation = currentUserListing?.attributes?.geolocation || {};
+  const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
+  const distance = 'distance=30';
+  const location = currentUserListing?.attributes?.publicData?.location;
+
+  const searchListings =
+    isAuthenticated && location ? (
+      <NamedLink
+        className={classNames(css.navigationLink, css.searchListings)}
+        name="SearchPage"
+        to={{ search: `?${origin}&${distance}&sort=relevant` }}
+      >
+        {userType === CAREGIVER ? <span>My Job Board</span> : <span>Find Caregivers</span>}
+      </NamedLink>
+    ) : null;
+
   return (
     <div className={css.root}>
       <AvatarLarge className={css.avatar} user={currentUser} />
@@ -138,13 +158,23 @@ const TopbarMobileMenu = props => {
         {feedbackLink}
       </div>
       <div className={css.footer}>
-        <NamedLink className={css.createNewListingLink} name="NewListingPage">
-          {userType === CAREGIVER ? (
-            <FormattedMessage id="TopbarMobileMenu.newListingLinkCaregiver" />
-          ) : (
-            <FormattedMessage id="TopbarMobileMenu.newListingLinkEmployer" />
-          )}
-        </NamedLink>
+        {!isNewListing ? (
+          <NamedLink
+            className={css.createNewListingLink}
+            name="SearchPage"
+            to={{ search: `?${origin}&${distance}&sort=relevant` }}
+          >
+            {userType === CAREGIVER ? <span>My Job Board</span> : <span>Find Caregivers</span>}
+          </NamedLink>
+        ) : (
+          <NamedLink className={css.createNewListingLink} name="NewListingPage">
+            {userType === CAREGIVER ? (
+              <FormattedMessage id="TopbarMobileMenu.newListingLinkCaregiver" />
+            ) : (
+              <FormattedMessage id="TopbarMobileMenu.newListingLinkEmployer" />
+            )}
+          </NamedLink>
+        )}
       </div>
     </div>
   );

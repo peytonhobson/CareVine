@@ -56,10 +56,10 @@ const TopbarDesktop = props => {
 
   const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
 
-  const geolocation = (currentUserListing && currentUserListing.attributes.geolocation) || {};
+  const geolocation = currentUserListing?.attributes?.geolocation || {};
   const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
   const distance = 'distance=30';
-  const location = currentUserListing && currentUserListing.attributes.publicData.location;
+  const location = currentUserListing?.attributes?.publicData?.location;
 
   const searchListings =
     isAuthenticatedOrJustHydrated && location ? (
