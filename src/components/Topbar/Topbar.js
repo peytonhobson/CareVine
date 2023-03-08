@@ -226,10 +226,13 @@ class TopbarComponent extends Component {
             </NamedLink>
             <Button
               rootClassName={css.searchMenu}
-              onClick={this.handleMobileSearchOpen}
+              onClick={() => {}}
               title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
             >
-              <SearchIcon className={css.searchMenuIcon} />
+              <div>
+                <SearchIcon className={css.searchMenuIcon} />
+                <span className={css.caregivers}>Caregivers</span>
+              </div>
             </Button>
           </div>
         ) : (

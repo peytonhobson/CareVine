@@ -52,6 +52,7 @@
   margin: 0;
   border-width: 0px;
   background-color: transparent;
+  margin-right: 2rem;
 
   /* Hovers */
   &:enabled {
@@ -74,6 +75,7 @@
 }
 .searchMenu {
   padding: 12px 24px;
+  visibility: hidden;
 }
 
 .menuIcon,
@@ -256,4 +258,8 @@
   @media (--viewportMedium) {
     margin: 0;
   }
+}
+
+.caregivers {
+  composes: marketplaceTinyFontStyles from global;
 }
