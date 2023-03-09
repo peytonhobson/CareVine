@@ -74,11 +74,11 @@ const Footer = props => {
                 <p className={css.organizationDescription}>
                   <FormattedMessage id="Footer.organizationDescription" />
                 </p>
-                <p className={css.organizationCopyright}>
+                {/* <p className={css.organizationCopyright}>
                   <NamedLink name="LandingPage" className={css.copyrightLink}>
                     <FormattedMessage id="Footer.copyright" />
                   </NamedLink>
-                </p>
+                </p> */}
               </div>
             </div>
             <div className={css.infoLinks}>

@@ -523,10 +523,13 @@ export const hasStripeAccount = userId => (dispatch, getState, sdk) => {
   };
 
   const handleError = e => {
+    console.log(e);
     dispatch(hasStripeAccountError(storableError(e)));
     log.error(e, 'fetch-provider-account-failed', {});
     throw e;
   };
+
+  console.log(userId);
 
   return fetchHasStripeAccount({ userId })
     .then(handleSuccess)

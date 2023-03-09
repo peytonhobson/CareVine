@@ -6,13 +6,13 @@ module.exports = (req, res) => {
 
   const { userId } = req.body;
 
+  console.log(userId);
+
   integrationSdk.users
     .show({ id: userId.uuid, include: ['stripeAccount'] })
     .then(apiResponse => {
       const stripeAccountId =
-        apiResponse.data.data.attributes &&
-        apiResponse.data.data.attributes.profile &&
-        apiResponse.data.data.attributes.profile.metadata.stripeAccountId;
+        apiResponse?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
 
       if (!!stripeAccountId) {
         res

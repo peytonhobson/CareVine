@@ -30,6 +30,7 @@ const PaymentForm = props => {
     onPaymentSubmit,
     paymentIntent,
     selectedPaymentMethod,
+    onElementReady,
   } = props;
 
   const stripe = useStripe();
@@ -210,6 +211,7 @@ const PaymentForm = props => {
                   handlePaymentChange(element);
                 }}
                 className={css.paymentElement}
+                onReady={onElementReady}
               />
 
               <Checkbox
@@ -220,16 +222,17 @@ const PaymentForm = props => {
                 value={saveDefaultPayment}
                 className={css.checkbox}
               />
-              {/* Change this to match option for default bank account */}
-              {defaultPaymentMethods &&
-                (defaultPaymentMethods.card || defaultPaymentMethods.bankAccount) && (
-                  <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
-                    <FormattedMessage
-                      id="PaymentForm.useDefaultPaymentMethod"
-                      values={{ paymentMethod: selectedPaymentMethodLabel.toLocaleLowerCase() }}
-                    />
-                  </p>
-                )}
+
+              {((defaultPaymentMethods?.card && selectedPaymentMethod === 'creditCard') ||
+                (defaultPaymentMethods?.bankAccount &&
+                  selectedPaymentMethod === 'bankAccount')) && (
+                <p className={css.changeDefaultText} onClick={() => setShowDefaultPayment(true)}>
+                  <FormattedMessage
+                    id="PaymentForm.useDefaultPaymentMethod"
+                    values={{ paymentMethod: selectedPaymentMethodLabel.toLocaleLowerCase() }}
+                  />
+                </p>
+              )}
             </Fragment>
           )}
         </div>

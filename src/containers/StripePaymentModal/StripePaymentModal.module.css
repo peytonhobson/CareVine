@@ -10,34 +10,47 @@
 }
 
 .root.single {
-  min-width: 350px;
+  @media (--viewportMedium) {
+    min-width: 350px;
 
-  & .leftColumnContainer {
-    width: 350px;
+    & .leftColumnContainer {
+      width: 350px;
+    }
   }
 }
 
 .root.double {
-  display: grid;
-  grid-template-columns: 2;
-  column-gap: var(--modalPaddingMediumInline);
-  margin-top: 20px;
-  place-content: start;
-  min-width: calc(700px + var(--modalPaddingMediumInline));
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 2;
+    column-gap: var(--modalPaddingMediumInline);
+    margin-top: 20px;
+    place-content: start;
+    min-width: calc(700px + var(--modalPaddingMediumInline));
 
-  & .leftColumnContainer {
-    grid-column: 1/2;
-    width: 350px;
-  }
+    & .leftColumnContainer {
+      grid-column: 1/2;
+      width: 350px;
+    }
 
-  & .paymentElements {
-    grid-column: 2/2;
-    max-width: 350px;
+    & .paymentElements {
+      grid-column: 2/2;
+      max-width: 350px;
+    }
   }
 }
 
 .root.confirmation {
   min-width: 0;
+  padding-top: 40%;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    height: auto;
+    padding-top: 0;
+  }
 }
 
 .modalContainer {
@@ -49,6 +62,7 @@
   /* Display and dimensions */
   display: flex;
   flex-direction: column;
+  margin-top: 5vh;
   padding: var(--modalPadding);
 
   background-color: var(--matterColorLight);
@@ -57,11 +71,13 @@
 
   min-height: 100vh;
   height: 100%;
+  width: 100%;
 
   @media (--viewportMedium) {
     flex-basis: 0;
     min-height: auto;
     height: auto;
+    width: auto;
 
     padding: var(--modalPaddingMedium);
     margin-top: 12.5vh;
@@ -88,6 +104,11 @@
   flex-wrap: wrap;
 }
 
+.confirmationContainer {
+  margin-top: 20%;
+  margin: auto;
+}
+
 .confirmationText {
   display: flex;
   word-wrap: none;
@@ -95,6 +116,7 @@
   font-size: 30px;
   animation: 2.5s fadeIn;
   animation-fill-mode: forwards;
+  width: 100%;
 }
 
 .noPayoutMessage {
