@@ -597,7 +597,7 @@ textarea {
 .marketplaceHeroTitleFontStyles {
   font-weight: var(--fontWeightBold);
   font-size: 2.25rem;
-  line-height: 2.25rem;
+  line-height: 3rem;
   letter-spacing: -0.044rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
   margin-top: 1.563rem;
@@ -621,15 +621,15 @@ textarea {
   font-size: 0.75rem;
   line-height: 1.125rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
-  margin-top: 9.5px;
-  margin-bottom: 8.5px;
+  margin-top: 0.594rem;
+  margin-bottom: 0.531rem;
   -webkit-font-smoothing: subpixel-antialiased;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 10.5px;
-    margin-bottom: 13.5px;
+    margin-top: 0.656rem;
+    margin-bottom: 0.844rem;
   }
 }
 

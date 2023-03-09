@@ -4,14 +4,14 @@ import classNames from 'classnames';
 import css from './IconCertification.module.css';
 
 const IconCertification = props => {
-  const { rootClassName, className, size } = props;
+  const { rootClassName, className, size, width, height } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
     <svg
       className={classes}
-      width="20"
-      height="20"
+      width={width || '20'}
+      height={height || '20'}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 431.17 431.17"
     >

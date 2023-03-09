@@ -7,16 +7,15 @@
 }
 
 .listingCards {
-  padding: 0 24px 96px 24px;
+  padding: 0 1.5rem 6rem 1.5rem;
   position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 80rem;
+  width: 100vw;
 
   @media (--viewportMedium) {
-    /* display: grid;
-    grid-auto-flow: row; */
+    max-width: 80rem;
   }
 
   @media (--viewportLarge) {
@@ -27,10 +26,10 @@
 .listingCard {
   margin-bottom: 20px;
   padding-bottom: 20px;
-  flex-basis: 100%;
   position: relative;
 
   @media (--viewportLarge) {
+    flex-basis: 100%;
     /**
       * resultPanelWidthRatio = 0.625 aka 62.5%
 

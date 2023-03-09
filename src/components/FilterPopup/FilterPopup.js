@@ -118,6 +118,7 @@ class FilterPopup extends Component {
       initialValues,
       keepDirtyOnReinitialize,
       contentPlacementOffset,
+      buttonClassName,
     } = this.props;
 
     const classes = classNames(rootClassName || css.root, className);
@@ -140,7 +141,7 @@ class FilterPopup extends Component {
           }}
         >
           <button
-            className={classNames(labelStyles, labelMaxWidthStyles)}
+            className={buttonClassName || classNames(labelStyles, labelMaxWidthStyles)}
             style={labelMaxWidthMaybe}
             onClick={() => this.toggleOpen()}
           >

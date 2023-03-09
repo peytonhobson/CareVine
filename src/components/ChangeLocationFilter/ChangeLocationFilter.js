@@ -99,9 +99,13 @@ class ChangeLocationFilter extends Component {
     const hasInitialValues = !!initialValues && !!initialValues[queryParamName];
     // Parse options from param strings like "has_all:a,b,c" or "a,b,c"
 
-    const labelForPopup = hasInitialValues
-      ? intl.formatMessage({ id: 'ChangeLocationFilter.labelSelected' })
-      : 'Change Location';
+    const labelForPopup = hasInitialValues ? (
+      <span className={css.selectedLabel}>
+        {JSON.parse(initialValues[queryParamName])?.address.substring(0, 12)}...
+      </span>
+    ) : (
+      'Change Location'
+    );
 
     const labelForPlain = hasInitialValues
       ? intl.formatMessage({ id: 'ChangeLocationFilterPlainForm.labelSelected' })

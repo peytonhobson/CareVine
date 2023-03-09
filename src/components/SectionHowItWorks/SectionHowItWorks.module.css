@@ -39,7 +39,13 @@
 }
 
 .stepContent {
-  padding-left: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
+  }
 }
 
 .stepTitle {
@@ -52,22 +58,47 @@
   }
 }
 
+.stepText {
+  width: 100%;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
+  }
+}
+
 .createProfileImage {
-  max-height: 15rem;
+  max-width: 80vw;
   border: 1px solid var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    max-height: 15rem;
+    max-width: auto;
+  }
 }
 
 .employerListingImage {
-  max-height: 15rem;
+  max-width: 80vw;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
+  }
 }
 
 .caregiverListingImage {
-  max-height: 30rem;
+  max-width: 80vw;
+
+  @media (--viewportMedium) {
+    max-height: 30rem;
+  }
 }
 
 .caregiverInquiryImage {
-  max-width: 30rem;
   border: 1px solid var(--marketplaceColor);
+  max-width: 80vw;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
+  }
 }
 
 .getStartedLink {

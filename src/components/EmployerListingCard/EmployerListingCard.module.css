@@ -5,7 +5,8 @@
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  height: 22rem;
+  border-bottom: 1px solid var(--matterColorAnti);
+  margin-bottom: 0 !important;
   /* justify-content: space-between; */
 
   color: var(--marketplaceColor);
@@ -14,12 +15,21 @@
   &:hover {
     text-decoration: none;
   }
+
+  @media (--viewportMedium) {
+    height: 22rem;
+  }
 }
 
 .topRow {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
+  margin-top: 1rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
 }
 
 .modalTitle {
@@ -75,16 +85,15 @@
   font-size: 1.75rem;
   line-height: 2rem;
   display: flex;
-  width: 100%;
   justify-content: center;
 
-  /* Remove default margins from font */
-  margin-top: 0.5rem;
-  margin-bottom: 0;
+  margin: 0 0 0.5rem 0;
+  padding: 0;
 
   @media (--viewportMedium) {
     margin-top: 0.5rem;
     margin-bottom: 0;
+    width: 100%;
   }
 }
 
@@ -118,40 +127,56 @@
 
 .title {
   /* Font */
-  composes: h2 from global;
+  composes: h3 from global;
   color: var(--matterColor);
   position: relative;
   display: inline-block;
   text-align: left;
-  width: 100%;
+  width: 70%;
 
   /* Remove default margins from font */
   margin-top: 0.5rem;
   margin-bottom: 0;
 
   @media (--viewportMedium) {
-    margin-top: 0.5rem;
-    margin-bottom: 0;
+    composes: h2 from global;
+    text-align: left;
+    width: 100%;
   }
+}
+
+.mobileTitleContainer {
+  margin-bottom: 0rem;
+  display: flex;
 }
 
 .userTitle {
   composes: title;
   text-align: center;
+  width: 100%;
 }
 
 .location {
-  margin-block: 0.5rem;
+  margin: 0;
+
+  @media (--viewportMedium) {
+    margin-top: 1rem;
+  }
 }
 
 .topInfo {
   max-height: 10rem;
   width: 100%;
-  display: grid;
-  grid-template-columns: 65% 30%;
-  column-gap: 2rem;
   margin-top: 0.2rem;
   margin-left: 1rem;
+  display: flex;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 65% 30%;
+    column-gap: 2rem;
+  }
 }
 
 .topText {
@@ -167,13 +192,15 @@
 }
 
 .avatar {
-  width: 10rem;
-  height: 10rem;
-  /*
-  &.premium {
-    border: solid 5px var(--marketplaceColorLight);
-    border-radius: 3rem;
-  } */
+  width: 5rem;
+  height: 5rem;
+  margin: auto;
+  padding: 0;
+
+  @media (--viewportMedium) {
+    width: 10rem;
+    height: 10rem;
+  }
 }
 
 .avatarInitials {
@@ -184,7 +211,12 @@
   color: var(--matterColor);
   display: flex;
   margin-top: 1.5rem;
-  margin-left: 11rem;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    margin-left: 11rem;
+    justify-content: flex-start;
+  }
 }
 
 .bold {
@@ -197,6 +229,11 @@
 }
 
 .serviceCardItem {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+
   padding-inline: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--matterColorNegative);
@@ -207,10 +244,21 @@
 .buttonContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding-block: 1rem;
+  /* min-height: 6rem; */
+
   &:hover {
     text-decoration: none;
+  }
+
+  @media (--viewportMedium) {
+    margin-top: 1rem;
+    padding: 0;
+    flex-direction: row;
+    min-height: 0;
+    justify-content: center;
   }
 }
 
@@ -233,9 +281,13 @@
 }
 
 .scheduleType {
-  margin-top: 1rem;
-  margin-bottom: 0;
+  margin-top: 0.2rem;
+  margin-bottom: 0.75rem;
   color: var(--matterColor);
+
+  @media (--viewportMedium) {
+    margin-top: 0.5rem;
+  }
 }
 
 .badge {

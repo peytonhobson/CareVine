@@ -35,6 +35,10 @@
   }
 }
 
+.selectedLabel {
+  overflow: hidden;
+}
+
 .predictionsRoot {
   position: absolute;
   width: 100%;

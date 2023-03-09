@@ -35,6 +35,8 @@ import css from './CaregiverListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 export const CaregiverListingCardComponent = props => {
   const { className, rootClassName, intl, listing, filtersConfig, currentUserListing } = props;
 
@@ -96,7 +98,7 @@ export const CaregiverListingCardComponent = props => {
   const avatarComponent = (
     <Avatar
       className={avatarClasses}
-      renderSizes="(max-width: 767px) 96px, 240px"
+      renderSizes="(max-width: 767px) 6rem, 15rem"
       user={currentAuthor}
       initialsClassName={css.avatarInitials}
       disableProfileLink
@@ -165,12 +167,14 @@ export const CaregiverListingCardComponent = props => {
     </div>
   );
 
-  const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
-    width: '30rem',
-    height: '28rem',
-    marginBottom: '3rem',
-    marginInline: '1.5rem',
+  console.log(isMobile);
 
+  const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
+    width: isMobile ? '100%' : '30rem',
+    aspectRatio: '1 / 1',
+    // height: '28rem',
+    marginBottom: '3rem',
+    marginInline: isMobile ? 0 : '1.5rem',
     '&.MuiPaper-rounded': {
       borderRadius: '3rem',
     },
@@ -184,11 +188,21 @@ export const CaregiverListingCardComponent = props => {
   const borderProps = {
     border: '3px solid var(--marketplaceColor)',
   };
-  const cardClasses = !hasPremiumSubscription ? useStyles(borderProps) : null;
+  const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
+
+  const Wrapper = ({ children }) => {
+    return isMobile ? (
+      <div className={classes}>{children}</div>
+    ) : (
+      <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+        {children}
+      </NamedLink>
+    );
+  };
 
   return (
     <Card className={cardClasses?.root}>
-      <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+      <Wrapper>
         <div className={css.topRow}>
           <div className={css.user}>
             {avatarComponent}
@@ -197,12 +211,12 @@ export const CaregiverListingCardComponent = props => {
                 longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
                 longWordClass: css.longWord,
               })}
-              {hasPremiumSubscription && (
+              {/* {hasPremiumSubscription && (
                 <InfoTooltip
                   title={premiumIconTitle}
-                  icon={<IconCheckmark className={css.premiumIcon} />}
+                  icon={<IconCheckmark className={css.premiumIcon} viewBox="0 0 1em 0.75em" />}
                 />
-              )}
+              )} */}
             </div>
           </div>
 
@@ -223,28 +237,52 @@ export const CaregiverListingCardComponent = props => {
                 />
               </h3>
             </div>
-            <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
+            {!isMobile && (
+              <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
+            )}
           </div>
         </div>
         <div className={css.mainInfo}>
+          {isMobile && (
+            <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
+          )}
           <div className={css.badges}>
             <div className={css.badge}>
-              <InfoTooltip title={backgroundCheckTitle} icon={<IconSearch />} />
+              <InfoTooltip
+                title={backgroundCheckTitle}
+                icon={<IconSearch height={isMobile ? '15' : null} width={isMobile ? '16' : null} />}
+                styles={{ paddingInline: '0' }}
+                onClick={() => console.log('here')}
+              />
             </div>
             {certificationsAndTraining && (
               <div className={css.badge}>
-                <InfoTooltip title={certificationsAndTrainingTitle} icon={<IconCertification />} />
+                <InfoTooltip
+                  title={certificationsAndTrainingTitle}
+                  icon={
+                    <IconCertification
+                      height={isMobile ? '15' : null}
+                      width={isMobile ? '16' : null}
+                    />
+                  }
+                  styles={{ paddingInline: '0' }}
+                />
               </div>
             )}
             {additionalInfo && additionalInfo.includes('hasCar') && (
               <div className={css.badge}>
-                <InfoTooltip title={hasCarTitle} icon={<IconCar />} />
+                <InfoTooltip
+                  title={hasCarTitle}
+                  icon={<IconCar height={isMobile ? '15' : null} width={isMobile ? '16' : null} />}
+                  styles={{ paddingInline: '0' }}
+                />
               </div>
             )}
             <div className={css.badge}>
               <InfoTooltip
                 title={experienceLevelTitle}
                 icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
+                styles={{ paddingInline: '0' }}
               />
             </div>
             {scheduleTypes && scheduleTypes.includes('liveIn') && (
@@ -255,7 +293,10 @@ export const CaregiverListingCardComponent = props => {
                       <FormattedMessage id="CaregiverListingCard.liveInCare" />
                     </p>
                   }
-                  icon={<IconHouse />}
+                  icon={
+                    <IconHouse height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
+                  }
+                  styles={{ paddingInline: '0' }}
                 />
               </div>
             )}
@@ -267,12 +308,14 @@ export const CaregiverListingCardComponent = props => {
                       <FormattedMessage id="CaregiverListingCard.oneTimeCare" />
                     </p>
                   }
-                  icon={<IconCalendar />}
+                  icon={
+                    <IconCalendar height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
+                  }
+                  styles={{ paddingInline: '0' }}
                 />
               </div>
             )}
           </div>
-
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
               {providedServices.slice(0, 2).map(service => (
@@ -295,7 +338,7 @@ export const CaregiverListingCardComponent = props => {
             </div>
           </div>
         </div>
-      </NamedLink>
+      </Wrapper>
       <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
         <Button className={css.messageButton}>
           <FormattedMessage id="CaregiverListingCard.viewProfile" />
