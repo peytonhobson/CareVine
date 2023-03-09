@@ -1,10 +1,18 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   display: flex;
+  margin-top: 5vh;
   height: 100%;
+  width: 100%;
   align-content: space-between;
   flex-wrap: wrap;
   transition-delay: 1.5s;
-  width: 350px;
+
+  @media (--viewportMedium) {
+    width: 350px;
+    margin-top: 0;
+  }
 }
 
 .paymentElementContainer {
@@ -34,15 +42,17 @@
 }
 
 .defaultPaymentTitle {
+  composes: h1 from global;
   font-weight: var(--fontWeightBold);
-  font-size: 20px;
-  line-height: 24px;
+
   letter-spacing: -0.5px;
   /* margin: 0; */
   text-align: center;
+  width: 100%;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
+    font-size: 20px;
     line-height: 40px;
     letter-spacing: -0.9px;
     margin-bottom: 10px;
@@ -73,4 +83,9 @@
 
 .checkbox {
   margin-block: 10px;
+}
+
+.paymentElement {
+  width: 100%;
+  margin-top: 1rem;
 }

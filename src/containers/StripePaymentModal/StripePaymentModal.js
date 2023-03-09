@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 
 import { arrayOf, bool, func, object, oneOfType, shape, string } from 'prop-types';
 import { compose } from 'redux';
@@ -30,6 +30,8 @@ import config from '../../config';
 import css from './StripePaymentModal.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
+
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const StripePaymentModalComponent = props => {
   const {
@@ -72,6 +74,7 @@ const StripePaymentModalComponent = props => {
   const [rootClass, setRootClass] = useState(classNames(css.root, css.single));
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const paymentFormRef = useRef(null);
 
   //TODO: Move this to load data?
   useEffect(() => {
@@ -95,6 +98,14 @@ const StripePaymentModalComponent = props => {
       setRootClass(classNames(css.root, css.confirmation));
     }
   }, [paymentIntent, confirmPaymentSuccess]);
+
+  const onElementReady = () => {
+    if (isMobile && paymentFormRef?.current) {
+      setTimeout(() => {
+        paymentFormRef.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 500);
+    }
+  };
 
   const onHandleReviewPayment = values => {
     const { amount, paymentMethod } = values;
@@ -137,7 +148,11 @@ const StripePaymentModalComponent = props => {
       sendbirdContext,
       providerListing,
       methodType
-    );
+    ).then(() => {
+      if (isMobile) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
   };
 
   const onHandleClose = () => {
@@ -160,7 +175,7 @@ const StripePaymentModalComponent = props => {
     },
     rules: {
       '.Input': {
-        display: 'block',
+        display: 'flex',
         width: '100%',
         margin: '0',
         paddingLeft: '0',
@@ -250,7 +265,7 @@ const StripePaymentModalComponent = props => {
                 </div>
               )}
               {clientSecret && !confirmPaymentSuccess && (
-                <div className={css.paymentElements}>
+                <div className={css.paymentElements} ref={paymentFormRef}>
                   {showPaymentForm && (
                     <Elements options={options} stripe={stripePromise}>
                       <PaymentForm
@@ -268,6 +283,7 @@ const StripePaymentModalComponent = props => {
                         onPaymentSubmit={onHandlePaymentSubmit}
                         paymentIntent={paymentIntent}
                         selectedPaymentMethod={selectedPaymentMethod}
+                        onElementReady={onElementReady}
                       />
                     </Elements>
                   )}
