@@ -8,11 +8,17 @@ const SIZE_SMALL = 'small';
 const SIZE_BIG = 'big';
 
 const IconCheckmark = props => {
-  const { rootClassName, className, size } = props;
+  const { rootClassName, className, size, viewBox } = props;
   const classes = classNames(rootClassName || css.root, className);
   if (size === SIZE_SMALL) {
     return (
-      <svg className={classes} width="16" height="12" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        className={classes}
+        width="1em"
+        height="0.75em"
+        viewBox={viewBox || '0 0 1em 0.75em'}
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <path
           d="M14 2l-8 8-4-4"
           strokeWidth="2.5"

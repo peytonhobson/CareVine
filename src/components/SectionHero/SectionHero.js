@@ -9,7 +9,7 @@ import css from './SectionHero.module.css';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
-  const { rootClassName, className, userType, currentUserListing } = props;
+  const { rootClassName, className, userType, currentUserListing, currentUserFetched } = props;
 
   useEffect(() => {
     setMounted(true);
@@ -39,52 +39,54 @@ const SectionHero = props => {
 
   return (
     <div className={classes}>
-      <div className={css.heroContent}>
-        {userType ? (
-          <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
-            <FormattedMessage id={title} />
-          </h1>
-        ) : (
-          <Logo format="hero" className={css.logo} alt="CareVine" />
-        )}
-        <h2 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
-          <FormattedMessage id="SectionHero.subTitle" />
-        </h2>
-        {/* Change this to use current location w/ mapbox */}
-        {location ? (
-          <NamedLink
-            name="SearchPage"
-            to={{ search: `?${origin}&${distance}&sort=relevant` }}
-            className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-          >
-            <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
-          </NamedLink>
-        ) : userType ? (
-          currentUserListing ? (
-            <OwnListingLink
-              listing={currentUserListing}
-              listingFetched={!!currentUserListing}
+      {currentUserFetched && (
+        <div className={css.heroContent}>
+          {userType ? (
+            <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
+              <FormattedMessage id={title} />
+            </h1>
+          ) : (
+            <Logo format="hero" className={css.logo} alt="CareVine" />
+          )}
+          <h2 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
+            <FormattedMessage id="SectionHero.subTitle" />
+          </h2>
+          {/* Change this to use current location w/ mapbox */}
+          {location ? (
+            <NamedLink
+              name="SearchPage"
+              to={{ search: `?${origin}&${distance}&sort=relevant` }}
               className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
             >
-              <FormattedMessage id="SectionHero.finishYourProfileButton" />
-            </OwnListingLink>
+              <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
+            </NamedLink>
+          ) : userType ? (
+            currentUserListing ? (
+              <OwnListingLink
+                listing={currentUserListing}
+                listingFetched={!!currentUserListing}
+                className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+              >
+                <FormattedMessage id="SectionHero.finishYourProfileButton" />
+              </OwnListingLink>
+            ) : (
+              <NamedLink
+                className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                name="NewListingPage"
+              >
+                <FormattedMessage id="SectionHero.addYourProfileButton" />
+              </NamedLink>
+            )
           ) : (
             <NamedLink
+              name="SignupPage"
               className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-              name="NewListingPage"
             >
-              <FormattedMessage id="SectionHero.addYourProfileButton" />
+              <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
             </NamedLink>
-          )
-        ) : (
-          <NamedLink
-            name="SignupPage"
-            className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-          >
-            <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
-          </NamedLink>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -47,7 +47,9 @@ module.exports = queryEvents = () => {
 
   const queryEvents = args => {
     var filter = { eventTypes: ['user/updated, listing/updated, user/deleted', 'user/created'] };
-    return integrationSdk.events.query({ ...args, ...filter });
+    return integrationSdk.events
+      .query({ ...args, ...filter })
+      .catch(e => log.error(e, 'Error querying events'));
   };
 
   const saveLastEventSequenceId = sequenceId => {
@@ -55,6 +57,7 @@ module.exports = queryEvents = () => {
     try {
       fs.writeFileSync(stateFile, sequenceId.toString());
     } catch (err) {
+      log.error(err);
       throw err;
     }
   };
@@ -65,6 +68,7 @@ module.exports = queryEvents = () => {
       const data = fs.readFileSync(stateFile);
       return parseInt(data, 10);
     } catch (err) {
+      log.error(err);
       return null;
     }
   };

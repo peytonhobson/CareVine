@@ -145,6 +145,7 @@ export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';
 export { default as CaregiverListingMainContent } from './ListingMainContent/CaregiverListingMainContent';
 export { default as CareScheduleExceptions } from './CareScheduleExceptions/CareScheduleExceptions';
+export { default as ChangeLocationFilter } from './ChangeLocationFilter/ChangeLocationFilter';
 export { default as Discussion } from './Discussion/Discussion';
 export { default as DistanceFilter } from './DistanceFilter/DistanceFilter';
 export { default as EmployerListingCard } from './EmployerListingCard/EmployerListingCard';

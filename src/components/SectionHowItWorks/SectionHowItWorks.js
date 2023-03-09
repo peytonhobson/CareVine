@@ -72,7 +72,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part1TitleCaregiver" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part1TextCaregiver" />
               </p>
               <img className={css.createProfileImage} src={createProfileImage} />
@@ -84,7 +84,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part2TitleCaregiver" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part2TextCaregiver" />
               </p>
               <img className={css.employerListingImage} src={employerListingImage} />
@@ -96,7 +96,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part3TitleCaregiver" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part3TextCaregiver" />
               </p>
               <img className={css.caregiverInquiryImage} src={caregiverInquiryMessage} />
@@ -110,7 +110,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part1TitleEmployer" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part1TextEmployer" />
               </p>
               <img className={css.createProfileImage} src={employerCareTypes} />
@@ -122,7 +122,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part2TitleEmployer" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part2TextEmployer" />
               </p>
               <img className={css.caregiverListingImage} src={caregiverListingImage} />
@@ -134,7 +134,7 @@ const SectionHowItWorks = props => {
               <FormattedMessage id="SectionHowItWorks.part3TitleEmployer" />
             </h1>
             <div className={css.stepContent}>
-              <p>
+              <p className={css.stepText}>
                 <FormattedMessage id="SectionHowItWorks.part3TextEmployer" />
               </p>
               <img className={css.caregiverInquiryImage} src={employerInquiryMessage} />

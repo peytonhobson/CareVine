@@ -39,8 +39,6 @@ const employerSearchFilters = [
   'certificationsAndTraining',
   'additionalInfo',
   'languagesSpoken',
-  'experienceLevel',
-  'covidVaccination',
 ];
 
 // Search filters that can be used to filter caregivers as an employer
@@ -54,7 +52,6 @@ const caregiverSearchFilters = [
   'detailedCareNeeds',
   'additionalInfo',
   'languagesSpoken',
-  'covidVaccination',
 ];
 
 const cleanSearchFromConflictingParams = (searchParams, sortConfig, filterConfig) => {
@@ -342,21 +339,29 @@ class MainPanel extends Component {
           onCloseModal={onCloseModal}
           resetAll={this.resetAll}
           selectedFiltersCount={selectedFiltersCount}
+          initialLocation={this.initialValues(['location'])}
+          onLocationChange={this.getHandleChangedValueFn(true)}
         >
-          {filterConfig.map(config => {
-            return (
-              <FilterComponent
-                key={`SearchFiltersMobile.${config.id}`}
-                idPrefix="SearchFiltersMobile"
-                filterConfig={config}
-                urlQueryParams={urlQueryParams}
-                initialValues={this.initialValues}
-                getHandleChangedValueFn={this.getHandleChangedValueFn}
-                liveEdit
-                showAsPopup={false}
-              />
-            );
-          })}
+          {filterConfig
+            .filter(filter =>
+              userType === CAREGIVER
+                ? caregiverSearchFilters.includes(filter.id)
+                : employerSearchFilters.includes(filter.id)
+            )
+            .map(config => {
+              return (
+                <FilterComponent
+                  key={`SearchFiltersMobile.${config.id}`}
+                  idPrefix="SearchFiltersMobile"
+                  filterConfig={config}
+                  urlQueryParams={urlQueryParams}
+                  initialValues={this.initialValues}
+                  getHandleChangedValueFn={this.getHandleChangedValueFn}
+                  liveEdit
+                  showAsPopup={false}
+                />
+              );
+            })}
         </SearchFiltersMobile>
         {isSecondaryFiltersOpen ? (
           <div className={classNames(css.searchFiltersPanel)}>

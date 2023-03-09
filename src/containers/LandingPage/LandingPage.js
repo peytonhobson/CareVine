@@ -33,6 +33,7 @@ export const LandingPageComponent = props => {
     currentUserListing,
     currentUserListingFetched,
     currentUser,
+    currentUserFetched,
   } = props;
 
   // Schema for search engines (helps them to understand what this page is about)
@@ -73,16 +74,19 @@ export const LandingPageComponent = props => {
               location={location}
               userType={userType}
               currentUserListing={currentUserListing}
+              currentUserFetched={currentUserFetched}
             />
           </div>
           <ul className={css.sections}>
             <li className={css.section}>
               <div className={css.sectionContent}>
-                <SectionHowItWorks
-                  currentUser={currentUser}
-                  currentUserListing={currentUserListing}
-                  currentUserListingFetched={currentUserListingFetched}
-                />
+                {currentUserFetched && (
+                  <SectionHowItWorks
+                    currentUser={currentUser}
+                    currentUserListing={currentUserListing}
+                    currentUserListingFetched={currentUserListingFetched}
+                  />
+                )}
               </div>
             </li>
           </ul>
@@ -114,11 +118,17 @@ LandingPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { currentUser, currentUserListing, currentUserListingFetched } = state.user;
+  const {
+    currentUser,
+    currentUserFetched,
+    currentUserListing,
+    currentUserListingFetched,
+  } = state.user;
 
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
+    currentUserFetched,
     currentUserListing,
     currentUserListingFetched,
   };

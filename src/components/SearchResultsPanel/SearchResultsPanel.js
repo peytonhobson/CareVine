@@ -53,6 +53,7 @@ const SearchResultsPanel = props => {
         {listings.map(l =>
           currentUserType === EMPLOYER ? (
             <CaregiverListingCard
+              className={css.listingCard}
               key={l.id.uuid}
               listing={l}
               renderSizes={cardRenderSizes}

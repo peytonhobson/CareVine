@@ -3,11 +3,14 @@ import { bool, func, object, node, number, shape, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
+import config from '../../config';
 
 import routeConfiguration from '../../routeConfiguration';
 import { createResourceLocatorString } from '../../util/routes';
-import { ModalInMobile, Button } from '../../components';
+import { ModalInMobile, Button, ChangeLocationFilter } from '../../components';
 import css from './SearchFiltersMobile.module.css';
+
+const FILTER_DROPDOWN_OFFSET = -14;
 
 class SearchFiltersMobileComponent extends Component {
   constructor(props) {
@@ -73,6 +76,9 @@ class SearchFiltersMobileComponent extends Component {
       onManageDisableScrolling,
       selectedFiltersCount,
       intl,
+      urlQueryParams,
+      initialLocation,
+      onLocationChange,
     } = this.props;
 
     const classes = classNames(rootClassName || css.root, className);
@@ -93,6 +99,10 @@ class SearchFiltersMobileComponent extends Component {
     const filtersButtonClasses =
       selectedFiltersCount > 0 ? css.filtersButtonSelected : css.filtersButton;
 
+    const locationButtonClasses = urlQueryParams.location
+      ? css.filtersButtonSelected
+      : css.filtersButton;
+
     return (
       <div className={classes}>
         <div className={css.searchResultSummary}>
@@ -108,9 +118,20 @@ class SearchFiltersMobileComponent extends Component {
             />
           </Button>
           {sortByComponent}
-          <div className={css.mapIcon} onClick={onMapIconClick}>
+          <ChangeLocationFilter
+            id="SearchFiltersMobile.changeLocation"
+            name="location"
+            filterConfig={config}
+            urlQueryParams={urlQueryParams}
+            initialValues={initialLocation}
+            showAsPopup
+            contentPlacementOffset={FILTER_DROPDOWN_OFFSET}
+            onSubmit={onLocationChange}
+            buttonClassName={locationButtonClasses}
+          />
+          {/* <div className={css.mapIcon} onClick={onMapIconClick}>
             <FormattedMessage id="SearchFiltersMobile.openMapView" className={css.mapIconText} />
-          </div>
+          </div> */}
         </div>
         <ModalInMobile
           id="SearchFiltersMobile.filters"

@@ -30,6 +30,8 @@ import css from './EmployerListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const priceData = (rates, intl) => {
   const minPriceMoney = new Money(rates[0], 'USD');
   const maxPriceMoney = new Money(rates[1], 'USD');
@@ -139,10 +141,9 @@ export const EmployerListingCardComponent = props => {
     scheduleType && scheduleTypeOptions.find(option => option.key === scheduleType).label;
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
-    width: '60rem',
-    height: '19rem',
+    width: isMobile ? '100%' : '60rem',
+    height: isMobile ? 'auto' : '19rem',
     marginBottom: '1.5rem',
-
     '&.MuiPaper-rounded': {
       borderRadius: '3rem',
     },
@@ -160,64 +161,85 @@ export const EmployerListingCardComponent = props => {
     <>
       <Card>
         <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-          <div className={css.topRow}>
-            <div className={css.user}>
-              {avatarComponent}
-              <div className={css.userTitle}>
-                {richText(userDisplayName, {
-                  longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
-                  longWordClass: css.longWord,
-                })}
+          {isMobile && (
+            <div className={css.mobileTitleContainer}>
+              <div className={css.user}>
+                {avatarComponent}
+                <div className={css.userTitle}>
+                  {richText(userDisplayName, {
+                    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+                    longWordClass: css.longWord,
+                  })}
+                </div>
               </div>
+              <div className={css.title}>{title}</div>
             </div>
+          )}
+          <div className={css.topRow}>
+            {!isMobile && (
+              <div className={css.user}>
+                {avatarComponent}
+                <div className={css.userTitle}>
+                  {richText(userDisplayName, {
+                    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+                    longWordClass: css.longWord,
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className={css.topInfo}>
               <div>
-                <div className={css.title}>{title}</div>
-                <h3 className={css.location}>
-                  <FormattedMessage
-                    id="EmployerListingCard.location"
-                    values={{ city: location.city, miles: distanceFromLocation }}
-                  />
-                </h3>
-                <h3 className={css.scheduleType}>
-                  <FormattedMessage
-                    id={'EmployerListingCard.scheduleType'}
-                    values={{ type: `${scheduleTypeLabel}${isLiveIn ? ' (Live-In)' : ''}` }}
-                  />
-                </h3>
-                {scheduleType === '24hour' || scheduleType === 'repeat' ? (
-                  <AvailabilityPreview entries={entries} availableDays={availableDays} />
-                ) : (
-                  <InlineTextButton
-                    onClick={e => {
-                      e.preventDefault();
-                      setIsOneTimeScheduleModalOpen(true);
-                    }}
-                  >
-                    <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                  </InlineTextButton>
-                )}
-              </div>
-              <div>
-                <div className={css.priceValue} title={priceTitle}>
-                  {formattedMinPrice}-{maxPrice / 100}
-                  <span className={css.perUnit}>
-                    &nbsp;
-                    <FormattedMessage id={'EmployerListingCard.perUnit'} />
-                  </span>
-                </div>
-                <div className={css.buttonContainer}>
-                  <Button className={css.messageButton}>
-                    <FormattedMessage id={'EmployerListingCard.viewProfile'} />
-                  </Button>
+                {!isMobile && <div className={css.title}>{title}</div>}
+                <div>
+                  <h3 className={css.location}>
+                    <FormattedMessage
+                      id="EmployerListingCard.location"
+                      values={{ city: location.city, miles: distanceFromLocation }}
+                    />
+                  </h3>
+                  <h3 className={css.scheduleType}>
+                    <FormattedMessage
+                      id={'EmployerListingCard.scheduleType'}
+                      values={{ type: `${scheduleTypeLabel}${isLiveIn ? ' (Live-In)' : ''}` }}
+                    />
+                  </h3>
+                  {scheduleType === '24hour' || scheduleType === 'repeat' ? (
+                    <AvailabilityPreview entries={entries} availableDays={availableDays} />
+                  ) : (
+                    <InlineTextButton
+                      onClick={e => {
+                        e.preventDefault();
+                        setIsOneTimeScheduleModalOpen(true);
+                      }}
+                    >
+                      <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
+                    </InlineTextButton>
+                  )}
                 </div>
               </div>
+
+              {!isMobile && (
+                <div>
+                  <div className={css.priceValue} title={priceTitle}>
+                    {formattedMinPrice}-{maxPrice / 100}
+                    <span className={css.perUnit}>
+                      &nbsp;
+                      <FormattedMessage id={'EmployerListingCard.perUnit'} />
+                    </span>
+                  </div>
+                  <div className={css.buttonContainer}>
+                    <Button className={css.messageButton}>
+                      <FormattedMessage id={'EmployerListingCard.viewProfile'} />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
-              {careTypesLabels.slice(0, 3).map(careType => (
+              {careTypesLabels.slice(0, isMobile ? 2 : 3).map(careType => (
                 <p className={css.serviceCardItem}>{careType && careType.split('/')[0]}</p>
               ))}
               {careTypes && careTypes.length > 2 && (
@@ -237,6 +259,20 @@ export const EmployerListingCardComponent = props => {
             </div>
           </div>
         </NamedLink>
+        {isMobile && (
+          <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
+            <div className={css.priceValue} title={priceTitle}>
+              {formattedMinPrice}-{maxPrice / 100}
+              <span className={css.perUnit}>
+                &nbsp;
+                <FormattedMessage id={'EmployerListingCard.perUnit'} />
+              </span>
+            </div>
+            <Button className={css.messageButton}>
+              <FormattedMessage id="EmployerListingCard.viewProfile" />
+            </Button>
+          </NamedLink>
+        )}
       </Card>
       {onManageDisableScrolling && (
         <Modal

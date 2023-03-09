@@ -4,15 +4,15 @@ import classNames from 'classnames';
 import css from './IconCar.module.css';
 
 const IconCar = props => {
-  const { rootClassName, className } = props;
+  const { rootClassName, className, height, width } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
     <svg
       className={classes}
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
+      width={width || '20'}
+      height={height || '20'}
       viewBox="0 0 256 256"
     >
       <defs></defs>

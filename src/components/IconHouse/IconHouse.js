@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import css from './IconHouse.module.css';
 
 const IconHouse = props => {
-  const { rootClassName, className } = props;
+  const { rootClassName, className, width, height } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
@@ -13,8 +13,8 @@ const IconHouse = props => {
       version="1.1"
       id="Capa_1"
       xmlns="http://www.w3.org/2000/svg"
-      width="20px"
-      height="20px"
+      width={width || '20'}
+      height={height || '20'}
       viewBox="0 0 495.398 495.398"
     >
       <g>
