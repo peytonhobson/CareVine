@@ -1,3 +1,5 @@
+@import '../../../styles/customMediaQueries.css';
+
 /* Title of the modal */
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
@@ -6,6 +8,20 @@
 /* Paragraph for the Modal */
 .modalMessage {
   composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  padding-top: 5rem;
+  /* min-height: 100vh; */
+  /* height: 100%; */
+
+  background-color: var(--matterColorBright);
+
+  @media (--viewportMedium) {
+    padding-top: 3rem;
+  }
 }
 
 .modalButtonContainer {
