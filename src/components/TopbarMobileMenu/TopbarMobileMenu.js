@@ -15,6 +15,7 @@ import {
   NamedLink,
   NotificationBadge,
   OwnListingLink,
+  ListingLink,
 } from '../../components';
 import { CAREGIVER } from '../../util/constants';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
@@ -105,16 +106,20 @@ const TopbarMobileMenu = props => {
   const distance = 'distance=30';
   const location = currentUserListing?.attributes?.publicData?.location;
 
-  const searchListings =
-    isAuthenticated && location ? (
-      <NamedLink
-        className={classNames(css.navigationLink, css.searchListings)}
-        name="SearchPage"
-        to={{ search: `?${origin}&${distance}&sort=relevant` }}
-      >
-        {userType === CAREGIVER ? <span>My Job Board</span> : <span>Find Caregivers</span>}
-      </NamedLink>
-    ) : null;
+  const listingLink =
+    isAuthenticated && currentUserListingFetched && currentUserListing && !isNewListing ? (
+      <ListingLink
+        className={css.navigationLink}
+        listing={currentUserListing}
+        children={<FormattedMessage id="TopbarDesktop.viewListing" />}
+      />
+    ) : (
+      <OwnListingLink
+        listing={currentUserListing}
+        listingFetched={currentUserListingFetched}
+        className={css.navigationLink}
+      />
+    );
 
   return (
     <div className={css.root}>
@@ -144,11 +149,7 @@ const TopbarMobileMenu = props => {
             {/* {notificationCountBadge} */}
           </span>
         )}
-        <OwnListingLink
-          listing={currentUserListing}
-          listingFetched={currentUserListingFetched}
-          className={css.navigationLink}
-        />
+        {listingLink}
         <NamedLink
           className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}
           name="AccountSettingsPage"
