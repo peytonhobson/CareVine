@@ -19,7 +19,7 @@ import {
 import { TopbarSearchForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
-import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
+
 const isDev = process.env.REACT_APP_ENV === 'development';
 
 const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];

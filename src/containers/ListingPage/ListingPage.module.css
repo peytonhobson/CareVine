@@ -13,7 +13,9 @@
 }
 
 .subContainer {
-  width: 60%;
+  @media (--viewportMedium) {
+    width: 60%;
+  }
 }
 
 .pageRoot {
