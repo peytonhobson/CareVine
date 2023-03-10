@@ -12,6 +12,8 @@ import css from './ListingSummary.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const ListingSummaryComponent = props => {
   const {
     listing,
@@ -71,17 +73,31 @@ const ListingSummaryComponent = props => {
             initialsClassName={css.avatarInitials}
             disableProfileLink
           />
+          {isMobile && (
+            <div className={css.priceValue} title={priceTitle}>
+              {formattedMinPrice}-{maxPrice / 100}
+              <span className={css.perUnit}>
+                &nbsp;
+                <FormattedMessage id={'CaregiverListingCard.perUnit'} />
+              </span>
+            </div>
+          )}
         </div>
         <div className={css.topInfo} style={{ flexDirection: userType !== CAREGIVER && 'row' }}>
           <div style={{ width: '100%' }}>{richName}</div>
-          <div className={css.priceValue} title={priceTitle}>
-            {formattedMinPrice}-{maxPrice / 100}
-            <span className={css.perUnit}>
-              &nbsp;
-              <FormattedMessage id={'CaregiverListingCard.perUnit'} />
-            </span>
-          </div>
-          <div style={{ color: userType !== CAREGIVER && 'var(--marketplaceColor)' }}>
+          {!isMobile && (
+            <div className={css.priceValue} title={priceTitle}>
+              {formattedMinPrice}-{maxPrice / 100}
+              <span className={css.perUnit}>
+                &nbsp;
+                <FormattedMessage id={'CaregiverListingCard.perUnit'} />
+              </span>
+            </div>
+          )}
+          <div
+            className={css.locations}
+            style={{ color: userType !== CAREGIVER && 'var(--marketplaceColor)' }}
+          >
             <h3 className={css.location}>{location.city}</h3>
             <h3 className={css.location}>
               <FormattedMessage

@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   padding-block: 2rem;
   display: flex;
@@ -6,8 +8,13 @@
 }
 
 .user {
-  display: flex;
-  max-width: 70%;
+  max-width: 85%;
+  display: grid;
+  grid-template-columns: auto auto;
+
+  @media (--viewportMedium) {
+    max-width: 70%;
+  }
 }
 
 .userDisplay {
@@ -58,18 +65,30 @@
 }
 
 .avatar {
-  width: 10rem;
-  height: 10rem;
+  width: 5rem;
+  height: 5rem;
+
+  @media (--viewportMedium) {
+    width: 10rem;
+    height: 10rem;
+  }
 }
 
 .topInfo {
+  margin-top: auto;
   max-height: 10rem;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
   margin-top: 0.2rem;
-  margin-left: 1rem;
+  margin-left: 2rem;
+
+  @media (--viewportMedium) {
+    margin-left: 1rem;
+  }
 }
 
 .priceValue {
@@ -79,13 +98,13 @@
   color: var(--marketplaceColor);
 
   /* Remove default margins from font */
-  margin-top: 0;
+  margin-top: 1rem;
   margin-bottom: 0;
-  margin-right: 2rem;
 
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
+    margin-right: 2rem;
   }
 }
 
@@ -129,15 +148,22 @@
 
   /* Remove default margins from font */
   margin: 0;
+}
 
-  /* @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-  } */
+.locations {
+  @media (--viewportMedium) {
+    display: block;
+  }
 }
 
 .location {
+  display: flex;
+  flex-wrap: nowrap;
   margin: 0;
+
+  @media (--viewportMedium) {
+    display: block;
+  }
 }
 
 .longWord {

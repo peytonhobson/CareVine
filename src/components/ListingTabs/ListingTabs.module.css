@@ -1,8 +1,10 @@
+@import '../../styles/customMediaQueries.css';
+
 .nav {
   /* Layout */
   display: flex;
   position: sticky;
-  top: var(--topbarHeightDesktop);
+  top: var(--topbarHeight);
   z-index: 1;
   flex-direction: row;
   padding: 0 0.5rem;
@@ -11,10 +13,11 @@
   box-shadow: var(--boxShadowLight);
   border-top: 2px solid var(--matterColorNegative);
   overflow-x: scroll;
-  width: 100%;
+  max-width: 100%;
   justify-content: space-between;
 
   @media (--viewportLarge) {
+    top: var(--topbarHeightDesktop);
     /* padding: 128px 0 82px 36px; */
     /* flex-direction: column; */
     overflow-x: auto;
@@ -29,9 +32,8 @@
 }
 
 .tab {
-  margin-left: 16px;
   white-space: nowrap;
-  font-size: x-large;
+  max-width: 15%;
 
   &:first-child {
     margin-left: 0;
@@ -43,6 +45,10 @@
   &:last-child {
     /* Padding added to tab so that it will be visible after call to scrollToTab */
     padding-right: 24px;
+  }
+
+  @media (--viewportMedium) {
+    margin-left: 1rem;
   }
 
   @media (--viewportLarge) {
@@ -61,9 +67,14 @@
 .tabContent {
   /* Font */
   font-weight: var(--fontWeightSemiBold);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
   letter-spacing: 0;
+
+  @media (--viewportMedium) {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 }
 
 .section {
