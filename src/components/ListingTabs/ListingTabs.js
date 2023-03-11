@@ -19,12 +19,14 @@ import {
 import css from './ListingTabs.module.css';
 import { findOptionsForSelectFilter } from '../../util/search';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const caregiverTabs = [
   'Availability',
   'Bio',
   'Services',
-  'Certifications/Training',
-  'Additional Info',
+  isMobile ? 'Training' : 'Certifications/Training',
+  'Additional',
 ];
 const employerTabs = [
   'Job Description',
@@ -82,13 +84,13 @@ const ListingTabs = props => {
       case 'Services':
         servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
-      case 'Certifications/Training':
+      case isMobile ? 'Training' : 'Certifications/Training':
         certificationsAndTrainingRef.current.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
         break;
-      case 'Additional Info':
+      case 'Additional':
         additionalInfoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         break;
       case 'Job Description':
@@ -130,7 +132,7 @@ const ListingTabs = props => {
             ref={servicesRef}
           />
         );
-      case 'Certifications/Training':
+      case isMobile ? 'Training' : 'Certifications/Training':
         return (
           <CertificationsSection
             key={key}
@@ -141,7 +143,7 @@ const ListingTabs = props => {
             ref={certificationsAndTrainingRef}
           />
         );
-      case 'Additional Info':
+      case 'Additional':
         return (
           <AdditionalInfoSection
             key={key}
@@ -204,7 +206,7 @@ const ListingTabs = props => {
       <ButtonTabNavHorizontal
         tabs={tabs}
         rootClassName={css.nav}
-        tabRootClassName={css.tabRoot}
+        tabRootClassName={css.tab}
         tabContentClass={css.tabContent}
         tabClassName={css.tab}
       />

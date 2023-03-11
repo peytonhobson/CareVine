@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import { findOptionsForSelectFilter } from '../../../util/search';
 
 import { SectionCard } from './';
+import classNames from 'classnames';
 
 import css from './sections.module.css';
 
@@ -28,7 +29,7 @@ const CaregiverPreferencesSection = forwardRef((props, ref) => {
     <SectionCard title={caregiverPreferencesTitle}>
       {idealCaregiverDetails?.trim() !== '' && (
         <>
-          <h2 className={css.subTitle}>About</h2>
+          <h2 className={classNames(css.subTitle, css.noTopMargin)}>About</h2>
           <p>{idealCaregiverDetails}</p>
         </>
       )}

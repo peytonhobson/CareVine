@@ -73,20 +73,38 @@ const ListingSummaryComponent = props => {
             initialsClassName={css.avatarInitials}
             disableProfileLink
           />
-          {isMobile && (
-            <div className={css.priceValue} title={priceTitle}>
-              {formattedMinPrice}-{maxPrice / 100}
-              <span className={css.perUnit}>
-                &nbsp;
-                <FormattedMessage id={'CaregiverListingCard.perUnit'} />
-              </span>
-            </div>
-          )}
+          {isMobile ? (
+            userType === EMPLOYER ? (
+              <div className={css.priceValue} title={priceTitle}>
+                {formattedMinPrice}-{maxPrice / 100}
+                <span className={css.perUnit}>
+                  &nbsp;
+                  <FormattedMessage id={'CaregiverListingCard.perUnit'} />
+                </span>
+              </div>
+            ) : (
+              <div style={{ width: '100%', marginTop: '0.5rem' }}>{richName}</div>
+            )
+          ) : null}
         </div>
-        <div className={css.topInfo} style={{ flexDirection: userType !== CAREGIVER && 'row' }}>
-          <div style={{ width: '100%' }}>{richName}</div>
-          {!isMobile && (
-            <div className={css.priceValue} title={priceTitle}>
+        <div
+          className={css.topInfo}
+          style={{
+            flexDirection: userType !== CAREGIVER && 'row',
+            alignItems: userType === CAREGIVER ? 'flex-start' : 'center',
+            justifyContent: userType === CAREGIVER && isMobile && 'center',
+            marginTop: userType === CAREGIVER && '0',
+          }}
+        >
+          {isMobile && userType === CAREGIVER ? null : (
+            <div style={{ width: '100%' }}>{richName}</div>
+          )}
+          {(!isMobile || userType === CAREGIVER) && (
+            <div
+              className={css.priceValue}
+              title={priceTitle}
+              style={{ marginTop: userType === CAREGIVER && '0' }}
+            >
               {formattedMinPrice}-{maxPrice / 100}
               <span className={css.perUnit}>
                 &nbsp;

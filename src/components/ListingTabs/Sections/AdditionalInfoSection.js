@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 
 import { findOptionsForSelectFilter } from '../../../util/search';
+import classNames from 'classnames';
 
 import { SectionCard } from './';
 
@@ -21,7 +22,7 @@ const AdditionalInfoSection = forwardRef((props, ref) => {
     <SectionCard title={additionalInfoCardTitle} ref={ref}>
       {additionalInfo?.length > 0 && (
         <>
-          <h2 className={css.subTitle}>Additional</h2>
+          <h2 className={classNames(css.subTitle, css.noTopMargin)}>Additional</h2>
           <ul className={css.itemContainer}>
             {additionalInfo?.map((info, index) => {
               return currentUserListing?.attributes?.publicData?.additionalInfo?.includes(info) ? (

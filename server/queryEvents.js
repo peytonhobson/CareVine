@@ -352,11 +352,11 @@ module.exports = queryEvents = () => {
   const pollLoop = sequenceId => {
     var params = sequenceId ? { startAfterSequenceId: sequenceId } : { createdAtStart: startTime };
     queryEvents(params).then(res => {
-      const events = res.data.data;
-      const fullPage = events.length === res.data.meta.perPage;
+      const events = res?.data?.data;
+      const fullPage = events.length === res?.data?.meta?.perPage;
       const delay = fullPage ? pollWait : pollIdleWait;
       const lastEvent = events[events.length - 1];
-      const lastSequenceId = lastEvent ? lastEvent.attributes.sequenceId : sequenceId;
+      const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
       events.forEach(e => {
         handleEvent(e);
