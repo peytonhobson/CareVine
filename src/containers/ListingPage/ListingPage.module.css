@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   margin: 0 auto;
   padding: 3rem 0;
 }
@@ -567,6 +567,20 @@
   }
   @media (--viewportLarge) {
     margin: 53px 0 27px 0;
+  }
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  padding-top: 5rem;
+  /* min-height: 100vh; */
+  /* height: 100%; */
+
+  background-color: var(--matterColorBright);
+
+  @media (--viewportMedium) {
+    padding-top: 3rem;
   }
 }
 

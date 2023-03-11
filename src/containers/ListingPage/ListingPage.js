@@ -452,6 +452,7 @@ export class ListingPageComponent extends Component {
             {this.state.enquiryModalOpen && (
               <SendbirdModal
                 contentClassName={css.enquiryModalContent}
+                containerClassName={css.modalContainer}
                 isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
                 onClose={() => this.setState({ enquiryModalOpen: false })}
                 onManageDisableScrolling={onManageDisableScrolling}

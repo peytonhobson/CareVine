@@ -1,24 +1,35 @@
+@import '../../styles/customMediaQueries.css';
+
 .customizedApp {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 400px;
   margin-top: 10px;
+  height: 60vh;
+
+  @media (--viewportMedium) {
+    height: 400px;
+    min-width: 40rem;
+  }
 }
 
 .header {
-  display: grid;
-  grid-template-columns: 2;
+  display: flex;
+  justify-content: space-evenly;
 }
 
-.leftHeader {
-  grid-column: 1/2;
+.heading {
+  max-width: 80%;
+
+  @media (--viewportMedium) {
+    max-width: 100%;
+  }
 }
 
 .rightHeader {
-  grid-column: 2/2;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  padding-right: 1rem;
 }
 
 .avatarBase {

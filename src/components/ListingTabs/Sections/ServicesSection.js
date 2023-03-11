@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 
 import { findOptionsForSelectFilter } from '../../../util/search';
+import classNames from 'classnames';
 
 import { SectionCard } from './';
 
@@ -19,7 +20,7 @@ const ServicesSection = forwardRef((props, ref) => {
 
   return (
     <SectionCard title={servicesCardTitle} ref={ref}>
-      <h2 className={css.subTitle}>Care Types:</h2>
+      <h2 className={classNames(css.subTitle, css.noTopMargin)}>Care Types:</h2>
       <ul className={css.itemContainer}>
         {careTypes?.map(service => {
           return currentUserListing?.attributes?.publicData?.careTypes?.includes(service) ? (

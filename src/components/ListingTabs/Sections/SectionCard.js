@@ -1,13 +1,28 @@
 import React, { forwardRef } from 'react';
 
-import { Card as MuiCard, CardHeader as MuiCardHeader, CardContent } from '@mui/material';
+import {
+  Card as MuiCard,
+  CardHeader as MuiCardHeader,
+  CardContent as MuiCardContent,
+} from '@mui/material';
 import { styled } from '@material-ui/styles';
 import classNames from 'classnames';
 
 import css from './sections.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const SectionCard = forwardRef((props, ref) => {
-  const { rootClassName, className, children, title, ...rest } = props;
+  const {
+    rootClassName,
+    className,
+    children,
+    title,
+    headerStyles,
+    cardStyles,
+    cardContentStyles,
+    ...rest
+  } = props;
   const classes = classNames(rootClassName || css.section, className);
 
   const CardHeader = styled(props => <MuiCardHeader {...props} />)(({ theme }) => ({
@@ -20,10 +35,17 @@ const SectionCard = forwardRef((props, ref) => {
       fontFamily: 'var(--fontFamily)',
       fontWeight: 'var(--fontWeightSemiBold)',
     },
+    ...headerStyles,
   }));
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     minHeight: '10rem',
+    marginInline: isMobile ? '1rem' : '0',
+    ...cardStyles,
+  }));
+
+  const CardContent = styled(props => <MuiCardContent {...props} />)(({ theme }) => ({
+    ...cardContentStyles,
   }));
 
   return (

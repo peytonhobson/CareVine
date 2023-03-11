@@ -22,6 +22,8 @@ const weekdayMap = [
   { day: 'sun', label: 'Sunday' },
 ];
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const CareScheduleSection = forwardRef((props, ref) => {
   const { availabilityPlan, filterConfig } = props;
 
@@ -29,7 +31,10 @@ const CareScheduleSection = forwardRef((props, ref) => {
 
   const careScheduleCardTitle = (
     <h1 className={css.title}>
-      Care Schedule ({scheduleTypes.find(s => s.key === availabilityPlan?.type)?.label})
+      Care Schedule{' '}
+      <span style={{ display: isMobile && 'inline-block' }}>
+        ({scheduleTypes.find(s => s.key === availabilityPlan?.type)?.label})
+      </span>
     </h1>
   );
 
@@ -38,9 +43,10 @@ const CareScheduleSection = forwardRef((props, ref) => {
   switch (availabilityPlan?.type) {
     case AVAILABILITY_PLAN_TYPE_ONE_TIME:
       const { selectedSessions } = availabilityPlan;
+      console.log(availabilityPlan);
       content = (
         <div className={css.container}>
-          <ViewCalendar entries={selectedSessions} />
+          <ViewCalendar selectedSessions={selectedSessions} planType="oneTime" />
         </div>
       );
       break;
@@ -67,7 +73,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
               <p>
-                <span className={css.bold}>Start Date: </span>
+                <span className={isMobile ? css.smallBold : css.bold}>Start Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.startDate
                     ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
@@ -77,7 +83,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
             </span>
             <span className={css.dateContainer}>
               <p>
-                <span className={css.bold}>End Date: </span>
+                <span className={isMobile ? css.smallBold : css.bold}>End Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.endDate
                     ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
@@ -137,7 +143,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
               <p>
-                <span className={css.bold}>Start Date: </span>
+                <span className={isMobile ? css.smallBold : css.bold}>Start Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.startDate
                     ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
@@ -147,7 +153,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
             </span>
             <span className={css.dateContainer}>
               <p>
-                <span className={css.bold}>End Date: </span>
+                <span className={isMobile ? css.smallBold : css.bold}>End Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.endDate
                     ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
@@ -163,8 +169,15 @@ const CareScheduleSection = forwardRef((props, ref) => {
       content = null;
   }
 
+  const cardContentStyles =
+    isMobile && availabilityPlan?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
+      ? {
+          paddingBottom: '0 !important',
+        }
+      : {};
+
   return (
-    <SectionCard title={careScheduleCardTitle} ref={ref}>
+    <SectionCard title={careScheduleCardTitle} ref={ref} cardContentStyles={cardContentStyles}>
       {content}
     </SectionCard>
   );

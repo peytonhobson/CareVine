@@ -22,6 +22,7 @@ const SendbirdModal = props => {
     history,
     onGenerateAccessToken,
     generateAccessTokenInProgress,
+    containerClassName,
   } = props;
 
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
@@ -68,6 +69,7 @@ const SendbirdModal = props => {
     <Modal
       id="SendbirdModal"
       contentClassName={css.enquiryModalContent}
+      containerClassName={containerClassName}
       isOpen={isOpen}
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}

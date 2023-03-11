@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 
 import { findOptionsForSelectFilter } from '../../../util/search';
 import { SectionCard } from './';
+import classNames from 'classnames';
 
 import css from './sections.module.css';
 
@@ -16,6 +17,7 @@ const JobDescriptionSection = forwardRef((props, ref) => {
 
   return (
     <SectionCard title={jobDescriptionTitle} ref={ref}>
+      <h2 className={classNames(css.subTitle, css.noTopMargin)}>Description</h2>
       <p>{listing?.attributes?.description}</p>
       <h2 className={css.subTitle}>Care Types</h2>
       <ul className={css.itemContainer}>
