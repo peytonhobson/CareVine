@@ -16,7 +16,7 @@ import ScreeningDescription from './ScreeningDescription';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import PaymentInfo from './PaymentInfo';
-import { VINE_CHECK_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
+import { CAREVINE_GOLD_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -98,12 +98,9 @@ const BACKGROUND_CHECK_REJECTED = 'BACKGROUND_CHECK_REJECTED';
 const UPDATE_USER = 'UPDATE_USER';
 const QUIZ_MAX_ATTEMPTS_FAILED = 'QUIZ_MAX_ATTEMPTS_FAILED';
 
-const BASIC_CHECK_PRICE = 1499;
-const VINE_CHECK_PRICE = 499;
 const MAX_QUIZ_ATTEMPTS = 3;
 
 const BASIC = 'basic';
-const VINE_CHECK = 'vineCheck';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
@@ -371,7 +368,7 @@ const EditListingBackgroundCheckPanel = props => {
             setBackgroundCheckType(bcType);
             onCreateSubscription(
               stripeCustomerId,
-              bcType === BASIC ? BASIC_CHECK_PRICE_ID : VINE_CHECK_PRICE_ID,
+              bcType === BASIC ? BASIC_CHECK_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
               currentUser.id.uuid,
               backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
             );

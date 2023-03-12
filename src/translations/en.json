@@ -1303,7 +1303,7 @@
   "SubscriptionsPage.title": "Subscriptions",
   "SubscriptionsPage.fetchDefaultPaymentErrorMessage": "There was an error fetching your default payment method. Please try again.",
   "SubscriptionsPage.unpaid": "Unpaid (Paused)",
-  "SubscriptionsPage.vineCheck": "Vine Check (Premium)",
+  "SubscriptionsPage.vineCheck": "CareVine Gold (Premium)",
   "SubscriptionsPage.wontChargeUntil": "You won't be charged until your current billing period ends on {renewalDate}",
   "TermsOfServicePage.heading": "Terms of Service",
   "TermsOfServicePage.privacyTabTitle": "Privacy Policy",
