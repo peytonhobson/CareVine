@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/styles';
 import css from './EditListingBackgroundCheckPanel.module.css';
 
 const BASIC = 'basic';
-const VINE_CHECK = 'vineCheck';
+const GOLD = 'gold';
 
 const ScreeningDescription = props => {
   const { onPayForBC } = props;
@@ -58,30 +58,32 @@ const ScreeningDescription = props => {
   const useStyles = makeStyles({
     root: props => ({
       backgroundColor: props.backgroundColor,
+      background: props.background,
       '&:hover': {
         backgroundColor: props.hoverBackgroundColor,
       },
     }),
   });
 
-  const greenProps = {
-    backgroundColor: 'var(--marketplaceColor) !important',
+  const goldProps = {
+    background:
+      'radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important',
   };
   const greyProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
   };
-  const greenClasses = useStyles(greenProps);
+  const goldClasses = useStyles(goldProps);
   const greyClasses = useStyles(greyProps);
 
-  const greenButtonProps = {
-    backgroundColor: 'var(--marketplaceColor) !important',
-    hoverBackgroundColor: 'var(--marketplaceColorDark) !important',
+  const goldButtonProps = {
+    background:
+      'radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%), radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important',
   };
   const greyButtonProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
     hoverBackgroundColor: 'var(--matterColor) !important',
   };
-  const greenButtonClasses = useStyles(greenButtonProps);
+  const goldButtonClasses = useStyles(goldButtonProps);
   const greyButtonClasses = useStyles(greyButtonProps);
 
   return (
@@ -105,7 +107,7 @@ const ScreeningDescription = props => {
             </ul>
             <ul className={css.negativeList}>
               <li>
-                <p>Vine Check badge to inform employers you are safe</p>
+                <p>CareVine Gold badge to inform employers you are safe</p>
               </li>
             </ul>
           </div>
@@ -117,7 +119,7 @@ const ScreeningDescription = props => {
         </CardActions>
       </Card>
       <Card className={css.vineCheckCard}>
-        <CardHeader title="Vine Check" className={greenClasses.root} />
+        <CardHeader title="CareVine Gold" className={goldClasses.root} />
         <CardContent>
           <div className={css.screeningTitleContainer}>
             <h2 className={css.screeningTitle}>Make your profile stand out</h2>
@@ -133,14 +135,14 @@ const ScreeningDescription = props => {
                 <p>Apply to jobs</p>
               </li>
               <li>
-                <p>Vine Check badge to inform employers you are safe</p>
+                <p>CareVine Gold badge to inform employers you are safe</p>
               </li>
             </ul>
           </div>
         </CardContent>
         <CardActions>
-          <Button className={greenButtonClasses.root} onClick={() => onPayForBC(VINE_CHECK)}>
-            Pay for Vine Check
+          <Button className={goldButtonClasses.root} onClick={() => onPayForBC(GOLD)}>
+            Pay for CareVine Gold
           </Button>
         </CardActions>
       </Card>

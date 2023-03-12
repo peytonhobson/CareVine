@@ -7,7 +7,7 @@ import { FREE_FIRST_PERIOD_ID } from '../../util/constants';
 import css from './EditListingBackgroundCheckPanel.module.css';
 
 const BASIC = 'basic';
-const VINE_CHECK = 'vineCheck';
+const GOLD = 'gold';
 
 const PaymentInfo = props => {
   const {
@@ -52,7 +52,7 @@ const PaymentInfo = props => {
       <h2>Order Summary</h2>
       <div className={css.spreadSection}>
         <h3>{backgroundCheckType === BASIC ? 'Screening Fee' : '1-Month Subscription'}:</h3>
-        {freeFirstPeriod && backgroundCheckType === VINE_CHECK ? (
+        {freeFirstPeriod && backgroundCheckType === GOLD ? (
           <h3>
             <span className={css.greyedtext}>${subTotal / 100}</span>
             <span className={css.newDiscount}>$0.00</span>
@@ -69,7 +69,7 @@ const PaymentInfo = props => {
       <hr></hr>
       <div className={css.spreadSection}>
         <h3>Total:</h3>
-        {freeFirstPeriod && backgroundCheckType === VINE_CHECK ? (
+        {freeFirstPeriod && backgroundCheckType === GOLD ? (
           <h3>
             <span className={css.greyedtext}>${total / 100} </span>
             <span className={css.newDiscount}>$0.00</span>
@@ -78,7 +78,7 @@ const PaymentInfo = props => {
           <h3>${total / 100}</h3>
         )}
       </div>
-      {backgroundCheckType === VINE_CHECK && (
+      {backgroundCheckType === GOLD && (
         <div className={css.promoContainer}>
           <div>
             <label htmlFor="promo-code">Promo Code</label>

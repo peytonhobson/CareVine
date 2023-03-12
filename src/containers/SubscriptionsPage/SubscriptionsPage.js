@@ -36,7 +36,7 @@ import {
   cancelFutureSubscription,
 } from '../../ducks/stripe.duck';
 import SubscriptionCard from './SubscriptionCard';
-import { VINE_CHECK_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
+import { CAREVINE_GOLD_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
 import { useEffect } from 'react';
@@ -229,7 +229,9 @@ const SubscriptionsPageComponent = props => {
   const handleReactivateSubscription = () => {
     const changeSubscription = bcType !== isReactivateSubscriptionPaymentModalOpen;
     const priceId =
-      isReactivateSubscriptionPaymentModalOpen == VINE ? VINE_CHECK_PRICE_ID : BASIC_CHECK_PRICE_ID;
+      isReactivateSubscriptionPaymentModalOpen == VINE
+        ? CAREVINE_GOLD_PRICE_ID
+        : BASIC_CHECK_PRICE_ID;
     const cardId =
       defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id;
 

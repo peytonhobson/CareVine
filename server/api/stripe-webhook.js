@@ -1,7 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { handleError, serialize, integrationSdk } = require('../api-util/sdk');
 const log = require('../log');
-const VINE_CHECK_PRICE_ID =
+const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
@@ -36,7 +36,7 @@ const updateBackgroundCheckSubscription = subscription => {
             // May set this to null if webhooks work
             status: subscription.status,
             subscriptionId: subscription.id,
-            type: subscription.items.data[0].price.id === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
+            type: subscription.items.data[0].price.id === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic',
             currentPeriodEnd: subscription.current_period_end,
             amount: subscription.plan.amount,
             cancelAtPeriodEnd: subscription.cancel_at_period_end,
@@ -63,8 +63,8 @@ const updateBackgroundCheckSubscriptionSchedule = schedule => {
           scheduleId: schedule.id,
           status: schedule.status,
           startDate: schedule.phases[0].start_date,
-          type: schedule.phases[0].items[0].price === VINE_CHECK_PRICE_ID ? 'vine' : 'basic',
-          amount: schedule.phases[0].items[0].price === VINE_CHECK_PRICE_ID ? 499 : 1499,
+          type: schedule.phases[0].items[0].price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic',
+          amount: schedule.phases[0].items[0].price === CAREVINE_GOLD_PRICE_ID ? 499 : 1499,
         },
       },
     })

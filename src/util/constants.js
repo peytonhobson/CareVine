@@ -2,7 +2,7 @@ export const EMPLOYER = 'employer';
 export const CAREGIVER = 'caregiver';
 
 // Price IDs for Stripe
-export const VINE_CHECK_PRICE_ID =
+export const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';

@@ -20,7 +20,7 @@
   background-color: var(--matterColorBright);
 
   @media (--viewportMedium) {
-    padding-top: 3rem;
+    min-width: 35rem;
   }
 }
 
