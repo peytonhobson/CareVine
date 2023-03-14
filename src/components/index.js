@@ -18,6 +18,7 @@ export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
 export { default as IconCalendar } from './IconCalendar/IconCalendar'
 export { default as IconCar } from './IconCar/IconCar';
 export { default as IconCard } from './IconCard/IconCard';
+export { default as IconCareVineGold } from './IconCareVineGold/IconCareVineGold';
 export { default as IconCertification } from './IconCertification/IconCertification';
 export { default as IconCheckmark } from './IconCheckmark/IconCheckmark';
 export { default as IconClose } from './IconClose/IconClose';

@@ -26,6 +26,7 @@ import {
   IconHouse,
   IconCalendar,
   AvailabilityPreview,
+  IconCareVineGold,
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
@@ -59,12 +60,11 @@ export const CaregiverListingCardComponent = props => {
   } = publicData;
   const slug = createSlug(userDisplayName);
 
-  const backgroundCheckSubscription = authorMetadata && authorMetadata.backgroundCheckSubscription;
+  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
-    backgroundCheckSubscription &&
-    backgroundCheckSubscription.status === 'active' &&
-    backgroundCheckSubscription.type === 'vine';
+    backgroundCheckSubscription?.status === 'active' &&
+    backgroundCheckSubscription?.type === 'vine';
 
   const backgroundCheckApprovedDate =
     authorMetadata &&
@@ -120,23 +120,12 @@ export const CaregiverListingCardComponent = props => {
       ))}
     </ul>
   );
-  const backgroundCheckTitle =
-    backgroundCheckSubscription && backgroundCheckSubscription.type === 'vine' ? (
-      <p>
-        <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
-      </p>
-    ) : (
-      <p>
-        <FormattedMessage
-          id="CaregiverListingCard.lastBackgroundChecked"
-          values={{
-            date:
-              backgroundCheckApprovedDate &&
-              new Date(backgroundCheckApprovedDate).toLocaleDateString(),
-          }}
-        />
-      </p>
-    );
+  const backgroundCheckTitle = (
+    <p>
+      <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
+    </p>
+  );
+
   const hasCarTitle = (
     <p>
       <FormattedMessage id="CaregiverListingCard.hasCarTitle" />
@@ -166,8 +155,6 @@ export const CaregiverListingCardComponent = props => {
       </ul>
     </div>
   );
-
-  console.log(isMobile);
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: isMobile ? '100%' : '30rem',
@@ -211,12 +198,6 @@ export const CaregiverListingCardComponent = props => {
                 longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
                 longWordClass: css.longWord,
               })}
-              {/* {hasPremiumSubscription && (
-                <InfoTooltip
-                  title={premiumIconTitle}
-                  icon={<IconCheckmark className={css.premiumIcon} viewBox="0 0 1em 0.75em" />}
-                />
-              )} */}
             </div>
           </div>
 
@@ -247,14 +228,20 @@ export const CaregiverListingCardComponent = props => {
             <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
           )}
           <div className={css.badges}>
-            <div className={css.badge}>
-              <InfoTooltip
-                title={backgroundCheckTitle}
-                icon={<IconSearch height={isMobile ? '15' : null} width={isMobile ? '16' : null} />}
-                styles={{ paddingInline: '0' }}
-                onClick={() => console.log('here')}
-              />
-            </div>
+            {hasPremiumSubscription && (
+              <div className={css.goldBadge}>
+                <InfoTooltip
+                  title={backgroundCheckTitle}
+                  icon={
+                    <IconCareVineGold
+                      height={isMobile ? '1.3em' : '1.6em'}
+                      width={isMobile ? '1.3em' : '1.8em'}
+                    />
+                  }
+                  styles={{ paddingInline: '0' }}
+                />
+              </div>
+            )}
             {certificationsAndTraining && (
               <div className={css.badge}>
                 <InfoTooltip
