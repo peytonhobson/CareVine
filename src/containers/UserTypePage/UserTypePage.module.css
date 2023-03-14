@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   flex-grow: 1;
   width: 100vw;
@@ -11,10 +13,14 @@
 }
 
 .subRoot {
-  width: 40vw;
+  width: 80vw;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+
+  @media (--viewportMedium) {
+    width: 40vw;
+  }
 }
 
 .buttonGroupRoot {
