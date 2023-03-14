@@ -117,6 +117,7 @@ ClientApp.propTypes = { store: any.isRequired };
 
 export const ServerApp = props => {
   const { url, context, helmetContext, store, hostedTranslations = {} } = props;
+
   setupLocale();
   HelmetProvider.canUseDOM = false;
   return (
