@@ -125,6 +125,7 @@ class RouteComponentRenderer extends Component {
 
     if (
       isAuthenticated &&
+      currentUser &&
       !currentUser?.attributes?.profile?.metadata?.userType &&
       !fetchCurrentUserInProgress &&
       route.name !== 'UserTypePage'
