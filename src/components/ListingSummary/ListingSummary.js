@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { Avatar, AvailabilityPreview, Button, SecondaryButton } from '..';
+import {
+  Avatar,
+  AvailabilityPreview,
+  Button,
+  SecondaryButton,
+  IconCareVineGold,
+  InfoTooltip,
+} from '..';
 import { formatPrice, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { compose } from 'redux';
@@ -29,6 +36,15 @@ const ListingSummaryComponent = props => {
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
   const { minPrice, maxPrice, availabilityPlan, location } = publicData;
+  const authorMetadata = author?.attributes?.profile?.metadata;
+
+  console.log(authorMetadata);
+
+  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+
+  const hasPremiumSubscription =
+    backgroundCheckSubscription?.status === 'active' &&
+    backgroundCheckSubscription?.type === 'vine';
 
   const currentUserGeolocation = currentUserListing?.attributes?.geolocation;
 
@@ -37,7 +53,10 @@ const ListingSummaryComponent = props => {
   const displayName = userDisplayNameAsString(author);
 
   const richName = (
-    <span className={userType === CAREGIVER ? css.name : css.title}>
+    <span
+      className={userType === CAREGIVER ? css.name : css.title}
+      style={{ width: userType === CAREGIVER && isMobile && 'auto !important' }}
+    >
       {richText(userType === CAREGIVER ? displayName : title, {
         longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
         longWordClass: css.longWord,
@@ -62,6 +81,12 @@ const ListingSummaryComponent = props => {
     onBookNow(initialValues);
   };
 
+  const backgroundCheckTitle = (
+    <p>
+      <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
+    </p>
+  );
+
   return (
     <div className={css.root}>
       <div className={css.user}>
@@ -83,7 +108,23 @@ const ListingSummaryComponent = props => {
                 </span>
               </div>
             ) : (
-              <div style={{ width: '100%', marginTop: '0.5rem' }}>{richName}</div>
+              <div className={css.nameContainer} style={{ marginTop: '0.5rem' }}>
+                {richName}
+                {hasPremiumSubscription && (
+                  <div className={css.goldBadge}>
+                    <InfoTooltip
+                      title={backgroundCheckTitle}
+                      icon={
+                        <IconCareVineGold
+                          height={isMobile ? '1.2em' : '1.6em'}
+                          width={isMobile ? '1.4em' : '2em'}
+                        />
+                      }
+                      styles={{ paddingInline: '0' }}
+                    />
+                  </div>
+                )}
+              </div>
             )
           ) : null}
         </div>
@@ -97,7 +138,23 @@ const ListingSummaryComponent = props => {
           }}
         >
           {isMobile && userType === CAREGIVER ? null : (
-            <div style={{ width: '100%' }}>{richName}</div>
+            <div className={css.nameContainer}>
+              {richName}
+              {hasPremiumSubscription && (
+                <div className={css.goldBadge}>
+                  <InfoTooltip
+                    title={backgroundCheckTitle}
+                    icon={
+                      <IconCareVineGold
+                        height={isMobile ? '15' : '1.6em'}
+                        width={isMobile ? '16' : '2em'}
+                      />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+            </div>
           )}
           {(!isMobile || userType === CAREGIVER) && (
             <div

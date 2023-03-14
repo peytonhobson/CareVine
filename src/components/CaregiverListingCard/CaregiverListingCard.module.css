@@ -244,6 +244,12 @@
   }
 }
 
+.goldBadge {
+  /* border: solid 2px rgba(202, 170, 86, 1); */
+
+  margin-right: 1rem;
+}
+
 .badge {
   border: solid 2px var(--marketplaceColor);
   margin-right: 1rem;

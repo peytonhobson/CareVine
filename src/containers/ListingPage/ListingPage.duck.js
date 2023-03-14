@@ -239,7 +239,7 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
   dispatch(fetchCurrentUser());
   const params = {
     id: listingId,
-    include: ['author', 'author.profileImage', 'images'],
+    include: ['author', 'author.profileImage', 'author.metadata', 'images'],
     'fields.image': [
       // Listing page
       'variants.landscape-crop',
