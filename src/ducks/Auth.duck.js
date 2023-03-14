@@ -205,16 +205,15 @@ export const signup = params => (dispatch, getState, sdk) => {
     return Promise.reject(new Error('Login or logout already in progress'));
   }
   dispatch(signupRequest());
-  const { email, password, firstName, lastName, userType, ...rest } = params;
+  const { email, password, firstName, lastName, ...rest } = params;
 
   const createUserParams = isEmpty(rest)
-    ? { email, password, firstName, lastName, publicData: { userType } }
+    ? { email, password, firstName, lastName }
     : {
         email,
         password,
         firstName,
         lastName,
-        publicData: { userType },
         protectedData: { ...rest },
       };
 
@@ -223,13 +222,6 @@ export const signup = params => (dispatch, getState, sdk) => {
   return (
     sdk.currentUser
       .create(createUserParams)
-      .then(() =>
-        //Maybe put message on screen if this fails to contact team
-        updateUserMetadata({
-          email,
-          metadata: { userType },
-        })
-      )
       .then(() => dispatch(signupSuccess()))
       //Need to change login to create profile path
       .then(() => dispatch(login(email, password)))

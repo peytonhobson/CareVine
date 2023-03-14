@@ -32,6 +32,7 @@ const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayou
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "SubscriptionPage" */ './containers/SubscriptionsPage/SubscriptionsPage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
+const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ './containers/StyleguidePage/StyleguidePage'));
@@ -308,6 +309,13 @@ const routeConfiguration = () => {
       authPage: 'LoginPage',
       component: SubscriptionsPage,
       loadData: pageDataLoadingAPI.SubscriptionsPage.loadData,
+    },
+    {
+      path: '/select-user-type',
+      name: 'UserTypePage',
+      component: UserTypePage,
+      auth: true,
+      loadData: pageDataLoadingAPI.UserTypePage.loadData,
     },
     {
       path: '/notfound',

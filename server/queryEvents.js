@@ -291,29 +291,6 @@ module.exports = queryEvents = () => {
       }
     }
 
-    if (eventType === 'user/created') {
-      // If user has userType in publicData, but not in metadata, add userType to metadata
-      // This indicates the update user metadata call failed
-
-      const currentAttributes = event?.attributes?.resource?.attributes;
-      const metadata = currentAttributes?.profile?.metadata;
-      const publicData = currentAttributes?.profile?.publicData;
-
-      if (publicData?.userType && !metadata?.userType) {
-        const userId = event?.attributes?.resource?.id?.uuid;
-
-        console.log('update user metadata userType');
-        integrationSdk.users
-          .updateProfile({
-            id: userId,
-            metadata: {
-              userType: publicData?.userType,
-            },
-          })
-          .catch(err => log.error(err));
-      }
-    }
-
     if (eventType === 'user/deleted') {
       const previousValues = event?.attributes?.previousValues;
       const userId = previousValues?.id?.uuid;
