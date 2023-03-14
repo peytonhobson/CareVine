@@ -108,12 +108,30 @@ class RouteComponentRenderer extends Component {
   }
 
   render() {
-    const { route, match, location, staticContext, currentUser } = this.props;
+    const {
+      route,
+      match,
+      location,
+      staticContext,
+      currentUser,
+      isAuthenticated,
+      fetchCurrentUserInProgress,
+    } = this.props;
     const { component: RouteComponent, authPage = 'SignupPage', extraProps } = route;
     const canShow = canShowComponent(this.props);
     if (!canShow) {
       staticContext.unauthorized = true;
     }
+
+    if (
+      isAuthenticated &&
+      !currentUser?.attributes?.profile?.metadata?.userType &&
+      !fetchCurrentUserInProgress &&
+      route.name !== 'UserTypePage'
+    ) {
+      return <NamedRedirect name="UserTypePage" />;
+    }
+
     const isInboxPage = route.name === 'InboxPage';
     if (isInboxPage && !canShow) {
       this.props.dispatch(changeModalValue(getMissingInfoModalValue(currentUser)));
@@ -152,7 +170,8 @@ RouteComponentRenderer.propTypes = {
 const mapStateToProps = state => {
   const { isAuthenticated, logoutInProgress } = state.Auth;
   const { currentUser } = state.user;
-  return { isAuthenticated, logoutInProgress, currentUser };
+  const { fetchCurrentUserInProgress } = state.user;
+  return { isAuthenticated, logoutInProgress, currentUser, fetchCurrentUserInProgress };
 };
 
 const RouteComponentContainer = compose(connect(mapStateToProps))(RouteComponentRenderer);

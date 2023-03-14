@@ -31,23 +31,6 @@ const SignupFormComponent = props => (
         form,
       } = fieldRenderProps;
 
-      // select user type
-      const userTypeSelectLabel = intl.formatMessage({
-        id: 'SignupForm.userTypeSelectLabel',
-      });
-      const employerSelectLabel = intl.formatMessage({
-        id: 'SignupForm.employerSelectLabel',
-      });
-      const employerSelectValue = intl.formatMessage({
-        id: 'SignupForm.employerSelectValue',
-      });
-      const caregiverSelectLabel = intl.formatMessage({
-        id: 'SignupForm.caregiverSelectLabel',
-      });
-      const caregiverSelectValue = intl.formatMessage({
-        id: 'SignupForm.caregiverSelectValue',
-      });
-
       // email
       const emailLabel = intl.formatMessage({
         id: 'SignupForm.emailLabel',
@@ -158,34 +141,18 @@ const SignupFormComponent = props => (
 
       const history = useHistory();
 
-      const formValues = form.getState().values;
-
       const onSubmit = values => {
         values.preventDefault();
 
-        const userType = formValues.userType;
-
         handleSubmit(values);
 
-        const firstTab = userType === 'employer' ? 'care-needs' : 'care-needs';
-
-        history.push(`/create-profile/draft/00000000-0000-0000-0000-000000000000/new/${firstTab}`);
+        history.push(`/select-user-type`);
       };
 
       return (
         <Form className={classes} onSubmit={onSubmit}>
           <div>
-            <FieldSelect
-              id={formId ? `${formId}.userType` : 'userType'}
-              name="userType"
-              label={userTypeSelectLabel}
-              firstValueSelected={true}
-            >
-              <option value={employerSelectValue}>{employerSelectLabel}</option>
-              <option value={caregiverSelectValue}>{caregiverSelectLabel}</option>
-            </FieldSelect>
             <FieldTextInput
-              className={css.password}
               type="email"
               id={formId ? `${formId}.email` : 'email'}
               name="email"

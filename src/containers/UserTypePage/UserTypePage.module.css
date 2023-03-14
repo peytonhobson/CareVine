@@ -1,0 +1,78 @@
+.root {
+  flex-grow: 1;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 11px 24px 0 24px;
+  overflow: auto;
+  flex-wrap: wrap;
+}
+
+.subRoot {
+  width: 40vw;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.buttonGroupRoot {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.buttonGroup {
+  composes: button buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+  min-height: 3rem;
+  /* border-radius: 3rem; */
+  max-width: 45%;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0.5rem;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
+}
+
+.buttonGroupSelected {
+  composes: button buttonFont buttonText buttonColors from global;
+
+  min-height: 3rem;
+  /* border-radius: 3rem; */
+  max-width: 45%;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0.5rem;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
+}
+
+.submitButton {
+  width: auto;
+  padding: 0 3rem;
+  min-height: 3rem;
+  margin-top: 6rem;
+}
