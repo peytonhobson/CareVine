@@ -99,15 +99,15 @@ const ScreeningDescription = props => {
             <h3 style={{ width: '100%', marginBottom: '0' }}>Benefits</h3>
             <ul className={css.benefitsList}>
               <li>
-                <p>Message employers</p>
-              </li>
-              <li>
-                <p>Apply to jobs</p>
+                <p>Message families and apply to jobs</p>
               </li>
             </ul>
             <ul className={css.negativeList}>
               <li>
-                <p>CareVine Gold badge to inform employers you are safe</p>
+                <p>CareVine Gold badge to make your profile stand out</p>
+              </li>
+              <li>
+                <p>Boosted listing to rank higher on the search board </p>
               </li>
             </ul>
           </div>
@@ -122,20 +122,20 @@ const ScreeningDescription = props => {
         <CardHeader title="CareVine Gold" className={goldClasses.root} />
         <CardContent>
           <div className={css.screeningTitleContainer}>
-            <h2 className={css.screeningTitle}>Make your profile stand out</h2>
+            <h2 className={css.screeningTitle}>Find jobs faster</h2>
             <p className={css.amountPerYear}>$4.99/month*</p>
           </div>
           <div className={css.benefitsListContainer}>
             <h3 style={{ width: '100%', marginBottom: '0' }}>Benefits</h3>
             <ul className={css.benefitsList}>
               <li>
-                <p>Message employers</p>
+                <p>Message families and apply to jobs</p>
               </li>
               <li>
-                <p>Apply to jobs</p>
+                <p>CareVine Gold badge to make your profile stand out</p>
               </li>
               <li>
-                <p>CareVine Gold badge to inform employers you are safe</p>
+                <p>Boosted listing to rank higher on the search board </p>
               </li>
             </ul>
           </div>

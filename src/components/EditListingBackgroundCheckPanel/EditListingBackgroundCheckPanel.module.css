@@ -6,8 +6,11 @@
   height: auto;
   display: flex;
   flex-direction: column;
-  padding: 11px 24px 0 24px;
   overflow: auto;
+
+  @media (--viewportMedium) {
+    padding: 3rem calc((100% - 75rem) / 2) 5.125rem 3.688rem !important;
+  }
 }
 
 .screeningRoot {
