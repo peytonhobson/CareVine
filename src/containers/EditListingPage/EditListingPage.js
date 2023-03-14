@@ -23,7 +23,6 @@ import {
   getStripeConnectAccountLink,
 } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
-import { savePaymentMethod, deletePaymentMethod } from '../../ducks/paymentMethods.duck';
 import {
   handleCardSetup,
   createPayment,

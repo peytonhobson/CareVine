@@ -21,7 +21,6 @@ import config from './config';
 // Flex template application uses English translations as default translations.
 import defaultMessages from './translations/en.json';
 
-import './assets/main.css';
 // import './styles/build.css';
 
 // If you want to change the language of default (fallback) translations,

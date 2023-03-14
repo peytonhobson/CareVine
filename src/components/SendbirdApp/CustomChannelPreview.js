@@ -193,7 +193,7 @@ const CustomChannelPreview = ({
                 </div>
               )}
               <span className="sendbird-channel-preview__content__upper__header__channel-name sendbird-label--subtitle-2">
-                <div style={{ color: isActive ? '#ffffff' : 'var(--marketplaceColorLight' }}>
+                <div style={{ color: isActive ? '#ffffff' : 'var(--marketplaceColor' }}>
                   {channelName}
                 </div>
               </span>

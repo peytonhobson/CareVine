@@ -25,17 +25,12 @@ const PasswordRecoveryPage = loadable(() => import(/* webpackChunkName: "Passwor
 const PasswordResetPage = loadable(() => import(/* webpackChunkName: "PasswordResetPage" */ './containers/PasswordResetPage/PasswordResetPage'));
 const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMethodsPage" */ './containers/PaymentMethodsPage/PaymentMethodsPage'));
 const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPolicyPage" */ './containers/PrivacyPolicyPage/PrivacyPolicyPage'));
-const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ './containers/ProfilePage/ProfilePage'));
-const ProfileSettingsPage = loadable(() => import(/* webpackChunkName: "ProfileSettingsPage" */ './containers/ProfileSettingsPage/ProfileSettingsPage'));
 const SearchPage = loadable(() => import(/* webpackChunkName: "SearchPage" */ /* webpackPrefetch: true */  './containers/SearchPage/SearchPage'));
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ './containers/StripePayoutPage/StripePayoutPage'));
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "SubscriptionPage" */ './containers/SubscriptionsPage/SubscriptionsPage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
-
-// Styleguide helps you to review current components and develop new ones
-const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ './containers/StyleguidePage/StyleguidePage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -168,24 +163,6 @@ const routeConfiguration = () => {
         pageDataLoadingAPI.TransactionPage.loadData({ ...params, transactionRole: 'customer' }),
       setInitialValues: pageDataLoadingAPI.TransactionPage.setInitialValues,
     },
-    {
-      path: '/u',
-      name: 'ProfileBasePage',
-      component: RedirectToLandingPage,
-    },
-    {
-      path: '/u/:id',
-      name: 'ProfilePage',
-      component: ProfilePage,
-      loadData: pageDataLoadingAPI.ProfilePage.loadData,
-    },
-    {
-      path: '/profile-settings',
-      name: 'ProfileSettingsPage',
-      auth: true,
-      authPage: 'LoginPage',
-      component: ProfileSettingsPage,
-    },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
     // so that in the error case users can be redirected back to the LoginPage
@@ -275,32 +252,6 @@ const routeConfiguration = () => {
       path: '/privacy-policy',
       name: 'PrivacyPolicyPage',
       component: PrivacyPolicyPage,
-    },
-    {
-      path: '/styleguide',
-      name: 'Styleguide',
-      component: StyleguidePage,
-    },
-    {
-      path: '/styleguide/g/:group',
-      name: 'StyleguideGroup',
-      component: StyleguidePage,
-    },
-    {
-      path: '/styleguide/c/:component',
-      name: 'StyleguideComponent',
-      component: StyleguidePage,
-    },
-    {
-      path: '/styleguide/c/:component/:example',
-      name: 'StyleguideComponentExample',
-      component: StyleguidePage,
-    },
-    {
-      path: '/styleguide/c/:component/:example/raw',
-      name: 'StyleguideComponentExampleRaw',
-      component: StyleguidePage,
-      extraProps: { raw: true },
     },
     {
       path: '/account/subscriptions',
