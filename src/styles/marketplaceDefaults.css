@@ -145,7 +145,7 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 35rem;
+  --SectionHero_desktopTitleMaxWidth: 30rem;
 
   /* ================ TabNav ================ */
   --TabNav_linkWidth: 15rem;
@@ -636,81 +636,81 @@ textarea {
 .marketplaceMessageFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightRegular);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .marketplaceMessageDateFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightRegular);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightMedium);
-    font-size: 12px;
-    line-height: 24px;
+    font-size: 0.75rem;
+    line-height: 1.5rem;
   }
 }
 
 .marketplaceTxTransitionFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 16px;
-  line-height: 18px;
+  font-size: 1rem;
+  line-height: 1.125rem;
 
   @media (--viewportMedium) {
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }
 
 .marketplaceSearchFilterLabelFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightSemiBold);
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 0.813rem;
+  line-height: 1.125rem;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightMedium);
-    font-size: 13px;
-    line-height: 20px;
+    font-size: 0.813rem;
+    line-height: 1.25rem;
   }
 }
 
 .marketplaceSearchFilterSublabelFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 18px;
-  line-height: 18px;
+  font-size: 1.125rem;
+  line-height: 1.125rem;
 }
 
 .marketplaceListingAttributeFontStyles {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightMedium);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 /* ================ Tabbed navigation font styles ================ */
 
 .marketplaceTabNavFontStyles {
   font-weight: var(--fontWeightMedium);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   letter-spacing: 0;
 
   @media (--viewportLarge) {
     font-weight: var(--fontWeightSemiBold);
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
   }
 }
 
 .marketplaceTabNavHorizontalFontStyles {
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
   letter-spacing: 0;
 }
 
@@ -744,19 +744,19 @@ textarea {
 .button {
   display: block;
   width: 100%;
-  min-height: 59px;
+  min-height: 3.688rem;
   margin: 0;
 
   /* Padding is only for <a> elements where button styles are applied,
   buttons elements should have zero padding */
-  padding: 17px 0 17px 0;
+  padding: 1.063rem 0 1.063rem 0;
 
   transition: all var(--transitionStyleButton);
   cursor: pointer;
 
   @media (--viewportMedium) {
-    padding: 20px 0 20px 0;
-    min-height: 65px;
+    padding: 1.25rem 0 1.25rem 0;
+    min-height: 4.063rem;
   }
 }
 .button:focus,
@@ -890,13 +890,13 @@ textarea {
   border-bottom: none;
 
   @media (--viewportMedium) {
-    flex-basis: 480px;
+    flex-basis: 30rem;
     flex-grow: 0;
     /* min-height: 568px; */
     padding: var(--modalPaddingMedium);
     margin-top: 12.5vh;
     margin-bottom: 12.5vh;
-    border-bottom: 8px solid var(--marketplaceColor);
+    border-bottom: 0.5rem solid var(--marketplaceColor);
   }
 }
 
@@ -916,7 +916,7 @@ textarea {
   border-radius: var(--borderRadius);
 
   @media (--viewportMedium) {
-    flex-basis: 480px;
+    flex-basis: 30rem;
     flex-grow: 0;
     height: 100%;
     padding: 0;
@@ -928,14 +928,14 @@ textarea {
 /* Modal title */
 .marketplaceModalTitleStyles {
   font-weight: var(--fontWeightBold);
-  font-size: 30px;
-  line-height: 36px;
+  font-size: 1.875rem;
+  line-height: 2rem;
   letter-spacing: -0.5px;
   margin: 0;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
-    line-height: 40px;
+    line-height: 2.5rem;
     letter-spacing: -0.9px;
     margin: 0;
   }
@@ -943,28 +943,28 @@ textarea {
 
 /* Modal message */
 .marketplaceModalParagraphStyles {
-  margin: 18px 0 0 0;
+  margin: 1.125rem 0 0 0;
 
   @media (--viewportMedium) {
-    margin: 24px 0 0 0;
+    margin: 1.5rem 0 0 0;
   }
 }
 
 /* Bottom wrapper for the modal */
 .marketplaceModalBottomWrapper {
   text-align: center;
-  margin-top: 60px;
+  margin-top: 3.75rem;
   align-self: stretch;
 
   @media (--viewportMedium) {
-    margin-top: 96px;
+    margin-top: 6rem;
   }
 }
 
 /* Adjust the bottomWrapper's margin to match modals without the helper text */
 .marketplaceModalBottomWrapperText {
-  margin-top: -24px;
-  padding-bottom: 8px;
+  margin-top: -1.5rem;
+  padding-bottom: 0.5rem;
 
   @media (--viewportMedium) {
     padding-bottom: 0;
@@ -974,8 +974,8 @@ textarea {
 .marketplaceModalHelperText {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightRegular);
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 0.813rem;
+  line-height: 1.125rem;
 
   -webkit-font-smoothing: subpixel-antialiased;
 
@@ -983,7 +983,7 @@ textarea {
   margin: 0;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     margin: 0;
   }
 }
@@ -991,8 +991,8 @@ textarea {
 .marketplaceModalHelperLink {
   font-family: var(--fontFamily);
   font-weight: var(--fontWeightRegular);
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 0.813rem;
+  line-height: 1.125rem;
 
   -webkit-font-smoothing: subpixel-antialiased;
 
@@ -1000,7 +1000,7 @@ textarea {
   margin: 0;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     margin: 0;
   }
 }
@@ -1064,56 +1064,56 @@ textarea {
 .marketplaceModalCloseText {
   /* Font */
   font-weight: var(--fontWeightBold);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 
   margin: 0;
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     margin: 0;
   }
 }
 
 .marketplaceModalCloseIcon {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 0.5rem;
 
   /* Move X icon vertically to align it with the close text. */
-  margin-top: 3px;
+  margin-top: 0.188rem;
 
   box-sizing: content-box;
 
   @media (--viewportMedium) {
-    margin-top: 2px;
+    margin-top: 0.125rem;
   }
 }
 
 .marketplaceModalErrorStyles {
   font-weight: var(--fontWeightMedium);
-  font-size: 15px;
-  line-height: 24px;
+  font-size: 0.938rem;
+  line-height: 1.5rem;
   letter-spacing: 0;
 
-  margin-top: 24px;
+  margin-top: 1.5rem;
   color: var(--failColor);
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightMedium);
     /* margin-top + n * line-height + margin-bottom => x * 8px */
-    margin-top: 17px;
-    margin-bottom: 15px;
+    margin-top: 1.063rem;
+    margin-bottom: 0.938rem;
   }
 }
 
 .marketplaceModalPasswordMargins {
   /* Leave space between the input and the button below when the
   viewport height is small */
-  margin-top: 24px;
+  margin-top: 1.5rem;
 
   @media (--viewportMedium) {
-    margin-top: 32px;
+    margin-top: 2rem;
   }
 }

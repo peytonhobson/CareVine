@@ -316,6 +316,7 @@ export class AuthenticationPageComponent extends Component {
             onSubmit={handleSubmitSignup}
             inProgress={authInProgress}
             onOpenTermsOfService={() => this.setState({ tosModalOpen: true })}
+            onManageDisableScrolling={onManageDisableScrolling}
           />
         )}
 

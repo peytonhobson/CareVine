@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
@@ -6,7 +6,14 @@ import { Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import * as validators from '../../util/validators';
-import { Form, PrimaryButton, FieldTextInput, FieldSelect } from '../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldTextInput,
+  FieldSelect,
+  Modal,
+  InlineTextButton,
+} from '../../components';
 import { useHistory } from 'react-router-dom';
 
 import css from './SignupForm.module.css';
@@ -29,7 +36,10 @@ const SignupFormComponent = props => (
         intl,
         onOpenTermsOfService,
         form,
+        onManageDisableScrolling,
       } = fieldRenderProps;
+
+      const [isPasswordRequirementsModalOpen, setIsPasswordRequirementsModalOpen] = useState(false);
 
       // email
       const emailLabel = intl.formatMessage({
@@ -150,65 +160,104 @@ const SignupFormComponent = props => (
       };
 
       return (
-        <Form className={classes} onSubmit={onSubmit}>
-          <div>
-            <FieldTextInput
-              type="email"
-              id={formId ? `${formId}.email` : 'email'}
-              name="email"
-              autoComplete="email"
-              label={emailLabel}
-              placeholder={emailPlaceholder}
-              validate={validators.composeValidators(emailRequired, emailValid)}
-            />
-            <div className={css.name}>
+        <>
+          <Form className={classes} onSubmit={onSubmit}>
+            <div>
               <FieldTextInput
-                className={css.firstNameRoot}
-                type="text"
-                id={formId ? `${formId}.fname` : 'fname'}
-                name="fname"
-                autoComplete="given-name"
-                label={firstNameLabel}
-                placeholder={firstNamePlaceholder}
-                validate={firstNameRequired}
+                type="email"
+                id={formId ? `${formId}.email` : 'email'}
+                name="email"
+                autoComplete="email"
+                label={emailLabel}
+                placeholder={emailPlaceholder}
+                validate={validators.composeValidators(emailRequired, emailValid)}
               />
-              <FieldTextInput
-                className={css.lastNameRoot}
-                type="text"
-                id={formId ? `${formId}.lname` : 'lname'}
-                name="lname"
-                autoComplete="family-name"
-                label={lastNameLabel}
-                placeholder={lastNamePlaceholder}
-                validate={lastNameRequired}
-              />
-            </div>
-            <FieldTextInput
-              className={css.password}
-              type="password"
-              id={formId ? `${formId}.password` : 'password'}
-              name="password"
-              autoComplete="new-password"
-              label={passwordLabel}
-              placeholder={passwordPlaceholder}
-              validate={passwordValidators}
-            />
-          </div>
-
-          <div className={css.bottomWrapper}>
-            <p className={css.bottomWrapperText}>
-              <span className={css.termsText}>
-                <FormattedMessage
-                  id="SignupForm.termsAndConditionsAcceptText"
-                  values={{ termsLink }}
+              <div className={css.name}>
+                <FieldTextInput
+                  className={css.firstNameRoot}
+                  type="text"
+                  id={formId ? `${formId}.fname` : 'fname'}
+                  name="fname"
+                  autoComplete="given-name"
+                  label={firstNameLabel}
+                  placeholder={firstNamePlaceholder}
+                  validate={firstNameRequired}
                 />
-              </span>
-            </p>
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="SignupForm.signUp" />
-            </PrimaryButton>
-          </div>
-        </Form>
+                <FieldTextInput
+                  className={css.lastNameRoot}
+                  type="text"
+                  id={formId ? `${formId}.lname` : 'lname'}
+                  name="lname"
+                  autoComplete="family-name"
+                  label={lastNameLabel}
+                  placeholder={lastNamePlaceholder}
+                  validate={lastNameRequired}
+                />
+              </div>
+              <FieldTextInput
+                className={css.password}
+                type="password"
+                id={formId ? `${formId}.password` : 'password'}
+                name="password"
+                autoComplete="new-password"
+                label={passwordLabel}
+                placeholder={passwordPlaceholder}
+                validate={passwordValidators}
+              />
+              <InlineTextButton
+                onClick={() => setIsPasswordRequirementsModalOpen(true)}
+                className={css.passwordRequirementsButton}
+                type="button"
+              >
+                <FormattedMessage id="SignupForm.passwordRequirements" />
+              </InlineTextButton>
+            </div>
+
+            <div className={css.bottomWrapper}>
+              <p className={css.bottomWrapperText}>
+                <span className={css.termsText}>
+                  <FormattedMessage
+                    id="SignupForm.termsAndConditionsAcceptText"
+                    values={{ termsLink }}
+                  />
+                </span>
+              </p>
+              <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+                <FormattedMessage id="SignupForm.signUp" />
+              </PrimaryButton>
+            </div>
+          </Form>
+          <Modal
+            id="PasswordRequirements"
+            isOpen={isPasswordRequirementsModalOpen}
+            onClose={() => setIsPasswordRequirementsModalOpen(false)}
+            usePortal
+            onManageDisableScrolling={onManageDisableScrolling}
+          >
+            <div className={css.passwordRequirementsModal}>
+              <h2 className={css.modalTitle}>
+                <FormattedMessage id="SignupForm.passwordRequirements" />
+              </h2>
+              <ul className={css.passwordRequirementsModalList}>
+                <li className={css.passwordRequirementsModalListItem}>
+                  <FormattedMessage id="SignupForm.passwordRequirementsListItem1" />
+                </li>
+                <li className={css.passwordRequirementsModalListItem}>
+                  <FormattedMessage id="SignupForm.passwordRequirementsListItem2" />
+                </li>
+                <li className={css.passwordRequirementsModalListItem}>
+                  <FormattedMessage id="SignupForm.passwordRequirementsListItem3" />
+                </li>
+                <li className={css.passwordRequirementsModalListItem}>
+                  <FormattedMessage id="SignupForm.passwordRequirementsListItem4" />
+                </li>
+                <li className={css.passwordRequirementsModalListItem}>
+                  <FormattedMessage id="SignupForm.passwordRequirementsListItem5" />
+                </li>
+              </ul>
+            </div>
+          </Modal>
+        </>
       );
     }}
   />
