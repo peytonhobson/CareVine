@@ -38,6 +38,7 @@
 
 .bottomWrapper {
   composes: marketplaceModalBottomWrapper from global;
+  margin-top: 3rem;
 }
 
 .bottomWrapperText {
@@ -55,4 +56,21 @@
     text-decoration: underline;
     cursor: pointer;
   }
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+.passwordRequirementsButton {
+  composes: marketplaceTinyFontStyles from global;
+
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.passwordRequirementsModalList {
+  composes: marketplaceModalParagraphStyles from global;
+
+  white-space: nowrap;
 }
