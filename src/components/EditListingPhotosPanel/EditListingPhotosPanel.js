@@ -32,6 +32,7 @@ class EditListingPhotosPanel extends Component {
       uploadInProgress,
       image,
       onUpdateProfile,
+      isNewListingFlow,
     } = this.props;
 
     const rootClass = rootClassName || css.root;
@@ -103,6 +104,7 @@ class EditListingPhotosPanel extends Component {
           onProfileImageUpload={onProfileImageUpload}
           uploadInProgress={uploadInProgress}
           image={image}
+          isNewListingFlow={isNewListingFlow}
         />
       </div>
     );

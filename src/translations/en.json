@@ -420,6 +420,8 @@
   "EditListingPhotosForm.updateFailed": "Failed to update. Please try again.",
   "EditListingPhotosPanel.createListingTitle": "Add your {profilePicture}",
   "EditListingPhotosPanel.profilePicture": "Profile Picture",
+  "EditListingPhotosForm.termsAndConditionsLabel": "I agree to the {termsAndConditionsLink} and {privacyPolicyLink}.",
+  "EditListingPhotosForm.termsAndConditionsRequired": "You need to accept the terms and conditions.",
   "EditListingPhotosPanel.title": "Edit your {profilePicture}",
   "EditListingPoliciesForm.rulesLabel": "Yoga studio policies",
   "EditListingPoliciesForm.rulesPlaceholder": "Describe the no-nos",

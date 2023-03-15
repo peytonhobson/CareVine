@@ -6,7 +6,7 @@ import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { nonEmptyArray, composeValidators } from '../../util/validators';
+import { nonEmptyArray, composeValidators, requiredChecked } from '../../util/validators';
 import { isUploadImageOverLimitError } from '../../util/errors';
 import {
   Button,
@@ -15,6 +15,8 @@ import {
   IconSpinner,
   Avatar,
   ImageFromFile,
+  FieldCheckbox,
+  NamedLink,
 } from '../../components';
 
 import css from './EditListingPhotosForm.module.css';
@@ -69,6 +71,7 @@ export class EditListingPhotosFormComponent extends Component {
             currentUser,
             onProfileImageUpload,
             image,
+            isNewListingFlow,
           } = formRenderProps;
 
           const { publishListingError, showListingsError, updateListingError, uploadImageError } =
@@ -104,6 +107,29 @@ export class EditListingPhotosFormComponent extends Component {
               <FormattedMessage id="EditListingPhotosForm.showListingFailed" />
             </p>
           ) : null;
+
+          const termsAndConditionsRequired = requiredChecked(
+            intl.formatMessage({
+              id: 'EditListingPhotosForm.termsAndConditionsRequired',
+            })
+          );
+          const termsAndConditionsLabel = intl.formatMessage(
+            {
+              id: 'EditListingPhotosForm.termsAndConditionsLabel',
+            },
+            {
+              termsAndConditionsLink: (
+                <NamedLink name="TermsOfServicePage" target="_blank">
+                  Terms and Conditions
+                </NamedLink>
+              ),
+              privacyPolicyLink: (
+                <NamedLink name="PrivacyPolicyPage" target="_blank">
+                  Privacy Policy
+                </NamedLink>
+              ),
+            }
+          );
 
           // imgs can contain added images (with temp ids) and submitted images with uniq ids.
 
@@ -256,6 +282,15 @@ export class EditListingPhotosFormComponent extends Component {
                 <div className={css.fileInfo}>
                   <FormattedMessage id="ProfileSettingsForm.fileInfo" />
                 </div>
+                {isNewListingFlow && (
+                  <FieldCheckbox
+                    id="termsAndConditions"
+                    name="termsAndConditions"
+                    label={termsAndConditionsLabel}
+                    rootClassName={css.termsAndConditions}
+                    validate={termsAndConditionsRequired}
+                  />
+                )}
               </div>
 
               {updateListingError ? (

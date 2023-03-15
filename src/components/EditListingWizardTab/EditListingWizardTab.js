@@ -439,6 +439,7 @@ const EditListingWizardTab = props => {
           uploadInProgress={uploadInProgress}
           onUpdateProfile={onUpdateProfile}
           image={image}
+          isNewListingFlow={isNewListingFlow}
         />
       );
     }
