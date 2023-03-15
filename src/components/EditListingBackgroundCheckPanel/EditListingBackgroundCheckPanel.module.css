@@ -116,7 +116,7 @@
 }
 
 .benefitsList {
-  list-style-image: url('../../assets/checkmark.svg');
+  list-style-image: url('../../assets/checkmark-mobile.svg');
   display: block;
   padding-left: 1rem;
   margin-top: 1rem;
@@ -124,16 +124,24 @@
   & > li > p {
     margin-block: 0.2rem;
   }
+
+  @media (--viewportMedium) {
+    list-style-image: url('../../assets/checkmark.svg');
+  }
 }
 
 .negativeList {
-  list-style-image: url('../../assets/x-icon.svg');
+  list-style-image: url('../../assets/x-icon-mobile.svg');
   display: block;
   padding-left: 1rem;
   color: var(--matterColorAnti);
 
   & > li > p {
     margin-block: 0.2rem;
+  }
+
+  @media (--viewportMedium) {
+    list-style-image: url('../../assets/x-icon.svg');
   }
 }
 

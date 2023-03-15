@@ -10,7 +10,7 @@ module.exports = queryEvents = () => {
   const CAREGIVER = 'caregiver';
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
-  const isLocal = process.env.NODE_ENV === 'development' && !isDev;
+  const isLocal = process.env.NODE_ENV === 'development' && isDev;
 
   const apiBaseUrl = () => {
     const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
