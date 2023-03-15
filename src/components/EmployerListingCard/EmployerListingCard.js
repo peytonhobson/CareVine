@@ -289,7 +289,7 @@ export const EmployerListingCardComponent = props => {
               values={{ author: currentAuthorName }}
             />
           </h1>
-          <ViewCalendar entries={selectedSessions} />
+          <ViewCalendar selectedSessions={selectedSessions} planType={scheduleType} />
         </Modal>
       )}
     </>
