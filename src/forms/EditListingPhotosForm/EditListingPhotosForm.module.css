@@ -158,7 +158,7 @@
   @media (--viewportLarge) {
     display: inline-block;
     width: 15rem;
-    margin-top: 6rem;
+    margin-top: 4rem;
   }
 }
 
@@ -366,7 +366,7 @@
 
   @media (--viewportMedium) {
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: 3rem;
     padding-top: 6px;
     padding-bottom: 2px;
   }
@@ -387,4 +387,8 @@
     padding-top: 4px;
     padding-bottom: 4px;
   }
+}
+
+.termsAndConditions {
+  margin-top: 5rem;
 }
