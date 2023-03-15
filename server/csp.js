@@ -36,7 +36,7 @@ const defaultDirectives = {
     '*.google-analytics.com',
     'stats.g.doubleclick.net',
 
-    'sentry.io',
+    '*.sentry.io',
     '*.stripe.com',
   ],
   fontSrc: [self, data, 'assets-sharetribecom.sharetribe.com', 'fonts.gstatic.com'],

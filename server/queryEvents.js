@@ -8,6 +8,9 @@ module.exports = queryEvents = () => {
   const isDev = process.env.REACT_APP_ENV === 'development';
   const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
   const CAREGIVER = 'caregiver';
+  const isTest = process.env.NODE_ENV === 'production' && isDev;
+  const isProd = process.env.NODE_ENV === 'production' && !isDev;
+  const isLocal = process.env.NODE_ENV === 'development' && !isDev;
 
   const apiBaseUrl = () => {
     const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -43,7 +46,15 @@ module.exports = queryEvents = () => {
 
   // File to keep state across restarts. Stores the last seen event sequence ID,
   // which allows continuing polling from the correct place
-  const stateFile = 'server/last-sequence-id.state';
+  let stateFile = null;
+
+  if (isLocal) {
+    stateFile = './server/last-sequence-id.state';
+  } else if (isTest) {
+    stateFile = './server/last-sequence-id-test.state';
+  } else if (isProd) {
+    stateFile = './server/last-sequence-id-prod.state';
+  }
 
   const queryEvents = args => {
     var filter = { eventTypes: ['user/updated, listing/updated, user/deleted', 'user/created'] };
