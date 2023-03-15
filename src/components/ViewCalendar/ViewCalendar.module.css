@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .blocked {
   color: var(--matterColorLight) !important;
 }
@@ -21,7 +23,6 @@
   /* react calendar */
 
   & :global(.react-calendar) {
-    width: 70vh;
     max-width: 100%;
     background-color: var(--marketplaceColor);
     color: white;
@@ -29,6 +30,10 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.125em;
+
+    @media (--viewportMedium) {
+      width: 70vh;
+    }
   }
 
   & :global(.react-calendar__navigation button) {
@@ -40,7 +45,9 @@
   }
 
   & :global(.react-calendar--doubleView) {
-    width: 700px;
+    @media (--viewportMedium) {
+      width: 700px;
+    }
   }
   & :global(.react-calendar--doubleView .react-calendar__viewContainer) {
     display: flex;
