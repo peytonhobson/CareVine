@@ -11,6 +11,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
+import { flexbox } from '@mui/system';
 
 const BASIC = 'basic';
 const GOLD = 'gold';
@@ -30,13 +31,16 @@ const ScreeningDescription = props => {
   }));
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
-    display: 'block',
+    display: 'flex',
     width: '25rem',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   }));
 
   const CardActions = styled(props => <MuiCardActions {...props} />)(({ theme }) => ({
     paddingInline: '1rem',
     paddingBottom: '1.5rem',
+    marginTop: 'auto',
   }));
 
   const Button = styled(props => <MuiButton {...props} />)(({ theme }) => ({
@@ -59,6 +63,7 @@ const ScreeningDescription = props => {
     root: props => ({
       backgroundColor: props.backgroundColor,
       background: props.background,
+      borderRadius: props.borderRadius,
       '&:hover': {
         backgroundColor: props.hoverBackgroundColor,
       },
@@ -67,7 +72,7 @@ const ScreeningDescription = props => {
 
   const goldProps = {
     background:
-      'linear-gradient(90deg,rgba(204, 153, 51, 1) 0%,rgba(211, 167, 62, 1) 5.56%,rgba(230, 203, 91, 1) 16.05%,rgba(252, 246, 124, 1) 26.53%,rgba(243, 232, 114, 1) 32.08%,rgba(219, 196, 86, 1) 42.5%,rgba(181, 138, 42, 1) 56.59%,rgba(179, 135, 40, 1) 57.3%,rgba(252, 246, 124, 1) 81.26%,rgba(250, 241, 120, 1) 84.84%,rgba(243, 228, 110, 1) 88.89%,rgba(231, 205, 92, 1) 93.18%,rgba(215, 173, 67, 1) 97.6%,rgba(204, 153, 51, 1) 100%) !important',
+      'linear-gradient(90deg, rgba(191, 149, 63, 1) 0%, rgba(203, 168, 75, 1) 3.06%, rgba(230, 210, 102, 1) 10.46%, rgba(246, 236, 118, 1) 16.27%, rgba(252, 246, 124, 1) 19.74%, rgba(224, 203, 91, 1) 33.88%, rgba(179, 135, 40, 1) 57.3%, rgba(188, 149, 50, 1) 61.6%, rgba(212, 185, 78, 1) 69.69%, rgba(250, 242, 121, 1) 80.6%, rgba(252, 246, 124, 1) 81.26%, rgba(249, 241, 120, 1) 84.27%, rgba(240, 228, 110, 1) 87.68%, rgba(225, 205, 93, 1) 91.29%, rgba(205, 173, 69, 1) 95.03%, rgba(179, 133, 38, 1) 98.85%, rgba(170, 119, 28, 1) 100%) !important',
   };
   const greyProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
@@ -77,11 +82,13 @@ const ScreeningDescription = props => {
 
   const goldButtonProps = {
     background:
-      'linear-gradient(90deg,rgba(204, 153, 51, 1) 0%,rgba(211, 167, 62, 1) 5.56%,rgba(230, 203, 91, 1) 16.05%,rgba(252, 246, 124, 1) 26.53%,rgba(243, 232, 114, 1) 32.08%,rgba(219, 196, 86, 1) 42.5%,rgba(181, 138, 42, 1) 56.59%,rgba(179, 135, 40, 1) 57.3%,rgba(252, 246, 124, 1) 81.26%,rgba(250, 241, 120, 1) 84.84%,rgba(243, 228, 110, 1) 88.89%,rgba(231, 205, 92, 1) 93.18%,rgba(215, 173, 67, 1) 97.6%,rgba(204, 153, 51, 1) 100%) !important',
+      'linear-gradient(90deg, rgba(191, 149, 63, 1) 0%, rgba(203, 168, 75, 1) 3.06%, rgba(230, 210, 102, 1) 10.46%, rgba(246, 236, 118, 1) 16.27%, rgba(252, 246, 124, 1) 19.74%, rgba(224, 203, 91, 1) 33.88%, rgba(179, 135, 40, 1) 57.3%, rgba(188, 149, 50, 1) 61.6%, rgba(212, 185, 78, 1) 69.69%, rgba(250, 242, 121, 1) 80.6%, rgba(252, 246, 124, 1) 81.26%, rgba(249, 241, 120, 1) 84.27%, rgba(240, 228, 110, 1) 87.68%, rgba(225, 205, 93, 1) 91.29%, rgba(205, 173, 69, 1) 95.03%, rgba(179, 133, 38, 1) 98.85%, rgba(170, 119, 28, 1) 100%) !important',
+    borderRadius: 'var(--borderRadius)',
   };
   const greyButtonProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
     hoverBackgroundColor: 'var(--matterColor) !important',
+    borderRadius: 'var(--borderRadius)',
   };
   const goldButtonClasses = useStyles(goldButtonProps);
   const greyButtonClasses = useStyles(greyButtonProps);
@@ -156,7 +163,7 @@ const ScreeningDescription = props => {
           </CardContent>
           <CardActions>
             <Button className={goldButtonClasses.root} onClick={() => onPayForBC(GOLD)}>
-              Pay for CareVine Gold
+              Get CareVine Gold
             </Button>
           </CardActions>
         </Card>
