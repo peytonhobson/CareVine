@@ -25,6 +25,7 @@ const PasswordRecoveryPage = loadable(() => import(/* webpackChunkName: "Passwor
 const PasswordResetPage = loadable(() => import(/* webpackChunkName: "PasswordResetPage" */ './containers/PasswordResetPage/PasswordResetPage'));
 const PaymentMethodsPage = loadable(() => import(/* webpackChunkName: "PaymentMethodsPage" */ './containers/PaymentMethodsPage/PaymentMethodsPage'));
 const PrivacyPolicyPage = loadable(() => import(/* webpackChunkName: "PrivacyPolicyPage" */ './containers/PrivacyPolicyPage/PrivacyPolicyPage'));
+const ProfilePage = loadable(() => import(/* webpackChunkName: "ProfilePage" */ './containers/ProfilePage/ProfilePage'));
 const SearchPage = loadable(() => import(/* webpackChunkName: "SearchPage" */ /* webpackPrefetch: true */  './containers/SearchPage/SearchPage'));
 const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayoutPage" */ './containers/StripePayoutPage/StripePayoutPage'));
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
@@ -242,6 +243,11 @@ const routeConfiguration = () => {
       authPage: 'LoginPage',
       component: PaymentMethodsPage,
       loadData: pageDataLoadingAPI.PaymentMethodsPage.loadData,
+    },
+    {
+      path: '/u/:id',
+      name: 'ProfilePage',
+      component: ProfilePage,
     },
     {
       path: '/terms-of-service',
