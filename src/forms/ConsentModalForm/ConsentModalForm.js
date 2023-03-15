@@ -81,15 +81,14 @@ const ConsentModalForm = props => (
               to me that an individual, company, firm, corporation or public agency may have. I
               hereby authorize and request any present or former employer, school, police
               department, financial institution or other persons having personal knowledge of me to
-              {/* Make sure to write this as LLC name instead of CareVine */}
               furnish Authenticating.com LLC or its designated agents with any and all information
-              in their possession regarding me in connection with the use of CareVine's product,
+              in their possession regarding me in connection with the use of Crgvr LLC's product,
               service or experience I am signing up for. I am authorizing that a photocopy of this
               authorization be accepted with the same authority as the original. I understand that,
               pursuant to the federal Fair Credit Reporting Act, if any adverse action is to be
               taken based upon the consumer report, a copy of the report and a summary of the
-              consumer’s rights will be provided to me. I further understand that by typing my name
-              here I am signing this authorization electronically.
+              consumer’s rights will be provided to me. I further understand that by checking the
+              box below I am agreeing to the above statements.
             </p>
           </div>
 
@@ -97,7 +96,7 @@ const ConsentModalForm = props => (
             onClick={() => {
               if (!scrollAtBottom)
                 alert(
-                  'Please scroll to the bottom of the text to agree to the terms and conditions'
+                  'Please scroll to the bottom of the text to agree to the terms and conditions.'
                 );
             }}
             style={{ width: '100%' }}
@@ -106,12 +105,12 @@ const ConsentModalForm = props => (
               id="consent"
               name="consent"
               value="consent"
-              label="I agree to the above terms and conditions"
+              label="I agree to statements above."
               className={css.consentCheckbox}
               textClassName={css.consentCheckboxText}
               required
               disabled={!scrollAtBottom}
-              validate={required('Please agree to the terms and conditions')}
+              validate={required('Please agree to the statements above.')}
             />
           </span>
 
