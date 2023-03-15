@@ -66,6 +66,8 @@ const ScreeningDescription = props => {
       borderRadius: props.borderRadius,
       '&:hover': {
         backgroundColor: props.hoverBackgroundColor,
+        brightness: props.hoverBrightness,
+        filter: props.hoverFilter,
       },
     }),
   });
@@ -84,6 +86,7 @@ const ScreeningDescription = props => {
     background:
       'linear-gradient(90deg, rgba(191, 149, 63, 1) 0%, rgba(203, 168, 75, 1) 3.06%, rgba(230, 210, 102, 1) 10.46%, rgba(246, 236, 118, 1) 16.27%, rgba(252, 246, 124, 1) 19.74%, rgba(224, 203, 91, 1) 33.88%, rgba(179, 135, 40, 1) 57.3%, rgba(188, 149, 50, 1) 61.6%, rgba(212, 185, 78, 1) 69.69%, rgba(250, 242, 121, 1) 80.6%, rgba(252, 246, 124, 1) 81.26%, rgba(249, 241, 120, 1) 84.27%, rgba(240, 228, 110, 1) 87.68%, rgba(225, 205, 93, 1) 91.29%, rgba(205, 173, 69, 1) 95.03%, rgba(179, 133, 38, 1) 98.85%, rgba(170, 119, 28, 1) 100%) !important',
     borderRadius: 'var(--borderRadius)',
+    hoverFilter: 'brightness(70%)',
   };
   const greyButtonProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
