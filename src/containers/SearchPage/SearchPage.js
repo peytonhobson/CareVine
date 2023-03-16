@@ -250,7 +250,8 @@ const mapStateToProps = state => {
   const currentUser = state.user.currentUser;
   const currentUserListing = state.user.currentUserListing;
   const currentUserType = currentUser?.attributes.profile.metadata.userType;
-  const oppositeUserType = currentUserType === CAREGIVER ? EMPLOYER : CAREGIVER;
+  const oppositeUserType =
+    currentUserType === CAREGIVER ? EMPLOYER : currentUserType === EMPLOYER ? CAREGIVER : null;
 
   const distance = searchParams?.distance;
   const origin = searchParams?.origin;
