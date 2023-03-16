@@ -125,13 +125,9 @@ export const EmployerListingCardComponent = props => {
 
   const currentAuthorName = currentAuthor && userDisplayNameAsString(currentAuthor);
 
-  let careTypesLabels = [];
-
-  findOptionsForSelectFilter('careTypes', filtersConfig).forEach(option => {
-    if (careTypes.includes(option.key)) {
-      careTypesLabels.push(option.label);
-    }
-  });
+  const careTypesLabels = findOptionsForSelectFilter('careTypes', filtersConfig)
+    .filter(option => careTypes.includes(option.key))
+    .map(option => option.label);
   const additionalCareTypesText = (
     <ul>
       {careTypesLabels.map((careType, index) => (
