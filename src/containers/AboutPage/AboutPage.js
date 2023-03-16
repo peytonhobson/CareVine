@@ -12,7 +12,7 @@ import {
 } from '../../components';
 
 import css from './AboutPage.module.css';
-import image from './senior-caregiver-walking-stock.jpg';
+import image from './about-us-background_1056x690.jpeg';
 
 const AboutPage = () => {
   const { siteTwitterHandle, siteFacebookPage } = config;
