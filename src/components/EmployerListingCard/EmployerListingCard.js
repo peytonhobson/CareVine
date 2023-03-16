@@ -125,9 +125,13 @@ export const EmployerListingCardComponent = props => {
 
   const currentAuthorName = currentAuthor && userDisplayNameAsString(currentAuthor);
 
-  const careTypesLabels = findOptionsForSelectFilter('careTypes', filtersConfig).map(
-    option => careTypes.includes(option.key) && option.label
-  );
+  let careTypesLabels = [];
+
+  findOptionsForSelectFilter('careTypes', filtersConfig).forEach(option => {
+    if (careTypes.includes(option.key)) {
+      careTypesLabels.push(option.label);
+    }
+  });
   const additionalCareTypesText = (
     <ul>
       {careTypesLabels.map((careType, index) => (
@@ -240,7 +244,7 @@ export const EmployerListingCardComponent = props => {
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
               {careTypesLabels.slice(0, isMobile ? 2 : 3).map(careType => (
-                <p className={css.serviceCardItem}>{careType && careType.split('/')[0]}</p>
+                <p className={css.serviceCardItem}>{careType?.split('/')[0]}</p>
               ))}
               {careTypes && careTypes.length > 2 && (
                 <InfoTooltip
