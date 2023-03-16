@@ -108,29 +108,6 @@ export class EditListingPhotosFormComponent extends Component {
             </p>
           ) : null;
 
-          // const termsAndConditionsRequired = requiredChecked(
-          //   intl.formatMessage({
-          //     id: 'EditListingPhotosForm.termsAndConditionsRequired',
-          //   })
-          // );
-          // const termsAndConditionsLabel = intl.formatMessage(
-          //   {
-          //     id: 'EditListingPhotosForm.termsAndConditionsLabel',
-          //   },
-          //   {
-          //     termsAndConditionsLink: (
-          //       <NamedLink name="TermsOfServicePage" target="_blank">
-          //         Terms and Conditions
-          //       </NamedLink>
-          //     ),
-          //     privacyPolicyLink: (
-          //       <NamedLink name="PrivacyPolicyPage" target="_blank">
-          //         Privacy Policy
-          //       </NamedLink>
-          //     ),
-          //   }
-          // );
-
           // imgs can contain added images (with temp ids) and submitted images with uniq ids.
 
           const submitReady = ((updated && pristine) || ready) && !publishListingFailed;
@@ -282,15 +259,6 @@ export class EditListingPhotosFormComponent extends Component {
                 <div className={css.fileInfo}>
                   <FormattedMessage id="ProfileSettingsForm.fileInfo" />
                 </div>
-                {/* {isNewListingFlow && (
-                  <FieldCheckbox
-                    id="termsAndConditions"
-                    name="termsAndConditions"
-                    label={termsAndConditionsLabel}
-                    rootClassName={css.termsAndConditions}
-                    validate={termsAndConditionsRequired}
-                  />
-                )} */}
               </div>
 
               {updateListingError ? (
