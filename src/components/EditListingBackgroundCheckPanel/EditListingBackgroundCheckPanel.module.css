@@ -116,32 +116,57 @@
 }
 
 .benefitsList {
-  list-style-image: url('../../assets/checkmark-mobile.svg');
+  list-style: none;
   display: block;
-  padding-left: 1rem;
+  padding-left: 0;
   margin-top: 1rem;
 
   & > li > p {
     margin-block: 0.2rem;
   }
 
-  @media (--viewportMedium) {
-    list-style-image: url('../../assets/checkmark.svg');
+  & > li {
+    margin: 0;
+    padding: 0 0 0 1.5rem;
+    list-style: none;
+    background-image: url('../../assets/checkmark.svg');
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 1.2rem;
+    background-position-y: 0.3rem;
+
+    @media (--viewportMedium) {
+      background-position-y: 0.5rem;
+      background-size: 1.5rem;
+      padding: 0 0 0 2rem;
+    }
   }
 }
 
 .negativeList {
-  list-style-image: url('../../assets/x-icon-mobile.svg');
+  list-style: none;
   display: block;
-  padding-left: 1rem;
-  color: var(--matterColorAnti);
+  padding-left: 0;
 
   & > li > p {
     margin-block: 0.2rem;
   }
 
-  @media (--viewportMedium) {
-    list-style-image: url('../../assets/x-icon.svg');
+  & > li {
+    margin: 0;
+    padding: 0 0 0 1.5rem;
+    list-style: none;
+    background-image: url('../../assets/x-icon.svg');
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 1rem;
+    background-position-y: 0.4rem;
+
+    @media (--viewportMedium) {
+      background-position-y: 0.6rem;
+      background-size: 1.2rem;
+      padding: 0 0 0 2rem;
+    }
   }
 }
 

@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/styles';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 import { flexbox } from '@mui/system';
+import IconCheckmark from '../IconCheckmark/IconCheckmark';
 
 const BASIC = 'basic';
 const GOLD = 'gold';
