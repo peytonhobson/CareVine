@@ -129,7 +129,7 @@
   "CaregiverListingCard.notVerified": "*Not verified by CareVine",
   "CaregiverListingCard.certificationsAndTraining": "Certifications and training",
   "CaregiverListingCard.lastBackgroundChecked": "Last background checked on {date}",
-  "CaregiverListingCard.continuouslyVerified": "This caregiver is continuously verified by CareVine.",
+  "CaregiverListingCard.continuouslyVerified": "This caregiver's background is continuously verified by CareVine.",
   "CareScheduleExceptions.addException": "+ Add an exception",
   "CareScheduleExceptions.availabilityExceptionsTitle": "Exceptions ({count})",
   "CareScheduleExceptions.availabilityExceptionsTitleNoCount": "Exceptions",

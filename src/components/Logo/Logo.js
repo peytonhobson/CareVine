@@ -33,7 +33,7 @@ Logo.defaultProps = {
 
 Logo.propTypes = {
   className: string,
-  format: oneOf(['desktop', 'mobile']),
+  format: oneOf(['desktop', 'mobile', 'hero']),
 };
 
 export default Logo;
