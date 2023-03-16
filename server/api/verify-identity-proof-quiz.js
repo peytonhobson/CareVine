@@ -17,7 +17,7 @@ module.exports = (req, res) => {
   const mockString = isDev ? 'mock/' : '';
 
   const userAccessCodeMaybe = {
-    userAccessCode: isDev ? mockUserAccessCodes[2] : payload.userAccessCode,
+    userAccessCode: isDev ? mockUserAccessCodes[1] : payload.userAccessCode,
   };
 
   axios
