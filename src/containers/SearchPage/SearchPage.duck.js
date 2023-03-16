@@ -233,6 +233,12 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
       Number(JSON.parse(location)?.origin?.lng)
     );
 
+  const currentUser = getState().user.currentUser;
+  const currentUserType = currentUser?.attributes?.profile?.metadata.userType;
+
+  const oppositeUserType =
+    currentUserType === CAREGIVER ? EMPLOYER : currentUserType === EMPLOYER ? CAREGIVER : null;
+
   const params = {
     ...rest,
     // ...priceMaybe,
@@ -241,6 +247,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     per_page: perPage,
     bounds: expandBounds(selectedLocation || origin, distance),
     ...sortMaybe,
+    meta_userType: oppositeUserType,
   };
 
   return sdk.listings

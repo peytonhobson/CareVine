@@ -249,20 +249,16 @@ const mapStateToProps = state => {
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
   const currentUserListing = state.user.currentUserListing;
-  const currentUserType = currentUser?.attributes.profile.metadata.userType;
-  const oppositeUserType =
-    currentUserType === CAREGIVER ? EMPLOYER : currentUserType === EMPLOYER ? CAREGIVER : null;
+  const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
 
   const distance = searchParams?.distance;
   const origin = searchParams?.origin;
 
-  const pageListings = getListingsById(state, currentPageResultIds)
-    .filter(listing => listing?.attributes?.metadata?.listingType === oppositeUserType)
-    .filter(listing =>
-      origin && listing?.attributes?.geolocation
-        ? calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
-        : false
-    );
+  const pageListings = getListingsById(state, currentPageResultIds).filter(listing =>
+    origin && listing?.attributes?.geolocation
+      ? calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
+      : false
+  );
 
   const sortByRelevant = searchParams?.sort === RELEVANT;
   const userType = currentUser?.attributes?.profile?.metadata?.userType;
@@ -278,7 +274,9 @@ const mapStateToProps = state => {
             (a, b) =>
               sortEmployerMatch(b, currentUserListing) - sortEmployerMatch(a, currentUserListing)
           )
-      : pageListings;
+      : currentUserType
+      ? pageListings
+      : null;
 
   return {
     currentUserTransactions: transactions,
