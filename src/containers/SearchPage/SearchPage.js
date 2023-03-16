@@ -276,7 +276,7 @@ const mapStateToProps = state => {
           )
       : currentUserType
       ? pageListings
-      : null;
+      : [];
 
   return {
     currentUserTransactions: transactions,

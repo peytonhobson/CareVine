@@ -1,18 +1,12 @@
 import unionWith from 'lodash/unionWith';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
-import { formatDateStringToTz, getExclusiveEndDateWithTz } from '../../util/dates';
 import { parse } from '../../util/urlHelpers';
 import config from '../../config';
-import { calculateDistanceBetweenOrigins, expandBounds } from '../../util/maps';
+import { expandBounds } from '../../util/maps';
 import { TRANSITIONS } from '../../util/transaction';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-import { userDisplayNameAsString } from '../../util/data';
-import { generateAccessToken } from '../InboxPage/InboxPage.duck';
-import * as log from '../../util/log';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 const { LatLng } = sdkTypes;
 
 // Pagination page size might need to be dynamic on responsive page layouts
@@ -247,7 +241,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     per_page: perPage,
     bounds: expandBounds(selectedLocation || origin, distance),
     ...sortMaybe,
-    meta_userType: oppositeUserType,
+    meta_listingType: oppositeUserType,
   };
 
   return sdk.listings
