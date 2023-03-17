@@ -121,7 +121,7 @@ const ScreeningDescription = props => {
                   <p>Message families and apply to jobs</p>
                 </li>
                 <li>
-                  <p>Basic Screening</p>
+                  <p>Basic background check</p>
                 </li>
               </ul>
               <ul className={css.negativeList}>
@@ -154,7 +154,7 @@ const ScreeningDescription = props => {
                   <p>Message families and apply to jobs</p>
                 </li>
                 <li>
-                  <p>Premium Screening</p>
+                  <p>Premium background check</p>
                 </li>
                 <li>
                   <p>CareVine Gold badge to make your profile stand out</p>
