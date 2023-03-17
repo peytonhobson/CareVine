@@ -58,7 +58,7 @@ const PayCreditCardForm = props => {
 
     const stripeErrorMessage = createPaymentError.message;
     setErrorMessage(
-      <p className={css.orderError}>
+      <p className={css.error}>
         <FormattedMessage id={errorId} values={{ stripeErrorMessage }} />
       </p>
     );

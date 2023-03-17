@@ -12,6 +12,7 @@ import {
   updateUserMetadata,
   applyPromo,
 } from '../util/api';
+import * as log from '../util/log';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const requestAction = actionType => params => ({ type: actionType, payload: { params } });
@@ -352,8 +353,8 @@ export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState,
       return response;
     })
     .catch(e => {
+      log.error(e, 'authenticate-create-user-failed', {});
       dispatch(authenticateCreateUserError(storableError(e)));
-      throw e;
     });
 };
 
@@ -372,8 +373,8 @@ export const authenticateUpdateUser = (userInfo, userAccessCode) => (dispatch, g
       return response;
     })
     .catch(e => {
+      log.error(e, 'authenticate-update-user-failed', {});
       dispatch(authenticateUpdateUserError(storableError(e)));
-      throw e;
     });
 };
 
@@ -396,8 +397,8 @@ export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
       return response;
     })
     .catch(e => {
+      log.error(e, 'authenticate-submit-consent-failed', {});
       dispatch(authenticateSubmitConsentError(storableError(e)));
-      throw e;
     });
 };
 
@@ -416,8 +417,8 @@ export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState
       return response;
     })
     .catch(e => {
+      log.error(e, 'identity-proof-quiz-failed', {});
       dispatch(getIdentityProofQuizError(storableError(e)));
-      throw e;
     });
 };
 
@@ -461,6 +462,7 @@ export const verifyIdentityProofQuiz = (
       return response;
     })
     .catch(e => {
+      log.error(e, 'verify-identity-proof-quiz-failed', {});
       dispatch(verifyIdentityProofQuizError(storableError(e)));
     });
 };
@@ -487,6 +489,7 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
       return response;
     })
     .catch(e => {
+      log.error(e, 'authenticate-generate-criminal-background-failed', {});
       dispatch(authenticateGenerateCriminalBackgroundError(storableError(e)));
     });
 };
@@ -526,6 +529,7 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
       return response;
     })
     .catch(e => {
+      log.error(e, 'get-authenticate-test-result-failed', {});
       dispatch(getAuthenticateTestResultError(storableError(e)));
     });
 };
@@ -563,6 +567,7 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
       return response;
     })
     .catch(e => {
+      log.error(e, 'authenticate-7-year-history-failed', {});
       dispatch(authenticate7YearHistoryError(storableError(e)));
     });
 };
@@ -591,6 +596,7 @@ export const applyBCPromo = (promoCode, userId) => (dispatch, getState, sdk) => 
       return result;
     })
     .catch(e => {
+      log.error(e, 'apply-bc-promo-failed', {});
       dispatch(applyBCPromoError(storableError(e)));
     });
 };
