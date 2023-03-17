@@ -75,13 +75,13 @@
   }
 
   @media (--viewportLarge) {
-    max-width: 1128px;
-    padding: 0 36px 0 36px;
+    max-width: 75rem;
+    padding: 0 2.25rem 0 2.25rem;
     margin: var(--LandingPage_sectionMarginTopLarge) auto 93px auto;
   }
 
   @media (--viewportXLarge) {
-    max-width: 1056px;
+    max-width: 75rem;
     padding: 0;
   }
 }

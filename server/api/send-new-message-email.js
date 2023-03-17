@@ -21,12 +21,9 @@ module.exports = (req, res) => {
         </div>`,
       };
 
-      console.log('msg', msg);
-
       return sgMail.send(msg);
     })
     .then(apiResponse => {
-      console.log('sent');
       res
         .status(200)
         .set('Content-Type', 'application/transit+json')

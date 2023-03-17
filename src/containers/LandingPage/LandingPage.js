@@ -12,6 +12,7 @@ import {
   SectionHero,
   SectionHowItWorks,
   SectionLocations,
+  SectionMarketplaceSummary,
   LayoutSingleColumn,
   LayoutWrapperTopbar,
   LayoutWrapperMain,
@@ -80,12 +81,14 @@ export const LandingPageComponent = props => {
           <ul className={css.sections}>
             <li className={css.section}>
               <div className={css.sectionContent}>
-                {currentUserFetched && (
+                {currentUser ? (
                   <SectionHowItWorks
                     currentUser={currentUser}
                     currentUserListing={currentUserListing}
                     currentUserListingFetched={currentUserListingFetched}
                   />
+                ) : (
+                  <SectionMarketplaceSummary />
                 )}
               </div>
             </li>

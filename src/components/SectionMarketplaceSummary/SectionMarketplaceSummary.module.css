@@ -1,0 +1,104 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.summaryContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 3rem;
+}
+
+.summary {
+  padding-inline: 2rem;
+  margin: auto;
+}
+
+.graphic {
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.graphicImage {
+  object-fit: cover;
+  max-width: 100%;
+}
+
+.title {
+  composes: h1 from global;
+  margin-top: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.getStartedLink {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  width: 100%;
+}
+
+.getStartedButton {
+  composes: button buttonBorders buttonColors h2 from global;
+  color: var(--matterColorLight);
+  text-align: center;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (--viewportMedium) {
+    display: block;
+    max-width: 20rem;
+  }
+}
+
+.userButtons {
+  width: 100%;
+}
+
+.buttonGroupRoot {
+  display: flex;
+  max-width: 30rem;
+  flex-wrap: nowrap;
+  margin-block: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.buttonGroup {
+  composes: button buttonFont buttonText buttonColorsSecondary from global;
+
+  border: 1px solid var(--marketplaceColor);
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+}
+
+.buttonGroupSelected {
+  composes: button buttonFont buttonText buttonColors from global;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  padding: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--marketplaceColor);
+    color: var(--matterColorLight);
+  }
+}
