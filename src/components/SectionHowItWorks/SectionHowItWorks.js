@@ -23,14 +23,9 @@ const buttonGroupOptions = [
 const SectionHowItWorks = props => {
   const { rootClassName, className, currentUser } = props;
 
-  const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
+  const userType = currentUser?.attributes?.profile?.metadata?.userType;
 
   const buttonGroupRef = useRef(null);
-  const [userType, setUserType] = useState(currentUserType);
-
-  const handleUserTypeChange = userType => {
-    setUserType(userType);
-  };
 
   const scrollIntoView = () => {
     buttonGroupRef.current.scrollIntoView({
@@ -42,28 +37,9 @@ const SectionHowItWorks = props => {
   const classes = classNames(rootClassName || css.root, className);
   return (
     <div className={classes}>
-      {!currentUser ? (
-        <>
-          <div className={css.title}>
-            <FormattedMessage id="SectionHowItWorks.titleLineOne" />
-          </div>
-
-          <div className={css.userButtons} ref={buttonGroupRef} onClick={scrollIntoView}>
-            <ButtonGroup
-              className={css.buttonGroup}
-              initialSelect={CAREGIVER}
-              onChange={handleUserTypeChange}
-              options={buttonGroupOptions}
-              rootClassName={css.buttonGroupRoot}
-              selectedClassName={css.buttonGroupSelected}
-            />
-          </div>
-        </>
-      ) : (
-        <div className={css.authTitle} ref={buttonGroupRef} onClick={scrollIntoView}>
-          <FormattedMessage id="SectionHowItWorks.titleAuthenticated" />
-        </div>
-      )}
+      <div className={css.authTitle} ref={buttonGroupRef} onClick={scrollIntoView}>
+        <FormattedMessage id="SectionHowItWorks.titleAuthenticated" />
+      </div>
 
       {userType === CAREGIVER ? (
         <div className={css.steps}>

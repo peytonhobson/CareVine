@@ -223,6 +223,7 @@ export { default as ReviewModal } from './ReviewModal/ReviewModal';
 export { default as SectionHero } from './SectionHero/SectionHero';
 export { default as SectionHowItWorks } from './SectionHowItWorks/SectionHowItWorks';
 export { default as SectionLocations } from './SectionLocations/SectionLocations';
+export { default as SectionMarketplaceSummary } from './SectionMarketplaceSummary/SectionMarketplaceSummary';
 export { default as SectionThumbnailLinks } from './SectionThumbnailLinks/SectionThumbnailLinks';
 export { default as SendbirdModal} from './SendbirdModal/SendbirdModal'
 export { default as TermsOfService } from './TermsOfService/TermsOfService';
