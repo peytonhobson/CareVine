@@ -181,7 +181,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   const authenticateUserAccessCode = privateData && privateData.authenticateUserAccessCode;
   const authenticateConsent = privateData && privateData.authenticateConsent;
-  const backgroundCheckSubscription = metadata && metadata.backgroundCheckSubscription;
+  const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
   const identityProofQuiz = privateData && privateData.identityProofQuiz;
   const identityProofQuizVerification = privateData && privateData.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
@@ -213,7 +213,7 @@ const EditListingBackgroundCheckPanel = props => {
       if (!getIdentityProofQuizInProgress) {
         setStage(SUBMIT_CONSENT);
       }
-    } else if (backgroundCheckSubscription && backgroundCheckSubscription.status === 'active') {
+    } else if (backgroundCheckSubscription?.status === 'active') {
       setStage(CREATE_USER);
     } else if (createPaymentSuccess && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);

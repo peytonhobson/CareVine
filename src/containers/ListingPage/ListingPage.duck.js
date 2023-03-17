@@ -3,7 +3,7 @@ import config from '../../config';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { transactionLineItems, fetchUserEmail } from '../../util/api';
+import { transactionLineItems, fetchUserEmail, sendNewMessageEmail } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
@@ -239,7 +239,7 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
   dispatch(fetchCurrentUser());
   const params = {
     id: listingId,
-    include: ['author', 'author.profileImage', 'author.metadata', 'images'],
+    include: ['author', 'author.email', 'author.profileImage', 'author.metadata', 'images'],
     'fields.image': [
       // Listing page
       'variants.landscape-crop',
@@ -373,8 +373,12 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
             invitedUserIds: [currentUserId, currentAuthorId],
             channelUrl: CHANNEL_URL,
           };
+          console.log('new');
           try {
             channel = await sb.groupChannel.createChannel(channelParams);
+
+            const senderName = userDisplayNameAsString(currentUser);
+            sendNewMessageEmail({ authorId: currentAuthorId, senderName });
           } catch (e) {
             dispatch(fetchChannelError(e));
           }

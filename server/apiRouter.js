@@ -47,6 +47,7 @@ const stripeCreateSubscriptionSchedule = require('./api/stripe-create-subscripti
 const stripeCancelSubscriptionSchedule = require('./api/stripe-cancel-subscription-schedule');
 const applyPromo = require('./api/apply-promo');
 const sendFeedbackEmail = require('./api/send-feedback-email');
+const sendNewMessageEmail = require('./api/send-new-message-email');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -117,6 +118,7 @@ router.post('/stripe-create-subscription-schedule', stripeCreateSubscriptionSche
 router.post('/stripe-cancel-subscription-schedule', stripeCancelSubscriptionSchedule);
 router.post('/apply-promo', applyPromo);
 router.post('/send-feedback-email', sendFeedbackEmail);
+router.post('/send-new-message-email', sendNewMessageEmail);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

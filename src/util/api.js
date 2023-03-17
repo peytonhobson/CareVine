@@ -273,3 +273,7 @@ export const applyPromo = body => {
 export const sendFeedbackEmail = body => {
   return post('/api/send-feedback-email', body);
 };
+
+export const sendNewMessageEmail = body => {
+  return post('/api/send-new-message-email', body);
+};

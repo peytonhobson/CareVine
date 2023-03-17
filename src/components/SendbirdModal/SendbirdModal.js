@@ -50,7 +50,17 @@ const SendbirdModal = props => {
     currentAuthor && currentAuthor.attributes && currentAuthor.attributes.profile.displayName;
 
   useEffect(() => {
-    if (currentAuthor && currentUser && accessToken && !messageChannel && !fetchChannelInProgress) {
+    const currentAuthorInMessageChannel = messageChannel?.members?.find(
+      member => member?.userId === currentAuthor?.id?.uuid
+    );
+
+    if (
+      currentAuthor &&
+      currentUser &&
+      accessToken &&
+      !currentAuthorInMessageChannel &&
+      !fetchChannelInProgress
+    ) {
       onFetchChannel(currentAuthor, currentUser, accessToken);
     }
   }, [currentAuthor, currentUser, accessToken, messageChannel, fetchChannelInProgress]);
