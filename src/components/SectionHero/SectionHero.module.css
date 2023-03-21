@@ -128,7 +128,8 @@
 }
 
 .arrowHead {
-  fill: var(--matterColorLightTransparent);
-  stroke-width: 1px;
+  margin-top: 0.1rem;
+  fill: transparent;
+  stroke-width: 1.5px;
   stroke: var(--matterColorLightTransparent);
 }
