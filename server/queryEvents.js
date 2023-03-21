@@ -285,8 +285,6 @@ module.exports = queryEvents = () => {
           .query({ authorId: userId })
           .then(res => {
             const listing = res?.data?.data[0];
-            console.log(listing);
-            console.log('state:', listing.state);
             if (listing.state === 'published') {
               integrationSdk.listings
                 .close(

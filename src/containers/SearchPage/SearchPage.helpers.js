@@ -252,6 +252,14 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
     cgScore += 10;
   }
 
+  const hasPremiumSubscription =
+    backgroundCheckSubscription?.status === 'active' &&
+    backgroundCheckSubscription?.type === 'vine';
+
+  if (hasPremiumSubscription) {
+    cgScore += 10;
+  }
+
   return cgScore;
 };
 
