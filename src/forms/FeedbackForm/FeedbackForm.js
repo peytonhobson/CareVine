@@ -11,20 +11,41 @@ import {
   FieldButtonGroup,
   Button,
   IconArrowHead,
+  FieldRangeSlider,
 } from '../../components';
 import { composeValidators, required, maxLength, emailFormatValid } from '../../util/validators';
 import { compose } from 'redux';
 
 import css from './FeedbackForm.module.css';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const DEVICE_TYPE = 'deviceType';
 const USER_TYPE = 'userType';
+const FIND_SITE = 'findSite';
+// const POSITIVES = 'positives';
 const IMPROVE_EXPERIENCE = 'improveExperience';
-const ISSUES = 'issues';
+const SECURITY = 'security';
+const ABILITY_RATING = 'abilityRating';
+const APPEARANCE_RATING = 'appearanceRating';
+const EASE_RATING = 'easeRating';
+const RATINGS = 'ratings';
 const EMAIL = 'email';
 const SUCCESS = 'success';
 
-const stages = [DEVICE_TYPE, USER_TYPE, IMPROVE_EXPERIENCE, ISSUES, EMAIL, SUCCESS];
+const stages = [
+  DEVICE_TYPE,
+  USER_TYPE,
+  FIND_SITE,
+  // POSITIVES,
+  IMPROVE_EXPERIENCE,
+  SECURITY,
+  ABILITY_RATING,
+  APPEARANCE_RATING,
+  EASE_RATING,
+  EMAIL,
+  SUCCESS,
+];
 
 const DESCRIPTION_MAX_LENGTH = 700;
 
@@ -97,7 +118,6 @@ const FeedbackForm = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          {/* TODO: change submit disabled for each to be dependent on specific field */}
           {stage === DEVICE_TYPE && (
             <div className={classNames(css.field, css.deviceType)}>
               <FieldButtonGroup
@@ -152,6 +172,82 @@ const FeedbackForm = props => (
             </div>
           )}
 
+          {stage === FIND_SITE && (
+            <div className={css.field}>
+              <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
+                <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+                <span className={css.goBackText}>Go back</span>
+              </Button>
+              <FieldTextInput
+                id="findSite"
+                name="findSite"
+                type="textarea"
+                label="How did you find this site? If through a search engine like Google, please provide what you searched for."
+                maxLength={DESCRIPTION_MAX_LENGTH}
+                validate={maxLength(
+                  'Must be less than or equal to 700 characters',
+                  DESCRIPTION_MAX_LENGTH
+                )}
+                inputRootClass={css.textAreaRoot}
+              />
+              <div className={css.submitButtonWrapper}>
+                <GradientButton
+                  type="button"
+                  inProgress={submitInProgress}
+                  disabled={!isDev && !values?.findSite}
+                  className={css.nextButton}
+                  onClick={nextStage}
+                >
+                  NEXT
+                </GradientButton>
+              </div>
+            </div>
+          )}
+
+          {stage === SECURITY && (
+            <div className={css.field}>
+              <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
+                <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+                <span className={css.goBackText}>Go back</span>
+              </Button>
+              <FieldButtonGroup
+                className={css.buttonGroup}
+                buttonRootClassName={css.buttonGroupRoot}
+                name="security"
+                options={yesNoOptions}
+                selectedClassName={css.buttonGroupSelected}
+                label="Would you feel secure entering your personal information into this website?"
+                initialSelect={values?.security}
+              />
+              {values?.security === 'no' && (
+                <FieldTextInput
+                  id="securityReason"
+                  name="securityReason"
+                  type="textarea"
+                  label="Why not?"
+                  maxLength={DESCRIPTION_MAX_LENGTH}
+                  validate={maxLength(
+                    'Must be less than or equal to 700 characters',
+                    DESCRIPTION_MAX_LENGTH
+                  )}
+                  inputRootClass={css.textAreaRoot}
+                  className={css.securityTA}
+                />
+              )}
+              <div className={css.submitButtonWrapper}>
+                <GradientButton
+                  type="button"
+                  inProgress={submitInProgress}
+                  disabled={!values?.security}
+                  className={css.nextButton}
+                  onClick={nextStage}
+                >
+                  NEXT
+                </GradientButton>
+              </div>
+            </div>
+          )}
+
           {stage === IMPROVE_EXPERIENCE && (
             <div className={css.field}>
               <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
@@ -162,7 +258,7 @@ const FeedbackForm = props => (
                 id="suggestions"
                 name="suggestions"
                 type="textarea"
-                label="Do you have any suggestions for how we could improve your experience?"
+                label="Were there any aspects of the site that were unclear or difficult to use?"
                 maxLength={DESCRIPTION_MAX_LENGTH}
                 validate={maxLength(
                   'Must be less than or equal to 700 characters',
@@ -171,43 +267,89 @@ const FeedbackForm = props => (
                 inputRootClass={css.textAreaRoot}
               />
               <div className={css.submitButtonWrapper}>
-                <GradientButton
-                  type="button"
-                  disabled={!values.suggestions || invalid}
-                  className={css.nextButton}
-                  onClick={nextStage}
-                >
+                <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
                   NEXT
                 </GradientButton>
               </div>
             </div>
           )}
 
-          {stage === ISSUES && (
+          {stage === ABILITY_RATING && (
             <div className={css.field}>
               <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
                 <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
                 <span className={css.goBackText}>Go back</span>
               </Button>
-              <FieldTextInput
-                id="issues"
-                name="issues"
-                type="textarea"
-                label="Did you encounter any bugs or issues while using the site?"
-                maxLength={DESCRIPTION_MAX_LENGTH}
-                validate={maxLength(
-                  'Must be less than or equal to 700 characters',
-                  DESCRIPTION_MAX_LENGTH
-                )}
-                inputRootClass={css.textAreaRoot}
+              <label className={css.ratingQuestion}>
+                How would you rate your ability to use the internet for tasks like entering personal
+                info, setting up payment methods, etc.?
+              </label>
+              <FieldRangeSlider
+                className={css.rangeSlider}
+                min={1}
+                max={10}
+                step={1}
+                name="abilityRating"
+                handles={[5]}
+                withMarks
+                noHandleLabels
               />
               <div className={css.submitButtonWrapper}>
-                <GradientButton
-                  type="button"
-                  disabled={!values?.issues || invalid}
-                  className={css.nextButton}
-                  onClick={nextStage}
-                >
+                <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
+                  NEXT
+                </GradientButton>
+              </div>
+            </div>
+          )}
+
+          {stage === APPEARANCE_RATING && (
+            <div className={css.field}>
+              <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
+                <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+                <span className={css.goBackText}>Go back</span>
+              </Button>
+              <label className={css.ratingQuestion}>
+                How would you rate the appearance of the website?
+              </label>
+              <FieldRangeSlider
+                className={css.rangeSlider}
+                min={1}
+                max={10}
+                step={1}
+                name="appearanceRating"
+                handles={[5]}
+                withMarks
+                noHandleLabels
+              />
+              <div className={css.submitButtonWrapper}>
+                <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
+                  NEXT
+                </GradientButton>
+              </div>
+            </div>
+          )}
+
+          {stage === EASE_RATING && (
+            <div className={css.field}>
+              <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
+                <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+                <span className={css.goBackText}>Go back</span>
+              </Button>
+              <label className={css.ratingQuestion}>
+                How would you rate the ease-of-use of the website?
+              </label>
+              <FieldRangeSlider
+                className={css.rangeSlider}
+                min={1}
+                max={10}
+                step={1}
+                name="easeRating"
+                handles={[5]}
+                withMarks
+                noHandleLabels
+              />
+              <div className={css.submitButtonWrapper}>
+                <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
                   NEXT
                 </GradientButton>
               </div>

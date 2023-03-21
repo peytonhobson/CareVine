@@ -16,11 +16,13 @@
   @media (--viewportMedium) {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    margin-top: 5rem;
   }
 }
 
 .summary {
   padding-inline: 2.5rem;
+  width: 100%;
 
   @media (--viewportMedium) {
     padding-inline: 2rem;
@@ -38,12 +40,17 @@
     max-width: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
   }
 }
 
 .graphicImage {
   object-fit: cover;
   max-width: 100%;
+
+  @media (--viewportMedium) {
+    max-height: 20rem;
+  }
 }
 
 .title {

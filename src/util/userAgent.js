@@ -14,6 +14,10 @@ export const isMobileSafari = () => {
 };
 
 export const isIOS = () => {
+  if (!window) {
+    return false;
+  }
+
   return (
     (/iPad|iPhone|iPod/.test(window.navigator.platform) ||
       (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1)) &&

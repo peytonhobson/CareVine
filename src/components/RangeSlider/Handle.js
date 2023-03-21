@@ -114,7 +114,7 @@ class Handle extends Component {
         onTouchEnd={this.onTouchEnd}
         role="button"
       >
-        {!noHandleLabels && <label className={css.handleLabel}>${value}</label>}
+        {!noHandleLabels && <label className={css.handleLabel}>{value}</label>}
         <div
           className={classNames(css.visibleHandle, {
             [css.dragged]: this.state.dragging,
