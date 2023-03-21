@@ -2,9 +2,14 @@ import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
 import IconCheckmark from '../IconCheckmark/IconCheckmark';
 import { NamedLink } from '../';
+import { LISTING_STATE_DRAFT } from '../../util/types';
+import {
+  LISTING_PAGE_PARAM_TYPE_DRAFT,
+  LISTING_PAGE_PARAM_TYPE_EDIT,
+  createSlug,
+} from '../../util/urlHelpers';
 
 import css from './ModalMissingInformation.module.css';
-import { createSlug } from '../../util/urlHelpers';
 
 const MissingRequirementsReminder = props => {
   const { className, currentUser, onChangeModalValue, currentUserListing } = props;
@@ -22,9 +27,12 @@ const MissingRequirementsReminder = props => {
     }
   };
 
-  const listingId = currentUserListing && currentUserListing.id.uuid;
-  const title = currentUserListing && currentUserListing.attributes.title;
-  const listingType = currentUserListing && currentUserListing.attributes.state;
+  const listingId = currentUserListing?.id?.uuid;
+  const title = currentUserListing?.attributes?.title;
+
+  const state = currentUserListing?.attributes?.state;
+  const isDraft = state === LISTING_STATE_DRAFT;
+  const listingType = isDraft ? LISTING_PAGE_PARAM_TYPE_DRAFT : LISTING_PAGE_PARAM_TYPE_EDIT;
 
   return (
     <div className={className}>
