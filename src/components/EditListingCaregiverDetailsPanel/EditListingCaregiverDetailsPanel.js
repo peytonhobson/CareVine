@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -85,11 +85,13 @@ const EditListingCaregiverDetailsPanel = props => {
     idealCaregiverDetails,
   };
 
+  const [initialState, setInitialState] = useState(initialValues);
+
   const formProps = {
     className: css.form,
     onChange,
     disabled,
-    initialValues,
+    initialValues: initialState,
     ready,
     updated: panelUpdated,
     updateInProgress,
@@ -122,6 +124,17 @@ const EditListingCaregiverDetailsPanel = props => {
               idealCaregiverDetails,
             },
           };
+
+          setInitialState({
+            certificationsAndTraining,
+            additionalInfo,
+            covidVaccination,
+            languagesSpoken: {
+              provided: languagesSpoken.provided,
+              additional: languagesSpoken.additional,
+            },
+            idealCaregiverDetails,
+          });
 
           onSubmit(updatedValues);
         }}

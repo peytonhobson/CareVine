@@ -31,11 +31,11 @@
   transition: var(--transitionStyleButton);
 
   flex-shrink: 0;
-  padding: 21px 24px 21px 24px;
+  padding: 1rem 1.5rem 1.313rem 1.5rem;
   height: 100%;
 
   @media (--viewportLarge) {
-    padding: 21px 36px 21px 36px;
+    padding: 1rem 2.25rem 1.313rem 2.25rem;
   }
 }
 .logoLink:hover {

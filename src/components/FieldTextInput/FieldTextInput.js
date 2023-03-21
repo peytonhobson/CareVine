@@ -44,6 +44,8 @@ class FieldTextInputComponent extends Component {
 
     const fieldMeta = { touched: hasError, error: errorText };
 
+    console.log(className);
+
     const getIOSInputEventHandlers = () => {
       if (!isIOS()) {
         return {};

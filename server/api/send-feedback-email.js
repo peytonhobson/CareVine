@@ -5,7 +5,19 @@ const log = require('../log');
 module.exports = (req, res) => {
   const { feedback } = req.body;
 
-  const { deviceType, userType, suggestions, issues, email, willingToContact } = feedback;
+  const {
+    deviceType,
+    userType,
+    findSite,
+    security,
+    securityReason,
+    suggestions,
+    abilityRating,
+    appearanceRating,
+    easeRating,
+    email,
+    willingToContact,
+  } = feedback;
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
@@ -15,8 +27,13 @@ module.exports = (req, res) => {
     html: `<div>
         <p>Device Type: ${deviceType}</p>
         <p>User Type: ${userType}</p>
+        <p>How they found out about Carevine: </br>${findSite}</p>
+        <p>Do they feel carevine is secure: ${security}</p>
+        <p>Security Reason: </br>${securityReason}</p>
+        <p>Ability Rating: ${abilityRating}</p>
+        <p>Appearance Rating: ${appearanceRating}</p>
+        <p>Ease Rating: ${easeRating}</p>
         <p>Suggestions: </br>${suggestions}</p>
-        <p>Issues: </br>${issues}</p>
         <p>Email: ${email}</p>
         <p>Willing to Contact: ${willingToContact}</p>
     </div>`,

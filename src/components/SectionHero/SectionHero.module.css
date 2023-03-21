@@ -34,6 +34,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
+  position: relative;
 
   /* Text positioning is done with paddings */
 }
@@ -71,6 +72,7 @@
 
   @media (--viewportMedium) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
+    padding-bottom: 0;
   }
 }
 .heroMainTitleFEDelay {
@@ -105,4 +107,28 @@
 }
 .heroButtonFEDelay {
   animation-delay: 0.3s;
+}
+
+.learnMoreButtonContainer {
+  position: absolute;
+  bottom: 0;
+
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.learnMoreButton {
+  color: var(--matterColorLightTransparent);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.arrowHead {
+  fill: var(--matterColorLightTransparent);
+  stroke-width: 1px;
+  stroke: var(--matterColorLightTransparent);
 }

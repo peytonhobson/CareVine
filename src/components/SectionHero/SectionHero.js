@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { string } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { NamedLink, Logo, OwnListingLink } from '../../components';
+import { NamedLink, Logo, OwnListingLink, IconArrowHead, InlineTextButton } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './SectionHero.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
-  const { rootClassName, className, userType, currentUserListing, currentUserFetched } = props;
+  const {
+    rootClassName,
+    className,
+    userType,
+    currentUserListing,
+    currentUserFetched,
+    scrollToContent,
+  } = props;
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +60,6 @@ const SectionHero = props => {
           <h2 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
             <FormattedMessage id="SectionHero.subTitle" />
           </h2>
-          {/* Change this to use current location w/ mapbox */}
           {location ? (
             <NamedLink
               name="SearchPage"
@@ -85,6 +93,14 @@ const SectionHero = props => {
               <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
             </NamedLink>
           )}
+        </div>
+      )}
+
+      {!isMobile && (
+        <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+          <InlineTextButton className={css.learnMoreButton}>
+            Learn More <IconArrowHead direction="down" className={css.arrowHead} />
+          </InlineTextButton>
         </div>
       )}
     </div>

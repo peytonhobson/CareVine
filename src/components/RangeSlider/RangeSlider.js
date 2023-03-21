@@ -44,6 +44,15 @@ class RangeSliderComponent extends Component {
     return Math.ceil(value / step) * step;
   }
 
+  markPositions() {
+    const { min, max, step } = this.props;
+    const marks = [];
+    for (let i = min; i <= max; i += step) {
+      marks.push(this.toPosition(i) - 4);
+    }
+    return marks;
+  }
+
   changeActive(index) {
     this.setState({ activeHandle: index });
   }
@@ -53,10 +62,20 @@ class RangeSliderComponent extends Component {
   }
 
   render() {
-    const { handles, min, max, noHandleLabels } = this.props;
+    const { handles, min, max, step, noHandleLabels, withMarks } = this.props;
 
     return (
       <Track handles={handles} valueToPosition={this.toPosition}>
+        {withMarks && (
+          <div className={css.marks}>
+            {this.markPositions().map((p, index) => (
+              <div className={css.markContainer} style={{ left: `${p}px` }}>
+                <div key={index} className={css.mark} />
+                <label className={css.stepLabel}>{(index + 1) * step}</label>
+              </div>
+            ))}
+          </div>
+        )}
         {handles.map((h, index) => {
           const classes = classNames({ [css.activeHandle]: this.state.activeHandle === index });
           return (
@@ -70,7 +89,7 @@ class RangeSliderComponent extends Component {
               positionToValue={this.toValue}
               changeActive={() => this.changeActive(index)}
               onChange={value => this.onChange(value, index)}
-              noHandleLabels
+              noHandleLabels={noHandleLabels}
             />
           );
         })}

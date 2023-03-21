@@ -14,10 +14,11 @@ const appReducer = combineReducers({ ...globalReducers, ...pageReducers });
 
 const createReducer = () => {
   return (state, action) => {
-    const appState = action.type === USER_LOGOUT ? undefined : state;
+    // Set currentUserFetched to true, otherwise hero will not show content
+    const appState = action.type === USER_LOGOUT ? { user: { currentUserFetched: true } } : state;
 
-    // Clear sessionStorage when logging out.
     if (action.type === USER_LOGOUT && typeof window !== 'undefined' && !!window.sessionStorage) {
+      // Clear sessionStorage when logging out.
       window.sessionStorage.clear();
     }
 

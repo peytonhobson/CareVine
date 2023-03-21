@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -48,6 +48,15 @@ export const LandingPageComponent = props => {
 
   const { userType } = (currentUser && currentUser.attributes.profile.metadata) || EMPLOYER;
 
+  const contentRef = useRef(null);
+
+  const scrollToContent = () => {
+    if (contentRef.current) {
+      const elementHeight = contentRef.current.getBoundingClientRect().top - 100;
+      window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+    }
+  };
+
   return (
     <Page
       className={css.root}
@@ -76,9 +85,10 @@ export const LandingPageComponent = props => {
               userType={userType}
               currentUserListing={currentUserListing}
               currentUserFetched={currentUserFetched}
+              scrollToContent={scrollToContent}
             />
           </div>
-          <ul className={css.sections}>
+          <ul className={css.sections} ref={contentRef}>
             <li className={css.section}>
               <div className={css.sectionContent}>
                 {currentUser ? (

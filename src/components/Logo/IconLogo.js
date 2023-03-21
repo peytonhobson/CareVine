@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import css from './Logo.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const IconLogo = props => {
   const { className, format, ...rest } = props;
 
@@ -10,7 +12,7 @@ const IconLogo = props => {
   let height = '3em';
 
   if (format === 'hero') {
-    width = '25em';
+    width = isMobile ? '25em' : '30em';
     height = '10em';
   }
 

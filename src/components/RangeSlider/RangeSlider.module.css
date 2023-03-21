@@ -8,3 +8,29 @@
 .activeHandle {
   z-index: 1;
 }
+
+.markContainer {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mark {
+  margin-top: -4px;
+
+  /* Layout */
+  width: 8px;
+  height: 8px;
+
+  box-sizing: content-box;
+  background-color: var(--marketplaceColor);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.stepLabel {
+  text-align: center;
+  width: 100%;
+}

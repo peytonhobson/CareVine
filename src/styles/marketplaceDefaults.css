@@ -145,7 +145,7 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 30rem;
+  --SectionHero_desktopTitleMaxWidth: 35rem;
 
   /* ================ TabNav ================ */
   --TabNav_linkWidth: 15rem;
@@ -604,8 +604,8 @@ textarea {
   margin-bottom: 0.875rem;
 
   @media (--viewportMedium) {
-    font-size: 4rem;
-    line-height: 4rem;
+    font-size: 5rem;
+    line-height: 5rem;
     letter-spacing: 0rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     padding-top: 1.563rem;
