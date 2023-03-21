@@ -15,7 +15,7 @@ import {
 } from '../../util/urlHelpers';
 import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
 
-import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox } from '..';
+import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
 import { StripeConnectAccountForm } from '../../forms';
 import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
@@ -30,6 +30,7 @@ import EditListingWizardTab, {
   BACKGROUND_CHECK,
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
+import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
 import css from './CaregiverEditListingWizard.module.css';
 
 // You can reorder these panels.
@@ -492,11 +493,16 @@ class CaregiverEditListingWizard extends Component {
           usePortal
         >
           <div className={css.modalPayoutDetailsWrapper}>
-            <h1 className={css.modalTitle}>
-              <FormattedMessage id="CaregiverEditListingWizard.payoutModalTitleOneMoreThing" />
-              <br />
-              <FormattedMessage id="CaregiverEditListingWizard.payoutModalTitlePayoutPreferences" />
-            </h1>
+            <div className={css.modalTitleContainer}>
+              <h1 className={css.modalTitle}>
+                <FormattedMessage id="CaregiverEditListingWizard.payoutModalTitleOneMoreThing" />
+                <br />
+                <FormattedMessage id="CaregiverEditListingWizard.payoutModalTitlePayoutPreferences" />
+              </h1>
+              <div className={css.stripeContainer}>
+                <img src={stripeLogo} className={css.stripeLogo} />
+              </div>
+            </div>
             {!currentUserLoaded ? (
               <FormattedMessage id="StripePayoutPage.loadingData" />
             ) : returnedAbnormallyFromStripe && !stripeAccountLinkError ? (
@@ -506,7 +512,17 @@ class CaregiverEditListingWizard extends Component {
             ) : (
               <>
                 <p className={css.modalMessage}>
-                  <FormattedMessage id="CaregiverEditListingWizard.payoutModalInfo" />
+                  <FormattedMessage
+                    id="CaregiverEditListingWizard.payoutModalInfo"
+                    values={{
+                      closeButtonText: (
+                        <span rootClassName={css.close} title="CLOSE">
+                          <span className={css.closeText}>CLOSE</span>
+                          <IconClose rootClassName={css.closeIcon} />
+                        </span>
+                      ),
+                    }}
+                  />
                 </p>
                 <StripeConnectAccountForm
                   disabled={formDisabled}

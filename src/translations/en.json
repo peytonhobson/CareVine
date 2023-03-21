@@ -103,7 +103,7 @@
   "Care24HourForm.liveInCheckboxLabel": "This is a live-in position",
   "Care24HourForm.updateFailed": "Failed to update. Please try again.",
   "Care24HourForm.whichCareDays": "Which days do you need care?",
-  "CaregiverEditListingWizard.payoutModalInfo": "Almost done! In order to send you money, we need to know a bit more about you. Next, we will guide you through verifying your account. The details can also be edited from Account Setting page on Payout details tab. ",
+  "CaregiverEditListingWizard.payoutModalInfo": "Almost done! In order for clients to pay you, we need to know a bit more about you. Next, we will guide you through verifying your account. If you don't feel comfortable entering your details now, you can click the {closeButtonText} button at the top and enter them later in the Payout Details page in Account Settings. ",
   "CaregiverEditListingWizard.payoutModalTitleOneMoreThing": "One more thing:",
   "CaregiverEditListingWizard.payoutModalTitlePayoutPreferences": "Payout preferences",
   "CaregiverEditListingWizard.redirectingToStripe": "You returned early from Stripe. Redirecting you back to Stripe…",
