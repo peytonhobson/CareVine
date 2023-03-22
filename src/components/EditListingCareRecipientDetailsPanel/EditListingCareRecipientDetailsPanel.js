@@ -42,15 +42,25 @@ const EditListingCareRecipientDetailsPanel = props => {
   const currentListing = ensureListing(listing);
 
   const [careRecipients, setCareRecipients] = useState(
-    currentListing.attributes.publicData.careRecipients || []
+    currentListing?.attributes?.publicData?.careRecipients || []
   );
   const [isCareRecipientFormVisible, setIsCareRecipientFormVisible] = useState(false);
+  const [isCareRecipientsWarningVisible, setIsCareRecipientsWarningVisible] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const { publicData } = currentListing.attributes;
 
   const handleSubmit = values => {
     const { recipientDetails, detailedCareNeeds } = values;
+
+    if (careRecipients.length === 0) {
+      // Need to use setTimeout due to bug where scrollTo doesn't work if called immediately
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 2);
+      setIsCareRecipientsWarningVisible(true);
+      return;
+    }
 
     const updatedValues = {
       publicData: {
@@ -68,6 +78,10 @@ const EditListingCareRecipientDetailsPanel = props => {
   const handleAddRecipient = values => {
     const { recipientRelationship, gender, age } = values;
 
+    if (isCareRecipientsWarningVisible) {
+      setIsCareRecipientsWarningVisible(false);
+    }
+
     const newCareRecipient = {
       recipientRelationship,
       gender,
@@ -79,6 +93,10 @@ const EditListingCareRecipientDetailsPanel = props => {
   };
 
   const onDeleteRecipient = careRecipient => {
+    if (careRecipients.length === 1) {
+      setIsCareRecipientsWarningVisible(true);
+    }
+
     setCareRecipients(prevCareRecipients => prevCareRecipients.filter(cr => cr !== careRecipient));
   };
 
@@ -192,6 +210,11 @@ const EditListingCareRecipientDetailsPanel = props => {
         >
           <FormattedMessage id="EditListingCareRecipientDetailsPanel.addCareRecipient" />
         </InlineTextButton>
+        {isCareRecipientsWarningVisible ? (
+          <p className={css.error}>
+            <FormattedMessage id="EditListingCareRecipientDetailsPanel.careRecipientsWarning" />
+          </p>
+        ) : null}
       </div>
       <EditListingCareRecipientDetailsForm
         {...formProps}
