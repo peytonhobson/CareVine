@@ -117,10 +117,14 @@
   width: 100%;
   justify-content: center;
   margin-bottom: 0.5rem;
+  visibility: hidden;
 }
 
 .learnMoreButton {
   color: var(--matterColorLightTransparent);
+
+  composes: animation;
+  animation-delay: 0s;
 
   &:hover {
     text-decoration: none;

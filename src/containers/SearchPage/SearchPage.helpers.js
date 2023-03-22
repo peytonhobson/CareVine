@@ -252,9 +252,12 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
     cgScore += 10;
   }
 
+  const caregiverAuthor = caregiverListing?.author;
+  const caregiverAuthorMetadata = caregiverAuthor?.attributes?.profile?.metadata;
+
   const hasPremiumSubscription =
-    backgroundCheckSubscription?.status === 'active' &&
-    backgroundCheckSubscription?.type === 'vine';
+    caregiverAuthorMetadata?.backgroundCheckSubscription?.status === 'active' ||
+    caregiverAuthorMetadata?.backgroundCheckSubscription?.type === 'vine';
 
   if (hasPremiumSubscription) {
     cgScore += 10;
