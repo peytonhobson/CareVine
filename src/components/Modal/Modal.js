@@ -142,6 +142,7 @@ export class ModalComponent extends Component {
           onClick={this.handleClose}
           rootClassName={closeButtonClasses}
           title={closeModalMessage}
+          type="button"
         >
           <span className={css.closeText}>
             {closeButtonMessage || <FormattedMessage id="Modal.close" />}
