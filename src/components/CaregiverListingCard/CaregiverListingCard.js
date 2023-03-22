@@ -158,7 +158,6 @@ export const CaregiverListingCardComponent = props => {
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: isMobile ? '100%' : '30rem',
-    aspectRatio: '1 / 1',
     // height: '28rem',
     marginBottom: '3rem',
     marginInline: isMobile ? 0 : '1.5rem',

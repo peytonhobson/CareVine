@@ -41,7 +41,6 @@ const EditListingCareRecipientDetailsFormComponent = props => (
         formId,
         fetchErrors,
         history,
-        careRecipients,
         values,
       } = formRenderProps;
 
@@ -89,7 +88,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
-      const submitDisabled = invalid || disabled || submitInProgress || careRecipients?.length < 1;
+      const submitDisabled = invalid || disabled || submitInProgress;
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>

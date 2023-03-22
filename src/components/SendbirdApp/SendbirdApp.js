@@ -4,7 +4,6 @@ import Avatar from '@sendbird/uikit-react/ui/Avatar';
 import ChannelListHeader from '@sendbird/uikit-react/ChannelList/components/ChannelListHeader';
 import { ChannelListProvider } from '@sendbird/uikit-react/ChannelList/context';
 import ChannelListUI from '@sendbird/uikit-react/ChannelList/components/ChannelListUI';
-import ChannelPreviewAction from '@sendbird/uikit-react/ChannelList/components/ChannelPreviewAction';
 import CustomChannelHeader from './CustomChannelHeader';
 import SBConversation from '@sendbird/uikit-react/Channel';
 import '@sendbird/uikit-react/dist/index.css';
@@ -148,6 +147,7 @@ const SendbirdApp = props => {
                   key={channel?.url}
                   onClick={onClick}
                   channel={channel}
+                  onLeaveChannel={onLeaveChannel}
                   isActive={channel?.url === currentChannelUrl}
                   renderChannelAction={() => (
                     <CustomChannelPreviewAction channel={channel} disabled={!isOnline} />

@@ -3,17 +3,29 @@ import React, { useState, useContext, useEffect } from 'react';
 import '@sendbird/uikit-react/dist/index.css';
 
 import MessageInput from '@sendbird/uikit-react/ui/MessageInput';
-import { a as LocalizationContext } from '@sendbird/uikit-react/LocalizationContext-3c8d4888.js';
 import QuoteMessageInput from '@sendbird/uikit-react/ui/QuoteMessageInput';
 import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import SuggestedMentionList from '@sendbird/uikit-react/Channel/components/SuggestedMentionList';
-import { M as MessageInputKeys } from '@sendbird/uikit-react/const-5b3992dc.js';
-import {
-  a as isDisabledBecauseFrozen,
-  b as isDisabledBecauseMuted,
-  d as isOperatorFunc,
-} from '@sendbird/uikit-react/ChannelProvider-2ced8109.js';
+import { LabelStringSet as stringSet } from '@sendbird/uikit-react/ui/Label';
+
+const isOperatorFunc = function() {
+  let groupChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const myRole = groupChannel === null || groupChannel === void 0 ? void 0 : groupChannel.myRole;
+  return myRole === 'operator';
+};
+const isDisabledBecauseFrozen = function() {
+  let groupChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const isFrozen =
+    groupChannel === null || groupChannel === void 0 ? void 0 : groupChannel.isFrozen;
+  return isFrozen && !isOperator(groupChannel);
+};
+const isDisabledBecauseMuted = function() {
+  let groupChannel = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  const myMutedState =
+    groupChannel === null || groupChannel === void 0 ? void 0 : groupChannel.myMutedState;
+  return myMutedState === 'muted';
+};
 
 const MessageInputWrapper = (props, ref) => {
   const { value, afterSendMessageMaybe } = props;
@@ -30,11 +42,17 @@ const MessageInputWrapper = (props, ref) => {
   const globalStore = useSendbirdStateContext();
   const channel = currentGroupChannel;
 
+  const MessageInputKeys = {
+    Enter: 'Enter',
+    ArrowUp: 'ArrowUp',
+    ArrowDown: 'ArrowDown',
+    Backspace: 'Backspace',
+  };
+
   const { isOnline, isMentionEnabled, userMention } = globalStore?.config;
   const maxUserMentionCount = userMention?.maxMentionCount || 10;
   const maxUserSuggestionCount = userMention?.maxSuggestionCount || 15;
 
-  const { stringSet } = useContext(LocalizationContext);
   const [mentionNickname, setMentionNickname] = useState('');
   const [mentionedUsers, setMentionedUsers] = useState([]);
   const [mentionedUserIds, setMentionedUserIds] = useState([]);
