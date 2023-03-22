@@ -147,7 +147,6 @@ const SendbirdApp = props => {
                   key={channel?.url}
                   onClick={onClick}
                   channel={channel}
-                  onLeaveChannel={onLeaveChannel}
                   isActive={channel?.url === currentChannelUrl}
                   renderChannelAction={() => (
                     <CustomChannelPreviewAction channel={channel} disabled={!isOnline} />
