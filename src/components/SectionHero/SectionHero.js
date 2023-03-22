@@ -11,6 +11,8 @@ const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
+  const [showLearnMore, setShowLearnMore] = useState(true);
+
   const {
     rootClassName,
     className,
@@ -20,8 +22,20 @@ const SectionHero = props => {
     scrollToContent,
   } = props;
 
+  const onScroll = () => {
+    if (window.scrollY > 50) {
+      setShowLearnMore(false);
+    } else {
+      setShowLearnMore(true);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
+
+    window.addEventListener('scroll', onScroll);
+
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const classes = classNames(rootClassName || css.root, className);
@@ -96,7 +110,7 @@ const SectionHero = props => {
         </div>
       )}
 
-      {!isMobile && (
+      {!isMobile && showLearnMore && (
         <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
           <InlineTextButton className={css.learnMoreButton}>
             Learn More <IconArrowHead direction="down" className={css.arrowHead} />
