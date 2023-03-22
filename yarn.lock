@@ -2706,24 +2706,25 @@
   resolved "https://registry.npmjs.org/@rushstack/eslint-patch/-/eslint-patch-1.1.4.tgz"
   integrity sha512-LwzQKA4vzIct1zNZzBmRKI9QuNpLgTQMEjsQLf3BXuGYb3QPTP4Yjf6mkdX+X1mYttZ808QpOwAzZjv28kq7DA==
 
-"@sendbird/chat@4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@sendbird/chat/-/chat-4.2.0.tgz#e24fb6ff3f42864e2a0bcb43719a0d1a605f2505"
-  integrity sha512-paMJ5RoTtGsCHNK4vN8m30MI+kOJ1pZi8abtAF9YFM1ZkpfyDM4GhT4Nm+kZ7gGm6nIJn+fuBCXdB5wVxJfunQ==
-
 "@sendbird/chat@^4.1.1":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@sendbird/chat/-/chat-4.2.1.tgz#12054ff2f8b960ab9c15097e8310795eaed8cb50"
   integrity sha512-yk3JqaZrDmXjRXTC47171d7SqlsirPDk9RV0tklRxduk53xcUBJgYYIRHD/cgKSsq7W70rItNBCxTifdrajJWw==
 
-"@sendbird/uikit-react@3.3.2":
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/@sendbird/uikit-react/-/uikit-react-3.3.2.tgz#d95d0a96ed37e8c3e071fda2fa90e10a2ceb1229"
-  integrity sha512-dNpWaSsq6vdr1XjjDquGS5b+CNCpbG3MMa7AwJ8An5TgOZPsYPbS7IPNCbN800Wdgpk+cFYaCXkjedbTzD+33A==
+"@sendbird/chat@^4.2.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@sendbird/chat/-/chat-4.6.0.tgz#b65cac6d351eaee435c744aa5ce4887760b6631c"
+  integrity sha512-Q8sfuSgI7NbR950111yasZwycK3vMrqb2IQWKoMN7/AVrDSOSUMDMBR2hfSCHOZaJwz7vtMnj4l9oWY3Sk8zuw==
+
+"@sendbird/uikit-react@^3.3.2":
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/@sendbird/uikit-react/-/uikit-react-3.4.2.tgz#d37d1916a5d5880a4d318dc6b258fb94411126ba"
+  integrity sha512-sw83kk3yudiQ5PAPWibtEnLdetyBzh8S4RHqM9dhcsPg6KEEx8QveaaQlJ3XoPSbk95iJ/63xAnslt9Q75iFkQ==
   dependencies:
     "@sendbird/chat" "^4.1.1"
     css-vars-ponyfill "^2.3.2"
     date-fns "^2.16.1"
+    dompurify "^3.0.1"
     prop-types "^15.7.2"
 
 "@sendgrid/client@^7.7.0":
@@ -7087,6 +7088,11 @@ domhandler@^4.0.0, domhandler@^4.2.0, domhandler@^4.3.1:
   integrity sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==
   dependencies:
     domelementtype "^2.2.0"
+
+dompurify@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.1.tgz#a0933f38931b3238934dd632043b727e53004289"
+  integrity sha512-60tsgvPKwItxZZdfLmamp0MTcecCta3avOhsLgPZ0qcWt96OasFfhkeIRbJ6br5i0fQawT1/RBGB5L58/Jpwuw==
 
 domutils@1.5.1:
   version "1.5.1"
@@ -15392,6 +15398,11 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
+
+use-long-press@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/use-long-press/-/use-long-press-2.0.3.tgz#9e26da35f05819fe8056787c78a101e91e3e464b"
+  integrity sha512-n3cfv90Y1ldNt+hhXzxnxuLZmgLOOC/+qfLGoeEBgOxmnokPPt39MPF3KmvKriq5VMoJ7uQdVjHejCdHBt9anw==
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

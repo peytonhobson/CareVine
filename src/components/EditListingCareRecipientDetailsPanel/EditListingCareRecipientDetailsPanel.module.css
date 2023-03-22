@@ -149,6 +149,10 @@
   }
 }
 
+.error {
+  color: var(--failColor);
+}
+
 @media (--viewportMedium) {
   .recipients {
     margin-bottom: 8px;

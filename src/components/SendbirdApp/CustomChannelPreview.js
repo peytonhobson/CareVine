@@ -7,21 +7,16 @@ import Badge from '../Badge/Badge';
 import Icon, { IconColors, IconTypes } from '@sendbird/uikit-react/ui/Icon';
 import Label, { LabelTypography, LabelColors } from '@sendbird/uikit-react/ui/Label';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
-import { u as useLocalization } from '@sendbird/uikit-react/LocalizationContext-3c8d4888.js';
-import MentionUserLabel from '@sendbird/uikit-react/ui/MentionUserLabel';
-import { u as useChannelListContext } from '@sendbird/uikit-react/ChannelListProvider-95089982.js';
+import { LabelStringSet as stringSet } from '@sendbird/uikit-react/ui/Label';
 import { TypingIndicatorText } from '@sendbird/uikit-react/Channel/components/TypingIndicator';
 import MessageStatus from '@sendbird/uikit-react/ui/MessageStatus';
 import { useMediaQuery } from '@mui/material';
-import { u as useLongPress } from '@sendbird/uikit-react/useLongPress-e7b1aee7.js';
-import { t as truncateString, d as isEditedMessage } from '@sendbird/uikit-react/index-c45e5f15.js';
-import classNames from 'classnames';
-import {
-  i as isToday,
-  a as isYesterday,
-  f as formatRelative,
-} from '@sendbird/uikit-react/index-13e7d10f.js';
-import { f as format } from '@sendbird/uikit-react/index-ba11d77d.js';
+import { useChannelListContext } from '@sendbird/uikit-react/ChannelList/context';
+import { timestampToDate } from '../../util/dates';
+import moment from 'moment';
+import { useLongPress } from 'use-long-press';
+import Modal from '@sendbird/uikit-react/ui/Modal';
+import TextButton from '@sendbird/uikit-react/ui/TextButton';
 
 const getLastMessageCreatedAt = (channel, locale) => {
   var _channel$lastMessage;
@@ -42,15 +37,77 @@ const getLastMessageCreatedAt = (channel, locale) => {
     return '';
   }
 
+  const isToday = dirtyDate => {
+    if (!dirtyDate) {
+      return false;
+    }
+    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
+    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
+    return dateLeftStartOfDay === dateRightStartOfDay;
+  };
+
+  const isYesterday = dirtyDate => {
+    if (!dirtyDate) {
+      return false;
+    }
+
+    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
+    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
+    return dateLeftStartOfDay === dateRightStartOfDay - 86400000;
+  };
+
   if (isToday(createdAt)) {
-    return format(createdAt, 'p', optionalParam);
+    return timestampToDate(createdAt).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    });
   }
 
   if (isYesterday(createdAt)) {
-    return formatRelative(createdAt, new Date(), optionalParam);
+    return (
+      'yesterday at ' +
+      timestampToDate(createdAt).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      })
+    );
   }
 
-  return format(createdAt, 'MMM dd', optionalParam);
+  return moment(createdAt).format('MMM DD');
+};
+
+const truncateString = function(fullStr, strLen) {
+  if (!strLen) strLen = 40;
+  if (fullStr === null || fullStr === undefined) return '';
+  if (fullStr.length <= strLen) return fullStr;
+  var separator = '...';
+  var sepLen = separator.length;
+  var charsToShow = strLen - sepLen;
+  var frontChars = Math.ceil(charsToShow / 2);
+  var backChars = Math.floor(charsToShow / 2);
+  return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
+};
+
+const isUserMessage = function(message) {
+  var _a;
+
+  return (
+    message &&
+    (((_a = message === null || message === void 0 ? void 0 : message.isUserMessage) === null ||
+    _a === void 0
+      ? void 0
+      : _a.call(message)) ||
+      (message === null || message === void 0 ? void 0 : message.messageType) === 'user')
+  );
+};
+
+const isEditedMessage = function(message) {
+  return (
+    isUserMessage(message) &&
+    (message === null || message === void 0 ? void 0 : message.updatedAt) > 0
+  );
 };
 
 const getChannelTitle = function() {
@@ -123,6 +180,7 @@ const CustomChannelPreview = ({
   isActive = false,
   onClick,
   renderChannelAction,
+  onLeaveChannel,
   tabIndex,
 }) => {
   const sbState = useSendbirdStateContext();
@@ -131,8 +189,6 @@ const CustomChannelPreview = ({
     isMessageReceiptStatusEnabled = false,
     typingChannels,
   } = useChannelListContext();
-  const channelListContext = useChannelListContext();
-  const { dateLocale, stringSet } = useLocalization();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTyping = typingChannels?.some(({ url }) => url === channel?.url);
 
@@ -151,16 +207,14 @@ const CustomChannelPreview = ({
     channel?.lastMessage?.sender?.userId === userId;
 
   const onLongPress = useLongPress(
-    {
-      onLongPress: () => {
-        if (isMobile) {
-          setShowMobileLeave(true);
-        }
-      },
-      onClick,
+    () => {
+      if (isMobile) {
+        setShowMobileLeave(true);
+      }
     },
     {
-      delay: 1000,
+      onCancel: () => onClick(),
+      threshold: 500,
     }
   );
   const channelName = getChannelTitle(channel, userId, stringSet);
@@ -174,7 +228,7 @@ const CustomChannelPreview = ({
         role="link"
         tabIndex={tabIndex}
         style={{ width: isMobile ? '100%' : 'auto' }}
-        {...(isMobile ? { ...onLongPress } : { onClick })}
+        {...(isMobile ? { ...onLongPress() } : { onClick })}
       >
         <div className="sendbird-channel-preview__avatar">
           <ChannelAvatar channel={channel} userId={userId} theme={theme} />
@@ -193,7 +247,14 @@ const CustomChannelPreview = ({
                 </div>
               )}
               <span className="sendbird-channel-preview__content__upper__header__channel-name sendbird-label--subtitle-2">
-                <div style={{ color: isActive ? '#ffffff' : 'var(--marketplaceColor' }}>
+                <div
+                  style={{
+                    color: isActive ? '#ffffff' : 'var(--marketplaceColor',
+                    userSelect: isMobile && 'none',
+                    WebkitUserSelect: isMobile && 'none',
+                    msUserSelect: isMobile && 'none',
+                  }}
+                >
                   {channelName}
                 </div>
               </span>
@@ -227,14 +288,19 @@ const CustomChannelPreview = ({
                     <Badge count={getChannelUnreadMessageCount(channel)} />
                   ) : null}
                 </div>
-                {getLastMessageCreatedAt(channel, dateLocale)}
+                {getLastMessageCreatedAt(channel, null)}
               </span>
             )}
           </div>
           <div className="sendbird-channel-preview__content__lower" style={{ width: '80%' }}>
             <span
               className="sendbird-channel-preview__content__lower__last-message sendbird-label--color-onbackground-2 sendbird-label--body-2"
-              style={{ color: isActive && '#ffffff' }}
+              style={{
+                color: isActive && '#ffffff',
+                userSelect: isMobile && 'none',
+                WebkitUserSelect: isMobile && 'none',
+                msUserSelect: isMobile && 'none',
+              }}
             >
               {isChannelTyping && <TypingIndicatorText members={channel?.getTypingUsers()} />}
               {!isChannelTyping &&
@@ -261,7 +327,7 @@ const CustomChannelPreview = ({
         >
           <TextButton
             onClick={() => {
-              onLeaveChannel();
+              channel.leave();
               setShowMobileLeave(false);
             }}
             className="sendbird-channel-preview__leave-label--mobile"

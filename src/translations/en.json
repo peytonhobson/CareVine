@@ -351,6 +351,7 @@
   "EditListingCareRecipientDetailsPanel.title": "Edit your {whoNeedsCare} details",
   "EditListingCareRecipientDetailsPanel.whoNeedsCare": "Care Recipient(s)",
   "EditListingCareRecipientDetailsPanel.whoNeedsCareLabel": "Tell us about who needs care",
+  "EditListingCareRecipientDetailsPanel.careRecipientsWarning": "Please add at least one care recipient",
   "EditListingCareSchedulePanel.careSchedule": "Care Schedule",
   "EditListingCareSchedulePanel.createListingTitle": "Create your {careSchedule}",
   "EditListingCareSchedulePanel.showListingFailed": "Fetching listing data failed",
