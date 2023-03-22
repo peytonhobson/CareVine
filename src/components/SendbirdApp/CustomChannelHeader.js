@@ -60,8 +60,7 @@ const CustomChannelHeader = props => {
 
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const currentUserType =
-    currentUser.attributes.profile.metadata && currentUser.attributes.profile.metadata.userType;
+  const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
 
   const {
     config: { userId, theme },

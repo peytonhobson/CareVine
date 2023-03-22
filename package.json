@@ -13,8 +13,8 @@
     "@material-ui/styles": "^4.11.5",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.16",
-    "@sendbird/chat": "4.2.0",
-    "@sendbird/uikit-react": "3.3.2",
+    "@sendbird/chat": "^4.2.0",
+    "@sendbird/uikit-react": "3.4.2",
     "@sendgrid/mail": "^7.7.0",
     "@sentry/browser": "^6.19.7",
     "@sentry/node": "^6.19.7",
@@ -62,7 +62,9 @@
     "passport": "^0.5.3",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
+    "patch-package": "^6.5.0",
     "path-to-regexp": "^6.2.1",
+    "postinstall-postinstall": "^2.1.0",
     "prop-types": "^15.8.1",
     "qs": "^6.11.0",
     "query-string": "^7.1.1",
@@ -92,10 +94,9 @@
     "stripe": "^11.1.0",
     "turf": "^3.0.14",
     "url": "^0.11.0",
+    "use-long-press": "^2.0.3",
     "uuid-by-string": "^4.0.0",
-    "zipcode-to-timezone": "^0.0.9",
-    "postinstall-postinstall": "^2.1.0",
-    "patch-package": "^6.5.0"
+    "zipcode-to-timezone": "^0.0.9"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.13",

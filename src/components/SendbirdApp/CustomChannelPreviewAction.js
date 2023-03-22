@@ -5,13 +5,11 @@ import ContextMenu, { MenuItem, MenuItems } from '@sendbird/uikit-react/ui/Conte
 import IconButton from '@sendbird/uikit-react/ui/IconButton';
 import Icon, { IconTypes, IconColors } from '@sendbird/uikit-react/ui/Icon';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
-import { n as noop } from '@sendbird/uikit-react/utils-c17213bb';
 import Modal from '@sendbird/uikit-react/ui/Modal';
 import { useChannelListContext } from '@sendbird/uikit-react/ChannelList/context';
-import { GroupChannel } from '@sendbird/chat/groupChannel';
 
 const LeaveChannelModal = props => {
-  const { channel = null, onSubmit = noop, onCancel = noop } = props;
+  const { channel = null, onSubmit, onCancel } = props;
 
   const channelFromContext = useChannelListContext()?.currentChannel;
   const leavingChannel = channel || channelFromContext;
