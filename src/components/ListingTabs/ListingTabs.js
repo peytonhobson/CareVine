@@ -76,34 +76,55 @@ const ListingTabs = props => {
   const onClick = tab => {
     switch (tab) {
       case 'Availability':
-        availabilityRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          availabilityRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Bio':
-        bioRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          bioRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Services':
-        servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case isMobile ? 'Training' : 'Certifications/Training':
-        certificationsAndTrainingRef.current.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
+        if (availabilityRef.current) {
+          certificationsAndTrainingRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
         break;
       case 'Additional':
-        additionalInfoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          additionalInfoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Job Description':
-        jobDescriptionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          jobDescriptionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Care Schedule':
-        careScheduleRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          careScheduleRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Care Recipients(s)':
-        careRecipientsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          careRecipientsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
         break;
       case 'Caregiver Preferences':
-        caregiverPreferencesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (availabilityRef.current) {
+          caregiverPreferencesRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
         break;
       default:
         break;
