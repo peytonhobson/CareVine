@@ -224,7 +224,7 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
   const employerScheduleType = employerPublicData.scheduleType;
 
   if (cgScheduleTypes.includes(employerScheduleType)) {
-    cgScore += 10;
+    cgScore += 15;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
@@ -243,7 +243,7 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
     certificationAndTraining => employerCertificationsAndTraining.includes(certificationAndTraining)
   ).length;
 
-  cgScore += 3 * cgCertificationsAndTrainingScore;
+  cgScore += 2 * cgCertificationsAndTrainingScore;
 
   const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
   const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
@@ -260,7 +260,7 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
     caregiverAuthorMetadata?.backgroundCheckSubscription?.type === 'vine';
 
   if (hasPremiumSubscription) {
-    cgScore += 10;
+    cgScore += 35;
   }
 
   return cgScore;
@@ -315,7 +315,7 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
   const employerScheduleType = employerPublicData.scheduleType;
 
   if (cgScheduleTypes.includes(employerScheduleType)) {
-    empScore += 10;
+    empScore += 15;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
@@ -331,7 +331,7 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
   const cgHasCar = cgAdditionalInfo.includes('hasCar');
 
   if (empNearPublicTransit === 'yes' && cgHasCar === false) {
-    empScore += 10;
+    empScore += 20;
   }
 
   const cgCertificationsAndTraining = cgPublicData.certificationsAndTraining || [];
@@ -341,13 +341,13 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
     certificationAndTraining => cgCertificationsAndTraining.includes(certificationAndTraining)
   ).length;
 
-  empScore += 3 * employerCertificationsAndTrainingScore;
+  empScore += 2 * employerCertificationsAndTrainingScore;
 
   const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
   const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
 
-  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'yes') {
-    empScore += 10;
+  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'no') {
+    empScore -= 10;
   }
 
   return empScore;
