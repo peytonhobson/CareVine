@@ -242,7 +242,7 @@ export const EmployerListingCardComponent = props => {
               {careTypesLabels.slice(0, isMobile ? 2 : 3).map(careType => (
                 <p className={css.serviceCardItem}>{careType?.split('/')[0]}</p>
               ))}
-              {careTypes && careTypes.length > 2 && (
+              {careTypes?.length > 3 && (
                 <InfoTooltip
                   styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
                   title={additionalCareTypesText}

@@ -307,15 +307,21 @@ export const CaregiverListingCardComponent = props => {
               {providedServices.slice(0, 2).map(service => (
                 <p className={css.serviceCardItem}>{servicesMap.get(service).split('/')[0]}</p>
               ))}
-              {additionalServices && additionalServices.length > 0 && (
+              {providedServices?.length > 3 && (
                 <InfoTooltip
                   styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
-                  title={additionalServicesText}
+                  title={
+                    <ul>
+                      {providedServices.slice(3, providedServices.length).map(service => (
+                        <li>{servicesMap.get(service).split('/')[0]}</li>
+                      ))}
+                    </ul>
+                  }
                   icon={
                     <p className={css.serviceCardItem}>
                       <FormattedMessage
                         id="CaregiverListingCard.additionalCareTypes"
-                        values={{ count: additionalServices.length }}
+                        values={{ count: providedServices.length - 3 }}
                       />
                     </p>
                   }
