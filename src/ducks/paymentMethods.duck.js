@@ -360,7 +360,7 @@ export const createBankAccount = (stripeCustomerId, stripe, currentUser) => (
   return savePromise
     .then(response => {
       if (!stripeCustomerId) {
-        return stripeCreateSetupIntent({ stripeCustomerId });
+        return stripeCreateSetupIntent({ stripeCustomerId: response.id });
       } else {
         return response;
       }
