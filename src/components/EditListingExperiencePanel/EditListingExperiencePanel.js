@@ -86,11 +86,12 @@ const EditListingExperiencePanel = props => {
           const updatedValues = {
             publicData: {
               experienceLevel,
-              experienceAreas: experienceAreas.filter(area =>
-                findOptionsForSelectFilter('detailedCareNeeds', filterConfig)?.find(
-                  el => el.key === area
-                )
-              ),
+              experienceAreas:
+                experienceAreas?.filter(area =>
+                  findOptionsForSelectFilter('detailedCareNeeds', filterConfig)?.find(
+                    el => el.key === area
+                  )
+                ) || null,
             },
           };
           onSubmit(updatedValues);
