@@ -74,15 +74,18 @@ export const EditListingPricingFormComponent = props => (
               <FormattedMessage id="EditListingPricingForm.updateFailed" />
             </p>
           ) : null}
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-            ready={submitReady}
-          >
-            {saveActionMsg}
-          </Button>
+          <div className={css.submitContainer}>
+            <Button
+              rootClassName={css.submitRoot}
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+              ready={submitReady}
+            >
+              {saveActionMsg}
+            </Button>
+          </div>
         </Form>
       );
     }}
