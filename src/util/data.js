@@ -441,22 +441,17 @@ export const cutTextToPreview = (text, length) => {
 };
 
 export const userCanMessage = currentUser => {
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-  const emailVerified = currentUser && currentUser.attributes.emailVerified;
+  const userType = currentUser?.attributes?.profile?.metadata?.userType;
+  const emailVerified = currentUser?.attributes?.emailVerified;
   const backgroundCheckApprovedStatus =
-    currentUser &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
+    currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
   const backgroundCheckSubscription =
-    currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
-  const stripeAccount = currentUser && currentUser.stripeAccount;
+    currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
 
   return userType === CAREGIVER
     ? emailVerified &&
         backgroundCheckApprovedStatus &&
-        backgroundCheckSubscription &&
-        backgroundCheckSubscription.status === 'active' &&
-        stripeAccount
+        backgroundCheckSubscription?.status === 'active'
     : emailVerified;
 };
 
@@ -464,25 +459,21 @@ export const getMissingInfoModalValue = currentUser => {
   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
   const backgroundCheckApprovedStatus =
-    currentUser &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
+    currentUser?.attributes?.profil?.metadata?.backgroundCheckApproved &&
+    currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
   const backgroundCheckSubscription =
-    currentUser && currentUser.attributes.profile.metadata.backgroundCheckSubscription;
-  const stripeAccount = currentUser && currentUser.stripeAccount;
+    currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
 
   const canMessage =
     userType === CAREGIVER
       ? emailVerified &&
         backgroundCheckApprovedStatus &&
-        backgroundCheckSubscription &&
-        backgroundCheckSubscription.status === 'active' &&
-        stripeAccount
+        backgroundCheckSubscription?.status === 'active'
       : emailVerified;
 
   if (!canMessage) {
     if (userType === CAREGIVER) {
-      if (emailVerified && backgroundCheckApprovedStatus && stripeAccount) {
+      if (emailVerified && backgroundCheckApprovedStatus) {
         return MISSING_SUBSCRIPTION;
       } else {
         return MISSING_REQUIREMENTS;

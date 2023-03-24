@@ -135,15 +135,12 @@ module.exports = queryEvents = () => {
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
       const prevBackgroundCheckSubscription =
         previousValuesProfile?.metadata?.backgroundCheckSubscription;
-      const stripeAccount = event?.attributes?.resource?.relationships?.stripeAccount?.data;
-      const prevStripeAccount = previousValues?.attributes?.relationships?.stripeAccount?.data;
+
       const openListing =
         metadata?.userType === CAREGIVER
           ? backgroundCheckSubscription?.status === 'active' &&
-            stripeAccount &&
             emailVerified &&
-            (!prevStripeAccount ||
-              prevBackgroundCheckSubscription?.status !== 'active' ||
+            (prevBackgroundCheckSubscription?.status !== 'active' ||
               (prevEmailVerified !== undefined && !prevEmailVerified))
           : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
