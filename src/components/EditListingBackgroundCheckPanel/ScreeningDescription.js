@@ -172,6 +172,12 @@ const ScreeningDescription = props => {
           </CardActions>
         </Card>
       </div>
+      <p className={css.disclaimer}>
+        CareVine does not hire or assume liability for any provider or care seeker. The
+        responsibility for choosing a suitable caregiver or job and adhering to relevant laws rests
+        with you. CareVine neither creates nor authenticates data found in profiles, job postings,
+        or listings.
+      </p>
     </div>
   );
 };
