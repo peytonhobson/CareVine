@@ -437,17 +437,11 @@ export const verifyIdentityProofQuiz = (
     questionAnswers,
   };
 
+  let success = false;
+
   return identityProofQuizVerification({ payload })
     .then(response => {
-      if (response.data.success) {
-        dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId));
-      }
-
-      if (response.data.success) {
-        dispatch(verifyIdentityProofQuizSuccess());
-      } else {
-        dispatch(verifyIdentityProofQuizFailure());
-      }
+      success = response?.data?.success;
 
       const privateData = !!response.data.success
         ? { identityProofQuizVerification: response.data }
@@ -456,6 +450,20 @@ export const verifyIdentityProofQuiz = (
       return sdk.currentUser.updateProfile({
         privateData,
       });
+    })
+    .then(response => {
+      if (success) {
+        dispatch(verifyIdentityProofQuizSuccess());
+      } else {
+        dispatch(verifyIdentityProofQuizFailure());
+      }
+      return response;
+    })
+    .then(response => {
+      if (success) {
+        return dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId));
+      }
+      return response;
     })
     .then(response => {
       dispatch(fetchCurrentUser());
@@ -474,18 +482,25 @@ export const authenticateGenerateCriminalBackground = (userAccessCode, userId) =
 ) => {
   dispatch(authenticateGenerateCriminalBackgroundRequest());
 
+  let success = false;
+
   return authenticateGenerateCriminalBackgroundCheck({ userAccessCode })
     .then(response => {
-      if (response?.data?.success) {
-        dispatch(getAuthenticateTestResult(userAccessCode, userId));
-      }
+      success = response?.data?.success;
+
       return sdk.currentUser.updateProfile({
         privateData: { authenticateCriminalBackgroundGenerated: response?.data?.success },
       });
     })
     .then(response => {
-      dispatch(fetchCurrentUser());
       dispatch(authenticateGenerateCriminalBackgroundSuccess());
+      if (success) {
+        dispatch(getAuthenticateTestResult(userAccessCode, userId));
+      }
+      return response;
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
       return response;
     })
     .catch(e => {
@@ -501,10 +516,8 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
 
   return authenticateTestResult({ userAccessCode })
     .then(response => {
-      if (response.data.backgroundCheck.hasCriminalRecord) {
-        dispatch(authenticate7YearHistory(userAccessCode, userId));
-      }
-      hasCriminalRecord = response.data.backgroundCheck.hasCriminalRecord;
+      hasCriminalRecord = response?.data?.backgroundCheck?.hasCriminalRecord;
+
       return sdk.currentUser.updateProfile({
         privateData: {
           authenticateUserTestResult: response.data,
@@ -524,8 +537,14 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
       });
     })
     .then(response => {
-      dispatch(fetchCurrentUser());
       dispatch(getAuthenticateTestResultSuccess(response));
+      if (hasCriminalRecord) {
+        dispatch(authenticate7YearHistory(userAccessCode, userId));
+      }
+      return response;
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
       return response;
     })
     .catch(e => {
@@ -564,6 +583,10 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
     .then(response => {
       dispatch(fetchCurrentUser());
       dispatch(authenticate7YearHistorySuccess(response));
+      return response;
+    })
+    .then(response => {
+      dispatch(fetchCurrentUser());
       return response;
     })
     .catch(e => {
