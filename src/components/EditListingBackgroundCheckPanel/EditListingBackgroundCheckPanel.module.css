@@ -400,3 +400,16 @@
 .newDiscount {
   color: var(--successColor);
 }
+
+.disclaimer {
+  composes: marketplaceTinyFontStyles from global;
+
+  text-align: center;
+  margin-top: 1rem;
+  margin-inline: 0.5rem;
+
+  @media (--viewportMedium) {
+    margin-inline: 2rem;
+    margin-top: 2rem;
+  }
+}
