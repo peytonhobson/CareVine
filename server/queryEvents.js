@@ -8,6 +8,7 @@ module.exports = queryEvents = () => {
   const isDev = process.env.REACT_APP_ENV === 'development';
   const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
   const CAREGIVER = 'caregiver';
+  const BACKGROUND_CHECK_APPROVED = 'approved';
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
@@ -177,7 +178,7 @@ module.exports = queryEvents = () => {
       const backgroundCheckRejected = privateData?.backgroundCheckRejected;
 
       if (
-        backgroundCheckApprovedStatus &&
+        backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         !isDev &&
         !tcmEnrolled &&
         backgroundCheckSubscription.type === 'vine' &&

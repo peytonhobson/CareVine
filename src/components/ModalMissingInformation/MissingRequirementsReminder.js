@@ -8,6 +8,7 @@ import {
   LISTING_PAGE_PARAM_TYPE_EDIT,
   createSlug,
 } from '../../util/urlHelpers';
+import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 
 import css from './ModalMissingInformation.module.css';
 
@@ -15,11 +16,8 @@ const MissingRequirementsReminder = props => {
   const { className, currentUser, onChangeModalValue, currentUserListing } = props;
 
   const backgroundCheckApprovedStatus =
-    currentUser &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved &&
-    currentUser.attributes.profile.metadata.backgroundCheckApproved.status;
+    currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
-  const stripeAccount = currentUser && currentUser.stripeAccount;
 
   const closeModalOnLinkClick = value => {
     if (!value) {
@@ -66,9 +64,9 @@ const MissingRequirementsReminder = props => {
             onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
           >
             <span className={css.listCircle}>
-              {backgroundCheckApprovedStatus && <IconCheckmark />}
+              {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED && <IconCheckmark />}
             </span>
-            {backgroundCheckApprovedStatus ? (
+            {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED ? (
               <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
             ) : !!currentUserListing ? (
               <NamedLink

@@ -54,3 +54,8 @@ export const timeOrderMap = new Map([
   ['10:00pm', 22],
   ['11:00pm', 23],
 ]);
+
+// Background check statuses
+export const BACKGROUND_CHECK_APPROVED = 'approved';
+export const BACKGROUND_CHECK_REJECTED = 'rejected';
+export const BACKGROUND_CHECK_PENDING = 'pending';

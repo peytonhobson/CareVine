@@ -13,6 +13,7 @@ import {
 import { types as sdkTypes } from '../util/sdkLoader';
 const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
+import { BACKGROUND_CHECK_APPROVED } from './constants';
 
 /**
  * Combine the given relationships objects
@@ -450,7 +451,7 @@ export const userCanMessage = currentUser => {
 
   return userType === CAREGIVER
     ? emailVerified &&
-        backgroundCheckApprovedStatus &&
+        backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         backgroundCheckSubscription?.status === 'active'
     : emailVerified;
 };
@@ -459,7 +460,6 @@ export const getMissingInfoModalValue = currentUser => {
   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
   const emailVerified = currentUser && currentUser.attributes.emailVerified;
   const backgroundCheckApprovedStatus =
-    currentUser?.attributes?.profil?.metadata?.backgroundCheckApproved &&
     currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
   const backgroundCheckSubscription =
     currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
@@ -467,13 +467,13 @@ export const getMissingInfoModalValue = currentUser => {
   const canMessage =
     userType === CAREGIVER
       ? emailVerified &&
-        backgroundCheckApprovedStatus &&
+        backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         backgroundCheckSubscription?.status === 'active'
       : emailVerified;
 
   if (!canMessage) {
     if (userType === CAREGIVER) {
-      if (emailVerified && backgroundCheckApprovedStatus) {
+      if (emailVerified && backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED) {
         return MISSING_SUBSCRIPTION;
       } else {
         return MISSING_REQUIREMENTS;
