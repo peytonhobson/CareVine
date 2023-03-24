@@ -99,9 +99,11 @@ const generateTitle = (currentListing, filterConfig) => {
     }
   });
 
-  const city = currentListing.attributes.publicData.location.city;
+  const city = currentListing?.attributes?.publicData?.location?.city;
 
-  return `${careScheduleType} Needed for My ${relationshipString} in ${city}`;
+  return `${careScheduleType} Needed for ${
+    !relationshipString.startsWith('Myself') ? 'My' : ''
+  } ${relationshipString} in ${city}`;
 };
 
 const EditListingJobDescriptionPanel = props => {
