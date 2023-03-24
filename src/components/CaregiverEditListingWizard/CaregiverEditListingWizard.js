@@ -17,7 +17,7 @@ import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../.
 
 import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
 import { StripeConnectAccountForm } from '../../forms';
-import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
+import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -246,7 +246,7 @@ class CaregiverEditListingWizard extends Component {
     const backgroundCheckApprovedStatus =
       currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
 
-    if (!isNewListingFlow && backgroundCheckApprovedStatus) {
+    if (!isNewListingFlow && backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED) {
       const index = TABS.indexOf(BACKGROUND_CHECK);
       if (index > -1) {
         TABS.splice(index, 1);

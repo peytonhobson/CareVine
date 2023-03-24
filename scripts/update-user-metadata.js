@@ -54,24 +54,24 @@ const emails = [
   'peyton.hobson1@gmail.com',
 ];
 
-let sbAccessToken = null;
-let privateData = null;
-
 emails.forEach(email => {
-  sbAccessToken = uuidv4();
-  privateData = {
-    sbAccessToken: null,
-  };
-
   integrationSdk.users
-    .show({ email })
+    .query(['meta_backgroundCheckApproved'])
     .then(res => {
       const userId = res.data.data.id;
+      const backgroundCheckApproved =
+        res?.data?.data?.attributes?.profile?.metadata?.backgroundCheckApproved;
+      const metadata = {
+        backgroundCheckApproved: {
+          ...backgroundCheckApproved,
+          status: backgroundCheckApproved?.status ? 'approved' : 'rejected',
+        },
+      };
 
       integrationSdk.users.updateProfile(
         {
           id: userId,
-          privateData,
+          metadata,
         },
         {
           expand: true,

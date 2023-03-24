@@ -14,6 +14,11 @@ import {
 } from '../util/api';
 import * as log from '../util/log';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
+import {
+  BACKGROUND_CHECK_APPROVED,
+  BACKGROUND_CHECK_PENDING,
+  BACKGROUND_CHECK_REJECTED,
+} from '../util/constants';
 
 const requestAction = actionType => params => ({ type: actionType, payload: { params } });
 
@@ -530,7 +535,7 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
         userId,
         metadata: {
           backgroundCheckApproved: {
-            status: !hasCriminalRecord,
+            status: !hasCriminalRecord ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
             date: newDate.getTime(),
           },
         },
@@ -570,11 +575,12 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
     .then(() => {
       const newDate = new Date();
       const { Candidate } = result.result.Candidates;
+
       return updateUserMetadata({
         userId,
         metadata: {
           backgroundCheckApproved: {
-            status: !Candidate,
+            status: !Candidate ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
             date: newDate.getTime(),
           },
         },
