@@ -88,19 +88,6 @@ const MissingRequirementsReminder = props => {
               </NamedLink>
             )}
           </li>
-          <li
-            className={css.requirementsListItem}
-            onClick={() => closeModalOnLinkClick(stripeAccount)}
-          >
-            <span className={css.listCircle}>{stripeAccount && <IconCheckmark />}</span>
-            {!!stripeAccount ? (
-              <FormattedMessage id="ModalMissingInformation.providePayoutDetails" />
-            ) : (
-              <NamedLink name="StripePayoutPage">
-                <FormattedMessage id="ModalMissingInformation.providePayoutDetails" />
-              </NamedLink>
-            )}
-          </li>
         </ul>
       </div>
     </div>

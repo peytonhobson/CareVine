@@ -75,15 +75,8 @@ export const InboxPageComponent = props => {
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
   const userId = ensuredCurrentUser.id && currentUser.id.uuid;
   const nickname = ensuredCurrentUser.attributes.profile.displayName;
-  const profileUrl =
-    ensuredCurrentUser.profileImage &&
-    ensuredCurrentUser.profileImage.attributes &&
-    ensuredCurrentUser.profileImage.attributes.variants &&
-    ensuredCurrentUser.profileImage.attributes.variants['square-small'] &&
-    ensuredCurrentUser.profileImage.attributes.variants['square-small'].url;
-  const accessToken =
-    ensuredCurrentUser.attributes.profile.privateData &&
-    ensuredCurrentUser.attributes.profile.privateData.sbAccessToken;
+  const profileUrl = ensuredCurrentUser.profileImage?.attributes?.variants['square-small']?.url;
+  const accessToken = ensuredCurrentUser.attributes.profile?.privateData?.sbAccessToken;
 
   useEffect(() => {
     if (!!ensuredCurrentUser.id && !accessToken && !generateAccessTokenInProgress) {
