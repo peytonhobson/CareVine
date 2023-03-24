@@ -190,8 +190,7 @@ const EditListingBackgroundCheckPanel = props => {
   const authenticate7YearHistory = privateData && privateData.authenticate7YearHistory;
   const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
   const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
-  const stripeCustomerId =
-    currentUser.stripeCustomer && currentUser.stripeCustomer.attributes.stripeCustomerId;
+  const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
   const backgroundCheckPromo = metadata?.backgroundCheckPromo;
 
@@ -468,7 +467,6 @@ const EditListingBackgroundCheckPanel = props => {
       );
       break;
     case IDENTITY_PROOF_QUIZ:
-      // TODO: Add identity proof errors
       const quizErrors = {
         getIdentityProofQuizError,
         verifyIdentityProofQuizError,

@@ -71,15 +71,15 @@ const ListingSummaryComponent = props => {
       ? calculateDistanceBetweenOrigins(currentUserGeolocation, geolocation)
       : null;
 
-  const handleBook = () => {
-    const initialValues = {
-      listing,
-      bookingStartTime: new Date().getTime(),
-      bookingEndTime: new Date().getTime() + 360000000,
-    };
+  // const handleBook = () => {
+  //   const initialValues = {
+  //     listing,
+  //     bookingStartTime: new Date().getTime(),
+  //     bookingEndTime: new Date().getTime() + 360000000,
+  //   };
 
-    onBookNow(initialValues);
-  };
+  //   onBookNow(initialValues);
+  // };
 
   const backgroundCheckTitle = (
     <p>

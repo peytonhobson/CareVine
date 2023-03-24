@@ -211,7 +211,7 @@ const CareScheduleExceptions = props => {
           <EditListingAvailabilityExceptionForm
             formId="EditListingAvailabilityExceptionForm"
             onSubmit={saveException}
-            timeZone={availabilityPlan.timezone}
+            timeZone={availabilityPlan?.timezone}
             availabilityExceptions={sortedAvailabilityExceptions}
             updateInProgress={updateInProgress}
             fetchErrors={errors}

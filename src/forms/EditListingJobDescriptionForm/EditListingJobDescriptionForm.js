@@ -22,6 +22,8 @@ import css from './EditListingJobDescriptionForm.module.css';
 const DESCRIPTION_MAX_LENGTH = 700;
 const DESCRIPTION_MIN_LENGTH = 100;
 
+const TITLE_MAX_LENGTH = 100;
+
 const EditListingJobDescriptionFormComponent = props => (
   <FinalForm
     {...props}
@@ -69,6 +71,13 @@ const EditListingJobDescriptionFormComponent = props => (
       const titleRequired = required(
         intl.formatMessage({ id: 'EditListingJobDescriptionForm.titleRequired' })
       );
+      const maxLength100Message = maxLength(
+        intl.formatMessage(
+          { id: 'EditListingJobDescriptionForm.maxLengthMessage' },
+          { maxLength: TITLE_MAX_LENGTH }
+        ),
+        TITLE_MAX_LENGTH
+      );
 
       const { updateListingError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
@@ -99,9 +108,10 @@ const EditListingJobDescriptionFormComponent = props => (
             className={css.textInput}
             inputRootClass={css.textInputRoot}
             placeholder={titlePlaceholder}
-            validate={titleRequired}
+            validate={composeValidators(titleRequired, maxLength100Message)}
             label={titleLabel}
             required
+            maxLength={TITLE_MAX_LENGTH}
           />
 
           <FieldTextInput

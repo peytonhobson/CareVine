@@ -270,7 +270,7 @@ const getAllTimeValues = (
   const endDate = selectedEndDate
     ? selectedEndDate
     : startTimeAsDate
-    ? new Date(findNextBoundary(timeZone, startTimeAsDate).getTime() - 1)
+    ? new Date(findNextBoundary(timeZone || 'America/Denver', startTimeAsDate).getTime() - 1)
     : null;
 
   const selectedTimeRange = timeRanges.find(t => isInRange(startTimeAsDate, t.start, t.end));
@@ -477,7 +477,7 @@ const EditListingAvailabilityExceptionForm = props => {
           onMonthChanged,
           pristine,
           availabilityExceptions,
-          timeZone,
+          timeZone = 'America/Denver',
           updateInProgress,
           fetchErrors,
           values,
@@ -561,7 +561,7 @@ const EditListingAvailabilityExceptionForm = props => {
         const placeholderTime = localizeAndFormatTime(
           intl,
           timeZone,
-          findNextBoundary(timeZone, TODAY)
+          findNextBoundary(timeZone || 'America/Denver', TODAY)
         );
 
         const submitInProgress = updateInProgress;
