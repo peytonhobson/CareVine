@@ -28,9 +28,11 @@ export const createEntriesFromSubmitValues = values =>
 
 // Create availabilityPlan from submit values
 export const createAvailabilityPlan = (values, currentListing) => {
-  const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
+  const timezone =
+    zipcodeToTimezone.lookup(currentListing?.attributes?.publicData?.location?.zipcode) ||
+    'America/Denver';
 
-  const isFlexible = values.isFlexible;
+  const isFlexible = values?.isFlexible;
 
   return {
     type: 'repeat',

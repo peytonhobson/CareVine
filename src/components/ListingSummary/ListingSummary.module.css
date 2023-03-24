@@ -142,13 +142,21 @@
 
 .title {
   /* Font */
-  composes: h3 from global;
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+
   color: var(--matterColor);
   position: relative;
   width: 100%;
 
   /* Remove default margins from font */
   margin: 0;
+
+  @media (--viewportMedium) {
+    font-size: 1.313rem;
+    line-height: 1.5rem;
+  }
 }
 
 .locations {

@@ -30,7 +30,7 @@ import css from './EditListingAvailabilityPanel.module.css';
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const defaultTimeZone = () =>
-  typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
+  typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'America/New_York';
 
 //////////////////////////////////
 // EditListingAvailabilityPanel //

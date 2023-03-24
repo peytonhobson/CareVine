@@ -134,7 +134,7 @@ class RouteComponentRenderer extends Component {
     }
 
     const isInboxPage = route.name === 'InboxPage';
-    if (isInboxPage && !canShow) {
+    if (isInboxPage && !canShow && currentUser) {
       this.props.dispatch(changeModalValue(getMissingInfoModalValue(currentUser)));
     }
 

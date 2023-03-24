@@ -12,6 +12,23 @@ import parser from 'parse-address';
 
 import css from './EditListingLocationPanel.module.css';
 
+const findZipcode = address => {
+  const addressArray = address.split(' ');
+
+  const digitArray = addressArray.filter(word => {
+    return word.trim().match(/\d+/g);
+  });
+
+  return digitArray[digitArray.length - 1].trim();
+};
+
+const findCity = address => {
+  const addressArray = address.split(',');
+  const city = addressArray[1];
+
+  return city.trim();
+};
+
 class EditListingLocationPanel extends Component {
   constructor(props) {
     super(props);
@@ -116,10 +133,20 @@ class EditListingLocationPanel extends Component {
 
             const timezone = zipcodeToTimezone.lookup(parsedAddress.zip);
 
-            const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
+            const availabilityPlanMaybe = currentListing?.attributes?.publicData?.availabilityPlan;
 
             if (availabilityPlanMaybe) {
               availabilityPlanMaybe.timezone = timezone;
+            }
+
+            if (!parsedAddress.zip) {
+              const zipcode = findZipcode(address);
+              parsedAddress.zip = zipcode;
+            }
+
+            if (!parsedAddress.city) {
+              const city = findCity(address);
+              parsedAddress.city = city;
             }
 
             const nearPublicTransitValue = nearPublicTransit.length > 0 ? true : false;
