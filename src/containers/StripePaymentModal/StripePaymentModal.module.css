@@ -113,10 +113,18 @@
   display: flex;
   word-wrap: none;
   white-space: nowrap;
-  font-size: 30px;
+  font-size: 2rem;
   animation: 2.5s fadeIn;
   animation-fill-mode: forwards;
   width: 100%;
+  text-align: center;
+
+  &.small {
+    font-size: 1rem;
+    width: auto;
+    word-wrap: break-word;
+    white-space: normal;
+  }
 }
 
 .noPayoutMessage {

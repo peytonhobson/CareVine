@@ -1290,7 +1290,7 @@
   "StripePaymentForm.submitConfirmPaymentInfo": "Confirm request",
   "StripePaymentForm.submitPaymentInfo": "Send request",
   "StripePaymentModal.closeButtonMessage": "close",
-  "StripePaymentModal.paymentConfirmedMessage": "Payment Confirmed",
+  "StripePaymentModal.paymentConfirmedMessage": "Payment Created",
   "StripePayoutPage.heading": "Payout details",
   "StripePayoutPage.loadingData": "Loading data…",
   "StripePayoutPage.redirectingToStripe": "You returned early from Stripe. Redirecting you back to Stripe…",
