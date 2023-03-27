@@ -239,7 +239,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard) => (
+export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, caregiverName) => (
   dispatch,
   getState,
   sdk
@@ -258,7 +258,13 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard) =>
   };
 
   if (stripeCustomerId) {
-    return stripeCreatePaymentIntent({ amount, userId, stripeCustomerId, isCard })
+    return stripeCreatePaymentIntent({
+      amount,
+      userId,
+      stripeCustomerId,
+      isCard,
+      description: `Payment to ${caregiverName}`,
+    })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
   } else {
@@ -269,6 +275,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard) =>
           userId,
           stripeCustomerId: res.id,
           isCard,
+          description: `Payment to ${caregiverName}`,
         });
       })
       .then(res => handleSuccess(res))

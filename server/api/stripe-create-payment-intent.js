@@ -1,4 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { reset } = require('nodemon');
 const { integrationSdk, handleError, handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
@@ -16,7 +17,7 @@ const calculateFeeAmount = (amount, isCard) => {
 module.exports = (req, res) => {
   // Create a PaymentIntent with the order amount and currency
 
-  const { userId, amount, stripeCustomerId, isCard, noFee } = req.body;
+  const { userId, amount, stripeCustomerId, isCard, noFee, description } = req.body;
 
   const applicationFeeMaybe = noFee
     ? null
@@ -27,11 +28,9 @@ module.exports = (req, res) => {
   integrationSdk.users
     .show({ id: userId.uuid, include: ['stripeAccount'] })
     .then(res => {
-      const stripeAccountId = res.data.data.attributes.profile.metadata.stripeAccountId;
+      const stripeAccountId = res?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
+      const email = res?.data?.data?.attributes?.email;
 
-      return stripeAccountId;
-    })
-    .then(stripeAccountId => {
       return stripe.paymentIntents.create({
         amount: noFee ? amount : Math.ceil(calculateOrderAmount(amount, isCard)),
         currency: 'usd',
@@ -41,6 +40,8 @@ module.exports = (req, res) => {
         },
         ...applicationFeeMaybe,
         customer: stripeCustomerId,
+        receipt_email: email,
+        description,
       });
     })
     .then(apiResponse => {

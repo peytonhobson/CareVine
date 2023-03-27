@@ -133,6 +133,10 @@ module.exports = (request, response) => {
         updateBackgroundCheckSubscription(customerSubscriptionUpdated);
       }
       break;
+    case 'charge.failed':
+      console.log('charge.failed');
+      const chargeFailed = event.data.object;
+      break;
     case 'invoice.paid':
       const invoicePaid = event.data.object;
       // TODO: Send email to user that their subscription has been paid

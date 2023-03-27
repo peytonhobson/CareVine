@@ -114,11 +114,13 @@ const StripePaymentModalComponent = props => {
 
     const isCard = paymentMethod === 'creditCard';
 
+    const providerName = userDisplayNameAsString(provider);
+
     if (currentUser.stripeCustomer && provider) {
       const { stripeCustomerId } = currentUser.stripeCustomer.attributes;
-      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId, isCard);
+      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId, isCard, providerName);
     } else {
-      onCreatePaymentIntent(amount.amount, provider.id, null, isCard);
+      onCreatePaymentIntent(amount.amount, provider.id, null, isCard, providerName);
     }
   };
 
@@ -293,6 +295,9 @@ const StripePaymentModalComponent = props => {
                 <div className={css.confirmationContainer}>
                   <IconConfirm />
                   <div className={css.confirmationText}>{paymentConfirmedMessage}</div>
+                  <p className={classNames(css.confirmationText, css.small)}>
+                    Once your payment is confirmed, we will send you an email.
+                  </p>
                 </div>
               )}
             </div>
@@ -434,8 +439,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId, isCard) =>
-    dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId, isCard)),
+  onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId, isCard, caregiverName) =>
+    dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId, isCard, caregiverName)),
   onConfirmPayment: (
     stripe,
     elements,
