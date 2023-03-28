@@ -62,3 +62,19 @@
     width: 15rem;
   }
 }
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  margin-top: 4rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}

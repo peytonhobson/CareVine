@@ -30,6 +30,10 @@
   }
 }
 
+.summaryText {
+  text-align: left;
+}
+
 .graphic {
   padding-inline: 2.5rem;
   margin-top: 1rem;

@@ -122,6 +122,7 @@ const EditListingJobDescriptionPanel = props => {
     intl,
     submitButtonText,
     filterConfig,
+    ...rest
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -166,6 +167,7 @@ const EditListingJobDescriptionPanel = props => {
     updateInProgress,
     fetchErrors: errors,
     intl,
+    ...rest,
   };
 
   return (
