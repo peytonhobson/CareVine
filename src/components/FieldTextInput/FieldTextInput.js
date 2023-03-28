@@ -25,6 +25,7 @@ class FieldTextInputComponent extends Component {
       isUncontrolled,
       inputRef,
       required,
+      exampleLink,
       ...rest
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -123,6 +124,7 @@ class FieldTextInputComponent extends Component {
                 {input.value?.length || 0}/{this.props.maxLength} characters
               </span>
             )}
+            <span className={css.exampleLink}>{exampleLink}</span>
           </>
         ) : (
           <input {...inputProps} />

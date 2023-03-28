@@ -32,4 +32,16 @@
 
 .characterCount {
   composes: marketplaceTinyFontStyles from global;
+  margin-right: 1rem;
+}
+
+label {
+  margin-right: 0.5rem;
+  display: inline;
+}
+
+.exampleLink {
+  composes: marketplaceTinyFontStyles from global;
+  text-decoration: underline;
+  margin: 0;
 }

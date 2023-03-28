@@ -24,6 +24,7 @@ const EditListingBioPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    ...rest
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -79,6 +80,7 @@ const EditListingBioPanel = props => {
         updated={panelUpdated}
         updateInProgress={updateInProgress}
         fetchErrors={errors}
+        {...rest}
       />
     </div>
   );
