@@ -136,7 +136,7 @@ const SendbirdApp = props => {
         <div className="sendbird-app__channellist-wrap">
           <ChannelListProvider
             onChannelSelect={channel => {
-              if (channel?.url !== currentChannelUrl) {
+              if (channel && channel?.url !== currentChannelUrl) {
                 setCurrentChannelUrl(channel.url);
               }
             }}

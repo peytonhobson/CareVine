@@ -116,12 +116,7 @@ const StripePaymentModalComponent = props => {
 
     const providerName = userDisplayNameAsString(provider);
 
-    if (currentUser.stripeCustomer && provider) {
-      const { stripeCustomerId } = currentUser.stripeCustomer.attributes;
-      onCreatePaymentIntent(amount.amount, provider.id, stripeCustomerId, isCard, providerName);
-    } else {
-      onCreatePaymentIntent(amount.amount, provider.id, null, isCard, providerName);
-    }
+    onCreatePaymentIntent(amount?.amount, provider?.id, currentUser, isCard, providerName);
   };
 
   const onHandlePaymentSubmit = (
@@ -439,8 +434,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, stripeCustomerId, isCard, caregiverName) =>
-    dispatch(createPaymentIntent(amount, stripeAccountId, stripeCustomerId, isCard, caregiverName)),
+  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName) =>
+    dispatch(createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName)),
   onConfirmPayment: (
     stripe,
     elements,

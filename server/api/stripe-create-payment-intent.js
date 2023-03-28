@@ -16,7 +16,7 @@ const calculateFeeAmount = (amount, isCard) => {
 module.exports = (req, res) => {
   // Create a PaymentIntent with the order amount and currency
 
-  const { userId, amount, stripeCustomerId, isCard, noFee, description } = req.body;
+  const { userId, amount, sender, stripeCustomerId, isCard, noFee, description } = req.body;
 
   const applicationFeeMaybe = noFee
     ? null
@@ -30,6 +30,9 @@ module.exports = (req, res) => {
       const stripeAccountId = res?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
       const email = res?.data?.data?.attributes?.email;
 
+      const senderEmail = sender?.attributes?.email;
+      const senderId = sender?.id?.uuid;
+
       return stripe.paymentIntents.create({
         amount: noFee ? amount : Math.ceil(calculateOrderAmount(amount, isCard)),
         currency: 'usd',
@@ -39,8 +42,9 @@ module.exports = (req, res) => {
         },
         ...applicationFeeMaybe,
         customer: stripeCustomerId,
-        receipt_email: email,
+        receipt_email: senderEmail,
         description,
+        metadata: { userId: senderId },
       });
     })
     .then(apiResponse => {

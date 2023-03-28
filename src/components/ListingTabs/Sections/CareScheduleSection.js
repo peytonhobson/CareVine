@@ -43,7 +43,6 @@ const CareScheduleSection = forwardRef((props, ref) => {
   switch (availabilityPlan?.type) {
     case AVAILABILITY_PLAN_TYPE_ONE_TIME:
       const { selectedSessions } = availabilityPlan;
-      console.log(availabilityPlan);
       content = (
         <div className={css.container}>
           <ViewCalendar selectedSessions={selectedSessions} planType="oneTime" />

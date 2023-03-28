@@ -9,6 +9,7 @@ module.exports = queryEvents = () => {
   const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
   const CAREGIVER = 'caregiver';
   const BACKGROUND_CHECK_APPROVED = 'approved';
+  const BACKGROUND_CHECK_REJECTED = 'rejected';
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
@@ -94,6 +95,7 @@ module.exports = queryEvents = () => {
       const prevListingState = event?.attributes?.previousValues?.attributes?.state;
       const newListingState = event?.attributes?.resource?.attributes?.state;
 
+      // Approve listing if they meet requirements when listing is published
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
         console.log('approve listing');
         integrationSdk.users
@@ -107,7 +109,6 @@ module.exports = queryEvents = () => {
             const openListing =
               metadata?.userType === CAREGIVER
                 ? metadata?.backgroundCheckSubscription?.status === 'active' &&
-                  user?.relationships?.stripeAccount?.data &&
                   user?.attributes?.emailVerified
                 : user?.attributes?.emailVerified;
             if (openListing) {
@@ -118,7 +119,7 @@ module.exports = queryEvents = () => {
               });
             }
           })
-          .catch(err => log.error(err));
+          .catch(err => log.error(err, 'listing-approve-failed'));
       }
     }
 
@@ -141,13 +142,17 @@ module.exports = queryEvents = () => {
         metadata?.userType === CAREGIVER
           ? backgroundCheckSubscription?.status === 'active' &&
             emailVerified &&
-            (prevBackgroundCheckSubscription?.status !== 'active' ||
+            ((prevBackgroundCheckSubscription?.status &&
+              prevBackgroundCheckSubscription?.status !== 'active') ||
               (prevEmailVerified !== undefined && !prevEmailVerified))
           : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
       // If user meets requirements to open listing, approve listing
+      // TODO: Add user data for listing status so we dont have to query them every time
       if (openListing) {
         const userId = event?.attributes?.resource?.id?.uuid;
+
+        let listingState = null;
 
         console.log('approve listing 2');
         integrationSdk.listings
@@ -157,19 +162,46 @@ module.exports = queryEvents = () => {
           .then(res => {
             console.log('approve listing 2 past query 1');
             const userListingId = res?.data?.data[0]?.id?.uuid;
-            const listingState = res?.data?.data[0]?.attributes?.state;
+            listingState = res?.data?.data[0]?.attributes?.state;
 
             if (listingState === 'pendingApproval') {
               console.log('approve listing 2 at approve');
-              integrationSdk.listings
-                .approve({
-                  id: userListingId,
-                })
-                .catch(err => log.error(err));
+              return integrationSdk.listings.approve({
+                id: userListingId,
+              });
+            }
+
+            if (listingState === 'closed') {
+              console.log('Open listing');
+              return integrationSdk.listings.open({
+                id: userListingId,
+              });
+            }
+          })
+          .then(() => {
+            //TODO: Change template data to match template
+            // TODO: test this with error handling
+            // TODO: This should be listing opened not listing approved
+            if (listingState === 'pendingApproval' || listingState === 'closed') {
+              axios
+                .post(
+                  `${apiBaseUrl()}/api/sendgrid-template-email`,
+                  {
+                    receiverId: userId,
+                    templateName: 'listing-approved',
+                    templateData: {},
+                  },
+                  {
+                    headers: {
+                      'Content-Type': 'application/transit+json',
+                    },
+                  }
+                )
+                .catch(e => log.error(e, 'listing-approved-email-failed'));
             }
           })
           .catch(err => {
-            log.error(err.data);
+            log.error(err, 'listing-approved-failed');
           });
       }
 
@@ -241,7 +273,7 @@ module.exports = queryEvents = () => {
               },
             });
           })
-          .catch(err => log.error(err));
+          .catch(err => log.error(err, 'tcm-deenroll-failed'));
       }
 
       const previousQuizAttempts = previousValuesProfile?.privateData?.identityProofQuizAttempts;
@@ -268,7 +300,7 @@ module.exports = queryEvents = () => {
               },
             }
           )
-          .catch(e => log.error(e));
+          .catch(e => log.error(e, 'stripe-update-subscription-failed'));
       }
 
       // Close user listing if background check subscription is cancelled
@@ -282,8 +314,9 @@ module.exports = queryEvents = () => {
         integrationSdk.listings
           .query({ authorId: userId })
           .then(res => {
-            const listing = res?.data?.data[0];
-            if (listing.state === 'published') {
+            const listing = res?.data?.data?.length > 0 && res.data.data[0];
+
+            if (listing?.attributes?.state === 'published') {
               integrationSdk.listings
                 .close(
                   {
@@ -293,10 +326,84 @@ module.exports = queryEvents = () => {
                     expand: true,
                   }
                 )
-                .catch(e => log.error(e?.data?.errors));
+                .then(() => {
+                  //TODO: Change template data to match template
+                  // TODO: test this with error handling
+                  axios
+                    .post(
+                      `${apiBaseUrl()}/api/sendgrid-template-emai`,
+                      {
+                        receiverId: userId,
+                        templateName: 'listing-closed',
+                        templateData: {},
+                      },
+                      {
+                        headers: {
+                          'Content-Type': 'application/transit+json',
+                        },
+                      }
+                    )
+                    .catch(e => log.error(e, 'listing-closed-email-failed'));
+                })
+                .catch(e => log.error(e?.data?.errors, 'listing-closed-failed'));
             }
           })
           .catch(e => log.error(e?.data?.errors));
+      }
+
+      const prevBackgroundCheckApprovedStatus =
+        previousValuesProfile?.metadata?.backgroundCheckApproved?.status;
+
+      if (
+        backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
+        prevBackgroundCheckApprovedStatus &&
+        prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_APPROVED
+      ) {
+        const userId = event?.attributes?.resource?.id?.uuid;
+
+        // TODO: test this with error handling
+        // TODO: Change template data to match template
+        axios
+          .post(
+            `${apiBaseUrl()}/api/sendgrid-template-email`,
+            {
+              receiverId: userId,
+              templateName: 'background-check-approved',
+              templateData: {},
+            },
+            {
+              headers: {
+                'Content-Type': 'application/transit+json',
+              },
+            }
+          )
+          .catch(e => log.error(e, 'send-bc-approved-email-failed', {}));
+      }
+
+      if (
+        backgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED &&
+        prevBackgroundCheckApprovedStatus &&
+        prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED
+      ) {
+        const userId = event?.attributes?.resource?.id?.uuid;
+
+        // TODO: test this with error handling
+        // TODO: Change template data to match template
+        axios
+          .post(
+            `${apiBaseUrl()}/api/sendgrid-template-email`,
+            {
+              receiverId: userId,
+              templateName: 'background-check-rejected',
+              templateData: {},
+            },
+            {
+              headers: {
+                'Content-Type': 'application/transit+json',
+              },
+            }
+          )
+          .catch(e => log.error(e, 'send-bc-rejected-email-failed', {}));
       }
     }
 
@@ -341,7 +448,7 @@ module.exports = queryEvents = () => {
       const events = res?.data?.data;
       const fullPage = events?.length === res?.data?.meta?.perPage;
       const delay = fullPage ? pollWait : pollIdleWait;
-      const lastEvent = events[events?.length - 1];
+      const lastEvent = events?.length ? events[events?.length - 1] : null;
       const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
       events.forEach(e => {

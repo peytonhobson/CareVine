@@ -101,10 +101,7 @@ const tabCompleted = (tab, listing, user) => {
   } = listing.attributes;
   const images = listing.images;
 
-  const backgroundCheckApproved =
-    user &&
-    user.attributes.profile.metadata &&
-    user.attributes.profile.metadata.backgroundCheckApproved;
+  const backgroundCheckApproved = user?.attributes?.profile?.metadata?.backgroundCheckApproved;
 
   switch (tab) {
     case SERVICES:
@@ -128,7 +125,8 @@ const tabCompleted = (tab, listing, user) => {
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
-      return !!(backgroundCheckApproved && backgroundCheckApproved.status);
+      console.log(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
+      return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:

@@ -298,8 +298,13 @@
   }
 
   .goToNextTabButton {
-    display: inline-block;
-    width: 241px;
-    margin-top: 62px;
+    margin-top: auto;
+    margin-bottom: 2rem;
+    flex-shrink: 0;
+
+    @media (--viewportLarge) {
+      display: inline-block;
+      max-width: 15rem;
+    }
   }
 }

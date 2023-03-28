@@ -275,10 +275,9 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
         const stripeCustomer = response.data.data;
         dispatch(stripeCustomerCreateSuccess(response));
         return stripeUpdateCustomer({
-          stripeCustomerId: stripeCustomer.attributes.stripeCustomerId,
+          stripeCustomerId: stripeCustomer?.attributes?.stripeCustomerId,
           update: {
             address: {
-              // postal_code,
               country: 'US',
             },
           },
@@ -297,7 +296,6 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
           stripeCustomerId,
           params: {
             address: {
-              // postal_code,
               country: 'US',
             },
           },

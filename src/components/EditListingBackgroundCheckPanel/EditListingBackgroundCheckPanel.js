@@ -17,6 +17,11 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import PaymentInfo from './PaymentInfo';
 import { CAREVINE_GOLD_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
+import {
+  BACKGROUND_CHECK_APPROVED,
+  BACKGROUND_CHECK_REJECTED,
+  BACKGROUND_CHECK_PENDING,
+} from '../../util/constants';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -94,7 +99,6 @@ const IDENTITY_PROOF_QUIZ = 'IDENTITY_PROOF_QUIZ';
 const LOADING = 'LOADING';
 const BACKGROUND_CHECK_COMPLETE = 'BACKGROUND_CHECK_COMPLETE';
 const BACKGROUND_CHECK_IN_REVIEW = 'BACKGROUND_CHECK_IN_REVIEW';
-const BACKGROUND_CHECK_REJECTED = 'BACKGROUND_CHECK_REJECTED';
 const UPDATE_USER = 'UPDATE_USER';
 const QUIZ_MAX_ATTEMPTS_FAILED = 'QUIZ_MAX_ATTEMPTS_FAILED';
 
@@ -196,11 +200,11 @@ const EditListingBackgroundCheckPanel = props => {
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
-    if (backgroundCheckRejected) {
+    if (backgroundCheckApproved?.status === BACKGROUND_CHECK_REJECTED) {
       setStage(BACKGROUND_CHECK_REJECTED);
-    } else if (backgroundCheckApproved && backgroundCheckApproved.status) {
+    } else if (backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED) {
       setStage(BACKGROUND_CHECK_COMPLETE);
-    } else if (authenticate7YearHistory) {
+    } else if (backgroundCheckApproved?.status === BACKGROUND_CHECK_PENDING) {
       setStage(BACKGROUND_CHECK_IN_REVIEW);
     } else if (identityProofQuizAttempts >= MAX_QUIZ_ATTEMPTS) {
       setStage(QUIZ_MAX_ATTEMPTS_FAILED);

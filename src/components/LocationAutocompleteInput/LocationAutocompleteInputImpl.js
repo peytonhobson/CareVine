@@ -480,7 +480,7 @@ class LocationAutocompleteInputImpl extends Component {
     const renderPredictions = this.state.inputHasFocus;
 
     const getIOSInputEventHandlers = () => {
-      if (!isIOS()) {
+      if (!isIOS(window)) {
         return {};
       }
 

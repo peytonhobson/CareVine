@@ -13,7 +13,7 @@ export const isMobileSafari = () => {
   return iOS && webkit;
 };
 
-export const isIOS = () => {
+export const isIOS = window => {
   if (!window) {
     return false;
   }

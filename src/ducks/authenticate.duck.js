@@ -11,6 +11,7 @@ import {
   updateUserAuthenticate,
   updateUserMetadata,
   applyPromo,
+  sendgridStandardEmail,
 } from '../util/api';
 import * as log from '../util/log';
 import { updateProfile } from '../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
@@ -587,6 +588,12 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
       });
     })
     .then(response => {
+      sendgridStandardEmail({
+        receiverEmail: 'peyton.hobson@carevine.us',
+        subject: 'Criminal Background Check Review',
+        html: `<span>User (${userId}) has a background check that needs reviewed.</span></br>
+        <span>Result: ${JSON.stringify(result)}</span></br>`,
+      });
       dispatch(fetchCurrentUser());
       dispatch(authenticate7YearHistorySuccess(response));
       return response;

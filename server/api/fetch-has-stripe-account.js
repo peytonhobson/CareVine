@@ -6,8 +6,6 @@ module.exports = (req, res) => {
 
   const { userId } = req.body;
 
-  console.log(userId);
-
   integrationSdk.users
     .show({ id: userId.uuid, include: ['stripeAccount'] })
     .then(apiResponse => {
