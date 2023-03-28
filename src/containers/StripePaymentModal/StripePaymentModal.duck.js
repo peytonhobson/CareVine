@@ -239,7 +239,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, caregiverName) => (
+export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName) => (
   dispatch,
   getState,
   sdk
@@ -257,6 +257,8 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, ca
     throw e;
   };
 
+  const stripeCustomerId = sender?.stripeCustomer?.attributes?.stripeCustomerId;
+
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({
       amount,
@@ -264,6 +266,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, ca
       stripeCustomerId,
       isCard,
       description: `Payment to ${caregiverName}`,
+      sender,
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
@@ -276,6 +279,7 @@ export const createPaymentIntent = (amount, userId, stripeCustomerId, isCard, ca
           stripeCustomerId: res.id,
           isCard,
           description: `Payment to ${caregiverName}`,
+          sender,
         });
       })
       .then(res => handleSuccess(res))
@@ -535,8 +539,6 @@ export const hasStripeAccount = userId => (dispatch, getState, sdk) => {
     log.error(e, 'fetch-provider-account-failed', {});
     throw e;
   };
-
-  console.log(userId);
 
   return fetchHasStripeAccount({ userId })
     .then(handleSuccess)

@@ -19,7 +19,7 @@ const findZipcode = address => {
     return word.trim().match(/\d+/g);
   });
 
-  return digitArray[digitArray.length - 1].trim();
+  return digitArray[digitArray.length - 1].trim().replace(/\D/g, '');
 };
 
 const findCity = address => {

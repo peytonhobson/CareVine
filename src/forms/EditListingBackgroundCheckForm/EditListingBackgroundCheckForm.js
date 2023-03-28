@@ -257,6 +257,7 @@ const EditListingBackgroundCheckForm = props => (
               label="State"
               placeholder="State"
               required
+              validate={required('State is required')}
             />
           </div>
           <div className={css.row}>

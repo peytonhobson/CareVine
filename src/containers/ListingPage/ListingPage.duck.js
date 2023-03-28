@@ -3,7 +3,7 @@ import config from '../../config';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { transactionLineItems, fetchUserEmail, sendNewMessageEmail } from '../../util/api';
+import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
@@ -16,7 +16,6 @@ import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/
 import { CAREGIVER } from '../../util/constants';
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-import { userDisplayNameAsString } from '../../util/data';
 import { generateAccessToken } from '../../ducks/sendbird.duck';
 
 const { UUID } = sdkTypes;
@@ -329,6 +328,8 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
   const currentAuthorId = currentAuthor.id.uuid;
   const currentUserId = currentUser.id.uuid;
 
+  console.log(currentAuthor);
+
   const params = {
     appId: process.env.REACT_APP_SENDBIRD_APP_ID,
     modules: [new GroupChannelModule()],
@@ -355,7 +356,7 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
         try {
           channel = await sb.groupChannel.getChannel(CHANNEL_URL);
         } catch (e) {
-          console.log(e);
+          // console.log(e);
         }
 
         if (!channel) {
@@ -364,7 +365,7 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
             channel = await sb.groupChannel.getChannel(CHANNEL_URL);
           } catch (e) {
             // TODO: remove in production
-            console.log(e);
+            // console.log(e);
           }
         }
 
@@ -376,9 +377,6 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           console.log('new');
           try {
             channel = await sb.groupChannel.createChannel(channelParams);
-
-            const senderName = userDisplayNameAsString(currentUser);
-            sendNewMessageEmail({ authorId: currentAuthorId, senderName });
           } catch (e) {
             dispatch(fetchChannelError(e));
           }

@@ -5,6 +5,10 @@ import SBConversation from '@sendbird/uikit-react/Channel';
 import { Modal, IconEnquiry, Avatar, IconSpinner } from '../';
 import { FormattedMessage } from '../../util/reactIntl';
 import CustomMessageInput from './CustomMessageInput';
+import { sendgridTemplateEmail } from '../../util/api';
+import { userDisplayNameAsString } from '../../util/data';
+import SendbirdChat from '@sendbird/chat';
+import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 
 import css from './SendbirdModal.module.css';
 
@@ -26,18 +30,10 @@ const SendbirdModal = props => {
   } = props;
 
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
-  const userId = currentUser && currentUser.id && currentUser.id.uuid;
-  const nickname =
-    currentUser && currentUser.attributes && currentUser.attributes.profile.displayName;
-  const profileUrl =
-    currentUser &&
-    currentUser.profileImage &&
-    currentUser.profileImage.attributes.variants['square-small'].url;
-  const accessToken =
-    currentUser &&
-    currentUser.attributes &&
-    currentUser.attributes.profile.privateData &&
-    currentUser.attributes.profile.privateData.sbAccessToken;
+  const userId = currentUser?.id?.uuid;
+  const nickname = currentUser?.attributes?.profile?.displayName;
+  const profileUrl = currentUser?.profileImage?.attributes?.variants['square-small']?.url;
+  const accessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
   const sendbirdColorSet = {
     '--sendbird-light-primary-500': '#5684a3',
     '--sendbird-light-primary-400': '#5684a3',
@@ -46,8 +42,7 @@ const SendbirdModal = props => {
     '--sendbird-light-primary-100': '#6ba0b6',
   };
 
-  const authorDisplayName =
-    currentAuthor && currentAuthor.attributes && currentAuthor.attributes.profile.displayName;
+  const authorDisplayName = currentAuthor?.attributes?.profile?.displayName;
 
   useEffect(() => {
     const currentAuthorInMessageChannel = messageChannel?.members?.find(
@@ -66,12 +61,31 @@ const SendbirdModal = props => {
   }, [currentAuthor, currentUser, accessToken, messageChannel, fetchChannelInProgress]);
 
   useEffect(() => {
-    if (!!currentUser && !!currentUser.id && !accessToken && !generateAccessTokenInProgress) {
+    if (currentUser?.id && !accessToken && !generateAccessTokenInProgress) {
       onGenerateAccessToken(currentUser);
     }
   }, [currentUser, accessToken, generateAccessTokenInProgress]);
 
   const redirectToInbox = () => {
+    const queryParams = {
+      limit: 3,
+    };
+    const query = messageChannel.createPreviousMessageListQuery(queryParams);
+
+    query.load().then(messages => {
+      const currentAuthorId = currentAuthor?.id?.uuid;
+      const senderName = userDisplayNameAsString(currentUser);
+
+      // TODO: Change template data
+      if (messages?.length < 1) {
+        sendgridTemplateEmail({
+          receiverId: currentAuthorId,
+          templateData: {},
+          templateName: 'new-message',
+        });
+      }
+    });
+
     history.push('/inbox');
   };
 

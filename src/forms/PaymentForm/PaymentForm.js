@@ -41,12 +41,14 @@ const PaymentForm = props => {
   const [showDefaultPayment, setShowDefaultPayment] = useState(false);
   const [saveDefaultPayment, setSaveDefaultPayment] = useState(false);
 
+  const stripeCustomer = currentUser?.stripeCustomer;
+
   useEffect(() => {
-    onFetchDefaultPayment(
-      currentUser.stripeCustomer &&
-        ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId
-    );
-  }, []);
+    if (stripeCustomer) {
+      const stripeCustomerId = stripeCustomer?.attributes?.stripeCustomerId;
+      onFetchDefaultPayment(stripeCustomerId);
+    }
+  }, [stripeCustomer]);
 
   useEffect(() => {
     if (

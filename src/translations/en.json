@@ -608,7 +608,7 @@
   "ListingPage.loadingListingMessage": "Loading profile...",
   "ListingPage.loadingListingTitle": "Loading profile...",
   "ListingPage.locationTitle": "Location",
-  "ListingPage.ownClosedListing": "Your profile has been closed and sessions can't be booked.",
+  "ListingPage.ownClosedListing": "Your profile has been closed and is not visible to other users.",
   "ListingPage.ownListing": "This is your own profile.",
   "ListingPage.ownListingDraft": "This profile is a draft.",
   "ListingPage.ownListingPendingApproval": "This profile is pending approval.",

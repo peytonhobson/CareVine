@@ -37,3 +37,19 @@
     margin-bottom: 54px;
   }
 }
+
+.nestedList {
+  padding-left: 2rem;
+}
+
+.bulletedList {
+  list-style: disc;
+}
+
+.mainList {
+  margin-top: 3rem;
+}
+
+.mainList > li {
+  margin-bottom: 4rem;
+}

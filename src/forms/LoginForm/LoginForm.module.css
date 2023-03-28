@@ -30,3 +30,7 @@
 .recoveryLinkInfo {
   composes: marketplaceModalHelperText from global;
 }
+
+.error {
+  color: var(--failColor);
+}

@@ -62,6 +62,6 @@
 
   @media (--viewportLarge) {
     display: inline-block;
-    width: 15rem;
+    max-width: 15rem;
   }
 }

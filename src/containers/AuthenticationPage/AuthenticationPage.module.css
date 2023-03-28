@@ -179,6 +179,8 @@
 
 .error {
   composes: marketplaceModalPasswordMargins from global;
+
+  color: var(--failColor);
 }
 
 /* ================ Social logins & SSO ================ */

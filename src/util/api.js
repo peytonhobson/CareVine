@@ -274,6 +274,10 @@ export const sendFeedbackEmail = body => {
   return post('/api/send-feedback-email', body);
 };
 
-export const sendNewMessageEmail = body => {
-  return post('/api/send-new-message-email', body);
+export const sendgridTemplateEmail = body => {
+  return post('/api/sendgrid-template-email', body);
+};
+
+export const sendgridStandardEmail = body => {
+  return post('/api/sendgrid-standard-email', body);
 };

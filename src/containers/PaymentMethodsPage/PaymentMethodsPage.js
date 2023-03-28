@@ -169,7 +169,8 @@ const PaymentMethodsPageComponent = props => {
 
   const showBankForm =
     (!bankAccount && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
-  const showCardForm = !card && defaultPaymentFetched && !fetchDefaultPaymentError;
+  const showCardForm =
+    (!card && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
 
   const fetchDefaultPaymentErrorMessage = (
     <p className={css.error}>
