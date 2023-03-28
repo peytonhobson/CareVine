@@ -156,24 +156,6 @@ const cancelBackgroundCheckSubscriptionSchedule = schedule => {
     .catch(e => log.error(e, 'cancel-background-check-subscription-schedule-failed'));
 };
 
-const sendExpiringEmail = data => {
-  const card = data.data.object.object === 'card' ? data.data.object : null;
-
-  if (card) {
-    const stripeCustomerId = card.customer;
-
-    stripe.customers
-      .retrieve(stripeCustomerId)
-      .then(customer => {
-        const userId = customer.metadata['sharetribe-user-id'];
-
-        // TODO: Replace template data when available
-        sendgridEmail(userId, 'payment-expiring', {}, 'send-payment-expiring-email-failed');
-      })
-      .catch(e => log.error(e, 'send-payment-expiring-email-failed', {}));
-  }
-};
-
 const sendChargeFailedEmail = data => {
   const feeAmount = Number.parseFloat(data?.application_fee_amount / 100).toFixed(2);
   const amount = Number.parseFloat(data?.amount / 100 - feeAmount).toFixed(2);
