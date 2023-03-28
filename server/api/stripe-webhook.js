@@ -266,11 +266,6 @@ module.exports = (request, response) => {
       const susbcriptionScheduleCreated = event.data.object;
       updateBackgroundCheckSubscriptionSchedule(susbcriptionScheduleCreated);
       break;
-    // ... handle other event types
-    case 'customer.source.expiring':
-      const customerSourceExpiring = event.data.object;
-      sendExpiringEmail(customerSourceExpiring);
-      break;
     case 'charge.dispute.created':
       const disputeCreated = event.data.object;
       sendgridStandardEmail(
