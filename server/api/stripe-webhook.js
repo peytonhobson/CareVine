@@ -104,17 +104,6 @@ const updateBackgroundCheckSubscription = subscription => {
     })
     .then(() => {
       if (
-        (prevBackgroundCheckSubscription?.status !== 'active' &&
-          subscription?.status === 'active' &&
-          !subscription?.cancel_at_period_end) ||
-        (prevBackgroundCheckSubscription?.cancelAtPeriodEnd && !subscription?.cancel_at_period_end)
-      ) {
-        failStage = 'subscription-confirmed-email-failed';
-        // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-confirmed', {}, failStage);
-      }
-
-      if (
         (prevBackgroundCheckSubscription?.status !== 'canceled' &&
           subscription?.status === 'canceled') ||
         (!prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancel_at_period_end)
