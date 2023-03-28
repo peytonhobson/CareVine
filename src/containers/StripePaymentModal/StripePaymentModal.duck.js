@@ -282,7 +282,10 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
           sender,
         });
       })
-      .then(res => handleSuccess(res))
+      .then(res => {
+        dispatch(fetchCurrentUser());
+        handleSuccess(res);
+      })
       .catch(e => handleError(e));
   }
 };
