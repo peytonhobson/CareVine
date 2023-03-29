@@ -11,12 +11,15 @@ const cors = require('cors');
 const apiRouter = require('./apiRouter');
 const wellKnownRouter = require('./wellKnownRouter');
 const queryEvents = require('./queryEvents');
+const isDev = process.env.NODE_ENV === 'development';
 
 const radix = 10;
 const PORT = parseInt(process.env.REACT_APP_DEV_API_SERVER_PORT, radix);
 const app = express();
 
-queryEvents();
+if (isDev) {
+  queryEvents();
+}
 
 // NOTE: CORS is only needed in this dev API server because it's
 // running in a different port than the main app.
