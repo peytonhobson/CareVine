@@ -86,6 +86,8 @@ module.exports = queryEvents = () => {
     }
   };
 
+  const approveListingEmail = (userId, listingId) => {};
+
   const handleEvent = event => {
     const eventType = event.attributes.eventType;
 
@@ -118,25 +120,9 @@ module.exports = queryEvents = () => {
                 .approve({
                   id: listingId,
                 })
+                .then(() => approveListingEmail(userId))
                 .catch(err => log.error(err, 'listing-approve-failed'));
             }
-          })
-          .then(() => {
-            axios
-              .post(
-                `${apiBaseUrl()}/api/sendgrid-template-email`,
-                {
-                  receiverId: userId,
-                  templateName: 'listing-approved',
-                  templateData: { marketplaceUrl: rootURL },
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/transit+json',
-                  },
-                }
-              )
-              .catch(e => log.error(e, 'listing-approved-email-failed'));
           })
           .catch(err => log.error(err, 'listing-approve-show-user-failed'));
       }
@@ -185,38 +171,26 @@ module.exports = queryEvents = () => {
 
             if (listingState === 'pendingApproval') {
               console.log('approve listing 2 at approve');
-              return integrationSdk.listings.approve({
-                id: userListingId,
-              });
+              return integrationSdk.listings
+                .approve({
+                  id: userListingId,
+                })
+                .then(() => {
+                  approveListingEmail(userId);
+                })
+                .catch(err => log.error(err, 'listing-approved-failed'));
             }
 
             if (listingState === 'closed') {
               console.log('Open listing');
-              return integrationSdk.listings.open({
-                id: userListingId,
-              });
-            }
-          })
-          .then(() => {
-            //TODO: Change template data to match template
-            // TODO: test this with error handling
-            // TODO: This should be listing opened not listing approved
-            if (listingState === 'pendingApproval' || listingState === 'closed') {
-              axios
-                .post(
-                  `${apiBaseUrl()}/api/sendgrid-template-email`,
-                  {
-                    receiverId: userId,
-                    templateName: 'listing-approved',
-                    templateData: { marketplaceUrl: rootURL },
-                  },
-                  {
-                    headers: {
-                      'Content-Type': 'application/transit+json',
-                    },
-                  }
-                )
-                .catch(e => log.error(e, 'listing-approved-email-failed'));
+              return integrationSdk.listings
+                .open({
+                  id: userListingId,
+                })
+                .then(() => {
+                  approveListingEmail(userId);
+                })
+                .catch(err => log.error(err, 'listing-open-failed'));
             }
           })
           .catch(err => {
@@ -376,7 +350,7 @@ module.exports = queryEvents = () => {
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         prevBackgroundCheckApprovedStatus &&
-          prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_APPROVED
+        prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_APPROVED
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
