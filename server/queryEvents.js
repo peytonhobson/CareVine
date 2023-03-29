@@ -483,6 +483,7 @@ module.exports = queryEvents = () => {
       const fullPage = events?.length === res?.data?.meta?.perPage;
       const delay = fullPage ? pollWait : pollIdleWait;
       const lastEvent = events?.length ? events[events?.length - 1] : null;
+      console.log(delay);
       console.log('lastEvent: ', lastEvent);
       const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
