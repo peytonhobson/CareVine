@@ -137,7 +137,6 @@ module.exports = queryEvents = () => {
                   id: listingId,
                 })
                 .then(() => {
-                  console.log('sequenceId at listing approve', event.attributes?.sequenceId);
                   approveListingEmail(userId);
                 })
                 .catch(err => log.error(err, 'listing-approve-failed'));
@@ -195,7 +194,6 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
-                  console.log('sequenceId at user approve', event.attributes?.sequenceId);
                   approveListingEmail(userId);
                 })
                 .catch(err => log.error(err, 'listing-approved-failed'));
@@ -374,19 +372,13 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
-        console.log('send background check rejected email');
-        console.log('prevBackgroundCheckApprovedStatus: ', prevBackgroundCheckApprovedStatus);
-        console.log('backgroundCheckApprovedStatus: ', backgroundCheckApprovedStatus);
-
         // TODO: test this with error handling
-        // TODO: Change template data to match template
         integrationSdk.listings
           .query({ authorId: userId })
           .then(res => {
             const listing = res?.data?.data?.length > 0 && res.data.data[0];
 
             const listingId = listing?.id?.uuid;
-            console.log('sequenceId at bc approve', event.attributes?.sequenceId);
             axios
               .post(
                 `${apiBaseUrl()}/api/sendgrid-template-email`,
@@ -415,10 +407,6 @@ module.exports = queryEvents = () => {
           prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED)
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
-
-        console.log('send background check rejected email');
-        console.log('prevBackgroundCheckApprovedStatus: ', prevBackgroundCheckApprovedStatus);
-        console.log('backgroundCheckApprovedStatus: ', backgroundCheckApprovedStatus);
 
         // TODO: test this with error handling
         // TODO: Change template data to match template
@@ -479,12 +467,9 @@ module.exports = queryEvents = () => {
     var params = sequenceId ? { startAfterSequenceId: sequenceId } : { createdAtStart: startTime };
     queryEvents(params).then(res => {
       const events = res?.data?.data;
-      console.log('events: ', events);
       const fullPage = events?.length === res?.data?.meta?.perPage;
       const delay = fullPage ? pollWait : pollIdleWait;
       const lastEvent = events?.length ? events[events?.length - 1] : null;
-      console.log(delay);
-      console.log('lastEvent: ', lastEvent);
       const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
       events.forEach(e => {
