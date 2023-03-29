@@ -375,8 +375,8 @@ module.exports = queryEvents = () => {
 
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        prevBackgroundCheckApprovedStatus &&
-        prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_APPROVED
+        (prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_APPROVED ||
+          !prevBackgroundCheckApprovedStatus)
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
@@ -412,8 +412,8 @@ module.exports = queryEvents = () => {
 
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED &&
-        prevBackgroundCheckApprovedStatus &&
-        prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED
+        (!prevBackgroundCheckApprovedStatus ||
+          prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED)
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
