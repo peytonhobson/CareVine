@@ -114,12 +114,31 @@ module.exports = queryEvents = () => {
             if (openListing) {
               const listingId = event.attributes.resource.id.uuid;
 
-              integrationSdk.listings.approve({
-                id: listingId,
-              });
+              return integrationSdk.listings
+                .approve({
+                  id: listingId,
+                })
+                .catch(err => log.error(err, 'listing-approve-failed'));
             }
           })
-          .catch(err => log.error(err, 'listing-approve-failed'));
+          .then(() => {
+            axios
+              .post(
+                `${apiBaseUrl()}/api/sendgrid-template-email`,
+                {
+                  receiverId: userId,
+                  templateName: 'listing-approved',
+                  templateData: { marketplaceUrl: rootURL },
+                },
+                {
+                  headers: {
+                    'Content-Type': 'application/transit+json',
+                  },
+                }
+              )
+              .catch(e => log.error(e, 'listing-approved-email-failed'));
+          })
+          .catch(err => log.error(err, 'listing-approve-show-user-failed'));
       }
     }
 
@@ -363,21 +382,32 @@ module.exports = queryEvents = () => {
 
         // TODO: test this with error handling
         // TODO: Change template data to match template
-        axios
-          .post(
-            `${apiBaseUrl()}/api/sendgrid-template-email`,
-            {
-              receiverId: userId,
-              templateName: 'background-check-approved',
-              templateData: {},
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .catch(e => log.error(e, 'send-bc-approved-email-failed', {}));
+        integrationSdk.listings
+          .query({ authorId: userId })
+          .then(res => {
+            const listing = res?.data?.data?.length > 0 && res.data.data[0];
+
+            const listingId = listing?.id?.uuid;
+            axios
+              .post(
+                `${apiBaseUrl()}/api/sendgrid-template-email`,
+                {
+                  receiverId: userId,
+                  templateName: 'background-check-approved',
+                  templateData: {
+                    marketplaceUrl: rootURL,
+                    listingId: listingId,
+                  },
+                },
+                {
+                  headers: {
+                    'Content-Type': 'application/transit+json',
+                  },
+                }
+              )
+              .catch(e => log.error(e, 'send-bc-approved-email-failed', {}));
+          })
+          .catch(e => log.error(e, 'bc-approved-listing-query-failed', {}));
       }
 
       if (
