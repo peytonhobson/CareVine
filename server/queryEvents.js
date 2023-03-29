@@ -208,7 +208,7 @@ module.exports = queryEvents = () => {
                   {
                     receiverId: userId,
                     templateName: 'listing-approved',
-                    templateData: {},
+                    templateData: { marketplaceUrl: rootURL },
                   },
                   {
                     headers: {
