@@ -479,9 +479,11 @@ module.exports = queryEvents = () => {
     var params = sequenceId ? { startAfterSequenceId: sequenceId } : { createdAtStart: startTime };
     queryEvents(params).then(res => {
       const events = res?.data?.data;
+      console.log('events: ', events);
       const fullPage = events?.length === res?.data?.meta?.perPage;
       const delay = fullPage ? pollWait : pollIdleWait;
       const lastEvent = events?.length ? events[events?.length - 1] : null;
+      console.log('lastEvent: ', lastEvent);
       const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
       events.forEach(e => {
