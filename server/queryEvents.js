@@ -92,7 +92,7 @@ module.exports = queryEvents = () => {
         `${apiBaseUrl()}/api/sendgrid-template-email`,
         {
           receiverId: userId,
-          templateName: 'approve-listing',
+          templateName: 'listing-approved',
           templateData: { marketplaceUrl: rootURL },
         },
         {
@@ -370,6 +370,10 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
+        console.log('send background check rejected email');
+        console.log('prevBackgroundCheckApprovedStatus: ', prevBackgroundCheckApprovedStatus);
+        console.log('backgroundCheckApprovedStatus: ', backgroundCheckApprovedStatus);
+
         // TODO: test this with error handling
         // TODO: Change template data to match template
         integrationSdk.listings
@@ -406,6 +410,10 @@ module.exports = queryEvents = () => {
           prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED)
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
+
+        console.log('send background check rejected email');
+        console.log('prevBackgroundCheckApprovedStatus: ', prevBackgroundCheckApprovedStatus);
+        console.log('backgroundCheckApprovedStatus: ', backgroundCheckApprovedStatus);
 
         // TODO: test this with error handling
         // TODO: Change template data to match template
