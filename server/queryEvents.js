@@ -86,7 +86,23 @@ module.exports = queryEvents = () => {
     }
   };
 
-  const approveListingEmail = (userId, listingId) => {};
+  const approveListingEmail = userId => {
+    axios
+      .post(
+        `${apiBaseUrl()}/api/sendgrid-template-email`,
+        {
+          receiverId: userId,
+          templateName: 'approve-listing',
+          templateData: { marketplaceUrl: rootURL },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/transit+json',
+          },
+        }
+      )
+      .catch(e => log.error(e, 'approve-listing-email-failed', {}));
+  };
 
   const handleEvent = event => {
     const eventType = event.attributes.eventType;
