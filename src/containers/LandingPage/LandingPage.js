@@ -88,6 +88,7 @@ export const LandingPageComponent = props => {
               scrollToContent={scrollToContent}
             />
           </div>
+          <div id="how-it-works" className={css.anchorDiv}></div>
           <ul className={css.sections} ref={contentRef}>
             <li className={css.section}>
               <div className={css.sectionContent}>
