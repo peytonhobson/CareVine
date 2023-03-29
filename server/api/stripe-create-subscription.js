@@ -6,10 +6,6 @@ const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
-const BASIC_CHECK_PRICE_ID =
-  process.env.REACT_APP_ENV === 'development'
-    ? 'price_1MXTzRJsU2TVwfKBbucAL3ns'
-    : 'price_1MXTz5JsU2TVwfKB0Dt67n8s';
 
 module.exports = (req, res) => {
   const { stripeCustomerId, priceId, userId, params } = req.body;
@@ -28,7 +24,7 @@ module.exports = (req, res) => {
         payment_method_types: ['card'],
       },
       description: `Payment for ${
-        priceId === CAREVINE_GOLD_PRICE_ID ? 'Carevine Gold' : 'Basic Background Check'
+        priceId === CAREVINE_GOLD_PRICE_ID ? 'Carevine Gold' : 'CareVine Basic'
       }`,
       //   automatic_tax: {
       //     enabled: true,

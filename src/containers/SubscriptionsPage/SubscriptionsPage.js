@@ -36,7 +36,7 @@ import {
   cancelFutureSubscription,
 } from '../../ducks/stripe.duck';
 import SubscriptionCard from './SubscriptionCard';
-import { CAREVINE_GOLD_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
+import { CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
 import { useEffect } from 'react';
@@ -231,7 +231,7 @@ const SubscriptionsPageComponent = props => {
     const priceId =
       isReactivateSubscriptionPaymentModalOpen == VINE
         ? CAREVINE_GOLD_PRICE_ID
-        : BASIC_CHECK_PRICE_ID;
+        : CAREVINE_BASIC_PRICE_ID;
     const cardId =
       defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id;
 
