@@ -402,7 +402,7 @@ export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
         userId,
         metadata: {
           backgroundCheckApproved: {
-            status: BACKGROUND_CHECK_PENDING,
+            status: 'started',
           },
         },
       });
