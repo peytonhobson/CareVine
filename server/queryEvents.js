@@ -136,7 +136,10 @@ module.exports = queryEvents = () => {
                 .approve({
                   id: listingId,
                 })
-                .then(() => approveListingEmail(userId))
+                .then(() => {
+                  console.log('sequenceId at listing approve', event.attributes?.sequenceId);
+                  approveListingEmail(userId);
+                })
                 .catch(err => log.error(err, 'listing-approve-failed'));
             }
           })
@@ -192,6 +195,7 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
+                  console.log('sequenceId at user approve', event.attributes?.sequenceId);
                   approveListingEmail(userId);
                 })
                 .catch(err => log.error(err, 'listing-approved-failed'));
@@ -382,6 +386,7 @@ module.exports = queryEvents = () => {
             const listing = res?.data?.data?.length > 0 && res.data.data[0];
 
             const listingId = listing?.id?.uuid;
+            console.log('sequenceId at bc approve', event.attributes?.sequenceId);
             axios
               .post(
                 `${apiBaseUrl()}/api/sendgrid-template-email`,
