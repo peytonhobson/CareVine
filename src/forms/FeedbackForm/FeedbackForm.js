@@ -12,6 +12,7 @@ import {
   Button,
   IconArrowHead,
   FieldRangeSlider,
+  FieldSelect,
 } from '../../components';
 import { composeValidators, required, maxLength, emailFormatValid } from '../../util/validators';
 import { compose } from 'redux';
@@ -26,6 +27,7 @@ const FIND_SITE = 'findSite';
 // const POSITIVES = 'positives';
 const IMPROVE_EXPERIENCE = 'improveExperience';
 const SECURITY = 'security';
+const AGE = 'age';
 const ABILITY_RATING = 'abilityRating';
 const APPEARANCE_RATING = 'appearanceRating';
 const EASE_RATING = 'easeRating';
@@ -40,6 +42,7 @@ const stages = [
   // POSITIVES,
   IMPROVE_EXPERIENCE,
   SECURITY,
+  AGE,
   ABILITY_RATING,
   APPEARANCE_RATING,
   EASE_RATING,
@@ -62,6 +65,18 @@ const userTypeOptions = [
 const yesNoOptions = [
   { key: 'yes', label: 'Yes' },
   { key: 'no', label: 'No' },
+];
+
+const ageOptions = [
+  { key: 'under30', label: 'Under 30' },
+  { key: '30s', label: '30s' },
+  { key: '40s', label: '40s' },
+  { key: '50s', label: '50s' },
+  { key: '60s', label: '60s' },
+  { key: '70s', label: '70s' },
+  { key: '80s', label: '80s' },
+  { key: '90s', label: '90s' },
+  { key: 'over100', label: 'Over 100' },
 ];
 
 const FeedbackForm = props => (
@@ -265,6 +280,28 @@ const FeedbackForm = props => (
                   DESCRIPTION_MAX_LENGTH
                 )}
                 inputRootClass={css.textAreaRoot}
+              />
+              <div className={css.submitButtonWrapper}>
+                <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
+                  NEXT
+                </GradientButton>
+              </div>
+            </div>
+          )}
+
+          {stage === AGE && (
+            <div className={css.field}>
+              <Button onClick={prevStage} rootClassName={css.goBackButton} type="button">
+                <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+                <span className={css.goBackText}>Go back</span>
+              </Button>
+              <FieldButtonGroup
+                buttonRootClassName={css.buttonGroupRootAge}
+                className={classNames(css.buttonGroupAge, css.buttonGroup)}
+                name="age"
+                options={ageOptions}
+                selectedClassName={classNames(css.buttonGroupSelected, css.buttonGroupSelectedAge)}
+                label="What is your age range?"
               />
               <div className={css.submitButtonWrapper}>
                 <GradientButton type="button" className={css.nextButton} onClick={nextStage}>
