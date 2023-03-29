@@ -12,6 +12,7 @@ module.exports = (req, res) => {
     security,
     securityReason,
     suggestions,
+    age,
     abilityRating,
     appearanceRating,
     easeRating,
@@ -30,6 +31,7 @@ module.exports = (req, res) => {
         <p>How they found out about Carevine: </br>${findSite}</p>
         <p>Do they feel carevine is secure: ${security}</p>
         <p>Security Reason: </br>${securityReason}</p>
+        <p>Age Range: ${age}</p>
         <p>Ability Rating: ${abilityRating}</p>
         <p>Appearance Rating: ${appearanceRating}</p>
         <p>Ease Rating: ${easeRating}</p>

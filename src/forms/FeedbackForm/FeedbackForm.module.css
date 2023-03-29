@@ -40,6 +40,10 @@
   overflow: visible;
 }
 
+.fieldSelect {
+  padding-top: 1rem;
+}
+
 .nextButton {
   width: 5rem;
   margin-top: 2rem;
@@ -193,4 +197,20 @@
 
 .securityTA {
   margin-top: 1.5rem;
+}
+
+.buttonGroupRootAge {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.buttonGroupAge {
+  max-width: 8rem;
+  margin: 0.5rem;
+}
+
+.buttonGroupSelectedAge {
+  max-width: 8rem;
+  margin: 0.5rem;
 }
