@@ -108,7 +108,7 @@ const ScreeningDescription = props => {
       </div>
       <div className={css.screeningRoot}>
         <Card className={css.basicCard}>
-          <CardHeader title="Basic Background Check" className={greyClasses.root} />
+          <CardHeader title="CareVine Basic" className={greyClasses.root} />
           <CardContent>
             <div className={css.screeningTitleContainer}>
               <h2 className={css.screeningTitle}>Complete a background check</h2>
@@ -136,7 +136,7 @@ const ScreeningDescription = props => {
           </CardContent>
           <CardActions>
             <Button className={greyButtonClasses.root} onClick={() => onPayForBC(BASIC)}>
-              Pay for background check
+              Pay for CareVine Basic
             </Button>
           </CardActions>
         </Card>

@@ -16,7 +16,7 @@ import ScreeningDescription from './ScreeningDescription';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import PaymentInfo from './PaymentInfo';
-import { CAREVINE_GOLD_PRICE_ID, BASIC_CHECK_PRICE_ID } from '../../util/constants';
+import { CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
 import {
   BACKGROUND_CHECK_APPROVED,
   BACKGROUND_CHECK_REJECTED,
@@ -371,7 +371,7 @@ const EditListingBackgroundCheckPanel = props => {
             setBackgroundCheckType(bcType);
             onCreateSubscription(
               stripeCustomerId,
-              bcType === BASIC ? BASIC_CHECK_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+              bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
               currentUser.id.uuid,
               backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
             );
