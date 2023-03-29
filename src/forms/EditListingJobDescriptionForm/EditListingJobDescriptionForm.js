@@ -6,14 +6,7 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import {
-  requiredFieldArrayCheckbox,
-  requiredFieldArrayRadio,
-  required,
-  maxLength,
-  minLength,
-  composeValidators,
-} from '../../util/validators';
+import { required, maxLength, minLength, composeValidators } from '../../util/validators';
 import config from '../../config';
 import { Form, Button, FieldTextInput, InlineTextButton, Modal } from '../../components';
 
