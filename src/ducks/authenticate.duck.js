@@ -397,6 +397,16 @@ export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
         privateData: { authenticateConsent: true },
       });
     })
+    .then(() => {
+      return updateUserMetadata({
+        userId,
+        metadata: {
+          backgroundCheckApproved: {
+            status: BACKGROUND_CHECK_PENDING,
+          },
+        },
+      });
+    })
     .then(response => {
       dispatch(authenticateSubmitConsentSuccess());
       dispatch(fetchCurrentUser());
