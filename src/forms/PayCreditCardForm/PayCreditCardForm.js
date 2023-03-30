@@ -72,6 +72,7 @@ const PayCreditCardForm = props => {
 
   const paymentElementOptions = {
     layout: 'tabs',
+    paymentMethodOrder: ['card', 'google_pay', 'apple_pay'],
     fields: {
       billingDetails: {
         address: {

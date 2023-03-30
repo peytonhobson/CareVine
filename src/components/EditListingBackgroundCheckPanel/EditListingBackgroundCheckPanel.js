@@ -382,51 +382,50 @@ const EditListingBackgroundCheckPanel = props => {
       break;
     case PAYMENT:
       const options = {
-        clientSecret: subscription && subscription.latest_invoice.payment_intent.client_secret,
+        clientSecret: subscription?.latest_invoice?.payment_intent.client_secret,
         appearance,
       };
 
-      content =
-        subscription && subscription.latest_invoice.payment_intent.client_secret ? (
-          <div className={css.paymentContainer}>
-            <div className={css.paymentForm}>
-              {!updateSubscriptionError && (
-                <Elements options={options} stripe={stripePromise}>
-                  <PayCreditCardForm
-                    createPaymentError={createPaymentError}
-                    createPaymentInProgress={createPaymentInProgress}
-                    formId="PayCreditCardForm"
-                    intl={intl}
-                    onSubmit={handleCardSubmit}
-                  />
-                </Elements>
-              )}
-            </div>
-            <PaymentInfo
-              backgroundCheckType={backgroundCheckType}
-              subscription={subscription}
-              onApplyBCPromoCode={onApplyBCPromoCode}
-              currentUser={currentUser}
-              applyBCPromoInProgress={applyBCPromoInProgress}
-              applyBCPromoError={applyBCPromoError}
-              bcPromo={bcPromo}
-              backgroundCheckPromo={backgroundCheckPromo}
-              onUpdateSubscription={onUpdateSubscription}
-              updateSubscriptionError={updateSubscriptionError}
-              updateSubscriptionInProgress={updateSubscriptionInProgress}
-            />
-          </div>
-        ) : (
-          <div className={css.spinnerContainer}>
-            {createSubscriptionError ? (
-              <p className={css.error}>
-                <FormattedMessage id="EditListingBackgroundCheckPanel.createSubscriptionError" />
-              </p>
-            ) : (
-              <IconSpinner className={css.spinner} />
+      content = subscription?.latest_invoice.payment_intent.client_secret ? (
+        <div className={css.paymentContainer}>
+          <div className={css.paymentForm}>
+            {!updateSubscriptionError && (
+              <Elements options={options} stripe={stripePromise}>
+                <PayCreditCardForm
+                  createPaymentError={createPaymentError}
+                  createPaymentInProgress={createPaymentInProgress}
+                  formId="PayCreditCardForm"
+                  intl={intl}
+                  onSubmit={handleCardSubmit}
+                />
+              </Elements>
             )}
           </div>
-        );
+          <PaymentInfo
+            backgroundCheckType={backgroundCheckType}
+            subscription={subscription}
+            onApplyBCPromoCode={onApplyBCPromoCode}
+            currentUser={currentUser}
+            applyBCPromoInProgress={applyBCPromoInProgress}
+            applyBCPromoError={applyBCPromoError}
+            bcPromo={bcPromo}
+            backgroundCheckPromo={backgroundCheckPromo}
+            onUpdateSubscription={onUpdateSubscription}
+            updateSubscriptionError={updateSubscriptionError}
+            updateSubscriptionInProgress={updateSubscriptionInProgress}
+          />
+        </div>
+      ) : (
+        <div className={css.spinnerContainer}>
+          {createSubscriptionError ? (
+            <p className={css.error}>
+              <FormattedMessage id="EditListingBackgroundCheckPanel.createSubscriptionError" />
+            </p>
+          ) : (
+            <IconSpinner className={css.spinner} />
+          )}
+        </div>
+      );
       break;
     case CONFIRM_PAYMENT:
       const paymentConfirmedMessage = intl.formatMessage({
