@@ -23,16 +23,17 @@
 
   @media (--viewportMedium) {
     flex-wrap: wrap;
+    justify-content: space-between;
   }
 }
 
 .backgroundCheckDescription {
   margin-top: 2rem;
   text-align: center;
+  margin-bottom: 2rem;
 
   @media (--viewportMedium) {
     margin-top: 0;
-    margin-bottom: 2rem;
   }
 }
 
@@ -350,16 +351,6 @@
   margin-block: 2rem;
 
   @media (--viewportMedium) {
-    margin-right: 0.5rem;
-    margin-block: 0;
-  }
-}
-
-.vineCheckCard {
-  margin-block: 2rem;
-
-  @media (--viewportMedium) {
-    margin-left: 0.5rem;
     margin-block: 0;
   }
 }
@@ -368,6 +359,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  flex-grow: 1;
   width: 100%;
 }
 
@@ -381,6 +373,7 @@
 
 .promoInput {
   border-bottom-color: var(--matterColor);
+  width: 100%;
 }
 
 .error {
