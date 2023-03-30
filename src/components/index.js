@@ -155,6 +155,7 @@ export { default as FilterPopup } from './FilterPopup/FilterPopup';
 export { default as InboxItem } from './InboxItem/InboxItem';
 export { default as KeywordFilter } from './KeywordFilter/KeywordFilter';
 export { default as ListingCard } from './ListingCard/ListingCard';
+export { default as ListingPreview } from './ListingPreview/ListingPreview';
 export { default as ListingTabs } from './ListingTabs/ListingTabs';
 export { default as ManageListingCard } from './ManageListingCard/ManageListingCard';
 export { default as Map } from './Map/Map';

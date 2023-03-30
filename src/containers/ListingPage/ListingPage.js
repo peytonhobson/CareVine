@@ -44,6 +44,7 @@ import {
   ListingTabs,
   SendbirdModal,
   BookingContainer,
+  ListingPreview,
 } from '../../components';
 import { generateAccessToken } from '../../ducks/sendbird.duck';
 import { EnquiryForm } from '../../forms';
@@ -91,6 +92,7 @@ export class ListingPageComponent extends Component {
       imageCarouselOpen: false,
       enquiryModalOpen: false,
       bookingModalOpen: false,
+      showListingPreview: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -373,6 +375,14 @@ export class ListingPageComponent extends Component {
         })
         .filter(variant => variant != null);
 
+    const showListingPreview = () => {
+      this.setState({ showListingPreview: true });
+    };
+
+    const showFullProfile = () => {
+      this.setState({ showListingPreview: false });
+    };
+
     const facebookImages = listingImages(currentListing, 'facebook');
     const twitterImages = listingImages(currentListing, 'twitter');
     const schemaImages = JSON.stringify(facebookImages.map(img => img.url));
@@ -432,21 +442,33 @@ export class ListingPageComponent extends Component {
             {actionBar}
             <div className={css.mainContainer}>
               <div className={css.subContainer}>
-                <ListingSummary
-                  listing={currentListing}
-                  params={params}
-                  currentUserListing={currentUserListing}
-                  onContactUser={this.onContactUser}
-                  isOwnListing={isOwnListing}
-                  onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
-                  onBookNow={handleBookingSubmit}
-                />
-                <ListingTabs
-                  currentUser={currentUser}
-                  listing={currentListing}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                  currentUserListing={currentUserListing}
-                />
+                {!this.state.showListingPreview ? (
+                  <>
+                    <ListingSummary
+                      listing={currentListing}
+                      params={params}
+                      currentUserListing={currentUserListing}
+                      onContactUser={this.onContactUser}
+                      isOwnListing={isOwnListing}
+                      onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
+                      onBookNow={handleBookingSubmit}
+                      onShowListingPreview={showListingPreview}
+                    />
+                    <ListingTabs
+                      currentUser={currentUser}
+                      listing={currentListing}
+                      onManageDisableScrolling={onManageDisableScrolling}
+                      currentUserListing={currentUserListing}
+                    />
+                  </>
+                ) : (
+                  <ListingPreview
+                    currentUser={currentUser}
+                    currentUserListing={currentUserListing}
+                    onShowFullProfile={showFullProfile}
+                    onManageDisableScrolling={onManageDisableScrolling}
+                  />
+                )}
               </div>
             </div>
             {this.state.enquiryModalOpen && (

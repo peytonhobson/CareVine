@@ -43,10 +43,10 @@ export const CaregiverListingCardComponent = props => {
 
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
-  const currentAuthor = currentListing.author;
-  const authorMetadata = currentAuthor.attributes.profile.metadata;
+  const currentAuthor = currentListing?.author;
+  const authorMetadata = currentAuthor?.attributes?.profile?.metadata;
   const userDisplayName = userDisplayNameAsString(currentAuthor) + '.';
-  const { publicData, geolocation: otherGeolocation } = currentListing.attributes;
+  const { publicData, geolocation: otherGeolocation } = currentListing?.attributes;
   const {
     location = {},
     careTypes: providedServices,
@@ -66,14 +66,11 @@ export const CaregiverListingCardComponent = props => {
     backgroundCheckSubscription?.status === 'active' &&
     backgroundCheckSubscription?.type === 'vine';
 
-  const backgroundCheckApprovedDate =
-    authorMetadata &&
-    authorMetadata.backgroundCheckApproved &&
-    authorMetadata.backgroundCheckApproved.date;
+  const backgroundCheckApprovedDate = authorMetadata?.backgroundCheckApproved?.date;
 
   const classes = classNames(rootClassName || css.root, className);
 
-  const geolocation = currentUserListing && currentUserListing.attributes.geolocation;
+  const geolocation = currentUserListing?.attributes?.geolocation;
 
   const distanceFromLocation =
     geolocation && otherGeolocation
@@ -90,7 +87,7 @@ export const CaregiverListingCardComponent = props => {
     'certificationsAndTraining',
     filtersConfig
   )
-    .filter(option => certificationsAndTraining && certificationsAndTraining.includes(option.key))
+    .filter(option => certificationsAndTraining?.includes(option.key))
     .map(option => option.label);
 
   const avatarClasses = classNames(css.avatar, hasPremiumSubscription && css.premium);
@@ -115,7 +112,7 @@ export const CaregiverListingCardComponent = props => {
     .map(service => servicesMap.get(service));
   const additionalServicesText = (
     <ul>
-      {additionalServices.map(service => (
+      {additionalServices?.map(service => (
         <li>{service && service.split('/')[0]}</li>
       ))}
     </ul>
@@ -149,7 +146,7 @@ export const CaregiverListingCardComponent = props => {
         <FormattedMessage id="CaregiverListingCard.notVerified" />
       </p>
       <ul className={css.certAndTrainList}>
-        {certificationsAndTrainingLabels.map(value => (
+        {certificationsAndTrainingLabels?.map(value => (
           <li>{value}</li>
         ))}
       </ul>
@@ -217,15 +214,11 @@ export const CaregiverListingCardComponent = props => {
                 />
               </h3>
             </div>
-            {!isMobile && (
-              <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
-            )}
+            {!isMobile && <AvailabilityPreview entries={availabilityPlan?.entries} />}
           </div>
         </div>
         <div className={css.mainInfo}>
-          {isMobile && (
-            <AvailabilityPreview entries={availabilityPlan && availabilityPlan.entries} />
-          )}
+          {isMobile && <AvailabilityPreview entries={availabilityPlan?.entries} />}
           <div className={css.badges}>
             {hasPremiumSubscription && (
               <div className={css.goldBadge}>
@@ -304,7 +297,7 @@ export const CaregiverListingCardComponent = props => {
           </div>
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
-              {providedServices.slice(0, 2).map(service => (
+              {providedServices?.slice(0, 2).map(service => (
                 <p className={css.serviceCardItem}>{servicesMap.get(service).split('/')[0]}</p>
               ))}
               {providedServices?.length > 3 && (
@@ -312,7 +305,7 @@ export const CaregiverListingCardComponent = props => {
                   styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
                   title={
                     <ul>
-                      {providedServices.slice(3, providedServices.length).map(service => (
+                      {providedServices?.slice(3, providedServices?.length).map(service => (
                         <li>{servicesMap.get(service).split('/')[0]}</li>
                       ))}
                     </ul>

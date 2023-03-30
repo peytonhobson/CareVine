@@ -80,10 +80,10 @@ export const EmployerListingCardComponent = props => {
   const [isOneTimeScheduleModalOpen, setIsOneTimeScheduleModalOpen] = useState(false);
 
   const currentListing = ensureListing(listing);
-  const id = currentListing.id.uuid;
-  const currentAuthor = currentListing.author;
+  const id = currentListing?.id?.uuid;
+  const currentAuthor = currentListing?.author;
   const userDisplayName = userDisplayNameAsString(currentAuthor) + '.';
-  const { publicData, title, geolocation: otherGeolocation } = currentListing.attributes;
+  const { publicData, title, geolocation: otherGeolocation } = currentListing?.attributes;
   const {
     location = {},
     careTypes,
@@ -96,7 +96,7 @@ export const EmployerListingCardComponent = props => {
 
   const classes = classNames(rootClassName || css.root, className);
 
-  const geolocation = currentUserListing && currentUserListing.attributes.geolocation;
+  const geolocation = currentUserListing?.attributes?.geolocation;
 
   const distanceFromLocation =
     geolocation && otherGeolocation
@@ -137,8 +137,7 @@ export const EmployerListingCardComponent = props => {
   );
 
   const scheduleTypeOptions = findOptionsForSelectFilter('scheduleType', filtersConfig) || [];
-  const scheduleTypeLabel =
-    scheduleType && scheduleTypeOptions.find(option => option.key === scheduleType).label;
+  const scheduleTypeLabel = scheduleTypeOptions?.find(option => option.key === scheduleType).label;
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: isMobile ? '100%' : '60rem',
