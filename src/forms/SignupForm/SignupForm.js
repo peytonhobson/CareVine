@@ -24,7 +24,6 @@ const newListingId = '00000000-0000-0000-0000-000000000000';
 const SignupFormComponent = props => (
   <FinalForm
     {...props}
-    initialValues={{ userType: 'employer' }}
     render={fieldRenderProps => {
       const {
         rootClassName,
