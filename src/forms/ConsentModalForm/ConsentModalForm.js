@@ -31,7 +31,7 @@ const ConsentModalForm = props => (
         currentUser.attributes.profile.metadata.authenticateConsent;
 
       const handleScroll = e => {
-        if (e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight) {
+        if (e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 30) {
           setScrollAtBottom(true);
           textWrapper.current.style.border = '3px solid var(--successColor)';
         } else if (scrollAtBottom) {
