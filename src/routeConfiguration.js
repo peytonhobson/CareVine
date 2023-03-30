@@ -205,6 +205,13 @@ const routeConfiguration = () => {
       component: InboxPage,
     },
     {
+      path: '/inbox/:channel',
+      name: 'InboxPageWithChannel',
+      auth: true,
+      authPage: 'LoginPage',
+      component: InboxPage,
+    },
+    {
       path: '/account',
       name: 'AccountSettingsPage',
       auth: true,
