@@ -1,0 +1,55 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  width: 100%;
+  padding-inline: 3rem;
+  margin-top: 15%;
+
+  @media (--viewportMedium) {
+    width: 40rem;
+    padding-inline: 0;
+    margin-top: 3%;
+  }
+}
+
+.email {
+  @media (--viewportMedium) {
+    width: 50%;
+  }
+}
+
+.description {
+  margin-top: 3rem;
+  padding-inline: 0;
+  width: calc(100% - 1rem);
+
+  & > label {
+    margin: 0;
+  }
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.submitButton {
+  width: auto;
+  min-height: 0;
+
+  padding: 1rem 6rem;
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.characterLabel {
+  display: block;
+
+  @media (--viewportMedium) {
+    display: inline;
+  }
+}

@@ -23,7 +23,7 @@ module.exports = (req, res) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
     to: 'feedback@carevine.us',
-    from: 'support@carevine.us',
+    from: 'admin-notification@carevine.us',
     subject: 'Feedback from Carevine App',
     html: `<div>
         <p>Device Type: ${deviceType}</p>

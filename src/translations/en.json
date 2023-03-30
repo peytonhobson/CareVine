@@ -220,6 +220,7 @@
   "ContactDetailsForm.tooManyVerificationRequests": "Too many email verification requests sent.",
   "ContactDetailsPage.heading": "Contact details",
   "ContactDetailsPage.title": "Contact details",
+  "ContactUsPage.sendContactEmailError": "Failed to send message. Please try again.",
   "CookieConsent.continue": "Continue",
   "CookieConsent.cookieLink": "cookies",
   "CookieConsent.message": "Welcome to CareVine, friend! We use {cookieLink} to enhance your browsing experience.",

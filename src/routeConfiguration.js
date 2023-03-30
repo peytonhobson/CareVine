@@ -32,6 +32,7 @@ const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfSe
 const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "SubscriptionPage" */ './containers/SubscriptionsPage/SubscriptionsPage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
+const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -66,6 +67,11 @@ const routeConfiguration = () => {
       path: '/about',
       name: 'AboutPage',
       component: AboutPage,
+    },
+    {
+      path: '/contact-us',
+      name: 'ContactUsPage',
+      component: ContactUsPage,
     },
     {
       path: '/create-profile/:slug/:id/:type/:tab',

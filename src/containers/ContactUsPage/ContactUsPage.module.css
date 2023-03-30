@@ -1,0 +1,79 @@
+@import '../../styles/customMediaQueries.css';
+
+.mainTitle {
+  font-weight: var(--fontWeightBold);
+  font-size: 60px;
+  line-height: 60px;
+  letter-spacing: -0.7px;
+
+  margin-top: 1.5rem;
+
+  width: 100%;
+  text-align: center;
+  background: -webkit-linear-gradient(
+    90deg,
+    var(--marketplaceColorLight) 50%,
+    var(--marketplaceColor)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  @media (--viewportMedium) {
+    font-size: 80px;
+    line-height: 80px;
+    letter-spacing: -1.5px;
+
+    margin-top: 25px;
+  }
+}
+
+.mainWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+
+  height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+  }
+}
+
+.iconConfirm {
+  margin-inline: auto;
+  margin-block: 1rem;
+}
+
+.confirmationContainer {
+  margin-top: 5%;
+  /* margin: auto; */
+}
+
+.confirmationText {
+  display: flex;
+  justify-content: center;
+  word-wrap: none;
+  white-space: nowrap;
+  font-size: 2rem;
+  line-height: 2.25rem;
+  animation: 2.5s fadeIn;
+  animation-fill-mode: forwards;
+  width: 100%;
+  text-align: center;
+  padding-inline: 2rem;
+
+  &.small {
+    font-size: 1rem;
+    width: auto;
+    word-wrap: break-word;
+    white-space: normal;
+    margin-top: 2rem;
+  }
+
+  @media (--viewportMedium) {
+    padding-inline: 0;
+  }
+}

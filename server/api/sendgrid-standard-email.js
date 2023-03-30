@@ -3,11 +3,11 @@ const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { receiverEmail, subject, html } = req.body;
+  const { fromEmail, receiverEmail, subject, html } = req.body;
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
-    from: 'no-reply@carevine.us',
+    from: fromEmail ?? 'no-reply@carevine.us',
     to: receiverEmail,
     subject,
     html,

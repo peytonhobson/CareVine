@@ -35,7 +35,7 @@ const AboutPage = () => {
         </LayoutWrapperTopbar>
 
         <LayoutWrapperMain className={css.staticPageWrapper}>
-          <h1 className={css.pageTitle}>Look for care or accelerate your career</h1>
+          <h1 className={css.pageTitle}>Look For Care or Accelerate Your Career</h1>
           <img className={css.coverImage} src={image} alt="My first ice cream." />
 
           <div className={css.contentWrapper}>
