@@ -17,6 +17,8 @@ import IconCheckmark from '../IconCheckmark/IconCheckmark';
 const BASIC = 'basic';
 const GOLD = 'gold';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const ScreeningDescription = props => {
   const { onPayForBC } = props;
 
@@ -33,7 +35,7 @@ const ScreeningDescription = props => {
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     display: 'flex',
-    width: '25rem',
+    width: isMobile ? '95%' : '48.5%',
     flexDirection: 'column',
     justifyContent: 'space-between',
   }));

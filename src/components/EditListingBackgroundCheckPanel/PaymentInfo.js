@@ -80,7 +80,7 @@ const PaymentInfo = props => {
       </div>
       {backgroundCheckType === GOLD && (
         <div className={css.promoContainer}>
-          <div>
+          <div style={{ width: '100%' }}>
             <label htmlFor="promo-code">Promo Code</label>
             <input
               className={css.promoInput}
