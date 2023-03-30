@@ -9,6 +9,7 @@ import SBConversation from '@sendbird/uikit-react/Channel';
 import '@sendbird/uikit-react/dist/index.css';
 import sendbirdSelectors from '@sendbird/uikit-react/sendbirdSelectors';
 import withSendbird from '@sendbird/uikit-react/withSendbird';
+import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 
 import CustomChannelPreview from './CustomChannelPreview';
 import CustomMessageItem from './CustomMessageItem';
@@ -45,9 +46,12 @@ const SendbirdApp = props => {
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentSuccess,
     updateLastMessage,
+    pathParams,
   } = props;
 
   const [currentChannelUrl, setCurrentChannelUrl] = useState('');
+
+  const channelContext = useSendbirdStateContext();
 
   const redirectToOwnProfile = () => {
     const pendingString =
@@ -75,6 +79,14 @@ const SendbirdApp = props => {
         otherUser,
       });
   }, [otherUser]);
+
+  useEffect(() => {
+    if (pathParams?.channel) {
+      setTimeout(() => {
+        setCurrentChannelUrl(pathParams.channel);
+      }, 500);
+    }
+  }, [pathParams]);
 
   const userEmail = currentUser.attributes.email;
   const renderTitle = (

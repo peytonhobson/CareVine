@@ -56,6 +56,7 @@ export const InboxPageComponent = props => {
     transitionToRequestPaymentError,
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentSuccess,
+    params,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -141,6 +142,7 @@ export const InboxPageComponent = props => {
                   transitionToRequestPaymentError={transitionToRequestPaymentError}
                   transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
                   transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
+                  pathParams={params}
                 />
               ) : (
                 <SendbirdApp
@@ -165,6 +167,7 @@ export const InboxPageComponent = props => {
                   transitionToRequestPaymentError={transitionToRequestPaymentError}
                   transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
                   transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
+                  pathParams={params}
                 />
               )}
             </SBProvider>
