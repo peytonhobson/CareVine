@@ -12,6 +12,10 @@ const SENDGRID_TEMPLATE_IDS = {
   'subscription-canceled': 'd-282d6dff340b4f8ba3c7cc3f40583725',
   'payment-expiring': 'd-77d689cbc3054d52ade077336ed14ac5',
   'payment-failed': 'd-f3f7c126303b4118a2b776be029d15e2',
+  'subscription-schedule-confirmed': 'd-05fec989fca84d4f870e1786a9377ce1',
+  'subscription-schedule-canceled': 'd-408b5788c9c8429ea66f077a2910669c',
+  'subscription-reactivated': 'd-000a9e879d4c47668276e57eb0a44ec6',
+  'subscription-upgraded': 'd-2779c5dca2a5486196bd6cb10fb8d279',
 };
 
 module.exports = (req, res) => {

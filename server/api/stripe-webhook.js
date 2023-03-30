@@ -62,6 +62,8 @@ const sendgridStandardEmail = (fromEmail, receiverEmail, subject, html) => {
 
 const updateBackgroundCheckSubscription = subscription => {
   const userId = subscription.metadata.userId;
+  const type =
+    subscription?.items?.data[0]?.price?.id === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic';
 
   let prevBackgroundCheckSubscription = null;
 
@@ -86,10 +88,7 @@ const updateBackgroundCheckSubscription = subscription => {
               // May set this to null if webhooks work
               status: subscription?.status,
               subscriptionId: subscription?.id,
-              type:
-                subscription?.items?.data[0]?.price?.id === CAREVINE_GOLD_PRICE_ID
-                  ? 'vine'
-                  : 'basic',
+              type,
               currentPeriodEnd: subscription?.current_period_end,
               amount: subscription?.plan?.amount,
               cancelAtPeriodEnd: subscription?.cancel_at_period_end,
@@ -104,14 +103,44 @@ const updateBackgroundCheckSubscription = subscription => {
       );
     })
     .then(() => {
-      if (
-        (prevBackgroundCheckSubscription?.status !== 'canceled' &&
-          subscription?.status === 'canceled') ||
-        (!prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancel_at_period_end)
-      ) {
+      const isReactivatingSubscription =
+        (prevBackgroundCheckSubscription?.status === 'canceled' ||
+          prevBackgroundCheckSubscription?.cancelAtPeriodEnd) &&
+        prevBackgroundCheckSubscription?.type === type &&
+        subscription?.status === 'active';
+
+      const isCanceling =
+        !prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancelAtPeriodEnd;
+
+      const isUpgrading = prevBackgroundCheckSubscription?.type === 'basic' && type === 'vine';
+
+      const isConfirming =
+        (!prevBackgroundCheckSubscription ||
+          !prevBackgroundCheckSubscription.status === 'incomplete') &&
+        subscription?.status === 'active';
+
+      if (isReactivatingSubscription) {
+        failStage = 'subscription-reactivated-email-failed';
+        // TODO: Add template data
+        sendgridEmail(userId, 'subscription-reactivated', {}, failStage);
+      }
+
+      if (isCanceling) {
         failStage = 'subscription-canceled-email-failed';
         // TODO: Implement template data
         sendgridEmail(userId, 'subscription-canceled', {}, failStage);
+      }
+
+      if (isUpgrading) {
+        failStage = 'subscription-upgraded-email-failed';
+        // TODO: Implement template data
+        sendgridEmail(userId, 'subscription-upgraded', {}, failStage);
+      }
+
+      if (isConfirming) {
+        failStage = 'subscription-confirmed-email-failed';
+        // TODO: Implement template data
+        sendgridEmail(userId, 'subscription-confirmed', {}, failStage);
       }
     })
     .catch(e => log.error(e, failStage));
@@ -119,6 +148,7 @@ const updateBackgroundCheckSubscription = subscription => {
 
 const updateBackgroundCheckSubscriptionSchedule = schedule => {
   const userId = schedule?.metadata?.userId;
+  const type = schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic';
 
   integrationSdk.users
     .updateProfile({
@@ -128,20 +158,25 @@ const updateBackgroundCheckSubscriptionSchedule = schedule => {
           scheduleId: schedule?.id,
           status: schedule?.status,
           startDate: schedule?.phases[0]?.start_date,
-          type: schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic',
+          type,
           amount: schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 499 : 1499,
         },
       },
     })
     .then(() => {
-      // TODO: Check if we want to send a separate email for this
-      // sendgridEmail(userId, 'subscription-schedule-confirmed', {});
+      sendgridEmail(
+        userId,
+        'subscription-schedule-confirmed',
+        { type },
+        'send-subscription-schedule-confirmed-email-failed'
+      );
     })
     .catch(e => log.error(e));
 };
 
 const cancelBackgroundCheckSubscriptionSchedule = schedule => {
   const userId = schedule?.metadata?.userId;
+  const type = schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic';
 
   integrationSdk.users
     .updateProfile({
@@ -151,8 +186,12 @@ const cancelBackgroundCheckSubscriptionSchedule = schedule => {
       },
     })
     .then(() => {
-      // TODO: Check if we want to send a separate email for this
-      // sendgridEmail(userId, 'subscription-schedule-canceled', {});
+      sendgridEmail(
+        userId,
+        'subscription-schedule-canceled',
+        { type },
+        'send-subscription-schedule-canceled-email-failed'
+      );
     })
     .catch(e => log.error(e, 'cancel-background-check-subscription-schedule-failed'));
 };
@@ -241,13 +280,13 @@ module.exports = (request, response) => {
       break;
     case 'subscription_schedule.canceled':
       console.log('subscription_schedule.canceled');
-      const susbcriptionScheduleCanceled = event.data.object;
-      cancelBackgroundCheckSubscriptionSchedule(susbcriptionScheduleCanceled);
+      const subscriptionScheduleCanceled = event.data.object;
+      cancelBackgroundCheckSubscriptionSchedule(subscriptionScheduleCanceled);
       break;
     case 'subscription_schedule.created':
       console.log('subscription_schedule.created');
-      const susbcriptionScheduleCreated = event.data.object;
-      updateBackgroundCheckSubscriptionSchedule(susbcriptionScheduleCreated);
+      const subscriptionScheduleCreated = event.data.object;
+      updateBackgroundCheckSubscriptionSchedule(subscriptionScheduleCreated);
       break;
     case 'charge.dispute.created':
       const disputeCreated = event.data.object;
