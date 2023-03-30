@@ -31,6 +31,7 @@ const ListingSummaryComponent = props => {
     isOwnListing,
     onOpenBookingModal,
     onBookNow,
+    onShowListingPreview,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -193,7 +194,13 @@ const ListingSummaryComponent = props => {
             <FormattedMessage id="ListingSummary.message" />
           </Button>
         </div>
-      ) : null}
+      ) : (
+        <div className={css.buttonContainer}>
+          <Button className={css.previewButton} onClick={onShowListingPreview}>
+            <FormattedMessage id="ListingSummary.viewPreview" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

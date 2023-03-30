@@ -10,6 +10,12 @@
   width: 100%;
   margin: 0 auto;
   padding: 3rem 0;
+
+  min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));
+
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop) - var(--userNavHeight));
+  }
 }
 
 .subContainer {
