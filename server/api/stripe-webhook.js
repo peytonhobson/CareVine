@@ -41,11 +41,12 @@ const sendgridEmail = (receiverId, templateName, templateData, failMessage) => {
     .catch(e => log.error(e, failMessage, {}));
 };
 
-const sendgridStandardEmail = (receiverEmail, subject, html) => {
+const sendgridStandardEmail = (fromEmail, receiverEmail, subject, html) => {
   axios
     .post(
       `${apiBaseUrl()}/api/sendgrid-standard-email`,
       {
+        fromEmail,
         receiverEmail,
         subject,
         html,
@@ -251,6 +252,7 @@ module.exports = (request, response) => {
     case 'charge.dispute.created':
       const disputeCreated = event.data.object;
       sendgridStandardEmail(
+        'admin-notification@carevine.us',
         'peyton.hobson@carevine.us',
         'Dispute Created',
         JSON.stringify(disputeCreated)
