@@ -239,7 +239,7 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName) => (
+export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, channelUrl) => (
   dispatch,
   getState,
   sdk
@@ -267,6 +267,10 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
       isCard,
       description: `Payment to ${caregiverName}`,
       sender,
+      metadata: {
+        channelUrl,
+        recipientName: caregiverName,
+      },
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
@@ -280,6 +284,10 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
           isCard,
           description: `Payment to ${caregiverName}`,
           sender,
+          metadata: {
+            channelUrl,
+            recipientName: caregiverName,
+          },
         });
       })
       .then(res => {
