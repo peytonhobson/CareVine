@@ -327,7 +327,7 @@ const CustomChannelPreview = ({
         >
           <TextButton
             onClick={() => {
-              channel.leave();
+              channel.delete();
               setShowMobileLeave(false);
             }}
             className="sendbird-channel-preview__leave-label--mobile"

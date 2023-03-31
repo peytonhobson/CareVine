@@ -328,8 +328,6 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
   const currentAuthorId = currentAuthor.id.uuid;
   const currentUserId = currentUser.id.uuid;
 
-  console.log(currentAuthor);
-
   const params = {
     appId: process.env.REACT_APP_SENDBIRD_APP_ID,
     modules: [new GroupChannelModule()],
@@ -359,6 +357,8 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           // console.log(e);
         }
 
+        console.log('past 1st');
+
         if (!channel) {
           CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
           try {
@@ -369,12 +369,13 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           }
         }
 
+        console.log('past 2nd', channel);
+
         if (!channel) {
           const channelParams = {
             invitedUserIds: [currentUserId, currentAuthorId],
             channelUrl: CHANNEL_URL,
           };
-          console.log('new');
           try {
             channel = await sb.groupChannel.createChannel(channelParams);
           } catch (e) {

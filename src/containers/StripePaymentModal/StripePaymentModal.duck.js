@@ -340,7 +340,7 @@ export const transitionTransaction = (otherUserListing, transition) => (
   getState,
   sdk
 ) => {
-  const listingId = otherUserListing && otherUserListing.id.uuid;
+  const listingId = otherUserListing?.id?.uuid;
 
   const bodyParams = {
     transition,
