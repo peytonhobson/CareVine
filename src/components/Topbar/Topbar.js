@@ -71,12 +71,42 @@ GenericError.propTypes = {
 class TopbarComponent extends Component {
   constructor(props) {
     super(props);
+
+    this.state = { started: false };
+
     this.handleMobileMenuOpen = this.handleMobileMenuOpen.bind(this);
     this.handleMobileMenuClose = this.handleMobileMenuClose.bind(this);
     this.handleMobileSearchOpen = this.handleMobileSearchOpen.bind(this);
     this.handleMobileSearchClose = this.handleMobileSearchClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  componentDidMount() {
+    const { currentUser } = this.props;
+    const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
+
+    if (sbAccessToken) {
+      this.props.onFetchUnreadMessages();
+      this.unreadMessagePolling = setInterval(() => {
+        this.props.onFetchUnreadMessages();
+      }, 10000);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const sbAccessToken = this.props.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
+
+    if (sbAccessToken && !this.unreadMessagePolling) {
+      this.props.onFetchUnreadMessages();
+      this.unreadMessagePolling = setInterval(() => {
+        this.props.onFetchUnreadMessages();
+      }, 10000);
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.unreadMessagePolling);
   }
 
   handleMobileMenuOpen() {
@@ -156,6 +186,7 @@ class TopbarComponent extends Component {
       showGenericError,
       modalValue,
       onChangeModalValue,
+      unreadMessages,
     } = this.props;
 
     const { mobilemenu, mobilesearch, address, origin, bounds } = parse(location.search, {
@@ -180,6 +211,7 @@ class TopbarComponent extends Component {
         notificationCount={notificationCount}
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
+        unreadMessages={unreadMessages}
       />
     );
 
@@ -251,6 +283,7 @@ class TopbarComponent extends Component {
               onLogout={this.handleLogout}
               onSearchSubmit={this.handleSubmit}
               onChangeModalValue={onChangeModalValue}
+              unreadMessages={unreadMessages}
             />
           </div>
         )}

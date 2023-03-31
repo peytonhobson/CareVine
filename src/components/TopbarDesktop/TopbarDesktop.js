@@ -15,6 +15,7 @@ import {
   NamedLink,
   ListingLink,
   OwnListingLink,
+  NotificationBadge,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
@@ -43,6 +44,7 @@ const TopbarDesktop = props => {
     onSearchSubmit,
     initialSearchFormValues,
     onChangeModalValue,
+    unreadMessages,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -77,14 +79,21 @@ const TopbarDesktop = props => {
       </NamedLink>
     ) : null;
 
-  const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
+  const notificationCountBadge =
+    unreadMessages > 0 ? (
+      <NotificationBadge className={css.notificationBadge} count={unreadMessages} />
+    ) : null;
 
   const inboxLink = authenticatedOnClientSide ? (
     userCanMessage(currentUser) ? (
-      <NamedLink className={css.regularLink} name="InboxPage" params={{ tab: 'messages' }}>
+      <NamedLink
+        className={classNames(css.regularLink, css.inboxLink)}
+        name="InboxPage"
+        params={{ tab: 'messages' }}
+      >
         <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />
-          {notificationDot}
+          {notificationCountBadge}
         </span>
       </NamedLink>
     ) : (
@@ -94,7 +103,7 @@ const TopbarDesktop = props => {
       >
         <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />
-          {notificationDot}
+          {notificationCountBadge}
         </span>
       </span>
     )
