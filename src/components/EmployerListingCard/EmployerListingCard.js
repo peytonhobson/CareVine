@@ -137,7 +137,7 @@ export const EmployerListingCardComponent = props => {
   );
 
   const scheduleTypeOptions = findOptionsForSelectFilter('scheduleType', filtersConfig) || [];
-  const scheduleTypeLabel = scheduleTypeOptions?.find(option => option.key === scheduleType).label;
+  const scheduleTypeLabel = scheduleTypeOptions?.find(option => option.key === scheduleType)?.label;
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: isMobile ? '100%' : '60rem',
