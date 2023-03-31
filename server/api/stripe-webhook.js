@@ -6,6 +6,7 @@ const CAREVINE_GOLD_PRICE_ID =
     ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
 const axios = require('axios');
+const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -197,18 +198,22 @@ const cancelBackgroundCheckSubscriptionSchedule = schedule => {
 };
 
 const sendChargeFailedEmail = data => {
-  const feeAmount = Number.parseFloat(data?.application_fee_amount / 100).toFixed(2);
-  const amount = Number.parseFloat(data?.amount / 100 - feeAmount).toFixed(2);
+  // const feeAmount = Number.parseFloat(data?.application_fee_amount / 100).toFixed(2);
+  // const amount = Number.parseFloat(data?.amount / 100 - feeAmount).toFixed(2);
   const failureMessage = data?.failure_message;
-  const description = data?.description;
-  const userId = data?.metadata?.userId;
   const type = data?.payment_method_details?.type;
+  const { recipientName, channelUrl, userId } = data?.metadata;
 
   if (type !== 'card') {
     sendgridEmail(
       userId,
       'payment-failed',
-      { feeAmount, amount, failureMessage, description },
+      {
+        marketplaceUrl: rootUrl,
+        failureMessage,
+        channelUrl,
+        recipientName,
+      },
       'send-payment-failed-email-failed'
     );
   }

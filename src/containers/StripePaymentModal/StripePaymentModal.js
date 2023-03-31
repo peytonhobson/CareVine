@@ -116,7 +116,14 @@ const StripePaymentModalComponent = props => {
 
     const providerName = userDisplayNameAsString(provider);
 
-    onCreatePaymentIntent(amount?.amount, provider?.id, currentUser, isCard, providerName);
+    onCreatePaymentIntent(
+      amount?.amount,
+      provider?.id,
+      currentUser,
+      isCard,
+      providerName,
+      channelUrl
+    );
   };
 
   const onHandlePaymentSubmit = (
@@ -434,8 +441,10 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName) =>
-    dispatch(createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName)),
+  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, channelUrl) =>
+    dispatch(
+      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, channelUrl)
+    ),
   onConfirmPayment: (
     stripe,
     elements,

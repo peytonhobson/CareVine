@@ -79,9 +79,11 @@ const NotifyForPaymentContainer = props => {
           values={{ providerName }}
         />
       </p>
-      <p className={css.notifyDisabledMessage}>
-        <FormattedMessage id="NotifyForPaymentContainer.notifyDisabledMessage" />
-      </p>
+      {notifiedInLastDay && (
+        <p className={css.notifyDisabledMessage}>
+          <FormattedMessage id="NotifyForPaymentContainer.notifyDisabledMessage" />
+        </p>
+      )}
       <div className={css.notifyButtonWrapper}>
         <Button
           disabled={notifyButtonDisabled}
