@@ -416,7 +416,7 @@ module.exports = queryEvents = () => {
             {
               receiverId: userId,
               templateName: 'background-check-rejected',
-              templateData: {},
+              templateData: { marketplaceUrl: rootURL },
             },
             {
               headers: {
