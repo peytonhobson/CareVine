@@ -16,7 +16,7 @@ import employerInquiryMessage from '../../assets/employer-inquiry-message.png';
 import css from './SectionHowItWorks.module.css';
 
 const buttonGroupOptions = [
-  { key: CAREGIVER, label: 'Find a job' },
+  { key: CAREGIVER, label: 'Become a Caregiver' },
   { key: EMPLOYER, label: 'Hire a caregiver' },
 ];
 

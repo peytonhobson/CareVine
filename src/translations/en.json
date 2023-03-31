@@ -1085,7 +1085,7 @@
   "SendbirdModal.heading": "Send a message to {displayName}",
   "SendMessageForm.sendFailed": "Failed to send. Please try again.",
   "SendMessageForm.sendMessage": "Send message",
-  "SignupForm.caregiverSelectLabel": "Find a job",
+  "SignupForm.caregiverSelectLabel": "Become a caregiver",
   "SignupForm.caregiverSelectValue": "caregiver",
   "SignupForm.emailInvalid": "A valid email address is required",
   "SignupForm.emailLabel": "Email",

@@ -9,7 +9,7 @@ import { NamedRedirect, ButtonGroup, GradientButton } from '../../components';
 import css from './UserTypePage.module.css';
 
 const userTypeOptions = [
-  { key: 'caregiver', label: 'Find a job' },
+  { key: 'caregiver', label: 'Become a caregiver' },
   { key: 'employer', label: 'Look for care' },
 ];
 
