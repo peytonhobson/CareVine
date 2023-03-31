@@ -342,7 +342,7 @@ module.exports = queryEvents = () => {
                   // TODO: test this with error handling
                   axios
                     .post(
-                      `${apiBaseUrl()}/api/sendgrid-template-emai`,
+                      `${apiBaseUrl()}/api/sendgrid-template-email`,
                       {
                         receiverId: userId,
                         templateName: 'listing-closed',

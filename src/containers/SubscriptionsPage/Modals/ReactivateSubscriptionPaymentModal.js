@@ -39,6 +39,8 @@ const ReactivateSubscriptionPaymentModal = props => {
   const inProgress =
     createSubscriptionInProgress || updateSubscriptionInProgress || cancelSubscriptionInProgress;
 
+  const isUpgrading = bcType === BASIC && bcStatus === 'active' && !cancelAtPeriodEnd;
+
   return (
     <Modal
       id="reactivateSubscriptionPaymentModal"
@@ -49,7 +51,7 @@ const ReactivateSubscriptionPaymentModal = props => {
       usePortal
     >
       <p className={css.modalTitle}>
-        {bcType === BASIC && bcStatus === 'active' && !cancelAtPeriodEnd ? (
+        {isUpgrading ? (
           <FormattedMessage id="SubscriptionsPage.upgradeSubscriptionModalTitle" />
         ) : (
           <FormattedMessage id="SubscriptionsPage.reactivateSubscriptionModalTitle" />
@@ -84,7 +86,7 @@ const ReactivateSubscriptionPaymentModal = props => {
         </p>
       )}
       <Button inProgress={inProgress} onClick={handleReactivateSubscription}>
-        Reactivate
+        {isUpgrading ? 'Upgrade' : 'Reactivate'}
       </Button>
     </Modal>
   );

@@ -123,25 +123,26 @@ const updateBackgroundCheckSubscription = subscription => {
       if (isReactivatingSubscription) {
         failStage = 'subscription-reactivated-email-failed';
         // TODO: Add template data
-        sendgridEmail(userId, 'subscription-reactivated', {}, failStage);
+        sendgridEmail(userId, 'subscription-reactivated', { marketplaceUrl: rootUrl }, failStage);
       }
 
       if (isCanceling) {
         failStage = 'subscription-canceled-email-failed';
         // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-canceled', {}, failStage);
+        sendgridEmail(userId, 'subscription-canceled', { marketplaceUrl: rootUrl }, failStage);
       }
 
       if (isUpgrading) {
         failStage = 'subscription-upgraded-email-failed';
         // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-upgraded', {}, failStage);
+        console.log('upgrade email');
+        sendgridEmail(userId, 'subscription-upgraded', { marketplaceUrl: rootUrl }, failStage);
       }
 
       if (isConfirming) {
         failStage = 'subscription-confirmed-email-failed';
         // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-confirmed', {}, failStage);
+        sendgridEmail(userId, 'subscription-confirmed', { marketplaceUrl: rootUrl }, failStage);
       }
     })
     .catch(e => log.error(e, failStage));
@@ -243,11 +244,6 @@ module.exports = (request, response) => {
       const customerSubscriptionCreated = event.data.object;
       // console.log(customerSubscriptionCreated);
       updateBackgroundCheckSubscription(customerSubscriptionCreated);
-      break;
-    case 'customer.subscription.deleted':
-      console.log('customer.subscription.deleted');
-      const customerSubscriptionDeleted = event.data.object;
-      updateBackgroundCheckSubscription(customerSubscriptionDeleted);
       break;
     case 'customer.subscription.paused':
       console.log('customer.subscription.paused');
