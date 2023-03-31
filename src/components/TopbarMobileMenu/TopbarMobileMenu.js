@@ -37,6 +37,7 @@ const TopbarMobileMenu = props => {
     notificationCount,
     onLogout,
     onChangeModalValue,
+    unreadMessages,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -89,10 +90,10 @@ const TopbarMobileMenu = props => {
     </NamedLink>
   ) : null;
 
-  // const notificationCountBadge =
-  //   notificationCount > 0 ? (
-  //     <NotificationBadge className={css.notificationBadge} count={notificationCount} />
-  //   ) : null;
+  const notificationCountBadge =
+    unreadMessages > 0 ? (
+      <NotificationBadge className={css.notificationBadge} count={unreadMessages} />
+    ) : null;
 
   const displayName = user.attributes.profile.firstName;
   const currentPageClass = page => {
@@ -138,7 +139,7 @@ const TopbarMobileMenu = props => {
             params={{ tab: 'messages' }}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {/* {notificationCountBadge} */}
+            {notificationCountBadge}
           </NamedLink>
         ) : (
           <span
@@ -146,7 +147,7 @@ const TopbarMobileMenu = props => {
             onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {/* {notificationCountBadge} */}
+            {notificationCountBadge}
           </span>
         )}
         {listingLink}

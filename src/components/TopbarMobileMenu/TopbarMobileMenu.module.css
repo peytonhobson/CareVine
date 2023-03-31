@@ -101,7 +101,7 @@
 
 .notificationBadge {
   position: absolute;
-  top: 4px;
+  top: 2px;
   right: -26px;
 
   /* This is inside a link - remove underline */

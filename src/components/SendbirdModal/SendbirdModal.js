@@ -76,11 +76,14 @@ const SendbirdModal = props => {
       const currentAuthorId = currentAuthor?.id?.uuid;
       const senderName = userDisplayNameAsString(currentUser);
 
-      // TODO: Change template data
       if (messages?.length < 1) {
         sendgridTemplateEmail({
           receiverId: currentAuthorId,
-          templateData: {},
+          templateData: {
+            marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+            senderName,
+            channelUrl: messageChannel.url,
+          },
           templateName: 'new-message',
         });
       }

@@ -184,6 +184,10 @@
   }
 }
 
+.inboxLink {
+  margin-right: 1rem;
+}
+
 .linkText {
   composes: topbarDesktopLabel;
   position: relative;

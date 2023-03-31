@@ -7,7 +7,7 @@ import { propTypes } from '../../util/types';
 import { sendVerificationEmail, hasCurrentUserErrors } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/Auth.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
-import { changeModalValue } from './TopbarContainer.duck';
+import { changeModalValue, fetchUnreadMessages } from './TopbarContainer.duck';
 import { Topbar } from '../../components';
 
 export const TopbarContainerComponent = props => {
@@ -33,6 +33,7 @@ export const TopbarContainerComponent = props => {
     onResendVerificationEmail,
     modalValue,
     onChangeModalValue,
+    onFetchUnreadMessages,
     ...rest
   } = props;
 
@@ -59,6 +60,7 @@ export const TopbarContainerComponent = props => {
       showGenericError={hasGenericError}
       modalValue={modalValue}
       onChangeModalValue={onChangeModalValue}
+      onFetchUnreadMessages={onFetchUnreadMessages}
       {...rest}
     />
   );
@@ -108,7 +110,7 @@ const mapStateToProps = state => {
   // Topbar needs isAuthenticated
   const { isAuthenticated, logoutError, authScopes } = state.Auth;
 
-  const { modalValue } = state.TopbarContainer;
+  const { modalValue, unreadMessages } = state.TopbarContainer;
 
   // Topbar needs user info.
   const {
@@ -136,6 +138,7 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
     hasGenericError,
     modalValue,
+    unreadMessages,
   };
 };
 
@@ -145,6 +148,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onChangeModalValue: value => dispatch(changeModalValue(value)),
+  onFetchUnreadMessages: () => dispatch(fetchUnreadMessages()),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
