@@ -33,9 +33,13 @@ export const ContactUsPageComponent = props => {
   } = props;
 
   const showContactForm = useMemo(() => {
-    const lastMessageTime = localStorage.getItem('carevineLastContactMessage');
-    console.log(lastMessageTime);
-    return !sendContactEmailSuccess && lastMessageTime < Date.now() - 1000 * 60 * 60 * 24;
+    if (typeof window !== 'undefined') {
+      // Perform localStorage action
+      const lastMessageTime = localStorage.getItem('carevineLastContactMessage');
+      return !sendContactEmailSuccess && lastMessageTime < Date.now() - 1000 * 60 * 60 * 24;
+    }
+
+    return null;
   }, [sendContactEmailSuccess]);
 
   const user = ensureCurrentUser(currentUser);
