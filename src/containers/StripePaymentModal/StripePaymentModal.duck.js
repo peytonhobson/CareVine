@@ -335,7 +335,7 @@ export const sendNotifyForPayment = (
     });
 };
 
-export const transitionTransaction = (otherUserListing, transition) => (
+export const transitionTransaction = (otherUserListing, transition, params) => (
   dispatch,
   getState,
   sdk
@@ -345,7 +345,10 @@ export const transitionTransaction = (otherUserListing, transition) => (
   const bodyParams = {
     transition,
     processAlias: config.singleActionProcessAlias,
-    params: { listingId },
+    params: {
+      listingId,
+      ...params,
+    },
   };
   return sdk.transactions
     .initiate(bodyParams)
