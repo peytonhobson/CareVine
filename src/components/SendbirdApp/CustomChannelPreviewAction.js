@@ -85,7 +85,7 @@ export default function ChannelPreviewAction({ channel, disabled }) {
           channel={channel}
           onSubmit={() => {
             setShowModal(false);
-            channel.leave();
+            channel.delete();
           }}
           onCancel={() => setShowModal(false)}
         />

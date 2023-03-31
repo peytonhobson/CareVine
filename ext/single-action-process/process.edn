@@ -16,13 +16,13 @@
  [{:name :notification/payment-details-notification,
    :on :transition/notify-for-payment,
    :to :actor.role/provider,
-   :template :money-paid},
+   :template :payment-received},
    {:name :notification/payment-requested,
    :on :transition/request-payment,
    :to :actor.role/provider,
-   :template :money-paid},
+   :template :payment-received},
    {:name :notification/payment-confirmed,
    :on :transition/confirm-payment,
    :to :actor.role/provider,
-   :template :money-paid}
+   :template :payment-received}
    ]}

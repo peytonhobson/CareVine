@@ -45,7 +45,7 @@ const AvailabilityPreview = props => {
   const daysInSchedule = weekdayAbbreviations.filter(day =>
     entries
       ? entries?.find(entry => entry?.dayOfWeek === day.key || entry === day.key)
-      : availableDays.includes(day.key)
+      : availableDays?.includes(day.key)
   );
 
   return (
