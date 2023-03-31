@@ -268,15 +268,19 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
     });
 };
 
-export const transitionToRequestPayment = otherUserListing => (dispatch, getState, sdk) => {
+export const transitionToRequestPayment = (otherUserListing, channelUrl) => (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(transitionToRequestPaymentRequest());
 
-  const listingId = otherUserListing && otherUserListing.id.uuid;
+  const listingId = otherUserListing?.id?.uuid;
 
   const bodyParams = {
     transition: TRANSITION_REQUEST_PAYMENT,
     processAlias: config.singleActionProcessAlias,
-    params: { listingId },
+    params: { listingId, protectedData: { channelUrl } },
   };
   return sdk.transactions
     .initiate(bodyParams)
@@ -358,7 +362,7 @@ export const sendRequestForPayment = (
             channel,
           });
           dispatch(sendRequestForPaymentSuccess());
-          dispatch(transitionToRequestPayment(otherUserListing));
+          dispatch(transitionToRequestPayment(otherUserListing, channelUrl));
         });
       });
     })

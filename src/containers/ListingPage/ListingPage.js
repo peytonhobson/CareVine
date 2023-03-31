@@ -170,8 +170,7 @@ export class ListingPageComponent extends Component {
       userType === CAREGIVER
         ? emailVerified &&
           backgroundCheckApproved?.status &&
-          backgroundCheckSubscription?.status === 'active' &&
-          stripeAccount
+          backgroundCheckSubscription?.status === 'active'
         : emailVerified;
 
     if (!currentUser) {
@@ -191,7 +190,7 @@ export class ListingPageComponent extends Component {
       // 2) doesnt have a subcription but everythings approved
       // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
       if (userType === CAREGIVER) {
-        if (emailVerified && backgroundCheckApproved?.status && stripeAccount) {
+        if (emailVerified && backgroundCheckApproved?.status) {
           this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
         } else {
           this.props.onChangeModalValue(MISSING_REQUIREMENTS);
