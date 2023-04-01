@@ -98,7 +98,7 @@ const TopbarDesktop = props => {
       </NamedLink>
     ) : (
       <span
-        className={css.regularLink}
+        className={classNames(css.regularLink, css.inboxLink)}
         onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
       >
         <span className={css.linkText}>
