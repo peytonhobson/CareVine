@@ -472,7 +472,7 @@ module.exports = queryEvents = () => {
       const lastEvent = events?.length ? events[events?.length - 1] : null;
       const lastSequenceId = lastEvent ? lastEvent.attributes?.sequenceId : sequenceId;
 
-      events.forEach(e => {
+      events?.forEach(e => {
         handleEvent(e);
       });
 

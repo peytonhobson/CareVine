@@ -121,17 +121,22 @@ const updateBackgroundCheckSubscription = subscription => {
           !prevBackgroundCheckSubscription.status === 'incomplete') &&
         subscription?.status === 'active';
 
+      const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
+      const endDate = moment(subscription?.current_period_end * 1000).format('MM/DD/YYYY');
+
       if (isReactivatingSubscription) {
         failStage = 'subscription-reactivated-email-failed';
-        // TODO: Add template data
-        sendgridEmail(userId, 'subscription-reactivated', { marketplaceUrl: rootUrl }, failStage);
+        sendgridEmail(
+          userId,
+          'subscription-reactivated',
+          { marketplaceUrl: rootUrl, subscriptionName, renewalDate: endDate },
+          failStage
+        );
       }
 
       if (isCanceling) {
         failStage = 'subscription-canceled-email-failed';
 
-        const endDate = moment(subscription?.current_period_end * 1000).format('MM/DD/YYYY');
-        const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
         sendgridEmail(
           userId,
           'subscription-canceled',
@@ -149,8 +154,12 @@ const updateBackgroundCheckSubscription = subscription => {
 
       if (isConfirming) {
         failStage = 'subscription-confirmed-email-failed';
-        // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-confirmed', { marketplaceUrl: rootUrl }, failStage);
+        sendgridEmail(
+          userId,
+          'subscription-confirmed',
+          { marketplaceUrl: rootUrl, subscriptionName, renewalDate: endDate },
+          failStage
+        );
       }
     })
     .catch(e => log.error(e, failStage));
@@ -159,6 +168,7 @@ const updateBackgroundCheckSubscription = subscription => {
 const updateBackgroundCheckSubscriptionSchedule = schedule => {
   const userId = schedule?.metadata?.userId;
   const type = schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic';
+  const startDate = schedule?.phases[0]?.start_date;
 
   integrationSdk.users
     .updateProfile({
@@ -167,17 +177,24 @@ const updateBackgroundCheckSubscriptionSchedule = schedule => {
         backgroundCheckSubscriptionSchedule: {
           scheduleId: schedule?.id,
           status: schedule?.status,
-          startDate: schedule?.phases[0]?.start_date,
+          startDate,
           type,
           amount: schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 499 : 1499,
         },
       },
     })
     .then(() => {
+      const newSubscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
+      const oldSubscriptionName = type === 'vine' ? 'Carevine Basic' : 'Carevine Gold';
       sendgridEmail(
         userId,
         'subscription-schedule-confirmed',
-        { type },
+        {
+          marketplaceUrl: rootUrl,
+          newSubscriptionName,
+          oldSubscriptionName,
+          startDate: moment(startDate * 1000).format('MM/DD/YYYY'),
+        },
         'send-subscription-schedule-confirmed-email-failed'
       );
     })
@@ -266,7 +283,6 @@ module.exports = (request, response) => {
     case 'customer.subscription.updated':
       console.log('customer.subscription.updated');
       const customerSubscriptionUpdated = event.data.object;
-      // console.log(customerSubscriptionUpdated);
       if (
         customerSubscriptionUpdated.status !== 'incomplete_expired' ||
         customerSubscriptionUpdated.status !== 'incomplete'
