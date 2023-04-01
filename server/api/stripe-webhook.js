@@ -7,6 +7,7 @@ const CAREVINE_GOLD_PRICE_ID =
     : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
 const axios = require('axios');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
+const moment = require('moment');
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -111,7 +112,7 @@ const updateBackgroundCheckSubscription = subscription => {
         subscription?.status === 'active';
 
       const isCanceling =
-        !prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancelAtPeriodEnd;
+        !prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancel_at_period_end;
 
       const isUpgrading = prevBackgroundCheckSubscription?.type === 'basic' && type === 'vine';
 
@@ -128,8 +129,15 @@ const updateBackgroundCheckSubscription = subscription => {
 
       if (isCanceling) {
         failStage = 'subscription-canceled-email-failed';
-        // TODO: Implement template data
-        sendgridEmail(userId, 'subscription-canceled', { marketplaceUrl: rootUrl }, failStage);
+
+        const endDate = moment(subscription?.current_period_end * 1000).format('MM/DD/YYYY');
+        const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
+        sendgridEmail(
+          userId,
+          'subscription-canceled',
+          { marketplaceUrl: rootUrl, endDate, subscriptionName },
+          failStage
+        );
       }
 
       if (isUpgrading) {
