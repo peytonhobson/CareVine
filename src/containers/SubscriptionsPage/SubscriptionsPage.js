@@ -250,29 +250,21 @@ const SubscriptionsPageComponent = props => {
          * we need to cancel the current subscription immediately and create a new one.
          */
         if (isReactivateSubscriptionPaymentModalOpen === BASIC) {
-          const updateParams = {
-            cancel_at_period_end: true,
-          };
-
-          onUpdateSubscription(backgroundCheckSubscription.subscriptionId, updateParams).then(
-            () => {
-              onCreateFutureSubscription(
-                stripeCustomerId,
-                backgroundCheckSubscription.currentPeriodEnd + 1000,
-                priceId,
-                ensuredCurrentUser.id.uuid
-              )
-                .then(() => {
-                  setFetchingUserInterval(
-                    setInterval(() => {
-                      onFetchCurrentUser();
-                    }, 300)
-                  );
-                  setIsReactivateSubscriptionPaymentModalOpen(false);
-                })
-                .catch(e => console.log(e));
-            }
-          );
+          onCreateFutureSubscription(
+            stripeCustomerId,
+            backgroundCheckSubscription.currentPeriodEnd + 1000,
+            priceId,
+            ensuredCurrentUser.id.uuid
+          )
+            .then(() => {
+              setFetchingUserInterval(
+                setInterval(() => {
+                  onFetchCurrentUser();
+                }, 300)
+              );
+              setIsReactivateSubscriptionPaymentModalOpen(false);
+            })
+            .catch(e => console.log(e));
         } else {
           const params = { default_payment_method: cardId, cancel_at_period_end: false };
 
