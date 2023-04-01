@@ -109,20 +109,17 @@ const SubscriptionsPageComponent = props => {
     isReactivateSubscriptionPaymentModalOpen,
     setIsReactivateSubscriptionPaymentModalOpen,
   ] = useState(false);
-  const [fetchingUser, setFetchingUser] = useState(false);
+  const [fetchingUserInterval, setFetchingUserInterval] = useState(false);
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const card =
-    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
+  const card = defaultPaymentMethods?.card?.card;
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
   const backgroundCheckSubscription =
-    ensuredCurrentUser.attributes.profile.metadata &&
-    ensuredCurrentUser.attributes.profile.metadata.backgroundCheckSubscription;
+    ensuredCurrentUser.attributes.profile.metadata?.backgroundCheckSubscription;
   const backgroundCheckSubscriptionSchedule =
-    ensuredCurrentUser.attributes.profile.privateData &&
-    ensuredCurrentUser.attributes.profile.privateData.backgroundCheckSubscriptionSchedule;
+    ensuredCurrentUser.attributes.profile.privateData?.backgroundCheckSubscriptionSchedule;
 
   const handleCardSubmit = params => {
     setIsSubmitting(true);
@@ -198,17 +195,27 @@ const SubscriptionsPageComponent = props => {
       break;
   }
 
+  useEffect(() => {
+    if (fetchingUserInterval) {
+      clearInterval(fetchingUserInterval);
+      setFetchingUserInterval(null);
+    }
+  }, [
+    backgroundCheckSubscription?.cancelAtPeriodEnd,
+    backgroundCheckSubscription?.status,
+    backgroundCheckSubscriptionSchedule?.status,
+  ]);
+
   // Set subscription to cancel at period end
   const handleCancelSubscription = () => {
     if (bcStatus === 'active' || bcStatus === 'past_due') {
       const params = { cancel_at_period_end: true };
       onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
-        setFetchingUser(true);
-        setTimeout(() => {
-          onFetchCurrentUser().then(() => {
-            setFetchingUser(false);
-          });
-        }, 1000);
+        setFetchingUserInterval(
+          setInterval(() => {
+            onFetchCurrentUser();
+          }, 300)
+        );
         setIsCancelSubscriptionModalOpen(false);
       });
     }
@@ -216,12 +223,11 @@ const SubscriptionsPageComponent = props => {
 
   const handleCancelFutureSubscription = () => {
     onCancelFutureSubscription(backgroundCheckSubscriptionSchedule.scheduleId).then(() => {
-      setFetchingUser(true);
-      setTimeout(() => {
-        onFetchCurrentUser().then(() => {
-          setFetchingUser(false);
-        });
-      }, 1000);
+      setFetchingUserInterval(
+        setInterval(() => {
+          onFetchCurrentUser();
+        }, 300)
+      );
       setIsCancelSubscriptionModalOpen(false);
     });
   };
@@ -257,13 +263,11 @@ const SubscriptionsPageComponent = props => {
                 ensuredCurrentUser.id.uuid
               )
                 .then(() => {
-                  setFetchingUser(true);
-                  setTimeout(() => {
-                    onFetchCurrentUser().then(() => {
-                      setFetchingUser(false);
-                    });
-                  }, 1000);
-
+                  setFetchingUserInterval(
+                    setInterval(() => {
+                      onFetchCurrentUser();
+                    }, 300)
+                  );
                   setIsReactivateSubscriptionPaymentModalOpen(false);
                 })
                 .catch(e => console.log(e));
@@ -280,13 +284,11 @@ const SubscriptionsPageComponent = props => {
               params,
               true
             ).then(() => {
-              setFetchingUser(true);
-              setTimeout(() => {
-                onFetchCurrentUser().then(() => {
-                  setFetchingUser(false);
-                });
-              }, 1000);
-
+              setFetchingUserInterval(
+                setInterval(() => {
+                  onFetchCurrentUser();
+                }, 300)
+              );
               setIsReactivateSubscriptionPaymentModalOpen(false);
             });
           });
@@ -294,12 +296,11 @@ const SubscriptionsPageComponent = props => {
       } else {
         const params = { cancel_at_period_end: false };
         onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
-          setFetchingUser(true);
-          setTimeout(() => {
-            onFetchCurrentUser().then(() => {
-              setFetchingUser(false);
-            });
-          }, 1000);
+          setFetchingUserInterval(
+            setInterval(() => {
+              onFetchCurrentUser();
+            }, 300)
+          );
           setIsReactivateSubscriptionPaymentModalOpen(false);
         });
       }
@@ -312,22 +313,20 @@ const SubscriptionsPageComponent = props => {
         params,
         true
       ).then(() => {
-        setFetchingUser(true);
-        setTimeout(() => {
-          onFetchCurrentUser().then(() => {
-            setFetchingUser(false);
-          });
-        }, 1000);
+        setFetchingUserInterval(
+          setInterval(() => {
+            onFetchCurrentUser();
+          }, 300)
+        );
         setIsReactivateSubscriptionPaymentModalOpen(false);
       });
     }
   };
 
   const renewalDate =
-    backgroundCheckSubscription &&
-    backgroundCheckSubscription.currentPeriodEnd &&
+    backgroundCheckSubscription?.currentPeriodEnd &&
     new Date(backgroundCheckSubscription.currentPeriodEnd * 1000);
-  const amount = backgroundCheckSubscription && backgroundCheckSubscription.amount;
+  const amount = backgroundCheckSubscription?.amount;
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
     bcStatus === 'active' && !cancelAtPeriodEnd ? (
@@ -374,7 +373,7 @@ const SubscriptionsPageComponent = props => {
     </InlineTextButton>
   );
 
-  const bcSubscriptionContent = fetchingUser ? (
+  const bcSubscriptionContent = fetchingUserInterval ? (
     <div className={css.spinnerContainer}>
       <IconSpinner />
     </div>
@@ -417,7 +416,7 @@ const SubscriptionsPageComponent = props => {
     id: 'SubscriptionsPage.futureSubscriptionsTitle',
   });
 
-  const futureSubscriptionsContent = fetchingUser ? null : backgroundCheckSubscriptionSchedule &&
+  const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
     backgroundCheckSubscriptionSchedule.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
       <SubscriptionCard title={futureSubscriptionTitle} headerButton={futureSubscriptionButton}>
