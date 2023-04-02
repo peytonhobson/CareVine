@@ -201,9 +201,14 @@ const updateBackgroundCheckSubscriptionSchedule = schedule => {
     .catch(e => log.error(e));
 };
 
-const cancelBackgroundCheckSubscriptionSchedule = schedule => {
+const cancelBackgroundCheckSubscriptionSchedule = async schedule => {
   const userId = schedule?.metadata?.userId;
-  const type = schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 'vine' : 'basic';
+
+  const currentUser = await integrationSdk.users.show({ id: userId });
+
+  const currentSubscription =
+    currentUser?.data?.data?.attributes?.profile?.metadata.backgroundCheckSubscription;
+  const endDate = moment(currentSubscription?.currentPeriodEnd * 1000).format('MM/DD/YYYY');
 
   integrationSdk.users
     .updateProfile({
@@ -216,7 +221,7 @@ const cancelBackgroundCheckSubscriptionSchedule = schedule => {
       sendgridEmail(
         userId,
         'subscription-schedule-canceled',
-        { type },
+        { marketplaceUrl: rootUrl, endDate },
         'send-subscription-schedule-canceled-email-failed'
       );
     })
