@@ -204,7 +204,13 @@ const updateBackgroundCheckSubscriptionSchedule = schedule => {
 const cancelBackgroundCheckSubscriptionSchedule = async schedule => {
   const userId = schedule?.metadata?.userId;
 
-  const currentUser = await integrationSdk.users.show({ id: userId });
+  let currentUser = null;
+
+  try {
+    currentUser = await integrationSdk.users.show({ id: userId });
+  } catch (e) {
+    log.error(e, 'cancel-background-check-subscription-schedule-user-query-failed');
+  }
 
   const currentSubscription =
     currentUser?.data?.data?.attributes?.profile?.metadata.backgroundCheckSubscription;
