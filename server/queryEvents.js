@@ -6,7 +6,7 @@ module.exports = queryEvents = () => {
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
-  const rootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
+  const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
   const CAREGIVER = 'caregiver';
   const BACKGROUND_CHECK_APPROVED = 'approved';
   const BACKGROUND_CHECK_REJECTED = 'rejected';
@@ -93,7 +93,7 @@ module.exports = queryEvents = () => {
         {
           receiverId: userId,
           templateName: 'listing-approved',
-          templateData: { marketplaceUrl: rootURL },
+          templateData: { marketplaceUrl: rootUrl },
         },
         {
           headers: {
@@ -303,7 +303,7 @@ module.exports = queryEvents = () => {
             `${apiBaseUrl()}/api/stripe-update-subscription`,
             {
               subscriptionId: backgroundCheckSubscription?.subscriptionId,
-              params: { cancel_at_period_end: true },
+              params: { marketplaceUrl: rootUrl, cancel_at_period_end: true },
             },
             {
               headers: {
@@ -338,15 +338,13 @@ module.exports = queryEvents = () => {
                   }
                 )
                 .then(() => {
-                  //TODO: Change template data to match template
-                  // TODO: test this with error handling
                   axios
                     .post(
                       `${apiBaseUrl()}/api/sendgrid-template-email`,
                       {
                         receiverId: userId,
                         templateName: 'listing-closed',
-                        templateData: {},
+                        templateData: { marketplaceUrl: rootUrl },
                       },
                       {
                         headers: {
@@ -356,7 +354,7 @@ module.exports = queryEvents = () => {
                     )
                     .catch(e => log.error(e, 'listing-closed-email-failed'));
                 })
-                .catch(e => log.error(e?.data?.errors, 'listing-closed-failed'));
+                .catch(e => log.error(e, 'listing-closed-failed'));
             }
           })
           .catch(e => log.error(e?.data?.errors));
@@ -386,7 +384,7 @@ module.exports = queryEvents = () => {
                   receiverId: userId,
                   templateName: 'background-check-approved',
                   templateData: {
-                    marketplaceUrl: rootURL,
+                    marketplaceUrl: rootUrl,
                     listingId: listingId,
                   },
                 },
@@ -416,7 +414,7 @@ module.exports = queryEvents = () => {
             {
               receiverId: userId,
               templateName: 'background-check-rejected',
-              templateData: { marketplaceUrl: rootURL },
+              templateData: { marketplaceUrl: rootUrl },
             },
             {
               headers: {
