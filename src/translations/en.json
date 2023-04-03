@@ -274,6 +274,7 @@
   "EditListingAvailabilityPanel.showListingFailed": "Failed to load listing. Please try again.",
   "EditListingAvailabilityPanel.title": "Edit your {availability}",
   "EditListingAvailabilityPanel.updateListingFailed": "Failed to update listing. Please try again.",
+  "EditListingAvailabilityPanel.noEntriesError": "Please add at least one time slot to your schedule.",
   "EditListingAvailabilityPlanForm.addAnother": "+ Add another",
   "EditListingAvailabilityPlanForm.dayOfWeek.fri": "Friday",
   "EditListingAvailabilityPlanForm.dayOfWeek.mon": "Monday",
