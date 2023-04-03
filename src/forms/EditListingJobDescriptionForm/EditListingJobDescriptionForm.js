@@ -158,7 +158,6 @@ const EditListingJobDescriptionFormComponent = props => (
             onManageDisableScrolling={onManageDisableScrolling}
             usePortal
           >
-            {/* TODO: replace these with actual examples */}
             <p className={css.modalTitle}>Job Description Examples</p>
             <div>
               <h2>Example 1</h2>
