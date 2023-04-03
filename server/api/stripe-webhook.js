@@ -307,6 +307,19 @@ module.exports = (request, response) => {
       const chargeFailed = event.data.object;
       sendChargeFailedEmail(chargeFailed);
       break;
+    case 'charge.succeeded':
+      console.log('charge.succeeded');
+      const chargeSucceeded = event.data.object;
+    // dispatch(
+    //   sendConfirmPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext)
+    // );
+
+    // const paymentAmount = calculatePaymentAmount(response.paymentIntent);
+    // dispatch(
+    //   transitionTransaction(providerListing, TRANSITION_CONFIRM_PAYMENT, {
+    //     protectedData: { paymentAmount },
+    //   })
+    // );
     case 'invoice.paid':
       const invoicePaid = event.data.object;
       // TODO: Send email to user that their subscription has been paid

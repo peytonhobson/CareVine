@@ -129,12 +129,8 @@ const PaymentForm = props => {
     },
   };
 
-  const card =
-    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
-  const bankAccount =
-    !!defaultPaymentMethods &&
-    !!defaultPaymentMethods.bankAccount &&
-    defaultPaymentMethods.bankAccount.us_bank_account;
+  const card = defaultPaymentMethods?.card?.card;
+  const bankAccount = defaultPaymentMethods?.bankAccount?.us_bank_account;
 
   const submitInProgress = confirmPaymentInProgress;
   const submitDisabled = submitInProgress || (!isElementsComplete && !showDefaultPayment);
