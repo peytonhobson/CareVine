@@ -347,12 +347,12 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           dispatch(generateAccessToken(currentAuthor));
         }
 
-        let CHANNEL_URL = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
+        let channelUrl = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
 
         let channel = null;
 
         try {
-          channel = await sb.groupChannel.getChannel(CHANNEL_URL);
+          channel = await sb.groupChannel.getChannel(channelUrl);
         } catch (e) {
           // console.log(e);
         }
@@ -360,9 +360,9 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
         console.log('past 1st');
 
         if (!channel) {
-          CHANNEL_URL = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
+          channelUrl = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
           try {
-            channel = await sb.groupChannel.getChannel(CHANNEL_URL);
+            channel = await sb.groupChannel.getChannel(channelUrl);
           } catch (e) {
             // TODO: remove in production
             // console.log(e);
@@ -373,13 +373,22 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
 
         if (!channel) {
           const channelParams = {
-            invitedUserIds: [currentUserId, currentAuthorId],
-            channelUrl: CHANNEL_URL,
+            operatorUserIds: [currentUserId, currentAuthorId],
+            invitedUserIds: [currentAuthorId, currentUserId],
+            channelUrl,
           };
           try {
+            console.log('channelParams: ', channelParams);
             channel = await sb.groupChannel.createChannel(channelParams);
           } catch (e) {
-            dispatch(fetchChannelError(e));
+            channelUrl = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
+            channelParams.channelUrl = channelUrl;
+            try {
+              channel = await sb.groupChannel.createChannel(channelParams);
+            } catch (e) {
+              log.error(e, 'failed-to-create-channel');
+              dispatch(fetchChannelError(e));
+            }
           }
         }
 

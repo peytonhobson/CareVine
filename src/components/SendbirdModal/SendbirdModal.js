@@ -76,7 +76,9 @@ const SendbirdModal = props => {
       const currentAuthorId = currentAuthor?.id?.uuid;
       const senderName = userDisplayNameAsString(currentUser);
 
-      if (messages?.length < 1) {
+      console.log(messages);
+
+      if (messages?.length <= 1) {
         sendgridTemplateEmail({
           receiverId: currentAuthorId,
           templateData: {

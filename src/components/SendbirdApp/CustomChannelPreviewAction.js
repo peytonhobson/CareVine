@@ -24,7 +24,7 @@ const LeaveChannelModal = props => {
         onCancel={onCancel}
         onSubmit={() => {
           logger.info('ChannelSettings: Leaving channel', leavingChannel);
-          leavingChannel?.leave().then(() => {
+          leavingChannel?.delete().then(() => {
             logger.info('ChannelSettings: Leaving channel successful!', leavingChannel);
             onSubmit();
           });
