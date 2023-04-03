@@ -16,6 +16,20 @@ import { TRANSITION_CONFIRM_PAYMENT, TRANSITION_NOTIFY_FOR_PAYMENT } from '../..
 import { createStripeCustomer } from '../../ducks/paymentMethods.duck';
 import config from '../../config';
 
+const calculatePaymentAmount = paymentIntent => {
+  const { amount, payment_method_types } = paymentIntent;
+
+  if (payment_method_types[0] === 'card') {
+    return Number.parseFloat(amount / 1.06 / 100)
+      .toFixed(2)
+      .toString();
+  }
+
+  return Number.parseFloat(amount / 1.03 / 100)
+    .toFixed(2)
+    .toString();
+};
+
 // ================ Action types ================ //
 
 export const SET_INITIAL_VALUES = 'app/StripePaymentModal/SET_INITIAL_VALUES';
@@ -403,20 +417,6 @@ const sendConfirmPaymentNotification = (
     .catch(e => {
       log.error(e, 'send-payment-notification-failed', {});
     });
-};
-
-const calculatePaymentAmount = paymentIntent => {
-  const { amount, payment_method_types } = paymentIntent;
-
-  if (payment_method_types[0] === 'card') {
-    return Number.parseFloat(amount / 1.06 / 100)
-      .toFixed(2)
-      .toString();
-  }
-
-  return Number.parseFloat(amount / 1.03 / 100)
-    .toFixed(2)
-    .toString();
 };
 
 export const confirmPayment = (
