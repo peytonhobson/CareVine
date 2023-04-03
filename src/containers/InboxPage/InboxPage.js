@@ -20,10 +20,10 @@ import {
   transitionToRequestPayment,
   fetchUserFromChannelUrl,
   sendRequestForPayment,
-  generateAccessToken,
 } from './InboxPage.duck';
 import { Page, LayoutWrapperMain, LayoutWrapperTopbar, FullPageError } from '../../components';
 import { TopbarContainer } from '..';
+import { generateAccessToken } from '../../ducks/sendbird.duck';
 
 import css from './InboxPage.module.css';
 

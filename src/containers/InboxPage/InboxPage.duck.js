@@ -5,7 +5,6 @@ import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { sendbirdUser } from '../../util/api';
 import * as log from '../../util/log';
 import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
@@ -38,10 +37,6 @@ export const SEND_REQUEST_FOR_PAYMENT_SUCCESS =
 export const SEND_REQUEST_FOR_PAYMENT_ERROR =
   'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_ERROR';
 
-export const GENERATE_ACCESS_TOKEN_REQUEST = 'app/StripePaymentModal/CREATE_SENDBIRD_USER_REQUEST';
-export const GENERATE_ACCESS_TOKEN_SUCCESS = 'app/StripePaymentModal/CREATE_SENDBIRD_USER_SUCCESS';
-export const GENERATE_ACCESS_TOKEN_ERROR = 'app/StripePaymentModal/CREATE_SENDBIRD_USER_ERROR';
-
 // ================ Reducer ================ //
 
 const entityRefs = entities =>
@@ -55,9 +50,6 @@ const initialState = {
   fetchOtherUserListingInProgress: false,
   fetchUserFromChannelUrlError: null,
   fetchUserFromChannelUrlInProgress: false,
-  generateAccessTokenError: null,
-  generateAccessTokenInProgress: false,
-  generateAccessTokenSuccess: false,
   otherUserListing: null,
   otherUserRef: null,
   sendRequestForPaymentError: null,
@@ -147,25 +139,6 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         sendRequestForPaymentError: payload,
       };
 
-    case GENERATE_ACCESS_TOKEN_REQUEST:
-      return {
-        ...state,
-        generateAccessTokenInProgress: true,
-        generateAccessTokenError: null,
-      };
-    case GENERATE_ACCESS_TOKEN_SUCCESS:
-      return {
-        ...state,
-        generateAccessTokenInProgress: false,
-        generateAccessTokenSuccess: true,
-      };
-    case GENERATE_ACCESS_TOKEN_ERROR:
-      return {
-        ...state,
-        generateAccessTokenInProgress: false,
-        generateAccessTokenError: payload,
-      };
-
     default:
       return state;
   }
@@ -218,18 +191,6 @@ export const sendRequestForPaymentSuccess = () => ({
 });
 export const sendRequestForPaymentError = e => ({
   type: SEND_REQUEST_FOR_PAYMENT_ERROR,
-  error: true,
-  payload: e,
-});
-
-export const generateAccessTokenRequest = () => ({
-  type: GENERATE_ACCESS_TOKEN_REQUEST,
-});
-export const generateAccessTokenSuccess = () => ({
-  type: GENERATE_ACCESS_TOKEN_SUCCESS,
-});
-export const generateAccessTokenError = e => ({
-  type: GENERATE_ACCESS_TOKEN_ERROR,
   error: true,
   payload: e,
 });
@@ -369,29 +330,5 @@ export const sendRequestForPayment = (
     .catch(e => {
       log.error(e, 'send-request-for-payment-failed');
       dispatch(sendRequestForPaymentError(e));
-    });
-};
-
-export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
-  dispatch(generateAccessTokenRequest());
-
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
-  };
-  const sb = SendbirdChat.init(params);
-
-  // May be failing when current user isnt available
-  sb.connect(currentUser.id.uuid)
-    .then(() => {
-      return sendbirdUser({ currentUser });
-    })
-    .then(() => {
-      dispatch(fetchCurrentUser());
-      dispatch(generateAccessTokenSuccess());
-    })
-    .catch(e => {
-      log.error(e, 'generate-access-token-failed');
-      dispatch(generateAccessTokenError(e));
     });
 };
