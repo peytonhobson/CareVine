@@ -22,6 +22,7 @@ import {
   ensureListing,
   ensureOwnListing,
   ensureUser,
+  userCanMessage,
   userDisplayNameAsString,
 } from '../../util/data';
 import { timestampToDate, calculateQuantityFromHours } from '../../util/dates';
@@ -49,7 +50,7 @@ import {
 import { generateAccessToken } from '../../ducks/sendbird.duck';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
-import { CAREGIVER } from '../../util/constants';
+import { BACKGROUND_CHECK_APPROVED, CAREGIVER } from '../../util/constants';
 import ActionBarMaybe from './ActionBarMaybe';
 import {
   MISSING_SUBSCRIPTION,
@@ -162,16 +163,8 @@ export class ListingPageComponent extends Component {
     const emailVerified = currentUser?.attributes?.emailVerified;
     const backgroundCheckApproved =
       currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved;
-    const backgroundCheckSubscription =
-      currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
-    const stripeAccount = currentUser?.stripeAccount;
 
-    const canMessage =
-      userType === CAREGIVER
-        ? emailVerified &&
-          backgroundCheckApproved?.status &&
-          backgroundCheckSubscription?.status === 'active'
-        : emailVerified;
+    const canMessage = userCanMessage(currentUser);
 
     if (!currentUser) {
       const state = { from: `${location.pathname}${location.search}${location.hash}` };
@@ -185,12 +178,8 @@ export class ListingPageComponent extends Component {
     } else if (canMessage) {
       this.setState({ enquiryModalOpen: true });
     } else {
-      // TODO: caregiver should have two separate modals
-      // 1) something not approved
-      // 2) doesnt have a subcription but everythings approved
-      // TODO: show modal to caregiver for all reqs and show modal to employer for email verification
       if (userType === CAREGIVER) {
-        if (emailVerified && backgroundCheckApproved?.status) {
+        if (emailVerified && backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED) {
           this.props.onChangeModalValue(MISSING_SUBSCRIPTION);
         } else {
           this.props.onChangeModalValue(MISSING_REQUIREMENTS);

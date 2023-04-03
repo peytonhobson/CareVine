@@ -386,7 +386,7 @@ const EditListingBackgroundCheckPanel = props => {
         appearance,
       };
 
-      content = subscription?.latest_invoice.payment_intent.client_secret ? (
+      content = subscription?.latest_invoice?.payment_intent.client_secret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
             {!updateSubscriptionError && (

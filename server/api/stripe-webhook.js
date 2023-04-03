@@ -118,8 +118,9 @@ const updateBackgroundCheckSubscription = subscription => {
 
       const isConfirming =
         (!prevBackgroundCheckSubscription ||
-          !prevBackgroundCheckSubscription.status === 'incomplete') &&
-        subscription?.status === 'active';
+          prevBackgroundCheckSubscription.status === 'incomplete') &&
+        subscription?.status === 'active' &&
+        !isUpgrading;
 
       const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
       const endDate = moment(subscription?.current_period_end * 1000).format('MM/DD/YYYY');
