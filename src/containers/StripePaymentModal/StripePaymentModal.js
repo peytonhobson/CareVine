@@ -13,19 +13,25 @@ import { Modal, UserListingPreview, IconConfirm, Button } from '../../components
 import { userDisplayNameAsString } from '../../util/data';
 import { PaymentForm, PaymentDetailsForm } from '../../forms';
 import {
-  createPaymentIntent,
-  confirmPayment,
   setInitialValues,
   initialState,
   hasStripeAccount,
   stripeCustomer,
-  fetchDefaultPayment,
   sendNotifyForPayment,
 } from './StripePaymentModal.duck';
 import { propTypes } from '../../util/types';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
 import NotifyForPaymentContainer from './NotifyForPaymentContainer';
 import config from '../../config';
+import {
+  confirmCardPayment,
+  confirmPayment,
+  createPaymentIntent,
+  createPayment,
+  setInitialValues as setStripeInitialValues,
+  initialState as stripeInitialState,
+} from '../../ducks/stripe.duck';
+import { fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
 
 import css from './StripePaymentModal.module.css';
 
@@ -56,7 +62,6 @@ const StripePaymentModalComponent = props => {
     intl,
     isOpen,
     onClose,
-    onConfirmPayment,
     onCreatePaymentIntent,
     onFetchDefaultPayment,
     onManageDisableScrolling,
@@ -68,6 +73,9 @@ const StripePaymentModalComponent = props => {
     sendbirdContext,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
+    onConfirmCardPayment,
+    onConfirmPayment,
+    onCreatePayment,
   } = props;
 
   const [clientSecret, setClientSecret] = useState(null);
@@ -133,30 +141,49 @@ const StripePaymentModalComponent = props => {
     useDefaultMethod,
     methodType
   ) => {
-    const defaultPaymentId =
+    const defaultMethodId =
       methodType === 'creditCard'
         ? defaultPaymentMethods?.card?.id
         : defaultPaymentMethods?.bankAccount?.id;
-    const currentUserId = currentUser?.id?.uuid;
-    const providerName = userDisplayNameAsString(provider);
-    onConfirmPayment(
-      stripe,
-      elements,
-      saveMethodAsDefault,
-      defaultPaymentId,
-      paymentIntent.id,
-      useDefaultMethod,
-      currentUserId,
-      providerName,
-      channelUrl,
-      sendbirdContext,
-      providerListing,
-      methodType
-    ).then(() => {
-      if (isMobile) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (useDefaultMethod) {
+      if (methodType === 'creditCard') {
+        onConfirmCardPayment({
+          stripe,
+          paymentParams: { payment_method: defaultMethodId },
+          paymentIntent,
+        }).then(() => {
+          if (isMobile) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      } else {
+        onConfirmPayment({
+          stripe,
+          paymentParams: { payment_method: defaultMethodId },
+          paymentIntent,
+        }).then(() => {
+          if (isMobile) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
       }
-    });
+    } else {
+      const userId = currentUser?.id?.uuid;
+
+      onCreatePayment({
+        stripe,
+        elements,
+        userId,
+        saveMethodAsDefault,
+        paymentIntent,
+        defaultMethodId,
+      }).then(() => {
+        if (isMobile) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
   };
 
   const onHandleClose = () => {
@@ -396,31 +423,43 @@ StripePaymentModalComponent.propTypes = {
 
 const mapStateToProps = state => {
   const {
-    confirmPaymentError,
-    confirmPaymentInProgress,
-    confirmPaymentSuccess,
-    createPaymentIntentError,
-    createPaymentIntentInProgress,
-    defaultPaymentMethods,
-    defaultPaymentFetched,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
     hasStripeAccount,
     hasStripeAccountError,
     hasStripeAccountFetched,
     hasStripeAccountInProgress,
-    paymentIntent,
     sendNotifyForPaymentError,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
     stripeCustomerFetched,
   } = state.StripePaymentModal;
   const { currentUser } = state.user;
-
-  return {
+  const {
     confirmPaymentError,
     confirmPaymentInProgress,
     confirmPaymentSuccess,
+    confirmCardPaymentError,
+    confirmCardPaymentInProgress,
+    confirmCardPaymentSuccess,
+    createPaymentIntentError,
+    createPaymentIntentInProgress,
+    paymentIntent,
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+  } = state.stripe;
+  const {
+    defaultPaymentMethods,
+    defaultPaymentFetched,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+  } = state.paymentMethods;
+
+  return {
+    confirmPaymentError: confirmPaymentError || confirmCardPaymentError || createPaymentError,
+    confirmPaymentInProgress:
+      confirmPaymentInProgress || confirmCardPaymentInProgress || createPaymentInProgress,
+    confirmPaymentSuccess:
+      confirmPaymentSuccess || confirmCardPaymentSuccess || createPaymentSuccess,
     createPaymentIntentError,
     createPaymentIntentInProgress,
     currentUser,
@@ -445,36 +484,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, channelUrl)
     ),
-  onConfirmPayment: (
-    stripe,
-    elements,
-    saveCardAsDefault,
-    defaultMethodId,
-    paymentIntentId,
-    useDefaultCard,
-    currentUserId,
-    providerName,
-    channelUrl,
-    sendbirdContext,
-    providerListing,
-    methodType
-  ) =>
-    dispatch(
-      confirmPayment(
-        stripe,
-        elements,
-        saveCardAsDefault,
-        defaultMethodId,
-        paymentIntentId,
-        useDefaultCard,
-        currentUserId,
-        providerName,
-        channelUrl,
-        sendbirdContext,
-        providerListing,
-        methodType
-      )
-    ),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
@@ -490,7 +499,13 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       sendNotifyForPayment(currentUser, providerName, channelUrl, sendbirdContext, providerListing)
     ),
-  onSetInitialState: () => dispatch(setInitialValues(initialState)),
+  onSetInitialState: () => {
+    dispatch(setInitialValues(initialState));
+    dispatch(setStripeInitialValues(stripeInitialState));
+  },
+  onConfirmCardPayment: params => dispatch(confirmCardPayment(params)),
+  onConfirmPayment: params => dispatch(confirmPayment(params)),
+  onCreatePayment: params => dispatch(createPayment(params)),
 });
 
 const StripePaymentModal = compose(
