@@ -78,6 +78,7 @@ const EditListingAvailabilityPanel = props => {
   const [availabilityExceptions, setAvailabilityExceptions] = useState(
     savedAvailabilityExceptions || []
   );
+  const [showNoEntriesError, setShowNoEntriesError] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
@@ -104,6 +105,11 @@ const EditListingAvailabilityPanel = props => {
 
   const handleSubmit = () => {
     if (selectedAvailabilityTypes.length === 0) {
+      return;
+    }
+
+    if (availabilityPlan.entries.length === 0) {
+      setShowNoEntriesError(true);
       return;
     }
 
@@ -222,6 +228,11 @@ const EditListingAvailabilityPanel = props => {
       {errors.updateListingError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingAvailabilityPanel.updateListingFailed" />
+        </p>
+      ) : null}
+      {showNoEntriesError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingAvailabilityPanel.noEntriesError" />
         </p>
       ) : null}
 

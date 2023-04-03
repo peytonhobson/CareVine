@@ -139,11 +139,11 @@ export const filters = [
       // Note: label is not added through the translation files
       // to make filter customizations a bit easier.
       options: [
-        { key: 'householdTasks', label: 'Household tasks' },
-        { key: 'personalCare', label: 'Personal care' },
+        { key: 'householdTasks', label: 'Household Tasks' },
+        { key: 'personalCare', label: 'Personal Care' },
         { key: 'companionship', label: 'Companionship' },
         { key: 'transportation', label: 'Transportation/Shopping' },
-        { key: 'specializedCare', label: 'Specialized care' },
+        { key: 'specializedCare', label: 'Specialized Care' },
         { key: 'memoryCare', label: 'Memory Care' },
       ],
     },
@@ -172,7 +172,7 @@ export const filters = [
     config: {
       searchMode: 'has_any',
       options: [
-        { key: 'oneTime', label: 'One time' },
+        { key: 'oneTime', label: 'One Time' },
         { key: 'recurring', label: 'Repeat' },
         { key: 'liveIn', label: '24 Hour' },
       ],
@@ -186,7 +186,7 @@ export const filters = [
     queryParamNames: ['pub_scheduleType'],
     config: {
       options: [
-        { key: 'oneTime', label: 'One time' },
+        { key: 'oneTime', label: 'One Time' },
         { key: 'repeat', label: 'Repeat' },
         { key: '24hour', label: '24 Hour' },
       ],

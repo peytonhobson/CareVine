@@ -46,6 +46,8 @@ import { manageDisableScrolling } from '../../ducks/UI.duck';
 import css from './AuthenticationPage.module.css';
 import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
 
+const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
+
 export class AuthenticationPageComponent extends Component {
   constructor(props) {
     super(props);
@@ -173,7 +175,11 @@ export class AuthenticationPageComponent extends Component {
 
     const handleSubmitSignup = values => {
       const { fname, lname, ...rest } = values;
-      const params = { firstName: fname.trim(), lastName: lname.trim(), ...rest };
+      const params = {
+        firstName: capitalizeFirstLetter(fname.trim()),
+        lastName: capitalizeFirstLetter(lname.trim()),
+        ...rest,
+      };
       submitSignup(params);
     };
 
