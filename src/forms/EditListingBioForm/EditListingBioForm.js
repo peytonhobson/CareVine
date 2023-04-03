@@ -124,33 +124,37 @@ const EditListingBioFormComponent = props => (
             onManageDisableScrolling={onManageDisableScrolling}
             usePortal
           >
-            {/* TODO: replace these with actual examples */}
             <p className={css.modalTitle}>Bio Examples</p>
             <div>
               <h2>Example 1</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                I have worked in several different work environments with seniors with various care
+                needs. I have worked in Assisted Living Facilities, Nursing homes, memory care, and
+                in private settings. I have chosen this profession because I enjoy Seniors and want
+                to provide good care to them when they no longer can do things on their own. I enjoy
+                cooking and cleaning so I can also do this in the home setting if needed. I have a
+                bubbly personality and a good sense of humor. I am organized and attentive to
+                details.
               </p>
             </div>
             <div>
               <h2>Example 2</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                I am a male caregiver who have provided care to both males and females in various
+                facilities and as a private caregiver in people&#39;s home. I became a certified
+                nursing assistant 5 years ago. I have a wealth of various experience from providing
+                care for individuals on at the end of life to being a companion to Seniors. I treat
+                each of my clients as if they were my own parent.
               </p>
             </div>
             <div>
               <h2>Example 3</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                I have extensive experience caring for Seniors and the disabled with all types of
+                care needs. I can provide several references if needed. I am a good communicator,
+                detailed, thoughtful, and reliable. I enjoying making others feel good. I will
+                ensure that I provide the care that I would for my own family member. I sincerely
+                have a passion for what I do.
               </p>
             </div>
           </Modal>
