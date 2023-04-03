@@ -378,7 +378,6 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
             channelUrl,
           };
           try {
-            console.log('channelParams: ', channelParams);
             channel = await sb.groupChannel.createChannel(channelParams);
           } catch (e) {
             channelUrl = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
