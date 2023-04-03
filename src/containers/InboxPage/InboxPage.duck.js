@@ -256,7 +256,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
 
         const otherUser = members.find(member => member.userId !== currentUserId);
 
-        return sdk.listings.query({ authorId: otherUser && otherUser.userId }).then(response => {
+        return sdk.listings.query({ authorId: otherUser?.userId }).then(response => {
           dispatch(fetchOtherUserListingSuccess(response.data.data));
         });
       });

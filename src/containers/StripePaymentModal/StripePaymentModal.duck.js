@@ -350,12 +350,13 @@ export const transitionTransaction = (otherUserListing, transition, params) => (
 ) => {
   const listingId = otherUserListing?.id?.uuid;
 
+  const paramsMaybe = params ? params : {};
   const bodyParams = {
     transition,
     processAlias: config.singleActionProcessAlias,
     params: {
       listingId,
-      ...params,
+      ...paramsMaybe,
     },
   };
   return sdk.transactions
@@ -364,7 +365,7 @@ export const transitionTransaction = (otherUserListing, transition, params) => (
       return response;
     })
     .catch(e => {
-      throw e;
+      log.error(e, 'transition-transaction-failed', {});
     });
 };
 
@@ -404,6 +405,20 @@ const sendConfirmPaymentNotification = (
     });
 };
 
+const calculatePaymentAmount = paymentIntent => {
+  const { amount, payment_method_types } = paymentIntent;
+
+  if (payment_method_types[0] === 'card') {
+    return Number.parseFloat(amount / 1.06 / 100)
+      .toFixed(2)
+      .toString();
+  }
+
+  return Number.parseFloat(amount / 1.03 / 100)
+    .toFixed(2)
+    .toString();
+};
+
 export const confirmPayment = (
   stripe,
   elements,
@@ -422,18 +437,16 @@ export const confirmPayment = (
 
   const handleSuccess = response => {
     dispatch(confirmPaymentSuccess(response));
-    try {
-      dispatch(
-        sendConfirmPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext)
-      );
-    } catch (e) {
-      log.error(e, 'send-payment-notification-failed', {});
-    }
-    try {
-      dispatch(transitionTransaction(providerListing, TRANSITION_CONFIRM_PAYMENT));
-    } catch (e) {
-      log.error(e, 'transition-to-payment-confirmed-failed', {});
-    }
+    dispatch(
+      sendConfirmPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext)
+    );
+
+    const paymentAmount = calculatePaymentAmount(response.paymentIntent);
+    dispatch(
+      transitionTransaction(providerListing, TRANSITION_CONFIRM_PAYMENT, {
+        protectedData: { paymentAmount },
+      })
+    );
     return response;
   };
 
@@ -490,7 +503,7 @@ export const confirmPayment = (
         })
         .catch(handleError);
     }
-  } else if (!!saveCardAsDefault) {
+  } else if (saveCardAsDefault) {
     let stripeCustomerId = null;
     // If user is saving card as default
     return stripeUpdatePaymentIntent({
