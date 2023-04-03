@@ -163,28 +163,33 @@ const EditListingJobDescriptionFormComponent = props => (
             <div>
               <h2>Example 1</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                I need a caregiver to stay with my mom for 3 days in her independent living
+                facility. My mother is diabetic and needs her blood sugars monitor 4x daily and
+                requires sliding scale insulin. She will need help with administering medications,
+                dressing, bathing, transfers, and walking. She will need help getting to the dining
+                room at her facility. She sleeps well at night, but would like someone there at
+                night in case she has an emergency or she needs help to the bathroom. She is a
+                pleasant lady, likes people, and is usually very cooperative with care. You would
+                have your own bedroom.
               </p>
             </div>
             <div>
               <h2>Example 2</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                This would be a long-term position for my son who has muscular dystrophy. Job
+                entails getting ready for the day (dressing, bathing, toileting, feeding, range of
+                motion). He only weighs 75 lbs. We have a van where you could take him on outings.
+                He enjoys going to the movies, park, and restaurants. On Wednesdays you would take
+                him to physical therapy. He has a good spirit and a great sense of humor.
               </p>
             </div>
             <div>
               <h2>Example 3</h2>
               <p className={css.modalMessage}>
-                It was cloudy outside but not really raining. There was a light sprinkle at most and
-                there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from
-                pulling her umbrella out and opening it. It had nothing to do with the weather or
-                the potential rain later that day. Sarah used the umbrella to hide.
+                I am looking for a female caregiver to spend time with my mom who lives in her own
+                home, but gets lonely and would like to be around people more. I would like the
+                caregiver to be able to take her shopping, to the senior center, or just for a
+                drive. The caregiver would be expected to do light housework also.
               </p>
             </div>
           </Modal>
