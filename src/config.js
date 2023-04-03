@@ -47,10 +47,10 @@ const sortSearchByDistance = true;
 let singleActionProcessAlias = null;
 
 if (isDev) {
-  singleActionProcessAlias = `single-action-process/release-7`;
+  singleActionProcessAlias = `single-action-process/release-10`;
 }
 if (isTest) {
-  singleActionProcessAlias = `single-action-process/release-2`;
+  singleActionProcessAlias = `single-action-process/active`;
 }
 if (isProd) {
   singleActionProcessAlias = `single-action-process/release-1`;

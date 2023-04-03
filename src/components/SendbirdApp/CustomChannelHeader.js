@@ -122,7 +122,12 @@ const CustomChannelHeader = props => {
           <PaymentButton
             channelContext={channelContext}
             channelUrl={channelUrl}
-            disabled={!otherUser}
+            disabled={
+              !otherUser ||
+              !listing ||
+              fetchUserFromChannelUrlInProgress ||
+              fetchOtherUserListingInProgress
+            }
             fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
             onOpenPaymentModal={onOpenPaymentModal}
             otherUser={otherUser}

@@ -12,7 +12,9 @@
    :to :state/payment-requested},
    {:name :transition/confirm-payment,
    :actor :actor.role/customer,
-   :actions [],
+   :actions [
+    {:name :action/update-protected-data},
+   ],
    :to :state/payment-confirmed}],
  :notifications
  [{:name :notification/payment-details-notification,
