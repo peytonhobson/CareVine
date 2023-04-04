@@ -314,7 +314,7 @@ const DailyPlan = props => {
   );
 };
 
-const submit = (onSubmit, weekdays) => values => {
+const submit = (onSubmit, weekdays, values) => {
   const sortedValues = weekdays.reduce(
     (submitValues, day) => {
       return submitValues[day]
@@ -332,10 +332,39 @@ const submit = (onSubmit, weekdays) => values => {
 
 const EditListingAvailabilityPlanFormComponent = props => {
   const { onSubmit, ...restOfprops } = props;
+  const [showEmptyError, setShowEmptyError] = useState(false);
+  const [showUnfinishedError, setShowUnfinishedError] = useState(false);
   return (
     <FinalForm
       {...restOfprops}
-      onSubmit={submit(onSubmit, props.weekdays)}
+      onSubmit={values => {
+        const concatDayEntriesReducer = (entries, day) => {
+          return values[day] ? entries.concat(values[day]) : entries;
+        };
+
+        const hasUnfinishedEntries = !!props.weekdays
+          .reduce(concatDayEntriesReducer, [])
+          .find(e => !e.startTime || !e.endTime);
+
+        const entryValues = props.weekdays.reduce((entries, day) => {
+          return values[day] ? entries.concat(values[day]) : entries;
+        }, []);
+
+        if (hasUnfinishedEntries) {
+          setShowUnfinishedError(true);
+          return;
+        }
+
+        if (entryValues.length === 0) {
+          setShowEmptyError(true);
+          return;
+        }
+
+        setShowEmptyError(false);
+        setShowUnfinishedError(false);
+
+        submit(onSubmit, props.weekdays, values);
+      }}
       mutators={{
         ...arrayMutators,
       }}
@@ -358,26 +387,9 @@ const EditListingAvailabilityPlanFormComponent = props => {
         const classes = classNames(rootClassName || css.root, className);
         const submitInProgress = inProgress;
 
-        const concatDayEntriesReducer = (entries, day) => {
-          return values[day] ? entries.concat(values[day]) : entries;
-        };
-        const hasUnfinishedEntries = !!weekdays
-          .reduce(concatDayEntriesReducer, [])
-          .find(e => !e.startTime || !e.endTime);
-
         const { updateListingError } = fetchErrors || {};
 
-        const submitDisabled = submitInProgress || hasUnfinishedEntries;
-
-        const listingType = currentListing && currentListing.attributes.metadata.listingType;
-
-        const isFlexibleTooltipText = (
-          <div>
-            <p>
-              <FormattedMessage id="EditListingAvailabilityPlanForm.isFlexibleTooltipText" />
-            </p>
-          </div>
-        );
+        const submitDisabled = submitInProgress;
 
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
@@ -389,25 +401,21 @@ const EditListingAvailabilityPlanFormComponent = props => {
                 return <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} />;
               })}
             </div>
-            {/* {listingType === 'caregiver' ? (
-              <div className={css.isFlexibleContainer}>
-                <FieldCheckbox
-                  id="isFlexible"
-                  name="isFlexible"
-                  className={css.isFlexible}
-                  textClassName={css.isFlexibleText}
-                  label={intl.formatMessage({
-                    id: 'EditListingAvailabilityPlanForm.isFlexible',
-                  })}
-                />
-                <InfoTooltip title={isFlexibleTooltipText} />
-              </div>
-            ) : null} */}
 
             <div className={css.submitButton}>
               {updateListingError && showErrors ? (
                 <p className={css.error}>
                   <FormattedMessage id="EditListingAvailabilityPlanForm.updateFailed" />
+                </p>
+              ) : null}
+              {showEmptyError ? (
+                <p className={css.error}>
+                  <FormattedMessage id="EditListingAvailabilityPlanForm.emptyError" />
+                </p>
+              ) : null}
+              {showUnfinishedError ? (
+                <p className={css.error}>
+                  <FormattedMessage id="EditListingAvailabilityPlanForm.unfinishedError" />
                 </p>
               ) : null}
               <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>

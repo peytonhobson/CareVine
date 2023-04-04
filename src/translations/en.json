@@ -284,6 +284,8 @@
   "EditListingAvailabilityPlanForm.dayOfWeek.tue": "Tuesday",
   "EditListingAvailabilityPlanForm.dayOfWeek.wed": "Wednesday",
   "EditListingAvailabilityPlanForm.endTimePlaceholder": "5:00pm",
+  "EditListingAvailabilityPlanForm.emptyError": "Please add at least one time slot to your schedule.",
+  "EditListingAvailabilityPlanForm.unfinishedError": "Please finish adding time slots to your schedule.",
   "EditListingAvailabilityPlanForm.hoursOfOperationTitle": "Hours of operation",
   "EditListingAvailabilityPlanForm.isFlexible": "This schedule can be flexible",
   "EditListingAvailabilityPlanForm.isFlexibleTooltipText": "If you are flexible, people can request to book you outside of your normal hours of availability.",
