@@ -127,10 +127,11 @@ const EditListingCareSchedulePanel = props => {
         timezone: defaultTimeZone(),
         entries: [],
       };
-      availabilityPlan =
-        availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
-          ? availabilityPlanMaybe
-          : defaultAvailabilityPlan;
+      availabilityPlan = savedRepeatPlan
+        ? savedRepeatPlan
+        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
+        ? availabilityPlanMaybe
+        : defaultAvailabilityPlan;
       mainContent = (
         <CareScheduleRecurringTimesContainer
           availabilityPlan={availabilityPlan}
@@ -146,6 +147,7 @@ const EditListingCareSchedulePanel = props => {
           updateInProgress={updateInProgress}
           showErrors={showErrors}
           panelUpdated={panelUpdated}
+          onChange={setSavedRepeatPlan}
         />
       );
       break;
