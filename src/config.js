@@ -2,14 +2,12 @@ import * as custom from './marketplace-custom-config.js';
 import defaultLocationSearches from './default-location-searches';
 import { defaultMCC, stripePublishableKey, stripeCountryDetails } from './stripe-config';
 import { currencyConfiguration } from './currency-config';
-import { I } from '@sendbird/uikit-react/index-43834bc0.js';
 
 const env = process.env.REACT_APP_ENV;
 const dev = process.env.REACT_APP_ENV === 'development';
 const isDev = process.env.REACT_APP_ENV === 'development';
 const isTest = process.env.NODE_ENV === 'production' && isDev;
 const isProd = process.env.NODE_ENV === 'production' && !isDev;
-const isLocal = process.env.NODE_ENV === 'development' && isDev;
 
 // CDN assets for the app. Configurable through Flex Console.
 // Currently, only translation.json is available.

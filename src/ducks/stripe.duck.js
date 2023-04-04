@@ -717,7 +717,7 @@ export const createPayment = params => (dispatch, getState, sdk) => {
   }
 };
 
-export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, channelUrl) => (
+export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, metadata) => (
   dispatch,
   getState,
   sdk
@@ -745,10 +745,7 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
       isCard,
       description: `Payment to ${caregiverName}`,
       sender,
-      metadata: {
-        channelUrl,
-        recipientName: caregiverName,
-      },
+      metadata,
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));

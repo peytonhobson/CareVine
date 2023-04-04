@@ -1,5 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleError, serialize, integrationSdk } = require('../api-util/sdk');
+const { handleError, serialize, integrationSdk, getSdk } = require('../api-util/sdk');
 const log = require('../log');
 const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
@@ -8,6 +8,21 @@ const CAREVINE_GOLD_PRICE_ID =
 const axios = require('axios');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const moment = require('moment');
+const isDev = process.env.REACT_APP_ENV === 'development';
+const isTest = process.env.NODE_ENV === 'production' && isDev;
+const isProd = process.env.NODE_ENV === 'production' && !isDev;
+
+let singleActionProcessAlias = null;
+
+if (isDev) {
+  singleActionProcessAlias = `single-action-process/release-10`;
+}
+if (isTest) {
+  singleActionProcessAlias = `single-action-process/active`;
+}
+if (isProd) {
+  singleActionProcessAlias = `single-action-process/release-1`;
+}
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -257,6 +272,23 @@ const sendChargeFailedEmail = data => {
   }
 };
 
+const sendPaymentReceivedEmail = data => {
+  const { userId, senderName } = data?.metadata;
+
+  const paymentAmount = (data?.amount - data?.application_fee_amount) / 100;
+
+  sendgridEmail(
+    userId,
+    'payment-received',
+    {
+      marketplaceUrl: rootUrl,
+      senderName,
+      paymentAmount,
+    },
+    'payment-received-email-failed'
+  );
+};
+
 module.exports = (request, response) => {
   const sig = request.headers['stripe-signature'];
 
@@ -310,23 +342,10 @@ module.exports = (request, response) => {
     case 'charge.succeeded':
       console.log('charge.succeeded');
       const chargeSucceeded = event.data.object;
-    // dispatch(
-    //   sendConfirmPaymentNotification(currentUserId, providerName, channelUrl, sendbirdContext)
-    // );
 
-    // const paymentAmount = calculatePaymentAmount(response.paymentIntent);
-    // dispatch(
-    //   transitionTransaction(providerListing, TRANSITION_CONFIRM_PAYMENT, {
-    //     protectedData: { paymentAmount },
-    //   })
-    // );
-    case 'invoice.paid':
-      const invoicePaid = event.data.object;
-      // TODO: Send email to user that their subscription has been paid
-      break;
-    case 'invoice.payment_failed':
-      const invoicePaymentFailed = event.data.object;
-      // TODO: Send email to user that their subscription payment has failed and their subscription has been paused
+      // TODO: Add function to update user notifications when notification page is created
+
+      sendPaymentReceivedEmail(chargeSucceeded);
       break;
     case 'subscription_schedule.canceled':
       console.log('subscription_schedule.canceled');

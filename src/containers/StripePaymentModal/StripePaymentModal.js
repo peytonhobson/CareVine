@@ -122,15 +122,23 @@ const StripePaymentModalComponent = props => {
 
     const isCard = paymentMethod === 'creditCard';
 
-    const providerName = userDisplayNameAsString(provider);
+    const recipientName = userDisplayNameAsString(provider);
+
+    const intentMetadata = {
+      channelUrl,
+      senderName: userDisplayNameAsString(currentUser),
+      listingId: providerListing.id.uuid,
+      userId: provider.id.uuid,
+      recipientName,
+    };
 
     onCreatePaymentIntent(
       amount?.amount,
       provider?.id,
       currentUser,
       isCard,
-      providerName,
-      channelUrl
+      recipientName,
+      intentMetadata
     );
   };
 
