@@ -277,16 +277,18 @@ const sendPaymentReceivedEmail = data => {
 
   const paymentAmount = (data?.amount - data?.application_fee_amount) / 100;
 
-  sendgridEmail(
-    userId,
-    'payment-received',
-    {
-      marketplaceUrl: rootUrl,
-      senderName,
-      paymentAmount,
-    },
-    'payment-received-email-failed'
-  );
+  if (senderName) {
+    sendgridEmail(
+      userId,
+      'payment-received',
+      {
+        marketplaceUrl: rootUrl,
+        senderName,
+        paymentAmount,
+      },
+      'payment-received-email-failed'
+    );
+  }
 };
 
 module.exports = (request, response) => {
