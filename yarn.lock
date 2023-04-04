@@ -2716,7 +2716,7 @@
   resolved "https://registry.yarnpkg.com/@sendbird/chat/-/chat-4.6.0.tgz#b65cac6d351eaee435c744aa5ce4887760b6631c"
   integrity sha512-Q8sfuSgI7NbR950111yasZwycK3vMrqb2IQWKoMN7/AVrDSOSUMDMBR2hfSCHOZaJwz7vtMnj4l9oWY3Sk8zuw==
 
-"@sendbird/uikit-react@^3.3.2":
+"@sendbird/uikit-react@3.4.2":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@sendbird/uikit-react/-/uikit-react-3.4.2.tgz#d37d1916a5d5880a4d318dc6b258fb94411126ba"
   integrity sha512-sw83kk3yudiQ5PAPWibtEnLdetyBzh8S4RHqM9dhcsPg6KEEx8QveaaQlJ3XoPSbk95iJ/63xAnslt9Q75iFkQ==

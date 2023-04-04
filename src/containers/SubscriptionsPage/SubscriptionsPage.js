@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
-import { createCreditCard } from '../../ducks/paymentMethods.duck';
+import { createCreditCard, fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import {
   SavedCardDetails,
@@ -27,7 +27,7 @@ import ReactivateSubscriptionModal from './Modals/ReactivateSubscriptionModal';
 import CancelSubscriptionModal from './Modals/CancelSubscriptionModal';
 import { TopbarContainer } from '../../containers';
 import { SaveCreditCardForm } from '../../forms';
-import { fetchDefaultPayment } from './SubscriptionsPage.duck.js';
+import { updateSubscriptionItem } from './SubscriptionsPage.duck';
 import {
   cancelSubscription,
   updateSubscription,
@@ -100,6 +100,7 @@ const SubscriptionsPageComponent = props => {
     onFetchCurrentUser,
     onCreateFutureSubscription,
     onCancelFutureSubscription,
+    onUpdateSubscriptionItem,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -146,7 +147,9 @@ const SubscriptionsPageComponent = props => {
   };
 
   useEffect(() => {
-    stripeCustomerId && onFetchDefaultPayment(stripeCustomerId);
+    if (stripeCustomerId) {
+      onFetchDefaultPayment(stripeCustomerId);
+    }
   }, [stripeCustomerId]);
 
   const title = intl.formatMessage({ id: 'SubscriptionsPage.title' });
@@ -204,35 +207,50 @@ const SubscriptionsPageComponent = props => {
     backgroundCheckSubscription?.cancelAtPeriodEnd,
     backgroundCheckSubscription?.status,
     backgroundCheckSubscriptionSchedule?.status,
+    backgroundCheckSubscription?.type,
   ]);
 
+  const createFetchUserInterval = () => {
+    setFetchingUserInterval(
+      setInterval(() => {
+        onFetchCurrentUser();
+      }, 300)
+    );
+  };
+
   // Set subscription to cancel at period end
-  const handleCancelSubscription = () => {
+  const handleCancelSubscription = async () => {
     if (bcStatus === 'active' || bcStatus === 'past_due') {
       const params = { cancel_at_period_end: true };
-      onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
-        setFetchingUserInterval(
-          setInterval(() => {
-            onFetchCurrentUser();
-          }, 300)
+
+      try {
+        const response = await onUpdateSubscription(
+          backgroundCheckSubscription.subscriptionId,
+          params
         );
+
+        createFetchUserInterval();
         setIsCancelSubscriptionModalOpen(false);
-      });
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
-  const handleCancelFutureSubscription = () => {
-    onCancelFutureSubscription(backgroundCheckSubscriptionSchedule.scheduleId).then(() => {
-      setFetchingUserInterval(
-        setInterval(() => {
-          onFetchCurrentUser();
-        }, 300)
+  const handleCancelFutureSubscription = async () => {
+    try {
+      const response = await onCancelFutureSubscription(
+        backgroundCheckSubscriptionSchedule.scheduleId
       );
+
+      createFetchUserInterval();
       setIsCancelSubscriptionModalOpen(false);
-    });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const handleReactivateSubscription = () => {
+  const handleReactivateSubscription = async () => {
     const changeSubscription = bcType !== isReactivateSubscriptionPaymentModalOpen;
     const priceId =
       isReactivateSubscriptionPaymentModalOpen == VINE
@@ -250,68 +268,66 @@ const SubscriptionsPageComponent = props => {
          * we need to cancel the current subscription immediately and create a new one.
          */
         if (isReactivateSubscriptionPaymentModalOpen === BASIC) {
-          onCreateFutureSubscription(
-            stripeCustomerId,
-            backgroundCheckSubscription.currentPeriodEnd + 1000,
-            priceId,
-            ensuredCurrentUser.id.uuid
-          )
-            .then(() => {
-              setFetchingUserInterval(
-                setInterval(() => {
-                  onFetchCurrentUser();
-                }, 300)
-              );
-              setIsReactivateSubscriptionPaymentModalOpen(false);
-            })
-            .catch(e => console.log(e));
-        } else {
-          const params = { default_payment_method: cardId, cancel_at_period_end: false };
-
-          onCancelSubscription(backgroundCheckSubscription.subscriptionId).then(() => {
-            onCreateSubscription(
+          try {
+            const response = await onCreateFutureSubscription(
               stripeCustomerId,
+              backgroundCheckSubscription.currentPeriodEnd + 1000,
               priceId,
-              ensuredCurrentUser.id.uuid,
-              params,
-              true
-            ).then(() => {
-              setFetchingUserInterval(
-                setInterval(() => {
-                  onFetchCurrentUser();
-                }, 300)
-              );
-              setIsReactivateSubscriptionPaymentModalOpen(false);
-            });
-          });
+              ensuredCurrentUser.id.uuid
+            );
+
+            createFetchUserInterval();
+            setIsReactivateSubscriptionPaymentModalOpen(false);
+          } catch (e) {
+            console.log(e);
+          }
+        } else {
+          // Upgrade current subscription from basic to gold
+          const subscriptionId = backgroundCheckSubscription.subscriptionId;
+
+          try {
+            const response = await onUpdateSubscriptionItem(subscriptionId, priceId);
+
+            createFetchUserInterval();
+            setIsReactivateSubscriptionPaymentModalOpen(false);
+          } catch (e) {
+            console.log(e);
+          }
         }
       } else {
+        // Reactive canceled subscription that hasn't reached the end of the billing period
         const params = { cancel_at_period_end: false };
-        onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params).then(() => {
-          setFetchingUserInterval(
-            setInterval(() => {
-              onFetchCurrentUser();
-            }, 300)
+
+        try {
+          const response = await onUpdateSubscription(
+            backgroundCheckSubscription.subscriptionId,
+            params
           );
+
+          createFetchUserInterval();
           setIsReactivateSubscriptionPaymentModalOpen(false);
-        });
+        } catch (e) {
+          console.log(e);
+        }
       }
     } else {
+      // Create new subscription
       const params = { default_payment_method: cardId, cancel_at_period_end: false };
-      onCreateSubscription(
-        stripeCustomerId,
-        priceId,
-        ensuredCurrentUser.id.uuid,
-        params,
-        true
-      ).then(() => {
-        setFetchingUserInterval(
-          setInterval(() => {
-            onFetchCurrentUser();
-          }, 300)
+
+      try {
+        const response = await onCreateSubscription(
+          stripeCustomerId,
+          priceId,
+          ensuredCurrentUser.id.uuid,
+          params,
+          true
         );
+
+        createFetchUserInterval();
         setIsReactivateSubscriptionPaymentModalOpen(false);
-      });
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -607,15 +623,13 @@ const mapStateToProps = state => {
     createCreditCardInProgress,
     createCreditCardSuccess,
     createStripeCustomerError,
-  } = state.paymentMethods;
-
-  const {
     defaultPaymentFetched,
     defaultPaymentMethods,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
-    stripeCustomerFetched,
-  } = state.SubscriptionsPage;
+  } = state.paymentMethods;
+
+  const { stripeCustomerFetched } = state.SubscriptionsPage;
 
   return {
     cancelSubscriptionError,
@@ -654,6 +668,8 @@ const mapDispatchToProps = dispatch => ({
   onCreateFutureSubscription: (stripeCustomerId, startDate, priceId, userId) =>
     dispatch(createFutureSubscription(stripeCustomerId, startDate, priceId, userId)),
   onCancelFutureSubscription: scheduleId => dispatch(cancelFutureSubscription(scheduleId)),
+  onUpdateSubscriptionItem: (subscriptionId, priceId) =>
+    dispatch(updateSubscriptionItem(subscriptionId, priceId)),
 });
 
 const SubscriptionsPage = compose(
