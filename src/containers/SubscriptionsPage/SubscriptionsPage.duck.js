@@ -4,7 +4,7 @@ import {
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
 import { storableError } from '../../util/errors';
-import { stripePaymentMethods, stripeUpdateSubscriptionItem } from '../../util/api';
+import { stripeUpdateSubscriptionItem } from '../../util/api';
 import * as log from '../../util/log';
 
 // ================ Action types ================ //
