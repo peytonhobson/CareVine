@@ -58,6 +58,7 @@ const EditListingCareSchedulePanel = props => {
   const [showErrors, setShowErrors] = useState(false);
   const [savedOneTimePlan, setSavedOneTimePlan] = useState(null);
   const [savedRepeatPlan, setSavedRepeatPlan] = useState(null);
+  const [saved24HourPlan, setSaved24HourPlan] = useState(null);
 
   useEffect(() => {
     setShowErrors(true);
@@ -158,10 +159,11 @@ const EditListingCareSchedulePanel = props => {
         liveIn: false,
         timezone: defaultTimeZone(),
       };
-      availabilityPlan =
-        availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
-          ? availabilityPlanMaybe
-          : defaultAvailabilityPlan;
+      availabilityPlan = saved24HourPlan
+        ? saved24HourPlan
+        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
+        ? availabilityPlanMaybe
+        : defaultAvailabilityPlan;
       mainContent = (
         <Care24HourForm
           availabilityPlan={availabilityPlan}
@@ -175,6 +177,7 @@ const EditListingCareSchedulePanel = props => {
           submitButtonText={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
+          onChange={setSaved24HourPlan}
         ></Care24HourForm>
       );
       break;
