@@ -24,6 +24,7 @@ const sortSessionsByStartTime = (a, b) => {
 const CareScheduleSelectDatesContainer = props => {
   const {
     availabilityPlan,
+    userAvailabilityPlan,
     disabled,
     errors,
     listing,
@@ -41,54 +42,37 @@ const CareScheduleSelectDatesContainer = props => {
 
   // Hooks
   const [isAddCareSessionModalOpen, setIsAddCareSessionModalOpen] = useState(false);
-  const [selectedSessions, setSelectedSessions] = useState([]);
-
-  useEffect(() => {
-    setSelectedSessions(
-      availabilityPlan?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
-        ? availabilityPlan.selectedSessions
-        : []
-    );
-  }, []);
+  const [selectedSessions, setSelectedSessions] = useState(
+    availabilityPlan?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
+      ? availabilityPlan.selectedSessions
+      : []
+  );
 
   const timeZone = zipcodeToTimezone.lookup(
     listing && listing.attributes.publicData.location.zipcode
   );
   const sortedSessions = selectedSessions.sort(sortSessionsByStartTime);
 
+  useEffect(() => {
+    onChange({
+      type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
+      selectedSessions,
+      timezone: timeZone,
+    });
+  }, [selectedSessions.length, timeZone]);
+
   const saveSession = values => {
     const { sessionStartTime, sessionEndTime } = values;
 
-    setSelectedSessions(prevSelectedSessions => {
-      const newSessions = prevSelectedSessions.concat({
-        start: sessionStartTime,
-        end: sessionEndTime,
-      });
-
-      onChange({
-        type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
-        selectedSessions: newSessions,
-        timezone: timeZone,
-      });
-
-      return newSessions;
-    });
-
+    setSelectedSessions(prevSelectedSessions => [
+      ...prevSelectedSessions,
+      { start: sessionStartTime, end: sessionEndTime },
+    ]);
     setIsAddCareSessionModalOpen(false);
   };
 
   const onDeleteCareSession = session => {
-    setSelectedSessions(prevSelectedSessions => {
-      const newSessions = prevSelectedSessions.filter(s => s !== session);
-
-      onChange({
-        type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
-        selectedSessions: newSessions,
-        timezone: timeZone,
-      });
-
-      return newSessions;
-    });
+    setSelectedSessions(prevSelectedSessions => prevSelectedSessions.filter(s => s !== session));
   };
 
   const handleSubmit = () => {
@@ -102,7 +86,11 @@ const CareScheduleSelectDatesContainer = props => {
   };
 
   const submitInProgress = updateInProgress;
-  const submitDisabled = disabled || selectedSessions.length === 0;
+  const submitDisabled =
+    disabled ||
+    selectedSessions.length === 0 ||
+    userAvailabilityPlan?.selectedSessions === selectedSessions ||
+    submitInProgress;
   const submitReady =
     (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME;
 
