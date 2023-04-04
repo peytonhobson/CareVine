@@ -250,6 +250,19 @@ const cancelBackgroundCheckSubscriptionSchedule = async schedule => {
     .catch(e => log.error(e, 'cancel-background-check-subscription-schedule-failed'));
 };
 
+const removeBackgroundCheckSubscriptionSchedule = async data => {
+  const userId = data?.metadata?.userId;
+
+  integrationSdk.users
+    .updateProfile({
+      id: userId,
+      privateData: {
+        backgroundCheckSubscriptionSchedule: null,
+      },
+    })
+    .catch(e => log.error(e, 'remove-background-check-subscription-schedule-failed'));
+};
+
 const sendChargeFailedEmail = data => {
   // const feeAmount = Number.parseFloat(data?.application_fee_amount / 100).toFixed(2);
   // const amount = Number.parseFloat(data?.amount / 100 - feeAmount).toFixed(2);
@@ -358,6 +371,13 @@ module.exports = (request, response) => {
       console.log('subscription_schedule.created');
       const subscriptionScheduleCreated = event.data.object;
       updateBackgroundCheckSubscriptionSchedule(subscriptionScheduleCreated);
+      break;
+    case 'subscription_schedule.updated':
+      console.log('subscription_schedule.updated');
+      const subscriptionScheduleUpdated = event.data.object;
+      if (subscriptionScheduleUpdated.current_phase) {
+        removeBackgroundCheckSubscriptionSchedule(subscriptionScheduleUpdated);
+      }
       break;
     case 'charge.dispute.created':
       const disputeCreated = event.data.object;
