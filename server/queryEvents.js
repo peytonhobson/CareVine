@@ -280,7 +280,8 @@ module.exports = queryEvents = () => {
           })
           .catch(err => log.error(err, 'tcm-deenroll-failed'));
       }
-
+      const prevBackgroundCheckApprovedStatus =
+        previousValuesProfile?.metadata?.backgroundCheckApproved?.status;
       const previousQuizAttempts = previousValuesProfile?.privateData?.identityProofQuizAttempts;
       const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
@@ -359,9 +360,6 @@ module.exports = queryEvents = () => {
           .catch(e => log.error(e?.data?.errors));
       }
 
-      const prevBackgroundCheckApprovedStatus =
-        previousValuesProfile?.metadata?.backgroundCheckApproved?.status;
-
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         prevBackgroundCheckApprovedStatus &&
@@ -369,7 +367,6 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
-        // TODO: test this with error handling
         integrationSdk.listings
           .query({ authorId: userId })
           .then(res => {

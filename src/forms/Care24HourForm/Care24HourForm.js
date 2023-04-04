@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 
 import { compose } from 'redux';
 import zipcodeToTimezone from 'zipcode-to-timezone';
@@ -31,15 +31,9 @@ const weekdayButtons = [
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-const formatHours = value => {
-  // if input value is falsy eg if the user deletes the input, then just return
-  if (!value) return value;
+const init = initialState => {};
 
-  // clean the input for any non-digit values.
-  const hours = value.replace(/[^\d]/g, '');
-
-  return hours;
-};
+const reducer = (state, action) => {};
 
 const Care24HourFormComponent = props => {
   const {
@@ -63,15 +57,17 @@ const Care24HourFormComponent = props => {
     values,
   } = props;
 
+  const savedStartDate = availabilityPlan?.startDate;
+  const savedEndDate = availabilityPlan?.endDate;
+  const initialState = { savedEndDate, savedStartDate, availabilityPlan };
+  const [state, dispatch] = useReducer(reducer, initialState, init);
+
   const [selectedWeekdays, setSelectedWeekdays] = useState(availabilityPlan?.availableDays || []);
   const [availabilityExceptions, setAvailabilityExceptions] = useState(
     availabilityPlan?.availabilityExceptions || []
   );
   const [liveIn, setLiveIn] = useState(availabilityPlan?.liveIn);
   const [hoursPerDay, setHoursPerDay] = useState(availabilityPlan?.hoursPerDay || 8);
-
-  const savedStartDate = availabilityPlan && availabilityPlan.startDate;
-  const savedEndDate = availabilityPlan && availabilityPlan.endDate;
   const [startDate, setStartDate] = useState(savedStartDate);
   const [endDate, setEndDate] = useState(savedEndDate);
 
