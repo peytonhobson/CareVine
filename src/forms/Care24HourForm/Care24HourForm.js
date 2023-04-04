@@ -59,6 +59,8 @@ const Care24HourFormComponent = props => {
     updated,
     updateInProgress,
     submitButtonType,
+    onChange,
+    values,
   } = props;
 
   const [selectedWeekdays, setSelectedWeekdays] = useState(availabilityPlan?.availableDays || []);
@@ -84,9 +86,11 @@ const Care24HourFormComponent = props => {
       liveIn === !!availabilityPlan?.liveIn &&
       availabilityExceptions === availabilityPlan?.availabilityExceptions &&
       hoursPerDay === availabilityPlan?.hoursPerDay) ||
-    selectedWeekdays.length === 0;
+    selectedWeekdays?.length === 0;
 
-  const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
+  const timezone = zipcodeToTimezone.lookup(
+    currentListing.attributes.publicData?.location?.zipcode
+  );
 
   const timelineInitialValues = {
     startDate: {
@@ -105,11 +109,26 @@ const Care24HourFormComponent = props => {
 
   const handleButtonClick = day => {
     setSelectedWeekdays(prevState => {
+      let newWeekdays = null;
+
       if (prevState.includes(day)) {
-        return prevState.filter(prevDay => prevDay !== day);
+        newWeekdays = prevState.filter(prevDay => prevDay !== day);
       } else {
-        return [...prevState, day];
+        newWeekdays = [...prevState, day];
       }
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_24HOUR,
+        timezone,
+        availableDays: newWeekdays,
+        liveIn,
+        hoursPerDay,
+        availabilityExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newWeekdays;
     });
   };
 
@@ -126,21 +145,106 @@ const Care24HourFormComponent = props => {
   };
 
   const handleSaveAvailabilityException = exception => {
-    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
+    setAvailabilityExceptions(prevExceptions => {
+      const newExceptions = prevExceptions.concat(exception);
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_24HOUR,
+        timezone,
+        availableDays: selectedWeekdays,
+        liveIn,
+        hoursPerDay,
+        availabilityExceptions: newExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newExceptions;
+    });
   };
 
   const handleDeleteException = start => {
-    setAvailabilityExceptions(prevExceptions =>
-      prevExceptions.filter(exception => exception.attributes.start !== start)
-    );
+    setAvailabilityExceptions(prevExceptions => {
+      const newExceptions = prevExceptions.filter(
+        exception => exception.attributes.start !== start
+      );
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_24HOUR,
+        timezone,
+        availableDays: selectedWeekdays,
+        liveIn,
+        hoursPerDay,
+        availabilityExceptions: newExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newExceptions;
+    });
   };
 
   const onStartDateChange = date => {
-    setStartDate(date?.date?.getTime());
+    const timeDate = date?.date.getTime();
+    setStartDate(timeDate);
+    onChange({
+      type: AVAILABILITY_PLAN_TYPE_24HOUR,
+      timezone,
+      availableDays: selectedWeekdays,
+      liveIn,
+      hoursPerDay,
+      availabilityExceptions,
+      startDate: timeDate,
+      endDate,
+    });
   };
 
   const onEndDateChange = date => {
-    setEndDate(date?.date?.getTime());
+    const timeDate = date?.date.getTime();
+    setEndDate(timeDate);
+    onChange({
+      type: AVAILABILITY_PLAN_TYPE_24HOUR,
+      timezone,
+      availableDays: selectedWeekdays,
+      liveIn,
+      hoursPerDay,
+      availabilityExceptions,
+      startDate,
+      endDate: timeDate,
+    });
+  };
+
+  const handleSetHoursPerDay = hoursPerDay => {
+    setHoursPerDay(hoursPerDay);
+    onChange({
+      type: AVAILABILITY_PLAN_TYPE_24HOUR,
+      timezone,
+      availableDays: selectedWeekdays,
+      liveIn,
+      hoursPerDay,
+      availabilityExceptions,
+      startDate,
+      endDate,
+    });
+  };
+
+  const handleSetLiveIn = () => {
+    setLiveIn(prevLiveIn => {
+      const newLiveIn = !prevLiveIn;
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_24HOUR,
+        timezone,
+        availableDays: selectedWeekdays,
+        liveIn: newLiveIn,
+        hoursPerDay,
+        availabilityExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newLiveIn;
+    });
   };
 
   return (
@@ -211,14 +315,14 @@ const Care24HourFormComponent = props => {
         label={liveInCheckboxLabel}
         checked={liveIn}
         value={liveIn}
-        onClick={() => setLiveIn(prevLiveIn => !prevLiveIn)}
+        onClick={handleSetLiveIn}
       />
       <FinalForm
         onSubmit={() => {}}
         render={() => {
           return (
             <div className={css.hoursPerDayContainer}>
-              <FormSpy onChange={e => setHoursPerDay(e.values.hoursPerDay)} />
+              <FormSpy onChange={e => handleSetHoursPerDay(e.values.hoursPerDay)} />
               <FieldAddSubtract
                 name="hoursPerDay"
                 fieldClassName={css.hoursPerDayField}
