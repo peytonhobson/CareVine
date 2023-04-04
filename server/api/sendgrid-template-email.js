@@ -16,6 +16,7 @@ const SENDGRID_TEMPLATE_IDS = {
   'subscription-schedule-canceled': 'd-408b5788c9c8429ea66f077a2910669c',
   'subscription-reactivated': 'd-000a9e879d4c47668276e57eb0a44ec6',
   'subscription-upgraded': 'd-2779c5dca2a5486196bd6cb10fb8d279',
+  'payment-received': 'd-9c4c3363ed4d4771aafdd4e221e7c1eb',
 };
 
 module.exports = (req, res) => {
