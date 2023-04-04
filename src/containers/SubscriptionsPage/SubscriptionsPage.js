@@ -90,7 +90,6 @@ const SubscriptionsPageComponent = props => {
     scrollingDisabled,
     cancelSubscriptionInProgress,
     cancelSubscriptionError,
-    onCancelSubscription,
     onUpdateSubscription,
     onCreateSubscription,
     createSubscriptionError,

@@ -110,7 +110,7 @@ const Footer = props => {
               </ul>
             </div>
             <div className={css.extraLinks}>
-              <div className={css.someLinks}>{socialMediaLinks}</div>
+              {/* <div className={css.someLinks}>{socialMediaLinks}</div> */}
               <div className={css.legalMatters}>
                 <ul className={css.tosAndPrivacy}>
                   <li>
