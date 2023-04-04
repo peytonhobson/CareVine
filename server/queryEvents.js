@@ -170,8 +170,7 @@ module.exports = queryEvents = () => {
               (prevEmailVerified !== undefined && !prevEmailVerified))
           : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
-      // If user meets requirements to open listing, approve listing
-      // TODO: Add user data for listing status so we dont have to query them every time
+      // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
@@ -183,12 +182,10 @@ module.exports = queryEvents = () => {
             authorId: userId,
           })
           .then(res => {
-            console.log('approve listing 2 past query 1');
-            const userListingId = res?.data?.data[0]?.id?.uuid;
-            listingState = res?.data?.data[0]?.attributes?.state;
+            const userListingId = res.data.data[0].id.uuid;
+            listingState = res.data.data[0].attributes.state;
 
             if (listingState === 'pendingApproval') {
-              console.log('approve listing 2 at approve');
               return integrationSdk.listings
                 .approve({
                   id: userListingId,
@@ -200,7 +197,6 @@ module.exports = queryEvents = () => {
             }
 
             if (listingState === 'closed') {
-              console.log('Open listing');
               return integrationSdk.listings
                 .open({
                   id: userListingId,
@@ -217,8 +213,6 @@ module.exports = queryEvents = () => {
       }
 
       const tcmEnrolled = privateData?.tcmEnrolled;
-      const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
-      const backgroundCheckRejected = privateData?.backgroundCheckRejected;
 
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
@@ -288,8 +282,10 @@ module.exports = queryEvents = () => {
       }
 
       const previousQuizAttempts = previousValuesProfile?.privateData?.identityProofQuizAttempts;
+      const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
-        previousValuesProfile?.privateData?.backgroundCheckRejected;
+        prevBackgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED;
+      const backgroundCheckRejected = backgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED;
 
       // If failed background check, set subscription to cancel at end of period
       if (
@@ -314,10 +310,13 @@ module.exports = queryEvents = () => {
           .catch(e => log.error(e, 'stripe-update-subscription-failed'));
       }
 
-      // Close user listing if background check subscription is cancelled
+      const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
+
+      // Close user listing if background check subscription is cancelled and they don't have a subscription schedule
       if (
         backgroundCheckSubscription?.status !== 'active' &&
-        previousBCSubscription?.status === 'active'
+        previousBCSubscription?.status === 'active' &&
+        !backgroundCheckSubscriptionSchedule
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
@@ -426,6 +425,7 @@ module.exports = queryEvents = () => {
       }
     }
 
+    // If user is deleted, delete their channels
     if (eventType === 'user/deleted') {
       const previousValues = event?.attributes?.previousValues;
       const userId = previousValues?.id?.uuid;
