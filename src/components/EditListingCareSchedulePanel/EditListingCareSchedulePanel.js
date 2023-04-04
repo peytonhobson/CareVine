@@ -50,19 +50,21 @@ const EditListingCareSchedulePanel = props => {
   const classes = classNames(className, rootClassName || css.root);
   const currentListing = ensureOwnListing(listing);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const availabilityPlanMaybe = currentListing?.attributes?.publicData?.availabilityPlan;
+  const availabilityPlanMaybe = currentListing.attributes.publicData?.availabilityPlan;
 
   const [selectedScheduleType, setSelectedScheduleType] = useState(
-    availabilityPlanMaybe?.type || ONE_TIME
+    availabilityPlanMaybe?.type ?? ONE_TIME
   );
   const [showErrors, setShowErrors] = useState(false);
+  const [savedOneTimePlan, setSavedOneTimePlan] = useState(null);
+  const [savedRepeatPlan, setSavedRepeatPlan] = useState(null);
 
   useEffect(() => {
     setShowErrors(true);
   }, [errors.updateListingError]);
 
   const handle24HourCareSubmit = values => {
-    const currentZipcode = currentListing?.attributes.publicData?.location?.zipcode;
+    const currentZipcode = currentListing.attributes.publicData?.location?.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
 
     const availabilityPlan = {
@@ -101,7 +103,7 @@ const EditListingCareSchedulePanel = props => {
 
   switch (selectedScheduleType) {
     case ONE_TIME:
-      availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
+      availabilityPlan = savedOneTimePlan ?? availabilityPlanMaybe;
       mainContent = (
         <CareScheduleSelectDatesContainer
           availabilityPlan={availabilityPlan}
@@ -115,6 +117,7 @@ const EditListingCareSchedulePanel = props => {
           updated={panelUpdated}
           updateInProgress={updateInProgress}
           showErrors={showErrors}
+          onChange={setSavedOneTimePlan}
         />
       );
       break;
@@ -125,9 +128,8 @@ const EditListingCareSchedulePanel = props => {
         entries: [],
       };
       availabilityPlan =
-        currentListing.attributes.publicData.availabilityPlan &&
-        currentListing.attributes.publicData.availabilityPlan.type === AVAILABILITY_PLAN_TYPE_REPEAT
-          ? currentListing.attributes.publicData.availabilityPlan
+        availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
+          ? availabilityPlanMaybe
           : defaultAvailabilityPlan;
       mainContent = (
         <CareScheduleRecurringTimesContainer
@@ -155,9 +157,8 @@ const EditListingCareSchedulePanel = props => {
         timezone: defaultTimeZone(),
       };
       availabilityPlan =
-        currentListing.attributes.publicData.availabilityPlan &&
-        currentListing.attributes.publicData.availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR
-          ? currentListing.attributes.publicData.availabilityPlan
+        availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
+          ? availabilityPlanMaybe
           : defaultAvailabilityPlan;
       mainContent = (
         <Care24HourForm
