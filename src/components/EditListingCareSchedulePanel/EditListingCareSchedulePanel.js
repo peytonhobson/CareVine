@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer } from 'react';
 import { arrayOf, bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import zipcodeToTimezone from 'zipcode-to-timezone';
@@ -22,6 +22,12 @@ const ONE_TIME = 'oneTime';
 const REPEAT = 'repeat';
 const TWENTY_FOUR_HOUR = '24hour';
 
+const CHANGE_SCHEDULE_TYPE = 'changeScheduleType';
+const SET_SHOW_ERRORS = 'setShowErrors';
+const SET_SAVE_ONE_TIME_PLAN = 'setSaveOneTimePlan';
+const SET_SAVE_REPEAT_PLAN = 'setSaveRepeatPlan';
+const SET_SAVE_24_HOUR_PLAN = 'setSave24HourPlan';
+
 const buttonGroupOptions = [
   { key: ONE_TIME, label: 'One Time Care' },
   { key: REPEAT, label: 'Repeat Care' },
@@ -30,6 +36,33 @@ const buttonGroupOptions = [
 
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
+
+const init = availabilityPlan => {
+  return {
+    selectedScheduleType: availabilityPlan?.type ?? ONE_TIME,
+    showErrors: false,
+    savedOneTimePlan: null,
+    savedRepeatPlan: null,
+    saved24HourPlan: null,
+  };
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case CHANGE_SCHEDULE_TYPE:
+      return { ...state, selectedScheduleType: action.payload };
+    case SET_SHOW_ERRORS:
+      return { ...state, showErrors: action.payload };
+    case SET_SAVE_ONE_TIME_PLAN:
+      return { ...state, savedOneTimePlan: action.payload };
+    case SET_SAVE_REPEAT_PLAN:
+      return { ...state, savedRepeatPlan: action.payload };
+    case SET_SAVE_24_HOUR_PLAN:
+      return { ...state, saved24HourPlan: action.payload };
+    default:
+      throw new Error();
+  }
+};
 
 const EditListingCareSchedulePanel = props => {
   const {
@@ -52,16 +85,10 @@ const EditListingCareSchedulePanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const availabilityPlanMaybe = currentListing.attributes.publicData?.availabilityPlan;
 
-  const [selectedScheduleType, setSelectedScheduleType] = useState(
-    availabilityPlanMaybe?.type ?? ONE_TIME
-  );
-  const [showErrors, setShowErrors] = useState(false);
-  const [savedOneTimePlan, setSavedOneTimePlan] = useState(null);
-  const [savedRepeatPlan, setSavedRepeatPlan] = useState(null);
-  const [saved24HourPlan, setSaved24HourPlan] = useState(null);
+  const [state, dispatch] = useReducer(reducer, availabilityPlanMaybe, init);
 
   useEffect(() => {
-    setShowErrors(true);
+    dispatch({ type: SET_SHOW_ERRORS, payload: errors.updateListingError });
   }, [errors.updateListingError]);
 
   const handle24HourCareSubmit = values => {
@@ -94,17 +121,17 @@ const EditListingCareSchedulePanel = props => {
   };
 
   const handleScheduleTypeChange = type => {
-    setSelectedScheduleType(type);
-    setShowErrors(false);
+    dispatch({ type: CHANGE_SCHEDULE_TYPE, payload: type });
+    dispatch({ type: SET_SHOW_ERRORS, payload: false });
   };
 
   let mainContent = null;
   let availabilityPlan = null;
   let defaultAvailabilityPlan = null;
 
-  switch (selectedScheduleType) {
+  switch (state.selectedScheduleType) {
     case ONE_TIME:
-      availabilityPlan = savedOneTimePlan ?? availabilityPlanMaybe;
+      availabilityPlan = state.savedOneTimePlan ?? availabilityPlanMaybe;
       mainContent = (
         <CareScheduleSelectDatesContainer
           availabilityPlan={availabilityPlan}
@@ -117,8 +144,8 @@ const EditListingCareSchedulePanel = props => {
           submitButtonText={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
-          showErrors={showErrors}
-          onChange={setSavedOneTimePlan}
+          showErrors={state.showErrors}
+          onChange={oneTimePlan => dispatch({ type: SET_SAVE_ONE_TIME_PLAN, payload: oneTimePlan })}
         />
       );
       break;
@@ -128,8 +155,8 @@ const EditListingCareSchedulePanel = props => {
         timezone: defaultTimeZone(),
         entries: [],
       };
-      availabilityPlan = savedRepeatPlan
-        ? savedRepeatPlan
+      availabilityPlan = state.savedRepeatPlan
+        ? state.savedRepeatPlan
         : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
         ? availabilityPlanMaybe
         : defaultAvailabilityPlan;
@@ -146,9 +173,9 @@ const EditListingCareSchedulePanel = props => {
           ready={ready}
           submitButtonText={submitButtonText}
           updateInProgress={updateInProgress}
-          showErrors={showErrors}
+          showErrors={state.showErrors}
           panelUpdated={panelUpdated}
-          onChange={setSavedRepeatPlan}
+          onChange={repeatPlan => dispatch({ type: SET_SAVE_REPEAT_PLAN, payload: repeatPlan })}
         />
       );
       break;
@@ -159,8 +186,8 @@ const EditListingCareSchedulePanel = props => {
         liveIn: false,
         timezone: defaultTimeZone(),
       };
-      availabilityPlan = saved24HourPlan
-        ? saved24HourPlan
+      availabilityPlan = state.saved24HourPlan
+        ? state.saved24HourPlan
         : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
         ? availabilityPlanMaybe
         : defaultAvailabilityPlan;
@@ -173,11 +200,11 @@ const EditListingCareSchedulePanel = props => {
           onManageDisableScrolling={onManageDisableScrolling}
           onSubmit={handle24HourCareSubmit}
           ready={ready}
-          showErrors={showErrors}
+          showErrors={state.showErrors}
           submitButtonText={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
-          onChange={setSaved24HourPlan}
+          onChange={plan => dispatch({ type: SET_SAVE_24_HOUR_PLAN, payload: plan })}
         ></Care24HourForm>
       );
       break;
