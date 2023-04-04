@@ -271,7 +271,7 @@ const SubscriptionsPageComponent = props => {
           try {
             const response = await onCreateFutureSubscription(
               stripeCustomerId,
-              backgroundCheckSubscription.currentPeriodEnd + 1000,
+              backgroundCheckSubscription.currentPeriodEnd + 60000, // Start subscription a minute after the current period ends to avoid close listing
               priceId,
               ensuredCurrentUser.id.uuid
             );
