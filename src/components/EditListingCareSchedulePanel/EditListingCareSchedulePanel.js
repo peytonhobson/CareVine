@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { arrayOf, bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import zipcodeToTimezone from 'zipcode-to-timezone';
@@ -163,6 +163,7 @@ const EditListingCareSchedulePanel = props => {
       mainContent = (
         <CareScheduleRecurringTimesContainer
           availabilityPlan={availabilityPlan}
+          userAvailabilityPlan={availabilityPlanMaybe}
           currentListing={currentListing}
           disabled={disabled}
           errors={errors}

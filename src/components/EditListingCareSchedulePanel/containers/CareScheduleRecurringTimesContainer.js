@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer, useEffect } from 'react';
 
 import zipcodeToTimezone from 'zipcode-to-timezone';
 import { compose } from 'redux';
@@ -23,9 +23,56 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const REPEAT = 'repeat';
 
+const SET_IS_EDIT_PLAN_MODAL_OPEN = 'SET_IS_EDIT_PLAN_MODAL_OPEN';
+const SET_AVAILABILITY_PLAN = 'SET_AVAILABILITY_PLAN';
+const ADD_AVAILABILITY_EXCEPTION = 'SET_AVAILABILITY_EXCEPTION';
+const DELETE_AVAILABILITY_EXCEPTION = 'DELETE_AVAILABILITY_EXCEPTION';
+const SET_START_DATE = 'SET_START_DATE';
+const SET_END_DATE = 'SET_END_DATE';
+
+const init = initialState => {
+  return {
+    ...initialState,
+    availabilityPlan: initialState.savedAvailabilityPlan,
+    startDate: initialState.savedStartDate,
+    endDate: initialState.savedEndDate,
+    availabilityExceptions: initialState.savedAvailabilityPlan?.availabilityExceptions || [],
+  };
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case SET_IS_EDIT_PLAN_MODAL_OPEN:
+      return { ...state, isEditPlanModalOpen: action.payload };
+    case SET_AVAILABILITY_PLAN:
+      return { ...state, availabilityPlan: action.payload };
+    case ADD_AVAILABILITY_EXCEPTION:
+      return {
+        ...state,
+        availabilityExceptions: [...state.availabilityExceptions, action.payload],
+      };
+    case DELETE_AVAILABILITY_EXCEPTION:
+      return {
+        ...state,
+        availabilityExceptions: state.availabilityExceptions.filter(
+          e => e.attributes.start !== action.payload
+        ),
+      };
+    case SET_START_DATE:
+      const startDate = action.payload?.date?.getTime();
+      return { ...state, startDate };
+    case SET_END_DATE:
+      const endDate = action.payload?.date?.getTime();
+      return { ...state, endDate };
+    default:
+      return state;
+  }
+};
+
 const CareScheduleRecurringTimesContainerComponent = props => {
   const {
     availabilityPlan: savedAvailabilityPlan,
+    userAvailabilityPlan,
     currentListing,
     disabled,
     errors,
@@ -43,33 +90,32 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     onChange,
   } = props;
 
-  const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
-  const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
-  const [availabilityExceptions, setAvailabilityExceptions] = useState(
-    savedAvailabilityPlan?.availabilityExceptions || []
-  );
-  const [availabilityPlan, setAvailabilityPlan] = useState(savedAvailabilityPlan);
-
   const savedStartDate = savedAvailabilityPlan?.startDate;
   const savedEndDate = savedAvailabilityPlan?.endDate;
-  const [startDate, setStartDate] = useState(savedStartDate);
-  const [endDate, setEndDate] = useState(savedEndDate);
+
+  const initialState = {
+    savedStartDate,
+    savedEndDate,
+    savedAvailabilityPlan,
+    isEditPlanModalOpen: false,
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState, init);
+
+  useEffect(() => {
+    onChange({
+      ...state.availabilityPlan,
+      availabilityExceptions: state.availabilityExceptions,
+      startDate: state.startDate,
+      endDate: state.endDate,
+    });
+  }, [state]);
 
   const handleAvailabilityPlanSubmit = values => {
-    setValuesFromLastSubmit(values);
-
     const newAvailabilityPlan = createAvailabilityPlan(values, currentListing);
 
-    setAvailabilityPlan(newAvailabilityPlan);
-
-    onChange({
-      ...newAvailabilityPlan,
-      availabilityExceptions,
-      startDate,
-      endDate,
-    });
-
-    setIsEditPlanModalOpen(false);
+    dispatch({ type: SET_AVAILABILITY_PLAN, payload: newAvailabilityPlan });
+    dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: false });
   };
 
   const handleSubmit = () => {
@@ -77,10 +123,10 @@ const CareScheduleRecurringTimesContainerComponent = props => {
 
     if (isBooking) {
       return onSubmit({
-        ...availabilityPlan,
-        availabilityExceptions,
-        startDate,
-        endDate,
+        ...state.availabilityPlan,
+        availabilityExceptions: state.availabilityExceptions,
+        startDate: state.startDate,
+        endDate: state.endDate,
       });
     }
 
@@ -88,10 +134,10 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       publicData: {
         scheduleType: REPEAT,
         availabilityPlan: {
-          ...availabilityPlan,
-          availabilityExceptions,
-          startDate,
-          endDate,
+          ...state.availabilityPlan,
+          availabilityExceptions: state.availabilityExceptions,
+          startDate: state.startDate,
+          endDate: state.endDate,
         },
       },
     })
@@ -105,16 +151,13 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       });
   };
 
-  const initialValues = valuesFromLastSubmit
-    ? valuesFromLastSubmit
-    : createInitialValues(availabilityPlan);
+  const initialValues = createInitialValues(state.availabilityPlan);
 
   const submitDisabled =
-    (!valuesFromLastSubmit &&
-      startDate === savedStartDate &&
-      endDate === savedEndDate &&
-      availabilityExceptions === availabilityPlan?.availabilityExceptions) ||
-    availabilityPlan?.entries?.length === 0;
+    (state.startDate === userAvailabilityPlan?.startDate &&
+      state.endDate === userAvailabilityPlan?.startDate &&
+      state.availabilityExceptions === userAvailabilityPlan?.availabilityExceptions) ||
+    state.availabilityPlan?.entries?.length === 0;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -130,59 +173,19 @@ const CareScheduleRecurringTimesContainerComponent = props => {
   };
 
   const handleSaveAvailabilityException = exception => {
-    setAvailabilityExceptions(prevExceptions => {
-      const newExceptions = prevExceptions.concat(exception);
-
-      onChange({
-        ...availabilityPlan,
-        availabilityExceptions: newExceptions,
-        startDate,
-        endDate,
-      });
-
-      return newExceptions;
-    });
+    dispatch({ type: ADD_AVAILABILITY_EXCEPTION, payload: exception });
   };
 
   const handleDeleteException = start => {
-    setAvailabilityExceptions(prevExceptions => {
-      const newExceptions = prevExceptions.filter(
-        exception => exception.attributes.start !== start
-      );
-
-      onChange({
-        ...availabilityPlan,
-        availabilityExceptions: newExceptions,
-        startDate,
-        endDate,
-      });
-
-      return newExceptions;
-    });
+    dispatch({ type: DELETE_AVAILABILITY_EXCEPTION, payload: start });
   };
 
   const onStartDateChange = date => {
-    const timeDate = date?.date.getTime();
-    setStartDate(timeDate);
-
-    onChange({
-      ...availabilityPlan,
-      availabilityExceptions,
-      startDate: timeDate,
-      endDate,
-    });
+    dispatch({ type: SET_START_DATE, payload: date });
   };
 
   const onEndDateChange = date => {
-    const timeDate = date?.date.getTime();
-    setEndDate(timeDate);
-
-    onChange({
-      ...availabilityPlan,
-      availabilityExceptions,
-      startDate,
-      endDate: timeDate,
-    });
+    dispatch({ type: SET_END_DATE, payload: date });
   };
 
   return (
@@ -208,23 +211,23 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           </h2>
           <InlineTextButton
             className={css.editPlanButton}
-            onClick={() => setIsEditPlanModalOpen(true)}
+            onClick={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
           >
             <IconEdit className={css.editPlanIcon} />{' '}
             <FormattedMessage id="CareScheduleRecurringTimesContainer.edit" />
           </InlineTextButton>
         </header>
         <WeekPanel
-          availabilityPlan={availabilityPlan}
-          openEditModal={() => setIsEditPlanModalOpen(true)}
+          availabilityPlan={state.availabilityPlan}
+          openEditModal={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
         />
       </section>
       <div className={css.scheduleExceptionsContainer}>
         <h2 className={css.scheduleExceptionsTitle}>Are there any exceptions to this schedule?</h2>
         <CareScheduleExceptions
-          availabilityExceptions={availabilityExceptions}
+          availabilityExceptions={state.availabilityExceptions}
           onManageDisableScrolling={onManageDisableScrolling}
-          availabilityPlan={availabilityPlan}
+          availabilityPlan={state.availabilityPlan}
           updateInProgress={updateInProgress}
           errors={errors}
           disabled={disabled}
@@ -246,8 +249,8 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       {onManageDisableScrolling ? (
         <Modal
           id="EditAvailabilityPlan"
-          isOpen={isEditPlanModalOpen}
-          onClose={() => setIsEditPlanModalOpen(false)}
+          isOpen={state.isEditPlanModalOpen}
+          onClose={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: false })}
           onManageDisableScrolling={onManageDisableScrolling}
           containerClassName={css.modalContainer}
           usePortal
@@ -255,7 +258,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           <EditListingAvailabilityPlanForm
             formId="EditListingAvailabilityPlanForm"
             listingTitle={currentListing.attributes.title}
-            availabilityPlan={availabilityPlan}
+            availabilityPlan={state.availabilityPlan}
             weekdays={WEEKDAYS}
             onSubmit={handleAvailabilityPlanSubmit}
             initialValues={initialValues}
