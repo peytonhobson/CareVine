@@ -266,6 +266,10 @@ export const stripeCancelSubscriptionSchedule = body => {
   return post('/api/stripe-cancel-subscription-schedule', body);
 };
 
+export const stripeUpdateSubscriptionItem = body => {
+  return post('/api/stripe-update-subscription-item', body);
+}
+
 export const applyPromo = body => {
   return post('/api/apply-promo', body);
 };
