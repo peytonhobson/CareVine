@@ -9,13 +9,7 @@
    :actions [
     {:name :action/update-protected-data},
    ],
-   :to :state/payment-requested},
-   {:name :transition/confirm-payment,
-   :actor :actor.role/customer,
-   :actions [
-    {:name :action/update-protected-data},
-   ],
-   :to :state/payment-confirmed}],
+   :to :state/payment-requested},],
  :notifications
  [{:name :notification/payment-details-notification,
    :on :transition/notify-for-payment,
@@ -25,8 +19,4 @@
    :on :transition/request-payment,
    :to :actor.role/provider,
    :template :payment-requested},
-   {:name :notification/payment-confirmed,
-   :on :transition/confirm-payment,
-   :to :actor.role/provider,
-   :template :payment-received}
    ]}
