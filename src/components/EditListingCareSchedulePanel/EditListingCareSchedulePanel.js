@@ -135,6 +135,7 @@ const EditListingCareSchedulePanel = props => {
       mainContent = (
         <CareScheduleSelectDatesContainer
           availabilityPlan={availabilityPlan}
+          userAvailabilityPlan={availabilityPlanMaybe}
           disabled={disabled}
           errors={errors}
           listing={currentListing}
