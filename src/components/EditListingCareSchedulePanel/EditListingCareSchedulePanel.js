@@ -50,19 +50,22 @@ const EditListingCareSchedulePanel = props => {
   const classes = classNames(className, rootClassName || css.root);
   const currentListing = ensureOwnListing(listing);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const availabilityPlanMaybe = currentListing?.attributes?.publicData?.availabilityPlan;
+  const availabilityPlanMaybe = currentListing.attributes.publicData?.availabilityPlan;
 
   const [selectedScheduleType, setSelectedScheduleType] = useState(
-    availabilityPlanMaybe?.type || ONE_TIME
+    availabilityPlanMaybe?.type ?? ONE_TIME
   );
   const [showErrors, setShowErrors] = useState(false);
+  const [savedOneTimePlan, setSavedOneTimePlan] = useState(null);
+  const [savedRepeatPlan, setSavedRepeatPlan] = useState(null);
+  const [saved24HourPlan, setSaved24HourPlan] = useState(null);
 
   useEffect(() => {
     setShowErrors(true);
   }, [errors.updateListingError]);
 
   const handle24HourCareSubmit = values => {
-    const currentZipcode = currentListing?.attributes.publicData?.location?.zipcode;
+    const currentZipcode = currentListing.attributes.publicData?.location?.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
 
     const availabilityPlan = {
@@ -101,7 +104,7 @@ const EditListingCareSchedulePanel = props => {
 
   switch (selectedScheduleType) {
     case ONE_TIME:
-      availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
+      availabilityPlan = savedOneTimePlan ?? availabilityPlanMaybe;
       mainContent = (
         <CareScheduleSelectDatesContainer
           availabilityPlan={availabilityPlan}
@@ -115,6 +118,7 @@ const EditListingCareSchedulePanel = props => {
           updated={panelUpdated}
           updateInProgress={updateInProgress}
           showErrors={showErrors}
+          onChange={setSavedOneTimePlan}
         />
       );
       break;
@@ -124,11 +128,11 @@ const EditListingCareSchedulePanel = props => {
         timezone: defaultTimeZone(),
         entries: [],
       };
-      availabilityPlan =
-        currentListing.attributes.publicData.availabilityPlan &&
-        currentListing.attributes.publicData.availabilityPlan.type === AVAILABILITY_PLAN_TYPE_REPEAT
-          ? currentListing.attributes.publicData.availabilityPlan
-          : defaultAvailabilityPlan;
+      availabilityPlan = savedRepeatPlan
+        ? savedRepeatPlan
+        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
+        ? availabilityPlanMaybe
+        : defaultAvailabilityPlan;
       mainContent = (
         <CareScheduleRecurringTimesContainer
           availabilityPlan={availabilityPlan}
@@ -144,6 +148,7 @@ const EditListingCareSchedulePanel = props => {
           updateInProgress={updateInProgress}
           showErrors={showErrors}
           panelUpdated={panelUpdated}
+          onChange={setSavedRepeatPlan}
         />
       );
       break;
@@ -154,11 +159,11 @@ const EditListingCareSchedulePanel = props => {
         liveIn: false,
         timezone: defaultTimeZone(),
       };
-      availabilityPlan =
-        currentListing.attributes.publicData.availabilityPlan &&
-        currentListing.attributes.publicData.availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR
-          ? currentListing.attributes.publicData.availabilityPlan
-          : defaultAvailabilityPlan;
+      availabilityPlan = saved24HourPlan
+        ? saved24HourPlan
+        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
+        ? availabilityPlanMaybe
+        : defaultAvailabilityPlan;
       mainContent = (
         <Care24HourForm
           availabilityPlan={availabilityPlan}
@@ -172,6 +177,7 @@ const EditListingCareSchedulePanel = props => {
           submitButtonText={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
+          onChange={setSaved24HourPlan}
         ></Care24HourForm>
       );
       break;

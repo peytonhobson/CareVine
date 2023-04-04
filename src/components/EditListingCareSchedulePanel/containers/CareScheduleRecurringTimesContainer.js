@@ -40,6 +40,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     panelUpdated,
     intl,
     isBooking,
+    onChange,
   } = props;
 
   const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
@@ -57,7 +58,16 @@ const CareScheduleRecurringTimesContainerComponent = props => {
   const handleAvailabilityPlanSubmit = values => {
     setValuesFromLastSubmit(values);
 
-    setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
+    const newAvailabilityPlan = createAvailabilityPlan(values, currentListing);
+
+    setAvailabilityPlan(newAvailabilityPlan);
+
+    onChange({
+      ...newAvailabilityPlan,
+      availabilityExceptions,
+      startDate,
+      endDate,
+    });
 
     setIsEditPlanModalOpen(false);
   };
@@ -120,21 +130,59 @@ const CareScheduleRecurringTimesContainerComponent = props => {
   };
 
   const handleSaveAvailabilityException = exception => {
-    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
+    setAvailabilityExceptions(prevExceptions => {
+      const newExceptions = prevExceptions.concat(exception);
+
+      onChange({
+        ...availabilityPlan,
+        availabilityExceptions: newExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newExceptions;
+    });
   };
 
   const handleDeleteException = start => {
-    setAvailabilityExceptions(prevExceptions =>
-      prevExceptions.filter(exception => exception.attributes.start !== start)
-    );
+    setAvailabilityExceptions(prevExceptions => {
+      const newExceptions = prevExceptions.filter(
+        exception => exception.attributes.start !== start
+      );
+
+      onChange({
+        ...availabilityPlan,
+        availabilityExceptions: newExceptions,
+        startDate,
+        endDate,
+      });
+
+      return newExceptions;
+    });
   };
 
   const onStartDateChange = date => {
-    setStartDate(date?.date?.getTime());
+    const timeDate = date?.date.getTime();
+    setStartDate(timeDate);
+
+    onChange({
+      ...availabilityPlan,
+      availabilityExceptions,
+      startDate: timeDate,
+      endDate,
+    });
   };
 
   const onEndDateChange = date => {
-    setEndDate(date?.date?.getTime());
+    const timeDate = date?.date.getTime();
+    setEndDate(timeDate);
+
+    onChange({
+      ...availabilityPlan,
+      availabilityExceptions,
+      startDate,
+      endDate: timeDate,
+    });
   };
 
   return (
