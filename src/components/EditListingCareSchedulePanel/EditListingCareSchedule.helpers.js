@@ -32,13 +32,10 @@ export const createAvailabilityPlan = (values, currentListing) => {
     zipcodeToTimezone.lookup(currentListing?.attributes?.publicData?.location?.zipcode) ||
     'America/Denver';
 
-  const isFlexible = values?.isFlexible;
-
   return {
     type: 'repeat',
     timezone,
     entries: createEntriesFromSubmitValues(values),
-    ...isFlexible,
   };
 };
 
