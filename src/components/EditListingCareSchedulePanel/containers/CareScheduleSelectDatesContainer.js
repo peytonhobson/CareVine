@@ -36,6 +36,7 @@ const CareScheduleSelectDatesContainer = props => {
     updateInProgress,
     showErrors,
     exceptionsClassName,
+    onChange,
   } = props;
 
   // Hooks
@@ -44,7 +45,7 @@ const CareScheduleSelectDatesContainer = props => {
 
   useEffect(() => {
     setSelectedSessions(
-      availabilityPlan && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
+      availabilityPlan?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
         ? availabilityPlan.selectedSessions
         : []
     );
@@ -58,16 +59,36 @@ const CareScheduleSelectDatesContainer = props => {
   const saveSession = values => {
     const { sessionStartTime, sessionEndTime } = values;
 
-    setSelectedSessions(prevSelectedSessions => [
-      ...prevSelectedSessions,
-      { start: sessionStartTime, end: sessionEndTime },
-    ]);
+    setSelectedSessions(prevSelectedSessions => {
+      const newSessions = prevSelectedSessions.concat({
+        start: sessionStartTime,
+        end: sessionEndTime,
+      });
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
+        selectedSessions: newSessions,
+        timezone: timeZone,
+      });
+
+      return newSessions;
+    });
 
     setIsAddCareSessionModalOpen(false);
   };
 
   const onDeleteCareSession = session => {
-    setSelectedSessions(prevSelectedSessions => prevSelectedSessions.filter(s => s !== session));
+    setSelectedSessions(prevSelectedSessions => {
+      const newSessions = prevSelectedSessions.filter(s => s !== session);
+
+      onChange({
+        type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
+        selectedSessions: newSessions,
+        timezone: timeZone,
+      });
+
+      return newSessions;
+    });
   };
 
   const handleSubmit = () => {

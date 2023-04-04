@@ -15,8 +15,8 @@ import css from './AboutPage.module.css';
 import image from './about-us-1056.jpg';
 
 const AboutPage = () => {
-  const { siteTwitterHandle, siteFacebookPage } = config;
-  const siteTwitterPage = twitterPageURL(siteTwitterHandle);
+  // const { siteTwitterHandle, siteFacebookPage } = config;
+  // const siteTwitterPage = twitterPageURL(siteTwitterHandle);
 
   // prettier-ignore
   return (
@@ -25,7 +25,7 @@ const AboutPage = () => {
       schema={{
         '@context': 'http://schema.org',
         '@type': 'AboutPage',
-        description: 'About Yogatime',
+        description: 'About CareVine',
         name: 'About page',
       }}
     >
@@ -36,7 +36,7 @@ const AboutPage = () => {
 
         <LayoutWrapperMain className={css.staticPageWrapper}>
           <h1 className={css.pageTitle}>Look For Care or Accelerate Your Career</h1>
-          <img className={css.coverImage} src={image} alt="My first ice cream." />
+          <img className={css.coverImage} src={image} alt="Two people smiling at each other." />
 
           <div className={css.contentWrapper}>
             <div className={css.contentMain}>
@@ -64,10 +64,11 @@ const AboutPage = () => {
               <p>
                 Thank you for considering our marketplace as your go-to resource for caregiving
                 needs. Don't hesitate to reach out to us to learn more about how we can help you
-                find the right caregiver or grow your business as a caregiver. You can also follow
+                find the right caregiver or grow your business as a caregiver.
+                {/* You can also follow
                 us on <ExternalLink href={siteFacebookPage}>Facebook</ExternalLink> and{' '}
                 <ExternalLink href={siteTwitterPage}>Twitter</ExternalLink> to stay up-to-date on
-                our latest news and updates.
+                our latest news and updates. */}
               </p>
             </div>
           </div>
