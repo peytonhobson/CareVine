@@ -196,6 +196,7 @@ const EditListingCareSchedulePanel = props => {
       mainContent = (
         <Care24HourForm
           availabilityPlan={availabilityPlan}
+          userAvailabilityPlan={availabilityPlanMaybe}
           currentListing={currentListing}
           disabled={disabled}
           fetchErrors={errors}
