@@ -106,6 +106,7 @@ const SendbirdApp = props => {
       onClick={redirectToOwnProfile}
       onKeyDown={redirectToOwnProfile}
       tabIndex={0}
+      style={{ backgroundColor: 'var(--matterColorNegative)' }}
     >
       <div className={css.titleAvatarContainer}>
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
