@@ -10,6 +10,9 @@ import {
 } from '../../components';
 import { EMPLOYER } from '../../util/constants';
 import css from './SearchResultsPanel.module.css';
+import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
+
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const SearchResultsPanel = props => {
   const {
@@ -61,6 +64,18 @@ const SearchResultsPanel = props => {
               currentUser={currentUser}
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
+            />
+          ) : isMobile ? (
+            <EmployerListingCardMobile
+              className={css.listingCard}
+              key={l.id.uuid}
+              listing={l}
+              renderSizes={cardRenderSizes}
+              setActiveListing={setActiveListing}
+              currentUser={currentUser}
+              onContactUser={onContactUser}
+              currentUserListing={currentUserListing}
+              onManageDisableScrolling={onManageDisableScrolling}
             />
           ) : (
             <EmployerListingCard

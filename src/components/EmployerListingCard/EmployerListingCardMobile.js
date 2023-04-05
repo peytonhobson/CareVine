@@ -30,6 +30,8 @@ import css from './EmployerListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const priceData = (rates, intl) => {
   const minPriceMoney = new Money(rates[0], 'USD');
   const maxPriceMoney = new Money(rates[1], 'USD');
@@ -64,7 +66,7 @@ const priceData = (rates, intl) => {
 
 // const LazyImage = lazyLoadWithDimensions(ListingImage, { loadAfterInitialRendering: 3000 });
 
-export const EmployerListingCardComponent = props => {
+export const EmployerListingCardMobileComponent = props => {
   const {
     className,
     rootClassName,
@@ -138,8 +140,8 @@ export const EmployerListingCardComponent = props => {
   const scheduleTypeLabel = scheduleTypeOptions?.find(option => option.key === scheduleType)?.label;
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
-    width: '60rem',
-    height: '19rem',
+    width: '100%',
+    height: 'auto',
     marginBottom: '1.5rem',
     '&.MuiPaper-rounded': {
       borderRadius: '3rem',
@@ -158,7 +160,7 @@ export const EmployerListingCardComponent = props => {
     <>
       <Card>
         <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-          <div className={css.topRow}>
+          <div className={css.mobileTitleContainer}>
             <div className={css.user}>
               {avatarComponent}
               <div className={css.userTitle}>
@@ -168,57 +170,40 @@ export const EmployerListingCardComponent = props => {
                 })}
               </div>
             </div>
-
+            <div className={css.title}>{title}</div>
+          </div>
+          <div className={css.topRow}>
             <div className={css.topInfo}>
-              <div>
-                <div className={css.title}>{title}</div>
-                <div>
-                  <h3 className={css.location}>
-                    <FormattedMessage
-                      id="EmployerListingCard.location"
-                      values={{ city: location.city, miles: distanceFromLocation }}
-                    />
-                  </h3>
-                  <h3 className={css.scheduleType}>
-                    <FormattedMessage
-                      id={'EmployerListingCard.scheduleType'}
-                      values={{ type: `${scheduleTypeLabel}${isLiveIn ? ' (Live-In)' : ''}` }}
-                    />
-                  </h3>
-                  {scheduleType === '24hour' || scheduleType === 'repeat' ? (
-                    <AvailabilityPreview entries={entries} availableDays={availableDays} />
-                  ) : (
-                    <InlineTextButton
-                      onClick={e => {
-                        e.preventDefault();
-                        setIsOneTimeScheduleModalOpen(true);
-                      }}
-                    >
-                      <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                    </InlineTextButton>
-                  )}
-                </div>
+              <div className={css.centerFlex}>
+                <h3 className={css.location}>{location.city}</h3>
+                <h3 className={css.location}>{distanceFromLocation} miles away</h3>
               </div>
-
-              <div>
-                <div className={css.priceValue} title={priceTitle}>
-                  {formattedMinPrice}-{maxPrice / 100}
-                  <span className={css.perUnit}>
-                    &nbsp;
-                    <FormattedMessage id={'EmployerListingCard.perUnit'} />
-                  </span>
-                </div>
-                <div className={css.buttonContainer}>
-                  <Button className={css.messageButton}>
-                    <FormattedMessage id={'EmployerListingCard.viewProfile'} />
-                  </Button>
-                </div>
+              <div className={css.centerFlex}>
+                <h3 className={css.scheduleType}>
+                  <FormattedMessage id={'EmployerListingCard.scheduleType'} values={{ type: '' }} />
+                </h3>
+                <h3 className={css.scheduleType}>
+                  {scheduleTypeLabel}
+                  {isLiveIn ? ' (Live-In)' : ''}
+                </h3>
+                {scheduleType === '24hour' || scheduleType === 'repeat' ? (
+                  <AvailabilityPreview entries={entries} availableDays={availableDays} />
+                ) : (
+                  <InlineTextButton
+                    onClick={e => {
+                      e.preventDefault();
+                      setIsOneTimeScheduleModalOpen(true);
+                    }}
+                  >
+                    <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
+                  </InlineTextButton>
+                )}
               </div>
             </div>
           </div>
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
-              {careTypesLabels.slice(0, 3).map(careType => (
+              {careTypesLabels.slice(0, 2).map(careType => (
                 <p className={css.serviceCardItem}>{careType?.split('/')[0]}</p>
               ))}
               {careTypes?.length > 3 && (
@@ -237,6 +222,18 @@ export const EmployerListingCardComponent = props => {
               )}
             </div>
           </div>
+        </NamedLink>
+        <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
+          <div className={css.priceValue} title={priceTitle}>
+            {formattedMinPrice}-{maxPrice / 100}
+            <span className={css.perUnit}>
+              &nbsp;
+              <FormattedMessage id={'EmployerListingCard.perUnit'} />
+            </span>
+          </div>
+          <Button className={css.messageButton}>
+            <FormattedMessage id="EmployerListingCard.viewProfile" />
+          </Button>
         </NamedLink>
       </Card>
       {onManageDisableScrolling && (
@@ -261,7 +258,7 @@ export const EmployerListingCardComponent = props => {
   );
 };
 
-EmployerListingCardComponent.defaultProps = {
+EmployerListingCardMobileComponent.defaultProps = {
   className: null,
   rootClassName: null,
   renderSizes: null,
@@ -269,7 +266,7 @@ EmployerListingCardComponent.defaultProps = {
   setActiveListing: () => null,
 };
 
-EmployerListingCardComponent.propTypes = {
+EmployerListingCardMobileComponent.propTypes = {
   className: string,
   rootClassName: string,
   filtersConfig: array,
@@ -282,4 +279,4 @@ EmployerListingCardComponent.propTypes = {
   setActiveListing: func,
 };
 
-export default injectIntl(EmployerListingCardComponent);
+export default injectIntl(EmployerListingCardMobileComponent);
