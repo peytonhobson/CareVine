@@ -53,7 +53,7 @@
 }
 
 .mediumAvatar .initials {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: var(--fontWeightSemiBold);
 }
 
@@ -68,7 +68,7 @@
 }
 
 .largeAvatar .initials {
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: var(--fontWeightSemiBold);
 }
 

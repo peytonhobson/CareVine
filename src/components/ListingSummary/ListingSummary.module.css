@@ -82,6 +82,15 @@
   }
 }
 
+.avatarInitials {
+  font-size: 2.5rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 5rem;
+  }
+}
+
 .topInfo {
   max-height: 10rem;
   display: flex;
