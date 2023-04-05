@@ -155,12 +155,6 @@ export const updateProfile = actionPayload => {
         }
         const currentUser = entities[0];
 
-        const sbAccessToken = currentUser.attributes.profile.privateData.sbAccessToken;
-
-        if (!!actionPayload.profileImageId && sbAccessToken) {
-          sendbirdUser({ currentUser });
-        }
-
         // Update current user in state.user.currentUser through user.duck.js
         dispatch(currentUserShowSuccess(currentUser));
       })
