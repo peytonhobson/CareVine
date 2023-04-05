@@ -222,11 +222,11 @@
 
   /* Positioning: right */
   position: absolute;
-  bottom: 27px;
-  right: -129px;
+  bottom: -0.625rem;
+  right: 2.5rem;
   /* Dimensions */
-  width: 105px;
-  height: 41px;
+  width: 7rem;
+  height: 2.563rem;
   padding: 11px 10px 7px 35px;
 
   /* Look and feel (buttonish) */
@@ -265,13 +265,37 @@
 }
 
 .uploadAvatarWrapper {
-  margin-top: 18px;
-  margin-bottom: 18px;
+  margin-top: 1.125rem;
+  margin-bottom: 1.125rem;
 
   @media (--viewportMedium) {
-    margin-top: 44px;
-    margin-bottom: 20px;
+    margin-top: 2.75rem;
+    margin-bottom: 1.25rem;
   }
+}
+
+.colorAvatarWrapper {
+  margin-top: 1.125rem;
+  margin-bottom: 1.125rem;
+
+  @media (--viewportMedium) {
+    margin-top: 2.75rem;
+    margin-bottom: 3.25rem;
+  }
+}
+
+.colorAvatar {
+  width: var(--ProfileSettingsForm_avatarSize);
+  height: var(--ProfileSettingsForm_avatarSize);
+  @media (--viewportMedium) {
+    width: var(--ProfileSettingsForm_avatarSizeDesktop);
+    height: var(--ProfileSettingsForm_avatarSizeDesktop);
+  }
+}
+
+.colorAvatarInitials {
+  font-size: 5rem;
+  font-weight: var(--fontWeightSemiBold);
 }
 
 .label {
@@ -290,6 +314,7 @@
 
   /* Center content */
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 
@@ -391,4 +416,48 @@
 
 .termsAndConditions {
   margin-top: 5rem;
+}
+
+.avatarsContainer {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.defaultProfiles {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 3rem;
+  align-items: space-evenly;
+  justify-content: center;
+  max-width: 5rem;
+}
+
+.defaultAvatar {
+  width: 3rem;
+  height: 3rem;
+}
+
+.avatarButton {
+  composes: button from global;
+  border-radius: 100%;
+  border: none;
+  min-height: 0;
+  height: 3.3rem;
+  width: 3.3rem;
+  margin-block: 0.5rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  &:hover {
+    outline: 2px solid var(--matterColor);
+    outline-offset: 0.15rem;
+  }
+
+  &.selected {
+    outline: 2px solid var(--matterColor);
+    outline-offset: 0.15rem;
+  }
 }

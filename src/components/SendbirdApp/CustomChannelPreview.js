@@ -2,7 +2,7 @@ import '@sendbird/uikit-react/dist/index.css';
 
 import React, { useState } from 'react';
 
-import ChannelAvatar from '@sendbird/uikit-react/ui/ChannelAvatar';
+import { Avatar } from '..';
 import Badge from '../Badge/Badge';
 import Icon, { IconColors, IconTypes } from '@sendbird/uikit-react/ui/Icon';
 import Label, { LabelTypography, LabelColors } from '@sendbird/uikit-react/ui/Label';
@@ -17,6 +17,8 @@ import moment from 'moment';
 import { useLongPress } from 'use-long-press';
 import Modal from '@sendbird/uikit-react/ui/Modal';
 import TextButton from '@sendbird/uikit-react/ui/TextButton';
+
+import css from './SendbirdApp.module.css';
 
 const getLastMessageCreatedAt = (channel, locale) => {
   var _channel$lastMessage;
@@ -182,6 +184,7 @@ const CustomChannelPreview = ({
   renderChannelAction,
   onLeaveChannel,
   tabIndex,
+  otherUser,
 }) => {
   const sbState = useSendbirdStateContext();
   const {
@@ -218,6 +221,7 @@ const CustomChannelPreview = ({
     }
   );
   const channelName = getChannelTitle(channel, userId, stringSet);
+  console.log(otherUser);
   return (
     <>
       <div
@@ -231,7 +235,7 @@ const CustomChannelPreview = ({
         {...(isMobile ? { ...onLongPress() } : { onClick })}
       >
         <div className="sendbird-channel-preview__avatar">
-          <ChannelAvatar channel={channel} userId={userId} theme={theme} />
+          <Avatar className={css.previewAvatar} user={otherUser} disableProfileLink />
         </div>
         <div className="sendbird-channel-preview__content">
           <div className="sendbird-channel-preview__content__upper " style={{ width: '100%' }}>

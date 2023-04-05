@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import Avatar from '@sendbird/uikit-react/ui/Avatar';
+import { Avatar } from '..';
 import ChannelListHeader from '@sendbird/uikit-react/ChannelList/components/ChannelListHeader';
 import { ChannelListProvider } from '@sendbird/uikit-react/ChannelList/context';
 import ChannelListUI from '@sendbird/uikit-react/ChannelList/components/ChannelListUI';
@@ -47,6 +47,10 @@ const SendbirdApp = props => {
     transitionToRequestPaymentSuccess,
     updateLastMessage,
     pathParams,
+    onFetchOtherUsers,
+    otherUsers,
+    fetchOtherUsersError,
+    fetchOtherUsersInProgress,
   } = props;
 
   const [currentChannelUrl, setCurrentChannelUrl] = useState('');
@@ -88,6 +92,12 @@ const SendbirdApp = props => {
     }
   }, [pathParams]);
 
+  useEffect(() => {
+    if (currentUser.id.uuid && accessToken) {
+      onFetchOtherUsers(currentUser.id.uuid, accessToken);
+    }
+  }, [currentUser.id.uuid, accessToken]);
+
   const userEmail = currentUser.attributes.email;
   const renderTitle = (
     <div
@@ -97,13 +107,8 @@ const SendbirdApp = props => {
       onKeyDown={redirectToOwnProfile}
       tabIndex={0}
     >
-      <div className="sendbird-channel-header__title__left">
-        <Avatar
-          width="32px"
-          height="32px"
-          src={userStore.user.profileUrl}
-          alt={userStore.user.nickname}
-        />
+      <div className={css.titleAvatarContainer}>
+        <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </div>
       <div className="sendbird-channel-header__title__right">
         <label
@@ -162,6 +167,9 @@ const SendbirdApp = props => {
                   isActive={channel?.url === currentChannelUrl}
                   renderChannelAction={() => (
                     <CustomChannelPreviewAction channel={channel} disabled={!isOnline} />
+                  )}
+                  otherUser={otherUsers?.find(user =>
+                    channel?.members.find(member => member.userId === user.id.uuid)
                   )}
                 />
               )}

@@ -210,7 +210,12 @@
 }
 
 .avatarInitials {
-  font-size: xxx-large;
+  font-size: 2.5rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 5rem;
+  }
 }
 
 .providedServices {

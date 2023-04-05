@@ -166,7 +166,7 @@
   --ManageAvailabilityCalendar_failedColor: #fff2f2;
 
   /* ================ ProfileSettingsForm ================ */
-  --ProfileSettingsForm_avatarSize: 6rem;
+  --ProfileSettingsForm_avatarSize: 12rem;
   --ProfileSettingsForm_avatarSizeDesktop: 15rem;
 }
 

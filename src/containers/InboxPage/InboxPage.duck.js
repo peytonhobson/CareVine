@@ -37,6 +37,10 @@ export const SEND_REQUEST_FOR_PAYMENT_SUCCESS =
 export const SEND_REQUEST_FOR_PAYMENT_ERROR =
   'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_ERROR';
 
+export const FETCH_OTHER_USERS_REQUEST = 'app/InboxPage/FETCH_OTHER_USERS_REQUEST';
+export const FETCH_OTHER_USERS_SUCCESS = 'app/InboxPage/FETCH_OTHER_USERS_SUCCESS';
+export const FETCH_OTHER_USERS_ERROR = 'app/InboxPage/FETCH_OTHER_USERS_ERROR';
+
 // ================ Reducer ================ //
 
 const entityRefs = entities =>
@@ -58,6 +62,9 @@ const initialState = {
   transitionToRequestPaymentError: null,
   transitionToRequestPaymentInProgress: false,
   transitionToRequestPaymentSuccess: false,
+  fetchOtherUsersInProgress: false,
+  fetchOtherUsersError: null,
+  otherUsersRefs: null,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -139,6 +146,25 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         sendRequestForPaymentError: payload,
       };
 
+    case FETCH_OTHER_USERS_REQUEST:
+      return {
+        ...state,
+        fetchOtherUsersInProgress: true,
+        fetchOtherUsersError: null,
+      };
+    case FETCH_OTHER_USERS_SUCCESS:
+      return {
+        ...state,
+        otherUsersRefs: entityRefs(payload),
+        fetchOtherUsersInProgress: false,
+      };
+    case FETCH_OTHER_USERS_ERROR:
+      return {
+        ...state,
+        fetchOtherUsersInProgress: false,
+        fetchOtherUsersError: payload,
+      };
+
     default:
       return state;
   }
@@ -191,6 +217,19 @@ export const sendRequestForPaymentSuccess = () => ({
 });
 export const sendRequestForPaymentError = e => ({
   type: SEND_REQUEST_FOR_PAYMENT_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const fetchOtherUsersRequest = () => ({
+  type: FETCH_OTHER_USERS_REQUEST,
+});
+export const fetchOtherUsersSuccess = response => ({
+  type: FETCH_OTHER_USERS_SUCCESS,
+  payload: response,
+});
+export const fetchOtherUsersError = e => ({
+  type: FETCH_OTHER_USERS_ERROR,
   error: true,
   payload: e,
 });
@@ -331,4 +370,53 @@ export const sendRequestForPayment = (
       log.error(e, 'send-request-for-payment-failed');
       dispatch(sendRequestForPaymentError(e));
     });
+};
+
+export const fetchOtherUsers = (userId, accessToken) => async (dispatch, getState, sdk) => {
+  dispatch(fetchOtherUsersRequest());
+
+  try {
+    const params = {
+      appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+      modules: [new GroupChannelModule()],
+    };
+    const sb = SendbirdChat.init(params);
+
+    await sb.connect(userId, accessToken);
+
+    const queryParams = {
+      userIdsFiter: [userId],
+    };
+    const query = sb.groupChannel.createMyGroupChannelListQuery(queryParams);
+
+    if (query.hasNext) {
+      const channels = await query.next();
+
+      const userIds = channels.map(channel => {
+        const members = channel.members;
+
+        const otherUser = members.find(member => member.userId !== userId);
+        return otherUser.userId;
+      });
+
+      const responses = await Promise.all(
+        userIds.map(async id => {
+          const user = await sdk.users.show({
+            id,
+            include: ['profileImage'],
+            'fields.user': ['profile.publicData', 'profile.abbreviatedName'],
+          });
+
+          dispatch(addMarketplaceEntities(user));
+
+          return user.data.data;
+        })
+      );
+
+      dispatch(fetchOtherUsersSuccess(responses));
+    }
+  } catch (e) {
+    log.error(e, 'fetch-other-users-failed');
+    dispatch(fetchOtherUsersError(e));
+  }
 };
