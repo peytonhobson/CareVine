@@ -20,6 +20,7 @@ import {
   transitionToRequestPayment,
   fetchUserFromChannelUrl,
   sendRequestForPayment,
+  fetchOtherUsers,
 } from './InboxPage.duck';
 import { Page, LayoutWrapperMain, LayoutWrapperTopbar, FullPageError } from '../../components';
 import { TopbarContainer } from '..';
@@ -57,6 +58,10 @@ export const InboxPageComponent = props => {
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentSuccess,
     params,
+    onFetchOtherUsers,
+    otherUsers,
+    fetchOtherUsersError,
+    fetchOtherUsersInProgress,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -143,6 +148,10 @@ export const InboxPageComponent = props => {
                   transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
                   transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
                   pathParams={params}
+                  onFetchOtherUsers={onFetchOtherUsers}
+                  otherUsers={otherUsers}
+                  fetchOtherUsersError={fetchOtherUsersError}
+                  fetchOtherUsersInProgress={fetchOtherUsersInProgress}
                 />
               ) : (
                 <SendbirdApp
@@ -168,6 +177,10 @@ export const InboxPageComponent = props => {
                   transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
                   transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
                   pathParams={params}
+                  onFetchOtherUsers={onFetchOtherUsers}
+                  otherUsers={otherUsers}
+                  fetchOtherUsersError={fetchOtherUsersError}
+                  fetchOtherUsersInProgress={fetchOtherUsersInProgress}
                 />
               )}
             </SBProvider>
@@ -252,9 +265,6 @@ const mapStateToProps = state => {
     fetchOtherUserListingInProgress,
     fetchUserFromChannelUrlError,
     fetchUserFromChannelUrlInProgress,
-    generateAccessTokenError,
-    generateAccessTokenInProgress,
-    generateAccessTokenSuccess,
     otherUserListing,
     otherUserRef,
     sendRequestForPaymentError,
@@ -263,9 +273,20 @@ const mapStateToProps = state => {
     transitionToRequestPaymentError,
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentSuccess,
+    fetchOtherUsersInProgress,
+    fetchOtherUsersError,
+    otherUsersRefs,
   } = state.InboxPage;
 
   const otherUser = otherUserRef && getMarketplaceEntities(state, [otherUserRef])[0];
+
+  const otherUsers = otherUsersRefs && getMarketplaceEntities(state, otherUsersRefs);
+
+  const {
+    generateAccessTokenError,
+    generateAccessTokenInProgress,
+    generateAccessTokenSuccess,
+  } = state.sendbird;
 
   const { currentUser, currentUserListing } = state.user;
 
@@ -288,6 +309,9 @@ const mapStateToProps = state => {
     transitionToRequestPaymentError,
     transitionToRequestPaymentInProgress,
     transitionToRequestPaymentSuccess,
+    fetchOtherUsersInProgress,
+    fetchOtherUsersError,
+    otherUsers,
   };
 };
 
@@ -316,6 +340,7 @@ const mapDispatchToProps = dispatch => ({
       )
     ),
   onTransitionToRequestPayment: tx => dispatch(transitionToRequestPayment(tx)),
+  onFetchOtherUsers: (userId, accessToken) => dispatch(fetchOtherUsers(userId, accessToken)),
 });
 
 const InboxPage = compose(

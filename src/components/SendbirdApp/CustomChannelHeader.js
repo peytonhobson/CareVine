@@ -1,13 +1,12 @@
 import React from 'react';
 
 import Icon, { IconTypes, IconColors } from '@sendbird/uikit-react/ui/Icon';
-import ChannelAvatar from '@sendbird/uikit-react/ui/ChannelAvatar';
 import { LabelStringSet } from '@sendbird/uikit-react/ui/Label';
 import { useChannelContext } from '@sendbird/uikit-react/Channel/context';
 import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 import { useMediaQuery } from '@mui/material';
 
-import { NamedLink } from '../';
+import { NamedLink, Avatar } from '../';
 import { createSlug } from '../../util/urlHelpers';
 import { EMPLOYER } from '../../util/constants';
 import PaymentButton from './CustomButtons/PaymentButton';
@@ -80,13 +79,7 @@ const CustomChannelHeader = props => {
       )}
       {!!listing ? (
         <NamedLink className={css.listingLink} name="ListingPage" params={{ id: listingId, slug }}>
-          <ChannelAvatar
-            channel={currentGroupChannel}
-            height={32}
-            theme={theme}
-            userId={userId}
-            width={32}
-          />
+          <Avatar className={css.headerAvatar} user={otherUser} disableProfileLink />
           <h2
             className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
             style={{ cursor: 'pointer' }}
@@ -96,13 +89,7 @@ const CustomChannelHeader = props => {
         </NamedLink>
       ) : (
         <div className={css.listingLink}>
-          <ChannelAvatar
-            channel={currentGroupChannel}
-            height={32}
-            theme={theme}
-            userId={userId}
-            width={32}
-          />
+          <Avatar className={css.headerAvatar} user={otherUser} disableProfileLink />
           <h2
             className="sendbird-chat-header__left__title sendbird-label sendbird-label--color-onbackground-1"
             style={{ cursor: 'pointer' }}

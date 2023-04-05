@@ -95,7 +95,8 @@ export const AvatarComponent = props => {
   const linkProps = avatarUser.id
     ? { name: 'ProfilePage', params: { id: avatarUser.id.uuid } }
     : { name: 'ProfileBasePage' };
-  const hasProfileImage = avatarUser.profileImage && avatarUser.profileImage.id;
+  const hasProfileImage =
+    avatarUser?.profileImage?.id || avatarUser?.relationships?.profileImage?.data?.id;
   const profileLinkEnabled = !disableProfileLink;
 
   const classForInitials = initialsClassName || css.initials;
@@ -112,7 +113,7 @@ export const AvatarComponent = props => {
         <ResponsiveImage
           rootClassName={css.avatarImage}
           alt={displayName}
-          image={avatarUser.profileImage}
+          image={avatarUser.profileImage || avatarUser.relationships.profileImage.data}
           variants={AVATAR_IMAGE_VARIANTS}
           sizes={renderSizes}
         />

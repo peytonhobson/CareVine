@@ -222,11 +222,11 @@
 
   /* Positioning: right */
   position: absolute;
-  bottom: 27px;
-  right: -129px;
+  bottom: -0.625rem;
+  right: 2.5rem;
   /* Dimensions */
-  width: 105px;
-  height: 41px;
+  width: 7rem;
+  height: 2.563rem;
   padding: 11px 10px 7px 35px;
 
   /* Look and feel (buttonish) */
@@ -314,6 +314,7 @@
 
   /* Center content */
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 
@@ -443,6 +444,7 @@
   min-height: 0;
   height: 3.3rem;
   width: 3.3rem;
+  margin-block: 0.5rem;
 
   display: flex;
   justify-content: center;
