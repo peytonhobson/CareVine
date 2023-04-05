@@ -220,6 +220,31 @@ export class EditListingPhotosFormComponent extends Component {
             );
           };
 
+          const DefaultAvatar = props => {
+            const { color, currentUser } = props;
+
+            return (
+              <div className={css.colorAvatarWrapper}>
+                <Avatar
+                  className={css.colorAvatar}
+                  initialsClassName={css.colorAvatarInitials}
+                  user={{
+                    ...currentUser,
+                    profileImage: null,
+                    attributes: {
+                      ...currentUser.attributes,
+                      profile: {
+                        ...currentUser.attributes.profile,
+                        publicData: { avatarLinearGradient: color },
+                      },
+                    },
+                  }}
+                  disableProfileLink
+                />
+              </div>
+            );
+          };
+
           const handleChangedAvatar = avatarColor => {
             form.change('selectedAvatar', avatarColor);
             onChangeAvatar(avatarColor);
@@ -227,158 +252,70 @@ export class EditListingPhotosFormComponent extends Component {
 
           let mainAvatar = null;
 
-          switch (selectedAvatar) {
-            case 'green':
-              mainAvatar = (
-                <div className={css.colorAvatarWrapper}>
-                  <Avatar
-                    className={css.colorAvatar}
-                    initialsClassName={css.colorAvatarInitials}
-                    user={{
-                      ...currentUser,
-                      profileImage: null,
-                      attributes: {
-                        ...currentUser.attributes,
-                        profile: {
-                          ...currentUser.attributes.profile,
-                          publicData: { avatarLinearGradient: 'green' },
-                        },
-                      },
-                    }}
-                    disableProfileLink
-                  />
-                </div>
-              );
-              break;
-            case 'red':
-              mainAvatar = (
-                <div className={css.colorAvatarWrapper}>
-                  <Avatar
-                    className={css.colorAvatar}
-                    initialsClassName={css.colorAvatarInitials}
-                    user={{
-                      ...currentUser,
-                      profileImage: null,
-                      attributes: {
-                        ...currentUser.attributes,
-                        profile: {
-                          ...currentUser.attributes.profile,
-                          publicData: { avatarLinearGradient: 'red' },
-                        },
-                      },
-                    }}
-                    disableProfileLink
-                  />
-                </div>
-              );
-              break;
-            case 'orange':
-              mainAvatar = (
-                <div className={css.colorAvatarWrapper}>
-                  <Avatar
-                    className={css.colorAvatar}
-                    initialsClassName={css.colorAvatarInitials}
-                    user={{
-                      ...currentUser,
-                      profileImage: null,
-                      attributes: {
-                        ...currentUser.attributes,
-                        profile: {
-                          ...currentUser.attributes.profile,
-                          publicData: { avatarLinearGradient: 'orange' },
-                        },
-                      },
-                    }}
-                    disableProfileLink
-                  />
-                </div>
-              );
-              break;
-            case 'pink':
-              mainAvatar = (
-                <div className={css.colorAvatarWrapper}>
-                  <Avatar
-                    className={css.colorAvatar}
-                    initialsClassName={css.colorAvatarInitials}
-                    user={{
-                      ...currentUser,
-                      profileImage: null,
-                      attributes: {
-                        ...currentUser.attributes,
-                        profile: {
-                          ...currentUser.attributes.profile,
-                          publicData: { avatarLinearGradient: 'pink' },
-                        },
-                      },
-                    }}
-                    disableProfileLink
-                  />
-                </div>
-              );
-
-              break;
-            default:
-              mainAvatar = (
-                <Field
-                  accept={ACCEPT_IMAGES}
-                  id="profileImage"
-                  name="profileImage"
-                  label={chooseAvatarLabel}
-                  type="file"
-                  form={null}
-                  uploadImageError={uploadImageError}
-                  disabled={uploadInProgress}
-                >
-                  {fieldProps => {
-                    const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
-                    const { name, type } = input;
-                    const onChange = e => {
-                      const file = e.target.files[0];
-                      form.change(`profileImage`, file);
-                      form.blur(`profileImage`);
-                      if (file != null) {
-                        const tempId = `${file.name}_${Date.now()}`;
-                        onProfileImageUpload({ id: tempId, file });
-                        this.submittedImage = file;
-                      }
-                    };
-
-                    let error = null;
-
-                    if (isUploadImageOverLimitError(uploadImageError)) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
-                        </div>
-                      );
-                    } else if (uploadImageError) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
-                        </div>
-                      );
+          if (selectedAvatar) {
+            mainAvatar = <DefaultAvatar color={selectedAvatar} currentUser={currentUser} />;
+          } else {
+            mainAvatar = (
+              <Field
+                accept={ACCEPT_IMAGES}
+                id="profileImage"
+                name="profileImage"
+                label={chooseAvatarLabel}
+                type="file"
+                form={null}
+                uploadImageError={uploadImageError}
+                disabled={uploadInProgress}
+              >
+                {fieldProps => {
+                  const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
+                  const { name, type } = input;
+                  const onChange = e => {
+                    const file = e.target.files[0];
+                    form.change(`profileImage`, file);
+                    form.blur(`profileImage`);
+                    if (file != null) {
+                      const tempId = `${file.name}_${Date.now()}`;
+                      onProfileImageUpload({ id: tempId, file });
+                      this.submittedImage = file;
                     }
+                  };
 
-                    return (
-                      <div className={css.uploadAvatarWrapper}>
-                        <label className={css.label} htmlFor={id}>
-                          {label}
-                        </label>
-                        <input
-                          accept={accept}
-                          id={id}
-                          name={name}
-                          className={css.uploadAvatarInput}
-                          disabled={disabled}
-                          onChange={onChange}
-                          type={type}
-                        />
-                        {error}
+                  let error = null;
+
+                  if (isUploadImageOverLimitError(uploadImageError)) {
+                    error = (
+                      <div className={css.error}>
+                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
                       </div>
                     );
-                  }}
-                </Field>
-              );
+                  } else if (uploadImageError) {
+                    error = (
+                      <div className={css.error}>
+                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className={css.uploadAvatarWrapper}>
+                      <label className={css.label} htmlFor={id}>
+                        {label}
+                      </label>
+                      <input
+                        accept={accept}
+                        id={id}
+                        name={name}
+                        className={css.uploadAvatarInput}
+                        disabled={disabled}
+                        onChange={onChange}
+                        type={type}
+                      />
+                      {error}
+                    </div>
+                  );
+                }}
+              </Field>
+            );
           }
 
           return (
