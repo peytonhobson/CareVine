@@ -190,6 +190,36 @@ export class EditListingPhotosFormComponent extends Component {
               </div>
             );
 
+          const AvatarButton = props => {
+            const { currentUser, name, selectedAvatar, children } = props;
+
+            return (
+              <button
+                className={classNames(css.avatarButton, selectedAvatar === name && css.selected)}
+                type="button"
+                onClick={() => handleChangedAvatar(name)}
+              >
+                {children || (
+                  <Avatar
+                    className={css.defaultAvatar}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: name },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                )}
+              </button>
+            );
+          };
+
           const handleChangedAvatar = avatarColor => {
             form.change('selectedAvatar', avatarColor);
             onChangeAvatar(avatarColor);
@@ -366,109 +396,29 @@ export class EditListingPhotosFormComponent extends Component {
                 <div className={css.avatarsContainer}>
                   {mainAvatar}
                   <div className={css.defaultProfiles}>
-                    <button
-                      className={classNames(css.avatarButton, !selectedAvatar && css.selected)}
-                      type="button"
-                      onClick={() => handleChangedAvatar()}
-                    >
+                    <AvatarButton currentUser={currentUser} selectedAvatar={selectedAvatar}>
                       <div className={classNames(css.avatarPlaceholder, css.defaultAvatar)}>+</div>
-                    </button>
-                    <button
-                      className={classNames(
-                        css.avatarButton,
-                        selectedAvatar === 'green' && css.selected
-                      )}
-                      type="button"
-                      onClick={() => handleChangedAvatar('green')}
-                    >
-                      <Avatar
-                        className={css.defaultAvatar}
-                        user={{
-                          ...currentUser,
-                          profileImage: null,
-                          attributes: {
-                            ...currentUser.attributes,
-                            profile: {
-                              ...currentUser.attributes.profile,
-                              publicData: { avatarLinearGradient: 'green' },
-                            },
-                          },
-                        }}
-                        disableProfileLink
-                      />
-                    </button>
-                    <button
-                      className={classNames(
-                        css.avatarButton,
-                        selectedAvatar === 'red' && css.selected
-                      )}
-                      type="button"
-                      onClick={() => handleChangedAvatar('red')}
-                    >
-                      <Avatar
-                        className={css.defaultAvatar}
-                        user={{
-                          ...currentUser,
-                          profileImage: null,
-                          attributes: {
-                            ...currentUser.attributes,
-                            profile: {
-                              ...currentUser.attributes.profile,
-                              publicData: { avatarLinearGradient: 'red' },
-                            },
-                          },
-                        }}
-                        disableProfileLink
-                      />
-                    </button>
-                    <button
-                      className={classNames(
-                        css.avatarButton,
-                        selectedAvatar === 'orange' && css.selected
-                      )}
-                      type="button"
-                      onClick={() => handleChangedAvatar('orange')}
-                    >
-                      <Avatar
-                        className={css.defaultAvatar}
-                        user={{
-                          ...currentUser,
-                          profileImage: null,
-                          attributes: {
-                            ...currentUser.attributes,
-                            profile: {
-                              ...currentUser.attributes.profile,
-                              publicData: { avatarLinearGradient: 'orange' },
-                            },
-                          },
-                        }}
-                        disableProfileLink
-                      />
-                    </button>
-                    <button
-                      className={classNames(
-                        css.avatarButton,
-                        selectedAvatar === 'pink' && css.selected
-                      )}
-                      type="button"
-                      onClick={() => handleChangedAvatar('pink')}
-                    >
-                      <Avatar
-                        className={css.defaultAvatar}
-                        user={{
-                          ...currentUser,
-                          profileImage: null,
-                          attributes: {
-                            ...currentUser.attributes,
-                            profile: {
-                              ...currentUser.attributes.profile,
-                              publicData: { avatarLinearGradient: 'pink' },
-                            },
-                          },
-                        }}
-                        disableProfileLink
-                      />
-                    </button>
+                    </AvatarButton>
+                    <AvatarButton
+                      name="green"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="red"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="orange"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="pink"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
                   </div>
                 </div>
                 {!this.state.selectedAvatar ? (
