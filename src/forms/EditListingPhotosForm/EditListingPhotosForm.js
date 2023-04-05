@@ -17,6 +17,7 @@ import {
   ImageFromFile,
   FieldCheckbox,
   NamedLink,
+  InlineTextButton,
 } from '../../components';
 
 import css from './EditListingPhotosForm.module.css';
@@ -30,6 +31,7 @@ export class EditListingPhotosFormComponent extends Component {
     this.state = { uploadDelay: false };
     this.submittedImage = null;
     this.uploadDelayTimeoutId = null;
+    this.selectedAvatar = null;
   }
 
   componentDidUpdate(prevProps) {
@@ -182,18 +184,100 @@ export class EditListingPhotosFormComponent extends Component {
               </div>
             );
 
-          return (
-            <Form
-              className={classes}
-              onSubmit={e => {
-                this.submittedImage = profileImage;
-                handleSubmit(e);
-              }}
-            >
-              <div className={css.sectionContainer}>
-                <h3 className={css.sectionTitle}>
-                  <FormattedMessage id="ProfileSettingsForm.yourProfilePicture" />
-                </h3>
+          let mainAvatar = null;
+
+          switch (this.state.selectedAvatar) {
+            case 'green':
+              mainAvatar = (
+                <div className={css.colorAvatarWrapper}>
+                  <Avatar
+                    className={css.colorAvatar}
+                    initialsClassName={css.colorAvatarInitials}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: 'green' },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                </div>
+              );
+              break;
+            case 'red':
+              mainAvatar = (
+                <div className={css.colorAvatarWrapper}>
+                  <Avatar
+                    className={css.colorAvatar}
+                    initialsClassName={css.colorAvatarInitials}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: 'red' },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                </div>
+              );
+              break;
+            case 'orange':
+              mainAvatar = (
+                <div className={css.colorAvatarWrapper}>
+                  <Avatar
+                    className={css.colorAvatar}
+                    initialsClassName={css.colorAvatarInitials}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: 'orange' },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                </div>
+              );
+              break;
+            case 'pink':
+              mainAvatar = (
+                <div className={css.colorAvatarWrapper}>
+                  <Avatar
+                    className={css.colorAvatar}
+                    initialsClassName={css.colorAvatarInitials}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: 'pink' },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                </div>
+              );
+
+              break;
+            default:
+              mainAvatar = (
                 <Field
                   accept={ACCEPT_IMAGES}
                   id="profileImage"
@@ -253,12 +337,146 @@ export class EditListingPhotosFormComponent extends Component {
                     );
                   }}
                 </Field>
-                <div className={css.tip}>
-                  <FormattedMessage id="ProfileSettingsForm.tip" />
+              );
+          }
+
+          return (
+            <Form
+              className={classes}
+              onSubmit={e => {
+                if (this.selectedAvatar) {
+                  handleSubmit(this.selectedAvatar);
+                } else {
+                  this.submittedImage = profileImage;
+                  handleSubmit(e);
+                }
+              }}
+            >
+              <div className={css.sectionContainer}>
+                <h3 className={css.sectionTitle}>
+                  <FormattedMessage id="ProfileSettingsForm.yourProfilePicture" />
+                </h3>
+                <div className={css.avatarsContainer}>
+                  {mainAvatar}
+                  <div className={css.defaultProfiles}>
+                    <button
+                      className={classNames(
+                        css.avatarButton,
+                        !this.state.selectedAvatar && css.selected
+                      )}
+                      type="button"
+                      onClick={() => this.setState({ selectedAvatar: null })}
+                    >
+                      <div className={classNames(css.avatarPlaceholder, css.defaultAvatar)}>+</div>
+                    </button>
+                    <button
+                      className={classNames(
+                        css.avatarButton,
+                        this.state.selectedAvatar === 'green' && css.selected
+                      )}
+                      type="button"
+                      onClick={() => this.setState({ selectedAvatar: 'green' })}
+                    >
+                      <Avatar
+                        className={css.defaultAvatar}
+                        user={{
+                          ...currentUser,
+                          profileImage: null,
+                          attributes: {
+                            ...currentUser.attributes,
+                            profile: {
+                              ...currentUser.attributes.profile,
+                              publicData: { avatarLinearGradient: 'green' },
+                            },
+                          },
+                        }}
+                        disableProfileLink
+                      />
+                    </button>
+                    <button
+                      className={classNames(
+                        css.avatarButton,
+                        this.state.selectedAvatar === 'red' && css.selected
+                      )}
+                      type="button"
+                      onClick={() => this.setState({ selectedAvatar: 'red' })}
+                    >
+                      <Avatar
+                        className={css.defaultAvatar}
+                        user={{
+                          ...currentUser,
+                          profileImage: null,
+                          attributes: {
+                            ...currentUser.attributes,
+                            profile: {
+                              ...currentUser.attributes.profile,
+                              publicData: { avatarLinearGradient: 'red' },
+                            },
+                          },
+                        }}
+                        disableProfileLink
+                      />
+                    </button>
+                    <button
+                      className={classNames(
+                        css.avatarButton,
+                        this.state.selectedAvatar === 'orange' && css.selected
+                      )}
+                      type="button"
+                      onClick={() => this.setState({ selectedAvatar: 'orange' })}
+                    >
+                      <Avatar
+                        className={css.defaultAvatar}
+                        user={{
+                          ...currentUser,
+                          profileImage: null,
+                          attributes: {
+                            ...currentUser.attributes,
+                            profile: {
+                              ...currentUser.attributes.profile,
+                              publicData: { avatarLinearGradient: 'orange' },
+                            },
+                          },
+                        }}
+                        disableProfileLink
+                      />
+                    </button>
+                    <button
+                      className={classNames(
+                        css.avatarButton,
+                        this.state.selectedAvatar === 'pink' && css.selected
+                      )}
+                      type="button"
+                      onClick={() => this.setState({ selectedAvatar: 'pink' })}
+                    >
+                      <Avatar
+                        className={css.defaultAvatar}
+                        user={{
+                          ...currentUser,
+                          profileImage: null,
+                          attributes: {
+                            ...currentUser.attributes,
+                            profile: {
+                              ...currentUser.attributes.profile,
+                              publicData: { avatarLinearGradient: 'pink' },
+                            },
+                          },
+                        }}
+                        disableProfileLink
+                      />
+                    </button>
+                  </div>
                 </div>
-                <div className={css.fileInfo}>
-                  <FormattedMessage id="ProfileSettingsForm.fileInfo" />
-                </div>
+                {!this.state.selectedAvatar ? (
+                  <>
+                    <div className={css.tip}>
+                      <FormattedMessage id="ProfileSettingsForm.tip" />
+                    </div>
+                    <div className={css.fileInfo}>
+                      <FormattedMessage id="ProfileSettingsForm.fileInfo" />
+                    </div>
+                  </>
+                ) : null}
               </div>
 
               {updateListingError ? (

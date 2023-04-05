@@ -68,6 +68,27 @@ export const AvatarComponent = props => {
 
   const defaultUserAbbreviatedName = '';
 
+  let linearGradient = null;
+
+  const avatarLinearGradient = avatarUser.attributes.profile.publicData?.avatarLinearGradient;
+
+  switch (avatarLinearGradient) {
+    case 'green':
+      linearGradient = css.linearGradientGreen;
+      break;
+    case 'red':
+      linearGradient = css.linearGradientRed;
+      break;
+    case 'orange':
+      linearGradient = css.linearGradientOrange;
+      break;
+    case 'pink':
+      linearGradient = css.linearGradientPink;
+      break;
+    default:
+      break;
+  }
+
   const displayName = userDisplayNameAsString(avatarUser, defaultUserDisplayName);
   const abbreviatedName = userAbbreviatedName(avatarUser, defaultUserAbbreviatedName);
   const rootProps = { className: classes, title: displayName };
@@ -100,7 +121,7 @@ export const AvatarComponent = props => {
   } else {
     // Placeholder avatar (initials)
     return (
-      <div {...rootProps}>
+      <div {...rootProps} className={classNames(classes, linearGradient)}>
         <span className={classForInitials}>{abbreviatedName}</span>
       </div>
     );
