@@ -21,6 +21,7 @@ import {
 } from '../../components';
 
 import css from './EditListingPhotosForm.module.css';
+import { E } from '@sendbird/uikit-react/index-43834bc0';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to load img srcset
@@ -31,7 +32,6 @@ export class EditListingPhotosFormComponent extends Component {
     this.state = { uploadDelay: false };
     this.submittedImage = null;
     this.uploadDelayTimeoutId = null;
-    this.selectedAvatar = null;
   }
 
   componentDidUpdate(prevProps) {
@@ -53,7 +53,6 @@ export class EditListingPhotosFormComponent extends Component {
     return (
       <FinalForm
         {...this.props}
-        initialValues={{ profileImage: this.props.profileImage }}
         render={formRenderProps => {
           const {
             form,
@@ -74,6 +73,8 @@ export class EditListingPhotosFormComponent extends Component {
             onProfileImageUpload,
             image,
             isNewListingFlow,
+            onChangeAvatar,
+            selectedAvatar,
           } = formRenderProps;
 
           const { publishListingError, showListingsError, updateListingError, uploadImageError } =
@@ -115,7 +116,12 @@ export class EditListingPhotosFormComponent extends Component {
           const submitReady = ((updated && pristine) || ready) && !publishListingFailed;
           const submitInProgress = updateInProgress;
           const submitDisabled =
-            invalid || disabled || submitInProgress || uploadInProgress || ready || image === null;
+            invalid ||
+            disabled ||
+            submitInProgress ||
+            uploadInProgress ||
+            ready ||
+            (image === null && !selectedAvatar);
 
           const classes = classNames(css.root, className);
 
@@ -184,9 +190,14 @@ export class EditListingPhotosFormComponent extends Component {
               </div>
             );
 
+          const handleChangedAvatar = avatarColor => {
+            form.change('selectedAvatar', avatarColor);
+            onChangeAvatar(avatarColor);
+          };
+
           let mainAvatar = null;
 
-          switch (this.state.selectedAvatar) {
+          switch (selectedAvatar) {
             case 'green':
               mainAvatar = (
                 <div className={css.colorAvatarWrapper}>
@@ -344,12 +355,8 @@ export class EditListingPhotosFormComponent extends Component {
             <Form
               className={classes}
               onSubmit={e => {
-                if (this.selectedAvatar) {
-                  handleSubmit(this.selectedAvatar);
-                } else {
-                  this.submittedImage = profileImage;
-                  handleSubmit(e);
-                }
+                this.submittedImage = profileImage;
+                handleSubmit(e);
               }}
             >
               <div className={css.sectionContainer}>
@@ -360,22 +367,19 @@ export class EditListingPhotosFormComponent extends Component {
                   {mainAvatar}
                   <div className={css.defaultProfiles}>
                     <button
-                      className={classNames(
-                        css.avatarButton,
-                        !this.state.selectedAvatar && css.selected
-                      )}
+                      className={classNames(css.avatarButton, !selectedAvatar && css.selected)}
                       type="button"
-                      onClick={() => this.setState({ selectedAvatar: null })}
+                      onClick={() => handleChangedAvatar()}
                     >
                       <div className={classNames(css.avatarPlaceholder, css.defaultAvatar)}>+</div>
                     </button>
                     <button
                       className={classNames(
                         css.avatarButton,
-                        this.state.selectedAvatar === 'green' && css.selected
+                        selectedAvatar === 'green' && css.selected
                       )}
                       type="button"
-                      onClick={() => this.setState({ selectedAvatar: 'green' })}
+                      onClick={() => handleChangedAvatar('green')}
                     >
                       <Avatar
                         className={css.defaultAvatar}
@@ -396,10 +400,10 @@ export class EditListingPhotosFormComponent extends Component {
                     <button
                       className={classNames(
                         css.avatarButton,
-                        this.state.selectedAvatar === 'red' && css.selected
+                        selectedAvatar === 'red' && css.selected
                       )}
                       type="button"
-                      onClick={() => this.setState({ selectedAvatar: 'red' })}
+                      onClick={() => handleChangedAvatar('red')}
                     >
                       <Avatar
                         className={css.defaultAvatar}
@@ -420,10 +424,10 @@ export class EditListingPhotosFormComponent extends Component {
                     <button
                       className={classNames(
                         css.avatarButton,
-                        this.state.selectedAvatar === 'orange' && css.selected
+                        selectedAvatar === 'orange' && css.selected
                       )}
                       type="button"
-                      onClick={() => this.setState({ selectedAvatar: 'orange' })}
+                      onClick={() => handleChangedAvatar('orange')}
                     >
                       <Avatar
                         className={css.defaultAvatar}
@@ -444,10 +448,10 @@ export class EditListingPhotosFormComponent extends Component {
                     <button
                       className={classNames(
                         css.avatarButton,
-                        this.state.selectedAvatar === 'pink' && css.selected
+                        selectedAvatar === 'pink' && css.selected
                       )}
                       type="button"
-                      onClick={() => this.setState({ selectedAvatar: 'pink' })}
+                      onClick={() => handleChangedAvatar('pink')}
                     >
                       <Avatar
                         className={css.defaultAvatar}
