@@ -10,6 +10,13 @@ import { ListingLink } from '../../components';
 import css from './EditListingPhotosPanel.module.css';
 
 class EditListingPhotosPanel extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedAvatar: props.currentUser.attributes.profile.publicData?.avatarLinearGradient,
+    };
+  }
+
   render() {
     const {
       className,
@@ -73,7 +80,7 @@ class EditListingPhotosPanel extends Component {
           disabled={disabled}
           ready={ready}
           fetchErrors={errors}
-          initialValues={{ profileImage }}
+          initialValues={{ profileImage, selectedAvatar: this.state.selectedAvatar }}
           onImageUpload={onImageUpload}
           onSubmit={values => {
             //Need to add upload image
@@ -81,25 +88,37 @@ class EditListingPhotosPanel extends Component {
             const uploadedImage = image;
 
             // Update profileImage only if file system has been accessed
-            const updatedValues = { profileImageId: uploadedImage.imageId };
+            const updatedValues = !values.selectedAvatar
+              ? {
+                  profileImageId: uploadedImage?.imageId,
+                  publicData: { avatarLinearGradient: null },
+                }
+              : {
+                  profileImageId: null,
+                  publicData: { avatarLinearGradient: values.selectedAvatar },
+                };
 
             onUpdateProfile(updatedValues);
 
-            const updateValues = {
-              publicData: {
-                profileImageId: values.profileImage.id,
-              },
-            };
+            const updateValues = !values.selectedAvatar
+              ? {
+                  publicData: {
+                    profileImageId: values.profileImage.id,
+                  },
+                }
+              : null;
 
             onSubmit(updateValues);
           }}
           onChange={onChange}
+          onChangeAvatar={value => this.setState({ selectedAvatar: value })}
           onUpdateImageOrder={onUpdateImageOrder}
           onRemoveImage={onRemoveImage}
           saveActionMsg={submitButtonText}
           updated={panelUpdated}
           updateInProgress={updateInProgress}
           profileImage={profileImage}
+          selectedAvatar={this.state.selectedAvatar}
           currentUser={currentUser}
           onProfileImageUpload={onProfileImageUpload}
           uploadInProgress={uploadInProgress}
