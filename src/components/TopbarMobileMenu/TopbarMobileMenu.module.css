@@ -34,6 +34,11 @@
   margin: var(--TopbarMobileMenu_topMargin) 0 0 0;
 }
 
+.avatarInitials {
+  font-size: 3rem;
+  font-weight: var(--fontWeightSemiBold);
+}
+
 .greeting {
   /* Font */
   composes: h1 from global;

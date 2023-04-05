@@ -122,7 +122,6 @@ const Care24HourFormComponent = props => {
     updateInProgress,
     submitButtonType,
     onChange,
-    values,
   } = props;
 
   const savedStartDate = availabilityPlan?.startDate;
