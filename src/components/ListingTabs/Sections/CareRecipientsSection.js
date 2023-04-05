@@ -18,8 +18,8 @@ const CareRecipientsSection = forwardRef((props, ref) => {
   const careNeedsOptions = findOptionsForSelectFilter('detailedCareNeeds', filterConfig);
 
   return (
-    <SectionCard title={careRecipientsTitle}>
-      <div className={css.recipients} ref={ref}>
+    <SectionCard title={careRecipientsTitle} ref={ref}>
+      <div className={css.recipients}>
         {careRecipients?.map((recipient, index) => {
           const { recipientRelationship, gender, age } = recipient;
           const recipientRelationshipLabel = findLabel(recipientRelationship, relationshipOptions);
