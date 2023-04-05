@@ -15,11 +15,11 @@
   width: 100vw;
 
   @media (--viewportMedium) {
-    max-width: 80rem;
+    max-width: 5rem;
   }
 
   @media (--viewportLarge) {
-    padding: 0 36px 96px 36px;
+    padding: 0 2.25rem 6rem 2.25rem;
   }
 }
 
