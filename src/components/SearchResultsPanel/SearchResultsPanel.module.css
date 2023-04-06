@@ -15,7 +15,7 @@
   width: 100vw;
 
   @media (--viewportMedium) {
-    max-width: 5rem;
+    max-width: 80rem;
   }
 
   @media (--viewportLarge) {
