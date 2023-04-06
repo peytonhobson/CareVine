@@ -18,6 +18,7 @@ import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../.
 import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
 import { StripeConnectAccountForm } from '../../forms';
 import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
+import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -31,6 +32,7 @@ import EditListingWizardTab, {
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
+
 import css from './CaregiverEditListingWizard.module.css';
 
 // You can reorder these panels.
@@ -265,8 +267,7 @@ class CaregiverEditListingWizard extends Component {
       history,
     } = this.props;
 
-    const stripeConnected =
-      currentUser && currentUser.stripeAccount && !!currentUser.stripeAccount.id;
+    const stripeConnected = !!currentUser.stripeAccount?.id;
 
     const stripeAccountData = stripeConnected ? getStripeAccountData(stripeAccount) : null;
 
@@ -283,6 +284,7 @@ class CaregiverEditListingWizard extends Component {
       !history.location.pathname.includes('create-profile')
     ) {
       onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
+      fetchCurrentUserHasListings();
     } else if (requirementsMissing || !stripeConnected) {
       this.setState({
         draftId: id,
@@ -290,6 +292,7 @@ class CaregiverEditListingWizard extends Component {
       });
     } else if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
+      fetchCurrentUserHasListings();
     }
   }
 
@@ -302,6 +305,7 @@ class CaregiverEditListingWizard extends Component {
     } else {
       history.push('/l');
     }
+    fetchCurrentUserHasListings();
   }
 
   handlePayoutSubmit(values) {

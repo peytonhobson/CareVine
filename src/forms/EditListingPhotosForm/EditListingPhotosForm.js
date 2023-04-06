@@ -358,7 +358,7 @@ export class EditListingPhotosFormComponent extends Component {
                     />
                   </div>
                 </div>
-                {!this.state.selectedAvatar ? (
+                {!selectedAvatar ? (
                   <>
                     <div className={css.tip}>
                       <FormattedMessage id="ProfileSettingsForm.tip" />

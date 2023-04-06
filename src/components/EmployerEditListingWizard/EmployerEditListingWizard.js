@@ -166,6 +166,8 @@ class EmployerEditListingWizard extends Component {
         } else if (history.location.pathname.includes('create-profile')) {
           history.push('/signup');
         }
+
+        fetchCurrentUserHasListings();
       }
     });
   }

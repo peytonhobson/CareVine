@@ -13,6 +13,7 @@ import {
   stripeDetachPaymentMethod,
 } from '../util/api';
 import { createStripeCustomer } from './paymentMethods.duck';
+import { fetchCurrentUser } from './user.duck';
 
 // https://stripe.com/docs/api/payment_intents/object#payment_intent_object-status
 const STRIPE_PI_HAS_PASSED_CONFIRM = ['processing', 'requires_capture', 'canceled', 'succeeded'];
@@ -735,7 +736,7 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
     throw e;
   };
 
-  const stripeCustomerId = sender?.stripeCustomer?.attributes?.stripeCustomerId;
+  const stripeCustomerId = sender.stripeCustomer?.attributes.stripeCustomerId;
 
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({
@@ -759,10 +760,7 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
           isCard,
           description: `Payment to ${caregiverName}`,
           sender,
-          metadata: {
-            channelUrl,
-            recipientName: caregiverName,
-          },
+          metadata,
         });
       })
       .then(res => {
