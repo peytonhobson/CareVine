@@ -18,7 +18,6 @@ import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../.
 import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
 import { StripeConnectAccountForm } from '../../forms';
 import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
-import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -265,6 +264,7 @@ class CaregiverEditListingWizard extends Component {
       stripeAccount,
       onChangeMissingInfoModal,
       history,
+      onFetchCurrentUserHasListings,
     } = this.props;
 
     const stripeConnected = !!currentUser.stripeAccount?.id;
@@ -284,7 +284,7 @@ class CaregiverEditListingWizard extends Component {
       !history.location.pathname.includes('create-profile')
     ) {
       onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
-      fetchCurrentUserHasListings();
+      onFetchCurrentUserHasListings();
     } else if (requirementsMissing || !stripeConnected) {
       this.setState({
         draftId: id,
@@ -292,20 +292,21 @@ class CaregiverEditListingWizard extends Component {
       });
     } else if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
-      fetchCurrentUserHasListings();
+      onFetchCurrentUserHasListings();
     }
   }
 
   handlePayoutModalClose() {
-    const { history } = this.props;
+    const { history, onFetchCurrentUserHasListings } = this.props;
 
     this.setState({ showPayoutDetails: false });
+
+    onFetchCurrentUserHasListings();
     if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
     } else {
       history.push('/l');
     }
-    fetchCurrentUserHasListings();
   }
 
   handlePayoutSubmit(values) {

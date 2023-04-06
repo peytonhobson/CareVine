@@ -67,6 +67,7 @@ import {
 } from '../../ducks/authenticate.duck';
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
+import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 import css from './EditListingPage.module.css';
 
@@ -141,6 +142,7 @@ export const EditListingPageComponent = props => {
     onUpdateSubscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    onFetchCurrentUserHasListings,
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -343,6 +345,7 @@ export const EditListingPageComponent = props => {
           onUpdateSubscription={onUpdateSubscription}
           updateSubscriptionError={updateSubscriptionError}
           updateSubscriptionInProgress={updateSubscriptionInProgress}
+          onFetchCurrentUserHasListings={onFetchCurrentUserHasListings}
         />
       );
     } else if (userType === EMPLOYER) {
@@ -377,6 +380,7 @@ export const EditListingPageComponent = props => {
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           availabilityExceptions={page.availabilityExceptions}
           fetchExceptionsInProgress={page.fetchExceptionsInProgress}
+          onFetchCurrentUserHasListings={onFetchCurrentUserHasListings}
         />
       );
     } else {
@@ -626,6 +630,9 @@ const mapDispatchToProps = dispatch => ({
   onApplyBCPromoCode: (promoCode, userId) => dispatch(applyBCPromo(promoCode, userId)),
   onUpdateSubscription: (subscriptionId, params) =>
     dispatch(updateSubscription(subscriptionId, params)),
+  onFetchCurrentUserHasListings: () => {
+    dispatch(fetchCurrentUserHasListings());
+  },
 });
 
 // Note: it is important that the withRouter HOC is **outside** the
