@@ -45,3 +45,8 @@ label {
   text-decoration: underline;
   margin: 0;
 }
+
+.lowerText {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}

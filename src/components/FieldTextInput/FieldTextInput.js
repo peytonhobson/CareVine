@@ -127,7 +127,10 @@ class FieldTextInputComponent extends Component {
             <span className={css.exampleLink}>{exampleLink}</span>
           </>
         ) : (
-          <input {...inputProps} />
+          <>
+            <input {...inputProps} />
+            <span className={css.lowerText}>{exampleLink}</span>
+          </>
         )}
         <ValidationError fieldMeta={fieldMeta} />
       </div>

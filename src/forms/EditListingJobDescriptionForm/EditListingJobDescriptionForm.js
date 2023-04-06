@@ -35,6 +35,7 @@ const EditListingJobDescriptionFormComponent = props => (
         updateInProgress,
         fetchErrors,
         onManageDisableScrolling,
+        isNewListingFlow,
         values,
         filterConfig,
       } = formRenderProps;
@@ -101,6 +102,10 @@ const EditListingJobDescriptionFormComponent = props => (
         </p>
       ) : null;
 
+      const titleCanEdit = isNewListingFlow ? (
+        <span style={{ textDecoration: 'none' }}>*This title can be edited</span>
+      ) : null;
+
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
@@ -122,6 +127,7 @@ const EditListingJobDescriptionFormComponent = props => (
               label={titleLabel}
               required
               maxLength={TITLE_MAX_LENGTH}
+              exampleLink={titleCanEdit}
             />
 
             <FieldTextInput
