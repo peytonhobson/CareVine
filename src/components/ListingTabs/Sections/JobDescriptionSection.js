@@ -9,7 +9,10 @@ import css from './sections.module.css';
 const JobDescriptionSection = forwardRef((props, ref) => {
   const { listing, currentUserListing, filterConfig, findLabel } = props;
 
-  const { careTypes } = listing?.attributes?.publicData;
+  const { careTypes, nearPublicTransit } = listing?.attributes?.publicData;
+
+  const additionalInfo = currentUserListing?.attributes?.publicData?.addiitonalInfo;
+  const hasCar = additionalInfo?.includes('hasCar');
 
   const jobDescriptionTitle = <h1 className={css.title}>About this job</h1>;
 
@@ -32,6 +35,14 @@ const JobDescriptionSection = forwardRef((props, ref) => {
             </li>
           );
         })}
+      </ul>
+      <h2 className={css.subTitle}>Near Public Transit</h2>
+      <ul className={css.itemContainer}>
+        {!hasCar ? (
+          <li className={css.sharedItem}>{nearPublicTransit ? 'Yes' : 'No'}</li>
+        ) : (
+          <li className={css.item}>{nearPublicTransit ? 'Yes' : 'No'}</li>
+        )}
       </ul>
     </SectionCard>
   );
