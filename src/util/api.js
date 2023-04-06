@@ -15,7 +15,7 @@ export const apiBaseUrl = () => {
   // In development, the dev API server is running in a different port
 
   if (useDevApiServer) {
-    return `http://localhost:${port}`;
+    return 'http://10.0.0.222:3500'; // `http://localhost:${port}`;
   }
 
   // Otherwise, use the same domain and port as the frontend
@@ -268,7 +268,7 @@ export const stripeCancelSubscriptionSchedule = body => {
 
 export const stripeUpdateSubscriptionItem = body => {
   return post('/api/stripe-update-subscription-item', body);
-}
+};
 
 export const applyPromo = body => {
   return post('/api/apply-promo', body);

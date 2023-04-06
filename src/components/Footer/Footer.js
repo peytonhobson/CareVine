@@ -40,7 +40,7 @@ const renderSocialMediaLinks = intl => {
     </ExternalLink>
   ) : null;
 
-  const instragramLink = siteInstagramPage ? (
+  const instagramLink = siteInstagramPage ? (
     <ExternalLink
       key="linkToInstagram"
       href={siteInstagramPage}
@@ -50,7 +50,7 @@ const renderSocialMediaLinks = intl => {
       <IconSocialMediaInstagram />
     </ExternalLink>
   ) : null;
-  return [fbLink, twitterLink, instragramLink].filter(v => v != null);
+  return [fbLink, twitterLink, instagramLink].filter(v => v != null);
 };
 
 const Footer = props => {
@@ -62,7 +62,7 @@ const Footer = props => {
     <div className={classes}>
       <div className={css.topBorderWrapper}>
         <div className={css.content}>
-          <div className={css.someLiksMobile}>{socialMediaLinks}</div>
+          {/* <div className={css.someLiksMobile}>{socialMediaLinks}</div> */}
           <div className={css.links}>
             <div className={css.organization} id="organization">
               <NamedLink name="LandingPage" className={css.logoLink}>

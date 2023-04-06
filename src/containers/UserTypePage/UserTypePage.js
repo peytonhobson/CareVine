@@ -9,8 +9,8 @@ import { NamedRedirect, ButtonGroup, GradientButton } from '../../components';
 import css from './UserTypePage.module.css';
 
 const userTypeOptions = [
-  { key: 'caregiver', label: 'Become a caregiver' },
-  { key: 'employer', label: 'Look for care' },
+  { key: 'caregiver', label: 'Become a Caregiver' },
+  { key: 'employer', label: 'Look For Care' },
 ];
 
 const UserTypePageComponent = props => {

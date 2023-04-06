@@ -29,10 +29,19 @@
 
 .travelDistance {
   margin-top: 2rem;
+  padding-top: 2rem;
 }
 
 .travelDistanceButton {
   padding: 0.5rem 1rem;
+}
+
+.addSubtractField {
+  margin-top: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 1rem;
+  }
 }
 
 .locationAutocompleteInput {

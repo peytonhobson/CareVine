@@ -230,6 +230,7 @@ const SignupFormComponent = props => (
             id="PasswordRequirements"
             isOpen={isPasswordRequirementsModalOpen}
             onClose={() => setIsPasswordRequirementsModalOpen(false)}
+            containerClassName={css.passwordReqs}
             usePortal
             onManageDisableScrolling={onManageDisableScrolling}
           >
