@@ -25,6 +25,7 @@
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
 
+  line-height: 3rem;
   text-align: center;
 }
 

@@ -54,6 +54,7 @@
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
+  margin-top: 2rem;
 }
 
 .dateContainer {
@@ -80,6 +81,7 @@
   display: flex;
   padding-block: 20px;
   justify-content: center;
+  width: 100%;
 }
 
 .weekdayButton {
@@ -92,22 +94,16 @@
   align-items: center;
   background-color: var(--matterColorAnti);
   color: var(--matterColorNegative);
+  margin: 0;
 
   border-radius: 100%;
 
-  width: 6rem;
-  height: 4rem;
-  font-size: 0.75rem;
+  width: 5.5rem;
+  height: 3.5rem;
+  font-size: 0.65rem;
   line-height: 1rem;
 
-  @media (--viewportMedium) {
-    width: 8rem;
-    height: 5rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
-  }
-
-  /* Clear padding that is set for link elements looking like buttons */
+  /* Clear padding that is set for link elemencpts looking like buttons */
   padding: 0;
   margin: 0 0.5rem;
 
@@ -115,6 +111,13 @@
     background-color: var(--marketplaceColor);
     border: 1px solid var(--marketplaceColor);
     color: var(--matterColorLight);
+  }
+
+  @media (--viewportMedium) {
+    width: 8rem;
+    height: 5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }
 

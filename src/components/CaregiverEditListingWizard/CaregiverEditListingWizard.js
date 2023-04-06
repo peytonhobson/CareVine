@@ -126,7 +126,6 @@ const tabCompleted = (tab, listing, user) => {
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
-      console.log(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
       return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
       return images && images.length > 0;

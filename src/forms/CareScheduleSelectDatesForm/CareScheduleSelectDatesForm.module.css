@@ -60,6 +60,7 @@
   width: 100%;
   padding: 0;
   margin-top: 30px;
+  padding: 0 2rem;
 
   @media (--viewportMedium) {
     flex-wrap: nowrap;
@@ -72,7 +73,7 @@
   display: flex;
   align-items: flex-end;
   position: relative;
-  width: calc(50% - 12px);
+  width: calc(50% - 1rem);
 
   &:nth-child(2n) {
     margin-top: 12px;
@@ -96,12 +97,11 @@
   flex-grow: 1;
 
   & :global(.SingleDatePickerInput) {
-    width: calc(100% - 24px);
-    margin: 0 0 0 24px;
+    width: calc(100% - 1.5rem);
+    margin: 0;
 
     @media (--viewportMedium) {
       width: 100%;
-      margin: 0;
     }
   }
 
@@ -117,7 +117,7 @@
 .fieldSelect {
   flex-grow: 1;
   margin-left: 0;
-  margin-right: 24px;
+  margin-right: 0;
 
   &::after {
     content: '';
@@ -132,9 +132,6 @@
   }
 
   @media (--viewportMedium) {
-    margin-left: 0;
-    margin-right: 0;
-
     &::after {
       left: 0;
       bottom: 17px;

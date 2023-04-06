@@ -46,6 +46,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  text-align: center;
 
   @media (--viewportMedium) {
     height: auto;
@@ -110,16 +111,17 @@
 }
 
 .confirmationText {
-  display: flex;
   word-wrap: none;
   white-space: nowrap;
   font-size: 2rem;
+  line-height: 2rem;
   animation: 2.5s fadeIn;
   animation-fill-mode: forwards;
-  width: 100%;
+  margin: auto;
   text-align: center;
 
   &.small {
+    margin-top: 1.5rem;
     font-size: 1rem;
     width: auto;
     word-wrap: break-word;

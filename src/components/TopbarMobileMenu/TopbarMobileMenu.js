@@ -43,7 +43,7 @@ const TopbarMobileMenu = props => {
   const user = ensureCurrentUser(currentUser);
 
   const userType = user?.attributes?.profile?.metadata?.userType;
-  const isNewListing = newListingStates.includes(currentPage) || !currentUserListing;
+  const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
 
   if (!isAuthenticated) {
     const signup = (
@@ -114,12 +114,23 @@ const TopbarMobileMenu = props => {
         listing={currentUserListing}
         children={<FormattedMessage id="TopbarDesktop.viewListing" />}
       />
+    ) : null;
+
+  const createListingLink =
+    !isAuthenticated || !(currentUserListingFetched && !currentUserListing) ? (
+      isNewListing ? (
+        <OwnListingLink
+          className={css.navigationLink}
+          listingFetched={currentUserListingFetched}
+          listing={currentUserListing}
+        >
+          <FormattedMessage id="TopbarDesktop.finishYourListingLink" />
+        </OwnListingLink>
+      ) : null
     ) : (
-      <OwnListingLink
-        listing={currentUserListing}
-        listingFetched={currentUserListingFetched}
-        className={css.navigationLink}
-      />
+      <NamedLink className={css.navigationLink} name="NewListingPage">
+        <FormattedMessage id="TopbarDesktop.createListing" />
+      </NamedLink>
     );
 
   return (
@@ -154,6 +165,7 @@ const TopbarMobileMenu = props => {
             {notificationCountBadge}
           </span>
         )}
+        {createListingLink}
         {listingLink}
         <NamedLink
           className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}
