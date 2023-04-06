@@ -215,7 +215,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
   } = searchParams;
   // const priceMaybe = priceSearchParams(price);
 
-  const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
+  const minPriceMaybe = price ? { pub_minPrice: `,${(price + 1) * 100}` } : {};
   const sortMaybe = searchableSortParams.includes(sort) ? { sort } : null;
 
   const maxPriceMaybe = pub_maxPrice ? { pub_maxPrice: `${pub_maxPrice * 100},` } : {};

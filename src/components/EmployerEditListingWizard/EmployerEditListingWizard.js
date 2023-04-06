@@ -3,9 +3,6 @@ import { array, bool, func, number, object, oneOf, shape, string } from 'prop-ty
 import { compose } from 'redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import classNames from 'classnames';
-import config from '../../config';
-import routeConfiguration from '../../routeConfiguration';
-import { createResourceLocatorString } from '../../util/routes';
 import { withViewport } from '../../util/contextHelpers';
 import { propTypes } from '../../util/types';
 import {
@@ -14,7 +11,6 @@ import {
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
 import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
-import { EMAIL_VERIFICATION } from '../ModalMissingInformation/ModalMissingInformation';
 
 import { Modal, NamedRedirect, Tabs } from '..';
 
@@ -153,7 +149,13 @@ class EmployerEditListingWizard extends Component {
   }
 
   handlePublishListing(id) {
-    const { onPublishListingDraft, currentUser, onChangeMissingInfoModal, history } = this.props;
+    const {
+      onPublishListingDraft,
+      currentUser,
+      onChangeMissingInfoModal,
+      history,
+      onFetchCurrentUserHasListings,
+    } = this.props;
 
     onPublishListingDraft(id).then(res => {
       if (res.type !== 'error') {
@@ -167,7 +169,7 @@ class EmployerEditListingWizard extends Component {
           history.push('/signup');
         }
 
-        fetchCurrentUserHasListings();
+        onFetchCurrentUserHasListings();
       }
     });
   }
