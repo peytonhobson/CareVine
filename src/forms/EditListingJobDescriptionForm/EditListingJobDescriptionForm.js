@@ -103,7 +103,9 @@ const EditListingJobDescriptionFormComponent = props => (
       ) : null;
 
       const titleCanEdit = isNewListingFlow ? (
-        <span style={{ textDecoration: 'none' }}>*This title can be edited</span>
+        <span style={{ textDecoration: 'none' }}>
+          *We recommend editing this title to better describe your needs
+        </span>
       ) : null;
 
       const classes = classNames(css.root, className);
