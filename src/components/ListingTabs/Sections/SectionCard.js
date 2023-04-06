@@ -41,6 +41,7 @@ const SectionCard = forwardRef((props, ref) => {
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     minHeight: '10rem',
     marginInline: isMobile ? '1rem' : '0',
+    padding: '1rem',
     ...cardStyles,
   }));
 

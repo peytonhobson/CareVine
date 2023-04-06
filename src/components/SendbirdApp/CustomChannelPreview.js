@@ -221,7 +221,7 @@ const CustomChannelPreview = ({
     }
   );
   const channelName = getChannelTitle(channel, userId, stringSet);
-  console.log(otherUser);
+
   return (
     <>
       <div

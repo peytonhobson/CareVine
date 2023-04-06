@@ -7,14 +7,9 @@
 .cells {
   display: flex;
   width: 100%;
-
-  @media (--viewportMedium) {
-    height: 7rem;
-  }
 }
 
 .cell {
-  position: relative;
   border: 1px solid var(--matterColorAnti);
   display: flex;
   width: 100%;
@@ -27,7 +22,6 @@
 }
 
 .day {
-  position: relative;
   display: inline;
   width: 100%;
   text-align: center;

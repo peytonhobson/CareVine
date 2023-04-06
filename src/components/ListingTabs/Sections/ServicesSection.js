@@ -31,16 +31,22 @@ const ServicesSection = forwardRef((props, ref) => {
         })}
       </ul>
 
-      <h2 className={css.subTitle}>Experience Areas:</h2>
-      <ul className={css.itemContainer}>
-        {experienceAreas?.map(area => {
-          return currentUserListing?.attributes?.publicData?.detailedCareNeeds?.includes(area) ? (
-            <li className={css.sharedItem}>{findLabel(area, experienceAreaOptions)}</li>
-          ) : (
-            <li className={css.item}>{findLabel(area, experienceAreaOptions)}</li>
-          );
-        })}
-      </ul>
+      {experienceAreas?.length > 0 ? (
+        <>
+          <h2 className={css.subTitle}>Experience Areas:</h2>
+          <ul className={css.itemContainer}>
+            {experienceAreas?.map(area => {
+              return currentUserListing?.attributes?.publicData?.detailedCareNeeds?.includes(
+                area
+              ) ? (
+                <li className={css.sharedItem}>{findLabel(area, experienceAreaOptions)}</li>
+              ) : (
+                <li className={css.item}>{findLabel(area, experienceAreaOptions)}</li>
+              );
+            })}
+          </ul>
+        </>
+      ) : null}
     </SectionCard>
   );
 });
