@@ -134,6 +134,7 @@ export const EditListingLocationFormComponent = props => (
               id={formId ? `${formId}.travelDistance` : 'travelDistance'}
               rootClassName={css.travelDistance}
               buttonClassName={css.travelDistanceButton}
+              fieldClassName={css.addSubtractField}
               name="travelDistance"
               startingCount={values.travelDistance}
               countLabel={distanceCountLabel}
