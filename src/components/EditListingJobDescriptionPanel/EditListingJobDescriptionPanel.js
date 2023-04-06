@@ -167,6 +167,7 @@ const EditListingJobDescriptionPanel = props => {
     updateInProgress,
     fetchErrors: errors,
     intl,
+    isNewListingFlow,
     ...rest,
   };
 
