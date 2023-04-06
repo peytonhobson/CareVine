@@ -86,6 +86,7 @@
   line-height: 20px;
   margin: 0;
   cursor: pointer;
+  white-space: nowrap;
 
   @media (--viewportMedium) {
     margin: 0;

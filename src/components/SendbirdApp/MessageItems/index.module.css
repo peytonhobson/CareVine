@@ -1,5 +1,5 @@
 .outgoingNotificationCard {
-  margin-bottom: 44px;
+  margin-bottom: 2.75rem;
   background-color: var(--marketplaceColor);
 }
 
@@ -16,8 +16,8 @@
 }
 
 .incomingContainer {
-  padding: 20px;
-  height: 300px;
+  padding: 1.25rem;
+  height: 18.75rem;
 
   &:hover {
     background-color: rgb(240, 240, 240);
@@ -31,14 +31,14 @@
 
 .cardTitle {
   font-weight: var(--fontWeightBold);
-  font-size: 24px;
-  line-height: 32px;
+  font-size: 1.5rem;
+  line-height: 2rem;
   letter-spacing: -0.5px;
   margin: 0;
 
   @media (--viewportMedium) {
     font-weight: var(--fontWeightSemiBold);
-    line-height: 40px;
+    line-height: 2.5rem;
     letter-spacing: -0.9px;
     margin: 0;
   }
@@ -54,21 +54,21 @@
 
 .bottomWrapper {
   display: flex;
-  margin-top: 20px;
+  margin-top: 1.25rem;
   justify-content: center;
   align-items: center;
 }
 
 .setupButton {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
-  padding-block: 15px;
+  padding-block: 1rem;
   /* width: 50%; */
   min-height: 0;
 }
 
 .paymentButton {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
-  padding-block: 15px;
+  padding-block: 1rem;
   min-height: 0;
   background-color: var(--marketplaceColor);
   color: var(--matterColorLight);

@@ -486,7 +486,7 @@ const EditListingBackgroundCheckPanel = props => {
       content = (
         <div className={css.content}>
           <h1 className={css.quizTitle}>
-            Verify your <span className={css.identityText}>identity</span>
+            Verify Your <span className={css.identityText}>Identity</span>
           </h1>
           <div className={css.attemptsContainer}>
             <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>

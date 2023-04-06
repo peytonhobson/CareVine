@@ -99,13 +99,8 @@
   flex-grow: 1;
 
   & :global(.SingleDatePickerInput) {
-    width: calc(100% - 24px);
-    margin: 0 0 0 24px;
-
-    @media (--viewportMedium) {
-      width: 100%;
-      margin: 0;
-    }
+    width: 100%;
+    margin: 0;
   }
 
   & :global(.SingleDatePicker_picker__directionLeft) {
@@ -120,7 +115,7 @@
 .fieldSelect {
   flex-grow: 1;
   margin-left: 0;
-  margin-right: 24px;
+  margin-right: 0;
 
   &::after {
     content: '';

@@ -186,6 +186,7 @@ const EditListingWizardTab = props => {
 
       return onUpsertListingDraft(tab, upsertValues)
         .then(r => {
+          window.scrollTo(0, 0);
           if (tab !== CARE_SCHEDULE && tab !== marketplaceTabs[marketplaceTabs.length - 1]) {
             // Create listing flow: smooth scrolling polyfill to scroll to correct tab
             handleCreateFlowTabScrolling(false);

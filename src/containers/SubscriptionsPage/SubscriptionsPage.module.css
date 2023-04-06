@@ -137,3 +137,7 @@ p {
 .futureSubscriptions {
   margin-top: 1rem;
 }
+
+.error {
+  color: var(--failColor);
+}

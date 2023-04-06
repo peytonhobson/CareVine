@@ -46,6 +46,13 @@
   composes: marketplaceModalCloseIcon from global;
   margin-left: 0;
   margin-right: 5px;
+
+  margin-top: 0;
+  margin-bottom: 0.1rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0.125rem;
+  }
 }
 
 .iconCheckmark {

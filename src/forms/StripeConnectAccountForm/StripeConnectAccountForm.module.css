@@ -62,6 +62,7 @@
 
 .termsLink {
   composes: marketplaceModalHelperLink from global;
+  white-space: nowrap;
 
   &:hover {
     text-decoration: underline;

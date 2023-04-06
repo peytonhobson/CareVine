@@ -160,12 +160,7 @@ export const EmployerListingCardMobileComponent = props => {
   return (
     <>
       <Card>
-        <NamedLink
-          className={classes}
-          name="ListingPage"
-          params={{ id, slug }}
-          style={{ pointerEvents: disableProfileLink && 'none' }}
-        >
+        <div className={classes}>
           <div className={css.mobileTitleContainer}>
             <div className={css.user}>
               {avatarComponent}
@@ -176,35 +171,32 @@ export const EmployerListingCardMobileComponent = props => {
                 })}
               </div>
             </div>
-            <div className={css.title}>{title}</div>
+            <div className={css.mobileTitleTextContainer}>
+              <div className={css.title}>{title}</div>
+              <h3 className={css.location}>{location.city}</h3>
+              <h3 className={css.location}>{distanceFromLocation} miles away</h3>
+            </div>
           </div>
           <div className={css.topRow}>
             <div className={css.topInfo}>
-              <div className={css.centerFlex}>
-                <h3 className={css.location}>{location.city}</h3>
-                <h3 className={css.location}>{distanceFromLocation} miles away</h3>
-              </div>
-              <div className={css.centerFlex}>
-                <h3 className={css.scheduleType}>
-                  <FormattedMessage id={'EmployerListingCard.scheduleType'} values={{ type: '' }} />
-                </h3>
-                <h3 className={css.scheduleType}>
-                  {scheduleTypeLabel}
-                  {isLiveIn ? ' (Live-In)' : ''}
-                </h3>
-                {scheduleType === '24hour' || scheduleType === 'repeat' ? (
-                  <AvailabilityPreview entries={entries} availableDays={availableDays} />
-                ) : (
-                  <InlineTextButton
-                    onClick={e => {
-                      e.preventDefault();
-                      setIsOneTimeScheduleModalOpen(true);
-                    }}
-                  >
-                    <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                  </InlineTextButton>
-                )}
-              </div>
+              <h3 className={css.scheduleType}>
+                <FormattedMessage
+                  id={'EmployerListingCard.scheduleType'}
+                  values={{ type: `${scheduleTypeLabel}${isLiveIn ? ' (Live-In)' : ''}` }}
+                />
+              </h3>
+              {scheduleType === '24hour' || scheduleType === 'repeat' ? (
+                <AvailabilityPreview entries={entries} availableDays={availableDays} />
+              ) : (
+                <InlineTextButton
+                  onClick={e => {
+                    e.preventDefault();
+                    setIsOneTimeScheduleModalOpen(true);
+                  }}
+                >
+                  <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
+                </InlineTextButton>
+              )}
             </div>
           </div>
           <div className={css.providedServices}>
@@ -228,8 +220,13 @@ export const EmployerListingCardMobileComponent = props => {
               )}
             </div>
           </div>
-        </NamedLink>
-        <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
+        </div>
+        <NamedLink
+          className={css.buttonContainer}
+          name="ListingPage"
+          params={{ id, slug }}
+          style={{ pointerEvents: disableProfileLink && 'none' }}
+        >
           <div className={css.priceValue} title={priceTitle}>
             {formattedMinPrice}-{maxPrice / 100}
             <span className={css.perUnit}>

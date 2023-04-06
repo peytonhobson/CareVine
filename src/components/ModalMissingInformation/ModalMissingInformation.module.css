@@ -61,6 +61,11 @@
   border: 1px solid var(--matterColorAnti);
   border-radius: 100%;
   margin-right: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 0;
+  }
 }
 
 .requirementsListItem {

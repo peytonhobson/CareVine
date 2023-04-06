@@ -39,8 +39,6 @@ const NotifyForPaymentContainer = props => {
 
   const providerName = userDisplayNameAsString(provider);
 
-  console.log(provider);
-
   const handleNotifyForPayment = () => {
     const currentUserId = currentUser.id && currentUser.id.uuid;
     onSendNotifyForPayment(
