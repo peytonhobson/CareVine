@@ -39,7 +39,15 @@ const MIN_LENGTH_FOR_LONG_WORDS = 10;
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const CaregiverListingCardComponent = props => {
-  const { className, rootClassName, intl, listing, filtersConfig, currentUserListing } = props;
+  const {
+    className,
+    rootClassName,
+    intl,
+    listing,
+    filtersConfig,
+    currentUserListing,
+    disableProfileLink,
+  } = props;
 
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
@@ -65,8 +73,6 @@ export const CaregiverListingCardComponent = props => {
   const hasPremiumSubscription =
     backgroundCheckSubscription?.status === 'active' &&
     backgroundCheckSubscription?.type === 'vine';
-
-  const backgroundCheckApprovedDate = authorMetadata?.backgroundCheckApproved?.date;
 
   const classes = classNames(rootClassName || css.root, className);
 
@@ -324,7 +330,12 @@ export const CaregiverListingCardComponent = props => {
           </div>
         </div>
       </Wrapper>
-      <NamedLink className={css.buttonContainer} name="ListingPage" params={{ id, slug }}>
+      <NamedLink
+        className={css.buttonContainer}
+        name="ListingPage"
+        params={{ id, slug }}
+        style={{ pointerEvents: disableProfileLink && 'none' }}
+      >
         <Button className={css.messageButton}>
           <FormattedMessage id="CaregiverListingCard.viewProfile" />
         </Button>

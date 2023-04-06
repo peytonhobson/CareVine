@@ -27,6 +27,7 @@ const ListingPreview = props => {
           currentUser={currentUser}
           currentUserListing={listingWithAuthor}
           listing={listingWithAuthor}
+          disableProfileLink
         />
       ) : isMobile ? (
         <EmployerListingCardMobile
@@ -35,6 +36,7 @@ const ListingPreview = props => {
           currentUserListing={listingWithAuthor}
           listing={listingWithAuthor}
           onManageDisableScrolling={onManageDisableScrolling}
+          disableProfileLink
         />
       ) : (
         <EmployerListingCard
@@ -43,6 +45,7 @@ const ListingPreview = props => {
           currentUserListing={listingWithAuthor}
           listing={listingWithAuthor}
           onManageDisableScrolling={onManageDisableScrolling}
+          disableProfileLink
         />
       )}
       <div className={css.buttonContainer}>
