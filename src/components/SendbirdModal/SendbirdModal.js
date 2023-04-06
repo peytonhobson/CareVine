@@ -117,6 +117,7 @@ const SendbirdModal = props => {
           <Avatar
             rootClassName={css.avatarRoot}
             className={css.avatar}
+            initialsClassName={css.avatarInitials}
             user={currentAuthor}
             disableProfileLink
           />
