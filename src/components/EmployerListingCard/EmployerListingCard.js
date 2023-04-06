@@ -73,6 +73,7 @@ export const EmployerListingCardComponent = props => {
     filtersConfig,
     currentUserListing,
     onManageDisableScrolling,
+    disableProfileLink,
   } = props;
 
   const [isOneTimeScheduleModalOpen, setIsOneTimeScheduleModalOpen] = useState(false);
@@ -157,7 +158,12 @@ export const EmployerListingCardComponent = props => {
   return (
     <>
       <Card>
-        <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+        <NamedLink
+          className={classes}
+          name="ListingPage"
+          params={{ id, slug }}
+          style={{ pointerEvents: disableProfileLink && 'none' }}
+        >
           <div className={css.topRow}>
             <div className={css.user}>
               {avatarComponent}

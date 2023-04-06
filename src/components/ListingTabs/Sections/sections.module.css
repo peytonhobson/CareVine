@@ -140,6 +140,7 @@
 
 .liveIn {
   color: var(--marketplaceColor);
+  padding: 1rem 0;
 }
 
 .recipients {
