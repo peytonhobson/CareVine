@@ -791,7 +791,7 @@
   "PaymentForm.stripeOtherErrorMessage": "Another problem occurred, maybe unrelated to Stripe.",
   "PaymentForm.stripePaymentMethodErrorMessage": "A payment error occurred: {stripeErrorMessage}",
   "PaymentForm.useDefaultMethodTitle": "Use Default {paymentMethod}",
-  "PaymentForm.useDefaultPaymentMethod": "Use your default {paymentMethod}",
+  "PaymentForm.useDefaultPaymentMethod": "Use your saved {paymentMethod}",
   "PaymentForm.useDifferentPaymentMethod": "Use a new {paymentMethod}",
   "PaymentMethodsForm.billingDetails": "Billing details",
   "PaymentMethodsForm.billingDetailsNameLabel": "Card holder's name",
