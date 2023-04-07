@@ -87,6 +87,8 @@ p {
 
 .headerButtonContainer {
   margin-right: 2rem;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 /* Title of the modal */
