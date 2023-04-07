@@ -300,7 +300,7 @@ module.exports = queryEvents = () => {
             `${apiBaseUrl()}/api/stripe-update-subscription`,
             {
               subscriptionId: backgroundCheckSubscription?.subscriptionId,
-              params: { marketplaceUrl: rootUrl, cancel_at_period_end: true },
+              params: { cancel_at_period_end: true },
             },
             {
               headers: {
