@@ -14,10 +14,11 @@ import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateConte
 import CustomChannelPreview from './CustomChannelPreview';
 import CustomMessageItem from './CustomMessageItem';
 import CustomChannelPreviewAction from './CustomChannelPreviewAction';
+import { LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT } from '../../util/urlHelpers';
 
 import css from './SendbirdApp.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 const SendbirdApp = props => {
   const {
@@ -55,12 +56,13 @@ const SendbirdApp = props => {
 
   const [currentChannelUrl, setCurrentChannelUrl] = useState('');
 
-  const channelContext = useSendbirdStateContext();
-
   const redirectToOwnProfile = () => {
     const pendingString =
       ownListing.attributes.state === 'pendingApproval' ? '/pending-approval' : '';
-    history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}${pendingString}`);
+    const isNewListing = newListingStates.includes(ownListing.attributes.state);
+    if (!isNewListing) {
+      history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}${pendingString}`);
+    }
   };
 
   useEffect(() => {

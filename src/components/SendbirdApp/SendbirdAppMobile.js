@@ -10,6 +10,7 @@ import SBConversation from '@sendbird/uikit-react/Channel';
 import '@sendbird/uikit-react/dist/index.css';
 import sendbirdSelectors from '@sendbird/uikit-react/sendbirdSelectors';
 import withSendbird from '@sendbird/uikit-react/withSendbird';
+import { LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT } from '../../util/urlHelpers';
 
 import CustomChannelPreview from './CustomChannelPreview';
 import CustomMessageItem from './CustomMessageItem';
@@ -17,7 +18,7 @@ import CustomChannelPreviewAction from './CustomChannelPreviewAction';
 
 import css from './SendbirdApp.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 const SendbirdAppMobile = props => {
   const {
@@ -57,7 +58,10 @@ const SendbirdAppMobile = props => {
   const redirectToOwnProfile = () => {
     const pendingString =
       ownListing.attributes.state === 'pendingApproval' ? '/pending-approval' : '';
-    history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}${pendingString}`);
+    const isNewListing = newListingStates.includes(ownListing.attributes.state);
+    if (!isNewListing) {
+      history.push(`/l/${ownListing.attributes.title}/${ownListing.id.uuid}${pendingString}`);
+    }
   };
 
   useEffect(() => {
