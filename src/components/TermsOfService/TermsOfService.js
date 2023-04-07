@@ -12,7 +12,7 @@ const TermsOfService = props => {
   // prettier-ignore
   return (
     <div className={classes}>
-      <p className={css.lastUpdated}>Last updated: March, 25 2023</p>
+      <p className={css.lastUpdated}>Last updated: April, 7 2023</p>
 
       <p>
         This website is operated by CareVine. Throughout the site, where “Site” shall mean
@@ -57,7 +57,7 @@ const TermsOfService = props => {
               <ol type="a" className={css.nestedList} style={{ marginLeft: '1rem' }}>
                 <li>
                   <p>
-                    Our Service connects Care Searchers with Providers who want to offer care
+                    Our Service connects those seeking care "Care Searchers" with those providing care "Providers" who want to offer care
                     services. Providers can create profiles, search and apply for jobs, and
                     communicate with Care Searchers. Similarly, Care Searchers can post jobs, search
                     for Providers, message them, and make payments through our Service.
@@ -99,7 +99,7 @@ const TermsOfService = props => {
                 <li>
                   <p>
                     Care Searchers are responsible for complying with all applicable employment and
-                    other laws related to any employment relationship they establish.
+                    other State or Federal laws related to any employment relationship they establish.
                   </p>
                 </li>
                 <li>
@@ -136,7 +136,8 @@ const TermsOfService = props => {
                 Users who have registered on our platform are entirely responsible for conducting
                 interviews, performing background checks, verifying the accuracy of information
                 provided, checking references, and choosing an appropriate Care Searcher or Provider
-                for themselves or their care recipient.
+                for themselves or their care recipient. CareVine is not responsible for any disputes and
+                or altercations that arise before or after users completing their due diligence.
               </p>
             </li>
           </ul>
@@ -227,7 +228,8 @@ const TermsOfService = props => {
                     and remove any Content, in whole or in part, at its sole discretion. CareVine
                     may take such actions if the Content is deemed to violate the Terms, or if it is
                     considered offensive, inappropriate, or illegal, or if it poses a threat to the
-                    safety of users or others.
+                    safety of users or others. CareVine does not need to provide justification or reasons
+                    as to why content was removed.
                   </p>
                 </li>
                 <li>
@@ -253,7 +255,7 @@ const TermsOfService = props => {
                 completeness, or usefulness of any information on the Site or available through the
                 Service, nor does it endorse or accept responsibility for the accuracy or
                 reliability of any opinion, advice, or statement made by any party on the Site or
-                through the Service. CareVine and its Affiliates will not be held responsible for
+                through the Service. CareVine and its Affiliates will not be held responsible or liable for
                 any loss or damage resulting from your reliance on information or other content
                 posted on the Site or transmitted by any user, or from reviews or comments made
                 about you by other users on the Site.
@@ -490,8 +492,8 @@ const TermsOfService = props => {
           <p>
             To access certain CareVine services or products, users may be required to pay a
             recurring subscription, one-time, or other fees. The user is responsible for all
-            applicable state or local sales taxes associated with the services or products
-            purchased.
+            applicable state or local sales taxes or any other fees associated with the services or products
+            purchased while using the Service.
           </p>
           <ul>
             <li>
@@ -621,7 +623,7 @@ const TermsOfService = props => {
                 You agree to indemnify and hold harmless CareVine and its officers, directors,
                 employees, agents, licensors, and suppliers, from and against any claims, actions,
                 suits or proceedings, as well as any and all losses, liabilities, damages, costs and
-                expenses (including reasonable attorneys' fees) arising out of or in connection with
+                expenses (including any attorneys' fees) arising out of or in connection with
                 your use of our platform and services, your breach or violation of these Terms of
                 Service, or your violation of any rights of any third party.
               </p>
@@ -736,7 +738,7 @@ const TermsOfService = props => {
             use of CareVine's platform and services, including but not limited to these Terms of
             Service, and whether such dispute, claim, or controversy is based on contract, tort,
             statute, or any other legal theory, such dispute, claim, or controversy shall be
-            resolved exclusively through binding arbitration.
+            resolved exclusively through binding arbitration in the state of Wyoming..
           </p>
           <p>
             The arbitration award shall be final and binding, and judgment on the award rendered by
