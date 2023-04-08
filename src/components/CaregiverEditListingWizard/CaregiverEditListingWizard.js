@@ -48,6 +48,7 @@ import {
   authenticate7YearHistory,
   applyBCPromo,
 } from '../../ducks/authenticate.duck';
+import { generateBio } from '../../ducks/chatGPT.duck';
 
 import css from './CaregiverEditListingWizard.module.css';
 
@@ -469,8 +470,6 @@ class CaregiverEditListingWizard extends Component {
       return <NamedRedirect name="EditListingPage" params={pathParams} />;
     }
 
-    console.log(rest);
-
     return (
       <div className={classes} ref={setPortalRootAfterInitialRender}>
         <Tabs
@@ -696,6 +695,8 @@ const mapStateToProps = state => {
     updateSubscriptionInProgress,
   } = state.stripe;
 
+  const { generateBioInProgress, generateBioError, generatedBio } = state.chatGPT;
+
   return {
     authenticate,
     createPaymentError,
@@ -713,6 +714,9 @@ const mapStateToProps = state => {
     updateStripeAccountError,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    generateBioInProgress,
+    generateBioError,
+    generatedBio,
   };
 };
 
@@ -747,6 +751,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
     ),
+  onGenerateBio: listing => dispatch(generateBio(listing)),
 });
 
 export default compose(
