@@ -50,6 +50,7 @@ const applyPromo = require('./api/apply-promo');
 const sendFeedbackEmail = require('./api/send-feedback-email');
 const sendgridTemplateEmail = require('./api/sendgrid-template-email');
 const sendgridStandardEmail = require('./api/sendgrid-standard-email');
+const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -123,6 +124,7 @@ router.post('/apply-promo', applyPromo);
 router.post('/send-feedback-email', sendFeedbackEmail);
 router.post('/sendgrid-template-email', sendgridTemplateEmail);
 router.post('/sendgrid-standard-email', sendgridStandardEmail);
+router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
