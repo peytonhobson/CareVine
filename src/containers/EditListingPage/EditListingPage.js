@@ -19,17 +19,6 @@ import { ensureOwnListing } from '../../util/data';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import {
-  stripeAccountClearError,
-  getStripeConnectAccountLink,
-} from '../../ducks/stripeConnectAccount.duck';
-import { stripeCustomer } from '../PaymentMethodsPage/PaymentMethodsPage.duck.js';
-import {
-  handleCardSetup,
-  createPayment,
-  createSubscription,
-  updateSubscription,
-} from '../../ducks/stripe.duck';
-import {
   CaregiverEditListingWizard,
   EmployerEditListingWizard,
   Footer,
@@ -83,66 +72,19 @@ const { UUID } = sdkTypes;
 // N.B. All the presentational content needs to be extracted to their own components
 export const EditListingPageComponent = props => {
   const {
+    createStripeAccountError,
     currentUser,
     currentUserListing,
     currentUserListingFetched,
-    createStripeAccountError,
-    fetchInProgress,
-    fetchStripeAccountError,
     getOwnListing,
-    getAccountLinkError,
-    getAccountLinkInProgress,
     history,
-    intl,
     image,
-    onAddAvailabilityException,
-    onAuthenticateCreateUser,
-    onDeleteAvailabilityException,
-    onCreateListingDraft,
-    onPublishListingDraft,
-    onUpdateListing,
-    onManageDisableScrolling,
-    onPayoutDetailsFormSubmit,
-    onPayoutDetailsFormChange,
-    onGetStripeConnectAccountLink,
-    onChange,
+    intl,
     page,
     params,
     scrollingDisabled,
-    allowOnlyOneListing,
-    stripeAccountFetched,
-    stripeAccount,
-    updateStripeAccountError,
-    onProfileImageUpload,
-    onUpdateProfile,
-    uploadInProgress,
-    onHandleCardSetup,
-    fetchStripeCustomer,
-    createStripeCustomerError,
-    handleCardSetupError,
-    onChangeMissingInfoModal,
     uploadImageError,
-    onAuthenticateSubmitConsent,
-    onCreatePayment,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    onGetIdentityProofQuiz,
-    onVerifyIdentityProofQuiz,
-    onCreateSubscription,
-    createSubscriptionError,
-    createSubscriptionInProgress,
-    subscription,
-    authenticate,
-    onAuthenticateUpdateUser,
-    onGetAuthenticateTestResult,
-    onGenerateCriminalBackground,
-    onGet7YearHistory,
-    onApplyBCPromoCode,
-    onUpdateSubscription,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
-    onFetchCurrentUserHasListings,
+    ...rest
   } = props;
 
   const { id, type, returnURLType } = params;
@@ -211,7 +153,7 @@ export const EditListingPageComponent = props => {
 
     return <NamedRedirect {...redirectProps} />;
   } else if (
-    (allowOnlyOneListing && isNewURI && currentUserListingFetched && currentUserListing) ||
+    (isNewURI && currentUserListingFetched && currentUserListing) ||
     (createProfile && isPublished)
   ) {
     // If we allow only one listing per provider, we need to redirect to correct listing.
@@ -252,23 +194,6 @@ export const EditListingPageComponent = props => {
     const newListingPublished =
       isDraftURI && currentListing && currentListingState !== LISTING_STATE_DRAFT;
 
-    // Show form if user is posting a new listing or editing existing one
-    const disableForm = page.redirectToListing && !showListingsError;
-
-    // Images are passed to EditListingForm so that it can generate thumbnails out of them
-    const currentListingImages =
-      currentListing && currentListing.images ? currentListing.images : [];
-
-    // Images not yet connected to the listing
-    const imageOrder = page.imageOrder || [];
-    const unattachedImages = imageOrder.map(i => page.images[i]);
-
-    const allImages = currentListingImages.concat(unattachedImages);
-    const removedImageIds = page.removedImageIds || [];
-    const images = allImages.filter(img => {
-      return !removedImageIds.includes(img.id);
-    });
-
     const profileImageId = currentUser?.profileImage ? currentUser?.profileImage.id : null;
     const profileImage = image || { imageId: profileImageId };
 
@@ -283,104 +208,45 @@ export const EditListingPageComponent = props => {
     if (userType === CAREGIVER) {
       editListingWizard = (
         <CaregiverEditListingWizard
-          id="CaregiverEditListingWizard"
+          {...rest}
+          availabilityExceptions={page.availabilityExceptions}
           className={css.wizard}
-          params={params}
-          disabled={disableForm}
-          errors={errors}
-          fetchInProgress={fetchInProgress}
-          newListingPublished={newListingPublished}
-          history={history}
-          images={images}
-          listing={currentListing}
-          onUpdateListing={onUpdateListing}
-          onCreateListingDraft={onCreateListingDraft}
-          onPublishListingDraft={onPublishListingDraft}
-          onPayoutDetailsFormChange={onPayoutDetailsFormChange}
-          onPayoutDetailsSubmit={onPayoutDetailsFormSubmit}
-          onGetStripeConnectAccountLink={onGetStripeConnectAccountLink}
-          getAccountLinkInProgress={getAccountLinkInProgress}
-          onChange={onChange}
           currentUser={currentUser}
-          onManageDisableScrolling={onManageDisableScrolling}
+          errors={errors}
+          history={history}
+          id="CaregiverEditListingWizard"
+          image={image}
+          listing={currentListing}
+          newListingPublished={newListingPublished}
+          pageName={createProfile ? 'CreateProfilePage' : 'EditListingPage'}
+          params={params}
+          profileImage={profileImage}
           stripeOnboardingReturnURL={params.returnURLType}
           updatedTab={page.updatedTab}
           updateInProgress={page.updateInProgress || page.createListingDraftInProgress}
           payoutDetailsSaveInProgress={page.payoutDetailsSaveInProgress}
           payoutDetailsSaved={page.payoutDetailsSaved}
-          stripeAccountFetched={stripeAccountFetched}
-          stripeAccount={stripeAccount}
-          stripeAccountError={
-            createStripeAccountError || updateStripeAccountError || fetchStripeAccountError
-          }
-          stripeAccountLinkError={getAccountLinkError}
-          pageName={createProfile ? 'CreateProfilePage' : 'EditListingPage'}
-          profileImage={profileImage}
-          onUpdateProfile={onUpdateProfile}
-          onProfileImageUpload={onProfileImageUpload}
-          uploadInProgress={uploadInProgress}
-          onChangeMissingInfoModal={onChangeMissingInfoModal}
-          image={image}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
-          availabilityExceptions={page.availabilityExceptions}
-          onAuthenticateCreateUser={onAuthenticateCreateUser}
-          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
-          onCreatePayment={onCreatePayment}
-          createPaymentInProgress={createPaymentInProgress}
-          createPaymentError={createPaymentError}
-          createPaymentSuccess={createPaymentSuccess}
-          onGetIdentityProofQuiz={onGetIdentityProofQuiz}
-          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
-          onCreateSubscription={onCreateSubscription}
-          createSubscriptionError={createSubscriptionError}
-          createSubscriptionInProgress={createSubscriptionInProgress}
-          subscription={subscription}
-          authenticate={authenticate}
-          onAuthenticateUpdateUser={onAuthenticateUpdateUser}
-          onGetAuthenticateTestResult={onGetAuthenticateTestResult}
-          onGenerateCriminalBackground={onGenerateCriminalBackground}
-          onGet7YearHistory={onGet7YearHistory}
-          onApplyBCPromoCode={onApplyBCPromoCode}
-          onUpdateSubscription={onUpdateSubscription}
-          updateSubscriptionError={updateSubscriptionError}
-          updateSubscriptionInProgress={updateSubscriptionInProgress}
-          onFetchCurrentUserHasListings={onFetchCurrentUserHasListings}
         />
       );
     } else if (userType === EMPLOYER) {
       editListingWizard = (
         <EmployerEditListingWizard
-          id="EmployerEditListingWizard"
+          {...rest}
+          availabilityExceptions={page.availabilityExceptions}
           className={css.wizard}
-          params={params}
-          disabled={disableForm}
-          errors={errors}
-          fetchInProgress={fetchInProgress}
-          newListingPublished={newListingPublished}
-          history={history}
-          images={images}
-          listing={currentListing}
-          onUpdateListing={onUpdateListing}
-          onCreateListingDraft={onCreateListingDraft}
-          onPublishListingDraft={onPublishListingDraft}
-          onChange={onChange}
           currentUser={currentUser}
-          onManageDisableScrolling={onManageDisableScrolling}
+          errors={errors}
+          fetchExceptionsInProgress={page.fetchExceptionsInProgress}
+          history={history}
+          id="EmployerEditListingWizard"
+          image={image}
+          listing={currentListing}
+          newListingPublished={newListingPublished}
+          pageName={createProfile ? 'CreateProfilePage' : 'EditListingPage'}
+          params={params}
+          profileImage={profileImage}
           updatedTab={page.updatedTab}
           updateInProgress={page.updateInProgress || page.createListingDraftInProgress}
-          pageName={createProfile ? 'CreateProfilePage' : 'EditListingPage'}
-          profileImage={profileImage}
-          onUpdateProfile={onUpdateProfile}
-          onProfileImageUpload={onProfileImageUpload}
-          image={image}
-          uploadInProgress={uploadInProgress}
-          onChangeMissingInfoModal={onChangeMissingInfoModal}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
-          availabilityExceptions={page.availabilityExceptions}
-          fetchExceptionsInProgress={page.fetchExceptionsInProgress}
-          onFetchCurrentUserHasListings={onFetchCurrentUserHasListings}
         />
       );
     } else {
@@ -476,15 +342,9 @@ EditListingPageComponent.propTypes = {
   currentUserListingFetched: bool,
   onAddAvailabilityException: func.isRequired,
   onDeleteAvailabilityException: func.isRequired,
-  onGetStripeConnectAccountLink: func.isRequired,
   onCreateListingDraft: func.isRequired,
   onPublishListingDraft: func.isRequired,
-  onImageUpload: func.isRequired,
   onManageDisableScrolling: func.isRequired,
-  onPayoutDetailsFormChange: func.isRequired,
-  onPayoutDetailsFormSubmit: func.isRequired,
-  onUpdateImageOrder: func.isRequired,
-  onRemoveListingImage: func.isRequired,
   onUpdateListing: func.isRequired,
   onChange: func.isRequired,
   page: object.isRequired,
@@ -511,19 +371,9 @@ EditListingPageComponent.propTypes = {
 
 const mapStateToProps = state => {
   const page = state.EditListingPage;
-  const authenticate = state.Authenticate;
   const { image, uploadInProgress, uploadImageError } = state.ProfileSettingsPage;
 
-  const {
-    getAccountLinkInProgress,
-    getAccountLinkError,
-    createStripeAccountInProgress,
-    createStripeAccountError,
-    updateStripeAccountError,
-    fetchStripeAccountError,
-    stripeAccount,
-    stripeAccountFetched,
-  } = state.stripeConnectAccount;
+  const { createStripeAccountInProgress, createStripeAccountError } = state.stripeConnectAccount;
 
   const { currentUser, currentUserListing, currentUserListingFetched } = state.user;
 
@@ -535,104 +385,36 @@ const mapStateToProps = state => {
     return listings.length === 1 ? listings[0] : null;
   };
 
-  const { addPaymentMethodError, createStripeCustomerError } = state.paymentMethods;
-
-  const { stripeCustomerFetched } = state.PaymentMethodsPage;
-
-  const {
-    handleCardSetupError,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    createSubscriptionError,
-    createSubscriptionInProgress,
-    subscription,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
-  } = state.stripe;
-
   return {
-    getAccountLinkInProgress,
-    getAccountLinkError,
     createStripeAccountError,
-    updateStripeAccountError,
-    fetchStripeAccountError,
-    stripeAccount,
-    stripeAccountFetched,
     currentUser,
     currentUserListing,
     currentUserListingFetched,
     fetchInProgress,
     getOwnListing,
-    page,
     image,
+    page,
     scrollingDisabled: isScrollingDisabled(state),
-    uploadInProgress,
-    addPaymentMethodError,
-    createStripeCustomerError,
-    handleCardSetupError,
     uploadImageError,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    createSubscriptionError,
-    createSubscriptionInProgress,
-    subscription,
-    authenticate,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
+    uploadInProgress,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   onAddAvailabilityException: params => dispatch(requestAddAvailabilityException(params)),
-  onDeleteAvailabilityException: params => dispatch(requestDeleteAvailabilityException(params)),
-  onUpdateListing: (tab, values) => dispatch(requestUpdateListing(tab, values)),
-  onCreateListingDraft: values => dispatch(requestCreateListingDraft(values)),
-  onPublishListingDraft: listingId => dispatch(requestPublishListingDraft(listingId)),
-  onImageUpload: data => dispatch(requestImageUpload(data)),
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onPayoutDetailsFormChange: () => dispatch(stripeAccountClearError()),
-  onPayoutDetailsFormSubmit: (values, isUpdateCall) =>
-    dispatch(savePayoutDetails(values, isUpdateCall)),
-  onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
-  onUpdateImageOrder: imageOrder => dispatch(updateImageOrder(imageOrder)),
-  onRemoveListingImage: imageId => dispatch(removeListingImage(imageId)),
   onChange: () => dispatch(clearUpdatedTab()),
-  onProfileImageUpload: data => dispatch(uploadImage(data)),
-  onUpdateProfile: data => dispatch(updateProfile(data)),
-  onHandleCardSetup: params => dispatch(handleCardSetup(params)),
-  fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  // onSavePaymentMethod: (stripeCustomer, newPaymentMethod) =>
-  //   dispatch(savePaymentMethod(stripeCustomer, newPaymentMethod)),
   onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
-  onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
-  onAuthenticateSubmitConsent: (userAccessCode, fullName, userId) =>
-    dispatch(authenticateSubmitConsent(userAccessCode, fullName, userId)),
-  onCreatePayment: params => dispatch(createPayment(params)),
-  onGetIdentityProofQuiz: (userAccessCode, userId) =>
-    dispatch(identityProofQuiz(userAccessCode, userId)),
-  onVerifyIdentityProofQuiz: (IDMSessionId, userAccessCode, userId, answers, currentAttempts) =>
-    dispatch(
-      verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
-    ),
-  onCreateSubscription: (stripeCustomerId, priceId, userId) =>
-    dispatch(createSubscription(stripeCustomerId, priceId, userId)),
-  onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
-    dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
-  onGetAuthenticateTestResult: (userAccessCode, userId) =>
-    dispatch(getAuthenticateTestResult(userAccessCode, userId)),
-  onGenerateCriminalBackground: (userAccessCode, userId) =>
-    dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
-  onGet7YearHistory: (userAccessCode, userId) =>
-    dispatch(authenticate7YearHistory(userAccessCode, userId)),
-  onApplyBCPromoCode: (promoCode, userId) => dispatch(applyBCPromo(promoCode, userId)),
-  onUpdateSubscription: (subscriptionId, params) =>
-    dispatch(updateSubscription(subscriptionId, params)),
+  onCreateListingDraft: values => dispatch(requestCreateListingDraft(values)),
+  onDeleteAvailabilityException: params => dispatch(requestDeleteAvailabilityException(params)),
   onFetchCurrentUserHasListings: () => {
     dispatch(fetchCurrentUserHasListings());
   },
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onProfileImageUpload: data => dispatch(uploadImage(data)),
+  onPublishListingDraft: listingId => dispatch(requestPublishListingDraft(listingId)),
+  onUpdateListing: (tab, values) => dispatch(requestUpdateListing(tab, values)),
+  onUpdateProfile: data => dispatch(updateProfile(data)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

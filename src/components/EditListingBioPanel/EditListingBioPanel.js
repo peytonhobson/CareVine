@@ -56,8 +56,6 @@ const EditListingBioPanel = props => {
     />
   );
 
-  // const userFullName = listing?.author?.attributes.profile.displayName;
-
   return (
     <div className={classes}>
       <h1 className={css.title}>{panelTitle}</h1>
