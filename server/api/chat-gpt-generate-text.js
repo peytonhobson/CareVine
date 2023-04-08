@@ -6,7 +6,7 @@ const configuration = new Configuration({
 });
 
 module.exports = async (req, res) => {
-  const { prompt, maxTokens = 200, temperature = 1, n = 1 } = req.body;
+  const { prompt, maxTokens = 250, temperature = 1, n = 1 } = req.body;
 
   const openai = new OpenAIApi(configuration);
 
