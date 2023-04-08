@@ -285,3 +285,7 @@ export const sendgridTemplateEmail = body => {
 export const sendgridStandardEmail = body => {
   return post('/api/sendgrid-standard-email', body);
 };
+
+export const chatGPTGenerateText = body => {
+  return post('/api/chat-gpt-generate-text', body);
+};
