@@ -132,6 +132,10 @@ const EditListingWizardTab = props => {
     generateBioInProgress,
     generateBioError,
     generatedBio,
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+    onGenerateJobDescription,
   } = props;
 
   const { type } = params;
@@ -495,6 +499,10 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          generateJobDescriptionInProgress={generateJobDescriptionInProgress}
+          generateJobDescriptionError={generateJobDescriptionError}
+          generatedJobDescription={generatedJobDescription}
+          onGenerateJobDescription={onGenerateJobDescription}
         />
       );
     }

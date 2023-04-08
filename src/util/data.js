@@ -204,7 +204,7 @@ export const ensureOwnListing = listing => {
   const empty = {
     id: null,
     type: 'ownListing',
-    attributes: { publicData: {} },
+    attributes: { publicData: {}, metadata: {}, privateData: {} },
     images: [],
   };
   return { ...empty, ...listing };
@@ -406,23 +406,16 @@ export const humanizeLineItemCode = code => {
   return lowercase.charAt(0).toUpperCase() + lowercase.slice(1);
 };
 
-export const convertFilterKeyToLabel = (keys, data) => {
-  const dataTypes = [];
-  for (const property in data) {
-    dataTypes.push(property);
-  }
+export const convertFilterKeyToLabel = (filterType, key) => {
+  return findOptionsForSelectFilter(filterType, filters).find(data => data.key === key).label;
+};
 
-  const filterOptions = [];
-
-  dataTypes.forEach(property => {
-    findOptionsForSelectFilter(property, filters)
-      .filter(data => {
-        return keys.includes(data.key);
-      })
-      .forEach(value => filterOptions.push(value));
-  });
-
-  return filterOptions.map(filter => filter.label);
+export const convertFilterKeysToLabels = (filterType, keys) => {
+  return findOptionsForSelectFilter(filterType, filters)
+    .filter(data => {
+      return keys.includes(data.key);
+    })
+    .map(filter => filter.label);
 };
 
 export const cutTextToPreview = (text, length) => {

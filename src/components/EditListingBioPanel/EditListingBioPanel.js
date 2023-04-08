@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
 import { ensureOwnListing } from '../../util/data';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { LISTING_STATE_DRAFT } from '../../util/types';
-import { ListingLink } from '..';
+import { Modal } from '..';
 import { EditListingBioForm } from '../../forms';
-import config from '../../config';
 
 import css from './EditListingBioPanel.module.css';
 
@@ -28,6 +27,7 @@ const EditListingBioPanel = props => {
     generateBioInProgress,
     generateBioError,
     generatedBio,
+    onManageDisableScrolling,
     ...rest
   } = props;
 
@@ -35,13 +35,15 @@ const EditListingBioPanel = props => {
   const currentListing = ensureOwnListing(listing);
   const { description, title, publicData } = currentListing.attributes;
 
-  // useEffect(() => {
-  //   if (!description || description === '') {
-  //     onGenerateBio(currentListing);
-  //   }
-  // }, [description]);
+  const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
-  console.log(listing);
+  useEffect(() => {
+    if (currentListing.id && (!description || description === '')) {
+      onGenerateBio(currentListing).then(() => {
+        setIsExplanationModalOpen(true);
+      });
+    }
+  }, [description]);
 
   const initialValues = { description: generatedBio || description };
 
@@ -92,8 +94,27 @@ const EditListingBioPanel = props => {
         updated={panelUpdated}
         updateInProgress={updateInProgress}
         fetchErrors={errors}
+        generateBioInProgress={generateBioInProgress}
+        onManageDisableScrolling={onManageDisableScrolling}
         {...rest}
       />
+      <Modal
+        id="BioGenerationExplanation"
+        isOpen={isExplanationModalOpen}
+        onClose={() => setIsExplanationModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <p className={css.modalTitle}>How does this work?</p>
+        <p className={css.modalMessage}>
+          We use a machine learning algorithm to generate a bio for you based on the information you
+          provided in your profile.
+        </p>
+        <p className={css.modalMessage}>
+          The generated bio is probably not perfect, but it is a good starting point. You can edit
+          the bio to make it more personal.
+        </p>
+      </Modal>
     </div>
   );
 };

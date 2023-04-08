@@ -13,6 +13,7 @@ import {
 } from '../../util/urlHelpers';
 import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { generateJobDescription } from '../../ducks/chatGPT.duck';
 
 import { NamedRedirect, Tabs } from '..';
 
@@ -345,16 +346,29 @@ const mapStateToProps = state => {
 
   const { handleCardSetupError } = state.stripe;
 
+  const {
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+  } = state.chatGPT;
+
   return {
     addPaymentMethodError,
     createStripeCustomerError,
     handleCardSetupError,
     scrollingDisabled: isScrollingDisabled(state),
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
   };
 };
+
+const mapDispatchToProps = dispatch => ({
+  onGenerateJobDescription: listing => dispatch(generateJobDescription(listing)),
+});
 
 export default compose(
   withViewport,
   injectIntl,
-  connect(mapStateToProps)
+  connect(mapStateToProps, mapDispatchToProps)
 )(EmployerEditListingWizard);
