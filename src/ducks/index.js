@@ -18,6 +18,7 @@ import stripe from './stripe.duck';
 import stripeConnectAccount from './stripeConnectAccount.duck';
 import user from './user.duck';
 import transactions from './transactions.duck';
+import chatGPT from './chatGPT.duck';
 
 export {
   Authenticate,
@@ -26,6 +27,7 @@ export {
   LocationFilter,
   Routing,
   UI,
+  chatGPT,
   hostedAssets,
   marketplaceData,
   paymentMethods,
