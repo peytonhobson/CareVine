@@ -43,7 +43,7 @@ export const PRICING = 'pricing';
 export const PROFILE_PICTURE = 'profile-picture';
 export const CARE_RECIPIENT = 'care-recipient';
 export const BACKGROUND_CHECK = 'background-check';
-export const CAREIGVER_PREFERENCES = 'caregiver-preferences';
+export const CAREGIVER_PREFERENCES = 'caregiver-preferences';
 export const JOB_DESCRIPTION = 'job-description';
 
 // EditListingWizardTab component supports these tabs
@@ -60,7 +60,7 @@ export const SUPPORTED_TABS = [
   CARE_SCHEDULE,
   PROFILE_PICTURE,
   CARE_RECIPIENT,
-  CAREIGVER_PREFERENCES,
+  CAREGIVER_PREFERENCES,
   BACKGROUND_CHECK,
   JOB_DESCRIPTION,
 ];
@@ -76,7 +76,13 @@ const pathParamsToNextTab = (params, tab, marketplaceTabs) => {
 
 const EditListingWizardTab = props => {
   const {
+    authenticate,
     availabilityExceptions,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
     currentUser,
     errors,
     fetchExceptionsInProgress,
@@ -90,10 +96,19 @@ const EditListingWizardTab = props => {
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
+    onApplyBCPromoCode,
     onAuthenticateCreateUser,
+    onAuthenticateSubmitConsent,
+    onAuthenticateUpdateUser,
     onChange,
     onCreateListingDraft,
+    onCreatePayment,
+    onCreateSubscription,
     onDeleteAvailabilityException,
+    onGenerateCriminalBackground,
+    onGet7YearHistory,
+    onGetAuthenticateTestResult,
+    onGetIdentityProofQuiz,
     onImageUpload,
     onManageDisableScrolling,
     onProfileImageUpload,
@@ -101,33 +116,26 @@ const EditListingWizardTab = props => {
     onUpdateImageOrder,
     onUpdateListing,
     onUpdateProfile,
+    onUpdateSubscription,
+    onVerifyIdentityProofQuiz,
     pageName,
     params,
     profileImage,
+    subscription,
     tab,
     updatedTab,
     updateInProgress,
-    uploadInProgress,
-    onAuthenticateSubmitConsent,
-    onCreatePayment,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    onGetIdentityProofQuiz,
-    onVerifyIdentityProofQuiz,
-    onCreateSubscription,
-    createSubscriptionError,
-    createSubscriptionInProgress,
-    subscription,
-    authenticate,
-    onAuthenticateUpdateUser,
-    onGetAuthenticateTestResult,
-    onGenerateCriminalBackground,
-    onGet7YearHistory,
-    onApplyBCPromoCode,
-    onUpdateSubscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    uploadInProgress,
+    onGenerateBio,
+    generateBioInProgress,
+    generateBioError,
+    generatedBio,
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+    onGenerateJobDescription,
   } = props;
 
   const { type } = params;
@@ -267,6 +275,10 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          onGenerateBio={onGenerateBio}
+          generateBioInProgress={generateBioInProgress}
+          generateBioError={generateBioError}
+          generatedBio={generatedBio}
         />
       );
     }
@@ -460,14 +472,14 @@ const EditListingWizardTab = props => {
         />
       );
     }
-    case CAREIGVER_PREFERENCES: {
+    case CAREGIVER_PREFERENCES: {
       const submitButtonTranslationKey = isNewListingFlow
         ? 'EditListingWizard.saveNewCaregiverDetails'
         : 'EditListingWizard.saveEditCaregiverDetails';
 
       return (
         <EditListingCaregiverDetailsPanel
-          {...panelProps(CAREIGVER_PREFERENCES)}
+          {...panelProps(CAREGIVER_PREFERENCES)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
@@ -487,6 +499,10 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          generateJobDescriptionInProgress={generateJobDescriptionInProgress}
+          generateJobDescriptionError={generateJobDescriptionError}
+          generatedJobDescription={generatedJobDescription}
+          onGenerateJobDescription={onGenerateJobDescription}
         />
       );
     }

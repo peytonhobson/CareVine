@@ -24,3 +24,18 @@
 .caregiverTitleText {
   color: var(--marketplaceColor);
 }
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  margin-top: 4rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}

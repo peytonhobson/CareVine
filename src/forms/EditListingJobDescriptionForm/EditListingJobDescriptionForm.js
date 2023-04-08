@@ -8,7 +8,14 @@ import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { required, maxLength, minLength, composeValidators } from '../../util/validators';
 import config from '../../config';
-import { Form, Button, FieldTextInput, InlineTextButton, Modal } from '../../components';
+import {
+  Form,
+  Button,
+  FieldTextInput,
+  InlineTextButton,
+  Modal,
+  IconSpinner,
+} from '../../components';
 
 import css from './EditListingJobDescriptionForm.module.css';
 
@@ -36,6 +43,7 @@ const EditListingJobDescriptionFormComponent = props => (
         fetchErrors,
         onManageDisableScrolling,
         isNewListingFlow,
+        generateJobDescriptionInProgress,
         values,
         filterConfig,
       } = formRenderProps;
@@ -118,34 +126,42 @@ const EditListingJobDescriptionFormComponent = props => (
           <Form className={classes} onSubmit={handleSubmit}>
             {errorMessageShowListing}
 
-            <FieldTextInput
-              id="title"
-              name="title"
-              type="textinput"
-              className={css.textInput}
-              inputRootClass={css.textInputRoot}
-              placeholder={titlePlaceholder}
-              validate={composeValidators(titleRequired, maxLength100Message)}
-              label={titleLabel}
-              required
-              maxLength={TITLE_MAX_LENGTH}
-              exampleLink={titleCanEdit}
-            />
+            {generateJobDescriptionInProgress ? (
+              <div className={css.spinnerContainer}>
+                <IconSpinner className={css.spinner} />
+              </div>
+            ) : (
+              <>
+                <FieldTextInput
+                  id="title"
+                  name="title"
+                  type="textinput"
+                  className={css.textInput}
+                  inputRootClass={css.textInputRoot}
+                  placeholder={titlePlaceholder}
+                  validate={composeValidators(titleRequired, maxLength100Message)}
+                  label={titleLabel}
+                  required
+                  maxLength={TITLE_MAX_LENGTH}
+                  exampleLink={titleCanEdit}
+                />
 
-            <FieldTextInput
-              id="description"
-              name="description"
-              className={css.textarea}
-              inputRootClass={css.textareaRoot}
-              type="textarea"
-              placeholder={descriptionPlaceholder}
-              label={descriptionLabel}
-              minLength={DESCRIPTION_MIN_LENGTH}
-              maxLength={DESCRIPTION_MAX_LENGTH}
-              required
-              validate={composeValidators(maxLength1000Message, minLength100Message)}
-              exampleLink={exampleLink}
-            />
+                <FieldTextInput
+                  id="description"
+                  name="description"
+                  className={css.textarea}
+                  inputRootClass={css.textareaRoot}
+                  type="textarea"
+                  placeholder={descriptionPlaceholder}
+                  label={descriptionLabel}
+                  minLength={DESCRIPTION_MIN_LENGTH}
+                  maxLength={DESCRIPTION_MAX_LENGTH}
+                  required
+                  validate={composeValidators(maxLength1000Message, minLength100Message)}
+                  exampleLink={exampleLink}
+                />
+              </>
+            )}
 
             {errorMessageUpdateListing}
 

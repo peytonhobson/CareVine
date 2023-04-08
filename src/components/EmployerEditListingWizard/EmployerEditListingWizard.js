@@ -2,6 +2,7 @@ import React, { Component, useEffect } from 'react';
 import { array, bool, func, number, object, oneOf, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { withViewport } from '../../util/contextHelpers';
 import { propTypes } from '../../util/types';
@@ -11,8 +12,10 @@ import {
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
 import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
+import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { generateJobDescription } from '../../ducks/chatGPT.duck';
 
-import { Modal, NamedRedirect, Tabs } from '..';
+import { NamedRedirect, Tabs } from '..';
 
 import EditListingWizardTab, {
   CARE_TYPE,
@@ -20,10 +23,11 @@ import EditListingWizardTab, {
   LOCATION,
   PRICING,
   CARE_RECIPIENT,
-  CAREIGVER_PREFERENCES,
+  CAREGIVER_PREFERENCES,
   PROFILE_PICTURE,
   JOB_DESCRIPTION,
 } from '../EditListingWizardTab/EditListingWizardTab';
+
 import css from './EmployerEditListingWizard.module.css';
 
 // You can reorder these panels.
@@ -38,7 +42,7 @@ export const TABS = [
   CARE_SCHEDULE,
   PRICING,
   CARE_RECIPIENT,
-  CAREIGVER_PREFERENCES,
+  CAREGIVER_PREFERENCES,
   JOB_DESCRIPTION,
   PROFILE_PICTURE,
 ];
@@ -58,7 +62,7 @@ const tabLabel = (intl, tab) => {
     key = 'EmployerEditListingWizard.tabLabelCareSchedule';
   } else if (tab === CARE_RECIPIENT) {
     key = 'EmployerEditListingWizard.tabLabelCareRecipient';
-  } else if (tab === CAREIGVER_PREFERENCES) {
+  } else if (tab === CAREGIVER_PREFERENCES) {
     key = 'EmployerEditListingWizard.tabLabelCaregiverPreferences';
   } else if (tab === JOB_DESCRIPTION) {
     key = 'EmployerEditListingWizard.tabLabelJobDescription';
@@ -91,7 +95,7 @@ const tabCompleted = (tab, listing) => {
       return !!(publicData && publicData.minPrice && publicData.maxPrice);
     case CARE_RECIPIENT:
       return !!(publicData && publicData?.careRecipients?.length > 0);
-    case CAREIGVER_PREFERENCES:
+    case CAREGIVER_PREFERENCES:
       return !!(publicData && publicData.languagesSpoken && publicData.covidVaccination);
     case JOB_DESCRIPTION:
       return !!description;
@@ -337,4 +341,34 @@ EmployerEditListingWizard.propTypes = {
   profileImage: object,
 };
 
-export default compose(withViewport, injectIntl)(EmployerEditListingWizard);
+const mapStateToProps = state => {
+  const { addPaymentMethodError, createStripeCustomerError } = state.paymentMethods;
+
+  const { handleCardSetupError } = state.stripe;
+
+  const {
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+  } = state.chatGPT;
+
+  return {
+    addPaymentMethodError,
+    createStripeCustomerError,
+    handleCardSetupError,
+    scrollingDisabled: isScrollingDisabled(state),
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  onGenerateJobDescription: listing => dispatch(generateJobDescription(listing)),
+});
+
+export default compose(
+  withViewport,
+  injectIntl,
+  connect(mapStateToProps, mapDispatchToProps)
+)(EmployerEditListingWizard);
