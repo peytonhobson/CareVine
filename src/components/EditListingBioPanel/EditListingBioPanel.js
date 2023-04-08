@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
@@ -24,12 +24,26 @@ const EditListingBioPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    onGenerateBio,
+    generateBioInProgress,
+    generateBioError,
+    generatedBio,
     ...rest
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
   const { description, title, publicData } = currentListing.attributes;
+
+  // useEffect(() => {
+  //   if (!description || description === '') {
+  //     onGenerateBio(currentListing);
+  //   }
+  // }, [description]);
+
+  console.log(listing);
+
+  const initialValues = { description: generatedBio || description };
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
@@ -61,7 +75,7 @@ const EditListingBioPanel = props => {
       <h1 className={css.title}>{panelTitle}</h1>
       <EditListingBioForm
         className={css.form}
-        initialValues={{ description }}
+        initialValues={initialValues}
         saveActionMsg={submitButtonText}
         onSubmit={values => {
           const { description } = values;

@@ -128,6 +128,10 @@ const EditListingWizardTab = props => {
     updateSubscriptionError,
     updateSubscriptionInProgress,
     uploadInProgress,
+    onGenerateBio,
+    generateBioInProgress,
+    generateBioError,
+    generatedBio,
   } = props;
 
   const { type } = params;
@@ -267,6 +271,10 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             onCompleteEditListingWizardTab(tab, values);
           }}
+          onGenerateBio={onGenerateBio}
+          generateBioInProgress={generateBioInProgress}
+          generateBioError={generateBioError}
+          generatedBio={generatedBio}
         />
       );
     }
