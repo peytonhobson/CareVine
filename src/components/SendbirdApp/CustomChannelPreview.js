@@ -17,6 +17,7 @@ import moment from 'moment';
 import { useLongPress } from 'use-long-press';
 import Modal from '@sendbird/uikit-react/ui/Modal';
 import TextButton from '@sendbird/uikit-react/ui/TextButton';
+import { isToday, isYesterday } from '../../util/dates.js';
 
 import css from './SendbirdApp.module.css';
 
@@ -38,25 +39,6 @@ const getLastMessageCreatedAt = (channel, locale) => {
   if (!createdAt) {
     return '';
   }
-
-  const isToday = dirtyDate => {
-    if (!dirtyDate) {
-      return false;
-    }
-    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
-    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
-    return dateLeftStartOfDay === dateRightStartOfDay;
-  };
-
-  const isYesterday = dirtyDate => {
-    if (!dirtyDate) {
-      return false;
-    }
-
-    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
-    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
-    return dateLeftStartOfDay === dateRightStartOfDay - 86400000;
-  };
 
   if (isToday(createdAt)) {
     return timestampToDate(createdAt).toLocaleTimeString('en-US', {
