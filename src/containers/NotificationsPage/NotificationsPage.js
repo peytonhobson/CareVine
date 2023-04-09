@@ -71,12 +71,12 @@ const NotificationsPageComponent = props => {
   const notifications = [
     {
       id: '1',
-      type: 'booking',
+      type: NOTIFICATION_TYPE_PAYMENT_RECEIVED,
       createdAt: new Date().getTime(),
       isRead: false,
       metadata: {
-        title: 'Notification title',
-        text: 'Notification text',
+        senderName: 'John D',
+        paymentAmount: 100,
       },
     },
     {
@@ -85,7 +85,7 @@ const NotificationsPageComponent = props => {
       createdAt: new Date().getTime(),
       isRead: false,
       metadata: {
-        senderName: 'John D.',
+        senderName: 'John D',
         channelUrl:
           'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d34c-0c4a-4e68-a140-a56e04d5c5a9',
       },
@@ -93,12 +93,11 @@ const NotificationsPageComponent = props => {
     ,
     {
       id: '3',
-      type: 'booking',
+      type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
       createdAt: new Date().getTime(),
       isRead: true,
       metadata: {
-        title: 'Notification title',
-        text: 'Notification text',
+        senderName: 'John D',
       },
     },
   ];
