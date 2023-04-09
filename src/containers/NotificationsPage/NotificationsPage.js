@@ -1,10 +1,11 @@
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
+import { updateNotifications } from '../../ducks/user.duck';
 
 import {
   Page,
@@ -23,20 +24,39 @@ import SideNav from './SideNav';
 
 const DELETE_NOTIFICATION = 'DELETE_NOTIFICATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
+const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 
 const reducer = (state, action) => {
   switch (action.type) {
     case DELETE_NOTIFICATION:
-      return { ...state, notifications: state.notifications.filter(n => n.id !== action.payload) };
+      return {
+        ...state,
+        notifications: state.notifications.filter(n => n.id !== action.payload),
+        isDeleteModalOpen: false,
+      };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
+    case SET_ACTIVE_NOTIFICATION:
+      return {
+        ...state,
+        activeNotificationId: action.payload,
+        notifications: state.notifications.map(n =>
+          n.id === action.payload ? { ...n, isRead: true } : n
+        ),
+      };
     default:
       return state;
   }
 };
 
 const NotificationsPageComponent = props => {
-  const { currentUser, scrollingDisabled, intl, onManageDisableScrolling } = props;
+  const {
+    currentUser,
+    scrollingDisabled,
+    intl,
+    onManageDisableScrolling,
+    onUpdateNotifications,
+  } = props;
 
   const notifications = [
     {
@@ -76,9 +96,14 @@ const NotificationsPageComponent = props => {
   const initialState = {
     notifications,
     isDeleteModalOpen: false,
+    activeNotificationId: notifications.length > 0 ? notifications[0].id : null,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    onUpdateNotifications(state.notifications);
+  }, [state.notifications]);
 
   const handleOpenDeleteNotificationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
@@ -86,14 +111,17 @@ const NotificationsPageComponent = props => {
 
   const handleDeleteNotification = () => {
     dispatch({ type: DELETE_NOTIFICATION, payload: state.isDeleteModalOpen });
-    dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
   };
 
-  // TODO: Change unread count
+  const handlePreviewClick = id => {
+    dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: id });
+  };
+
+  const unreadCount = state.notifications.filter(n => !n.isRead).length;
   const title = intl.formatMessage(
     { id: 'NotificationsPage.title' },
     {
-      unreadCount: 0,
+      unreadCount,
     }
   );
 
@@ -112,6 +140,8 @@ const NotificationsPageComponent = props => {
           <SideNav
             notifications={state.notifications}
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
+            onPreviewClick={handlePreviewClick}
+            activeNotificationId={state.activeNotificationId}
           />
         </LayoutWrapperSideNav>
         <LayoutWrapperMain></LayoutWrapperMain>
@@ -160,6 +190,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onUpdateNotifications: notifications => dispatch(updateNotifications(notifications)),
 });
 
 const NotificationsPage = compose(
