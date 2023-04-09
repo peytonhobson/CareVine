@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IconCar, IconEdit, IconVerticalDots, Modal } from '../../components';
 import { isToday, isYesterday, timestampToDate } from '../../util/dates';
 import moment from 'moment';
+import classNames from 'classnames';
 
 import css from './NotificationsPage.module.css';
 
@@ -29,7 +30,12 @@ const formatPreviewDate = createdAt => {
 };
 
 const SideNav = props => {
-  const { notifications, handleOpenDeleteNotificationModal } = props;
+  const {
+    notifications,
+    handleOpenDeleteNotificationModal,
+    onPreviewClick,
+    activeNotificationId,
+  } = props;
 
   return (
     <div className={css.sidenavRoot}>
@@ -37,17 +43,18 @@ const SideNav = props => {
         const { title, date, text } = notification.metadata;
         const { createdAt, type, id, isRead } = notification;
         const notificationDot = !isRead ? <div className={css.notificationDot} /> : null;
+        const activeClass = activeNotificationId === id ? css.active : null;
         return (
-          <div className={css.notificationPreview} key={index}>
-            <div className={css.notificationIcon}>
-              <IconCar />
-            </div>
+          <div
+            className={classNames(css.notificationPreview, activeClass)}
+            key={index}
+            onClick={() => onPreviewClick(id)}
+          >
+            <div className={css.previewHoverLine} />
             <div className={css.notificationPreviewContent}>
               <div className={css.notificationPreviewUpper}>
-                <div className={css.notificationTitle}>
-                  {title} {notificationDot}
-                </div>
-
+                <div className={css.notificationTitle}>{title}</div>
+                {notificationDot}
                 <div className={css.notificationDate}>{formatPreviewDate(createdAt)}</div>
               </div>
               <div className={css.notificationPreviewLower}>
