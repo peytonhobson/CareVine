@@ -64,6 +64,9 @@ const buildText = (type, metadata) => {
         receive payment. To complete this and receive payment from ${metadata.senderName}, please click the
         button below.`;
   }
+  if (type === NOTIFICATION_TYPE_NEW_MESSAGE) {
+    return `You have a new message from ${metadata.senderName}. To view this message, click the button below.`;
+  }
 };
 
 const buildTitle = (type, metadata) => {
@@ -75,6 +78,9 @@ const buildTitle = (type, metadata) => {
   }
   if (type === NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT) {
     return `${metadata.senderName} Wants to Pay You!`;
+  }
+  if (type === NOTIFICATION_TYPE_NEW_MESSAGE) {
+    return `New Message from ${metadata.senderName}`;
   }
 };
 

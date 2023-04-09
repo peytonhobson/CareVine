@@ -1,30 +1,32 @@
 import React from 'react';
+
 import { NamedLink } from '../../../components';
 
 import css from './NotificationTemplates.module.css';
 
-const NotificationPaymentRequested = props => {
+const NotificationNewMessage = props => {
   const { notification } = props;
 
   const { senderName, channelUrl } = notification.metadata;
 
   return (
     <div className={css.root}>
-      <h1 className={css.title}>Payment Requested</h1>
+      <h1 className={css.title}>
+        New Message from <span className={css.noWrapText}>{senderName}</span>
+      </h1>
       <p className={css.message}>
-        <span className={css.noWrapText}>{senderName}</span> has requested payment from you. Click
-        the button below to go to the payment page. Once there, click the "Pay" button in the top
-        right to pay them.
+        You have a new message from <span className={css.noWrapText}>{senderName}</span>. To view
+        this message, click the button below.
       </p>
       <NamedLink
         name="InboxPageWithChannel"
         params={{ channel: channelUrl }}
         className={css.linkButton}
       >
-        Go to Payment
+        View Message
       </NamedLink>
     </div>
   );
 };
 
-export default NotificationPaymentRequested;
+export default NotificationNewMessage;

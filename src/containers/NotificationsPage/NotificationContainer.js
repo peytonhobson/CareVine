@@ -15,6 +15,7 @@ import {
   NotificationPaymentRequested,
   NotificationPaymentReceived,
   NotificationNotifyForPayment,
+  NotificationNewMessage,
 } from './NotificationTemplates';
 
 import css from './NotificationsPage.module.css';
@@ -31,9 +32,9 @@ const NotificationContainer = props => {
     // case NOTIFICATION_TYPE_LISTING_OPENED:
     //     notificationTemplate =  <NotificationListingOpened notification={notification} />;
     // break;
-    // case NOTIFICATION_TYPE_NEW_MESSAGE:
-    //     notificationTemplate =  <NotificationNewMessage notification={notification} />;
-    // break;
+    case NOTIFICATION_TYPE_NEW_MESSAGE:
+      notificationTemplate = <NotificationNewMessage notification={notification} />;
+      break;
     case NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT:
       notificationTemplate = <NotificationNotifyForPayment notification={notification} />;
       break;

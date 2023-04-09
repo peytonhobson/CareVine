@@ -13,7 +13,7 @@ const NotificationPaymentRequested = props => {
       <h1 className={css.title}>Payment Received</h1>
       <p className={css.message}>
         You have received a payment of ${Number.parseFloat(paymentAmount).toFixed(2)} from{' '}
-        {senderName}.
+        <span className={css.noWrapText}>{senderName}</span>.
       </p>
     </div>
   );

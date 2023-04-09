@@ -90,7 +90,6 @@ const NotificationsPageComponent = props => {
           'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d34c-0c4a-4e68-a140-a56e04d5c5a9',
       },
     },
-    ,
     {
       id: '3',
       type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
@@ -98,6 +97,17 @@ const NotificationsPageComponent = props => {
       isRead: true,
       metadata: {
         senderName: 'John D',
+      },
+    },
+    {
+      id: '4',
+      type: NOTIFICATION_TYPE_NEW_MESSAGE,
+      createdAt: new Date().getTime(),
+      isRead: true,
+      metadata: {
+        senderName: 'John D',
+        channelUrl:
+          'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d06d-ce9f-4a26-ab53-23e4e1de5789',
       },
     },
   ];
