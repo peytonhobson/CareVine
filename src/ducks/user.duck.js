@@ -59,9 +59,6 @@ const initialState = {
   currentUserShowError: null,
   currentUserHasListings: false,
   currentUserHasListingsError: null,
-  currentUserNotificationsCount: 0,
-  currentUserNotificationsCountError: null,
-  currentUserNotificationsCountInProgress: false,
   currentUserHasOrders: null, // This is not fetched unless unverified emails exist
   currentUserHasOrdersError: null,
   sendVerificationEmailInProgress: false,
@@ -96,9 +93,6 @@ export default function reducer(state = initialState, action = {}) {
         currentUserShowError: null,
         currentUserHasListings: false,
         currentUserHasListingsError: null,
-        currentUserNotificationsCount: 0,
-        currentUserNotificationsCountError: null,
-        currentUserNotificationsCountInProgress: false,
         currentUserListing: null,
         currentUserListingFetched: false,
       };
@@ -172,10 +166,7 @@ export default function reducer(state = initialState, action = {}) {
 export const hasCurrentUserErrors = state => {
   const { user } = state;
   return (
-    user.currentUserShowError ||
-    user.currentUserHasListingsError ||
-    user.fetchCurrentUserNotificationsError ||
-    user.currentUserHasOrdersError
+    user.currentUserShowError || user.currentUserHasListingsError || user.currentUserHasOrdersError
   );
 };
 
@@ -372,7 +363,6 @@ export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => 
     })
     .then(currentUser => {
       dispatch(fetchCurrentUserHasListings());
-      dispatch(currentUserNotificationsCount());
       if (!currentUser.attributes.emailVerified) {
         dispatch(fetchCurrentUserHasOrders());
       }

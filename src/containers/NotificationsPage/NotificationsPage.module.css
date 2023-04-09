@@ -71,11 +71,13 @@
 .notificationTitle {
   font-size: 0.875rem;
   color: var(--marketplaceColor);
+  padding-right: 3rem;
 }
 
 .notificationDate {
   font-family: 'Roboto', sans-serif;
   font-size: 0.75rem;
+  white-space: nowrap;
 }
 
 .notificationIcon {
@@ -167,11 +169,25 @@
 
   /* Position */
   position: absolute;
-  right: 4rem;
+  right: 4.5rem;
   top: 0.75rem;
 
   /* Style: red dot with white border */
   background-color: var(--failColor);
 
   opacity: 1;
+}
+
+.mainWrapper {
+  padding: 0 0 5rem 0;
+  background-color: #eeeeee;
+}
+
+.notificationContainerRoot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  padding: 0 15rem;
 }
