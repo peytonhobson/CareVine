@@ -1,11 +1,20 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { isEqual } from 'lodash';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { updateNotifications } from '../../ducks/user.duck';
+import {
+  NOTIFICATION_TYPE_LISTING_REMOVED,
+  NOTIFICATION_TYPE_LISTING_OPENED,
+  NOTIFICATION_TYPE_NEW_MESSAGE,
+  NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
+  NOTIFICATION_TYPE_PAYMENT_RECEIVED,
+  NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+} from '../../util/constants';
 
 import {
   Page,
@@ -18,6 +27,7 @@ import {
   Modal,
 } from '../../components';
 import { TopbarContainer } from '..';
+import NotificationContainer from './NotificationContainer';
 
 import css from './NotificationsPage.module.css';
 import SideNav from './SideNav';
@@ -39,7 +49,7 @@ const reducer = (state, action) => {
     case SET_ACTIVE_NOTIFICATION:
       return {
         ...state,
-        activeNotificationId: action.payload,
+        activeNotification: state.notifications.find(n => n.id === action.payload),
         notifications: state.notifications.map(n =>
           n.id === action.payload ? { ...n, isRead: true } : n
         ),
@@ -62,29 +72,29 @@ const NotificationsPageComponent = props => {
     {
       id: '1',
       type: 'booking',
-      createdAt: new Date(),
+      createdAt: new Date().getTime(),
       isRead: false,
       metadata: {
         title: 'Notification title',
-        date: new Date(),
         text: 'Notification text',
       },
     },
     {
       id: '2',
-      type: 'booking',
-      createdAt: new Date(),
+      type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+      createdAt: new Date().getTime(),
       isRead: false,
       metadata: {
-        title: 'Notification title',
-        text: 'Notification text',
+        senderName: 'John D.',
+        channelUrl:
+          'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d34c-0c4a-4e68-a140-a56e04d5c5a9',
       },
     },
     ,
     {
       id: '3',
       type: 'booking',
-      createdAt: new Date(),
+      createdAt: new Date().getTime(),
       isRead: true,
       metadata: {
         title: 'Notification title',
@@ -93,16 +103,32 @@ const NotificationsPageComponent = props => {
     },
   ];
 
+  const sortedNotifications = notifications.sort((a, b) => {
+    return b.createdAt - a.createdAt;
+  });
+
   const initialState = {
-    notifications,
+    notifications: sortedNotifications,
     isDeleteModalOpen: false,
-    activeNotificationId: notifications.length > 0 ? notifications[0].id : null,
+    activeNotification: notifications.length > 0 ? notifications[0] : null,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const usePrevious = value => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  };
+
+  const previousNotifications = usePrevious(state.notifications);
+
   useEffect(() => {
-    onUpdateNotifications(state.notifications);
+    if (previousNotifications && !isEqual(state.notifications, previousNotifications)) {
+      onUpdateNotifications(state.notifications);
+    }
   }, [state.notifications]);
 
   const handleOpenDeleteNotificationModal = id => {
@@ -141,10 +167,12 @@ const NotificationsPageComponent = props => {
             notifications={state.notifications}
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
             onPreviewClick={handlePreviewClick}
-            activeNotificationId={state.activeNotificationId}
+            activeNotificationId={state.activeNotification ? state.activeNotification.id : null}
           />
         </LayoutWrapperSideNav>
-        <LayoutWrapperMain></LayoutWrapperMain>
+        <LayoutWrapperMain className={css.mainWrapper}>
+          <NotificationContainer notification={state.activeNotification} />
+        </LayoutWrapperMain>
       </LayoutSideNavigation>
       <Modal
         id="NotificationsPageDeleteModal"

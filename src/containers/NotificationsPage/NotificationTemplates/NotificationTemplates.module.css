@@ -1,0 +1,30 @@
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.title {
+  color: var(--marketplaceColor);
+  font-size: 3rem;
+  width: 100%;
+  text-align: center;
+}
+
+.message {
+  color: var(--marketplaceColor);
+  font-size: 1.25rem;
+  width: 100%;
+  text-align: center;
+}
+
+.linkButton {
+  composes: button buttonText buttonFont buttonColors buttonBorders from global;
+
+  margin-top: 3rem;
+  width: auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 1rem 3rem;
+}
