@@ -54,11 +54,27 @@ const buildText = (type, metadata) => {
   if (type === NOTIFICATION_TYPE_PAYMENT_REQUESTED) {
     return `${metadata.senderName} has requested payment from you. Click the button below to go to the payment page. Once there, click the "Pay" button in the top right to pay them.`;
   }
+  if (type === NOTIFICATION_TYPE_PAYMENT_RECEIVED) {
+    return `You have received a payment of $${Number.parseFloat(metadata.paymentAmount).toFixed(
+      2
+    )} from ${metadata.senderName}.`;
+  }
+  if (type === NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT) {
+    return `You haven't completed the payout details portion of your account and you are unable to
+        receive payment. To complete this and receive payment from ${metadata.senderName}, please click the
+        button below.`;
+  }
 };
 
 const buildTitle = (type, metadata) => {
   if (type === NOTIFICATION_TYPE_PAYMENT_REQUESTED) {
     return `Payment request from ${metadata.senderName}`;
+  }
+  if (type === NOTIFICATION_TYPE_PAYMENT_RECEIVED) {
+    return `Payment received from ${metadata.senderName}`;
+  }
+  if (type === NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT) {
+    return `${metadata.senderName} Wants to Pay You!`;
   }
 };
 
@@ -87,12 +103,12 @@ const NotificationPreview = props => {
         </div>
         <div className={css.notificationPreviewLower}>
           <div className={css.notificationText}>{text}</div>
-          <div
-            className={css.notificationPreviewAction}
-            onClick={() => handleOpenDeleteNotificationModal(id)}
-          >
-            <IconVerticalDots height="0.75rem" width="1rem" className={css.menuIcon} />
-          </div>
+        </div>
+        <div
+          className={css.notificationPreviewAction}
+          onClick={() => handleOpenDeleteNotificationModal(id)}
+        >
+          <IconVerticalDots height="0.75rem" width="1rem" className={css.menuIcon} />
         </div>
       </div>
     </div>

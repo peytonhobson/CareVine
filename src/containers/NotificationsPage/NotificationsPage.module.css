@@ -116,6 +116,10 @@
   padding: 0.4rem 0.25rem;
   border-radius: 0.25rem;
 
+  position: absolute;
+  right: 1rem;
+  top: 1.5rem;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.04);
   }
