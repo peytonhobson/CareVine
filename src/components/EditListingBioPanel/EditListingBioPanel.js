@@ -107,12 +107,12 @@ const EditListingBioPanel = props => {
       >
         <p className={css.modalTitle}>How does this work?</p>
         <p className={css.modalMessage}>
-          We use a machine learning algorithm to generate a bio for you based on the information you
-          provided in your profile.
+          We used a machine learning algorithm to generate a bio for you based on the information
+          you provided in your profile.
         </p>
         <p className={css.modalMessage}>
-          The generated bio is probably not perfect, but it is a good starting point. You can edit
-          the bio to make it more personal.
+          It is probably not perfect, but it is a good starting point. You can edit the bio to make
+          it more personal.
         </p>
       </Modal>
     </div>
