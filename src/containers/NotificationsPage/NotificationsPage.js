@@ -13,6 +13,7 @@ import {
   LayoutWrapperSideNav,
   LayoutWrapperMain,
   Button,
+  SecondaryButton,
   Modal,
 } from '../../components';
 import { TopbarContainer } from '..';
@@ -42,6 +43,7 @@ const NotificationsPageComponent = props => {
       id: '1',
       type: 'booking',
       createdAt: new Date(),
+      isRead: false,
       metadata: {
         title: 'Notification title',
         date: new Date(),
@@ -52,6 +54,7 @@ const NotificationsPageComponent = props => {
       id: '2',
       type: 'booking',
       createdAt: new Date(),
+      isRead: false,
       metadata: {
         title: 'Notification title',
         text: 'Notification text',
@@ -62,6 +65,7 @@ const NotificationsPageComponent = props => {
       id: '3',
       type: 'booking',
       createdAt: new Date(),
+      isRead: true,
       metadata: {
         title: 'Notification title',
         text: 'Notification text',
@@ -78,6 +82,11 @@ const NotificationsPageComponent = props => {
 
   const handleOpenDeleteNotificationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
+  };
+
+  const handleDeleteNotification = () => {
+    dispatch({ type: DELETE_NOTIFICATION, payload: state.isDeleteModalOpen });
+    dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
   };
 
   // TODO: Change unread count
@@ -101,7 +110,7 @@ const NotificationsPageComponent = props => {
         </LayoutWrapperTopbar>
         <LayoutWrapperSideNav className={css.navigation}>
           <SideNav
-            notifications={notifications}
+            notifications={state.notifications}
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
           />
         </LayoutWrapperSideNav>
@@ -123,18 +132,13 @@ const NotificationsPageComponent = props => {
             <FormattedMessage id="NotificationsPage.deleteModalText" />
           </p>
           <div className={css.modalButtons}>
-            <Button
-              rootClassName={css.modalButton}
+            <SecondaryButton
+              className={css.modalButtonCancel}
               onClick={() => dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false })}
             >
               <FormattedMessage id="NotificationsPage.deleteModalCancel" />
-            </Button>
-            <Button
-              rootClassName={css.modalButton}
-              onClick={() =>
-                dispatch({ type: DELETE_NOTIFICATION, payload: state.isDeleteModalOpen })
-              }
-            >
+            </SecondaryButton>
+            <Button className={css.modalButtonDelete} onClick={handleDeleteNotification}>
               <FormattedMessage id="NotificationsPage.deleteModalConfirm" />
             </Button>
           </div>

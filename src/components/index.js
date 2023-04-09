@@ -40,6 +40,7 @@ export { default as IconSocialMediaTwitter } from './IconSocialMediaTwitter/Icon
 export { default as IconSpinner } from './IconSpinner/IconSpinner';
 export { default as IconSuccess } from './IconSuccess/IconSuccess';
 export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
+export { default as IconVerticalDots } from './IconVerticalDots/IconVerticalDots';
 
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
