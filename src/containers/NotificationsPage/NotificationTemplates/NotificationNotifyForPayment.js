@@ -11,11 +11,13 @@ const NotificationNotifyForPayment = props => {
 
   return (
     <div className={css.root}>
-      <h1 className={css.title}>{senderName} Wants to Pay You!</h1>
+      <h1 className={css.title}>
+        <span className={css.noWrapText}>{senderName}</span> Wants to Pay You!
+      </h1>
       <p className={css.message}>
         You haven&apos;t completed the payout details portion of your account and you are unable to
-        receive payment. To complete this and receive payment from {senderName}, please click the
-        button below.
+        receive payment. To complete this and receive payment from{' '}
+        <span className={css.noWrapText}>{senderName}</span>, please click the button below.
       </p>
       <NamedLink name="StripePayoutPage" className={css.linkButton}>
         Setup Payout Details

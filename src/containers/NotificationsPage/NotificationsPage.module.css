@@ -69,7 +69,7 @@
 }
 
 .notificationTitle {
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   color: var(--marketplaceColor);
   padding-right: 3rem;
 }
@@ -113,12 +113,12 @@
 }
 
 .notificationPreviewAction {
-  padding: 0.4rem 0.25rem;
+  padding: 0.2rem 0.25rem;
   border-radius: 0.25rem;
 
   position: absolute;
   right: 1rem;
-  top: 1.5rem;
+  top: 1.8rem;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.04);
@@ -194,4 +194,8 @@
   height: 100%;
   width: 100%;
   padding: 0 15rem;
+}
+
+.noTextWrap {
+  white-space: nowrap;
 }
