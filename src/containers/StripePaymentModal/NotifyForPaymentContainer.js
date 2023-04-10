@@ -26,13 +26,11 @@ const checkIfNotifiedInLastDay = messages => {
 const NotifyForPaymentContainer = props => {
   const {
     channelContext,
-    channelUrl,
     currentUser,
     intl,
     onSendNotifyForPayment,
     provider,
     providerListing,
-    sendbirdContext,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
   } = props;
@@ -40,14 +38,7 @@ const NotifyForPaymentContainer = props => {
   const providerName = userDisplayNameAsString(provider);
 
   const handleNotifyForPayment = () => {
-    const currentUserId = currentUser.id && currentUser.id.uuid;
-    onSendNotifyForPayment(
-      currentUserId,
-      providerName,
-      channelUrl,
-      sendbirdContext,
-      providerListing
-    );
+    onSendNotifyForPayment(currentUser, provider, providerListing);
   };
 
   const notifiedInLastDay = checkIfNotifiedInLastDay(channelContext.allMessages);

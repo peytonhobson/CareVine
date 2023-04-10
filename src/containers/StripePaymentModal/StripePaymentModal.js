@@ -70,7 +70,6 @@ const StripePaymentModalComponent = props => {
     paymentIntent,
     provider,
     providerListing,
-    sendbirdContext,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
     onConfirmCardPayment,
@@ -342,13 +341,11 @@ const StripePaymentModalComponent = props => {
           {!hasStripeAccount && hasStripeAccountFetched && !confirmPaymentSuccess && (
             <NotifyForPaymentContainer
               channelContext={channelContext}
-              channelUrl={channelUrl}
               currentUser={currentUser}
               intl={intl}
               onSendNotifyForPayment={onSendNotifyForPayment}
               provider={provider}
               providerListing={providerListing}
-              sendbirdContext={sendbirdContext}
               sendNotifyForPaymentInProgress={sendNotifyForPaymentInProgress}
               sendNotifyForPaymentSuccess={sendNotifyForPaymentSuccess}
             />
@@ -497,16 +494,8 @@ const mapDispatchToProps = dispatch => ({
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSendNotifyForPayment: (
-    currentUser,
-    providerName,
-    channelUrl,
-    sendbirdContext,
-    providerListing
-  ) =>
-    dispatch(
-      sendNotifyForPayment(currentUser, providerName, channelUrl, sendbirdContext, providerListing)
-    ),
+  onSendNotifyForPayment: (currentUser, otherUser, providerListing) =>
+    dispatch(sendNotifyForPayment(currentUser, otherUser, providerListing)),
   onSetInitialState: () => {
     dispatch(setInitialValues(initialState));
     dispatch(setStripeInitialValues(stripeInitialState));

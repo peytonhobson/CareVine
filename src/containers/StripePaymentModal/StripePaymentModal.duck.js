@@ -1,13 +1,12 @@
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-
-import { fetchHasStripeAccount } from '../../util/api';
+import { fetchHasStripeAccount, updateUserNotifications } from '../../util/api';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import { TRANSITION_CONFIRM_PAYMENT, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
-import { createStripeCustomer } from '../../ducks/paymentMethods.duck';
 import config from '../../config';
+import { NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT } from '../../util/constants';
+import { userDisplayNameAsString } from '../../util/data';
+import { v4 as uuidv4 } from 'uuid';
+import { TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
 
 // ================ Action types ================ //
 
@@ -142,49 +141,37 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const sendNotifyForPayment = (
-  currentUserId,
-  providerName,
-  channelUrl,
-  sendbirdContext,
-  providerListing
-) => (dispatch, getState, sdk) => {
+export const sendNotifyForPayment = (currentUser, otherUser, providerListing) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(sendNotifyForPaymentRequest());
 
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
+  const senderName = userDisplayNameAsString(currentUser);
+  const userId = otherUser.id.uuid;
+  const newNotification = {
+    id: uuidv4(),
+    type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata: {
+      senderName,
+    },
   };
 
-  const sb = SendbirdChat.init(params);
-
-  sb.connect(currentUserId)
-    .then(() => {
-      sb.groupChannel.getChannel(channelUrl).then(channel => {
-        const messageParams = {
-          customType: 'NOTIFY_FOR_PAYMENT',
-          message: `You notified ${providerName} that you want to pay them.`,
-          data: `{"providerName": "${providerName}"}`,
-        };
-
-        channel.sendUserMessage(messageParams).onSucceeded(message => {
-          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
-            message,
-            channel,
-          });
-
-          dispatch(sendNotifyForPaymentSuccess());
-          try {
-            dispatch(transitionTransaction(providerListing, TRANSITION_NOTIFY_FOR_PAYMENT));
-          } catch (e) {
-            log.error(e, 'transition-notify-for-payment-failed', {});
-          }
-        });
-      });
-    })
-    .catch(e => {
-      dispatch(sendNotifyForPaymentError(e));
+  try {
+    const response = await updateUserNotifications({
+      userId,
+      newNotification,
     });
+
+    dispatch(sendNotifyForPaymentSuccess());
+    dispatch(transitionTransaction(providerListing, TRANSITION_NOTIFY_FOR_PAYMENT));
+  } catch (e) {
+    log.error(e, 'send-notify-for-payment-failed');
+    dispatch(sendNotifyForPaymentError(e));
+  }
 };
 
 export const transitionTransaction = (otherUserListing, transition, params) => (

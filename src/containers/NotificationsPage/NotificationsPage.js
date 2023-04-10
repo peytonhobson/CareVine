@@ -151,6 +151,7 @@ const NotificationsPageComponent = props => {
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.mainWrapper}>
           <NotificationContainer
+            notifications={state.notifications}
             notification={state.activeNotification}
             listing={currentUserListing}
             currentUser={currentUser}

@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
       id: userId,
     });
 
-    const oldNotifications = fetchedUser.data.data.attributes.profile.privateData.notifications;
+    const oldNotifications =
+      fetchedUser.data.data.attributes.profile.privateData.notifications || [];
 
     const newNotifications = [...oldNotifications, newNotification];
 

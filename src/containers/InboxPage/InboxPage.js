@@ -201,7 +201,6 @@ export const InboxPageComponent = props => {
             onClose={onClosePaymentModal}
             provider={modalInitialValues.provider}
             providerListing={otherUserListing}
-            sendbirdContext={modalInitialValues.sendbirdContext}
           />
         )}
       </LayoutWrapperMain>
