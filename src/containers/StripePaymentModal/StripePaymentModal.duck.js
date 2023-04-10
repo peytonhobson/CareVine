@@ -1,4 +1,4 @@
-import { fetchHasStripeAccount, updateUserNotifications } from '../../util/api';
+import { fetchHasStripeAccount, updateUser, updateUserNotifications } from '../../util/api';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
@@ -161,9 +161,27 @@ export const sendNotifyForPayment = (currentUser, otherUser, providerListing) =>
   };
 
   try {
-    const response = await updateUserNotifications({
+    await updateUserNotifications({
       userId,
       newNotification,
+    });
+
+    const currentTime = new Date().getTime();
+    const oldNotificationsForPayment =
+      currentUser.attributes.profile.privateData?.sentNotificationsForPayment?.filter(
+        o => o.createdAt > currentTime - 1000 * 60 * 60 * 24
+      ) || [];
+
+    const newSentNotificationsForPayment = [
+      ...oldNotificationsForPayment,
+      { userId, createdAt: currentTime },
+    ];
+
+    await updateUser({
+      userId: currentUser.id.uuid,
+      privateData: {
+        sentNotificationsForPayment: newSentNotificationsForPayment,
+      },
     });
 
     dispatch(sendNotifyForPaymentSuccess());
