@@ -16,6 +16,7 @@ import {
   ListingLink,
   OwnListingLink,
   NotificationBadge,
+  IconBell,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
@@ -186,6 +187,17 @@ const TopbarDesktop = props => {
     </NamedLink>
   );
 
+  const notificationsLink = authenticatedOnClientSide ? (
+    <NamedLink
+      className={classNames(css.regularLink, css.notificationsLink)}
+      name="NotificationsPage"
+    >
+      <span className={css.bell}>
+        <IconBell height="2rem" width="2rem" />
+      </span>
+    </NamedLink>
+  ) : null;
+
   const listingLink =
     authenticatedOnClientSide &&
     currentUserListingFetched &&
@@ -233,6 +245,7 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
+        {notificationsLink}
         {feedbackLink}
       </div>
       {profileMenu}

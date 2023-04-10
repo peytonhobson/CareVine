@@ -16,6 +16,7 @@ import {
   NotificationPaymentReceived,
   NotificationNotifyForPayment,
   NotificationNewMessage,
+  NotificationListingRemoved,
 } from './NotificationTemplates';
 
 import css from './NotificationsPage.module.css';
@@ -26,9 +27,9 @@ const NotificationContainer = props => {
   let notificationTemplate = null;
 
   switch (notification.type) {
-    // case NOTIFICATION_TYPE_LISTING_REMOVED:
-    //     notificationTemplate =  <NotificationListingRemoved notification={notification} />;
-    //break;
+    case NOTIFICATION_TYPE_LISTING_REMOVED:
+      notificationTemplate = <NotificationListingRemoved notification={notification} />;
+      break;
     // case NOTIFICATION_TYPE_LISTING_OPENED:
     //     notificationTemplate =  <NotificationListingOpened notification={notification} />;
     // break;

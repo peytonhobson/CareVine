@@ -15,6 +15,7 @@ export { default as IconAdd } from './IconAdd/IconAdd';
 export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
 export { default as IconBank } from './IconBank/IconBank';
 export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
+export { default as IconBell } from './IconBell/IconBell';
 export { default as IconCalendar } from './IconCalendar/IconCalendar'
 export { default as IconCar } from './IconCar/IconCar';
 export { default as IconCard } from './IconCard/IconCard';

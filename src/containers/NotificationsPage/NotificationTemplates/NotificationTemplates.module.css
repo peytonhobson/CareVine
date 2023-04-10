@@ -17,12 +17,13 @@
   font-size: 1.25rem;
   width: 100%;
   text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
 }
 
 .linkButton {
   composes: button buttonText buttonFont buttonColors buttonBorders from global;
 
-  margin-top: 3rem;
   width: auto;
   min-height: 0;
   min-width: 0;
