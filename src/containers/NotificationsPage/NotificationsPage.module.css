@@ -70,6 +70,7 @@
   height: 100%;
   width: 100%;
   flex-wrap: wrap;
+  padding-bottom: 5rem;
 }
 
 .bell {
@@ -80,7 +81,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding-bottom: 5rem;
 }
 
 .noNotificationsText {
@@ -144,6 +144,10 @@
   display: flex;
   justify-content: space-between;
   line-height: 1rem;
+}
+
+.noWrapText {
+  white-space: nowrap;
 }
 
 .notificationPreviewAction {
@@ -232,4 +236,17 @@
 
 .noTextWrap {
   white-space: nowrap;
+}
+
+.sideNavSpinner {
+  height: 4rem;
+  width: 4rem;
+  stroke: 3px;
+}
+
+.mainSpinner {
+  height: 6rem;
+  width: 6rem;
+  stroke: 6px;
+  margin-bottom: 5rem;
 }

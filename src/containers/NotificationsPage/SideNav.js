@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconBell } from '../../components';
+import { IconBell, IconSpinner } from '../../components';
 import NotificationPreview from './NotificationPreview';
 
 import css from './NotificationsPage.module.css';
@@ -10,6 +10,7 @@ const SideNav = props => {
     handleOpenDeleteNotificationModal,
     onPreviewClick,
     activeNotificationId,
+    fetchCurrentUserInProgress,
   } = props;
 
   return (
@@ -28,10 +29,14 @@ const SideNav = props => {
         })
       ) : (
         <div className={css.noNotificationsContainer}>
-          <div className={css.noNotifications}>
-            <IconBell className={css.bell} height="5rem" width="5rem" />
-            <span className={css.noNotificationsText}>No Notifications</span>
-          </div>
+          {fetchCurrentUserInProgress ? (
+            <IconSpinner className={css.sideNavSpinner} />
+          ) : (
+            <div className={css.noNotifications}>
+              <IconBell className={css.bell} height="5rem" width="5rem" />
+              <span className={css.noNotificationsText}>No Notifications</span>
+            </div>
+          )}
         </div>
       )}
     </div>

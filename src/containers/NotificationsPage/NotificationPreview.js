@@ -76,24 +76,40 @@ const buildText = (type, metadata) => {
   }
 };
 
-const buildTitle = (type, metadata) => {
+const TitleContent = ({ type, metadata }) => {
   if (type === NOTIFICATION_TYPE_PAYMENT_REQUESTED) {
-    return `Payment request from ${metadata.senderName}`;
+    return (
+      <span>
+        Payment request from <span className={css.noWrapText}>{metadata.senderName}</span>
+      </span>
+    );
   }
   if (type === NOTIFICATION_TYPE_PAYMENT_RECEIVED) {
-    return `Payment received from ${metadata.senderName}`;
+    return (
+      <span>
+        Payment received from <span className={css.noWrapText}>{metadata.senderName}</span>
+      </span>
+    );
   }
   if (type === NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT) {
-    return `${metadata.senderName} Wants to Pay You!`;
+    return (
+      <span>
+        <span className={css.noWrapText}>{metadata.senderName}</span> Wants to Pay You!
+      </span>
+    );
   }
   if (type === NOTIFICATION_TYPE_NEW_MESSAGE) {
-    return `New Message from ${metadata.senderName}`;
+    return (
+      <span>
+        New Message from <span className={css.noWrapText}>{metadata.senderName}</span>
+      </span>
+    );
   }
   if (type === NOTIFICATION_TYPE_LISTING_REMOVED) {
-    return `Listing Removed`;
+    return <span>Listing Removed</span>;
   }
   if (type === NOTIFICATION_TYPE_LISTING_OPENED) {
-    return `Listing Opened`;
+    return <span>Listing Opened</span>;
   }
 };
 
@@ -104,7 +120,7 @@ const NotificationPreview = props => {
   const notificationDot = !isRead ? <div className={css.notificationDot} /> : null;
   const activeClass = active ? css.active : null;
 
-  const title = buildTitle(type, metadata);
+  const title = <TitleContent type={type} metadata={metadata} />;
   const text = truncateString(buildText(type, metadata));
 
   return (
