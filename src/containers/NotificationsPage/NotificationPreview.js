@@ -71,6 +71,9 @@ const buildText = (type, metadata) => {
     return `Your CareVine listing has been removed and is no longer active. To reactivate your
         subscription to be listed on the CareVine marketplace, click on the reactivate button below.`;
   }
+  if (type === NOTIFICATION_TYPE_LISTING_OPENED) {
+    return `Your profile listing has been posted on the marketplace and is now viewable by others.`;
+  }
 };
 
 const buildTitle = (type, metadata) => {
@@ -88,6 +91,9 @@ const buildTitle = (type, metadata) => {
   }
   if (type === NOTIFICATION_TYPE_LISTING_REMOVED) {
     return `Listing Removed`;
+  }
+  if (type === NOTIFICATION_TYPE_LISTING_OPENED) {
+    return `Listing Opened`;
   }
 };
 

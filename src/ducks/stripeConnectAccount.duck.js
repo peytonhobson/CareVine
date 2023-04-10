@@ -3,7 +3,7 @@
 import config from '../config';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
-import { updateUserMetadata } from '../util/api';
+import { updateUser } from '../util/api';
 
 // ================ Action types ================ //
 
@@ -197,9 +197,9 @@ export const createStripeAccount = params => (dispatch, getState, sdk) => {
     })
     .then(response => {
       const stripeAccount = response.data.data;
-      const email = getState().user.currentUser.attributes.email;
+      const userId = getState().user.currentUser.id.uuid;
       const stripeAccountId = stripeAccount.attributes.stripeAccountId;
-      updateUserMetadata({ email, metadata: { stripeAccountId } });
+      updateUser({ userId, metadata: { stripeAccountId } });
       return stripeAccount;
     })
     .then(stripeAccount => {

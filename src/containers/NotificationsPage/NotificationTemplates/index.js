@@ -3,3 +3,4 @@ export { default as NotificationPaymentReceived } from './NotificationPaymentRec
 export { default as NotificationNotifyForPayment } from './NotificationNotifyForPayment';
 export { default as NotificationNewMessage } from './NotificationNewMessage';
 export { default as NotificationListingRemoved } from './NotificationListingRemoved';
+export { default as NotificationListingOpened } from './NotificationListingOpened';

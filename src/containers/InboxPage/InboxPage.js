@@ -323,22 +323,8 @@ const mapDispatchToProps = dispatch => ({
   onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSendRequestForPayment: (
-    currentUserId,
-    customerName,
-    channelUrl,
-    sendbirdContext,
-    otherUserListing
-  ) =>
-    dispatch(
-      sendRequestForPayment(
-        currentUserId,
-        customerName,
-        channelUrl,
-        sendbirdContext,
-        otherUserListing
-      )
-    ),
+  onSendRequestForPayment: (currentUser, channelUrl, otherUserListing, otherUser) =>
+    dispatch(sendRequestForPayment(currentUser, channelUrl, otherUserListing, otherUser)),
   onTransitionToRequestPayment: tx => dispatch(transitionToRequestPayment(tx)),
   onFetchOtherUsers: (userId, accessToken) => dispatch(fetchOtherUsers(userId, accessToken)),
 });

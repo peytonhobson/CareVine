@@ -71,58 +71,10 @@ const NotificationsPageComponent = props => {
     intl,
     onManageDisableScrolling,
     onUpdateNotifications,
+    currentUserListing,
   } = props;
 
-  const notifications = [
-    {
-      id: '1',
-      type: NOTIFICATION_TYPE_PAYMENT_RECEIVED,
-      createdAt: new Date().getTime(),
-      isRead: false,
-      metadata: {
-        senderName: 'John D',
-        paymentAmount: 100,
-      },
-    },
-    {
-      id: '2',
-      type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
-      createdAt: new Date().getTime(),
-      isRead: false,
-      metadata: {
-        senderName: 'John D',
-        channelUrl:
-          'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d34c-0c4a-4e68-a140-a56e04d5c5a9',
-      },
-    },
-    {
-      id: '3',
-      type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
-      createdAt: new Date().getTime(),
-      isRead: true,
-      metadata: {
-        senderName: 'John D',
-      },
-    },
-    {
-      id: '4',
-      type: NOTIFICATION_TYPE_NEW_MESSAGE,
-      createdAt: new Date().getTime(),
-      isRead: true,
-      metadata: {
-        senderName: 'John D',
-        channelUrl:
-          'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d06d-ce9f-4a26-ab53-23e4e1de5789',
-      },
-    },
-    {
-      id: '5',
-      type: NOTIFICATION_TYPE_LISTING_REMOVED,
-      createdAt: new Date().getTime(),
-      isRead: true,
-      metadata: {},
-    },
-  ];
+  const notifications = currentUser.attributes.profile.privateData.notifications || [];
 
   const sortedNotifications = notifications.sort((a, b) => {
     return b.createdAt - a.createdAt;
@@ -198,7 +150,11 @@ const NotificationsPageComponent = props => {
           />
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.mainWrapper}>
-          <NotificationContainer notification={state.activeNotification} />
+          <NotificationContainer
+            notification={state.activeNotification}
+            listing={currentUserListing}
+            currentUser={currentUser}
+          />
         </LayoutWrapperMain>
       </LayoutSideNavigation>
       <Modal
@@ -234,11 +190,12 @@ const NotificationsPageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing, currentUserListingFetched } = state.user;
 
   return {
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
+    currentUserListing,
   };
 };
 
