@@ -41,7 +41,6 @@ const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const StripePaymentModalComponent = props => {
   const {
-    channelContext,
     channelUrl,
     confirmPaymentError,
     confirmPaymentInProgress,
@@ -340,7 +339,6 @@ const StripePaymentModalComponent = props => {
           )}
           {!hasStripeAccount && hasStripeAccountFetched && !confirmPaymentSuccess && (
             <NotifyForPaymentContainer
-              channelContext={channelContext}
               currentUser={currentUser}
               intl={intl}
               onSendNotifyForPayment={onSendNotifyForPayment}

@@ -21,7 +21,6 @@ const checkIfNotifiedInLastDay = (currentUser, otherUserId) => {
 
 const NotifyForPaymentContainer = props => {
   const {
-    channelContext,
     currentUser,
     intl,
     onSendNotifyForPayment,
