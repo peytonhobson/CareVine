@@ -193,7 +193,7 @@ const TopbarDesktop = props => {
       name="NotificationsPage"
     >
       <span className={css.bell}>
-        <IconBell height="2rem" width="2rem" />
+        <IconBell height="1.75rem" width="1.75rem" />
       </span>
     </NamedLink>
   ) : null;
