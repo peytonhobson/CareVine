@@ -21,6 +21,7 @@ import {
   TopbarMobileMenu,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
+import { ensureCurrentUser } from '../../util/data';
 
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
@@ -175,7 +176,6 @@ class TopbarComponent extends Component {
       currentUserListingFetched,
       currentUserHasOrders,
       currentPage,
-      notificationCount,
       viewport,
       intl,
       location,
@@ -194,7 +194,15 @@ class TopbarComponent extends Component {
       latlngBounds: ['bounds'],
     });
 
-    const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
+    const ensuredCurrentUser = ensureCurrentUser(currentUser);
+    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.filter(
+      notification => !notification.isRead
+    )?.length;
+
+    const notificationDot =
+      unreadMessages > 0 || unreadNotificationCount > 0 ? (
+        <div className={css.notificationDot} />
+      ) : null;
 
     const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
     const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
@@ -208,10 +216,10 @@ class TopbarComponent extends Component {
         currentUserListingFetched={currentUserListingFetched}
         currentUser={currentUser}
         onLogout={this.handleLogout}
-        notificationCount={notificationCount}
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
         unreadMessages={unreadMessages}
+        unreadNotificationCount={unreadNotificationCount}
       />
     );
 
@@ -279,11 +287,11 @@ class TopbarComponent extends Component {
               initialSearchFormValues={initialSearchFormValues}
               intl={intl}
               isAuthenticated={isAuthenticated}
-              notificationCount={notificationCount}
               onLogout={this.handleLogout}
               onSearchSubmit={this.handleSubmit}
               onChangeModalValue={onChangeModalValue}
               unreadMessages={unreadMessages}
+              unreadNotificationCount={unreadNotificationCount}
             />
           </div>
         )}
