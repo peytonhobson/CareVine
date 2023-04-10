@@ -20,7 +20,18 @@ import {
 import css from './NotificationsPage.module.css';
 
 const NotificationContainer = props => {
-  const { notifications, notification, listing, currentUser, fetchCurrentUserInProgress } = props;
+  const {
+    notifications,
+    notification,
+    listing,
+    currentUser,
+    fetchCurrentUserInProgress,
+    onFetchSenderListing,
+    sender,
+    senderListing,
+    fetchSenderListingInProgress,
+    fetchSenderListingError,
+  } = props;
 
   let notificationTemplate = null;
 
@@ -47,7 +58,16 @@ const NotificationContainer = props => {
       notificationTemplate = <NotificationPaymentReceived notification={notification} />;
       break;
     case NOTIFICATION_TYPE_PAYMENT_REQUESTED:
-      notificationTemplate = <NotificationPaymentRequested notification={notification} />;
+      notificationTemplate = (
+        <NotificationPaymentRequested
+          notification={notification}
+          onFetchSenderListing={onFetchSenderListing}
+          sender={sender}
+          senderListing={senderListing}
+          fetchSenderListingInProgress={fetchSenderListingInProgress}
+          fetchSenderListingError={fetchSenderListingError}
+        />
+      );
       break;
     default:
       notificationTemplate =

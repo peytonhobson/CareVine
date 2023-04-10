@@ -7,14 +7,7 @@ import { isEqual } from 'lodash';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { updateNotifications } from '../../ducks/user.duck';
-import {
-  NOTIFICATION_TYPE_LISTING_REMOVED,
-  NOTIFICATION_TYPE_LISTING_OPENED,
-  NOTIFICATION_TYPE_NEW_MESSAGE,
-  NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
-  NOTIFICATION_TYPE_PAYMENT_RECEIVED,
-  NOTIFICATION_TYPE_PAYMENT_REQUESTED,
-} from '../../util/constants';
+import { fetchSenderListing } from './NotificationsPage.duck';
 
 import {
   Page,
@@ -80,6 +73,11 @@ const NotificationsPageComponent = props => {
     onUpdateNotifications,
     currentUserListing,
     fetchCurrentUserInProgress,
+    onFetchSenderListing,
+    sender,
+    senderListing,
+    fetchSenderListingInProgress,
+    fetchSenderListingError,
   } = props;
 
   const notifications = currentUser?.attributes.profile.privateData.notifications || [];
@@ -174,6 +172,11 @@ const NotificationsPageComponent = props => {
             listing={currentUserListing}
             currentUser={currentUser}
             fetchCurrentUserInProgress={fetchCurrentUserInProgress}
+            onFetchSenderListing={onFetchSenderListing}
+            sender={sender}
+            senderListing={senderListing}
+            fetchSenderListingInProgress={fetchSenderListingInProgress}
+            fetchSenderListingError={fetchSenderListingError}
           />
         </LayoutWrapperMain>
       </LayoutSideNavigation>
@@ -212,11 +215,22 @@ const NotificationsPageComponent = props => {
 const mapStateToProps = state => {
   const { currentUser, fetchCurrentUserInProgress, currentUserListing } = state.user;
 
+  const {
+    senderListing,
+    sender,
+    fetchSenderListingInProgress,
+    fetchSenderListingError,
+  } = state.NotificationsPage;
+
   return {
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
     fetchCurrentUserInProgress,
+    senderListing,
+    sender,
+    fetchSenderListingInProgress,
+    fetchSenderListingError,
   };
 };
 
@@ -224,6 +238,7 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onUpdateNotifications: notifications => dispatch(updateNotifications(notifications)),
+  onFetchSenderListing: id => dispatch(fetchSenderListing(id)),
 });
 
 const NotificationsPage = compose(
