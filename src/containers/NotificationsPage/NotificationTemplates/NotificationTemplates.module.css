@@ -33,3 +33,7 @@
 .noWrapText {
   white-space: nowrap;
 }
+
+.error {
+  color: var(--failColor);
+}

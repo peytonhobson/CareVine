@@ -7,20 +7,15 @@ import { userDisplayNameAsString } from '../../../util/data';
 import css from './index.module.css';
 import { useEffect } from 'react';
 
-const checkIfRequestInLastDay = messages => {
-  let withinADay = false;
+const checkIfRequestInLastDay = (currentUser, otherUserId) => {
+  const sentRequestsForPayment =
+    currentUser.attributes.profile.privateData?.sentRequestsForPayment || [];
 
-  messages &&
-    messages
-      .filter(message => {
-        return message.customType === 'REQUEST_FOR_PAYMENT';
-      })
-      .forEach(message => {
-        if (new Date(message.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
-          withinADay = true;
-        }
-      });
-  return withinADay;
+  const withinLastDay =
+    sentRequestsForPayment.find(notification => notification.userId === otherUserId)?.createdAt >
+    Date.now() - 24 * 60 * 60 * 1000;
+
+  return withinLastDay;
 };
 
 const RequestPaymentButton = props => {
@@ -57,12 +52,11 @@ const RequestPaymentButton = props => {
 
   const clickDisabled =
     !!disabled ||
-    channelContext.allMessages.length === 0 ||
-    checkIfRequestInLastDay(channelContext.allMessages);
+    !currentUser.stripeAccount?.id ||
+    checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
 
   const requestPayment = () => {
     if (!paymentRequestedForUser) {
-      console.log('here');
       onSendRequestForPayment(currentUser, channelUrl, otherUserListing, otherUser);
     }
   };

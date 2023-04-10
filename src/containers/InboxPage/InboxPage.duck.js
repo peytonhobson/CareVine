@@ -8,7 +8,7 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
 import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import { updateUserNotifications } from '../../util/api';
+import { updateUserNotifications, updateUser } from '../../util/api';
 import { userDisplayNameAsString } from '../../util/data';
 import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
 import { v4 as uuidv4 } from 'uuid';
@@ -353,14 +353,32 @@ export const sendRequestForPayment = (
     metadata: {
       senderName,
       channelUrl,
-      providerId: userId,
+      listingId: otherUserListing.id.uuid,
     },
   };
 
   try {
-    const response = await updateUserNotifications({
+    await updateUserNotifications({
       userId,
       newNotification,
+    });
+
+    const currentTime = new Date().getTime();
+    const oldRequestsForPayment =
+      currentUser.attributes.profile.privateData?.sentRequestsForPayment?.filter(
+        o => o.createdAt > currentTime - 1000 * 60 * 60 * 24
+      ) || [];
+
+    const newSentRequestsForPayment = [
+      ...oldRequestsForPayment,
+      { userId, createdAt: currentTime },
+    ];
+
+    await updateUser({
+      userId: currentUser.id.uuid,
+      privateData: {
+        sentRequestsForPayment: newSentRequestsForPayment,
+      },
     });
 
     dispatch(sendRequestForPaymentSuccess());
