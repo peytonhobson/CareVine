@@ -74,7 +74,7 @@ const NotificationsPageComponent = props => {
     currentUserListing,
   } = props;
 
-  const notifications = currentUser.attributes.profile.privateData.notifications || [];
+  const notifications = currentUser?.attributes.profile.privateData.notifications || [];
 
   const sortedNotifications = notifications.sort((a, b) => {
     return b.createdAt - a.createdAt;
