@@ -6,9 +6,8 @@ import { isEqual } from 'lodash';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
-import { updateNotifications } from '../../ducks/user.duck';
+import { updateNotifications, fetchCurrentUser } from '../../ducks/user.duck';
 import { fetchSenderListing } from './NotificationsPage.duck';
-import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 
 import {
   Page,
@@ -31,6 +30,7 @@ const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
+const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -39,6 +39,12 @@ const reducer = (state, action) => {
         ...state,
         notifications: state.notifications.filter(n => n.id !== action.payload),
         isDeleteModalOpen: false,
+        activeNotification:
+          state.activeNotification.id === action.payload
+            ? state.notifications.length > 1
+              ? state.notifications[0]
+              : null
+            : state.activeNotification,
       };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
@@ -60,6 +66,8 @@ const reducer = (state, action) => {
         notifications: action.payload,
         activeNotification: action.payload.length > 0 ? action.payload[0] : null,
       };
+    case SET_CURRENT_USER_INITIAL_FETCHED:
+      return { ...state, currentUserInitialFetched: true };
     default:
       return state;
   }
@@ -79,6 +87,7 @@ const NotificationsPageComponent = props => {
     senderListing,
     fetchSenderListingInProgress,
     fetchSenderListingError,
+    onFetchCurrentUser,
   } = props;
 
   const notifications = currentUser?.attributes.profile.privateData.notifications || [];
@@ -98,6 +107,14 @@ const NotificationsPageComponent = props => {
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    const fetchUserInterval = setInterval(() => onFetchCurrentUser(), 10000);
+
+    return () => {
+      clearInterval(fetchUserInterval);
+    };
+  }, []);
 
   useEffect(() => {
     if (sortedNotifications.length === 0) return;
@@ -125,6 +142,14 @@ const NotificationsPageComponent = props => {
       dispatch({ type: SET_NOTIFICATION_READ, payload: state.activeNotification.id });
     }
   }, [state.activeNotification?.id]);
+
+  const previousFetchCurrentUserInProgress = usePrevious(fetchCurrentUserInProgress);
+
+  useEffect(() => {
+    if (previousFetchCurrentUserInProgress && !fetchCurrentUserInProgress) {
+      dispatch({ type: SET_CURRENT_USER_INITIAL_FETCHED });
+    }
+  }, [fetchCurrentUserInProgress]);
 
   const handleOpenDeleteNotificationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
@@ -163,7 +188,9 @@ const NotificationsPageComponent = props => {
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
             onPreviewClick={handlePreviewClick}
             activeNotificationId={state.activeNotification ? state.activeNotification.id : null}
-            fetchCurrentUserInProgress={fetchCurrentUserInProgress}
+            fetchCurrentUserInProgress={
+              fetchCurrentUserInProgress && !state.currentUserInitialFetched
+            }
           />
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.mainWrapper}>
@@ -172,7 +199,9 @@ const NotificationsPageComponent = props => {
             notification={state.activeNotification}
             listing={currentUserListing}
             currentUser={currentUser}
-            fetchCurrentUserInProgress={fetchCurrentUserInProgress}
+            fetchCurrentUserInProgress={
+              fetchCurrentUserInProgress && !state.currentUserInitialFetched
+            }
             onFetchSenderListing={onFetchSenderListing}
             sender={sender}
             senderListing={senderListing}
@@ -240,6 +269,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onUpdateNotifications: notifications => dispatch(updateNotifications(notifications)),
   onFetchSenderListing: id => dispatch(fetchSenderListing(id)),
+  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
 });
 
 const NotificationsPage = compose(
