@@ -62,15 +62,8 @@ const RequestPaymentButton = props => {
 
   const requestPayment = () => {
     if (!paymentRequestedForUser) {
-      const currentUserId = currentUser && currentUser.id && currentUser.id.uuid;
-      const customerName = userDisplayNameAsString(otherUser);
-      onSendRequestForPayment(
-        currentUserId,
-        customerName,
-        channelUrl,
-        sendbirdContext,
-        otherUserListing
-      );
+      console.log('here');
+      onSendRequestForPayment(currentUser, channelUrl, otherUserListing, otherUser);
     }
   };
 

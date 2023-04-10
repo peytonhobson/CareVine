@@ -16,6 +16,7 @@ const SideNav = props => {
       {notifications.map((notification, index) => {
         return (
           <NotificationPreview
+            key={index}
             notification={notification}
             active={notification.id === activeNotificationId}
             onPreviewClick={onPreviewClick}

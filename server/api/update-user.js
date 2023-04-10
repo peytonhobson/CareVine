@@ -3,24 +3,21 @@ var crypto = require('crypto');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { userId, email, metadata } = req.body;
+  const { userId, privateData, publicData, metadata, fetchUser } = req.body;
 
-  integrationSdk.users
-    .show({ id: userId, email })
-    .then(userResponse => {
-      const user = userResponse.data.data;
-
-      return integrationSdk.users.updateProfile(
-        {
-          id: user.id,
-          metadata,
-        },
-        {
-          expand: true,
-          'fields.user': ['email', 'profile.metadata'],
-        }
-      );
-    })
+  return integrationSdk.users
+    .updateProfile(
+      {
+        id: userId,
+        metadata,
+        publicData,
+        privateData,
+      },
+      {
+        expand: true,
+        'fields.user': ['email', 'profile.metadata'],
+      }
+    )
     .then(apiResponse => {
       const { status, statusText, data } = apiResponse;
       res
@@ -36,6 +33,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      log.error(e.data.errors);
       handleError(res, e);
     });
 };

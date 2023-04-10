@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
-import { createUserWithIdp, updateUserMetadata, deleteUserAccount } from '../util/api';
+import { createUserWithIdp } from '../util/api';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
 

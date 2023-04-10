@@ -17,12 +17,13 @@ import {
   NotificationNotifyForPayment,
   NotificationNewMessage,
   NotificationListingRemoved,
+  NotificationListingOpened,
 } from './NotificationTemplates';
 
 import css from './NotificationsPage.module.css';
 
 const NotificationContainer = props => {
-  const { notification } = props;
+  const { notification, listing, currentUser } = props;
 
   let notificationTemplate = null;
 
@@ -30,9 +31,15 @@ const NotificationContainer = props => {
     case NOTIFICATION_TYPE_LISTING_REMOVED:
       notificationTemplate = <NotificationListingRemoved notification={notification} />;
       break;
-    // case NOTIFICATION_TYPE_LISTING_OPENED:
-    //     notificationTemplate =  <NotificationListingOpened notification={notification} />;
-    // break;
+    case NOTIFICATION_TYPE_LISTING_OPENED:
+      notificationTemplate = (
+        <NotificationListingOpened
+          notification={notification}
+          listing={listing}
+          currentUser={currentUser}
+        />
+      );
+      break;
     case NOTIFICATION_TYPE_NEW_MESSAGE:
       notificationTemplate = <NotificationNewMessage notification={notification} />;
       break;
