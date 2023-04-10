@@ -353,7 +353,7 @@ export const sendRequestForPayment = (
     metadata: {
       senderName,
       channelUrl,
-      listingId: otherUserListing.id.uuid,
+      senderId: currentUser.id.uuid,
     },
   };
 

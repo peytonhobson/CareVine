@@ -14,15 +14,15 @@ const NotificationPaymentRequested = props => {
     fetchSenderListingError,
   } = props;
 
-  const { senderName, channelUrl, listingId } = notification.metadata;
+  const { senderName, channelUrl, senderId } = notification.metadata;
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   useEffect(() => {
-    if (listingId) {
-      onFetchSenderListing(listingId);
+    if (senderId) {
+      onFetchSenderListing(senderId);
     }
-  }, [listingId]);
+  }, [senderId]);
 
   const payButtonDisabled =
     fetchSenderListingInProgress || fetchSenderListingError || !senderListing || !sender;
@@ -49,13 +49,15 @@ const NotificationPaymentRequested = props => {
       >
         Pay {senderName}
       </Button>
-      <StripePaymentModal
-        channelUrl={channelUrl}
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        provider={sender}
-        providerListing={senderListing}
-      />
+      {isPaymentModalOpen && (
+        <StripePaymentModal
+          channelUrl={channelUrl}
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          provider={sender}
+          providerListing={senderListing}
+        />
+      )}
     </div>
   );
 };

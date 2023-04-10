@@ -82,7 +82,6 @@ const StripePaymentModalComponent = props => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const paymentFormRef = useRef(null);
 
-  //TODO: Move this to load data?
   useEffect(() => {
     fetchStripeCustomer();
   }, []);
