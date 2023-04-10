@@ -128,11 +128,11 @@
 
 .topbarDesktopLabel {
   display: inline-block;
-  margin: 28px 0;
+  margin: 1.75rem 0;
   text-decoration: inherit;
 
   @media (--viewportMedium) {
-    margin: 28px 0;
+    margin: 1.75rem 0;
   }
 }
 
@@ -165,8 +165,7 @@
 
   height: 100%;
   padding: 0 12px 0 12px;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin: 0 1rem;
   color: var(--matterColor);
   cursor: pointer;
 
@@ -178,14 +177,22 @@
   }
 
   @media (--viewportMedium) {
-    line-height: 16px;
+    line-height: 1rem;
     margin-top: 0;
     margin-bottom: 0;
   }
 }
 
-.inboxLink {
-  margin-right: 1rem !important;
+.notificationsLink {
+  height: 100%;
+  display: block;
+  margin: 0 0.5rem;
+}
+
+.bell {
+  display: inline-block;
+  margin: 1.25rem 0 1.25rem 0;
+  text-decoration: inherit;
 }
 
 .linkText {

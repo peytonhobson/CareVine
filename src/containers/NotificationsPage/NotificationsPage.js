@@ -35,6 +35,7 @@ import SideNav from './SideNav';
 const DELETE_NOTIFICATION = 'DELETE_NOTIFICATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
+const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -50,6 +51,10 @@ const reducer = (state, action) => {
       return {
         ...state,
         activeNotification: state.notifications.find(n => n.id === action.payload),
+      };
+    case SET_NOTIFICATION_READ:
+      return {
+        ...state,
         notifications: state.notifications.map(n =>
           n.id === action.payload ? { ...n, isRead: true } : n
         ),
@@ -110,6 +115,13 @@ const NotificationsPageComponent = props => {
           'sendbird_group_channel_6352e1f6-c07c-403c-84ac-48bbaef586a2-6426d06d-ce9f-4a26-ab53-23e4e1de5789',
       },
     },
+    {
+      id: '5',
+      type: NOTIFICATION_TYPE_LISTING_REMOVED,
+      createdAt: new Date().getTime(),
+      isRead: true,
+      metadata: {},
+    },
   ];
 
   const sortedNotifications = notifications.sort((a, b) => {
@@ -139,6 +151,12 @@ const NotificationsPageComponent = props => {
       onUpdateNotifications(state.notifications);
     }
   }, [state.notifications]);
+
+  useEffect(() => {
+    if (state.activeNotification && !state.activeNotification.isRead) {
+      dispatch({ type: SET_NOTIFICATION_READ, payload: state.activeNotification.id });
+    }
+  }, [state.activeNotification?.id]);
 
   const handleOpenDeleteNotificationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });

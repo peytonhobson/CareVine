@@ -67,6 +67,10 @@ const buildText = (type, metadata) => {
   if (type === NOTIFICATION_TYPE_NEW_MESSAGE) {
     return `You have a new message from ${metadata.senderName}. To view this message, click the button below.`;
   }
+  if (type === NOTIFICATION_TYPE_LISTING_REMOVED) {
+    return `Your CareVine listing has been removed and is no longer active. To reactivate your
+        subscription to be listed on the CareVine marketplace, click on the reactivate button below.`;
+  }
 };
 
 const buildTitle = (type, metadata) => {
@@ -81,6 +85,9 @@ const buildTitle = (type, metadata) => {
   }
   if (type === NOTIFICATION_TYPE_NEW_MESSAGE) {
     return `New Message from ${metadata.senderName}`;
+  }
+  if (type === NOTIFICATION_TYPE_LISTING_REMOVED) {
+    return `Listing Removed`;
   }
 };
 
