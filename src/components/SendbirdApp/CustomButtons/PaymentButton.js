@@ -20,7 +20,6 @@ const PaymentButton = props => {
     const modalInitialValues = {
       channelUrl,
       provider: otherUser,
-      channelContext,
     };
 
     onOpenPaymentModal(modalInitialValues);
