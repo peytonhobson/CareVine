@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { IconCar, IconEdit, IconVerticalDots, Modal } from '../../components';
-import { isToday, isYesterday, timestampToDate } from '../../util/dates';
-import moment from 'moment';
-import classNames from 'classnames';
+import React from 'react';
+import { IconBell } from '../../components';
 import {
   NOTIFICATION_TYPE_LISTING_REMOVED,
   NOTIFICATION_TYPE_LISTING_OPENED,
@@ -23,11 +20,11 @@ import {
 import css from './NotificationsPage.module.css';
 
 const NotificationContainer = props => {
-  const { notification, listing, currentUser } = props;
+  const { notifications, notification, listing, currentUser } = props;
 
   let notificationTemplate = null;
 
-  switch (notification.type) {
+  switch (notification?.type) {
     case NOTIFICATION_TYPE_LISTING_REMOVED:
       notificationTemplate = <NotificationListingRemoved notification={notification} />;
       break;
@@ -53,7 +50,17 @@ const NotificationContainer = props => {
       notificationTemplate = <NotificationPaymentRequested notification={notification} />;
       break;
     default:
-      notificationTemplate = null;
+      notificationTemplate =
+        notifications.length === 0 ? (
+          <div className={css.noNotificationsContainer}>
+            <div className={css.noNotifications}>
+              <IconBell className={css.bell} height="10rem" width="10rem" />
+              <h1 className={css.noNotificationsText}>No Notifications</h1>
+            </div>
+          </div>
+        ) : (
+          <h1 className={css.selectANotification}>Select a Notification</h1>
+        );
   }
 
   return <div className={css.notificationContainerRoot}>{notificationTemplate}</div>;

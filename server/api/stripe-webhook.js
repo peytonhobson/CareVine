@@ -93,28 +93,20 @@ const updateBackgroundCheckSubscription = async subscription => {
     prevBackgroundCheckSubscription =
       user?.attributes?.profile?.metadata?.backgroundCheckSubscription;
 
-    await axios.post(
-      `${apiBaseUrl()}/api/update-user-metadata`,
-      {
-        userId,
-        metadata: {
-          backgroundCheckSubscription: {
-            // May set this to null if webhooks work
-            status: subscription?.status,
-            subscriptionId: subscription?.id,
-            type,
-            currentPeriodEnd: subscription?.current_period_end,
-            amount: subscription?.plan?.amount,
-            cancelAtPeriodEnd: subscription?.cancel_at_period_end,
-          },
+    await integrationSdk.users.updateProfile({
+      id: userId,
+      metadata: {
+        backgroundCheckSubscription: {
+          // May set this to null if webhooks work
+          status: subscription?.status,
+          subscriptionId: subscription?.id,
+          type,
+          currentPeriodEnd: subscription?.current_period_end,
+          amount: subscription?.plan?.amount,
+          cancelAtPeriodEnd: subscription?.cancel_at_period_end,
         },
       },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
-        },
-      }
-    );
+    });
 
     const isReactivatingSubscription =
       (prevBackgroundCheckSubscription?.status === 'canceled' ||

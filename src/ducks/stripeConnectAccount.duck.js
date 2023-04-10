@@ -198,6 +198,7 @@ export const createStripeAccount = params => (dispatch, getState, sdk) => {
     .then(response => {
       const stripeAccount = response.data.data;
       const userId = getState().user.currentUser.id.uuid;
+      console.log(getState().user.currentUser);
       const stripeAccountId = stripeAccount.attributes.stripeAccountId;
       updateUser({ userId, metadata: { stripeAccountId } });
       return stripeAccount;

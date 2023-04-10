@@ -14,14 +14,12 @@ const PaymentButton = props => {
     onOpenPaymentModal,
     otherUser,
     rootClassName,
-    sendbirdContext,
   } = props;
 
   const openStripeModal = () => {
     const modalInitialValues = {
       channelUrl,
       provider: otherUser,
-      sendbirdContext,
       channelContext,
     };
 

@@ -10,12 +10,10 @@ module.exports = (req, res) => {
       {
         id: userId,
         metadata,
-        publicData,
-        privateData,
       },
       {
         expand: true,
-        'fields.user': ['email', 'profile.metadata'],
+        'fields.user': ['profile.metadata', 'profile.privateData', 'profile.publicData'],
       }
     )
     .then(apiResponse => {
