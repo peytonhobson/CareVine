@@ -1,17 +1,6 @@
-import pick from 'lodash/pick';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-
-import { storableError } from '../../util/errors';
-import { TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
+import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
-import config from '../../config';
-import { fetchCurrentUser } from '../../ducks/user.duck';
-import { updateUserNotifications } from '../../util/api';
-import { userDisplayNameAsString } from '../../util/data';
-import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
-import { v4 as uuidv4 } from 'uuid';
 
 // ================ Action types ================ //
 
@@ -20,6 +9,12 @@ export const FETCH_SENDER_LISTING_SUCCESS = 'app/NotificationsPage/FETCH_SENDER_
 export const FETCH_SENDER_LISTING_ERROR = 'app/NotificationsPage/FETCH_SENDER_LISTING_ERROR';
 
 // ================ Reducer ================ //
+
+const entityRefs = entities =>
+  entities.map(entity => ({
+    id: entity.id,
+    type: entity.type,
+  }));
 
 const initialState = {
   senderListing: null,
@@ -42,8 +37,8 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         ...state,
         fetchSenderListingInProgress: false,
         fetchSenderListingError: null,
-        senderListing: payload.data,
-        sender: payload.included[0],
+        senderListing: payload.listing,
+        sender: payload.user,
       };
     case FETCH_SENDER_LISTING_ERROR:
       return {
@@ -80,9 +75,17 @@ export const fetchSenderListing = id => async (dispatch, getState, sdk) => {
   dispatch(fetchSenderListingRequest());
 
   try {
-    const response = await sdk.listings.show({ id, include: ['author'] });
+    const listingResponse = await sdk.listings.query({
+      authorId: id,
+      include: ['author', 'author.profileImage'],
+    });
 
-    dispatch(fetchSenderListingSuccess(response.data));
+    dispatch(
+      fetchSenderListingSuccess({
+        listing: listingResponse.data.data[0],
+        user: listingResponse.data.included[0],
+      })
+    );
   } catch (e) {
     log.error(e, 'fetch-sender-listing-failed');
     dispatch(fetchSenderListingError(storableError(e)));

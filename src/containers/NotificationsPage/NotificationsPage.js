@@ -8,6 +8,7 @@ import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { updateNotifications } from '../../ducks/user.duck';
 import { fetchSenderListing } from './NotificationsPage.duck';
+import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 
 import {
   Page,

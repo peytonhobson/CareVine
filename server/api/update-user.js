@@ -5,9 +5,6 @@ const log = require('../log');
 module.exports = (req, res) => {
   const { userId, privateData, publicData, metadata } = req.body;
 
-  console.log('privateData', privateData);
-  console.log('userId', userId);
-
   const privateDataMaybe = privateData ? { privateData } : {};
   const publicDataMaybe = publicData ? { publicData } : {};
   const metadataMaybe = metadata ? { metadata } : {};
