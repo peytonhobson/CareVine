@@ -1,4 +1,4 @@
-import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 
@@ -90,4 +90,8 @@ export const fetchSenderListing = id => async (dispatch, getState, sdk) => {
     log.error(e, 'fetch-sender-listing-failed');
     dispatch(fetchSenderListingError(storableError(e)));
   }
+};
+
+export const loadData = (dispatch, getState, sdk) => {
+  return fetchCurrentUser();
 };

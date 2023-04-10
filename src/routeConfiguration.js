@@ -177,6 +177,7 @@ const routeConfiguration = () => {
       auth: true,
       authPage: 'LoginPage',
       component: NotificationsPage,
+      loadData: pageDataLoadingAPI.NotificationsPage.loadData,
     },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
