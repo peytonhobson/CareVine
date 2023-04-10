@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer, useRef, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -36,6 +36,7 @@ const DELETE_NOTIFICATION = 'DELETE_NOTIFICATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
+const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -59,6 +60,12 @@ const reducer = (state, action) => {
           n.id === action.payload ? { ...n, isRead: true } : n
         ),
       };
+    case SET_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: action.payload,
+        activeNotification: action.payload.length > 0 ? action.payload[0] : null,
+      };
     default:
       return state;
   }
@@ -72,13 +79,18 @@ const NotificationsPageComponent = props => {
     onManageDisableScrolling,
     onUpdateNotifications,
     currentUserListing,
+    fetchCurrentUserInProgress,
   } = props;
 
   const notifications = currentUser?.attributes.profile.privateData.notifications || [];
 
-  const sortedNotifications = notifications.sort((a, b) => {
-    return b.createdAt - a.createdAt;
-  });
+  const sortedNotifications = useMemo(
+    () =>
+      notifications.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+      }),
+    [notifications]
+  );
 
   const initialState = {
     notifications: sortedNotifications,
@@ -87,6 +99,11 @@ const NotificationsPageComponent = props => {
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (sortedNotifications.length === 0) return;
+    dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
+  }, [sortedNotifications.length]);
 
   const usePrevious = value => {
     const ref = useRef();
@@ -147,6 +164,7 @@ const NotificationsPageComponent = props => {
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
             onPreviewClick={handlePreviewClick}
             activeNotificationId={state.activeNotification ? state.activeNotification.id : null}
+            fetchCurrentUserInProgress={fetchCurrentUserInProgress}
           />
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.mainWrapper}>
@@ -155,6 +173,7 @@ const NotificationsPageComponent = props => {
             notification={state.activeNotification}
             listing={currentUserListing}
             currentUser={currentUser}
+            fetchCurrentUserInProgress={fetchCurrentUserInProgress}
           />
         </LayoutWrapperMain>
       </LayoutSideNavigation>
@@ -191,12 +210,13 @@ const NotificationsPageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser, currentUserListing, currentUserListingFetched } = state.user;
+  const { currentUser, fetchCurrentUserInProgress, currentUserListing } = state.user;
 
   return {
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
+    fetchCurrentUserInProgress,
   };
 };
 

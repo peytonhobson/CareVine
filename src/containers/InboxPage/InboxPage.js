@@ -195,7 +195,6 @@ export const InboxPageComponent = props => {
         )}
         {isPaymentModalOpen && (
           <StripePaymentModal
-            channelContext={modalInitialValues.channelContext}
             channelUrl={modalInitialValues.channelUrl}
             isOpen={isPaymentModalOpen}
             onClose={onClosePaymentModal}

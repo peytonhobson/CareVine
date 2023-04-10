@@ -353,6 +353,7 @@ export const sendRequestForPayment = (
     metadata: {
       senderName,
       channelUrl,
+      providerId: userId,
     },
   };
 

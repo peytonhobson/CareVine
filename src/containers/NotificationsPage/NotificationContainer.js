@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconBell } from '../../components';
+import { IconBell, IconSpinner } from '../../components';
 import {
   NOTIFICATION_TYPE_LISTING_REMOVED,
   NOTIFICATION_TYPE_LISTING_OPENED,
@@ -20,7 +20,7 @@ import {
 import css from './NotificationsPage.module.css';
 
 const NotificationContainer = props => {
-  const { notifications, notification, listing, currentUser } = props;
+  const { notifications, notification, listing, currentUser, fetchCurrentUserInProgress } = props;
 
   let notificationTemplate = null;
 
@@ -58,6 +58,8 @@ const NotificationContainer = props => {
               <h1 className={css.noNotificationsText}>No Notifications</h1>
             </div>
           </div>
+        ) : fetchCurrentUserInProgress ? (
+          <IconSpinner className={css.mainSpinner} />
         ) : (
           <h1 className={css.selectANotification}>Select a Notification</h1>
         );
