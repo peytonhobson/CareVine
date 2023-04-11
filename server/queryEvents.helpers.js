@@ -204,7 +204,39 @@ const closeListing = async userId => {
   }
 };
 
+const updateListingApproveListing = async event => {
+  const userId = event.attributes.resource.relationships?.author?.data?.id?.uuid;
+
+  try {
+    const res = await integrationSdk.users.show({
+      id: userId,
+      include: ['stripeAccount'],
+    });
+
+    const user = res?.data?.data;
+    const metadata = user?.attributes?.profile?.metadata;
+    const openListing =
+      metadata?.userType === CAREGIVER
+        ? metadata?.backgroundCheckSubscription?.status === 'active' &&
+          user?.attributes?.emailVerified
+        : user?.attributes?.emailVerified;
+    if (openListing) {
+      const listingId = event.attributes.resource.id.uuid;
+
+      await integrationSdk.listings.approve({
+        id: listingId,
+      });
+
+      const userName = user?.attributes?.profile?.displayName;
+      approveListingNotification(userId, userName, listingId);
+    }
+  } catch (e) {
+    log.error(e, 'listing-update-approved-failed', {});
+  }
+};
+
 module.exports = {
   approveListingNotification,
   closeListing,
+  updateListingApproveListing,
 };
