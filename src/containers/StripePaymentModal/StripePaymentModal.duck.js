@@ -218,42 +218,6 @@ export const transitionTransaction = (otherUserListing, transition, params) => (
     });
 };
 
-// const sendConfirmPaymentNotification = (
-//   currentUserId,
-//   providerName,
-//   channelUrl,
-//   sendbirdContext
-// ) => (dispatch, getState, sdk) => {
-//   const params = {
-//     appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-//     modules: [new GroupChannelModule()],
-//   };
-
-//   const sb = SendbirdChat.init(params);
-
-//   return sb
-//     .connect(currentUserId)
-//     .then(() => {
-//       sb.groupChannel.getChannel(channelUrl).then(channel => {
-//         const messageParams = {
-//           customType: 'CONFIRM_PAYMENT',
-//           message: `You made a payment to ${providerName}.`,
-//           data: `{"providerName": "${providerName}"}`,
-//         };
-
-//         channel.sendUserMessage(messageParams).onSucceeded(message => {
-//           sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
-//             message,
-//             channel,
-//           });
-//         });
-//       });
-//     })
-//     .catch(e => {
-//       log.error(e, 'send-payment-notification-failed', {});
-//     });
-// };
-
 export const hasStripeAccount = userId => (dispatch, getState, sdk) => {
   dispatch(hasStripeAccountRequest());
 
