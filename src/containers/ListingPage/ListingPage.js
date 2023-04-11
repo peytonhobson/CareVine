@@ -373,24 +373,10 @@ export class ListingPageComponent extends Component {
       this.setState({ showListingPreview: false });
     };
 
-    const facebookImages = listingImages(currentListing, 'facebook');
-    const twitterImages = listingImages(currentListing, 'twitter');
-    const schemaImages = JSON.stringify(facebookImages.map(img => img.url));
     const siteTitle = config.siteTitle;
     const schemaTitle = intl.formatMessage(
       { id: 'ListingPage.schemaTitle' },
-      { title, price: formattedPrice, siteTitle }
-    );
-
-    const hostLink = (
-      <NamedLink
-        className={css.authorNameLink}
-        name="ListingPage"
-        params={params}
-        to={{ hash: '#host' }}
-      >
-        {authorDisplayName}
-      </NamedLink>
+      { displayName: authorDisplayName, siteTitle }
     );
 
     const actionBar = listingId ? (
@@ -416,14 +402,11 @@ export class ListingPageComponent extends Component {
         author={authorDisplayName}
         contentType="website"
         description={description}
-        facebookImages={facebookImages}
-        twitterImages={twitterImages}
         schema={{
           '@context': 'http://schema.org',
           '@type': 'ItemPage',
           description: description,
           name: schemaTitle,
-          image: schemaImages,
         }}
       >
         <LayoutSingleColumn className={css.pageRoot}>

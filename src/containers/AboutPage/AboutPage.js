@@ -25,8 +25,8 @@ const AboutPage = () => {
       schema={{
         '@context': 'http://schema.org',
         '@type': 'AboutPage',
-        description: 'About Yogatime',
-        name: 'About page',
+        description: 'About CareVine',
+        name: 'About Page',
       }}
     >
       <LayoutSingleColumn>
@@ -36,7 +36,7 @@ const AboutPage = () => {
 
         <LayoutWrapperMain className={css.staticPageWrapper}>
           <h1 className={css.pageTitle}>Look For Care or Accelerate Your Career</h1>
-          <img className={css.coverImage} src={image} alt="My first ice cream." />
+          <img className={css.coverImage} src={image} alt="Two people smiling at each other." />
 
           <div className={css.contentWrapper}>
             <div className={css.contentMain}>
