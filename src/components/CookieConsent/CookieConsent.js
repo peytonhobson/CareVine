@@ -56,8 +56,7 @@ class CookieConsent extends Component {
       return (
         <div className={classes}>
           <div className={css.message}>
-            Warning! This is a test environment. Anything you do here will not be saved in
-            production. Any data or users on this site are fake.{' '}
+            <FormattedMessage id="CookieConsent.message" values={{ cookieLink }} />
           </div>
           <button className={css.continueBtn} onClick={this.onAcceptCookies}>
             <FormattedMessage id="CookieConsent.continue" />
