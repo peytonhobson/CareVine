@@ -98,7 +98,7 @@ const TopbarMobileMenu = props => {
 
   const unreadMessagesBadge =
     unreadMessages > 0 ? (
-      <NotificationBadge className={css.notificationBadge} count={unreadMessages} />
+      <NotificationBadge className={css.messageBadge} count={unreadMessages} />
     ) : null;
 
   const displayName = user.attributes.profile.firstName;
