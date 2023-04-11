@@ -44,10 +44,7 @@ const sortSearchByDistance = true;
 // this particular web application is able to handle.
 let singleActionProcessAlias = null;
 
-if (isDev) {
-  singleActionProcessAlias = `single-action-process/release-11`;
-}
-if (isTest) {
+if (isDev || isTest) {
   singleActionProcessAlias = `single-action-process/active`;
 }
 if (isProd) {
