@@ -1,12 +1,8 @@
 module.exports = queryEvents = () => {
   const fs = require('fs');
   const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
-  const axios = require('axios');
-  const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
-  const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
-  const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
   const CAREGIVER = 'caregiver';
   const BACKGROUND_CHECK_APPROVED = 'approved';
   const BACKGROUND_CHECK_REJECTED = 'rejected';

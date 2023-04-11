@@ -119,7 +119,8 @@ const EditListingJobDescriptionFormComponent = props => (
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
-      const submitDisabled = invalid || disabled || submitInProgress;
+      const submitDisabled =
+        invalid || disabled || submitInProgress || generateJobDescriptionInProgress;
 
       return (
         <>
