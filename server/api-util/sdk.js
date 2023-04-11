@@ -80,19 +80,19 @@ exports.handleError = (res, error) => {
 };
 
 exports.handleStripeError = (res, error) => {
-  log.error(error, 'stripe-api-request-failed', error.type);
+  log.error(error, 'stripe-api-request-failed', error?.type);
 
   if (error.statusCode && error.raw && error.type) {
     const { statusCode, raw, type } = error;
 
-    // JS SDK error
     res
-      .status(error.statusCode)
+      .set('Content-Type', 'application/transit+json')
+      .status(statusCode)
       .json({
         name: 'Stripe API Request failed',
         status: statusCode,
         type,
-        message: raw && raw.message,
+        message: raw?.message,
       })
       .end();
   } else {
