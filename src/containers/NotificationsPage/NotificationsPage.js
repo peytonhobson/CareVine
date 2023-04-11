@@ -97,7 +97,10 @@ const NotificationsPageComponent = props => {
     fetchSenderListingInProgress,
     fetchSenderListingError,
     onFetchCurrentUser,
+    params,
   } = props;
+
+  const { notificationId } = params;
 
   const notifications = currentUser?.attributes.profile.privateData.notifications || [];
 
@@ -122,6 +125,16 @@ const NotificationsPageComponent = props => {
     if (sortedNotifications.length === 0) return;
     dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
   }, [sortedNotifications.length]);
+
+  useEffect(() => {
+    if (notificationId && state.notifications.find(n => n.id === notificationId)) {
+      dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: notificationId });
+
+      if (isMobile) {
+        dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: true });
+      }
+    }
+  }, [notificationId]);
 
   const usePrevious = value => {
     const ref = useRef();
