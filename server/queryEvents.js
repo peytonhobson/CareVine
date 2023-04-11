@@ -13,7 +13,11 @@ module.exports = queryEvents = () => {
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
-  const { approveListingNotification, closeListing } = require('./queryEvents.helpers');
+  const {
+    approveListingNotification,
+    closeListing,
+    updateListingApproveListing,
+  } = require('./queryEvents.helpers');
 
   const apiBaseUrl = () => {
     const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -91,42 +95,13 @@ module.exports = queryEvents = () => {
     const eventType = event.attributes.eventType;
 
     if (eventType === 'listing/updated') {
-      const userId = event?.attributes?.resource?.relationships?.author?.data?.id?.uuid;
-
       const prevListingState = event?.attributes?.previousValues?.attributes?.state;
       const newListingState = event?.attributes?.resource?.attributes?.state;
 
       // Approve listing if they meet requirements when listing is published
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
-        console.log('approve listing');
-        integrationSdk.users
-          .show({
-            id: userId,
-            include: ['stripeAccount'],
-          })
-          .then(res => {
-            const user = res?.data?.data;
-            const metadata = user?.attributes?.profile?.metadata;
-            const openListing =
-              metadata?.userType === CAREGIVER
-                ? metadata?.backgroundCheckSubscription?.status === 'active' &&
-                  user?.attributes?.emailVerified
-                : user?.attributes?.emailVerified;
-            if (openListing) {
-              const listingId = event.attributes.resource.id.uuid;
-
-              return integrationSdk.listings
-                .approve({
-                  id: listingId,
-                })
-                .then(() => {
-                  const userName = user?.attributes?.profile?.displayName;
-                  approveListingNotification(userId, userName, listingId);
-                })
-                .catch(err => log.error(err, 'listing-approve-failed'));
-            }
-          })
-          .catch(err => log.error(err, 'listing-approve-show-user-failed'));
+        console.log('approve listing listing update');
+        updateListingApproveListing(event);
       }
     }
 
