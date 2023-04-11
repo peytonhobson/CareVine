@@ -9,7 +9,7 @@ import {
   identityProofQuizVerification,
   submitConsentAuthenticate,
   updateUserAuthenticate,
-  updateUserMetadata,
+  updateUser,
   applyPromo,
   sendgridStandardEmail,
 } from '../util/api';
@@ -398,7 +398,7 @@ export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
       });
     })
     .then(() => {
-      return updateUserMetadata({
+      return updateUser({
         userId,
         metadata: {
           backgroundCheckApproved: {
@@ -542,7 +542,7 @@ export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, 
     })
     .then(() => {
       const newDate = new Date();
-      return updateUserMetadata({
+      return updateUser({
         userId,
         metadata: {
           backgroundCheckApproved: {
@@ -587,7 +587,7 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
       const newDate = new Date();
       const { Candidate } = result.result.Candidates;
 
-      return updateUserMetadata({
+      return updateUser({
         userId,
         metadata: {
           backgroundCheckApproved: {
@@ -630,7 +630,7 @@ export const applyBCPromo = (promoCode, userId) => (dispatch, getState, sdk) => 
         date: new Date().getTime(),
       };
 
-      return updateUserMetadata({
+      return updateUser({
         userId,
         metadata: {
           backgroundCheckPromo: result,

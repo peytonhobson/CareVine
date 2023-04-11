@@ -7,32 +7,25 @@ import { FormattedMessage } from '../../util/reactIntl';
 import css from './StripePaymentModal.module.css';
 import classNames from 'classnames';
 
-const checkIfNotifiedInLastDay = messages => {
-  let withinADay = false;
+const checkIfNotifiedInLastDay = (currentUser, otherUserId) => {
+  const sentNotificationsForPayment =
+    currentUser.attributes.profile.privateData?.sentNotificationsForPayment || [];
 
-  messages &&
-    messages
-      .filter(message => {
-        return message.customType === 'NOTIFY_FOR_PAYMENT';
-      })
-      .forEach(message => {
-        if (new Date(message.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)) {
-          withinADay = true;
-        }
-      });
-  return withinADay;
+  const withinLastDay =
+    sentNotificationsForPayment.find(notification => notification.userId === otherUserId)
+      ?.createdAt >
+    Date.now() - 24 * 60 * 60 * 1000;
+
+  return withinLastDay;
 };
 
 const NotifyForPaymentContainer = props => {
   const {
-    channelContext,
-    channelUrl,
     currentUser,
     intl,
     onSendNotifyForPayment,
     provider,
     providerListing,
-    sendbirdContext,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
   } = props;
@@ -40,17 +33,10 @@ const NotifyForPaymentContainer = props => {
   const providerName = userDisplayNameAsString(provider);
 
   const handleNotifyForPayment = () => {
-    const currentUserId = currentUser.id && currentUser.id.uuid;
-    onSendNotifyForPayment(
-      currentUserId,
-      providerName,
-      channelUrl,
-      sendbirdContext,
-      providerListing
-    );
+    onSendNotifyForPayment(currentUser, provider, providerListing);
   };
 
-  const notifiedInLastDay = checkIfNotifiedInLastDay(channelContext.allMessages);
+  const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, provider.id.uuid);
 
   const notifyButtonDisabled =
     !currentUser ||

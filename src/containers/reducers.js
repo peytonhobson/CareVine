@@ -24,6 +24,7 @@ import SubscriptionsPage from './SubscriptionsPage/SubscriptionsPage.duck';
 import TopbarContainer from './TopbarContainer/TopbarContainer.duck';
 import TransactionPage from './TransactionPage/TransactionPage.duck';
 import UserTypePage from './UserTypePage/UserTypePage.duck';
+import NotificationsPage from './NotificationsPage/NotificationsPage.duck';
 
 export {
   CheckoutPage,
@@ -47,4 +48,5 @@ export {
   TopbarContainer,
   TransactionPage,
   UserTypePage,
+  NotificationsPage,
 };

@@ -15,6 +15,7 @@ export { default as IconAdd } from './IconAdd/IconAdd';
 export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
 export { default as IconBank } from './IconBank/IconBank';
 export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
+export { default as IconBell } from './IconBell/IconBell';
 export { default as IconCalendar } from './IconCalendar/IconCalendar'
 export { default as IconCar } from './IconCar/IconCar';
 export { default as IconCard } from './IconCard/IconCard';
@@ -40,6 +41,7 @@ export { default as IconSocialMediaTwitter } from './IconSocialMediaTwitter/Icon
 export { default as IconSpinner } from './IconSpinner/IconSpinner';
 export { default as IconSuccess } from './IconSuccess/IconSuccess';
 export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
+export { default as IconVerticalDots } from './IconVerticalDots/IconVerticalDots';
 
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
@@ -152,7 +154,6 @@ export { default as DistanceFilter } from './DistanceFilter/DistanceFilter';
 export { default as EmployerListingCard } from './EmployerListingCard/EmployerListingCard';
 export { default as FilterPlain } from './FilterPlain/FilterPlain';
 export { default as FilterPopup } from './FilterPopup/FilterPopup';
-export { default as InboxItem } from './InboxItem/InboxItem';
 export { default as KeywordFilter } from './KeywordFilter/KeywordFilter';
 export { default as ListingCard } from './ListingCard/ListingCard';
 export { default as ListingPreview } from './ListingPreview/ListingPreview';
@@ -216,9 +217,7 @@ export { default as ListingBioPanel } from './ListingBioPanel/ListingBioPanel';
 export { default as ListingRecommendationsPanel } from './ListingRecommendationsPanel/ListingRecommendationsPanel';
 export { default as ListingServicesPanel } from './ListingServicesPanel/ListingServicesPanel';
 export { default as ListingSummary } from './ListingSummary/ListingSummary';
-export { default as MessagesInboxSideList } from './InboxSideLists/MessagesInboxSideList';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
-export { default as NotificationsInboxSideList } from './InboxSideLists/NotificationsInboxSideList';
 export { default as PrivacyPolicy } from './PrivacyPolicy/PrivacyPolicy';
 export { default as ReviewModal } from './ReviewModal/ReviewModal';
 export { default as SectionHero } from './SectionHero/SectionHero';

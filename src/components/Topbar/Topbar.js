@@ -21,6 +21,7 @@ import {
   TopbarMobileMenu,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
+import { ensureCurrentUser } from '../../util/data';
 
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
@@ -86,10 +87,12 @@ class TopbarComponent extends Component {
     const { currentUser } = this.props;
     const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
 
-    if (sbAccessToken) {
+    if (sbAccessToken && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
-      this.unreadMessagePolling = setInterval(() => {
+      this.props.onFetchCurrentUser();
+      this.pollingInterval = setInterval(() => {
         this.props.onFetchUnreadMessages();
+        this.props.onFetchCurrentUser();
       }, 10000);
     }
   }
@@ -97,16 +100,18 @@ class TopbarComponent extends Component {
   componentDidUpdate(prevProps) {
     const sbAccessToken = this.props.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
 
-    if (sbAccessToken && !this.unreadMessagePolling) {
+    if (sbAccessToken && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
-      this.unreadMessagePolling = setInterval(() => {
+      this.props.onFetchCurrentUser();
+      this.pollingInterval = setInterval(() => {
         this.props.onFetchUnreadMessages();
+        this.props.onFetchCurrentUser();
       }, 10000);
     }
   }
 
   componentWillUnmount() {
-    clearInterval(this.unreadMessagePolling);
+    clearInterval(this.pollingInterval);
   }
 
   handleMobileMenuOpen() {
@@ -175,7 +180,6 @@ class TopbarComponent extends Component {
       currentUserListingFetched,
       currentUserHasOrders,
       currentPage,
-      notificationCount,
       viewport,
       intl,
       location,
@@ -194,7 +198,15 @@ class TopbarComponent extends Component {
       latlngBounds: ['bounds'],
     });
 
-    const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
+    const ensuredCurrentUser = ensureCurrentUser(currentUser);
+    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.filter(
+      notification => !notification.isRead
+    )?.length;
+
+    const notificationDot =
+      unreadMessages > 0 || unreadNotificationCount > 0 ? (
+        <div className={css.notificationDot} />
+      ) : null;
 
     const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
     const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
@@ -208,10 +220,10 @@ class TopbarComponent extends Component {
         currentUserListingFetched={currentUserListingFetched}
         currentUser={currentUser}
         onLogout={this.handleLogout}
-        notificationCount={notificationCount}
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
         unreadMessages={unreadMessages}
+        unreadNotificationCount={unreadNotificationCount}
       />
     );
 
@@ -279,11 +291,11 @@ class TopbarComponent extends Component {
               initialSearchFormValues={initialSearchFormValues}
               intl={intl}
               isAuthenticated={isAuthenticated}
-              notificationCount={notificationCount}
               onLogout={this.handleLogout}
               onSearchSubmit={this.handleSubmit}
               onChangeModalValue={onChangeModalValue}
               unreadMessages={unreadMessages}
+              unreadNotificationCount={unreadNotificationCount}
             />
           </div>
         )}
@@ -296,25 +308,6 @@ class TopbarComponent extends Component {
         >
           {authInProgress ? null : mobileMenu}
         </Modal>
-        {/* <Modal
-          id="TopbarMobileSearch"
-          containerClassName={css.modalContainer}
-          isOpen={isMobileSearchOpen}
-          onClose={this.handleMobileSearchClose}
-          usePortal
-          onManageDisableScrolling={onManageDisableScrolling}
-        >
-          <div className={css.searchContainer}>
-            <TopbarSearchForm
-              onSubmit={this.handleSubmit}
-              initialValues={initialSearchFormValues}
-              isMobile
-            />
-            <p className={css.mobileHelp}>
-              <FormattedMessage id="Topbar.mobileSearchHelp" />
-            </p>
-          </div>
-        </Modal> */}
         <ModalMissingInformation
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}

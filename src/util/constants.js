@@ -59,3 +59,11 @@ export const timeOrderMap = new Map([
 export const BACKGROUND_CHECK_APPROVED = 'approved';
 export const BACKGROUND_CHECK_REJECTED = 'rejected';
 export const BACKGROUND_CHECK_PENDING = 'pending';
+
+// Notification types
+export const NOTIFICATION_TYPE_PAYMENT_RECEIVED = 'paymentReceived';
+export const NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT = 'notifyForPayment';
+export const NOTIFICATION_TYPE_PAYMENT_REQUESTED = 'paymentRequested';
+export const NOTIFICATION_TYPE_LISTING_OPENED = 'listingOpened';
+export const NOTIFICATION_TYPE_LISTING_REMOVED = 'listingRemoved';
+export const NOTIFICATION_TYPE_NEW_MESSAGE = 'newMessage';

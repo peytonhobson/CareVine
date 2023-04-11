@@ -33,6 +33,7 @@ const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "Subscripti
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
 const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
+const NotificationsPage = loadable(() => import(/* webpackChunkName: "NotificationsPage" */ './containers/NotificationsPage/NotificationsPage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -169,6 +170,14 @@ const routeConfiguration = () => {
       loadData: params =>
         pageDataLoadingAPI.TransactionPage.loadData({ ...params, transactionRole: 'customer' }),
       setInitialValues: pageDataLoadingAPI.TransactionPage.setInitialValues,
+    },
+    {
+      path: '/notifications',
+      name: 'NotificationsPage',
+      auth: true,
+      authPage: 'LoginPage',
+      component: NotificationsPage,
+      loadData: pageDataLoadingAPI.NotificationsPage.loadData,
     },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
