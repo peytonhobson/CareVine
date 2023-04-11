@@ -11,9 +11,8 @@ const NotificationListingRemoved = props => {
     <div className={css.root}>
       <h1 className={css.title}>Listing Removed</h1>
       <p className={css.message}>
-        Your CareVine listing has been removed and is no longer active. To navigate to the
-        subscriptions page and reactivate your subscription to be listed on the CareVine
-        marketplace, click on the reactivate button below.
+        Your CareVine listing has been removed and is no longer active. To reactivate your
+        subscription to be listed on the CareVine marketplace, click on the reactivate button below.
       </p>
       <NamedLink name="SubscriptionsPage" className={css.linkButton}>
         Reactivate
