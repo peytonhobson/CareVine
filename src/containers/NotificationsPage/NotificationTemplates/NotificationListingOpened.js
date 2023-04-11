@@ -18,7 +18,10 @@ const NotificationListingOpened = props => {
       <NamedLink
         className={css.linkButton}
         name="ListingPage"
-        params={{ slug: createSlug(userDisplayNameAsString(currentUser)), id: listing.id.uuid }}
+        params={{
+          slug: createSlug(userDisplayNameAsString(currentUser)),
+          id: listing?.id.uuid ?? 'string',
+        }}
       >
         <span>View Listing</span>
       </NamedLink>

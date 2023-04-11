@@ -145,7 +145,7 @@ const TopbarMobileMenu = props => {
       name="NotificationsPage"
     >
       <span className={css.bell}>
-        <IconBell height="2rem" width="2rem" />
+        <IconBell height="2.5em" width="2.5em" />
         {unreadNotificationCountBadge}
       </span>
     </NamedLink>

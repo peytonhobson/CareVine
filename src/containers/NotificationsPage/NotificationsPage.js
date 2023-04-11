@@ -69,7 +69,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         notifications: action.payload,
-        activeNotification: action.payload.length > 0 ? action.payload[0] : null,
+        activeNotification: state.notifications.find(n => n.id === state.activeNotification.id)
+          ? state.activeNotification
+          : action.payload.length > 0
+          ? action.payload[0]
+          : null,
       };
     case SET_CURRENT_USER_INITIAL_FETCHED:
       return { ...state, currentUserInitialFetched: true };

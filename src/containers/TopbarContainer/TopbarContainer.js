@@ -11,7 +11,8 @@ import {
 } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/Auth.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
-import { changeModalValue, fetchUnreadMessages } from './TopbarContainer.duck';
+import { changeModalValue } from './TopbarContainer.duck';
+import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
 import { Topbar } from '../../components';
 
 export const TopbarContainerComponent = props => {
@@ -114,7 +115,9 @@ const mapStateToProps = state => {
   // Topbar needs isAuthenticated
   const { isAuthenticated, logoutError, authScopes } = state.Auth;
 
-  const { modalValue, unreadMessages } = state.TopbarContainer;
+  const { modalValue } = state.TopbarContainer;
+
+  const { unreadMessages } = state.sendbird;
 
   // Topbar needs user info.
   const {

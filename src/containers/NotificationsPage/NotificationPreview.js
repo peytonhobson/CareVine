@@ -134,8 +134,8 @@ const NotificationPreview = props => {
       <div className={css.previewHoverLine} />
       <div className={css.notificationPreviewContent}>
         <div className={css.notificationPreviewUpper}>
-          <div className={css.notificationTitle}>{title}</div>
           {notificationDot}
+          <div className={css.notificationTitle}>{title}</div>
           <div className={css.notificationDate}>{formatPreviewDate(createdAt)}</div>
         </div>
         <div className={css.notificationPreviewLower}>
@@ -149,8 +149,8 @@ const NotificationPreview = props => {
           }}
         >
           <IconVerticalDots
-            height={isMobile ? '1.5rem' : '0.75rem'}
-            width={isMobile ? '1.75rem' : '1rem'}
+            height={isMobile ? '1.5em' : '0.75em'}
+            width={isMobile ? '1.75em' : '1em'}
             className={css.menuIcon}
           />
         </div>
