@@ -17,6 +17,7 @@ module.exports = queryEvents = () => {
     approveListingNotification,
     closeListing,
     updateListingApproveListing,
+    updateUserListingApproved,
   } = require('./queryEvents.helpers');
 
   const apiBaseUrl = () => {
@@ -131,45 +132,8 @@ module.exports = queryEvents = () => {
 
       // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
-        const userId = event?.attributes?.resource?.id?.uuid;
-
-        let listingState = null;
-
         console.log('approve listing 2');
-        integrationSdk.listings
-          .query({
-            authorId: userId,
-          })
-          .then(res => {
-            const userListingId = res.data.data[0].id.uuid;
-            listingState = res.data.data[0].attributes.state;
-            const displayName = event.attributes.resource.attributes.profile.displayName;
-
-            if (listingState === 'pendingApproval') {
-              return integrationSdk.listings
-                .approve({
-                  id: userListingId,
-                })
-                .then(() => {
-                  approveListingNotification(userId, displayName, userListingId);
-                })
-                .catch(err => log.error(err, 'listing-approved-failed'));
-            }
-
-            if (listingState === 'closed') {
-              return integrationSdk.listings
-                .open({
-                  id: userListingId,
-                })
-                .then(() => {
-                  approveListingNotification(userId, displayName, userListingId);
-                })
-                .catch(err => log.error(err, 'listing-open-failed'));
-            }
-          })
-          .catch(err => {
-            log.error(err, 'listing-approved-failed');
-          });
+        updateUserListingApproved(event);
       }
 
       const tcmEnrolled = privateData?.tcmEnrolled;

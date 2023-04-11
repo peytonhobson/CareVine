@@ -235,7 +235,41 @@ const updateListingApproveListing = async event => {
   }
 };
 
+const updateUserListingApproved = async event => {
+  let listingState = null;
+  const userId = event.attributes.resource.id?.uuid;
+
+  try {
+    const res = await integrationSdk.listings.query({
+      authorId: userId,
+    });
+
+    const userListingId = res.data.data[0].id.uuid;
+    listingState = res.data.data[0].attributes.state;
+    const displayName = event.attributes.resource.attributes.profile.displayName;
+
+    if (listingState === 'pendingApproval') {
+      await integrationSdk.listings.approve({
+        id: userListingId,
+      });
+
+      approveListingNotification(userId, displayName, userListingId);
+    }
+
+    if (listingState === 'closed') {
+      await integrationSdk.listings.open({
+        id: userListingId,
+      });
+
+      approveListingNotification(userId, displayName, userListingId);
+    }
+  } catch (e) {
+    log.error(e, 'user-update-approved-failed', {});
+  }
+};
+
 module.exports = {
+  updateUserListingApproved,
   approveListingNotification,
   closeListing,
   updateListingApproveListing,
