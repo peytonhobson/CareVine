@@ -88,11 +88,11 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = (userId, userName, listingId) => {
+const approveListingNotification = async (userId, userName, listingId) => {
   try {
     const urlParams = `/l/${createSlug(userName)}/${listingId}`;
 
-    axios.post(
+    await axios.post(
       `${apiBaseUrl()}/api/sendgrid-template-email`,
       {
         receiverId: userId,
@@ -118,7 +118,7 @@ const approveListingNotification = (userId, userName, listingId) => {
   };
 
   try {
-    axios.post(
+    await axios.post(
       `${apiBaseUrl()}/api/update-user-notifications`,
       {
         userId,
@@ -160,7 +160,7 @@ const closeListing = async userId => {
     }
 
     try {
-      axios.post(
+      await axios.post(
         `${apiBaseUrl()}/api/sendgrid-template-email`,
         {
           receiverId: userId,
@@ -186,7 +186,7 @@ const closeListing = async userId => {
         metadata: {},
       };
 
-      axios.post(
+      await axios.post(
         `${apiBaseUrl()}/api/update-user-notifications`,
         {
           userId,
@@ -268,9 +268,83 @@ const updateUserListingApproved = async event => {
   }
 };
 
+const enrollUserTCM = async (event, userAccessCode) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
+      {
+        userAccessCode,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+
+    const userId = event?.attributes?.resource?.id?.uuid;
+    await integrationSdk.users.updateProfile({
+      id: userId,
+      privateData: {
+        tcmEnrolled: true,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'user-enroll-tcm-failed', {});
+  }
+};
+
+const deEnrollUserTCM = async (event, userAccessCode) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
+      {
+        userAccessCode,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+
+    const userId = event.attributes.resource.id.uuid;
+    await integrationSdk.users.updateProfile({
+      id: userId,
+      privateData: {
+        tcmEnrolled: false,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'user-deenroll-tcm-failed', {});
+  }
+};
+
+const cancelSubscription = async backgroundCheckSubscription => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/stripe-update-subscription`,
+      {
+        subscriptionId: backgroundCheckSubscription.subscriptionId,
+        params: { cancel_at_period_end: true },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'stripe-update-subscription-failed');
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
   closeListing,
   updateListingApproveListing,
+  enrollUserTCM,
+  deEnrollUserTCM,
+  cancelSubscription,
 };
