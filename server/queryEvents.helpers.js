@@ -88,11 +88,11 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = (userId, userName, listingId) => {
+const approveListingNotification = async (userId, userName, listingId) => {
   try {
     const urlParams = `/l/${createSlug(userName)}/${listingId}`;
 
-    axios.post(
+    await axios.post(
       `${apiBaseUrl()}/api/sendgrid-template-email`,
       {
         receiverId: userId,
@@ -118,7 +118,7 @@ const approveListingNotification = (userId, userName, listingId) => {
   };
 
   try {
-    axios.post(
+    await axios.post(
       `${apiBaseUrl()}/api/update-user-notifications`,
       {
         userId,
@@ -160,7 +160,7 @@ const closeListing = async userId => {
     }
 
     try {
-      axios.post(
+      await axios.post(
         `${apiBaseUrl()}/api/sendgrid-template-email`,
         {
           receiverId: userId,
@@ -186,7 +186,7 @@ const closeListing = async userId => {
         metadata: {},
       };
 
-      axios.post(
+      await axios.post(
         `${apiBaseUrl()}/api/update-user-notifications`,
         {
           userId,
@@ -204,7 +204,233 @@ const closeListing = async userId => {
   }
 };
 
+const updateListingApproveListing = async event => {
+  const userId = event.attributes.resource.relationships?.author?.data?.id?.uuid;
+
+  try {
+    const res = await integrationSdk.users.show({
+      id: userId,
+      include: ['stripeAccount'],
+    });
+
+    const user = res?.data?.data;
+    const metadata = user?.attributes?.profile?.metadata;
+    const openListing =
+      metadata?.userType === CAREGIVER
+        ? metadata?.backgroundCheckSubscription?.status === 'active' &&
+          user?.attributes?.emailVerified
+        : user?.attributes?.emailVerified;
+    if (openListing) {
+      const listingId = event.attributes.resource.id.uuid;
+
+      await integrationSdk.listings.approve({
+        id: listingId,
+      });
+
+      const userName = user?.attributes?.profile?.displayName;
+      approveListingNotification(userId, userName, listingId);
+    }
+  } catch (e) {
+    log.error(e, 'listing-update-approved-failed', {});
+  }
+};
+
+const updateUserListingApproved = async event => {
+  let listingState = null;
+  const userId = event.attributes.resource.id?.uuid;
+
+  try {
+    const res = await integrationSdk.listings.query({
+      authorId: userId,
+    });
+
+    const userListingId = res.data.data[0].id.uuid;
+    listingState = res.data.data[0].attributes.state;
+    const displayName = event.attributes.resource.attributes.profile.displayName;
+
+    if (listingState === 'pendingApproval') {
+      await integrationSdk.listings.approve({
+        id: userListingId,
+      });
+
+      approveListingNotification(userId, displayName, userListingId);
+    }
+
+    if (listingState === 'closed') {
+      await integrationSdk.listings.open({
+        id: userListingId,
+      });
+
+      approveListingNotification(userId, displayName, userListingId);
+    }
+  } catch (e) {
+    log.error(e, 'user-update-approved-failed', {});
+  }
+};
+
+const enrollUserTCM = async (event, userAccessCode) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
+      {
+        userAccessCode,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+
+    const userId = event?.attributes?.resource?.id?.uuid;
+    await integrationSdk.users.updateProfile({
+      id: userId,
+      privateData: {
+        tcmEnrolled: true,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'user-enroll-tcm-failed', {});
+  }
+};
+
+const deEnrollUserTCM = async (event, userAccessCode) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
+      {
+        userAccessCode,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+
+    const userId = event.attributes.resource.id.uuid;
+    await integrationSdk.users.updateProfile({
+      id: userId,
+      privateData: {
+        tcmEnrolled: false,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'user-deenroll-tcm-failed', {});
+  }
+};
+
+const cancelSubscription = async backgroundCheckSubscription => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/stripe-update-subscription`,
+      {
+        subscriptionId: backgroundCheckSubscription.subscriptionId,
+        params: { cancel_at_period_end: true },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'stripe-update-subscription-failed');
+  }
+};
+
+const backgroundCheckApprovedNotification = async userId => {
+  try {
+    const res = integrationSdk.listings.query({ authorId: userId });
+
+    const listing = res?.data?.data?.length > 0 && res.data.data[0];
+
+    const listingId = listing?.id?.uuid;
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: userId,
+        templateName: 'background-check-approved',
+        templateData: {
+          marketplaceUrl: rootUrl,
+          listingId: listingId,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'bc-approved-email-failed', {});
+  }
+};
+
+const backgroundCheckRejectedNotification = async userId => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: userId,
+        templateName: 'background-check-rejected',
+        templateData: { marketplaceUrl: rootUrl },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'send-bc-rejected-email-failed', {});
+  }
+};
+
+const deleteUserChannels = async userId => {
+  try {
+    const apiResponse = await axios.get(
+      `https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`,
+      {
+        headers: {
+          'Content-Type': 'application/json; charset=utf8',
+          'Api-Token': SB_API_TOKEN,
+        },
+      }
+    );
+    const channels = apiResponse?.data?.channels;
+
+    if (channels?.length > 0) {
+      channels.forEach(async channel => {
+        try {
+          await axios.delete(
+            `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
+            {
+              headers: {
+                'Content-Type': 'application/json; charset=utf8',
+                'Api-Token': SB_API_TOKEN,
+              },
+            }
+          );
+        } catch (e) {
+          log.error(e, 'delete-user-channel-failed', {});
+        }
+      });
+    }
+  } catch (e) {
+    log.error(e, 'delete-user-channels-failed', {});
+  }
+};
+
 module.exports = {
+  updateUserListingApproved,
   approveListingNotification,
   closeListing,
+  updateListingApproveListing,
+  enrollUserTCM,
+  deEnrollUserTCM,
+  cancelSubscription,
+  backgroundCheckRejectedNotification,
+  backgroundCheckApprovedNotification,
+  deleteUserChannels,
 };

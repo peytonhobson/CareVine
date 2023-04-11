@@ -13,20 +13,17 @@ module.exports = queryEvents = () => {
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
-  const { approveListingNotification, closeListing } = require('./queryEvents.helpers');
-
-  const apiBaseUrl = () => {
-    const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
-    const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
-
-    // In development, the dev API server is running in a different port
-    if (useDevApiServer) {
-      return `http://localhost:${port}`;
-    }
-
-    // Otherwise, use the same domain and port as the frontend
-    return process.env.REACT_APP_CANONICAL_ROOT_URL;
-  };
+  const {
+    closeListing,
+    updateListingApproveListing,
+    updateUserListingApproved,
+    enrollUserTCM,
+    deEnrollUserTCM,
+    cancelSubscription,
+    backgroundCheckApprovedNotification,
+    deleteUserChannels,
+    backgroundCheckRejectedNotification,
+  } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
     // These two env vars need to be set in the `.env` file.
@@ -91,42 +88,13 @@ module.exports = queryEvents = () => {
     const eventType = event.attributes.eventType;
 
     if (eventType === 'listing/updated') {
-      const userId = event?.attributes?.resource?.relationships?.author?.data?.id?.uuid;
-
       const prevListingState = event?.attributes?.previousValues?.attributes?.state;
       const newListingState = event?.attributes?.resource?.attributes?.state;
 
       // Approve listing if they meet requirements when listing is published
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
-        console.log('approve listing');
-        integrationSdk.users
-          .show({
-            id: userId,
-            include: ['stripeAccount'],
-          })
-          .then(res => {
-            const user = res?.data?.data;
-            const metadata = user?.attributes?.profile?.metadata;
-            const openListing =
-              metadata?.userType === CAREGIVER
-                ? metadata?.backgroundCheckSubscription?.status === 'active' &&
-                  user?.attributes?.emailVerified
-                : user?.attributes?.emailVerified;
-            if (openListing) {
-              const listingId = event.attributes.resource.id.uuid;
-
-              return integrationSdk.listings
-                .approve({
-                  id: listingId,
-                })
-                .then(() => {
-                  const userName = user?.attributes?.profile?.displayName;
-                  approveListingNotification(userId, userName, listingId);
-                })
-                .catch(err => log.error(err, 'listing-approve-failed'));
-            }
-          })
-          .catch(err => log.error(err, 'listing-approve-show-user-failed'));
+        console.log('approve listing listing update');
+        updateListingApproveListing(event);
       }
     }
 
@@ -156,45 +124,8 @@ module.exports = queryEvents = () => {
 
       // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
-        const userId = event?.attributes?.resource?.id?.uuid;
-
-        let listingState = null;
-
         console.log('approve listing 2');
-        integrationSdk.listings
-          .query({
-            authorId: userId,
-          })
-          .then(res => {
-            const userListingId = res.data.data[0].id.uuid;
-            listingState = res.data.data[0].attributes.state;
-            const displayName = event.attributes.resource.attributes.profile.displayName;
-
-            if (listingState === 'pendingApproval') {
-              return integrationSdk.listings
-                .approve({
-                  id: userListingId,
-                })
-                .then(() => {
-                  approveListingNotification(userId, displayName, userListingId);
-                })
-                .catch(err => log.error(err, 'listing-approved-failed'));
-            }
-
-            if (listingState === 'closed') {
-              return integrationSdk.listings
-                .open({
-                  id: userListingId,
-                })
-                .then(() => {
-                  approveListingNotification(userId, displayName, userListingId);
-                })
-                .catch(err => log.error(err, 'listing-open-failed'));
-            }
-          })
-          .catch(err => {
-            log.error(err, 'listing-approved-failed');
-          });
+        updateUserListingApproved(event);
       }
 
       const tcmEnrolled = privateData?.tcmEnrolled;
@@ -209,28 +140,7 @@ module.exports = queryEvents = () => {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
         console.log('enroll tcm');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
-            {
-              userAccessCode,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .then(() => {
-            const userId = event?.attributes?.resource?.id?.uuid;
-            integrationSdk.users.updateProfile({
-              id: userId,
-              privateData: {
-                tcmEnrolled: true,
-              },
-            });
-          })
-          .catch(err => log.error(err));
+        enrollUserTCM(event, userAccessCode);
       }
 
       if (
@@ -242,28 +152,7 @@ module.exports = queryEvents = () => {
         const userAccessCode = privateData?.authenticateUserAccessCode;
 
         console.log('deenroll tcm');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
-            {
-              userAccessCode,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .then(() => {
-            const userId = event.attributes.resource.id.uuid;
-            integrationSdk.users.updateProfile({
-              id: userId,
-              privateData: {
-                tcmEnrolled: false,
-              },
-            });
-          })
-          .catch(err => log.error(err, 'tcm-deenroll-failed'));
+        deEnrollUserTCM(event, userAccessCode);
       }
       const prevBackgroundCheckApprovedStatus =
         previousValuesProfile?.metadata?.backgroundCheckApproved?.status;
@@ -280,20 +169,7 @@ module.exports = queryEvents = () => {
         backgroundCheckSubscription?.status === 'active'
       ) {
         console.log('cancel subscription');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/stripe-update-subscription`,
-            {
-              subscriptionId: backgroundCheckSubscription?.subscriptionId,
-              params: { cancel_at_period_end: true },
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .catch(e => log.error(e, 'stripe-update-subscription-failed'));
+        cancelSubscription(backgroundCheckSubscription);
       }
 
       const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
@@ -317,32 +193,7 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
-        integrationSdk.listings
-          .query({ authorId: userId })
-          .then(res => {
-            const listing = res?.data?.data?.length > 0 && res.data.data[0];
-
-            const listingId = listing?.id?.uuid;
-            axios
-              .post(
-                `${apiBaseUrl()}/api/sendgrid-template-email`,
-                {
-                  receiverId: userId,
-                  templateName: 'background-check-approved',
-                  templateData: {
-                    marketplaceUrl: rootUrl,
-                    listingId: listingId,
-                  },
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/transit+json',
-                  },
-                }
-              )
-              .catch(e => log.error(e, 'send-bc-approved-email-failed', {}));
-          })
-          .catch(e => log.error(e, 'bc-approved-listing-query-failed', {}));
+        backgroundCheckApprovedNotification(userId);
       }
 
       if (
@@ -351,24 +202,7 @@ module.exports = queryEvents = () => {
         prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
-
-        // TODO: test this with error handling
-        // TODO: Change template data to match template
-        axios
-          .post(
-            `${apiBaseUrl()}/api/sendgrid-template-email`,
-            {
-              receiverId: userId,
-              templateName: 'background-check-rejected',
-              templateData: { marketplaceUrl: rootUrl },
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .catch(e => log.error(e, 'send-bc-rejected-email-failed', {}));
+        backgroundCheckRejectedNotification(userId);
       }
     }
 
@@ -378,31 +212,7 @@ module.exports = queryEvents = () => {
       const userId = previousValues?.id?.uuid;
 
       console.log('delete user channels');
-      axios
-        .get(`https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`, {
-          headers: {
-            'Content-Type': 'application/json; charset=utf8',
-            'Api-Token': SB_API_TOKEN,
-          },
-        })
-        .then(apiResponse => {
-          const channels = apiResponse?.data?.channels;
-
-          if (channels?.length > 0) {
-            channels.forEach(channel => {
-              axios.delete(
-                `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json; charset=utf8',
-                    'Api-Token': SB_API_TOKEN,
-                  },
-                }
-              );
-            });
-          }
-        })
-        .catch(e => log.error(e.data));
+      deleteUserChannels(userId);
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);
