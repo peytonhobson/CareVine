@@ -179,6 +179,14 @@ const routeConfiguration = () => {
       component: NotificationsPage,
       loadData: pageDataLoadingAPI.NotificationsPage.loadData,
     },
+    {
+      path: '/notifications/:notificationId',
+      name: 'NotificationsPageSelected',
+      auth: true,
+      authPage: 'LoginPage',
+      component: NotificationsPage,
+      loadData: pageDataLoadingAPI.NotificationsPage.loadData,
+    },
 
     // Note: authenticating with IdP (e.g. Facebook) expects that /login path exists
     // so that in the error case users can be redirected back to the LoginPage
