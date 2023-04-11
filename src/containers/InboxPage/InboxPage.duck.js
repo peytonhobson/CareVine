@@ -8,6 +8,11 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
 import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
+import { updateUserNotifications, updateUser } from '../../util/api';
+import { userDisplayNameAsString } from '../../util/data';
+import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
+import { v4 as uuidv4 } from 'uuid';
 
 // ================ Action types ================ //
 
@@ -249,7 +254,8 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
   };
   const sb = SendbirdChat.init(params);
 
-  sb.connect(currentUserId, accessToken)
+  return sb
+    .connect(currentUserId, accessToken)
     .then(() => {
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const members = channel.members;
@@ -332,44 +338,57 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId, accessToken) 
 };
 
 export const sendRequestForPayment = (
-  currentUserId,
-  customerName,
+  currentUser,
   channelUrl,
-  sendbirdContext,
-  otherUserListing
-) => (dispatch, getState, sdk) => {
+  otherUserListing,
+  otherUser
+) => async (dispatch, getState, sdk) => {
   dispatch(sendRequestForPaymentRequest());
 
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
+  const senderName = userDisplayNameAsString(currentUser);
+  const userId = otherUser.id.uuid;
+  const newNotification = {
+    id: uuidv4(),
+    type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata: {
+      senderName,
+      channelUrl,
+      senderId: currentUser.id.uuid,
+    },
   };
 
-  const sb = SendbirdChat.init(params);
-
-  sb.connect(currentUserId)
-    .then(() => {
-      sb.groupChannel.getChannel(channelUrl).then(channel => {
-        const messageParams = {
-          customType: 'REQUEST_FOR_PAYMENT',
-          message: `You requested payment from ${customerName}.`,
-          data: `{"customerName": "${customerName}"}`,
-        };
-
-        channel.sendUserMessage(messageParams).onSucceeded(message => {
-          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
-            message,
-            channel,
-          });
-          dispatch(sendRequestForPaymentSuccess());
-          dispatch(transitionToRequestPayment(otherUserListing, channelUrl));
-        });
-      });
-    })
-    .catch(e => {
-      log.error(e, 'send-request-for-payment-failed');
-      dispatch(sendRequestForPaymentError(e));
+  try {
+    await updateUserNotifications({
+      userId,
+      newNotification,
     });
+
+    const currentTime = new Date().getTime();
+    const oldRequestsForPayment =
+      currentUser.attributes.profile.privateData?.sentRequestsForPayment?.filter(
+        o => o.createdAt > currentTime - 1000 * 60 * 60 * 24
+      ) || [];
+
+    const newSentRequestsForPayment = [
+      ...oldRequestsForPayment,
+      { userId, createdAt: currentTime },
+    ];
+
+    await updateUser({
+      userId: currentUser.id.uuid,
+      privateData: {
+        sentRequestsForPayment: newSentRequestsForPayment,
+      },
+    });
+
+    dispatch(sendRequestForPaymentSuccess());
+    dispatch(transitionToRequestPayment(otherUserListing, channelUrl));
+  } catch (e) {
+    log.error(e, 'send-request-for-payment-failed');
+    dispatch(sendRequestForPaymentError(e));
+  }
 };
 
 export const fetchOtherUsers = (userId, accessToken) => async (dispatch, getState, sdk) => {

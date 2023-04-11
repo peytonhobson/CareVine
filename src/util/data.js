@@ -226,7 +226,12 @@ export const ensureUser = user => {
  * @param {Object} current user entity object, which is to be ensured against null values
  */
 export const ensureCurrentUser = user => {
-  const empty = { id: null, type: 'currentUser', attributes: { profile: {} }, profileImage: {} };
+  const empty = {
+    id: null,
+    type: 'currentUser',
+    attributes: { profile: { publicData: {}, privateData: {}, metadata: {} } },
+    profileImage: {},
+  };
   return { ...empty, ...user };
 };
 

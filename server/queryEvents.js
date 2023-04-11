@@ -13,6 +13,7 @@ module.exports = queryEvents = () => {
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
+  const { approveListingNotification, closeListing } = require('./queryEvents.helpers');
 
   const apiBaseUrl = () => {
     const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -86,24 +87,6 @@ module.exports = queryEvents = () => {
     }
   };
 
-  const approveListingEmail = userId => {
-    axios
-      .post(
-        `${apiBaseUrl()}/api/sendgrid-template-email`,
-        {
-          receiverId: userId,
-          templateName: 'listing-approved',
-          templateData: { marketplaceUrl: rootUrl },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/transit+json',
-          },
-        }
-      )
-      .catch(e => log.error(e, 'approve-listing-email-failed', {}));
-  };
-
   const handleEvent = event => {
     const eventType = event.attributes.eventType;
 
@@ -137,7 +120,7 @@ module.exports = queryEvents = () => {
                   id: listingId,
                 })
                 .then(() => {
-                  approveListingEmail(userId);
+                  approveListingNotification(userId);
                 })
                 .catch(err => log.error(err, 'listing-approve-failed'));
             }
@@ -191,7 +174,7 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
-                  approveListingEmail(userId);
+                  approveListingNotification(userId);
                 })
                 .catch(err => log.error(err, 'listing-approved-failed'));
             }
@@ -202,7 +185,7 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
-                  approveListingEmail(userId);
+                  approveListingNotification(userId);
                 })
                 .catch(err => log.error(err, 'listing-open-failed'));
             }
@@ -322,42 +305,7 @@ module.exports = queryEvents = () => {
         const userId = event?.attributes?.resource?.id?.uuid;
 
         console.log('close listing');
-        integrationSdk.listings
-          .query({ authorId: userId })
-          .then(res => {
-            const listing = res?.data?.data?.length > 0 && res.data.data[0];
-
-            if (listing?.attributes?.state === 'published') {
-              integrationSdk.listings
-                .close(
-                  {
-                    id: listing?.id?.uuid,
-                  },
-                  {
-                    expand: true,
-                  }
-                )
-                .then(() => {
-                  axios
-                    .post(
-                      `${apiBaseUrl()}/api/sendgrid-template-email`,
-                      {
-                        receiverId: userId,
-                        templateName: 'listing-closed',
-                        templateData: { marketplaceUrl: rootUrl },
-                      },
-                      {
-                        headers: {
-                          'Content-Type': 'application/transit+json',
-                        },
-                      }
-                    )
-                    .catch(e => log.error(e, 'listing-closed-email-failed'));
-                })
-                .catch(e => log.error(e, 'listing-closed-failed'));
-            }
-          })
-          .catch(e => log.error(e?.data?.errors));
+        closeListing(userId);
       }
 
       if (

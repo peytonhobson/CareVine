@@ -20,7 +20,6 @@ module.exports = (req, res) => {
   const { promoCode } = req.body;
 
   var file = `promo-codes/promo-codes${isDev && '-test'}.json`;
-  //   console.log('Trying to download file', fileKey);
 
   const s3 = new AWS.S3({
     accessKeyId: process.env.IAM_USER_KEY,
@@ -54,7 +53,6 @@ module.exports = (req, res) => {
 
         return s3.putObject(putOptions, function(err, data) {
           if (err) {
-            console.log('here');
             handleError(err, err.response);
           } else {
             return res

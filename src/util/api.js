@@ -119,16 +119,8 @@ export const createUserWithIdp = body => {
   return post('/api/auth/create-user-with-idp', body);
 };
 
-// Update user metadata
-//
-// This is similar to the `initiatePrivileged` above. It will use the
-// backend for the transition. The backend endpoint will update the
-// values for the selected user.
-//
-// See `server/api/update-user-metadata.js` to see what data should
-// be sent in the body.
-export const updateUserMetadata = body => {
-  return post('/api/update-user-metadata', body);
+export const updateUser = body => {
+  return post('/api/update-user', body);
 };
 
 // Update listing metadata
@@ -288,4 +280,8 @@ export const sendgridStandardEmail = body => {
 
 export const chatGPTGenerateText = body => {
   return post('/api/chat-gpt-generate-text', body);
+};
+
+export const updateUserNotifications = body => {
+  return post('/api/update-user-notifications', body);
 };

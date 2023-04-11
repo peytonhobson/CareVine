@@ -16,6 +16,7 @@ import {
   ListingLink,
   OwnListingLink,
   NotificationBadge,
+  IconBell,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
@@ -37,7 +38,6 @@ const TopbarDesktop = props => {
     currentUserHasListings,
     currentUserListing,
     currentUserListingFetched,
-    notificationCount,
     intl,
     isAuthenticated,
     onLogout,
@@ -45,6 +45,7 @@ const TopbarDesktop = props => {
     initialSearchFormValues,
     onChangeModalValue,
     unreadMessages,
+    unreadNotificationCount,
   } = props;
   const [mounted, setMounted] = useState(false);
 
@@ -79,9 +80,14 @@ const TopbarDesktop = props => {
       </NamedLink>
     ) : null;
 
-  const notificationCountBadge =
+  const unreadMessageCountBadge =
     unreadMessages > 0 ? (
-      <NotificationBadge className={css.notificationBadge} count={unreadMessages} />
+      <NotificationBadge className={css.unreadMessageBadge} count={unreadMessages} />
+    ) : null;
+
+  const unreadNotificationCountBadge =
+    unreadNotificationCount > 0 ? (
+      <NotificationBadge className={css.unreadNotificationBadge} count={unreadNotificationCount} />
     ) : null;
 
   const inboxLink = authenticatedOnClientSide ? (
@@ -93,7 +99,7 @@ const TopbarDesktop = props => {
       >
         <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />
-          {notificationCountBadge}
+          {unreadMessageCountBadge}
         </span>
       </NamedLink>
     ) : (
@@ -103,7 +109,7 @@ const TopbarDesktop = props => {
       >
         <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />
-          {notificationCountBadge}
+          {unreadMessageCountBadge}
         </span>
       </span>
     )
@@ -186,6 +192,18 @@ const TopbarDesktop = props => {
     </NamedLink>
   );
 
+  const notificationsLink = authenticatedOnClientSide ? (
+    <NamedLink
+      className={classNames(css.regularLink, css.notificationsLink)}
+      name="NotificationsPage"
+    >
+      <span className={css.bell}>
+        <IconBell height="1.75em" width="1.75em" />
+        {unreadNotificationCountBadge}
+      </span>
+    </NamedLink>
+  ) : null;
+
   const listingLink =
     authenticatedOnClientSide &&
     currentUserListingFetched &&
@@ -233,6 +251,7 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
+        {notificationsLink}
         {feedbackLink}
       </div>
       {profileMenu}
@@ -250,7 +269,7 @@ TopbarDesktop.defaultProps = {
   className: null,
   currentUser: null,
   currentPage: null,
-  notificationCount: 0,
+  unreadMessageCount: 0,
   initialSearchFormValues: {},
   currentUserListing: null,
   currentUserListingFetched: false,
@@ -266,7 +285,7 @@ TopbarDesktop.propTypes = {
   currentPage: string,
   isAuthenticated: bool.isRequired,
   onLogout: func.isRequired,
-  notificationCount: number,
+  unreadMessageCount: number,
   onSearchSubmit: func.isRequired,
   initialSearchFormValues: object,
   intl: intlShape.isRequired,
