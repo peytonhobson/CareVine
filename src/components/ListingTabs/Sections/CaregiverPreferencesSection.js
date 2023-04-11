@@ -26,7 +26,7 @@ const CaregiverPreferencesSection = forwardRef((props, ref) => {
   const languageOptions = findOptionsForSelectFilter('languagesSpoken', filterConfig);
 
   return (
-    <SectionCard title={caregiverPreferencesTitle}>
+    <SectionCard title={caregiverPreferencesTitle} ref={ref}>
       {idealCaregiverDetails?.trim() !== '' && (
         <>
           <h2 className={classNames(css.subTitle, css.noTopMargin)}>About</h2>

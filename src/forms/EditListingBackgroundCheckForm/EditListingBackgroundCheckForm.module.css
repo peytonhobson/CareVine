@@ -20,10 +20,17 @@
 
 .thirdField {
   width: calc(33% - 24px);
+
+  & > label {
+    white-space: nowrap;
+  }
 }
 
 .secondField {
   width: calc(50% - 24px);
+  & > label {
+    white-space: nowrap;
+  }
 }
 
 .monthYearContainer {

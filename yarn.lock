@@ -2716,7 +2716,7 @@
   resolved "https://registry.yarnpkg.com/@sendbird/chat/-/chat-4.6.0.tgz#b65cac6d351eaee435c744aa5ce4887760b6631c"
   integrity sha512-Q8sfuSgI7NbR950111yasZwycK3vMrqb2IQWKoMN7/AVrDSOSUMDMBR2hfSCHOZaJwz7vtMnj4l9oWY3Sk8zuw==
 
-"@sendbird/uikit-react@^3.3.2":
+"@sendbird/uikit-react@3.4.2":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@sendbird/uikit-react/-/uikit-react-3.4.2.tgz#d37d1916a5d5880a4d318dc6b258fb94411126ba"
   integrity sha512-sw83kk3yudiQ5PAPWibtEnLdetyBzh8S4RHqM9dhcsPg6KEEx8QveaaQlJ3XoPSbk95iJ/63xAnslt9Q75iFkQ==
@@ -11255,6 +11255,14 @@ open@^8.0.9, open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
+openai@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/openai/-/openai-3.2.1.tgz#1fa35bdf979cbde8453b43f2dd3a7d401ee40866"
+  integrity sha512-762C9BNlJPbjjlWZi4WYK9iM2tAVAv0uUp1UmI34vb0CN5T2mjB/qM6RYBmNKMh/dN9fC+bxqPwWJZUTWW052A==
+  dependencies:
+    axios "^0.26.0"
+    form-data "^4.0.0"
+
 optionator@^0.8.1:
   version "0.8.3"
   resolved "https://registry.npmjs.org/optionator/-/optionator-0.8.3.tgz"
@@ -15457,6 +15465,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 v8-compile-cache@^2.0.3:
   version "2.1.1"

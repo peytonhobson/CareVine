@@ -7,12 +7,12 @@
   align-items: center;
   justify-content: center;
 
-  /* Colors */
   background-image: linear-gradient(
     -180deg,
     var(--marketplaceColorLight) 0%,
     var(--marketplaceColor) 100%
   );
+
   color: var(--matterColorLight);
 
   &:hover {
@@ -53,7 +53,7 @@
 }
 
 .mediumAvatar .initials {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: var(--fontWeightSemiBold);
 }
 
@@ -68,11 +68,35 @@
 }
 
 .largeAvatar .initials {
-  font-size: 30px;
+  font-size: 1.875rem;
   font-weight: var(--fontWeightSemiBold);
 }
 
 .bannedUserIcon {
   width: 100%;
   height: 100%;
+}
+
+.linearGradientGreen {
+  background-image: linear-gradient(
+    -180deg,
+    var(--marketplaceColor) 20%,
+    var(--marketplaceColorLight) 100%
+  );
+}
+
+.linearGradientRed {
+  background-image: linear-gradient(-180deg, var(--marketplaceColor) 20%, var(--failColor) 100%);
+}
+
+.linearGradientOrange {
+  background-image: linear-gradient(
+    -180deg,
+    var(--marketplaceColor) 20%,
+    var(--attentionColor) 100%
+  );
+}
+
+.linearGradientPink {
+  background-image: linear-gradient(-180deg, var(--marketplaceColor) 20%, pink 100%);
 }

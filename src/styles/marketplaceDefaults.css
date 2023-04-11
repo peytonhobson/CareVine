@@ -166,7 +166,7 @@
   --ManageAvailabilityCalendar_failedColor: #fff2f2;
 
   /* ================ ProfileSettingsForm ================ */
-  --ProfileSettingsForm_avatarSize: 6rem;
+  --ProfileSettingsForm_avatarSize: 12rem;
   --ProfileSettingsForm_avatarSizeDesktop: 15rem;
 }
 
@@ -1082,7 +1082,7 @@ textarea {
   margin-left: 0.5rem;
 
   /* Move X icon vertically to align it with the close text. */
-  margin-top: 0.188rem;
+  margin-top: 0.1rem;
 
   box-sizing: content-box;
 

@@ -17,9 +17,11 @@ import {
   ImageFromFile,
   FieldCheckbox,
   NamedLink,
+  InlineTextButton,
 } from '../../components';
 
 import css from './EditListingPhotosForm.module.css';
+import { E } from '@sendbird/uikit-react/index-43834bc0';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to load img srcset
@@ -51,7 +53,6 @@ export class EditListingPhotosFormComponent extends Component {
     return (
       <FinalForm
         {...this.props}
-        initialValues={{ profileImage: this.props.profileImage }}
         render={formRenderProps => {
           const {
             form,
@@ -72,6 +73,8 @@ export class EditListingPhotosFormComponent extends Component {
             onProfileImageUpload,
             image,
             isNewListingFlow,
+            onChangeAvatar,
+            selectedAvatar,
           } = formRenderProps;
 
           const { publishListingError, showListingsError, updateListingError, uploadImageError } =
@@ -113,7 +116,12 @@ export class EditListingPhotosFormComponent extends Component {
           const submitReady = ((updated && pristine) || ready) && !publishListingFailed;
           const submitInProgress = updateInProgress;
           const submitDisabled =
-            invalid || disabled || submitInProgress || uploadInProgress || ready || image === null;
+            invalid ||
+            disabled ||
+            submitInProgress ||
+            uploadInProgress ||
+            ready ||
+            (image === null && !selectedAvatar);
 
           const classes = classNames(css.root, className);
 
@@ -182,6 +190,134 @@ export class EditListingPhotosFormComponent extends Component {
               </div>
             );
 
+          const AvatarButton = props => {
+            const { currentUser, name, selectedAvatar, children } = props;
+
+            return (
+              <button
+                className={classNames(css.avatarButton, selectedAvatar === name && css.selected)}
+                type="button"
+                onClick={() => handleChangedAvatar(name)}
+              >
+                {children || (
+                  <Avatar
+                    className={css.defaultAvatar}
+                    user={{
+                      ...currentUser,
+                      profileImage: null,
+                      attributes: {
+                        ...currentUser.attributes,
+                        profile: {
+                          ...currentUser.attributes.profile,
+                          publicData: { avatarLinearGradient: name },
+                        },
+                      },
+                    }}
+                    disableProfileLink
+                  />
+                )}
+              </button>
+            );
+          };
+
+          const DefaultAvatar = props => {
+            const { color, currentUser } = props;
+
+            return (
+              <div className={css.colorAvatarWrapper}>
+                <Avatar
+                  className={css.colorAvatar}
+                  initialsClassName={css.colorAvatarInitials}
+                  user={{
+                    ...currentUser,
+                    profileImage: null,
+                    attributes: {
+                      ...currentUser.attributes,
+                      profile: {
+                        ...currentUser.attributes.profile,
+                        publicData: { avatarLinearGradient: color },
+                      },
+                    },
+                  }}
+                  disableProfileLink
+                />
+              </div>
+            );
+          };
+
+          const handleChangedAvatar = avatarColor => {
+            form.change('selectedAvatar', avatarColor);
+            onChangeAvatar(avatarColor);
+          };
+
+          let mainAvatar = null;
+
+          if (selectedAvatar) {
+            mainAvatar = <DefaultAvatar color={selectedAvatar} currentUser={currentUser} />;
+          } else {
+            mainAvatar = (
+              <Field
+                accept={ACCEPT_IMAGES}
+                id="profileImage"
+                name="profileImage"
+                label={chooseAvatarLabel}
+                type="file"
+                form={null}
+                uploadImageError={uploadImageError}
+                disabled={uploadInProgress}
+              >
+                {fieldProps => {
+                  const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
+                  const { name, type } = input;
+                  const onChange = e => {
+                    const file = e.target.files[0];
+                    form.change(`profileImage`, file);
+                    form.blur(`profileImage`);
+                    if (file != null) {
+                      const tempId = `${file.name}_${Date.now()}`;
+                      onProfileImageUpload({ id: tempId, file });
+                      this.submittedImage = file;
+                    }
+                  };
+
+                  let error = null;
+
+                  if (isUploadImageOverLimitError(uploadImageError)) {
+                    error = (
+                      <div className={css.error}>
+                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
+                      </div>
+                    );
+                  } else if (uploadImageError) {
+                    error = (
+                      <div className={css.error}>
+                        <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className={css.uploadAvatarWrapper}>
+                      <label className={css.label} htmlFor={id}>
+                        {label}
+                      </label>
+                      <input
+                        accept={accept}
+                        id={id}
+                        name={name}
+                        className={css.uploadAvatarInput}
+                        disabled={disabled}
+                        onChange={onChange}
+                        type={type}
+                      />
+                      {error}
+                    </div>
+                  );
+                }}
+              </Field>
+            );
+          }
+
           return (
             <Form
               className={classes}
@@ -194,71 +330,44 @@ export class EditListingPhotosFormComponent extends Component {
                 <h3 className={css.sectionTitle}>
                   <FormattedMessage id="ProfileSettingsForm.yourProfilePicture" />
                 </h3>
-                <Field
-                  accept={ACCEPT_IMAGES}
-                  id="profileImage"
-                  name="profileImage"
-                  label={chooseAvatarLabel}
-                  type="file"
-                  form={null}
-                  uploadImageError={uploadImageError}
-                  disabled={uploadInProgress}
-                >
-                  {fieldProps => {
-                    const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
-                    const { name, type } = input;
-                    const onChange = e => {
-                      const file = e.target.files[0];
-                      form.change(`profileImage`, file);
-                      form.blur(`profileImage`);
-                      if (file != null) {
-                        const tempId = `${file.name}_${Date.now()}`;
-                        onProfileImageUpload({ id: tempId, file });
-                        this.submittedImage = file;
-                      }
-                    };
-
-                    let error = null;
-
-                    if (isUploadImageOverLimitError(uploadImageError)) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailedFileTooLarge" />
-                        </div>
-                      );
-                    } else if (uploadImageError) {
-                      error = (
-                        <div className={css.error}>
-                          <FormattedMessage id="ProfileSettingsForm.imageUploadFailed" />
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className={css.uploadAvatarWrapper}>
-                        <label className={css.label} htmlFor={id}>
-                          {label}
-                        </label>
-                        <input
-                          accept={accept}
-                          id={id}
-                          name={name}
-                          className={css.uploadAvatarInput}
-                          disabled={disabled}
-                          onChange={onChange}
-                          type={type}
-                        />
-                        {error}
-                      </div>
-                    );
-                  }}
-                </Field>
-                <div className={css.tip}>
-                  <FormattedMessage id="ProfileSettingsForm.tip" />
+                <div className={css.avatarsContainer}>
+                  {mainAvatar}
+                  <div className={css.defaultProfiles}>
+                    <AvatarButton currentUser={currentUser} selectedAvatar={selectedAvatar}>
+                      <div className={classNames(css.avatarPlaceholder, css.defaultAvatar)}>+</div>
+                    </AvatarButton>
+                    <AvatarButton
+                      name="green"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="red"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="orange"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                    <AvatarButton
+                      name="pink"
+                      currentUser={currentUser}
+                      selectedAvatar={selectedAvatar}
+                    />
+                  </div>
                 </div>
-                <div className={css.fileInfo}>
-                  <FormattedMessage id="ProfileSettingsForm.fileInfo" />
-                </div>
+                {!selectedAvatar ? (
+                  <>
+                    <div className={css.tip}>
+                      <FormattedMessage id="ProfileSettingsForm.tip" />
+                    </div>
+                    <div className={css.fileInfo}>
+                      <FormattedMessage id="ProfileSettingsForm.fileInfo" />
+                    </div>
+                  </>
+                ) : null}
               </div>
 
               {updateListingError ? (

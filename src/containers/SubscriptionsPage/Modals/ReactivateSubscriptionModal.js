@@ -35,7 +35,7 @@ const ReactivateSubscriptionPaymentModal = props => {
       </p>
       <div className={css.modalButtonContainer}>
         <SecondaryButton onClick={switchPlans} className={css.reactivateModalButton}>
-          Switch to {bcType === VINE ? 'Basic' : 'CareVine Gold'}
+          {bcType === VINE ? 'Switch to Basic' : 'Upgrade to Gold'}
         </SecondaryButton>
         <Button onClick={reactivateSubscription} className={css.reactivateModalButton}>
           Reactivate

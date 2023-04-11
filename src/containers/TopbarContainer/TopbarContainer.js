@@ -4,10 +4,15 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { propTypes } from '../../util/types';
-import { sendVerificationEmail, hasCurrentUserErrors } from '../../ducks/user.duck';
+import {
+  sendVerificationEmail,
+  hasCurrentUserErrors,
+  fetchCurrentUser,
+} from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/Auth.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
-import { changeModalValue, fetchUnreadMessages } from './TopbarContainer.duck';
+import { changeModalValue } from './TopbarContainer.duck';
+import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
 import { Topbar } from '../../components';
 
 export const TopbarContainerComponent = props => {
@@ -110,7 +115,9 @@ const mapStateToProps = state => {
   // Topbar needs isAuthenticated
   const { isAuthenticated, logoutError, authScopes } = state.Auth;
 
-  const { modalValue, unreadMessages } = state.TopbarContainer;
+  const { modalValue } = state.TopbarContainer;
+
+  const { unreadMessages } = state.sendbird;
 
   // Topbar needs user info.
   const {
@@ -149,6 +156,7 @@ const mapDispatchToProps = dispatch => ({
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onChangeModalValue: value => dispatch(changeModalValue(value)),
   onFetchUnreadMessages: () => dispatch(fetchUnreadMessages()),
+  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

@@ -9,7 +9,7 @@ import {
   updateStripeAccount,
   fetchStripeAccount,
 } from '../../ducks/stripeConnectAccount.duck';
-import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchCurrentUser, fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import * as log from '../../util/log';
 import { updateListingMetadata } from '../../util/api';
 

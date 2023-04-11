@@ -22,8 +22,6 @@ module.exports = (req, res) => {
   let incompleteTransactions = null;
   let deletable = false;
 
-  console.log('before transactions');
-
   sdk.transactions
     .query({ lastTransitions: nonFinalTransitions })
     .then(resp => {

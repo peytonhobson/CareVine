@@ -6,7 +6,14 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { minLength, maxLength, required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldTextInput, InlineTextButton, Modal } from '../../components';
+import {
+  Form,
+  Button,
+  FieldTextInput,
+  InlineTextButton,
+  Modal,
+  IconSpinner,
+} from '../../components';
 
 import css from './EditListingBioForm.module.css';
 
@@ -32,6 +39,7 @@ const EditListingBioFormComponent = props => (
         fetchErrors,
         values,
         onManageDisableScrolling,
+        generateBioInProgress,
       } = formRenderProps;
 
       const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
@@ -80,30 +88,36 @@ const EditListingBioFormComponent = props => (
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
-      const submitDisabled = invalid || disabled || submitInProgress;
+      const submitDisabled = invalid || disabled || submitInProgress || generateBioInProgress;
 
       return (
         <>
           <Form className={classes} onSubmit={handleSubmit}>
             {errorMessageShowListing}
 
-            <FieldTextInput
-              id="description"
-              name="description"
-              className={css.description}
-              inputRootClass={css.descriptionInput}
-              type="textarea"
-              label={descriptionMessage}
-              placeholder={descriptionPlaceholderMessage}
-              maxLength={DESCRIPTION_MAX_LENGTH}
-              validate={composeValidators(
-                required(descriptionRequiredMessage),
-                maxLength1000Message,
-                minLength100Message
-              )}
-              required
-              exampleLink={exampleLink}
-            />
+            {generateBioInProgress ? (
+              <div className={css.spinnerContainer}>
+                <IconSpinner className={css.spinner} />
+              </div>
+            ) : (
+              <FieldTextInput
+                id="description"
+                name="description"
+                className={css.description}
+                inputRootClass={css.descriptionInput}
+                type="textarea"
+                label={descriptionMessage}
+                placeholder={descriptionPlaceholderMessage}
+                maxLength={DESCRIPTION_MAX_LENGTH}
+                validate={composeValidators(
+                  required(descriptionRequiredMessage),
+                  maxLength1000Message,
+                  minLength100Message
+                )}
+                required
+                exampleLink={exampleLink}
+              />
+            )}
 
             {errorMessageUpdateListing}
 

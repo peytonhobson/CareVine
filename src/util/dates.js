@@ -848,3 +848,22 @@ export const isDayMomentInsideRange = (dayMoment, start, end, timeZone) => {
 
   return false;
 };
+
+export const isToday = dirtyDate => {
+  if (!dirtyDate) {
+    return false;
+  }
+  const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
+  const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
+  return dateLeftStartOfDay === dateRightStartOfDay;
+};
+
+export const isYesterday = dirtyDate => {
+  if (!dirtyDate) {
+    return false;
+  }
+
+  const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
+  const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
+  return dateLeftStartOfDay === dateRightStartOfDay - 86400000;
+};

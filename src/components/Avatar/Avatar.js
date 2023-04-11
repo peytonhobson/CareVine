@@ -68,13 +68,35 @@ export const AvatarComponent = props => {
 
   const defaultUserAbbreviatedName = '';
 
+  let linearGradient = null;
+
+  const avatarLinearGradient = avatarUser.attributes.profile.publicData?.avatarLinearGradient;
+
+  switch (avatarLinearGradient) {
+    case 'green':
+      linearGradient = css.linearGradientGreen;
+      break;
+    case 'red':
+      linearGradient = css.linearGradientRed;
+      break;
+    case 'orange':
+      linearGradient = css.linearGradientOrange;
+      break;
+    case 'pink':
+      linearGradient = css.linearGradientPink;
+      break;
+    default:
+      break;
+  }
+
   const displayName = userDisplayNameAsString(avatarUser, defaultUserDisplayName);
   const abbreviatedName = userAbbreviatedName(avatarUser, defaultUserAbbreviatedName);
   const rootProps = { className: classes, title: displayName };
   const linkProps = avatarUser.id
     ? { name: 'ProfilePage', params: { id: avatarUser.id.uuid } }
     : { name: 'ProfileBasePage' };
-  const hasProfileImage = avatarUser.profileImage && avatarUser.profileImage.id;
+  const hasProfileImage =
+    avatarUser?.profileImage?.id || avatarUser?.relationships?.profileImage?.data?.id;
   const profileLinkEnabled = !disableProfileLink;
 
   const classForInitials = initialsClassName || css.initials;
@@ -91,7 +113,7 @@ export const AvatarComponent = props => {
         <ResponsiveImage
           rootClassName={css.avatarImage}
           alt={displayName}
-          image={avatarUser.profileImage}
+          image={avatarUser.profileImage || avatarUser.relationships.profileImage.data}
           variants={AVATAR_IMAGE_VARIANTS}
           sizes={renderSizes}
         />
@@ -100,7 +122,7 @@ export const AvatarComponent = props => {
   } else {
     // Placeholder avatar (initials)
     return (
-      <div {...rootProps}>
+      <div {...rootProps} className={classNames(classes, linearGradient)}>
         <span className={classForInitials}>{abbreviatedName}</span>
       </div>
     );

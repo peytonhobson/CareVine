@@ -22,12 +22,9 @@ export const FETCH_CURRENT_USER_HAS_LISTINGS_SUCCESS =
 export const FETCH_CURRENT_USER_HAS_LISTINGS_ERROR =
   'app/user/FETCH_CURRENT_USER_HAS_LISTINGS_ERROR';
 
-export const CURRENT_USER_NOTIFICATIONS_COUNT_REQUEST =
-  'app/user/CURRENT_USER_NOTIFICATIONS_COUNT_REQUEST';
-export const CURRENT_USER_NOTIFICATIONS_COUNT_SUCCESS =
-  'app/user/CURRENT_USER_NOTIFICATIONS_COUNT_SUCCESS';
-export const CURRENT_USER_NOTIFICATIONS_COUNT_ERROR =
-  'app/user/CURRENT_USER_NOTIFICATIONS_COUNT_ERROR';
+export const UPDATE_NOTIFICATIONS_REQUEST = 'app/user/UPDATE_NOTIFICATIONS_REQUEST';
+export const UPDATE_NOTIFICATIONS_SUCCESS = 'app/user/UPDATE_NOTIFICATIONS_SUCCESS';
+export const UPDATE_NOTIFICATIONS_ERROR = 'app/user/UPDATE_NOTIFICATIONS_COUNT_ERROR';
 
 export const FETCH_CURRENT_USER_HAS_ORDERS_REQUEST =
   'app/user/FETCH_CURRENT_USER_HAS_ORDERS_REQUEST';
@@ -62,15 +59,14 @@ const initialState = {
   currentUserShowError: null,
   currentUserHasListings: false,
   currentUserHasListingsError: null,
-  currentUserNotificationsCount: 0,
-  currentUserNotificationsCountError: null,
-  currentUserNotificationsCountInProgress: false,
   currentUserHasOrders: null, // This is not fetched unless unverified emails exist
   currentUserHasOrdersError: null,
   sendVerificationEmailInProgress: false,
   sendVerificationEmailError: null,
   currentUserListing: null,
   currentUserListingFetched: false,
+  updateNotificationInProgress: false,
+  updateNotificationError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -97,9 +93,6 @@ export default function reducer(state = initialState, action = {}) {
         currentUserShowError: null,
         currentUserHasListings: false,
         currentUserHasListingsError: null,
-        currentUserNotificationsCount: 0,
-        currentUserNotificationsCountError: null,
-        currentUserNotificationsCountInProgress: false,
         currentUserListing: null,
         currentUserListingFetched: false,
       };
@@ -119,24 +112,22 @@ export default function reducer(state = initialState, action = {}) {
 
     // convert fetch notifications cases to notification count
 
-    case CURRENT_USER_NOTIFICATIONS_COUNT_REQUEST:
+    case UPDATE_NOTIFICATIONS_REQUEST:
       return {
         ...state,
-        currentUserNotificationsCountError: null,
-        currentUserNotificationsCountInProgress: true,
+        updateNotificationInProgress: true,
+        updateNotificationsError: null,
       };
-    case CURRENT_USER_NOTIFICATIONS_COUNT_SUCCESS:
+    case UPDATE_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
-        currentUserNotificationsCountInProgress: false,
-        currentUserNotificationsCount: payload,
+        updateNotificationInProgress: false,
       };
-    case CURRENT_USER_NOTIFICATIONS_COUNT_ERROR:
-      console.error(payload); // eslint-disable-line
+    case UPDATE_NOTIFICATIONS_ERROR:
       return {
         ...state,
-        currentUserNotificationsCountError: payload,
-        currentUserNotificationsCountInProgress: false,
+        updateNotificationsError: payload,
+        updateNotificationsInProgress: false,
       };
 
     case FETCH_CURRENT_USER_HAS_ORDERS_REQUEST:
@@ -175,10 +166,7 @@ export default function reducer(state = initialState, action = {}) {
 export const hasCurrentUserErrors = state => {
   const { user } = state;
   return (
-    user.currentUserShowError ||
-    user.currentUserHasListingsError ||
-    user.fetchCurrentUserNotificationsError ||
-    user.currentUserHasOrdersError
+    user.currentUserShowError || user.currentUserHasListingsError || user.currentUserHasOrdersError
   );
 };
 
@@ -206,29 +194,24 @@ export const clearCurrentUser = () => ({ type: CLEAR_CURRENT_USER });
 const fetchCurrentUserHasListingsRequest = () => ({
   type: FETCH_CURRENT_USER_HAS_LISTINGS_REQUEST,
 });
-
 export const fetchCurrentUserHasListingsSuccess = (hasListings, listing) => ({
   type: FETCH_CURRENT_USER_HAS_LISTINGS_SUCCESS,
   payload: { hasListings, listing },
 });
-
 const fetchCurrentUserHasListingsError = e => ({
   type: FETCH_CURRENT_USER_HAS_LISTINGS_ERROR,
   error: true,
   payload: e,
 });
 
-const currentUserNotificationsCountRequest = () => ({
-  type: CURRENT_USER_NOTIFICATIONS_COUNT_REQUEST,
+export const updateNotificationsRequest = () => ({
+  type: UPDATE_NOTIFICATIONS_REQUEST,
 });
-
-export const currentUserNotificationsCountSuccess = count => ({
-  type: CURRENT_USER_NOTIFICATIONS_COUNT_SUCCESS,
-  payload: count,
+export const updateNotificationsSuccess = () => ({
+  type: UPDATE_NOTIFICATIONS_SUCCESS,
 });
-
-const currentUserNotificationsCountError = e => ({
-  type: CURRENT_USER_NOTIFICATIONS_COUNT_ERROR,
+export const updateNotificationsError = e => ({
+  type: UPDATE_NOTIFICATIONS_ERROR,
   error: true,
   payload: e,
 });
@@ -236,12 +219,10 @@ const currentUserNotificationsCountError = e => ({
 const fetchCurrentUserHasOrdersRequest = () => ({
   type: FETCH_CURRENT_USER_HAS_ORDERS_REQUEST,
 });
-
 export const fetchCurrentUserHasOrdersSuccess = hasOrders => ({
   type: FETCH_CURRENT_USER_HAS_ORDERS_SUCCESS,
   payload: { hasOrders },
 });
-
 const fetchCurrentUserHasOrdersError = e => ({
   type: FETCH_CURRENT_USER_HAS_ORDERS_ERROR,
   error: true,
@@ -251,11 +232,9 @@ const fetchCurrentUserHasOrdersError = e => ({
 export const sendVerificationEmailRequest = () => ({
   type: SEND_VERIFICATION_EMAIL_REQUEST,
 });
-
 export const sendVerificationEmailSuccess = () => ({
   type: SEND_VERIFICATION_EMAIL_SUCCESS,
 });
-
 export const sendVerificationEmailError = e => ({
   type: SEND_VERIFICATION_EMAIL_ERROR,
   error: true,
@@ -318,17 +297,19 @@ export const fetchCurrentUserHasOrders = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(fetchCurrentUserHasOrdersError(storableError(e))));
 };
 
-// Notificaiton page size is max (100 items on page)
-const NOTIFICATION_PAGE_SIZE = 100;
+export const updateNotifications = notifications => (dispatch, getState, sdk) => {
+  dispatch(updateNotificationsRequest());
 
-export const currentUserNotificationsCount = (page = 1) => (dispatch, getState, sdk) => {
-  dispatch(currentUserNotificationsCountRequest());
+  try {
+    const response = sdk.currentUser.updateProfile({
+      privateData: { notifications },
+    });
 
-  const apiQueryParams = {
-    page: page,
-    per_page: NOTIFICATION_PAGE_SIZE,
-  };
-  dispatch(currentUserNotificationsCountSuccess(0));
+    dispatch(updateNotificationsSuccess());
+  } catch (e) {
+    log.error(e, 'failed-to-update-notifications');
+    dispatch(updateNotificationsError(storableError(e)));
+  }
 };
 
 export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => {
@@ -382,7 +363,6 @@ export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => 
     })
     .then(currentUser => {
       dispatch(fetchCurrentUserHasListings());
-      dispatch(currentUserNotificationsCount());
       if (!currentUser.attributes.emailVerified) {
         dispatch(fetchCurrentUserHasOrders());
       }

@@ -5,10 +5,10 @@ import SBConversation from '@sendbird/uikit-react/Channel';
 import { Modal, IconEnquiry, Avatar, IconSpinner } from '../';
 import { FormattedMessage } from '../../util/reactIntl';
 import CustomMessageInput from './CustomMessageInput';
-import { sendgridTemplateEmail } from '../../util/api';
+import { sendgridTemplateEmail, updateUserNotifications } from '../../util/api';
 import { userDisplayNameAsString } from '../../util/data';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+import { v4 as uuidv4 } from 'uuid';
+import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 
 import css from './SendbirdModal.module.css';
 
@@ -76,18 +76,37 @@ const SendbirdModal = props => {
       const currentAuthorId = currentAuthor?.id?.uuid;
       const senderName = userDisplayNameAsString(currentUser);
 
-      console.log(messages);
-
       if (messages?.length <= 1) {
-        sendgridTemplateEmail({
-          receiverId: currentAuthorId,
-          templateData: {
-            marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-            senderName,
-            channelUrl: messageChannel.url,
-          },
-          templateName: 'new-message',
-        });
+        try {
+          sendgridTemplateEmail({
+            receiverId: currentAuthorId,
+            templateData: {
+              marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+              senderName,
+              channelUrl: messageChannel.url,
+            },
+            templateName: 'new-message',
+          });
+        } catch (e) {
+          console.error(e);
+        }
+
+        try {
+          const newNotification = {
+            id: uuidv4(),
+            type: NOTIFICATION_TYPE_NEW_MESSAGE,
+            createdAt: new Date().getTime(),
+            read: false,
+            metadata: {
+              senderName,
+              channelUrl: messageChannel.url,
+            },
+          };
+
+          updateUserNotifications({ userId: currentAuthorId, newNotification });
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
 
@@ -117,6 +136,7 @@ const SendbirdModal = props => {
           <Avatar
             rootClassName={css.avatarRoot}
             className={css.avatar}
+            initialsClassName={css.avatarInitials}
             user={currentAuthor}
             disableProfileLink
           />

@@ -21,6 +21,8 @@ const CertificationsSection = forwardRef((props, ref) => {
     filterConfig
   );
 
+  if (!certificationsAndTraining || certificationsAndTraining.length === 0) return null;
+
   return (
     <SectionCard title={certificationsAndTrainingCardTitle} ref={ref}>
       {certificationsAndTraining?.length > 0 ? (

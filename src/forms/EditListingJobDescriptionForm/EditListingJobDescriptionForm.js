@@ -8,7 +8,14 @@ import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { required, maxLength, minLength, composeValidators } from '../../util/validators';
 import config from '../../config';
-import { Form, Button, FieldTextInput, InlineTextButton, Modal } from '../../components';
+import {
+  Form,
+  Button,
+  FieldTextInput,
+  InlineTextButton,
+  Modal,
+  IconSpinner,
+} from '../../components';
 
 import css from './EditListingJobDescriptionForm.module.css';
 
@@ -35,6 +42,8 @@ const EditListingJobDescriptionFormComponent = props => (
         updateInProgress,
         fetchErrors,
         onManageDisableScrolling,
+        isNewListingFlow,
+        generateJobDescriptionInProgress,
         values,
         filterConfig,
       } = formRenderProps;
@@ -101,43 +110,59 @@ const EditListingJobDescriptionFormComponent = props => (
         </p>
       ) : null;
 
+      const titleCanEdit = isNewListingFlow ? (
+        <span style={{ textDecoration: 'none' }}>
+          *We recommend editing this title to better describe your needs
+        </span>
+      ) : null;
+
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
-      const submitDisabled = invalid || disabled || submitInProgress;
+      const submitDisabled =
+        invalid || disabled || submitInProgress || generateJobDescriptionInProgress;
 
       return (
         <>
           <Form className={classes} onSubmit={handleSubmit}>
             {errorMessageShowListing}
 
-            <FieldTextInput
-              id="title"
-              name="title"
-              type="textinput"
-              className={css.textInput}
-              inputRootClass={css.textInputRoot}
-              placeholder={titlePlaceholder}
-              validate={composeValidators(titleRequired, maxLength100Message)}
-              label={titleLabel}
-              required
-              maxLength={TITLE_MAX_LENGTH}
-            />
+            {generateJobDescriptionInProgress ? (
+              <div className={css.spinnerContainer}>
+                <IconSpinner className={css.spinner} />
+              </div>
+            ) : (
+              <>
+                <FieldTextInput
+                  id="title"
+                  name="title"
+                  type="textinput"
+                  className={css.textInput}
+                  inputRootClass={css.textInputRoot}
+                  placeholder={titlePlaceholder}
+                  validate={composeValidators(titleRequired, maxLength100Message)}
+                  label={titleLabel}
+                  required
+                  maxLength={TITLE_MAX_LENGTH}
+                  exampleLink={titleCanEdit}
+                />
 
-            <FieldTextInput
-              id="description"
-              name="description"
-              className={css.textarea}
-              inputRootClass={css.textareaRoot}
-              type="textarea"
-              placeholder={descriptionPlaceholder}
-              label={descriptionLabel}
-              minLength={DESCRIPTION_MIN_LENGTH}
-              maxLength={DESCRIPTION_MAX_LENGTH}
-              required
-              validate={composeValidators(maxLength1000Message, minLength100Message)}
-              exampleLink={exampleLink}
-            />
+                <FieldTextInput
+                  id="description"
+                  name="description"
+                  className={css.textarea}
+                  inputRootClass={css.textareaRoot}
+                  type="textarea"
+                  placeholder={descriptionPlaceholder}
+                  label={descriptionLabel}
+                  minLength={DESCRIPTION_MIN_LENGTH}
+                  maxLength={DESCRIPTION_MAX_LENGTH}
+                  required
+                  validate={composeValidators(maxLength1000Message, minLength100Message)}
+                  exampleLink={exampleLink}
+                />
+              </>
+            )}
 
             {errorMessageUpdateListing}
 

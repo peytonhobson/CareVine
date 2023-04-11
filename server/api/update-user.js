@@ -3,23 +3,18 @@ var crypto = require('crypto');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { userId, email, metadata } = req.body;
+  const { userId, privateData, publicData, metadata } = req.body;
 
-  integrationSdk.users
-    .show({ id: userId, email })
-    .then(userResponse => {
-      const user = userResponse.data.data;
+  const privateDataMaybe = privateData ? { privateData } : {};
+  const publicDataMaybe = publicData ? { publicData } : {};
+  const metadataMaybe = metadata ? { metadata } : {};
 
-      return integrationSdk.users.updateProfile(
-        {
-          id: user.id,
-          metadata,
-        },
-        {
-          expand: true,
-          'fields.user': ['email', 'profile.metadata'],
-        }
-      );
+  return integrationSdk.users
+    .updateProfile({
+      id: userId,
+      ...privateDataMaybe,
+      ...publicDataMaybe,
+      ...metadataMaybe,
     })
     .then(apiResponse => {
       const { status, statusText, data } = apiResponse;

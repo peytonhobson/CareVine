@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { intlShape } from '../../util/reactIntl';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -9,6 +9,7 @@ import { ensureListing } from '../../util/data';
 import { EditListingJobDescriptionForm } from '../../forms';
 import config from '../../config';
 import { findOptionsForSelectFilter } from '../../util/search';
+import { Modal } from '..';
 
 import css from './EditListingJobDescriptionPanel.module.css';
 
@@ -122,12 +123,27 @@ const EditListingJobDescriptionPanel = props => {
     intl,
     submitButtonText,
     filterConfig,
+    generateJobDescriptionInProgress,
+    generateJobDescriptionError,
+    generatedJobDescription,
+    onGenerateJobDescription,
+    onManageDisableScrolling,
     ...rest
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
   const { publicData, description, title } = currentListing.attributes;
+
+  const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (currentListing.id && (!description || description === '')) {
+      onGenerateJobDescription(currentListing).then(() => {
+        setIsExplanationModalOpen(true);
+      });
+    }
+  }, [description]);
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
@@ -155,7 +171,10 @@ const EditListingJobDescriptionPanel = props => {
   );
 
   const initialTitle = title !== 'Title' ? title : generateTitle(currentListing, filterConfig);
-  const initialValues = { title: initialTitle, description };
+  const initialValues = {
+    title: initialTitle,
+    description: generatedJobDescription || description,
+  };
 
   const formProps = {
     className: css.form,
@@ -167,6 +186,8 @@ const EditListingJobDescriptionPanel = props => {
     updateInProgress,
     fetchErrors: errors,
     intl,
+    isNewListingFlow,
+    onManageDisableScrolling,
     ...rest,
   };
 
@@ -187,7 +208,25 @@ const EditListingJobDescriptionPanel = props => {
 
           onSubmit(updatedValues);
         }}
+        generateJobDescriptionInProgress={generateJobDescriptionInProgress}
       />
+      <Modal
+        id="JDGenerationExplanation"
+        isOpen={isExplanationModalOpen}
+        onClose={() => setIsExplanationModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <p className={css.modalTitle}>How does this work?</p>
+        <p className={css.modalMessage}>
+          We used a machine learning algorithm to generate a job description for you based on the
+          information you provided in your profile.
+        </p>
+        <p className={css.modalMessage}>
+          It is probably not perfect, but it is a good starting point. You can edit the job
+          description to make it more personal.
+        </p>
+      </Modal>
     </div>
   );
 };

@@ -215,7 +215,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
   } = searchParams;
   // const priceMaybe = priceSearchParams(price);
 
-  const minPriceMaybe = price ? { pub_minPrice: `,${price * 100}` } : {};
+  const minPriceMaybe = price ? { pub_minPrice: `,${(price + 1) * 100}` } : {};
   const sortMaybe = searchableSortParams.includes(sort) ? { sort } : null;
 
   const maxPriceMaybe = pub_maxPrice ? { pub_maxPrice: `${pub_maxPrice * 100},` } : {};
@@ -277,7 +277,13 @@ export const loadData = (params, search) => {
     perPage: RESULT_PAGE_SIZE,
     include: ['author.profileImage', 'images'],
     'fields.listing': ['title', 'geolocation', 'description', 'publicData', 'metadata'],
-    'fields.user': ['profile.displayName', 'profile.abbreviatedName', 'email', 'profile.metadata'],
+    'fields.user': [
+      'profile.displayName',
+      'profile.abbreviatedName',
+      'email',
+      'profile.metadata',
+      'profile.publicData',
+    ],
     'fields.image': ['variants.square-small', 'variants.square-small2x'],
     'limit.images': 1,
   });

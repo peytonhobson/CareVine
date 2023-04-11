@@ -87,6 +87,8 @@ p {
 
 .headerButtonContainer {
   margin-right: 2rem;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 /* Title of the modal */
@@ -136,4 +138,8 @@ p {
 
 .futureSubscriptions {
   margin-top: 1rem;
+}
+
+.error {
+  color: var(--failColor);
 }

@@ -83,7 +83,7 @@ class AddSubtractComponent extends Component {
 
     const classes = classNames(rootClassName || css.root);
 
-    const fieldClass = classNames(fieldClassName || css.fieldRoot);
+    const fieldClass = classNames(css.fieldRoot, fieldClassName);
 
     return (
       <div className={classes}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 
 import { compose } from 'redux';
 import zipcodeToTimezone from 'zipcode-to-timezone';
@@ -31,19 +31,81 @@ const weekdayButtons = [
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-const formatHours = value => {
-  // if input value is falsy eg if the user deletes the input, then just return
-  if (!value) return value;
+const ADD_SELECTED_WEEKDAY = 'ADD_SELECTED_WEEKDAY';
+const DELETE_SELECTED_WEEKDAY = 'DELETE_SELECTED_WEEKDAY';
+const ADD_AVAILABILITY_EXCEPTION = 'ADD_AVAILABILITY_EXCEPTION';
+const DELETE_AVAILABILITY_EXCEPTION = 'DELETE_AVAILABILITY_EXCEPTION';
+const CHANGE_LIVE_IN = 'SET_LIVE_IN';
+const SET_HOURS_PER_DAY = 'SET_HOURS_PER_DAY';
+const SET_START_DATE = 'SET_START_DATE';
+const SET_END_DATE = 'SET_END_DATE';
 
-  // clean the input for any non-digit values.
-  const hours = value.replace(/[^\d]/g, '');
+const init = initialState => {
+  return {
+    availableDays: initialState.availabilityPlan?.availableDays || [],
+    availabilityExceptions: initialState.availabilityPlan?.availabilityExceptions || [],
+    liveIn: initialState.availabilityPlan?.liveIn,
+    hoursPerDay: initialState.availabilityPlan?.hoursPerDay || 8,
+    startDate: initialState.savedStartDate,
+    endDate: initialState.savedEndDate,
+  };
+};
 
-  return hours;
+const reducer = (state, action) => {
+  switch (action.type) {
+    case ADD_SELECTED_WEEKDAY:
+      return {
+        ...state,
+        availableDays: [...state.availableDays, action.payload],
+      };
+    case DELETE_SELECTED_WEEKDAY:
+      return {
+        ...state,
+        availableDays: state.availableDays.filter(day => day !== action.payload),
+      };
+    case CHANGE_LIVE_IN:
+      return {
+        ...state,
+        liveIn: !state.liveIn,
+      };
+    case ADD_AVAILABILITY_EXCEPTION:
+      return {
+        ...state,
+        availabilityExceptions: [...state.availabilityExceptions, action.payload],
+      };
+    case DELETE_AVAILABILITY_EXCEPTION:
+      return {
+        ...state,
+        availabilityExceptions: state.availabilityExceptions.filter(
+          exception => exception !== action.payload
+        ),
+      };
+    case SET_HOURS_PER_DAY:
+      return {
+        ...state,
+        hoursPerDay: action.payload,
+      };
+    case SET_START_DATE:
+      const startDate = action.payload?.date?.getTime();
+      return {
+        ...state,
+        startDate,
+      };
+    case SET_END_DATE:
+      const endDate = action.payload?.date?.getTime();
+      return {
+        ...state,
+        endDate,
+      };
+    default:
+      return state;
+  }
 };
 
 const Care24HourFormComponent = props => {
   const {
     availabilityPlan,
+    userAvailabilityPlan,
     currentListing,
     disabled,
     fetchErrors,
@@ -59,34 +121,38 @@ const Care24HourFormComponent = props => {
     updated,
     updateInProgress,
     submitButtonType,
+    onChange,
   } = props;
 
-  const [selectedWeekdays, setSelectedWeekdays] = useState(availabilityPlan?.availableDays || []);
-  const [availabilityExceptions, setAvailabilityExceptions] = useState(
-    availabilityPlan?.availabilityExceptions || []
-  );
-  const [liveIn, setLiveIn] = useState(availabilityPlan?.liveIn);
-  const [hoursPerDay, setHoursPerDay] = useState(availabilityPlan?.hoursPerDay || 8);
+  const savedStartDate = availabilityPlan?.startDate;
+  const savedEndDate = availabilityPlan?.endDate;
+  const initialState = { savedEndDate, savedStartDate, availabilityPlan };
+  const [state, dispatch] = useReducer(reducer, initialState, init);
 
-  const savedStartDate = availabilityPlan && availabilityPlan.startDate;
-  const savedEndDate = availabilityPlan && availabilityPlan.endDate;
-  const [startDate, setStartDate] = useState(savedStartDate);
-  const [endDate, setEndDate] = useState(savedEndDate);
+  const timezone = zipcodeToTimezone.lookup(
+    currentListing.attributes.publicData?.location?.zipcode
+  );
+
+  useEffect(() => {
+    onChange({
+      type: AVAILABILITY_PLAN_TYPE_24HOUR,
+      timezone,
+      ...state,
+    });
+  }, [state]);
 
   const liveInCheckboxLabel = intl.formatMessage({ id: 'Care24HourForm.liveInCheckboxLabel' });
 
   const submitInProgress = updateInProgress;
   const submitReady = (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR;
   const submitDisabled =
-    (selectedWeekdays === availabilityPlan?.availableDays &&
-      startDate === savedStartDate &&
-      endDate === savedEndDate &&
-      liveIn === !!availabilityPlan?.liveIn &&
-      availabilityExceptions === availabilityPlan?.availabilityExceptions &&
-      hoursPerDay === availabilityPlan?.hoursPerDay) ||
-    selectedWeekdays.length === 0;
-
-  const timezone = zipcodeToTimezone.lookup(currentListing.attributes.publicData.location.zipcode);
+    (state.availableDays === userAvailabilityPlan?.availableDays &&
+      state.startDate === userAvailabilityPlan?.startDate &&
+      state.endDate === userAvailabilityPlan?.endDate &&
+      state.liveIn === userAvailabilityPlan?.liveIn &&
+      state.availabilityExceptions === userAvailabilityPlan?.availabilityExceptions &&
+      state.hoursPerDay === userAvailabilityPlan?.hoursPerDay) ||
+    state.availableDays?.length === 0;
 
   const timelineInitialValues = {
     startDate: {
@@ -104,43 +170,42 @@ const Care24HourFormComponent = props => {
   );
 
   const handleButtonClick = day => {
-    setSelectedWeekdays(prevState => {
-      if (prevState.includes(day)) {
-        return prevState.filter(prevDay => prevDay !== day);
-      } else {
-        return [...prevState, day];
-      }
-    });
+    if (state.availableDays.includes(day)) {
+      dispatch({ type: DELETE_SELECTED_WEEKDAY, payload: day });
+    } else {
+      dispatch({ type: ADD_SELECTED_WEEKDAY, payload: day });
+    }
   };
 
   const handleSubmit = e => {
     e.preventDefault();
     onSubmit({
-      availableDays: selectedWeekdays,
-      liveIn,
-      hoursPerDay,
-      availabilityExceptions,
-      startDate,
-      endDate,
+      ...state,
     });
   };
 
   const handleSaveAvailabilityException = exception => {
-    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
+    dispatch({ type: ADD_AVAILABILITY_EXCEPTION, payload: exception });
   };
 
   const handleDeleteException = start => {
-    setAvailabilityExceptions(prevExceptions =>
-      prevExceptions.filter(exception => exception.attributes.start !== start)
-    );
+    dispatch({ type: DELETE_AVAILABILITY_EXCEPTION, payload: start });
   };
 
   const onStartDateChange = date => {
-    setStartDate(date?.date?.getTime());
+    dispatch({ type: SET_START_DATE, payload: date });
   };
 
   const onEndDateChange = date => {
-    setEndDate(date?.date?.getTime());
+    dispatch({ type: SET_END_DATE, payload: date });
+  };
+
+  const handleSetHoursPerDay = hoursPerDay => {
+    dispatch({ type: SET_HOURS_PER_DAY, payload: hoursPerDay });
+  };
+
+  const handleSetLiveIn = () => {
+    dispatch({ type: CHANGE_LIVE_IN });
   };
 
   return (
@@ -168,7 +233,9 @@ const Care24HourFormComponent = props => {
                 <Button
                   key={index}
                   className={
-                    selectedWeekdays.includes(button.day) ? css.selectedButton : css.weekdayButton
+                    state.availableDays.includes(button.day)
+                      ? css.selectedButton
+                      : css.weekdayButton
                   }
                   type="button"
                   onClick={e => {
@@ -189,7 +256,9 @@ const Care24HourFormComponent = props => {
                 <Button
                   key={index}
                   className={
-                    selectedWeekdays.includes(button.day) ? css.selectedButton : css.weekdayButton
+                    state.availableDays.includes(button.day)
+                      ? css.selectedButton
+                      : css.weekdayButton
                   }
                   type="button"
                   onClick={e => {
@@ -209,20 +278,20 @@ const Care24HourFormComponent = props => {
         id="liveIn"
         name="liveIn"
         label={liveInCheckboxLabel}
-        checked={liveIn}
-        value={liveIn}
-        onClick={() => setLiveIn(prevLiveIn => !prevLiveIn)}
+        checked={state.liveIn}
+        value={state.liveIn}
+        onClick={handleSetLiveIn}
       />
       <FinalForm
         onSubmit={() => {}}
         render={() => {
           return (
             <div className={css.hoursPerDayContainer}>
-              <FormSpy onChange={e => setHoursPerDay(e.values.hoursPerDay)} />
+              <FormSpy onChange={e => handleSetHoursPerDay(e.values.hoursPerDay)} />
               <FieldAddSubtract
                 name="hoursPerDay"
                 fieldClassName={css.hoursPerDayField}
-                startingCount={hoursPerDay}
+                startingCount={state.hoursPerDay}
                 max={24}
                 min={1}
                 label={hoursPerDayLabel}
@@ -236,7 +305,7 @@ const Care24HourFormComponent = props => {
         <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
         <CareScheduleExceptions
           fetchExceptionsInProgress={fetchExceptionsInProgress}
-          availabilityExceptions={availabilityExceptions}
+          availabilityExceptions={state.availabilityExceptions}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           onAddAvailabilityException={onAddAvailabilityException}
           onManageDisableScrolling={onManageDisableScrolling}

@@ -30,6 +30,17 @@
   }
 }
 
+.avatar {
+  margin: auto;
+}
+
+.titleAvatarContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline: 0.5rem;
+}
+
 .channelListMobileContainer {
   width: 100vw !important;
   height: 100vh;

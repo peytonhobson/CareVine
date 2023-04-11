@@ -64,10 +64,11 @@ const AboutPage = () => {
               <p>
                 Thank you for considering our marketplace as your go-to resource for caregiving
                 needs. Don't hesitate to reach out to us to learn more about how we can help you
-                find the right caregiver or grow your business as a caregiver. You can also follow
+                find the right caregiver or grow your business as a caregiver.
+                {/* You can also follow
                 us on <ExternalLink href={siteFacebookPage}>Facebook</ExternalLink> and{' '}
                 <ExternalLink href={siteTwitterPage}>Twitter</ExternalLink> to stay up-to-date on
-                our latest news and updates.
+                our latest news and updates. */}
               </p>
             </div>
           </div>

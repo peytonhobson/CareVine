@@ -16,8 +16,8 @@
   align-items: center;
 
   /* Colors */
-  background-color: var(--matterColor);
-  color: var(--matterColorNegative);
+  background-color: var(--failColor);
+  color: var(--matterColorLight);
 
   /* Cover Topbar on desktop */
   @media (--viewportMedium) {

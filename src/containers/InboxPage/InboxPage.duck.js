@@ -8,6 +8,11 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
 import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
+import { updateUserNotifications, updateUser } from '../../util/api';
+import { userDisplayNameAsString } from '../../util/data';
+import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
+import { v4 as uuidv4 } from 'uuid';
 
 // ================ Action types ================ //
 
@@ -37,6 +42,10 @@ export const SEND_REQUEST_FOR_PAYMENT_SUCCESS =
 export const SEND_REQUEST_FOR_PAYMENT_ERROR =
   'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_ERROR';
 
+export const FETCH_OTHER_USERS_REQUEST = 'app/InboxPage/FETCH_OTHER_USERS_REQUEST';
+export const FETCH_OTHER_USERS_SUCCESS = 'app/InboxPage/FETCH_OTHER_USERS_SUCCESS';
+export const FETCH_OTHER_USERS_ERROR = 'app/InboxPage/FETCH_OTHER_USERS_ERROR';
+
 // ================ Reducer ================ //
 
 const entityRefs = entities =>
@@ -58,6 +67,9 @@ const initialState = {
   transitionToRequestPaymentError: null,
   transitionToRequestPaymentInProgress: false,
   transitionToRequestPaymentSuccess: false,
+  fetchOtherUsersInProgress: false,
+  fetchOtherUsersError: null,
+  otherUsersRefs: null,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -139,6 +151,25 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         sendRequestForPaymentError: payload,
       };
 
+    case FETCH_OTHER_USERS_REQUEST:
+      return {
+        ...state,
+        fetchOtherUsersInProgress: true,
+        fetchOtherUsersError: null,
+      };
+    case FETCH_OTHER_USERS_SUCCESS:
+      return {
+        ...state,
+        otherUsersRefs: entityRefs(payload),
+        fetchOtherUsersInProgress: false,
+      };
+    case FETCH_OTHER_USERS_ERROR:
+      return {
+        ...state,
+        fetchOtherUsersInProgress: false,
+        fetchOtherUsersError: payload,
+      };
+
     default:
       return state;
   }
@@ -195,6 +226,19 @@ export const sendRequestForPaymentError = e => ({
   payload: e,
 });
 
+export const fetchOtherUsersRequest = () => ({
+  type: FETCH_OTHER_USERS_REQUEST,
+});
+export const fetchOtherUsersSuccess = response => ({
+  type: FETCH_OTHER_USERS_SUCCESS,
+  payload: response,
+});
+export const fetchOtherUsersError = e => ({
+  type: FETCH_OTHER_USERS_ERROR,
+  error: true,
+  payload: e,
+});
+
 // ================ Thunks ================ //
 
 export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) => (
@@ -210,7 +254,8 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
   };
   const sb = SendbirdChat.init(params);
 
-  sb.connect(currentUserId, accessToken)
+  return sb
+    .connect(currentUserId, accessToken)
     .then(() => {
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const members = channel.members;
@@ -229,7 +274,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
     });
 };
 
-export const transitionToRequestPayment = (otherUserListing, channelUrl) => (
+export const transitionToRequestPayment = (otherUserListing, notificationId) => (
   dispatch,
   getState,
   sdk
@@ -241,7 +286,7 @@ export const transitionToRequestPayment = (otherUserListing, channelUrl) => (
   const bodyParams = {
     transition: TRANSITION_REQUEST_PAYMENT,
     processAlias: config.singleActionProcessAlias,
-    params: { listingId, protectedData: { channelUrl } },
+    params: { listingId, protectedData: { notificationId } },
   };
   return sdk.transactions
     .initiate(bodyParams)
@@ -293,42 +338,105 @@ export const fetchUserFromChannelUrl = (channelUrl, currentUserId, accessToken) 
 };
 
 export const sendRequestForPayment = (
-  currentUserId,
-  customerName,
+  currentUser,
   channelUrl,
-  sendbirdContext,
-  otherUserListing
-) => (dispatch, getState, sdk) => {
+  otherUserListing,
+  otherUser
+) => async (dispatch, getState, sdk) => {
   dispatch(sendRequestForPaymentRequest());
 
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
+  const senderName = userDisplayNameAsString(currentUser);
+  const userId = otherUser.id.uuid;
+  const notificationId = uuidv4();
+  const newNotification = {
+    id: notificationId,
+    type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata: {
+      senderName,
+      channelUrl,
+      senderId: currentUser.id.uuid,
+    },
   };
 
-  const sb = SendbirdChat.init(params);
-
-  sb.connect(currentUserId)
-    .then(() => {
-      sb.groupChannel.getChannel(channelUrl).then(channel => {
-        const messageParams = {
-          customType: 'REQUEST_FOR_PAYMENT',
-          message: `You requested payment from ${customerName}.`,
-          data: `{"customerName": "${customerName}"}`,
-        };
-
-        channel.sendUserMessage(messageParams).onSucceeded(message => {
-          sendbirdContext.config.pubSub.publish('SEND_USER_MESSAGE', {
-            message,
-            channel,
-          });
-          dispatch(sendRequestForPaymentSuccess());
-          dispatch(transitionToRequestPayment(otherUserListing, channelUrl));
-        });
-      });
-    })
-    .catch(e => {
-      log.error(e, 'send-request-for-payment-failed');
-      dispatch(sendRequestForPaymentError(e));
+  try {
+    await updateUserNotifications({
+      userId,
+      newNotification,
     });
+
+    const currentTime = new Date().getTime();
+    const oldRequestsForPayment =
+      currentUser.attributes.profile.privateData?.sentRequestsForPayment?.filter(
+        o => o.createdAt > currentTime - 1000 * 60 * 60 * 24
+      ) || [];
+
+    const newSentRequestsForPayment = [
+      ...oldRequestsForPayment,
+      { userId, createdAt: currentTime },
+    ];
+
+    await updateUser({
+      userId: currentUser.id.uuid,
+      privateData: {
+        sentRequestsForPayment: newSentRequestsForPayment,
+      },
+    });
+
+    dispatch(sendRequestForPaymentSuccess());
+    dispatch(transitionToRequestPayment(otherUserListing, notificationId));
+  } catch (e) {
+    log.error(e, 'send-request-for-payment-failed');
+    dispatch(sendRequestForPaymentError(e));
+  }
+};
+
+export const fetchOtherUsers = (userId, accessToken) => async (dispatch, getState, sdk) => {
+  dispatch(fetchOtherUsersRequest());
+
+  try {
+    const params = {
+      appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+      modules: [new GroupChannelModule()],
+    };
+    const sb = SendbirdChat.init(params);
+
+    await sb.connect(userId, accessToken);
+
+    const queryParams = {
+      userIdsFiter: [userId],
+    };
+    const query = sb.groupChannel.createMyGroupChannelListQuery(queryParams);
+
+    if (query.hasNext) {
+      const channels = await query.next();
+
+      const userIds = channels.map(channel => {
+        const members = channel.members;
+
+        const otherUser = members.find(member => member.userId !== userId);
+        return otherUser.userId;
+      });
+
+      const responses = await Promise.all(
+        userIds.map(async id => {
+          const user = await sdk.users.show({
+            id,
+            include: ['profileImage'],
+            'fields.user': ['profile.publicData', 'profile.abbreviatedName'],
+          });
+
+          dispatch(addMarketplaceEntities(user));
+
+          return user.data.data;
+        })
+      );
+
+      dispatch(fetchOtherUsersSuccess(responses));
+    }
+  } catch (e) {
+    log.error(e, 'fetch-other-users-failed');
+    dispatch(fetchOtherUsersError(e));
+  }
 };

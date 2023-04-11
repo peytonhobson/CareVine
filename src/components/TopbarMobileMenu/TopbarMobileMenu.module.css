@@ -34,6 +34,11 @@
   margin: var(--TopbarMobileMenu_topMargin) 0 0 0;
 }
 
+.avatarInitials {
+  font-size: 3rem;
+  font-weight: var(--fontWeightSemiBold);
+}
+
 .greeting {
   /* Font */
   composes: h1 from global;
@@ -82,7 +87,7 @@
   position: relative;
   cursor: pointer;
 
-  margin-top: auto;
+  margin-top: 6rem;
   margin-bottom: 13px;
 }
 
@@ -99,10 +104,25 @@
   color: var(--marketplaceColorDark);
 }
 
+.messageBadge {
+  position: absolute;
+  top: 1px;
+  right: -1.55rem;
+
+  min-width: 1.25rem;
+
+  /* This is inside a link - remove underline */
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 .notificationBadge {
   position: absolute;
-  top: 2px;
-  right: -26px;
+  top: 1px;
+  right: -1rem;
+
+  min-width: 1.25rem;
 
   /* This is inside a link - remove underline */
   &:hover {
@@ -154,4 +174,20 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.unreadNotificationBadge {
+  left: 1.2rem;
+}
+
+.notificationsLink {
+  height: 100%;
+  display: block;
+}
+
+.bell {
+  display: inline-block;
+  margin: 1rem 0;
+  text-decoration: inherit;
+  position: relative;
 }

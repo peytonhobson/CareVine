@@ -37,6 +37,7 @@ const WeekCalendar = props => {
             width: 'calc(14.285%)',
             padding: 0,
             border: 'none',
+            borderRadius: '0',
           }}
         />
       ) : (

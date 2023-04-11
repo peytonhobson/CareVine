@@ -151,13 +151,13 @@
 }
 
 .goToNextTabButton {
-  margin-top: auto;
   margin-bottom: 4rem;
   margin-top: 2.5rem;
 
   @media (--viewportLarge) {
     display: inline-block;
     margin-bottom: 1.5rem;
+    margin-top: 0;
   }
 }
 

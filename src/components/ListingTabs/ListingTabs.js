@@ -17,7 +17,6 @@ import {
 } from './Sections';
 
 import css from './ListingTabs.module.css';
-import { findOptionsForSelectFilter } from '../../util/search';
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
@@ -52,6 +51,11 @@ const getTabs = (listingType, onClick, selected) => {
   });
 };
 
+const scrollToRef = ref => {
+  const elementHeight = ref.offsetTop - (isMobile ? 100 : 130);
+  window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+};
+
 const ListingTabs = props => {
   const { listing, onManageDisableScrolling, currentUserListing } = props;
 
@@ -70,65 +74,27 @@ const ListingTabs = props => {
   const careRecipientsRef = useRef(null);
   const caregiverPreferencesRef = useRef(null);
 
+  const refMap = {
+    Availability: availabilityRef,
+    Bio: bioRef,
+    Services: servicesRef,
+    'Certifications/Training': certificationsAndTrainingRef,
+    Training: certificationsAndTrainingRef,
+    Additional: additionalInfoRef,
+    'Job Description': jobDescriptionRef,
+    'Care Schedule': careScheduleRef,
+    'Care Recipients(s)': careRecipientsRef,
+    'Caregiver Preferences': caregiverPreferencesRef,
+  };
+
   const { publicData } = listing.attributes;
   const { availabilityPlan } = publicData;
 
   const onClick = tab => {
-    switch (tab) {
-      case 'Availability':
-        if (availabilityRef.current) {
-          availabilityRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Bio':
-        if (availabilityRef.current) {
-          bioRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Services':
-        if (availabilityRef.current) {
-          servicesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case isMobile ? 'Training' : 'Certifications/Training':
-        if (availabilityRef.current) {
-          certificationsAndTrainingRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          });
-        }
-        break;
-      case 'Additional':
-        if (availabilityRef.current) {
-          additionalInfoRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Job Description':
-        if (availabilityRef.current) {
-          jobDescriptionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Care Schedule':
-        if (availabilityRef.current) {
-          careScheduleRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Care Recipients(s)':
-        if (availabilityRef.current) {
-          careRecipientsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        break;
-      case 'Caregiver Preferences':
-        if (availabilityRef.current) {
-          caregiverPreferencesRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          });
-        }
-        break;
-      default:
-        break;
+    if (refMap[tab].current) {
+      scrollToRef(refMap[tab].current);
     }
+
     setSelectedTab(tab);
   };
 

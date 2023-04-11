@@ -1,6 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import { array, bool, func, number, object, oneOf, shape, string } from 'prop-types';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import classNames from 'classnames';
 import config from '../../config';
@@ -14,10 +15,14 @@ import {
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
 import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
+import { getStripeConnectAccountLink } from '../../ducks/stripeConnectAccount.duck';
 
 import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
 import { StripeConnectAccountForm } from '../../forms';
 import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
+import { stripeAccountClearError } from '../../ducks/stripeConnectAccount.duck';
+import { stripeCustomer } from '../../containers/PaymentMethodsPage/PaymentMethodsPage.duck.js';
+import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -31,6 +36,20 @@ import EditListingWizardTab, {
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
+import { savePayoutDetails } from '../../containers/EditListingPage/EditListingPage.duck';
+import {
+  authenticateCreateUser,
+  authenticateSubmitConsent,
+  identityProofQuiz,
+  verifyIdentityProofQuiz,
+  authenticateUpdateUser,
+  getAuthenticateTestResult,
+  authenticateGenerateCriminalBackground,
+  authenticate7YearHistory,
+  applyBCPromo,
+} from '../../ducks/authenticate.duck';
+import { generateBio } from '../../ducks/chatGPT.duck';
+
 import css from './CaregiverEditListingWizard.module.css';
 
 // You can reorder these panels.
@@ -125,7 +144,6 @@ const tabCompleted = (tab, listing, user) => {
     case AVAILABILITY:
       return !!(publicData && publicData.availabilityPlan);
     case BACKGROUND_CHECK:
-      console.log(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
       return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
       return images && images.length > 0;
@@ -263,10 +281,10 @@ class CaregiverEditListingWizard extends Component {
       stripeAccount,
       onChangeMissingInfoModal,
       history,
+      onFetchCurrentUserHasListings,
     } = this.props;
 
-    const stripeConnected =
-      currentUser && currentUser.stripeAccount && !!currentUser.stripeAccount.id;
+    const stripeConnected = !!currentUser.stripeAccount?.id;
 
     const stripeAccountData = stripeConnected ? getStripeAccountData(stripeAccount) : null;
 
@@ -283,6 +301,7 @@ class CaregiverEditListingWizard extends Component {
       !history.location.pathname.includes('create-profile')
     ) {
       onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
+      onFetchCurrentUserHasListings();
     } else if (requirementsMissing || !stripeConnected) {
       this.setState({
         draftId: id,
@@ -290,13 +309,16 @@ class CaregiverEditListingWizard extends Component {
       });
     } else if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
+      onFetchCurrentUserHasListings();
     }
   }
 
   handlePayoutModalClose() {
-    const { history } = this.props;
+    const { history, onFetchCurrentUserHasListings } = this.props;
 
     this.setState({ showPayoutDetails: false });
+
+    onFetchCurrentUserHasListings();
     if (history.location.pathname.includes('create-profile')) {
       history.push('/signup');
     } else {
@@ -317,36 +339,38 @@ class CaregiverEditListingWizard extends Component {
 
   render() {
     const {
-      id,
       className,
-      rootClassName,
-      params,
-      listing,
-      viewport,
-      intl,
+      createStripeAccountError,
+      currentUser,
       errors,
       fetchInProgress,
-      payoutDetailsSaveInProgress,
-      payoutDetailsSaved,
+      fetchStripeAccountError,
+      getAccountLinkInProgress,
+      id,
+      intl,
+      listing,
+      onGetStripeConnectAccountLink,
       onManageDisableScrolling,
       onPayoutDetailsFormChange,
-      onGetStripeConnectAccountLink,
-      getAccountLinkInProgress,
-      createStripeAccountError,
-      updateStripeAccountError,
-      fetchStripeAccountError,
-      stripeAccountFetched,
-      stripeAccount,
-      stripeAccountError,
-      stripeAccountLinkError,
-      currentUser,
-      pageName,
-      profileImage,
       onProfileImageUpload,
       onUpdateProfile,
+      pageName,
+      params,
+      payoutDetailsSaved,
+      payoutDetailsSaveInProgress,
+      profileImage,
+      rootClassName,
+      stripeAccount,
+      stripeAccountFetched,
+      stripeAccountLinkError,
+      updateStripeAccountError,
       uploadInProgress,
+      viewport,
       ...rest
     } = this.props;
+
+    const stripeAccountError =
+      createStripeAccountError || updateStripeAccountError || fetchStripeAccountError;
 
     const selectedTab = params.tab;
     const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
@@ -642,4 +666,96 @@ CaregiverEditListingWizard.propTypes = {
   profileImage: object,
 };
 
-export default compose(withViewport, injectIntl)(CaregiverEditListingWizard);
+const mapStateToProps = state => {
+  const authenticate = state.Authenticate;
+
+  const {
+    getAccountLinkInProgress,
+    createStripeAccountError,
+    updateStripeAccountError,
+    fetchStripeAccountError,
+    stripeAccount,
+    stripeAccountFetched,
+  } = state.stripeConnectAccount;
+
+  const getOwnListing = id => {
+    const listings = getMarketplaceEntities(state, [{ id, type: 'ownListing' }]);
+
+    return listings.length === 1 ? listings[0] : null;
+  };
+
+  const {
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+  } = state.stripe;
+
+  const { generateBioInProgress, generateBioError, generatedBio } = state.chatGPT;
+
+  return {
+    authenticate,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createStripeAccountError,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    fetchStripeAccountError,
+    getAccountLinkInProgress,
+    getOwnListing,
+    stripeAccount,
+    stripeAccountFetched,
+    subscription,
+    updateStripeAccountError,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+    generateBioInProgress,
+    generateBioError,
+    generatedBio,
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  fetchStripeCustomer: () => dispatch(stripeCustomer()),
+  onApplyBCPromoCode: (promoCode, userId) => dispatch(applyBCPromo(promoCode, userId)),
+  onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
+  onAuthenticateSubmitConsent: (userAccessCode, fullName, userId) =>
+    dispatch(authenticateSubmitConsent(userAccessCode, fullName, userId)),
+  onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
+    dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
+  onCreatePayment: params => dispatch(createPayment(params)),
+  onCreateSubscription: (stripeCustomerId, priceId, userId) =>
+    dispatch(createSubscription(stripeCustomerId, priceId, userId)),
+  onGenerateCriminalBackground: (userAccessCode, userId) =>
+    dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
+  onGet7YearHistory: (userAccessCode, userId) =>
+    dispatch(authenticate7YearHistory(userAccessCode, userId)),
+  onGetAuthenticateTestResult: (userAccessCode, userId) =>
+    dispatch(getAuthenticateTestResult(userAccessCode, userId)),
+  onGetIdentityProofQuiz: (userAccessCode, userId) =>
+    dispatch(identityProofQuiz(userAccessCode, userId)),
+  onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
+  onHandleCardSetup: params => dispatch(handleCardSetup(params)),
+  onImageUpload: data => dispatch(requestImageUpload(data)),
+  onPayoutDetailsFormChange: () => dispatch(stripeAccountClearError()),
+  onPayoutDetailsSubmit: (values, isUpdateCall) =>
+    dispatch(savePayoutDetails(values, isUpdateCall)),
+  onUpdateSubscription: (subscriptionId, params) =>
+    dispatch(updateSubscription(subscriptionId, params)),
+  onVerifyIdentityProofQuiz: (IDMSessionId, userAccessCode, userId, answers, currentAttempts) =>
+    dispatch(
+      verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
+    ),
+  onGenerateBio: listing => dispatch(generateBio(listing)),
+});
+
+export default compose(
+  withViewport,
+  injectIntl,
+  connect(mapStateToProps, mapDispatchToProps)
+)(CaregiverEditListingWizard);

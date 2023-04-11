@@ -8,10 +8,17 @@ export const GENERATE_ACCESS_TOKEN_REQUEST = 'app/sendbird/CREATE_SENDBIRD_USER_
 export const GENERATE_ACCESS_TOKEN_SUCCESS = 'app/sendbird/CREATE_SENDBIRD_USER_SUCCESS';
 export const GENERATE_ACCESS_TOKEN_ERROR = 'app/sendbird/CREATE_SENDBIRD_USER_ERROR';
 
+export const FETCH_UNREAD_MESSAGES_REQUEST = 'app/sendbird/FETCH_UNREAD_MESSAGES_REQUEST';
+export const FETCH_UNREAD_MESSAGES_SUCCESS = 'app/sendbird/FETCH_UNREAD_MESSAGES_SUCCESS';
+export const FETCH_UNREAD_MESSAGES_ERROR = 'app/sendbird/FETCH_UNREAD_MESSAGES_ERROR';
+
 const initialState = {
   generateAccessTokenError: null,
   generateAccessTokenInProgress: false,
   generateAccessTokenSuccess: false,
+  fetchUnreadMessagesInProgress: false,
+  fetchUnreadMessagesError: null,
+  unreadMessages: null,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -36,6 +43,25 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         generateAccessTokenError: payload,
       };
 
+    case FETCH_UNREAD_MESSAGES_REQUEST:
+      return {
+        ...state,
+        fetchUnreadMessagesInProgress: true,
+        fetchUnreadMessagesError: false,
+      };
+    case FETCH_UNREAD_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        unreadMessages: payload,
+        fetchUnreadMessagesInProgress: false,
+      };
+    case FETCH_UNREAD_MESSAGES_ERROR:
+      return {
+        ...state,
+        fetchUnreadMessagesInProgress: false,
+        fetchUnreadMessagesError: payload,
+      };
+
     default:
       return state;
   }
@@ -51,6 +77,19 @@ export const generateAccessTokenError = e => ({
   type: GENERATE_ACCESS_TOKEN_ERROR,
   error: true,
   payload: e,
+});
+
+export const fetchUnreadMessagesRequest = () => ({
+  type: FETCH_UNREAD_MESSAGES_REQUEST,
+});
+export const fetchUnreadMessagesSuccess = unreadMessages => ({
+  type: FETCH_UNREAD_MESSAGES_SUCCESS,
+  payload: unreadMessages,
+});
+export const fetchUnreadMessagesError = e => ({
+  type: FETCH_UNREAD_MESSAGES_ERROR,
+  payload: e,
+  error: true,
 });
 
 export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
@@ -75,4 +114,29 @@ export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
       log.error(e, 'generate-access-token-failed');
       dispatch(generateAccessTokenError(e));
     });
+};
+
+export const fetchUnreadMessages = () => async (dispatch, getState, sdk) => {
+  const currentUserId = getState().user?.currentUser?.id?.uuid;
+  const accessToken = getState().user?.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
+
+  const params = {
+    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
+    modules: [new GroupChannelModule()],
+  };
+  const sb = SendbirdChat.init(params);
+
+  try {
+    await sb.connect(currentUserId, accessToken);
+  } catch (e) {
+    log.error(e, 'connect-failed', {});
+  }
+
+  try {
+    const count = await sb.groupChannel.getTotalUnreadMessageCount();
+    dispatch(fetchUnreadMessagesSuccess(count));
+  } catch (e) {
+    log.error(e, 'fetch-unread-messages-failed', {});
+    dispatch(fetchUnreadMessagesError(e));
+  }
 };

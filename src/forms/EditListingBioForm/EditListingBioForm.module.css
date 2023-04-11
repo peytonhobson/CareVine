@@ -78,3 +78,18 @@
 .modalMessage {
   composes: marketplaceModalParagraphStyles from global;
 }
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  stroke: var(--marketplaceColor);
+  stroke-width: 3px;
+}

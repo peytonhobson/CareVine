@@ -2,7 +2,7 @@ import '@sendbird/uikit-react/dist/index.css';
 
 import React, { useState } from 'react';
 
-import ChannelAvatar from '@sendbird/uikit-react/ui/ChannelAvatar';
+import { Avatar } from '..';
 import Badge from '../Badge/Badge';
 import Icon, { IconColors, IconTypes } from '@sendbird/uikit-react/ui/Icon';
 import Label, { LabelTypography, LabelColors } from '@sendbird/uikit-react/ui/Label';
@@ -17,6 +17,9 @@ import moment from 'moment';
 import { useLongPress } from 'use-long-press';
 import Modal from '@sendbird/uikit-react/ui/Modal';
 import TextButton from '@sendbird/uikit-react/ui/TextButton';
+import { isToday, isYesterday } from '../../util/dates.js';
+
+import css from './SendbirdApp.module.css';
 
 const getLastMessageCreatedAt = (channel, locale) => {
   var _channel$lastMessage;
@@ -36,25 +39,6 @@ const getLastMessageCreatedAt = (channel, locale) => {
   if (!createdAt) {
     return '';
   }
-
-  const isToday = dirtyDate => {
-    if (!dirtyDate) {
-      return false;
-    }
-    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
-    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
-    return dateLeftStartOfDay === dateRightStartOfDay;
-  };
-
-  const isYesterday = dirtyDate => {
-    if (!dirtyDate) {
-      return false;
-    }
-
-    const dateLeftStartOfDay = timestampToDate(dirtyDate).setHours(0, 0, 0, 0);
-    const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
-    return dateLeftStartOfDay === dateRightStartOfDay - 86400000;
-  };
 
   if (isToday(createdAt)) {
     return timestampToDate(createdAt).toLocaleTimeString('en-US', {
@@ -182,6 +166,7 @@ const CustomChannelPreview = ({
   renderChannelAction,
   onLeaveChannel,
   tabIndex,
+  otherUser,
 }) => {
   const sbState = useSendbirdStateContext();
   const {
@@ -218,6 +203,7 @@ const CustomChannelPreview = ({
     }
   );
   const channelName = getChannelTitle(channel, userId, stringSet);
+
   return (
     <>
       <div
@@ -231,7 +217,7 @@ const CustomChannelPreview = ({
         {...(isMobile ? { ...onLongPress() } : { onClick })}
       >
         <div className="sendbird-channel-preview__avatar">
-          <ChannelAvatar channel={channel} userId={userId} theme={theme} />
+          <Avatar className={css.previewAvatar} user={otherUser} disableProfileLink />
         </div>
         <div className="sendbird-channel-preview__content">
           <div className="sendbird-channel-preview__content__upper " style={{ width: '100%' }}>

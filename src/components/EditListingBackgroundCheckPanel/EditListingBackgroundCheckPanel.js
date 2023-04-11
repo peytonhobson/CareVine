@@ -382,11 +382,11 @@ const EditListingBackgroundCheckPanel = props => {
       break;
     case PAYMENT:
       const options = {
-        clientSecret: subscription?.latest_invoice?.payment_intent.client_secret,
+        clientSecret: subscription?.latest_invoice?.payment_intent?.client_secret,
         appearance,
       };
 
-      content = subscription?.latest_invoice?.payment_intent.client_secret ? (
+      content = subscription?.latest_invoice?.payment_intent?.client_secret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
             {!updateSubscriptionError && (
@@ -486,7 +486,7 @@ const EditListingBackgroundCheckPanel = props => {
       content = (
         <div className={css.content}>
           <h1 className={css.quizTitle}>
-            Verify your <span className={css.identityText}>identity</span>
+            Verify Your <span className={css.identityText}>Identity</span>
           </h1>
           <div className={css.attemptsContainer}>
             <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>
