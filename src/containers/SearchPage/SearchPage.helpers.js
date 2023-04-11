@@ -144,7 +144,7 @@ export const createSearchResultSchema = (listings, address, intl) => {
 
   const schemaMainEntity = JSON.stringify({
     '@type': 'ItemList',
-    name: searchAddress,
+    name: 'search',
     itemListOrder: 'http://schema.org/ItemListOrderAscending',
     itemListElement: schemaListings,
   });
