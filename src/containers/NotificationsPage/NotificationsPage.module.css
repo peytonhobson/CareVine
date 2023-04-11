@@ -22,7 +22,7 @@
   width: 100%;
 
   @media (--viewportMedium) {
-    width: 20rem;
+    width: 23rem;
   }
 }
 
@@ -245,13 +245,18 @@
 
   /* Position */
   position: absolute;
-  right: 4.5rem;
-  top: 0.75rem;
+  left: 1rem;
+  top: 1.35rem;
 
   /* Style: red dot with white border */
   background-color: var(--failColor);
 
   opacity: 1;
+
+  @media (--viewportMedium) {
+    left: 0.8rem;
+    top: 0.875rem;
+  }
 }
 
 .mainWrapper {
@@ -266,6 +271,7 @@
   align-items: center;
   height: 90vh;
   width: 100%;
+  padding: 0 1rem;
 
   @media (--viewportMedium) {
     height: 100%;

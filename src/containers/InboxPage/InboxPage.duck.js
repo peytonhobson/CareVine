@@ -8,6 +8,7 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
 import config from '../../config';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
 import { updateUserNotifications, updateUser } from '../../util/api';
 import { userDisplayNameAsString } from '../../util/data';
 import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
@@ -253,7 +254,8 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
   };
   const sb = SendbirdChat.init(params);
 
-  sb.connect(currentUserId, accessToken)
+  return sb
+    .connect(currentUserId, accessToken)
     .then(() => {
       sb.groupChannel.getChannel(channelUrl).then(channel => {
         const members = channel.members;

@@ -198,7 +198,7 @@ const TopbarDesktop = props => {
       name="NotificationsPage"
     >
       <span className={css.bell}>
-        <IconBell height="1.75rem" width="1.75rem" />
+        <IconBell height="1.75em" width="1.75em" />
         {unreadNotificationCountBadge}
       </span>
     </NamedLink>
