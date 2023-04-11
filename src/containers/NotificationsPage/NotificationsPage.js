@@ -27,10 +27,13 @@ import SideNav from './SideNav';
 
 const DELETE_NOTIFICATION = 'DELETE_NOTIFICATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
+const SET_NOTIFICATION_MODAL_OPEN = 'SET_NOTIFICATION_MODAL_OPEN';
 const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
+
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -48,6 +51,8 @@ const reducer = (state, action) => {
       };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
+    case SET_NOTIFICATION_MODAL_OPEN:
+      return { ...state, isNotificationModalOpen: action.payload };
     case SET_ACTIVE_NOTIFICATION:
       return {
         ...state,
@@ -104,6 +109,7 @@ const NotificationsPageComponent = props => {
     notifications: sortedNotifications,
     isDeleteModalOpen: false,
     activeNotification: notifications.length > 0 ? notifications[0] : null,
+    isNotificationModalOpen: false,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -154,6 +160,10 @@ const NotificationsPageComponent = props => {
 
   const handlePreviewClick = id => {
     dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: id });
+
+    if (isMobile) {
+      dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: true });
+    }
   };
 
   const unreadCount = state.notifications.filter(n => !n.isRead).length;
@@ -186,23 +196,49 @@ const NotificationsPageComponent = props => {
             }
           />
         </LayoutWrapperSideNav>
+
         <LayoutWrapperMain className={css.mainWrapper}>
-          <NotificationContainer
-            notifications={state.notifications}
-            notification={state.activeNotification}
-            listing={currentUserListing}
-            currentUser={currentUser}
-            fetchCurrentUserInProgress={
-              fetchCurrentUserInProgress && !state.currentUserInitialFetched
-            }
-            onFetchSenderListing={onFetchSenderListing}
-            sender={sender}
-            senderListing={senderListing}
-            fetchSenderListingInProgress={fetchSenderListingInProgress}
-            fetchSenderListingError={fetchSenderListingError}
-          />
+          {!isMobile ? (
+            <NotificationContainer
+              notifications={state.notifications}
+              notification={state.activeNotification}
+              listing={currentUserListing}
+              currentUser={currentUser}
+              fetchCurrentUserInProgress={
+                fetchCurrentUserInProgress && !state.currentUserInitialFetched
+              }
+              onFetchSenderListing={onFetchSenderListing}
+              sender={sender}
+              senderListing={senderListing}
+              fetchSenderListingInProgress={fetchSenderListingInProgress}
+              fetchSenderListingError={fetchSenderListingError}
+            />
+          ) : null}
         </LayoutWrapperMain>
       </LayoutSideNavigation>
+      <Modal
+        id="NotificationsPageNotificationModal"
+        isOpen={state.isNotificationModalOpen}
+        onClose={() => dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: false })}
+        onManageDisableScrolling={onManageDisableScrolling}
+        containerClassName={css.modalContainer}
+        usePortal
+      >
+        <NotificationContainer
+          notifications={state.notifications}
+          notification={state.activeNotification}
+          listing={currentUserListing}
+          currentUser={currentUser}
+          fetchCurrentUserInProgress={
+            fetchCurrentUserInProgress && !state.currentUserInitialFetched
+          }
+          onFetchSenderListing={onFetchSenderListing}
+          sender={sender}
+          senderListing={senderListing}
+          fetchSenderListingInProgress={fetchSenderListingInProgress}
+          fetchSenderListingError={fetchSenderListingError}
+        />
+      </Modal>
       <Modal
         id="NotificationsPageDeleteModal"
         isOpen={state.isDeleteModalOpen}
