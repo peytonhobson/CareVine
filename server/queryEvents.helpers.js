@@ -339,6 +339,89 @@ const cancelSubscription = async backgroundCheckSubscription => {
   }
 };
 
+const backgroundCheckApprovedNotification = async userId => {
+  try {
+    const res = integrationSdk.listings.query({ authorId: userId });
+
+    const listing = res?.data?.data?.length > 0 && res.data.data[0];
+
+    const listingId = listing?.id?.uuid;
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: userId,
+        templateName: 'background-check-approved',
+        templateData: {
+          marketplaceUrl: rootUrl,
+          listingId: listingId,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'bc-approved-email-failed', {});
+  }
+};
+
+const backgroundCheckRejectedNotification = async userId => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: userId,
+        templateName: 'background-check-rejected',
+        templateData: { marketplaceUrl: rootUrl },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'send-bc-rejected-email-failed', {});
+  }
+};
+
+const deleteUserChannels = async userId => {
+  try {
+    const apiResponse = await axios.get(
+      `https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`,
+      {
+        headers: {
+          'Content-Type': 'application/json; charset=utf8',
+          'Api-Token': SB_API_TOKEN,
+        },
+      }
+    );
+    const channels = apiResponse?.data?.channels;
+
+    if (channels?.length > 0) {
+      channels.forEach(async channel => {
+        try {
+          await axios.delete(
+            `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
+            {
+              headers: {
+                'Content-Type': 'application/json; charset=utf8',
+                'Api-Token': SB_API_TOKEN,
+              },
+            }
+          );
+        } catch (e) {
+          log.error(e, 'delete-user-channel-failed', {});
+        }
+      });
+    }
+  } catch (e) {
+    log.error(e, 'delete-user-channels-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -347,4 +430,7 @@ module.exports = {
   enrollUserTCM,
   deEnrollUserTCM,
   cancelSubscription,
+  backgroundCheckRejectedNotification,
+  backgroundCheckApprovedNotification,
+  deleteUserChannels,
 };

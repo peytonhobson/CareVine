@@ -20,20 +20,10 @@ module.exports = queryEvents = () => {
     enrollUserTCM,
     deEnrollUserTCM,
     cancelSubscription,
+    backgroundCheckApprovedNotification,
+    deleteUserChannels,
+    backgroundCheckRejectedNotification,
   } = require('./queryEvents.helpers');
-
-  const apiBaseUrl = () => {
-    const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
-    const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
-
-    // In development, the dev API server is running in a different port
-    if (useDevApiServer) {
-      return `http://localhost:${port}`;
-    }
-
-    // Otherwise, use the same domain and port as the frontend
-    return process.env.REACT_APP_CANONICAL_ROOT_URL;
-  };
 
   const integrationSdk = flexIntegrationSdk.createInstance({
     // These two env vars need to be set in the `.env` file.
@@ -203,32 +193,7 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
-        integrationSdk.listings
-          .query({ authorId: userId })
-          .then(res => {
-            const listing = res?.data?.data?.length > 0 && res.data.data[0];
-
-            const listingId = listing?.id?.uuid;
-            axios
-              .post(
-                `${apiBaseUrl()}/api/sendgrid-template-email`,
-                {
-                  receiverId: userId,
-                  templateName: 'background-check-approved',
-                  templateData: {
-                    marketplaceUrl: rootUrl,
-                    listingId: listingId,
-                  },
-                },
-                {
-                  headers: {
-                    'Content-Type': 'application/transit+json',
-                  },
-                }
-              )
-              .catch(e => log.error(e, 'send-bc-approved-email-failed', {}));
-          })
-          .catch(e => log.error(e, 'bc-approved-listing-query-failed', {}));
+        backgroundCheckApprovedNotification(userId);
       }
 
       if (
@@ -237,24 +202,7 @@ module.exports = queryEvents = () => {
         prevBackgroundCheckApprovedStatus !== BACKGROUND_CHECK_REJECTED
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
-
-        // TODO: test this with error handling
-        // TODO: Change template data to match template
-        axios
-          .post(
-            `${apiBaseUrl()}/api/sendgrid-template-email`,
-            {
-              receiverId: userId,
-              templateName: 'background-check-rejected',
-              templateData: { marketplaceUrl: rootUrl },
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .catch(e => log.error(e, 'send-bc-rejected-email-failed', {}));
+        backgroundCheckRejectedNotification(userId);
       }
     }
 
@@ -264,31 +212,7 @@ module.exports = queryEvents = () => {
       const userId = previousValues?.id?.uuid;
 
       console.log('delete user channels');
-      axios
-        .get(`https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`, {
-          headers: {
-            'Content-Type': 'application/json; charset=utf8',
-            'Api-Token': SB_API_TOKEN,
-          },
-        })
-        .then(apiResponse => {
-          const channels = apiResponse?.data?.channels;
-
-          if (channels?.length > 0) {
-            channels.forEach(channel => {
-              axios.delete(
-                `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
-                {
-                  headers: {
-                    'Content-Type': 'application/json; charset=utf8',
-                    'Api-Token': SB_API_TOKEN,
-                  },
-                }
-              );
-            });
-          }
-        })
-        .catch(e => log.error(e.data));
+      deleteUserChannels(userId);
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);
