@@ -8,6 +8,7 @@
   padding: 0;
   background-color: var(--matterColorLight);
   width: 100%;
+  height: calc(100vh - var(--topbarHeight));
 
   @media (--viewportMedium) {
     height: calc(100vh - var(--topbarHeightDesktop));
@@ -80,7 +81,11 @@
   height: 100%;
   width: 100%;
   flex-wrap: wrap;
-  padding-bottom: 5rem;
+  padding-bottom: 10rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 5rem;
+  }
 }
 
 .bell {
@@ -262,7 +267,12 @@
 .mainWrapper {
   padding: 0;
   background-color: #eeeeee;
-  height: calc(100vh - var(--topbarHeightDesktop));
+
+  height: 0;
+
+  @media (--viewportMedium) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+  }
 }
 
 .notificationContainerRoot {

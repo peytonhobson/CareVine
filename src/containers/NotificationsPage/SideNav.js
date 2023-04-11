@@ -4,6 +4,8 @@ import NotificationPreview from './NotificationPreview';
 
 import css from './NotificationsPage.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const SideNav = props => {
   const {
     notifications,
@@ -33,7 +35,11 @@ const SideNav = props => {
             <IconSpinner className={css.sideNavSpinner} />
           ) : (
             <div className={css.noNotifications}>
-              <IconBell className={css.bell} height="5rem" width="5rem" />
+              <IconBell
+                className={css.bell}
+                height={isMobile ? '7em' : '5em'}
+                width={isMobile ? '7em' : '5em'}
+              />
               <span className={css.noNotificationsText}>No Notifications</span>
             </div>
           )}
