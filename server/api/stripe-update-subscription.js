@@ -5,7 +5,7 @@ const log = require('../log');
 module.exports = (req, res) => {
   const { subscriptionId, params } = req.body;
 
-  stripe.subscriptions
+  return stripe.subscriptions
     .update(subscriptionId, {
       ...params,
     })
@@ -19,7 +19,5 @@ module.exports = (req, res) => {
         )
         .end();
     })
-    .catch(e => {
-      handleStripeError(res, e);
-    });
+    .catch(e => handleStripeError(res, e));
 };

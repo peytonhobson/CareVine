@@ -14,10 +14,12 @@ module.exports = queryEvents = () => {
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const {
-    approveListingNotification,
     closeListing,
     updateListingApproveListing,
     updateUserListingApproved,
+    enrollUserTCM,
+    deEnrollUserTCM,
+    cancelSubscription,
   } = require('./queryEvents.helpers');
 
   const apiBaseUrl = () => {
@@ -148,28 +150,7 @@ module.exports = queryEvents = () => {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
         console.log('enroll tcm');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
-            {
-              userAccessCode,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .then(() => {
-            const userId = event?.attributes?.resource?.id?.uuid;
-            integrationSdk.users.updateProfile({
-              id: userId,
-              privateData: {
-                tcmEnrolled: true,
-              },
-            });
-          })
-          .catch(err => log.error(err));
+        enrollUserTCM(event, userAccessCode);
       }
 
       if (
@@ -181,28 +162,7 @@ module.exports = queryEvents = () => {
         const userAccessCode = privateData?.authenticateUserAccessCode;
 
         console.log('deenroll tcm');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
-            {
-              userAccessCode,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .then(() => {
-            const userId = event.attributes.resource.id.uuid;
-            integrationSdk.users.updateProfile({
-              id: userId,
-              privateData: {
-                tcmEnrolled: false,
-              },
-            });
-          })
-          .catch(err => log.error(err, 'tcm-deenroll-failed'));
+        deEnrollUserTCM(event, userAccessCode);
       }
       const prevBackgroundCheckApprovedStatus =
         previousValuesProfile?.metadata?.backgroundCheckApproved?.status;
@@ -219,20 +179,7 @@ module.exports = queryEvents = () => {
         backgroundCheckSubscription?.status === 'active'
       ) {
         console.log('cancel subscription');
-        axios
-          .post(
-            `${apiBaseUrl()}/api/stripe-update-subscription`,
-            {
-              subscriptionId: backgroundCheckSubscription?.subscriptionId,
-              params: { cancel_at_period_end: true },
-            },
-            {
-              headers: {
-                'Content-Type': 'application/transit+json',
-              },
-            }
-          )
-          .catch(e => log.error(e, 'stripe-update-subscription-failed'));
+        cancelSubscription(backgroundCheckSubscription);
       }
 
       const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
