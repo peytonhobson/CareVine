@@ -109,14 +109,6 @@ const NotificationsPageComponent = props => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const fetchUserInterval = setInterval(() => onFetchCurrentUser(), 10000);
-
-    return () => {
-      clearInterval(fetchUserInterval);
-    };
-  }, []);
-
-  useEffect(() => {
     if (sortedNotifications.length === 0) return;
     dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
   }, [sortedNotifications.length]);
@@ -134,6 +126,7 @@ const NotificationsPageComponent = props => {
   useEffect(() => {
     if (previousNotifications && !isEqual(state.notifications, previousNotifications)) {
       onUpdateNotifications(state.notifications);
+      onFetchCurrentUser();
     }
   }, [state.notifications]);
 

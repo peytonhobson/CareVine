@@ -87,10 +87,12 @@ class TopbarComponent extends Component {
     const { currentUser } = this.props;
     const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
 
-    if (sbAccessToken) {
+    if (sbAccessToken && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
-      this.unreadMessagePolling = setInterval(() => {
+      this.props.onFetchCurrentUser();
+      this.pollingInterval = setInterval(() => {
         this.props.onFetchUnreadMessages();
+        this.props.onFetchCurrentUser();
       }, 10000);
     }
   }
@@ -98,16 +100,18 @@ class TopbarComponent extends Component {
   componentDidUpdate(prevProps) {
     const sbAccessToken = this.props.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
 
-    if (sbAccessToken && !this.unreadMessagePolling) {
+    if (sbAccessToken && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
-      this.unreadMessagePolling = setInterval(() => {
+      this.props.onFetchCurrentUser();
+      this.pollingInterval = setInterval(() => {
         this.props.onFetchUnreadMessages();
+        this.props.onFetchCurrentUser();
       }, 10000);
     }
   }
 
   componentWillUnmount() {
-    clearInterval(this.unreadMessagePolling);
+    clearInterval(this.pollingInterval);
   }
 
   handleMobileMenuOpen() {
