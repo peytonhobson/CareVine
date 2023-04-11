@@ -308,25 +308,6 @@ class TopbarComponent extends Component {
         >
           {authInProgress ? null : mobileMenu}
         </Modal>
-        {/* <Modal
-          id="TopbarMobileSearch"
-          containerClassName={css.modalContainer}
-          isOpen={isMobileSearchOpen}
-          onClose={this.handleMobileSearchClose}
-          usePortal
-          onManageDisableScrolling={onManageDisableScrolling}
-        >
-          <div className={css.searchContainer}>
-            <TopbarSearchForm
-              onSubmit={this.handleSubmit}
-              initialValues={initialSearchFormValues}
-              isMobile
-            />
-            <p className={css.mobileHelp}>
-              <FormattedMessage id="Topbar.mobileSearchHelp" />
-            </p>
-          </div>
-        </Modal> */}
         <ModalMissingInformation
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}

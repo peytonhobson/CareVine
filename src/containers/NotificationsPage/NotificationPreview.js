@@ -15,6 +15,8 @@ import classNames from 'classnames';
 
 import css from './NotificationsPage.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 const formatPreviewDate = createdAt => {
   if (isToday(createdAt)) {
     return timestampToDate(createdAt).toLocaleTimeString('en-US', {
@@ -141,9 +143,16 @@ const NotificationPreview = props => {
         </div>
         <div
           className={css.notificationPreviewAction}
-          onClick={() => handleOpenDeleteNotificationModal(id)}
+          onClick={e => {
+            e.stopPropagation();
+            handleOpenDeleteNotificationModal(id);
+          }}
         >
-          <IconVerticalDots height="0.75rem" width="1rem" className={css.menuIcon} />
+          <IconVerticalDots
+            height={isMobile ? '1.5rem' : '0.75rem'}
+            width={isMobile ? '1.75rem' : '1rem'}
+            className={css.menuIcon}
+          />
         </div>
       </div>
     </div>

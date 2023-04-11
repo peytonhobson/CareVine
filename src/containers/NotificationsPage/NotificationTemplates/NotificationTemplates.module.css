@@ -8,6 +8,7 @@
 .title {
   color: var(--marketplaceColor);
   font-size: 3rem;
+  line-height: 3.5rem;
   width: 100%;
   text-align: center;
 }
@@ -15,6 +16,7 @@
 .message {
   color: var(--marketplaceColor);
   font-size: 1.25rem;
+  line-height: 1.75rem;
   width: 100%;
   text-align: center;
   margin-top: 2rem;

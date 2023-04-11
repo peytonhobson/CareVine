@@ -1,23 +1,29 @@
 @import '../../styles/customMediaQueries.css';
 
-.desktopTopbar,
-.mobileTopbar {
-  box-shadow: none;
+.desktopTopbar {
   border-bottom: solid 1px rgba(0, 0, 0, 0.12);
 }
 
 .navigation {
   padding: 0;
   background-color: var(--matterColorLight);
-  height: calc(100vh - var(--topbarHeightDesktop));
+  width: 100%;
+
+  @media (--viewportMedium) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+    width: auto;
+  }
 }
 
 .sidenavRoot {
   flex: 1 1 0;
   overflow-y: scroll;
   overflow-x: hidden;
-  width: 20rem;
-  height: 100%;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: 20rem;
+  }
 }
 
 .notificationPreview {
@@ -25,13 +31,17 @@
   cursor: pointer;
   box-sizing: border-box;
   width: 100%;
-  height: 5rem;
+  height: 7rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   padding: 0.75rem 1rem 0.75rem 1rem;
   border-bottom: solid 1px rgba(0, 0, 0, 0.12);
+
+  @media (--viewportMedium) {
+    height: 5rem;
+  }
 
   &:focus {
     outline: none;
@@ -103,15 +113,24 @@
 }
 
 .notificationTitle {
-  font-size: 0.825rem;
+  font-size: 1.1rem;
   color: var(--marketplaceColor);
   padding-right: 3rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 0.825rem;
+  }
 }
 
 .notificationDate {
   font-family: 'Roboto', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   white-space: nowrap;
+
+  @media (--viewportMedium) {
+    font-size: 0.75rem;
+  }
 }
 
 .notificationIcon {
@@ -119,9 +138,15 @@
 }
 
 .notificationText {
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: rgba(0, 0, 0, 0.5);
   font-family: 'Roboto', sans-serif;
+  margin-top: 0.5rem;
+
+  @media (--viewportMedium) {
+    font-size: 0.75rem;
+    margin-top: 0rem;
+  }
 }
 
 .notificationPreviewContent {
@@ -135,7 +160,11 @@
   justify-content: space-between;
   width: 100%;
   flex-wrap: nowrap;
-  line-height: 1rem;
+  line-height: 2rem;
+
+  @media (--viewportMedium) {
+    line-height: 1rem;
+  }
 }
 
 .notificationPreviewLower {
@@ -155,11 +184,16 @@
   border-radius: 0.25rem;
 
   position: absolute;
-  right: 1rem;
-  top: 1.8rem;
+  right: 1.5rem;
+  top: 3rem;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  @media (--viewportMedium) {
+    right: 1rem;
+    top: 1.8rem;
   }
 }
 
@@ -230,9 +264,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 90vh;
   width: 100%;
-  padding: 0 15rem;
+
+  @media (--viewportMedium) {
+    height: 100%;
+    padding: 0 15rem;
+  }
 }
 
 .noTextWrap {

@@ -16,6 +16,7 @@ import {
   NotificationBadge,
   OwnListingLink,
   ListingLink,
+  IconBell,
 } from '../../components';
 import { CAREGIVER } from '../../util/constants';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
@@ -34,10 +35,10 @@ const TopbarMobileMenu = props => {
     currentUserListing,
     currentUserListingFetched,
     currentUser,
-    notificationCount,
     onLogout,
     onChangeModalValue,
     unreadMessages,
+    unreadNotificationCount,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -90,7 +91,12 @@ const TopbarMobileMenu = props => {
     </NamedLink>
   ) : null;
 
-  const notificationCountBadge =
+  const unreadNotificationCountBadge =
+    unreadNotificationCount > 0 ? (
+      <NotificationBadge className={css.notificationBadge} count={unreadNotificationCount} />
+    ) : null;
+
+  const unreadMessagesBadge =
     unreadMessages > 0 ? (
       <NotificationBadge className={css.notificationBadge} count={unreadMessages} />
     ) : null;
@@ -133,6 +139,18 @@ const TopbarMobileMenu = props => {
       </NamedLink>
     );
 
+  const notificationsLink = isAuthenticated ? (
+    <NamedLink
+      className={classNames(css.regularLink, css.notificationsLink)}
+      name="NotificationsPage"
+    >
+      <span className={css.bell}>
+        <IconBell height="2rem" width="2rem" />
+        {unreadNotificationCountBadge}
+      </span>
+    </NamedLink>
+  ) : null;
+
   return (
     <div className={css.root}>
       <AvatarLarge
@@ -147,6 +165,7 @@ const TopbarMobileMenu = props => {
         <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>
           <FormattedMessage id="TopbarMobileMenu.logoutLink" />
         </InlineTextButton>
+        {notificationsLink}
         {userCanMessage(currentUser) ? (
           <NamedLink
             className={classNames(css.inbox, currentPageClass('InboxPage'))}
@@ -154,7 +173,7 @@ const TopbarMobileMenu = props => {
             params={{ tab: 'messages' }}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {notificationCountBadge}
+            {unreadMessagesBadge}
           </NamedLink>
         ) : (
           <span
@@ -162,7 +181,7 @@ const TopbarMobileMenu = props => {
             onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {notificationCountBadge}
+            {unreadMessagesBadge}
           </span>
         )}
         {createListingLink}
