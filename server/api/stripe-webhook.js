@@ -78,9 +78,9 @@ const sendgridStandardEmail = (fromEmail, receiverEmail, subject, html, failMess
     .catch(e => log.error(e, failMessage, {}));
 };
 
-const createNotifications = (userId, type, metadata, failMessage) => {
+const createNotifications = (userId, type, metadata, failMessage, notificationId) => {
   const newNotification = {
-    id: uuidv4(),
+    id: notificationId ?? uuidv4(),
     type,
     createdAt: new Date().getTime(),
     isRead: false,
@@ -304,6 +304,7 @@ const sendPaymentReceivedNotifications = data => {
   const { userId, senderName } = data?.metadata;
 
   const paymentAmount = (data?.amount - data?.application_fee_amount) / 100;
+  const notificationId = uuidv4();
 
   if (senderName) {
     sendgridEmail(
@@ -313,6 +314,7 @@ const sendPaymentReceivedNotifications = data => {
         marketplaceUrl: rootUrl,
         senderName,
         paymentAmount,
+        notificationId,
       },
       'payment-received-email-failed'
     );
@@ -321,7 +323,8 @@ const sendPaymentReceivedNotifications = data => {
       userId,
       'paymentReceived',
       { metadata: { senderName, paymentAmount } },
-      'payment-received-notification-failed'
+      'payment-received-notification-failed',
+      notificationId
     );
   }
 };

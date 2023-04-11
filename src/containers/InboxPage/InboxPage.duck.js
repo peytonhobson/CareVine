@@ -274,7 +274,7 @@ export const fetchOtherUserListing = (channelUrl, currentUserId, accessToken) =>
     });
 };
 
-export const transitionToRequestPayment = (otherUserListing, channelUrl) => (
+export const transitionToRequestPayment = (otherUserListing, notificationId) => (
   dispatch,
   getState,
   sdk
@@ -286,7 +286,7 @@ export const transitionToRequestPayment = (otherUserListing, channelUrl) => (
   const bodyParams = {
     transition: TRANSITION_REQUEST_PAYMENT,
     processAlias: config.singleActionProcessAlias,
-    params: { listingId, protectedData: { channelUrl } },
+    params: { listingId, protectedData: { notificationId } },
   };
   return sdk.transactions
     .initiate(bodyParams)
@@ -347,8 +347,9 @@ export const sendRequestForPayment = (
 
   const senderName = userDisplayNameAsString(currentUser);
   const userId = otherUser.id.uuid;
+  const notificationId = uuidv4();
   const newNotification = {
-    id: uuidv4(),
+    id: notificationId,
     type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
     createdAt: new Date().getTime(),
     isRead: false,
@@ -384,7 +385,7 @@ export const sendRequestForPayment = (
     });
 
     dispatch(sendRequestForPaymentSuccess());
-    dispatch(transitionToRequestPayment(otherUserListing, channelUrl));
+    dispatch(transitionToRequestPayment(otherUserListing, notificationId));
   } catch (e) {
     log.error(e, 'send-request-for-payment-failed');
     dispatch(sendRequestForPaymentError(e));

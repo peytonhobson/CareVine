@@ -120,7 +120,8 @@ module.exports = queryEvents = () => {
                   id: listingId,
                 })
                 .then(() => {
-                  approveListingNotification(userId);
+                  const userName = user?.attributes?.profile?.displayName;
+                  approveListingNotification(userId, userName, listingId);
                 })
                 .catch(err => log.error(err, 'listing-approve-failed'));
             }
@@ -167,6 +168,7 @@ module.exports = queryEvents = () => {
           .then(res => {
             const userListingId = res.data.data[0].id.uuid;
             listingState = res.data.data[0].attributes.state;
+            const displayName = event.attributes.resource.attributes.profile.displayName;
 
             if (listingState === 'pendingApproval') {
               return integrationSdk.listings
@@ -174,7 +176,7 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
-                  approveListingNotification(userId);
+                  approveListingNotification(userId, displayName, userListingId);
                 })
                 .catch(err => log.error(err, 'listing-approved-failed'));
             }
@@ -185,7 +187,7 @@ module.exports = queryEvents = () => {
                   id: userListingId,
                 })
                 .then(() => {
-                  approveListingNotification(userId);
+                  approveListingNotification(userId, displayName, userListingId);
                 })
                 .catch(err => log.error(err, 'listing-open-failed'));
             }
