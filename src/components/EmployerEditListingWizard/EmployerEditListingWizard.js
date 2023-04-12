@@ -1,7 +1,7 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component } from 'react';
 import { array, bool, func, number, object, oneOf, shape, string } from 'prop-types';
 import { compose } from 'redux';
-import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { injectIntl, intlShape } from '../../util/reactIntl';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { withViewport } from '../../util/contextHelpers';
@@ -11,7 +11,7 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
+import { getMissingInfoModalValue } from '../../util/data';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { generateJobDescription } from '../../ducks/chatGPT.duck';
 
@@ -184,7 +184,7 @@ class EmployerEditListingWizard extends Component {
       className,
       rootClassName,
       params,
-      listing,
+      listing: currentListing,
       viewport,
       intl,
       errors,
@@ -205,7 +205,6 @@ class EmployerEditListingWizard extends Component {
     );
     const rootClasses = rootClassName || css.root;
     const classes = classNames(rootClasses, className);
-    const currentListing = ensureListing(listing);
     const tabsStatus = tabsActive(isNewListingFlow, currentListing);
 
     // If selectedTab is not active, redirect to the beginning of wizard
@@ -243,8 +242,6 @@ class EmployerEditListingWizard extends Component {
       return { name: pageName || 'EditListingPage', params: { ...params, tab } };
     };
 
-    const ensuredCurrentUser = ensureCurrentUser(currentUser);
-
     return (
       <div className={classes}>
         <Tabs
@@ -274,7 +271,7 @@ class EmployerEditListingWizard extends Component {
                 onManageDisableScrolling={onManageDisableScrolling}
                 pageName={pageName}
                 profileImage={profileImage}
-                currentUser={ensuredCurrentUser}
+                currentUser={currentUser}
                 onProfileImageUpload={onProfileImageUpload}
                 uploadInProgress={uploadInProgress}
                 onUpdateProfile={onUpdateProfile}

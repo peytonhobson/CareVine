@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { bool, func, object, shape, string, oneOf } from 'prop-types';
 import { compose } from 'redux';
 import { withRouter } from 'react-router-dom';
@@ -15,7 +15,7 @@ import {
   getListingType,
 } from '../../util/urlHelpers';
 import { LISTING_STATE_DRAFT, LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
-import { ensureOwnListing } from '../../util/data';
+import { ensureOwnListing, ensureCurrentUser } from '../../util/data';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import {
@@ -59,8 +59,6 @@ export const EditListingPageComponent = props => {
   const {
     createStripeAccountError,
     currentUser,
-    currentUserListing,
-    currentUserListingFetched,
     getOwnListing,
     history,
     image,
@@ -82,30 +80,30 @@ export const EditListingPageComponent = props => {
     history.replace(history.location.pathname.replace('/l/', '/create-profile/'));
   }
 
-  const userType = currentUser && currentUser.attributes.profile.publicData.userType;
-  const isListingDraft =
-    currentUserListing && currentUserListing.attributes.state === LISTING_PAGE_PARAM_TYPE_DRAFT;
+  const ensuredCurrentUser = ensureCurrentUser(currentUser);
+  const userType = ensuredCurrentUser.attributes.profile.publicData.userType;
 
-  if (currentUserListing && type !== getListingType(isListingDraft)) {
+  const listingId = page.submittedListingId || (id ? new UUID(id) : null);
+  const listing = useMemo(() => getOwnListing(listingId), [getOwnListing, listingId]);
+  const currentListing = ensureOwnListing(listing);
+  const { state: currentListingState } = currentListing.attributes;
+
+  const isListingDraft = currentListingState === LISTING_PAGE_PARAM_TYPE_DRAFT;
+  if (listing && type !== getListingType(isListingDraft)) {
     history.replace(
       createResourceLocatorString('EditListingPage', routeConfiguration(), {
-        id: currentUserListing.id.uuid,
-        slug: createSlug(currentUserListing.attributes.title),
+        id: listing.id?.uuid,
+        slug: createSlug(listing.attributes.title),
         type: getListingType(isListingDraft),
         tab: userType === 'employer' ? 'care-type' : 'services',
       })
     );
   }
 
-  const listingId = page.submittedListingId || (id ? new UUID(id) : null);
-  const listing = getOwnListing(listingId);
-  const currentListing = ensureOwnListing(listing);
-  const { state: currentListingState } = currentListing.attributes;
-
   const isPastDraft = currentListingState && currentListingState !== LISTING_STATE_DRAFT;
   const shouldRedirect = isNewListingFlow && listingId && isPastDraft;
 
-  const hasStripeOnboardingDataIfNeeded = returnURLType ? !!(currentUser && currentUser.id) : true;
+  const hasStripeOnboardingDataIfNeeded = returnURLType ? !!ensuredCurrentUser.id : true;
   const showForm = hasStripeOnboardingDataIfNeeded && (isNewURI || currentListing.id);
 
   const createProfile = history.location.pathname.includes('create-profile');
@@ -137,18 +135,15 @@ export const EditListingPageComponent = props => {
         };
 
     return <NamedRedirect {...redirectProps} />;
-  } else if (
-    (isNewURI && currentUserListingFetched && currentUserListing) ||
-    (createProfile && isPublished)
-  ) {
+  } else if ((isNewURI && currentListing.id?.uuid) || (createProfile && isPublished)) {
     // If we allow only one listing per provider, we need to redirect to correct listing.
 
     return (
       <NamedRedirect
         name="EditListingPage"
         params={{
-          id: currentUserListing.id.uuid,
-          slug: createSlug(currentUserListing.attributes.title),
+          id: currentListing.id?.uuid,
+          slug: createSlug(currentListing.attributes.title),
           type: LISTING_PAGE_PARAM_TYPE_EDIT,
           tab: userType === 'employer' ? 'care-type' : 'services',
         }}
@@ -179,7 +174,9 @@ export const EditListingPageComponent = props => {
     const newListingPublished =
       isDraftURI && currentListing && currentListingState !== LISTING_STATE_DRAFT;
 
-    const profileImageId = currentUser?.profileImage ? currentUser?.profileImage.id : null;
+    const profileImageId = ensuredCurrentUser.profileImage
+      ? ensuredCurrentUser.profileImage.id
+      : null;
     const profileImage = image || { imageId: profileImageId };
 
     const title = isNewListingFlow
@@ -188,7 +185,7 @@ export const EditListingPageComponent = props => {
 
     let editListingWizard = null;
 
-    const userType = currentUser?.attributes.profile.metadata.userType;
+    const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
 
     if (userType === CAREGIVER) {
       editListingWizard = (
@@ -196,7 +193,7 @@ export const EditListingPageComponent = props => {
           {...rest}
           availabilityExceptions={page.availabilityExceptions}
           className={css.wizard}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           errors={errors}
           history={history}
           id="CaregiverEditListingWizard"
@@ -219,7 +216,7 @@ export const EditListingPageComponent = props => {
           {...rest}
           availabilityExceptions={page.availabilityExceptions}
           className={css.wizard}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           errors={errors}
           fetchExceptionsInProgress={page.fetchExceptionsInProgress}
           history={history}
@@ -275,7 +272,7 @@ export const EditListingPageComponent = props => {
     };
     return (
       <Page title={intl.formatMessage(loadingPageMsg)} scrollingDisabled={scrollingDisabled}>
-        {!createProfile && currentListing && currentListing.id && currentListing.id.uuid && (
+        {!createProfile && currentListing.id?.uuid && (
           <TopbarContainer
             className={css.topbar}
             mobileRootClassName={css.mobileTopbar}
@@ -283,16 +280,14 @@ export const EditListingPageComponent = props => {
             mobileClassName={css.mobileTopbar}
           />
         )}
-        {!createProfile && currentListing && currentListing.id && currentListing.id.uuid && (
+        {!createProfile && currentListing.id?.uuid && (
           <UserNav
             selectedPageName={currentListing ? 'EditListingPage' : 'NewListingPage'}
             listing={currentListing}
           />
         )}
         <div className={css.placeholderWhileLoading} />
-        {!createProfile && currentListing && currentListing.id && currentListing.id.uuid && (
-          <Footer />
-        )}
+        {!createProfile && currentListing.id?.uuid && <Footer />}
       </Page>
     );
   }
@@ -311,8 +306,6 @@ EditListingPageComponent.defaultProps = {
   listingDraft: null,
   notificationCount: 0,
   sendVerificationEmailError: null,
-  currentUserListing: null,
-  currentUserListingFetched: false,
 };
 
 EditListingPageComponent.propTypes = {
@@ -323,8 +316,6 @@ EditListingPageComponent.propTypes = {
   updateStripeAccountError: propTypes.error,
   currentUser: propTypes.currentUser,
   getOwnListing: func.isRequired,
-  currentUserListing: propTypes.ownListing,
-  currentUserListingFetched: bool,
   onAddAvailabilityException: func.isRequired,
   onDeleteAvailabilityException: func.isRequired,
   onCreateListingDraft: func.isRequired,
@@ -360,7 +351,7 @@ const mapStateToProps = state => {
 
   const { createStripeAccountInProgress, createStripeAccountError } = state.stripeConnectAccount;
 
-  const { currentUser, currentUserListing, currentUserListingFetched } = state.user;
+  const { currentUser } = state.user;
 
   const fetchInProgress = createStripeAccountInProgress;
 
@@ -373,8 +364,6 @@ const mapStateToProps = state => {
   return {
     createStripeAccountError,
     currentUser,
-    currentUserListing,
-    currentUserListingFetched,
     fetchInProgress,
     getOwnListing,
     image,

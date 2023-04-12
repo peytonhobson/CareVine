@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import classNames from 'classnames';
 import { Modal, IconConfirm, Button, IconClose, IconSpinner } from '../';
 import { ensureOwnListing } from '../../util/data';
@@ -180,19 +180,19 @@ const EditListingBackgroundCheckPanel = props => {
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = <FormattedMessage id="EditListingBackgroundCheckPanel.createListingTitle" />;
 
-  const authenticateUserAccessCode = privateData && privateData.authenticateUserAccessCode;
-  const authenticateConsent = privateData && privateData.authenticateConsent;
+  const authenticateUserAccessCode = privateData?.authenticateUserAccessCode;
+  const authenticateConsent = privateData?.authenticateConsent;
   const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
-  const identityProofQuiz = privateData && privateData.identityProofQuiz;
-  const identityProofQuizVerification = privateData && privateData.identityProofQuizVerification;
+  const identityProofQuiz = privateData?.identityProofQuiz;
+  const identityProofQuizVerification = privateData?.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
-    privateData && privateData.authenticateCriminalBackgroundGenerated;
-  const authenticateUserTestResult = privateData && privateData.authenticateUserTestResult;
-  const authenticate7YearHistory = privateData && privateData.authenticate7YearHistory;
-  const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
-  const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
+    privateData?.authenticateCriminalBackgroundGenerated;
+  const authenticateUserTestResult = privateData?.authenticateUserTestResult;
+  const authenticate7YearHistory = privateData?.authenticate7YearHistory;
+  const backgroundCheckApproved = metadata?.backgroundCheckApproved;
+  const backgroundCheckRejected = privateData?.backgroundCheckRejected;
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
-  const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
+  const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
@@ -341,6 +341,25 @@ const EditListingBackgroundCheckPanel = props => {
     }
   };
 
+  const handlePayForBC = bcType => {
+    setStage(PAYMENT);
+    setBackgroundCheckType(bcType);
+    onCreateSubscription(
+      stripeCustomerId,
+      bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+      currentUser.id.uuid
+    );
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  };
+
+  const memoizedHandlePayForBC = useCallback(handlePayForBC, [
+    setStage,
+    setBackgroundCheckType,
+    onCreateSubscription,
+    stripeCustomerId,
+    currentUser.id.uuid,
+  ]);
+
   const initialValues = {
     firstName,
     lastName,
@@ -366,20 +385,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   switch (stage) {
     case INITIAL:
-      content = (
-        <ScreeningDescription
-          onPayForBC={bcType => {
-            setStage(PAYMENT);
-            setBackgroundCheckType(bcType);
-            onCreateSubscription(
-              stripeCustomerId,
-              bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-              currentUser.id.uuid
-            );
-            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          }}
-        />
-      );
+      content = <ScreeningDescription onPayForBC={memoizedHandlePayForBC} />;
       break;
     case PAYMENT:
       const options = {
