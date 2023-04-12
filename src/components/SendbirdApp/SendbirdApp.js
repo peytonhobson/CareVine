@@ -9,12 +9,11 @@ import SBConversation from '@sendbird/uikit-react/Channel';
 import '@sendbird/uikit-react/dist/index.css';
 import sendbirdSelectors from '@sendbird/uikit-react/sendbirdSelectors';
 import withSendbird from '@sendbird/uikit-react/withSendbird';
-import useSendbirdStateContext from '@sendbird/uikit-react/useSendbirdStateContext';
 
 import CustomChannelPreview from './CustomChannelPreview';
-import CustomMessageItem from './CustomMessageItem';
 import CustomChannelPreviewAction from './CustomChannelPreviewAction';
 import { LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT } from '../../util/urlHelpers';
+import CustomMessage from './CustomMessage';
 
 import css from './SendbirdApp.module.css';
 
@@ -185,16 +184,14 @@ const SendbirdApp = props => {
             channelUrl={currentChannelUrl}
             renderChannelHeader={() => customChannelHeader}
             disableUserProfile
-            renderMessage={({ message, onDeleteMessage, onUpdateMessage, emojiContainer }) => (
-              <CustomMessageItem
+            renderMessage={(messageProps, idx) => (
+              <CustomMessage
+                key={idx}
+                {...messageProps}
                 currentChannel={currentChannelUrl}
                 currentUser={currentUser}
-                emojiContainer={emojiContainer}
                 isPaymentModalOpen={isPaymentModalOpen}
-                message={message}
-                onDeleteMessage={onDeleteMessage}
                 onOpenPaymentModal={onOpenPaymentModal}
-                onUpdateMessage={onUpdateMessage}
                 otherUser={otherUser}
                 sdk={sdk}
                 updateLastMessage={updateLastMessage}
