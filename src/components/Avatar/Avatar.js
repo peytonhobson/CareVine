@@ -10,6 +10,10 @@ import {
   userAbbreviatedName,
 } from '../../util/data';
 import { ResponsiveImage, IconBannedUser, NamedLink } from '../../components/';
+import DefaultAvatar1 from '../../assets/Dava1.png';
+import DefaultAvatar2 from '../../assets/Dava2.png';
+import DefaultAvatar3 from '../../assets/Dava3.png';
+import DefaultAvatar4 from '../../assets/Dava4.png';
 
 import css from './Avatar.module.css';
 
@@ -68,22 +72,22 @@ export const AvatarComponent = props => {
 
   const defaultUserAbbreviatedName = '';
 
-  let linearGradient = null;
+  let defaultAvatarImage = null;
 
-  const avatarLinearGradient = avatarUser.attributes.profile.publicData?.avatarLinearGradient;
+  const defaultAvatar = avatarUser.attributes.profile.publicData?.defaultAvatar;
 
-  switch (avatarLinearGradient) {
-    case 'green':
-      linearGradient = css.linearGradientGreen;
+  switch (defaultAvatar) {
+    case '1':
+      defaultAvatarImage = css.defaultContainer1;
       break;
-    case 'red':
-      linearGradient = css.linearGradientRed;
+    case '2':
+      defaultAvatarImage = css.defaultContainer2;
       break;
-    case 'orange':
-      linearGradient = css.linearGradientOrange;
+    case '3':
+      defaultAvatarImage = css.defaultContainer3;
       break;
-    case 'pink':
-      linearGradient = css.linearGradientPink;
+    case '4':
+      defaultAvatarImage = css.defaultContainer4;
       break;
     default:
       break;
@@ -95,11 +99,10 @@ export const AvatarComponent = props => {
   const linkProps = avatarUser.id
     ? { name: 'ProfilePage', params: { id: avatarUser.id.uuid } }
     : { name: 'ProfileBasePage' };
-  const hasProfileImage =
-    avatarUser?.profileImage?.id || avatarUser?.relationships?.profileImage?.data?.id;
+  const hasProfileImage = avatarUser?.profileImage?.id;
   const profileLinkEnabled = !disableProfileLink;
 
-  const classForInitials = initialsClassName || css.initials;
+  const classForInitials = classNames(css.initials, initialsClassName);
 
   if (isBannedUser || isDeletedUser) {
     return (
@@ -122,7 +125,7 @@ export const AvatarComponent = props => {
   } else {
     // Placeholder avatar (initials)
     return (
-      <div {...rootProps} className={classNames(classes, linearGradient)}>
+      <div {...rootProps} className={classNames(classes, defaultAvatarImage)}>
         <span className={classForInitials}>{abbreviatedName}</span>
       </div>
     );
