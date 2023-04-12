@@ -46,7 +46,6 @@ import {
   getAuthenticateTestResult,
   authenticateGenerateCriminalBackground,
   authenticate7YearHistory,
-  applyBCPromo,
 } from '../../ducks/authenticate.duck';
 import { generateBio } from '../../ducks/chatGPT.duck';
 
@@ -722,7 +721,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onApplyBCPromoCode: (promoCode, userId) => dispatch(applyBCPromo(promoCode, userId)),
   onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
   onAuthenticateSubmitConsent: (userAccessCode, fullName, userId) =>
     dispatch(authenticateSubmitConsent(userAccessCode, fullName, userId)),

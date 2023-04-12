@@ -37,23 +37,8 @@ import {
   requestCreateListingDraft,
   requestPublishListingDraft,
   requestUpdateListing,
-  requestImageUpload,
-  updateImageOrder,
-  removeListingImage,
   clearUpdatedTab,
-  savePayoutDetails,
 } from './EditListingPage.duck';
-import {
-  authenticateCreateUser,
-  authenticateSubmitConsent,
-  identityProofQuiz,
-  verifyIdentityProofQuiz,
-  authenticateUpdateUser,
-  getAuthenticateTestResult,
-  authenticateGenerateCriminalBackground,
-  authenticate7YearHistory,
-  applyBCPromo,
-} from '../../ducks/authenticate.duck';
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';

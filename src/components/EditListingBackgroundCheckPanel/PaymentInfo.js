@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '..';
-import { FREE_FIRST_PERIOD_ID } from '../../util/constants';
+import { PROMO_CODES } from '../../util/constants';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -14,45 +14,60 @@ const PaymentInfo = props => {
     backgroundCheckType,
     subscription,
     currentUser,
-    onApplyBCPromoCode,
-    applyBCPromoInProgress,
-    applyBCPromoError,
-    bcPromo,
-    backgroundCheckPromo,
     onUpdateSubscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
   } = props;
 
   const [promoCode, setPromoCode] = useState('');
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoError, setPromoError] = useState(false);
+
+  const handleApplyPromoCode = () => {
+    setPromoError(false);
+
+    const promotionCode = PROMO_CODES.find(
+      code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
+    )?.value;
+    if (!promotionCode) {
+      setPromoError(true);
+      return;
+    }
+    onUpdateSubscription(subscription.id, {
+      promotion_code: promotionCode,
+    });
+  };
 
   useEffect(() => {
-    if (bcPromo?.discount === FREE_FIRST_PERIOD_ID) {
-      onUpdateSubscription(subscription.id, { coupon: bcPromo?.discount });
+    if (subscription?.discount?.promotion_code) {
+      setPromoApplied(true);
     }
-  }, [bcPromo]);
+  }, [subscription]);
+
+  useEffect(() => {
+    if (updateSubscriptionError) {
+      setPromoError(true);
+    }
+  }, [updateSubscriptionError]);
 
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
 
   const latestInvoice = subscription.latest_invoice;
 
-  const subTotal = latestInvoice.total_excluding_tax;
+  const subTotal = latestInvoice?.total_excluding_tax || subscription?.plan?.amount;
   //   let tax = 0;
   //   latestInvoice.total_tax_amounts.forEach(taxAmount => {
   //     tax += taxAmount.amount;
   //   });
-  const total = latestInvoice.total;
-
-  const userId = currentUser.id.uuid;
-  const freeFirstPeriod = backgroundCheckPromo?.discount === FREE_FIRST_PERIOD_ID;
+  const total = latestInvoice.total || subscription?.plan?.amount;
 
   return (
     <div className={css.paymentInfo}>
       <h2>Order Summary</h2>
       <div className={css.spreadSection}>
         <h3>{backgroundCheckType === BASIC ? 'Screening Fee' : '1-Month Subscription'}:</h3>
-        {freeFirstPeriod && backgroundCheckType === GOLD ? (
+        {promoApplied ? (
           <h3>
             <span className={css.greyedtext}>${subTotal / 100}</span>
             <span className={css.newDiscount}>$0.00</span>
@@ -69,7 +84,7 @@ const PaymentInfo = props => {
       <hr></hr>
       <div className={css.spreadSection}>
         <h3>Total:</h3>
-        {freeFirstPeriod && backgroundCheckType === GOLD ? (
+        {promoApplied ? (
           <h3>
             <span className={css.greyedtext}>${total / 100} </span>
             <span className={css.newDiscount}>$0.00</span>
@@ -78,46 +93,38 @@ const PaymentInfo = props => {
           <h3>${total / 100}</h3>
         )}
       </div>
-      {backgroundCheckType === GOLD && (
-        <div className={css.promoContainer}>
-          <div style={{ width: '100%' }}>
-            <label htmlFor="promo-code">Promo Code</label>
-            <input
-              className={css.promoInput}
-              id="promo-code"
-              type="text"
-              onChange={e => setPromoCode(e?.target?.value)}
-            />
-          </div>
-          <Button
-            className={css.applyButton}
-            onClick={() => onApplyBCPromoCode(promoCode, userId)}
-            inProgress={applyBCPromoInProgress || updateSubscriptionInProgress}
-            ready={bcPromo && bcPromo.discount !== null}
-            disabled={promoCode === ''}
-          >
-            Apply
-          </Button>
+      <div className={css.promoContainer}>
+        <div style={{ width: '100%' }}>
+          <label htmlFor="promo-code">Promo Code</label>
+          <input
+            className={css.promoInput}
+            id="promo-code"
+            type="text"
+            onChange={e => {
+              setPromoError(false);
+              setPromoCode(e?.target?.value);
+            }}
+            disabled={promoApplied}
+          />
         </div>
-      )}
-      {applyBCPromoError ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingBackgroundCheckPanel.applyPromoError" />
-        </p>
-      ) : null}
-      {bcPromo && bcPromo.discount === null ? (
-        <p className={css.error}>
-          <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />
-        </p>
-      ) : null}
-      {bcPromo && bcPromo.discount === FREE_FIRST_PERIOD_ID ? (
+        <Button
+          className={css.applyButton}
+          onClick={handleApplyPromoCode}
+          inProgress={updateSubscriptionInProgress}
+          ready={promoApplied}
+          disabled={promoCode === '' || promoApplied}
+        >
+          Apply
+        </Button>
+      </div>
+      {promoApplied ? (
         <p className={css.success}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.discountApplied" />
         </p>
       ) : null}
-      {updateSubscriptionError ? (
+      {promoError ? (
         <p className={css.error}>
-          <FormattedMessage id="EditListingBackgroundCheckPanel.updateSubscriptionError" />
+          <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />
         </p>
       ) : null}
       <p className={css.textSm}>
