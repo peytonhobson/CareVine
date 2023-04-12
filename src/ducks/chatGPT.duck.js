@@ -29,7 +29,7 @@ const generateBioPrompt = listing => {
             Languages Spoken:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
             Care Types: ${convertFilterKeysToLabels('careTypes', careTypes)}
             Experience Areas: ${convertFilterKeysToLabels('detailedCareNeeds', experienceAreas)}
-            Experience Level: ${convertFilterKeysToLabels('experienceLevel', experienceLevel)}
+            Experience Level: ${convertFilterKeyToLabel('experienceLevel', experienceLevel)}
     `;
 
   return prompt;
