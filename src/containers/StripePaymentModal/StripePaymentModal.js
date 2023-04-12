@@ -125,7 +125,8 @@ const StripePaymentModalComponent = props => {
       channelUrl,
       senderName: userDisplayNameAsString(currentUser),
       listingId: providerListing.id.uuid,
-      userId: provider.id.uuid,
+      recipientId: provider.id.uuid,
+      senderId: currentUser.id.uuid,
       recipientName,
     };
 
