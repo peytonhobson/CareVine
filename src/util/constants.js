@@ -10,12 +10,14 @@ export const CAREVINE_BASIC_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTzRJsU2TVwfKBbucAL3ns'
     : 'price_1MXTz5JsU2TVwfKB0Dt67n8s';
-export const FREE_FIRST_PERIOD_ID =
-  process.env.REACT_APP_ENV === 'development' ? '2wY0citm' : 'Fx2yQHtC';
 export const HOURLY_RATE_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MefLwJsU2TVwfKBJmeA4Bew'
     : 'price_1MefMNJsU2TVwfKBzID0s85E';
+export const PROMO_CODES = [
+  { key: 'YOUAREGOLDEN', type: 'gold', value: 'promo_1Mw6CqJsU2TVwfKBlNBPaNho' },
+  { key: 'CAREMORE', type: 'basic', value: 'promo_1Mw6JgJsU2TVwfKBD4XQLkIl' },
+];
 
 // Modal Missing Information Types
 export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';

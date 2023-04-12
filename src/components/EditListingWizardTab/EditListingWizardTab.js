@@ -96,7 +96,6 @@ const EditListingWizardTab = props => {
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
-    onApplyBCPromoCode,
     onAuthenticateCreateUser,
     onAuthenticateSubmitConsent,
     onAuthenticateUpdateUser,
@@ -425,7 +424,6 @@ const EditListingWizardTab = props => {
           onGetAuthenticateTestResult={onGetAuthenticateTestResult}
           onGenerateCriminalBackground={onGenerateCriminalBackground}
           onGet7YearHistory={onGet7YearHistory}
-          onApplyBCPromoCode={onApplyBCPromoCode}
           onUpdateSubscription={onUpdateSubscription}
           updateSubscriptionError={updateSubscriptionError}
           updateSubscriptionInProgress={updateSubscriptionInProgress}

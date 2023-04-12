@@ -140,7 +140,6 @@ const EditListingBackgroundCheckPanel = props => {
     onGetAuthenticateTestResult,
     onGenerateCriminalBackground,
     onGet7YearHistory,
-    onApplyBCPromoCode,
     onUpdateSubscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
@@ -164,13 +163,11 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
-    applyBCPromoInProgress,
-    applyBCPromoError,
-    bcPromo,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -196,7 +193,6 @@ const EditListingBackgroundCheckPanel = props => {
   const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
-  const backgroundCheckPromo = metadata?.backgroundCheckPromo;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
@@ -242,6 +238,12 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(UPDATE_USER);
     }
   }, [getIdentityProofQuizError]);
+
+  useEffect(() => {
+    if (subscription?.latest_invoice?.payment_intent?.client_secret) {
+      setClientSecret(subscription.latest_invoice.payment_intent.client_secret);
+    }
+  }, [subscription]);
 
   useEffect(() => {
     if (
@@ -382,11 +384,11 @@ const EditListingBackgroundCheckPanel = props => {
       break;
     case PAYMENT:
       const options = {
-        clientSecret: subscription?.latest_invoice?.payment_intent?.client_secret,
+        clientSecret,
         appearance,
       };
 
-      content = subscription?.latest_invoice?.payment_intent?.client_secret ? (
+      content = clientSecret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
             {!updateSubscriptionError && (
@@ -404,12 +406,7 @@ const EditListingBackgroundCheckPanel = props => {
           <PaymentInfo
             backgroundCheckType={backgroundCheckType}
             subscription={subscription}
-            onApplyBCPromoCode={onApplyBCPromoCode}
             currentUser={currentUser}
-            applyBCPromoInProgress={applyBCPromoInProgress}
-            applyBCPromoError={applyBCPromoError}
-            bcPromo={bcPromo}
-            backgroundCheckPromo={backgroundCheckPromo}
             onUpdateSubscription={onUpdateSubscription}
             updateSubscriptionError={updateSubscriptionError}
             updateSubscriptionInProgress={updateSubscriptionInProgress}

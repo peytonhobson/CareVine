@@ -303,7 +303,7 @@
   "EditListingBackgroundCheckPanel.submitFormText": "By submitting this form, you agree that your credit card will be charged ${paymentAmount}, plus applicable sales tax.",
   "EditListingBackgroundCheckPanel.applyPromoError": "Failed to apply promo code. Please try again.",
   "EditListingBackgroundCheckPanel.nullPromoError": "The entered promo code is not valid. Please double-check the code and try again.",
-  "EditListingBackgroundCheckPanel.discountApplied": "Success! Discount has been applied and saved to your user.",
+  "EditListingBackgroundCheckPanel.discountApplied": "Success! Discount has been applied and your first month will be free. Unless you cancel prior to the renewal date, your card will be charged the full subscription price at the end of the first month.",
   "EditListingBackgroundCheckPanel.updateSubscriptionError": "Failed to update payment details. Please try refreshing the page.",
   "EditListingBioForm.certificateLabel": "Teaching certificate",
   "EditListingBioForm.createListingDraftError": "Failed to create a draft. Please try again.",
