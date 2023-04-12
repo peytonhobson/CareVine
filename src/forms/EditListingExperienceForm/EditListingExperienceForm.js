@@ -60,7 +60,7 @@ const EditListingExperienceFormComponent = props => (
         experienceAreasOptions.splice(16, experienceAreasOptions.length);
       }
 
-      const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
+      const { updateListingError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingExperienceForm.updateFailed" />

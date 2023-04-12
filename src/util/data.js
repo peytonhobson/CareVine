@@ -189,7 +189,7 @@ export const ensureListing = listing => {
   const empty = {
     id: null,
     type: 'listing',
-    attributes: { publicData: {} },
+    attributes: { publicData: {}, privateData: {}, metadata: {} },
     images: [],
   };
   return { ...empty, ...listing };

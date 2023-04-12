@@ -9,7 +9,6 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureListing } from '../../util/data';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   EditListingAdditionalDetailsPanel,
@@ -92,7 +91,7 @@ const EditListingWizardTab = props => {
     history,
     image,
     intl,
-    listing,
+    listing: currentListing,
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
@@ -141,12 +140,7 @@ const EditListingWizardTab = props => {
   const isNewURI = type === LISTING_PAGE_PARAM_TYPE_NEW;
   const isDraftURI = type === LISTING_PAGE_PARAM_TYPE_DRAFT;
   const isNewListingFlow = isNewURI || isDraftURI;
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-
-  const currentListing = ensureListing(listing);
-  const imageIds = images => {
-    return images ? images.map(img => img.imageId || img.id) : null;
-  };
+  const userType = currentUser.attributes.profile.metadata.userType;
 
   // When user has update draft listing, he should be redirected to next EditListingWizardTab
   const redirectAfterDraftUpdate = (listingId, params, tab, marketplaceTabs, history) => {

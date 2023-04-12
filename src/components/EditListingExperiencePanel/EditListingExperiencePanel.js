@@ -17,7 +17,6 @@ const EditListingExperiencePanel = props => {
     rootClassName,
     className,
     listing,
-    isNewListingFlow,
     disabled,
     ready,
     onSubmit,

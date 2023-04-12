@@ -193,7 +193,7 @@ class TopbarComponent extends Component {
       unreadMessages,
     } = this.props;
 
-    const { mobilemenu, mobilesearch, address, origin, bounds } = parse(location.search, {
+    const { mobilemenu } = parse(location.search, {
       latlng: ['origin'],
       latlngBounds: ['bounds'],
     });
@@ -210,7 +210,6 @@ class TopbarComponent extends Component {
 
     const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
     const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
-    const isMobileSearchOpen = isMobileLayout && mobilesearch === 'open';
 
     const mobileMenu = (
       <TopbarMobileMenu
@@ -226,19 +225,6 @@ class TopbarComponent extends Component {
         unreadNotificationCount={unreadNotificationCount}
       />
     );
-
-    // Only render current search if full place object is available in the URL params
-    const locationFieldsPresent = config.sortSearchByDistance
-      ? address && origin && bounds
-      : address && bounds;
-    const initialSearchFormValues = {
-      location: locationFieldsPresent
-        ? {
-            search: address,
-            selectedPlace: { address, origin, bounds },
-          }
-        : null,
-    };
 
     const classes = classNames(rootClassName || css.root, className);
 
@@ -288,7 +274,6 @@ class TopbarComponent extends Component {
               currentUserListingFetched={currentUserListingFetched}
               currentUser={currentUser}
               currentPage={currentPage}
-              initialSearchFormValues={initialSearchFormValues}
               intl={intl}
               isAuthenticated={isAuthenticated}
               onLogout={this.handleLogout}

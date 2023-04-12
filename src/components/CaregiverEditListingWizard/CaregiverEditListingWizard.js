@@ -14,10 +14,10 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureCurrentUser, ensureListing, getMissingInfoModalValue } from '../../util/data';
+import { getMissingInfoModalValue } from '../../util/data';
 import { getStripeConnectAccountLink } from '../../ducks/stripeConnectAccount.duck';
 
-import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose, Button } from '..';
+import { Modal, NamedRedirect, Tabs, StripeConnectAccountStatusBox, IconClose } from '..';
 import { StripeConnectAccountForm } from '../../forms';
 import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 import { stripeAccountClearError } from '../../ducks/stripeConnectAccount.duck';
@@ -109,39 +109,27 @@ const tabLabel = (intl, tab) => {
  * @return true if tab / step is completed.
  */
 const tabCompleted = (tab, listing, user) => {
-  const {
-    availabilityPlan,
-    description,
-    geolocation,
-    title,
-    publicData,
-    metadata,
-  } = listing.attributes;
+  const { description, geolocation, publicData } = listing.attributes;
   const images = listing.images;
 
-  const backgroundCheckApproved = user?.attributes?.profile?.metadata?.backgroundCheckApproved;
+  const backgroundCheckApproved = user.attributes.profile.metadata.backgroundCheckApproved;
 
   switch (tab) {
     case SERVICES:
-      return !!(publicData && publicData.careTypes);
+      return !!publicData.careTypes;
     case BIO:
       return !!description;
     // TODO: Update publicData to be verified
     case EXPERIENCE:
-      return !!(publicData && publicData.experienceLevel);
+      return !!publicData.experienceLevel;
     case ADDITIONAL_DETAILS:
-      return !!(publicData && publicData.covidVaccination && publicData.languagesSpoken);
+      return !!(publicData.covidVaccination && publicData.languagesSpoken);
     case LOCATION:
-      return !!(
-        geolocation &&
-        publicData &&
-        publicData.location &&
-        publicData.travelDistance != undefined
-      );
+      return !!(geolocation && publicData.location && publicData.travelDistance != undefined);
     case PRICING:
-      return !!(publicData && publicData.minPrice && publicData.maxPrice);
+      return !!(publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
-      return !!(publicData && publicData.availabilityPlan);
+      return !!publicData.availabilityPlan;
     case BACKGROUND_CHECK:
       return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
@@ -259,7 +247,7 @@ class CaregiverEditListingWizard extends Component {
     }
 
     const backgroundCheckApprovedStatus =
-      currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
+      currentUser.attributes.profile.metadata.backgroundCheckApproved?.status;
 
     if (!isNewListingFlow && backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED) {
       const index = TABS.indexOf(BACKGROUND_CHECK);
@@ -347,7 +335,7 @@ class CaregiverEditListingWizard extends Component {
       getAccountLinkInProgress,
       id,
       intl,
-      listing,
+      listing: currentListing,
       onGetStripeConnectAccountLink,
       onManageDisableScrolling,
       onPayoutDetailsFormChange,
@@ -377,7 +365,6 @@ class CaregiverEditListingWizard extends Component {
     );
     const rootClasses = rootClassName || css.root;
     const classes = classNames(rootClasses, className);
-    const currentListing = ensureListing(listing);
     const tabsStatus = tabsActive(isNewListingFlow, currentListing, currentUser);
 
     // If selectedTab is not active, redirect to the beginning of wizard
@@ -421,8 +408,7 @@ class CaregiverEditListingWizard extends Component {
       }
     };
     const formDisabled = getAccountLinkInProgress;
-    const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const currentUserLoaded = !!ensuredCurrentUser.id;
+    const currentUserLoaded = currentUser.id;
     const stripeConnected = currentUserLoaded && !!stripeAccount && !!stripeAccount.id;
 
     const rootURL = config.canonicalRootURL;
@@ -549,7 +535,7 @@ class CaregiverEditListingWizard extends Component {
                   disabled={formDisabled}
                   inProgress={payoutDetailsSaveInProgress}
                   ready={payoutDetailsSaved}
-                  currentUser={ensuredCurrentUser}
+                  currentUser={currentUser}
                   stripeBankAccountLastDigits={getBankAccountLast4Digits(stripeAccountData)}
                   savedCountry={savedCountry}
                   submitButtonText={intl.formatMessage({
