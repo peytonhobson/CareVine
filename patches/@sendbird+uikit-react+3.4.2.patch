@@ -51,7 +51,7 @@ index 5002173..491dd81 100644
  import '../../ui/MentionUserLabel.js';
  import 'dompurify';
 diff --git a/node_modules/@sendbird/uikit-react/Channel/components/Message.js b/node_modules/@sendbird/uikit-react/Channel/components/Message.js
-index 6f6281d..cbc7f9f 100644
+index 6f6281d..d5d7c36 100644
 --- a/node_modules/@sendbird/uikit-react/Channel/components/Message.js
 +++ b/node_modules/@sendbird/uikit-react/Channel/components/Message.js
 @@ -38,7 +38,7 @@ import '../../ui/SortByRow.js';
@@ -63,6 +63,37 @@ index 6f6281d..cbc7f9f 100644
  import '../../ui/IconButton.js';
  import '../../ui/Button.js';
  import '../../ui/MentionUserLabel.js';
+@@ -398,7 +398,29 @@ var Message = function (_a) {
+     color: LabelColors.ONBACKGROUND_2
+   }, format(message.createdAt, 'MMMM dd, yyyy', {
+     locale: dateLocale
+-  })))), (renderMessageContent === null || renderMessageContent === void 0 ? void 0 : renderMessageContent()) || /*#__PURE__*/React__default.createElement(MessageContent, {
++  })))), (renderMessageContent === null || renderMessageContent === void 0 ? void 0 : renderMessageContent({
++    className: "sendbird-message-hoc__message-content",
++    userId: userId,
++    scrollToMessage: scrollToMessage,
++    channel: currentGroupChannel,
++    message: message,
++    disabled: !isOnline,
++    chainTop: chainTop,
++    chainBottom: chainBottom,
++    isReactionEnabled: isReactionEnabled,
++    replyType: replyType,
++    threadReplySelectType: threadReplySelectType,
++    nicknamesMap: nicknamesMap,
++    emojiContainer: emojiContainer,
++    showEdit: setShowEdit,
++    showRemove: setShowRemove,
++    showFileViewer: setShowFileViewer,
++    resendMessage: resendMessage,
++    toggleReaction: toggleReaction,
++    setQuoteMessage: setQuoteMessage,
++    onReplyInThread: onReplyInThread,
++    onQuoteMessageClick: onQuoteMessageClick
++  })) || /*#__PURE__*/React__default.createElement(MessageContent, {
+     className: "sendbird-message-hoc__message-content",
+     userId: userId,
+     scrollToMessage: scrollToMessage,
 diff --git a/node_modules/@sendbird/uikit-react/Channel/components/MessageInput.js b/node_modules/@sendbird/uikit-react/Channel/components/MessageInput.js
 index 5d3f31d..277a5f1 100644
 --- a/node_modules/@sendbird/uikit-react/Channel/components/MessageInput.js

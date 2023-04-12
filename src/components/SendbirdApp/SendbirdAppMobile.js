@@ -13,7 +13,6 @@ import withSendbird from '@sendbird/uikit-react/withSendbird';
 import { LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT } from '../../util/urlHelpers';
 
 import CustomChannelPreview from './CustomChannelPreview';
-import CustomMessageItem from './CustomMessageItem';
 import CustomChannelPreviewAction from './CustomChannelPreviewAction';
 
 import css from './SendbirdApp.module.css';
@@ -173,22 +172,6 @@ const SendbirdAppMobile = props => {
               channelUrl={currentChannelUrl}
               renderChannelHeader={() => customChannelHeader}
               disableUserProfile
-              renderMessage={({ message, onDeleteMessage, onUpdateMessage, emojiContainer }) => (
-                <CustomMessageItem
-                  currentChannel={currentChannelUrl}
-                  currentUser={currentUser}
-                  emojiContainer={emojiContainer}
-                  isPaymentModalOpen={isPaymentModalOpen}
-                  message={message}
-                  onDeleteMessage={onDeleteMessage}
-                  onOpenPaymentModal={onOpenPaymentModal}
-                  onUpdateMessage={onUpdateMessage}
-                  otherUser={otherUser}
-                  sdk={sdk}
-                  updateLastMessage={updateLastMessage}
-                  userId={userId}
-                />
-              )}
             />
           </div>
         )}
