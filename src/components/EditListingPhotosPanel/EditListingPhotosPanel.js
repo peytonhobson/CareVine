@@ -91,11 +91,11 @@ class EditListingPhotosPanel extends Component {
             const updatedValues = !values.selectedAvatar
               ? {
                   profileImageId: uploadedImage?.imageId,
-                  publicData: { avatarLinearGradient: null },
+                  publicData: { defaultAvatar: null },
                 }
               : {
                   profileImageId: null,
-                  publicData: { avatarLinearGradient: values.selectedAvatar },
+                  publicData: { defaultAvatar: values.selectedAvatar },
                 };
 
             onUpdateProfile(updatedValues);
