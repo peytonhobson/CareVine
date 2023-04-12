@@ -253,10 +253,14 @@ const mapStateToProps = state => {
 
   const distance = searchParams?.distance;
   const origin = searchParams?.origin;
+  const location = searchParams?.location && JSON.parse(searchParams?.location);
+
+  const calculatedOrigin = location?.origin ?? origin;
 
   const pageListings = getListingsById(state, currentPageResultIds).filter(listing =>
-    origin && listing?.attributes?.geolocation
-      ? calculateDistanceBetweenOrigins(origin, listing?.attributes?.geolocation) < distance
+    calculatedOrigin && listing?.attributes?.geolocation
+      ? calculateDistanceBetweenOrigins(calculatedOrigin, listing?.attributes?.geolocation) <
+        distance
       : false
   );
 
