@@ -209,7 +209,7 @@ export class EditListingPhotosFormComponent extends Component {
                         ...currentUser.attributes,
                         profile: {
                           ...currentUser.attributes.profile,
-                          publicData: { avatarLinearGradient: name },
+                          publicData: { defaultAvatar: name },
                         },
                       },
                     }}
@@ -235,7 +235,7 @@ export class EditListingPhotosFormComponent extends Component {
                       ...currentUser.attributes,
                       profile: {
                         ...currentUser.attributes.profile,
-                        publicData: { avatarLinearGradient: color },
+                        publicData: { defaultAvatar: color },
                       },
                     },
                   }}
@@ -337,22 +337,22 @@ export class EditListingPhotosFormComponent extends Component {
                       <div className={classNames(css.avatarPlaceholder, css.defaultAvatar)}>+</div>
                     </AvatarButton>
                     <AvatarButton
-                      name="green"
+                      name="1"
                       currentUser={currentUser}
                       selectedAvatar={selectedAvatar}
                     />
                     <AvatarButton
-                      name="red"
+                      name="2"
                       currentUser={currentUser}
                       selectedAvatar={selectedAvatar}
                     />
                     <AvatarButton
-                      name="orange"
+                      name="3"
                       currentUser={currentUser}
                       selectedAvatar={selectedAvatar}
                     />
                     <AvatarButton
-                      name="pink"
+                      name="4"
                       currentUser={currentUser}
                       selectedAvatar={selectedAvatar}
                     />

@@ -285,16 +285,16 @@
 }
 
 .colorAvatar {
-  width: var(--ProfileSettingsForm_avatarSize);
-  height: var(--ProfileSettingsForm_avatarSize);
+  width: var(--ProfileSettingsForm_avatarSize) !important;
+  height: var(--ProfileSettingsForm_avatarSize) !important;
   @media (--viewportMedium) {
-    width: var(--ProfileSettingsForm_avatarSizeDesktop);
-    height: var(--ProfileSettingsForm_avatarSizeDesktop);
+    width: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
+    height: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
   }
 }
 
 .colorAvatarInitials {
-  font-size: 5rem;
+  font-size: 5rem !important;
   font-weight: var(--fontWeightSemiBold);
 }
 
@@ -433,8 +433,8 @@
 }
 
 .defaultAvatar {
-  width: 3rem;
-  height: 3rem;
+  width: 3rem !important;
+  height: 3rem !important;
 }
 
 .avatarButton {
