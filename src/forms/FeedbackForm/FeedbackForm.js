@@ -58,8 +58,8 @@ const deviceOptions = [
 ];
 
 const userTypeOptions = [
-  { key: 'caregiver', label: 'Find a job' },
-  { key: 'employer', label: 'Looking for care' },
+  { key: 'caregiver', label: 'Become a Caregiver' },
+  { key: 'employer', label: 'Looking for Care' },
 ];
 
 const yesNoOptions = [
