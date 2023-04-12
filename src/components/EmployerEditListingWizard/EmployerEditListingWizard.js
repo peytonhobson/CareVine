@@ -262,7 +262,7 @@ class EmployerEditListingWizard extends Component {
                 tab={tab}
                 intl={intl}
                 params={params}
-                listing={listing}
+                listing={currentListing}
                 marketplaceTabs={TABS}
                 errors={errors}
                 handleCreateFlowTabScrolling={this.handleCreateFlowTabScrolling}

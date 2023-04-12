@@ -413,18 +413,14 @@ const CareScheduleSelectDatesForm = props => {
           intl,
           invalid,
           onMonthChanged,
-          pristine,
           selectedSessions,
           timeZone,
           updateInProgress,
-          fetchErrors,
           values,
-          updated,
         } = formRenderProps;
 
         const idPrefix = `${formId}` || 'CareScheduleSelectDatesForm';
         const {
-          availability,
           sessionStartDate,
           sessionStartTime = null,
           sessionEndDate,
@@ -479,8 +475,6 @@ const CareScheduleSelectDatesForm = props => {
           timeZone,
           onMonthChanged
         );
-
-        const { updateListingError } = fetchErrors || {};
 
         const placeholderTime = localizeAndFormatTime(
           intl,

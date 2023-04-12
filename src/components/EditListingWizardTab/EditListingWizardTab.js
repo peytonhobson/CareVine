@@ -214,7 +214,7 @@ const EditListingWizardTab = props => {
     return {
       className: css.panel,
       errors,
-      listing,
+      listing: currentListing,
       onChange,
       panelUpdated: updatedTab === tab,
       updateInProgress,
@@ -359,7 +359,7 @@ const EditListingWizardTab = props => {
             return onCompleteEditListingWizardTab(tab, values, true);
           }}
           onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
         />
       );
@@ -382,7 +382,7 @@ const EditListingWizardTab = props => {
             return onCompleteEditListingWizardTab(tab, values, true);
           }}
           onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
         />
       );
@@ -407,7 +407,7 @@ const EditListingWizardTab = props => {
           onGetIdentityProofQuiz={onGetIdentityProofQuiz}
           onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
           onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
           onCreateSubscription={onCreateSubscription}
           createSubscriptionError={createSubscriptionError}
