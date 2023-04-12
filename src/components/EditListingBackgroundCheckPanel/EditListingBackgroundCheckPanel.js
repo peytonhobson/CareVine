@@ -374,8 +374,7 @@ const EditListingBackgroundCheckPanel = props => {
             onCreateSubscription(
               stripeCustomerId,
               bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-              currentUser.id.uuid,
-              backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
+              currentUser.id.uuid
             );
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
           }}
