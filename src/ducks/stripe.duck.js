@@ -793,7 +793,7 @@ export const createSubscription = (stripeCustomerId, priceId, userId, params) =>
   if (stripeCustomerId) {
     return stripeCreateSubscription({ stripeCustomerId, priceId, userId, params })
       .then(res => {
-        if (params && params.default_payment_method) {
+        if (params?.default_payment_method && !params?.trial_end) {
           return stripeConfirmPayment({
             paymentId: res.latest_invoice.payment_intent.id,
             paymentMethod: params.default_payment_method,
