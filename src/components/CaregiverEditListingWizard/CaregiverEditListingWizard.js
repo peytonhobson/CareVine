@@ -662,12 +662,6 @@ const mapStateToProps = state => {
     stripeAccountFetched,
   } = state.stripeConnectAccount;
 
-  const getOwnListing = id => {
-    const listings = getMarketplaceEntities(state, [{ id, type: 'ownListing' }]);
-
-    return listings.length === 1 ? listings[0] : null;
-  };
-
   const {
     createPaymentInProgress,
     createPaymentError,
@@ -691,7 +685,6 @@ const mapStateToProps = state => {
     createSubscriptionInProgress,
     fetchStripeAccountError,
     getAccountLinkInProgress,
-    getOwnListing,
     stripeAccount,
     stripeAccountFetched,
     subscription,
