@@ -14,10 +14,16 @@ export const HOURLY_RATE_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MefLwJsU2TVwfKBJmeA4Bew'
     : 'price_1MefMNJsU2TVwfKBzID0s85E';
-export const PROMO_CODES = [
-  { key: 'YOUAREGOLDEN', type: 'gold', value: 'promo_1Mw6CqJsU2TVwfKBlNBPaNho' },
-  { key: 'CAREMORE', type: 'basic', value: 'promo_1Mw6JgJsU2TVwfKBD4XQLkIl' },
-];
+export const PROMO_CODES =
+  process.env.REACT_APP_ENV === 'development'
+    ? [
+        { key: 'YOUAREGOLDEN', type: 'gold', value: 'promo_1Mw6CqJsU2TVwfKBlNBPaNho' },
+        { key: 'CAREMORE', type: 'basic', value: 'promo_1Mw6JgJsU2TVwfKBD4XQLkIl' },
+      ]
+    : [
+        { key: 'YOUAREGOLDEN', type: 'gold', value: 'promo_1MwOuEJsU2TVwfKBKv2vigZ8' },
+        { key: 'CAREMORE', type: 'basic', value: 'promo_1MwOvfJsU2TVwfKBd7il1NXq' },
+      ];
 
 // Modal Missing Information Types
 export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';
