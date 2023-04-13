@@ -6,6 +6,10 @@
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--matterColorBright);
+
+  @media (--viewportMedium) {
+    padding-bottom: 4rem;
+  }
 }
 
 .filtersWrapper {
