@@ -341,65 +341,66 @@ export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) 
     });
 };
 
-export const createBankAccount = (stripeCustomerId, stripe, currentUser) => (
+export const createBankAccount = (stripeCustomerId, stripe, currentUser) => async (
   dispatch,
   getState,
   sdk
 ) => {
   dispatch(createBankAccountRequest());
 
-  const userId = currentUser.id.uuid;
-
   const savePromise = !stripeCustomerId
     ? dispatch(createStripeCustomer())
     : stripeCreateSetupIntent({ stripeCustomerId });
 
-  // TODO: Need to test for error handling
-  return savePromise
-    .then(response => {
-      if (!stripeCustomerId) {
-        return stripeCreateSetupIntent({ stripeCustomerId: response.id });
-      } else {
-        return response;
-      }
-    })
-    .then(response => {
-      const firstName = currentUser.attributes.profile.firstName;
-      const lastName = currentUser.attributes.profile.lastName;
-      const name = `${firstName} ${lastName}`;
-      const email = currentUser.attributes.email;
+  try {
+    const response = await savePromise;
 
-      return stripe
-        .collectBankAccountForSetup({
-          clientSecret: response.client_secret,
-          params: {
-            payment_method_type: 'us_bank_account',
-            payment_method_data: {
-              billing_details: {
-                name,
-                email,
-              },
-            },
+    let setupIntentResponse;
+
+    if (!stripeCustomerId) {
+      setupIntentResponse = await stripeCreateSetupIntent({ stripeCustomerId: response.id });
+    } else {
+      setupIntentResponse = response;
+    }
+
+    const firstName = currentUser.attributes.profile.firstName;
+    const lastName = currentUser.attributes.profile.lastName;
+    const name = `${firstName} ${lastName}`;
+    const email = currentUser.attributes.email;
+
+    const bankAccountSetupResponse = await stripe.collectBankAccountForSetup({
+      clientSecret: setupIntentResponse.client_secret,
+      params: {
+        payment_method_type: 'us_bank_account',
+        payment_method_data: {
+          billing_details: {
+            name,
+            email,
           },
-          expand: ['payment_method'],
-        })
-        .then(response => {
-          if (response.setupIntent.status === 'requires_confirmation') {
-            return stripe.confirmUsBankAccountSetup(response.setupIntent.client_secret);
-          }
-        });
-    })
-    .then(response => {
-      if (!!response && !!response.error) {
-        throw new Error(response.error.message);
-      }
-
-      dispatch(createBankAccountSuccess());
-    })
-    .catch(e => {
-      log.error(storableError(e), 'create-bank-account-failed');
-      dispatch(createBankAccountError(storableError(e)));
+        },
+      },
+      expand: ['payment_method'],
     });
+
+    if (bankAccountSetupResponse?.error) {
+      throw new Error(bankAccountSetupResponse.error.message);
+    }
+
+    if (bankAccountSetupResponse.setupIntent.status === 'requires_confirmation') {
+      const confirmResponse = await stripe.confirmUsBankAccountSetup(
+        bankAccountSetupResponse.setupIntent.client_secret
+      );
+
+      if (confirmResponse?.error) {
+        throw new Error(confirmResponse.error.message);
+      }
+    }
+
+    dispatch(createBankAccountSuccess());
+  } catch (e) {
+    log.error(storableError(e), 'create-bank-account-failed');
+    dispatch(createBankAccountError(storableError(e)));
+  }
 };
 
 export const createCreditCard = (

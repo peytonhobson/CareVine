@@ -364,7 +364,6 @@ export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
           try {
             channel = await sb.groupChannel.getChannel(channelUrl);
           } catch (e) {
-            // TODO: remove in production
             // console.log(e);
           }
         }
