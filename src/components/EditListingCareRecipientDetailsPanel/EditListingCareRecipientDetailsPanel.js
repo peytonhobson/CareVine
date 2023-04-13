@@ -7,19 +7,11 @@ import config from '../../config';
 import { findOptionsForSelectFilter } from '../../util/search';
 
 import { LISTING_STATE_DRAFT } from '../../util/types';
-import { ensureListing } from '../../util/data';
+import { ensureListing, convertFilterKeyToLabel } from '../../util/data';
 import { EditListingAddCareRecipientForm, EditListingCareRecipientDetailsForm } from '../../forms';
 import { InlineTextButton, Modal, IconClose } from '..';
 
 import css from './EditListingCareRecipientDetailsPanel.module.css';
-
-const convertFilterKeyToLabel = (key, property, filter) => {
-  const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
-    return key === data.key;
-  });
-
-  return filterOption ? filterOption.label : null;
-};
 
 const EditListingCareRecipientDetailsPanel = props => {
   const {
@@ -172,12 +164,11 @@ const EditListingCareRecipientDetailsPanel = props => {
           {careRecipients.map((recipient, index) => {
             const { recipientRelationship, gender, age } = recipient;
             const recipientRelationshipLabel = convertFilterKeyToLabel(
-              recipientRelationship,
               'recipientRelationship',
-              filterConfig
+              recipientRelationship
             );
-            const genderLabel = convertFilterKeyToLabel(gender, 'gender', filterConfig);
-            const ageLabel = convertFilterKeyToLabel(age, 'recipientAge', filterConfig);
+            const genderLabel = convertFilterKeyToLabel('gender', gender);
+            const ageLabel = convertFilterKeyToLabel('recipientAge', age);
             return (
               <div key={index} className={css.recipient}>
                 <div className={css.recipientHeader}>

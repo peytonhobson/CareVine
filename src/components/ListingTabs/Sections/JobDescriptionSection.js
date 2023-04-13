@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 
 import { findOptionsForSelectFilter } from '../../../util/search';
+import { convertFilterKeyToLabel } from '../../../util/data';
 import { SectionCard } from './';
 import classNames from 'classnames';
 
@@ -17,6 +18,7 @@ const JobDescriptionSection = forwardRef((props, ref) => {
   const jobDescriptionTitle = <h1 className={css.title}>About this job</h1>;
 
   const careTypeOptions = findOptionsForSelectFilter('careTypes', filterConfig);
+  const nearPublicTransitLabel = convertFilterKeyToLabel('nearPublicTransit', nearPublicTransit);
 
   return (
     <SectionCard title={jobDescriptionTitle} ref={ref}>
@@ -38,11 +40,7 @@ const JobDescriptionSection = forwardRef((props, ref) => {
       </ul>
       <h2 className={css.subTitle}>Near Public Transit</h2>
       <ul className={css.itemContainer}>
-        {!hasCar ? (
-          <li className={css.sharedItem}>{nearPublicTransit ? 'Yes' : 'No'}</li>
-        ) : (
-          <li className={css.item}>{nearPublicTransit ? 'Yes' : 'No'}</li>
-        )}
+        <li className={!hasCar ? css.sharedItem : css.item}>{nearPublicTransitLabel}</li>
       </ul>
     </SectionCard>
   );

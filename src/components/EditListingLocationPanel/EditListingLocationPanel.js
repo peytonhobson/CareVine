@@ -52,9 +52,8 @@ class EditListingLocationPanel extends Component {
     const travelDistanceFieldPresent = publicData && publicData.travelDistance;
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
 
-    const nearPublicTransit =
-      publicData && publicData.nearPublicTransit ? publicData.nearPublicTransit : null;
-    const residenceType = publicData && publicData.residenceType ? publicData.residenceType : null;
+    const nearPublicTransit = publicData.nearPublicTransit ? publicData.nearPublicTransit : null;
+    const residenceType = publicData.residenceType ? publicData.residenceType : null;
 
     return {
       location: locationFieldsPresent
@@ -64,7 +63,7 @@ class EditListingLocationPanel extends Component {
           }
         : null,
       travelDistance: travelDistanceFieldPresent ? travelDistance : 15,
-      nearPublicTransit: nearPublicTransit ? ['nearPublicTransit'] : [],
+      nearPublicTransit: nearPublicTransit,
       residenceType,
     };
   }
@@ -123,7 +122,7 @@ class EditListingLocationPanel extends Component {
           className={css.form}
           initialValues={this.state.initialValues}
           onSubmit={values => {
-            const { location, travelDistance, nearPublicTransit = [], residenceType } = values;
+            const { location, travelDistance, nearPublicTransit, residenceType } = values;
 
             const {
               selectedPlace: { address, origin },
@@ -149,8 +148,6 @@ class EditListingLocationPanel extends Component {
               parsedAddress.city = city;
             }
 
-            const nearPublicTransitValue = nearPublicTransit.length > 0 ? true : false;
-
             const updateValues =
               userType === CAREGIVER
                 ? {
@@ -175,7 +172,7 @@ class EditListingLocationPanel extends Component {
                         state: parsedAddress.state,
                         zipcode: parsedAddress.zip,
                       },
-                      nearPublicTransit: nearPublicTransitValue,
+                      nearPublicTransit,
                       availabilityPlan: availabilityPlanMaybe,
                       residenceType,
                     },
@@ -191,7 +188,7 @@ class EditListingLocationPanel extends Component {
               initialValues: {
                 location: { search: address, selectedPlace: { address, origin } },
                 travelDistance,
-                nearPublicTransit: nearPublicTransitValue,
+                nearPublicTransit,
                 residenceType,
               },
             });

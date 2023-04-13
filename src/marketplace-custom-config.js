@@ -194,10 +194,133 @@ export const filters = [
   },
   {
     id: 'detailedCareNeeds',
-    label: 'Preferred Experience Areas',
+    label: 'Recipient Care Needs',
     type: 'SelectMultipleFilter',
     group: 'secondary',
-    queryParamNames: ['pub_detailedCareNeeds', 'pub_skills'],
+    queryParamNames: ['pub_detailedCareNeeds'],
+    config: {
+      // Optional modes: 'has_all', 'has_any'
+      // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
+      searchMode: 'has_all',
+
+      // "key" is the option you see in Flex Console.
+      // "label" is set here for this web app's UI only.
+      // Note: label is not added through the translation files
+      // to make filter customizations a bit easier.
+      options: [
+        {
+          key: 'hospice',
+          label: 'Hospice Care',
+        },
+        {
+          key: 'memory',
+          label: 'Memory Care',
+        },
+        {
+          key: 'medicationAdministration',
+          label: 'Medication Administration',
+        },
+        {
+          key: 'incontinence',
+          label: 'Incontinence Care',
+        },
+        {
+          key: 'insulinAdministration',
+          label: 'Insulin Administration',
+        },
+        {
+          key: 'bedConfined',
+          label: 'Bed Confined Care',
+        },
+        {
+          key: 'dressing',
+          label: 'Dressing Assistance',
+        },
+        {
+          key: 'hygiene',
+          label: 'Hygiene Care',
+        },
+        {
+          key: 'showering',
+          label: 'Showering Assistance',
+        },
+        {
+          key: 'transfer',
+          label: 'Transfer Assistance',
+        },
+        {
+          key: 'walking',
+          label: 'Walking Assistance',
+        },
+        {
+          key: 'mealPrep',
+          label: 'Meal Preparation',
+        },
+        {
+          key: 'companionship',
+          label: 'Companionship',
+        },
+        {
+          key: 'transportation',
+          label: 'Transportation/Shopping',
+        },
+        {
+          key: 'cleaning',
+          label: 'Cleaning/House care',
+        },
+        {
+          key: 'catheter',
+          label: 'Catheter Care',
+        },
+        {
+          key: 'medMgmt',
+          label: 'Medication Management',
+        },
+        {
+          key: 'fallPrevention',
+          label: 'Fall Prevention',
+        },
+        {
+          key: 'bowel',
+          label: 'Bowel Care',
+        },
+        {
+          key: 'colostomy',
+          label: 'Colostomy Care',
+        },
+        {
+          key: 'diabetesMgmt',
+          label: 'Diabetes Management',
+        },
+        {
+          key: 'feedingTube',
+          label: 'Feeding Tube Administration',
+        },
+        {
+          key: 'hoyerLift',
+          label: 'Hoyer Lift',
+        },
+        {
+          key: 'woundcare',
+          label: 'Basic Wound Care',
+        },
+        {
+          key: 'vitalSign',
+          label: 'Vital Sign Monitoring',
+        },
+        {
+          key: 'exercise',
+          label: 'Exercise Assistance',
+        },
+      ],
+    },
+  },
+  {
+    id: 'experienceAreas',
+    label: 'Desired Experience Areas',
+    type: 'SelectMultipleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_experienceAreas'],
     config: {
       // Optional modes: 'has_all', 'has_any'
       // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
@@ -388,6 +511,19 @@ export const filters = [
         { key: 'early90s', label: '90-94' },
         { key: 'late90s', label: '95-99' },
         { key: '100s', label: '100+' },
+      ],
+    },
+  },
+  {
+    id: 'nearPublicTransit',
+    label: 'Near Public Transit',
+    type: 'SelectSingleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_nearPublicTransit'],
+    config: {
+      options: [
+        { key: 'yes', label: 'Yes' },
+        { key: 'no', label: 'No' },
       ],
     },
   },

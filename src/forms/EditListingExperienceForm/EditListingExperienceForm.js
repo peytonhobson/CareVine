@@ -55,7 +55,7 @@ const EditListingExperienceFormComponent = props => (
       const experienceAreasFeaturesLabel = intl.formatMessage({
         id: 'EditListingExperienceForm.experienceAreasFormLabel',
       });
-      const experienceAreasOptions = findOptionsForSelectFilter('detailedCareNeeds', filterConfig);
+      const experienceAreasOptions = findOptionsForSelectFilter('experienceAreas', filterConfig);
       if (history.location.pathname.includes(CREATE_PROFILE)) {
         experienceAreasOptions.splice(16, experienceAreasOptions.length);
       }
