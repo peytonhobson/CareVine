@@ -143,6 +143,11 @@ const EditListingBackgroundCheckPanel = props => {
     onUpdateSubscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    onCreateSetupIntent,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    onConfirmSetupIntent,
   } = props;
 
   const {
@@ -168,6 +173,7 @@ const EditListingBackgroundCheckPanel = props => {
   const [stage, setStage] = useState(INITIAL);
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
+  const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -240,10 +246,12 @@ const EditListingBackgroundCheckPanel = props => {
   }, [getIdentityProofQuizError]);
 
   useEffect(() => {
-    if (subscription?.latest_invoice?.payment_intent?.client_secret) {
-      setClientSecret(subscription.latest_invoice.payment_intent.client_secret);
-    }
+    setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
   }, [subscription]);
+
+  useEffect(() => {
+    setSetupIntentClientSecret(setupIntent?.client_secret);
+  }, [setupIntent]);
 
   useEffect(() => {
     if (
@@ -315,7 +323,14 @@ const EditListingBackgroundCheckPanel = props => {
       elements,
       userId,
     };
-    onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+
+    if (setupIntentClientSecret) {
+      onConfirmSetupIntent(stripe, setupIntentClientSecret, elements).then(() =>
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      );
+    } else {
+      onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+    }
   };
 
   const handleIdentityQuizSubmit = answers => {
@@ -393,11 +408,27 @@ const EditListingBackgroundCheckPanel = props => {
         appearance,
       };
 
+      const setupIntentOptions = {
+        clientSecret: setupIntentClientSecret,
+        appearance,
+      };
+
       content = clientSecret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
-            {!updateSubscriptionError && (
+            {!updateSubscriptionError && !setupIntentClientSecret && (
               <Elements options={options} stripe={stripePromise}>
+                <PayCreditCardForm
+                  createPaymentError={createPaymentError}
+                  createPaymentInProgress={createPaymentInProgress}
+                  formId="PayCreditCardForm"
+                  intl={intl}
+                  onSubmit={handleCardSubmit}
+                />
+              </Elements>
+            )}
+            {setupIntentClientSecret && (
+              <Elements options={setupIntentOptions} stripe={stripePromise}>
                 <PayCreditCardForm
                   createPaymentError={createPaymentError}
                   createPaymentInProgress={createPaymentInProgress}
@@ -411,10 +442,15 @@ const EditListingBackgroundCheckPanel = props => {
           <PaymentInfo
             backgroundCheckType={backgroundCheckType}
             subscription={subscription}
+            stripeCustomerId={stripeCustomerId}
             currentUser={currentUser}
-            onUpdateSubscription={onUpdateSubscription}
-            updateSubscriptionError={updateSubscriptionError}
-            updateSubscriptionInProgress={updateSubscriptionInProgress}
+            onCreateSubscription={onCreateSubscription}
+            createSubscriptionError={createSubscriptionError}
+            createSubscriptionInProgress={createSubscriptionInProgress}
+            onCreateSetupIntent={onCreateSetupIntent}
+            setupIntent={setupIntent}
+            createSetupIntentInProgress={createSetupIntentInProgress}
+            createSetupIntentError={createSetupIntentError}
           />
         </div>
       ) : (

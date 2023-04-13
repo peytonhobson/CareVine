@@ -23,6 +23,7 @@ import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 import { stripeAccountClearError } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../../containers/PaymentMethodsPage/PaymentMethodsPage.duck.js';
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -674,6 +675,7 @@ const mapStateToProps = state => {
   } = state.stripe;
 
   const { generateBioInProgress, generateBioError, generatedBio } = state.chatGPT;
+  const { setupIntent, createSetupIntentInProgress, createSetupIntentError } = state.paymentMethods;
 
   return {
     authenticate,
@@ -694,6 +696,9 @@ const mapStateToProps = state => {
     generateBioInProgress,
     generateBioError,
     generatedBio,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   };
 };
 
@@ -705,8 +710,8 @@ const mapDispatchToProps = dispatch => ({
   onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
     dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
   onCreatePayment: params => dispatch(createPayment(params)),
-  onCreateSubscription: (stripeCustomerId, priceId, userId) =>
-    dispatch(createSubscription(stripeCustomerId, priceId, userId)),
+  onCreateSubscription: (stripeCustomerId, priceId, userId, params) =>
+    dispatch(createSubscription(stripeCustomerId, priceId, userId, params)),
   onGenerateCriminalBackground: (userAccessCode, userId) =>
     dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
   onGet7YearHistory: (userAccessCode, userId) =>
@@ -728,6 +733,10 @@ const mapDispatchToProps = dispatch => ({
       verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
     ),
   onGenerateBio: listing => dispatch(generateBio(listing)),
+  onCreateSetupIntent: (stripeCustomerId, params) =>
+    dispatch(createSetupIntent(stripeCustomerId, params)),
+  onConfirmSetupIntent: (stripe, setupIntentClientSecret, element) =>
+    dispatch(confirmSetupIntent(stripe, setupIntentClientSecret, element)),
 });
 
 export default compose(
