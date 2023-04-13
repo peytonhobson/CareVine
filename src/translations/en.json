@@ -407,6 +407,7 @@
   "EditListingLocationForm.showListingFailed": "Fetching profile data failed",
   "EditListingLocationForm.updateFailed": "Failed to update. Please try again.",
   "EditListingLocationPanel.createListingLocation": "located",
+  "EditListingLocationForm.nearPublicTransitRequired": "Please select an option",
   "EditListingLocationPanel.createListingTitle": "Where are you {location}?",
   "EditListingLocationPanel.location": "Location",
   "EditListingLocationPanel.title": "Edit your {location}",

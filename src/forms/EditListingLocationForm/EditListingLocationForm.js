@@ -97,6 +97,10 @@ export const EditListingLocationFormComponent = props => (
       const nearPublicTransitText = intl.formatMessage({
         id: 'EditListingLocationForm.nearPublicTransitText',
       });
+      const nearPublicTransitValues = findOptionsForSelectFilter('nearPublicTransit', filterConfig);
+      const nearPublicTransitRequiredMessage = intl.formatMessage({
+        id: 'EditListingLocationForm.nearPublicTransitRequired',
+      });
 
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
@@ -144,12 +148,15 @@ export const EditListingLocationFormComponent = props => (
           )}
           {userType === EMPLOYER && (
             <>
-              <FieldCheckbox
+              <FieldRadioButtonGroup
                 id={formId ? `${formId}.nearPublicTransit` : 'nearPublicTransit'}
                 className={css.formMargins}
                 name="nearPublicTransit"
                 label={nearPublicTransitText}
-                value="nearPublicTransit"
+                options={nearPublicTransitValues}
+                required
+                inline
+                validate={requiredFieldArrayRadio(nearPublicTransitRequiredMessage)}
               />
               <FieldRadioButtonGroup
                 id={formId ? `${formId}.residenceType` : 'residenceType'}

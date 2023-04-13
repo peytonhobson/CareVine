@@ -20,8 +20,8 @@ const FieldRadioButtonRenderer = props => {
 
   const { initialSelect, inline } = props;
 
-  const classes = classNames(rootClassName, inline ? css.inlineRoot : css.root);
-  const listClasses = className || (inline ? css.inlineList : css.list);
+  const classes = classNames(rootClassName, css.root);
+  const listClasses = classNames(className, inline ? css.inlineList : css.list);
   const itemClasses = inline ? css.inlineItem : css.item;
 
   return (

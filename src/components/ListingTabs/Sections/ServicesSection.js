@@ -15,7 +15,7 @@ const ServicesSection = forwardRef((props, ref) => {
   const publicData = listing?.attributes?.publicData;
   const { careTypes, experienceAreas } = publicData;
 
-  const experienceAreaOptions = findOptionsForSelectFilter('detailedCareNeeds', filterConfig);
+  const experienceAreaOptions = findOptionsForSelectFilter('experienceAreas', filterConfig);
   const careTypeOptions = findOptionsForSelectFilter('careTypes', filterConfig);
 
   return (
