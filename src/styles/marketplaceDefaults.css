@@ -805,7 +805,7 @@ textarea {
 }
 .buttonBordersSecondary:hover,
 .buttonBordersSecondary:focus {
-  border-color: var(--matterColorAnti);
+  border-color: var(--marketplaceColor);
 }
 .buttonBordersSecondary:disabled {
   border-color: var(--matterColorNegative);

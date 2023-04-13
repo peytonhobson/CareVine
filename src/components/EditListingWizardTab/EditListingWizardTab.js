@@ -134,6 +134,11 @@ const EditListingWizardTab = props => {
     generateJobDescriptionError,
     generatedJobDescription,
     onGenerateJobDescription,
+    onCreateSetupIntent,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    onConfirmSetupIntent,
   } = props;
 
   const { type } = params;
@@ -421,6 +426,11 @@ const EditListingWizardTab = props => {
           onUpdateSubscription={onUpdateSubscription}
           updateSubscriptionError={updateSubscriptionError}
           updateSubscriptionInProgress={updateSubscriptionInProgress}
+          onCreateSetupIntent={onCreateSetupIntent}
+          setupIntent={setupIntent}
+          createSetupIntentInProgress={createSetupIntentInProgress}
+          createSetupIntentError={createSetupIntentError}
+          onConfirmSetupIntent={onConfirmSetupIntent}
         />
       );
     }

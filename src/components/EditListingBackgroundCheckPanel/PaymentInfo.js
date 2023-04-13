@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '..';
-import { PROMO_CODES } from '../../util/constants';
+import { PROMO_CODES, CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
+import moment from 'moment';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -14,41 +15,57 @@ const PaymentInfo = props => {
     backgroundCheckType,
     subscription,
     currentUser,
-    onUpdateSubscription,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
+    stripeCustomerId,
+    onCreateSubscription,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    onCreateSetupIntent,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   } = props;
 
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState(false);
 
-  const handleApplyPromoCode = () => {
+  const handleApplyPromoCode = async () => {
     setPromoError(false);
 
     const promotionCode = PROMO_CODES.find(
       code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
-    )?.value;
+    );
     if (!promotionCode) {
       setPromoError(true);
       return;
     }
-    onUpdateSubscription(subscription.id, {
-      promotion_code: promotionCode,
-    });
+
+    onCreateSetupIntent(stripeCustomerId, { payment_method_types: ['card'] });
+
+    //   onCreateSubscription(
+    //     stripeCustomerId,
+    //     backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+    //     currentUser.id?.uuid,
+    //     {
+    //       trial_end: moment()
+    //         .add(1, 'month')
+    //         .unix(),
+    //     }
+    //   );
+    // } catch (e) {}
   };
 
   useEffect(() => {
-    if (subscription?.discount?.promotion_code) {
+    if (subscription?.trial_end) {
       setPromoApplied(true);
     }
   }, [subscription]);
 
   useEffect(() => {
-    if (updateSubscriptionError) {
+    if (createSubscriptionError) {
       setPromoError(true);
     }
-  }, [updateSubscriptionError]);
+  }, [createSubscriptionError]);
 
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
@@ -110,7 +127,7 @@ const PaymentInfo = props => {
         <Button
           className={css.applyButton}
           onClick={handleApplyPromoCode}
-          inProgress={updateSubscriptionInProgress}
+          inProgress={createSubscriptionInProgress}
           ready={promoApplied}
           disabled={promoCode === '' || promoApplied}
         >
