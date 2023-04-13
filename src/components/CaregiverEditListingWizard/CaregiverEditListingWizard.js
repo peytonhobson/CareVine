@@ -119,7 +119,6 @@ const tabCompleted = (tab, listing, user) => {
       return !!publicData.careTypes;
     case BIO:
       return !!description;
-    // TODO: Update publicData to be verified
     case EXPERIENCE:
       return !!publicData.experienceLevel;
     case ADDITIONAL_DETAILS:
