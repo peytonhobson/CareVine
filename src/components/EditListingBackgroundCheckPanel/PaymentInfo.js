@@ -16,9 +16,6 @@ const PaymentInfo = props => {
     subscription,
     currentUser,
     stripeCustomerId,
-    onCreateSubscription,
-    createSubscriptionError,
-    createSubscriptionInProgress,
     onCreateSetupIntent,
     setupIntent,
     createSetupIntentInProgress,
@@ -41,31 +38,19 @@ const PaymentInfo = props => {
     }
 
     onCreateSetupIntent(stripeCustomerId, { payment_method_types: ['card'] });
-
-    //   onCreateSubscription(
-    //     stripeCustomerId,
-    //     backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-    //     currentUser.id?.uuid,
-    //     {
-    //       trial_end: moment()
-    //         .add(1, 'month')
-    //         .unix(),
-    //     }
-    //   );
-    // } catch (e) {}
   };
 
   useEffect(() => {
-    if (subscription?.trial_end) {
+    if (setupIntent) {
       setPromoApplied(true);
     }
-  }, [subscription]);
+  }, [setupIntent]);
 
   useEffect(() => {
-    if (createSubscriptionError) {
+    if (createSetupIntentError) {
       setPromoError(true);
     }
-  }, [createSubscriptionError]);
+  }, [createSetupIntentError]);
 
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
@@ -127,7 +112,7 @@ const PaymentInfo = props => {
         <Button
           className={css.applyButton}
           onClick={handleApplyPromoCode}
-          inProgress={createSubscriptionInProgress}
+          inProgress={createSetupIntentInProgress}
           ready={promoApplied}
           disabled={promoCode === '' || promoApplied}
         >
