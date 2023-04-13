@@ -393,7 +393,7 @@ module.exports = (request, response) => {
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
-    log.error(err);
+    log.error(err, 'stripe-webhook-error');
     response
       .status(400)
       .send(
@@ -402,26 +402,26 @@ module.exports = (request, response) => {
     return;
   }
 
+  if (isDev || isTest) {
+    console.log(event.type);
+  }
+
   // Handle the event
   switch (event.type) {
     case 'customer.subscription.created':
-      console.log('customer.subscription.created');
       const customerSubscriptionCreated = event.data.object;
       // console.log(customerSubscriptionCreated);
       updateBackgroundCheckSubscription(customerSubscriptionCreated);
       break;
     case 'customer.subscription.paused':
-      console.log('customer.subscription.paused');
       const customerSubscriptionPaused = event.data.object;
       updateBackgroundCheckSubscription(customerSubscriptionPaused);
       break;
     case 'customer.subscription.resumed':
-      console.log('customer.subscription.resumed');
       const customerSubscriptionResumed = event.data.object;
       updateBackgroundCheckSubscription(customerSubscriptionResumed);
       break;
     case 'customer.subscription.updated':
-      console.log('customer.subscription.updated');
       const customerSubscriptionUpdated = event.data.object;
       if (
         customerSubscriptionUpdated.status !== 'incomplete_expired' ||
@@ -431,12 +431,10 @@ module.exports = (request, response) => {
       }
       break;
     case 'charge.failed':
-      console.log('charge.failed');
       const chargeFailed = event.data.object;
       sendChargeFailedEmail(chargeFailed);
       break;
     case 'charge.succeeded':
-      console.log('charge.succeeded');
       const chargeSucceeded = event.data.object;
 
       sendPaymentReceivedNotifications(chargeSucceeded);
@@ -453,7 +451,6 @@ module.exports = (request, response) => {
       updateBackgroundCheckSubscriptionSchedule(subscriptionScheduleCreated);
       break;
     case 'subscription_schedule.updated':
-      console.log('subscription_schedule.updated');
       const subscriptionScheduleUpdated = event.data.object;
       if (subscriptionScheduleUpdated.current_phase) {
         removeBackgroundCheckSubscriptionSchedule(subscriptionScheduleUpdated);
