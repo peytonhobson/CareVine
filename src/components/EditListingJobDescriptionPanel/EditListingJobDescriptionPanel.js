@@ -33,7 +33,7 @@ const generateTitle = (currentListing, filterConfig) => {
   let careScheduleType = null;
   const availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
 
-  switch (availabilityPlan.type) {
+  switch (availabilityPlan?.type) {
     case AVAILABILITY_PLAN_TYPE_SELECT_DATES:
       careScheduleType = SELECT_DATES;
       break;
@@ -100,7 +100,7 @@ const generateTitle = (currentListing, filterConfig) => {
     }
   });
 
-  const city = currentListing?.attributes?.publicData?.location?.city;
+  const city = currentListing.attributes.publicData.location?.city;
 
   return `${careScheduleType} Needed for ${
     !relationshipString.startsWith('Myself') ? 'My' : ''
@@ -133,7 +133,7 @@ const EditListingJobDescriptionPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
-  const { publicData, description, title } = currentListing.attributes;
+  const { description, title } = currentListing.attributes;
 
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
