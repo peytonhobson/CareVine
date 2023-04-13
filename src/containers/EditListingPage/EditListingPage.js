@@ -374,22 +374,19 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onAddAvailabilityException: params => dispatch(requestAddAvailabilityException(params)),
-  onChange: () => dispatch(clearUpdatedTab()),
-  onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
-  onCreateListingDraft: values => dispatch(requestCreateListingDraft(values)),
-  onDeleteAvailabilityException: params => dispatch(requestDeleteAvailabilityException(params)),
-  onFetchCurrentUserHasListings: () => {
-    dispatch(fetchCurrentUserHasListings());
-  },
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onProfileImageUpload: data => dispatch(uploadImage(data)),
-  onPublishListingDraft: listingId => dispatch(requestPublishListingDraft(listingId)),
-  onUpdateListing: (tab, values) => dispatch(requestUpdateListing(tab, values)),
-  onUpdateProfile: data => dispatch(updateProfile(data)),
-});
+const mapDispatchToProps = {
+  onAddAvailabilityException: requestAddAvailabilityException,
+  onChange: clearUpdatedTab,
+  onChangeMissingInfoModal: changeModalValue,
+  onCreateListingDraft: requestCreateListingDraft,
+  onDeleteAvailabilityException: requestDeleteAvailabilityException,
+  onFetchCurrentUserHasListings: fetchCurrentUserHasListings,
+  onManageDisableScrolling: manageDisableScrolling,
+  onProfileImageUpload: uploadImage,
+  onPublishListingDraft: requestPublishListingDraft,
+  onUpdateListing: requestUpdateListing,
+  onUpdateProfile: updateProfile,
+};
 
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route
