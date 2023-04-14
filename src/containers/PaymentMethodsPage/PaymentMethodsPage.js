@@ -71,12 +71,8 @@ const PaymentMethodsPageComponent = props => {
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const card =
-    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
-  const bankAccount =
-    !!defaultPaymentMethods &&
-    !!defaultPaymentMethods.bankAccount &&
-    defaultPaymentMethods.bankAccount.us_bank_account;
+  const card = defaultPaymentMethods?.card?.card;
+  const bankAccount = defaultPaymentMethods?.bankAccount?.us_bank_account;
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
 

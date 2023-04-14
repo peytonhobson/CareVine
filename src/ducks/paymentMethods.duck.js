@@ -36,6 +36,14 @@ export const FETCH_DEFAULT_PAYMENT_REQUEST = 'app/paymentMethods/FETCH_DEFAULT_P
 export const FETCH_DEFAULT_PAYMENT_SUCCESS = 'app/paymentMethods/FETCH_DEFAULT_PAYMENT_SUCCESS';
 export const FETCH_DEFAULT_PAYMENT_ERROR = 'app/paymentMethods/FETCH_DEFAULT_PAYMENT_ERROR';
 
+export const CREATE_SETUP_INTENT_REQUEST = 'app/paymentMethods/CREATE_SETUP_INTENT_REQUEST';
+export const CREATE_SETUP_INTENT_SUCCESS = 'app/paymentMethods/CREATE_SETUP_INTENT_SUCCESS';
+export const CREATE_SETUP_INTENT_ERROR = 'app/paymentMethods/CREATE_SETUP_INTENT_ERROR';
+
+export const CONFIRM_SETUP_INTENT_REQUEST = 'app/paymentMethods/CONFIRM_SETUP_INTENT_REQUEST';
+export const CONFIRM_SETUP_INTENT_SUCCESS = 'app/paymentMethods/CONFIRM_SETUP_INTENT_SUCCESS';
+export const CONFIRM_SETUP_INTENT_ERROR = 'app/paymentMethods/CONFIRM_SETUP_INTENT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -55,6 +63,12 @@ const initialState = {
   defaultPaymentFetched: false,
   fetchDefaultPaymentError: null,
   fetchDefaultPaymentInProgress: false,
+  createSetupIntentInProgress: false,
+  createSetupIntentError: null,
+  setupIntent: null,
+  confirmSetupIntentInProgress: false,
+  confirmSetupIntentError: null,
+  createdPaymentMethod: null,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -178,6 +192,35 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         defaultPaymentFetched: true,
       };
 
+    case CREATE_SETUP_INTENT_REQUEST:
+      return { ...state, createSetupIntentInProgress: true, createSetupIntentError: null };
+    case CREATE_SETUP_INTENT_SUCCESS:
+      return {
+        ...state,
+        createSetupIntentInProgress: false,
+        setupIntent: payload,
+      };
+    case CREATE_SETUP_INTENT_ERROR:
+      return {
+        ...state,
+        createSetupIntentInProgress: false,
+        createSetupIntentError: payload,
+      };
+    case CONFIRM_SETUP_INTENT_REQUEST:
+      return { ...state, confirmSetupIntentInProgress: true, confirmSetupIntentError: null };
+    case CONFIRM_SETUP_INTENT_SUCCESS:
+      return {
+        ...state,
+        confirmSetupIntentInProgress: false,
+        createdPaymentMethod: payload,
+      };
+    case CONFIRM_SETUP_INTENT_ERROR:
+      return {
+        ...state,
+        confirmSetupIntentInProgress: false,
+        confirmSetupIntentError: payload,
+      };
+
     default:
       return state;
   }
@@ -259,6 +302,28 @@ export const fetchDefaultPaymentSuccess = defaultPayment => ({
 });
 export const fetchDefaultPaymentError = e => ({
   type: FETCH_DEFAULT_PAYMENT_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const createSetupIntentRequest = () => ({ type: CREATE_SETUP_INTENT_REQUEST });
+export const createSetupIntentSuccess = setupIntent => ({
+  type: CREATE_SETUP_INTENT_SUCCESS,
+  payload: setupIntent,
+});
+export const createSetupIntentError = e => ({
+  type: CREATE_SETUP_INTENT_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const confirmSetupIntentRequest = () => ({ type: CONFIRM_SETUP_INTENT_REQUEST });
+export const confirmSetupIntentSuccess = paymentMethod => ({
+  type: CONFIRM_SETUP_INTENT_SUCCESS,
+  payload: paymentMethod,
+});
+export const confirmSetupIntentError = e => ({
+  type: CONFIRM_SETUP_INTENT_ERROR,
   error: true,
   payload: e,
 });
@@ -457,10 +522,53 @@ export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk)
   const handleError = e => {
     dispatch(fetchDefaultPaymentError(storableError(e)));
     log.error(e, 'fetch-default-payment-failed', {});
-    throw e;
   };
 
   return stripePaymentMethods({ stripeCustomerId })
     .then(handleSuccess)
     .catch(handleError);
+};
+
+export const createSetupIntent = (stripeCustomerId, params) => async (dispatch, getState, sdk) => {
+  dispatch(createSetupIntentRequest());
+
+  try {
+    const setupIntent = await stripeCreateSetupIntent({ stripeCustomerId, params });
+
+    dispatch(createSetupIntentSuccess(setupIntent));
+  } catch (e) {
+    dispatch(createSetupIntentError(storableError(e)));
+    log.error(e, 'create-setup-intent-failed', {});
+  }
+};
+
+export const confirmSetupIntent = (stripe, setupIntentClientSecret, elements) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(confirmSetupIntentRequest());
+
+  try {
+    const response = await stripe.confirmSetup({
+      elements,
+      confirmParams: {
+        // Return URL where the customer should be redirected after the SetupIntent is confirmed.]
+        payment_method_data: {
+          billing_details: {
+            address: {
+              country: 'US',
+            },
+          },
+        },
+        return_url: process.env.REACT_APP_CANONICAL_ROOT_URL,
+      },
+      redirect: 'if_required',
+    });
+
+    dispatch(confirmSetupIntentSuccess(response?.setupIntent?.payment_method));
+  } catch (e) {
+    dispatch(confirmSetupIntentError(storableError(e)));
+    log.error(e, 'confirm-setup-intent-failed', {});
+  }
 };

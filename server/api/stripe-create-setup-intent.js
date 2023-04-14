@@ -3,13 +3,15 @@ const { handleStripeError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { stripeCustomerId } = req.body;
+  const { stripeCustomerId, params } = req.body;
+  const paramsMaybe = params || {};
 
   if (stripeCustomerId) {
     return stripe.setupIntents
       .create({
         customer: stripeCustomerId,
         payment_method_types: ['card', 'us_bank_account'],
+        ...params,
       })
       .then(apiResponse => {
         res
