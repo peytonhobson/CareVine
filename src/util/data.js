@@ -412,15 +412,15 @@ export const humanizeLineItemCode = code => {
 };
 
 export const convertFilterKeyToLabel = (filterType, key) => {
-  return findOptionsForSelectFilter(filterType, filters).find(data => data.key === key).label;
+  return findOptionsForSelectFilter(filterType, filters)?.find(data => data.key === key)?.label;
 };
 
 export const convertFilterKeysToLabels = (filterType, keys) => {
   return findOptionsForSelectFilter(filterType, filters)
-    .filter(data => {
+    ?.filter(data => {
       return keys.includes(data.key);
     })
-    .map(filter => filter.label);
+    ?.map(filter => filter.label);
 };
 
 export const cutTextToPreview = (text, length) => {
