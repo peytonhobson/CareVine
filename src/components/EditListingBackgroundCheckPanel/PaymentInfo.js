@@ -46,12 +46,6 @@ const PaymentInfo = props => {
     }
   }, [setupIntent]);
 
-  useEffect(() => {
-    if (createSetupIntentError) {
-      setPromoError(true);
-    }
-  }, [createSetupIntentError]);
-
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
 
@@ -127,6 +121,11 @@ const PaymentInfo = props => {
       {promoError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />
+        </p>
+      ) : null}
+      {createSetupIntentError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingBackgroundCheckPanel.createSetupIntentError" />
         </p>
       ) : null}
       <p className={css.textSm}>
