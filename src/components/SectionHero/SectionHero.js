@@ -11,14 +11,15 @@ import {
   Button,
 } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './SectionHero.module.css';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(true);
+
+  const isMobile = useCheckMobileScreen();
 
   const {
     rootClassName,

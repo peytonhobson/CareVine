@@ -7,10 +7,9 @@ import {
 } from '@mui/material';
 import { styled } from '@material-ui/styles';
 import classNames from 'classnames';
+import { useCheckMobileScreen } from '../../../util/userAgent';
 
 import css from './sections.module.css';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const SectionCard = forwardRef((props, ref) => {
   const {
@@ -24,6 +23,8 @@ const SectionCard = forwardRef((props, ref) => {
     ...rest
   } = props;
   const classes = classNames(rootClassName || css.section, className);
+
+  const isMobile = useCheckMobileScreen();
 
   const CardHeader = styled(props => <MuiCardHeader {...props} />)(({ theme }) => ({
     textAlign: 'left',

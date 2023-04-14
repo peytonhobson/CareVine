@@ -30,8 +30,6 @@ import css from './EmployerListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const priceData = (rates, intl) => {
   const minPriceMoney = new Money(rates[0], 'USD');
   const maxPriceMoney = new Money(rates[1], 'USD');

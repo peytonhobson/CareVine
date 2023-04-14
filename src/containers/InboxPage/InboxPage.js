@@ -25,10 +25,9 @@ import {
 import { Page, LayoutWrapperMain, LayoutWrapperTopbar, FullPageError } from '../../components';
 import { TopbarContainer } from '..';
 import { generateAccessToken } from '../../ducks/sendbird.duck';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './InboxPage.module.css';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const InboxPageComponent = props => {
   const {
@@ -63,6 +62,8 @@ export const InboxPageComponent = props => {
     fetchOtherUsersError,
     fetchOtherUsersInProgress,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 

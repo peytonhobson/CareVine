@@ -65,13 +65,13 @@ import {
   fetchChannel,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
+import { useCheckMobileScreen } from '../../util/userAgent';
+
 import css from './ListingPage.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const priceData = (price, intl) => {
   if (price && price.currency === config.currency) {
@@ -395,6 +395,8 @@ export class ListingPageComponent extends Component {
       </div>
     ) : null;
 
+    const isMobile = useCheckMobileScreen();
+
     return (
       <Page
         title={schemaTitle}
@@ -426,12 +428,14 @@ export class ListingPageComponent extends Component {
                       onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
                       onBookNow={handleBookingSubmit}
                       onShowListingPreview={showListingPreview}
+                      isMobile={isMobile}
                     />
                     <ListingTabs
                       currentUser={currentUser}
                       listing={currentListing}
                       onManageDisableScrolling={onManageDisableScrolling}
                       currentUserListing={currentUserListing}
+                      isMobile={isMobile}
                     />
                   </>
                 ) : (
@@ -440,6 +444,7 @@ export class ListingPageComponent extends Component {
                     currentUserListing={currentUserListing}
                     onShowFullProfile={showFullProfile}
                     onManageDisableScrolling={onManageDisableScrolling}
+                    isMobile={isMobile}
                   />
                 )}
               </div>

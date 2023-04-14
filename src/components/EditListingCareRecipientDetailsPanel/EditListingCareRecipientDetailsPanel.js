@@ -243,7 +243,7 @@ EditListingCareRecipientDetailsPanel.defaultProps = {
   filterConfig: config.custom.filters,
 };
 
-const { bool, func, object, string, shape, filterConfig } = PropTypes;
+const { bool, func, object, string, array } = PropTypes;
 
 EditListingCareRecipientDetailsPanel.propTypes = {
   rootClassName: string,
@@ -261,7 +261,7 @@ EditListingCareRecipientDetailsPanel.propTypes = {
   updateInProgress: bool.isRequired,
   errors: object.isRequired,
   intl: intlShape.isRequired,
-  filterConfig: filterConfig,
+  filterConfig: array,
 };
 
 export default EditListingCareRecipientDetailsPanel;

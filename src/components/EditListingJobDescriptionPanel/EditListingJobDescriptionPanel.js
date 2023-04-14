@@ -51,7 +51,7 @@ const generateTitle = (currentListing, filterConfig) => {
 
   const careRecipients = currentListing.attributes.publicData.careRecipients;
 
-  if (careRecipients.length > 0) {
+  if (careRecipients?.length > 0) {
     relationships = careRecipients.map(recipient =>
       convertFilterKeyToLabel(
         recipient.recipientRelationship,
@@ -256,7 +256,6 @@ EditListingJobDescriptionPanel.propTypes = {
   updateInProgress: bool.isRequired,
   errors: object.isRequired,
   intl: intlShape.isRequired,
-  filterConfig: filterConfig,
 };
 
 export default EditListingJobDescriptionPanel;

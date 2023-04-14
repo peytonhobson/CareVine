@@ -32,12 +32,11 @@ import {
   initialState as stripeInitialState,
 } from '../../ducks/stripe.duck';
 import { fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './StripePaymentModal.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const StripePaymentModalComponent = props => {
   const {
@@ -75,6 +74,8 @@ const StripePaymentModalComponent = props => {
     onConfirmPayment,
     onCreatePayment,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const [clientSecret, setClientSecret] = useState(null);
   const [rootClass, setRootClass] = useState(classNames(css.root, css.single));
@@ -202,7 +203,6 @@ const StripePaymentModalComponent = props => {
     setRootClass(classNames(css.root, css.single));
   };
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const appearance = {
     theme: 'stripe',
     variables: {

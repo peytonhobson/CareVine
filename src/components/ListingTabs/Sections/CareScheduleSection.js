@@ -22,10 +22,8 @@ const weekdayMap = [
   { day: 'sun', label: 'Sunday' },
 ];
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const CareScheduleSection = forwardRef((props, ref) => {
-  const { availabilityPlan, filterConfig } = props;
+  const { availabilityPlan, filterConfig, isMobile } = props;
 
   const scheduleTypes = findOptionsForSelectFilter('scheduleType', filterConfig);
 

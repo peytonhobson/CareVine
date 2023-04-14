@@ -19,8 +19,6 @@ import css from './ListingSummary.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const ListingSummaryComponent = props => {
   const {
     listing,
@@ -32,6 +30,7 @@ const ListingSummaryComponent = props => {
     onOpenBookingModal,
     onBookNow,
     onShowListingPreview,
+    isMobiles,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;

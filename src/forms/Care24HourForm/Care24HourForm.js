@@ -15,6 +15,7 @@ import {
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { timestampToDate } from '../../util/dates';
 import { TimelineForm } from '../../forms';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './Care24HourForm.module.css';
 
@@ -28,8 +29,6 @@ const weekdayButtons = [
   { day: 'sat', label: 'Saturday' },
   { day: 'sun', label: 'Sunday' },
 ];
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const ADD_SELECTED_WEEKDAY = 'ADD_SELECTED_WEEKDAY';
 const DELETE_SELECTED_WEEKDAY = 'DELETE_SELECTED_WEEKDAY';
@@ -123,6 +122,8 @@ const Care24HourFormComponent = props => {
     submitButtonType,
     onChange,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const savedStartDate = availabilityPlan?.startDate;
   const savedEndDate = availabilityPlan?.endDate;

@@ -247,7 +247,6 @@ TimelineForm.propTypes = {
   intl: intlShape.isRequired,
   onSubmit: func.isRequired,
   timeZone: string.isRequired,
-  updateInProgress: bool.isRequired,
   fetchErrors: shape({
     updateListingError: propTypes.error,
   }),

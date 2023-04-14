@@ -37,73 +37,11 @@ import {
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-const appearance = {
-  theme: 'stripe',
-  variables: {
-    colorPrimary: '#568a6e',
-    fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    borderRadius: '2px',
-  },
-  rules: {
-    '.Input': {
-      display: 'block',
-      width: '100%',
-      margin: '0',
-      paddingLeft: '0',
-      paddingBlock: isMobile ? '5px' : '4px',
-      height: '24px',
-      boxShadow: 'none',
-
-      /* Borders */
-      border: 'none',
-      borderBottomWidth: '2px',
-      borderBottomStyle: 'solid',
-      borderBottomColor: '#4a4a4a',
-      borderRadius: 0,
-      transition: 'border-bottom-color ease-in 0.2s',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-      fontSize: '16px',
-      lineHeight: isMobile ? '24px' : '32px;',
-      letterSpacing: '-0.1px',
-      fontWeight: '500',
-    },
-    '.Input:hover, .Input:focus': {
-      boxShadow: 'none',
-      borderColor: '#568a6e',
-    },
-    '.Input::placeholder': {
-      color: '#b2b2b2',
-      fontWeight: '500',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    },
-    '.Input--invalid': {
-      boxShadow: 'none',
-      borderBottomColor: '#ff0000',
-      color: '#ff0000',
-    },
-    '.Error': {
-      color: '#ff0000',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    },
-    '.Label': {
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-      display: 'block',
-      fontWeight: '600',
-      fontSize: '14px',
-      lineHeight: isMobile ? '18px' : '16px',
-      letterSpacing: 0,
-      marginTop: 0,
-      marginBottom: 0,
-      paddingTop: isMobile ? '0px' : '6px',
-      color: '#4a4a4a',
-    },
-  },
-};
 
 const INITIAL = 'INITIAL';
 const PAYMENT = 'PAYMENT';
@@ -167,6 +105,71 @@ const EditListingBackgroundCheckPanel = props => {
     updateSubscriptionInProgress,
     fetchCurrentUser,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
+
+  const appearance = {
+    theme: 'stripe',
+    variables: {
+      colorPrimary: '#568a6e',
+      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      borderRadius: '2px',
+    },
+    rules: {
+      '.Input': {
+        display: 'block',
+        width: '100%',
+        margin: '0',
+        paddingLeft: '0',
+        paddingBlock: isMobile ? '5px' : '4px',
+        height: '24px',
+        boxShadow: 'none',
+
+        /* Borders */
+        border: 'none',
+        borderBottomWidth: '2px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: '#4a4a4a',
+        borderRadius: 0,
+        transition: 'border-bottom-color ease-in 0.2s',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+        fontSize: '16px',
+        lineHeight: isMobile ? '24px' : '32px;',
+        letterSpacing: '-0.1px',
+        fontWeight: '500',
+      },
+      '.Input:hover, .Input:focus': {
+        boxShadow: 'none',
+        borderColor: '#568a6e',
+      },
+      '.Input::placeholder': {
+        color: '#b2b2b2',
+        fontWeight: '500',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      },
+      '.Input--invalid': {
+        boxShadow: 'none',
+        borderBottomColor: '#ff0000',
+        color: '#ff0000',
+      },
+      '.Error': {
+        color: '#ff0000',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      },
+      '.Label': {
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+        display: 'block',
+        fontWeight: '600',
+        fontSize: '14px',
+        lineHeight: isMobile ? '18px' : '16px',
+        letterSpacing: 0,
+        marginTop: 0,
+        marginBottom: 0,
+        paddingTop: isMobile ? '0px' : '6px',
+        color: '#4a4a4a',
+      },
+    },
+  };
 
   const {
     authenticateCreateUserError,

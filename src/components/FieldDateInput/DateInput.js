@@ -5,7 +5,7 @@
  * N.B. *isOutsideRange* in defaultProps is defining what dates are available to booking.
  */
 import React, { Component } from 'react';
-import { bool, func, instanceOf, shape, string } from 'prop-types';
+import { bool, func, instanceOf, object, shape, string } from 'prop-types';
 import { SingleDatePicker, isInclusivelyAfterDay, isInclusivelyBeforeDay } from 'react-dates';
 
 // Import moment from moment-timezone. 10-year range only.
@@ -220,9 +220,7 @@ DateInputComponent.propTypes = {
   useMobileMargins: bool,
   placeholderText: string,
   screenReaderInputMessage: string,
-  value: shape({
-    date: instanceOf(Date),
-  }),
+  value: object,
 };
 
 export default injectIntl(DateInputComponent);
