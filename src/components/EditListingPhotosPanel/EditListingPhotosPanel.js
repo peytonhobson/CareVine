@@ -13,7 +13,7 @@ class EditListingPhotosPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedAvatar: props.currentUser.attributes.profile.publicData?.avatarLinearGradient,
+      selectedAvatar: props.currentUser.attributes.profile.publicData?.defaultAvatar,
     };
   }
 
