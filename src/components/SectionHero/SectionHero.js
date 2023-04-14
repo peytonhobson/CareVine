@@ -2,7 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { string } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { NamedLink, Logo, OwnListingLink, IconArrowHead, InlineTextButton } from '../../components';
+import {
+  NamedLink,
+  Logo,
+  OwnListingLink,
+  IconArrowHead,
+  InlineTextButton,
+  Button,
+} from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './SectionHero.module.css';
@@ -18,6 +25,7 @@ const SectionHero = props => {
     className,
     userType,
     currentUserListing,
+    currentUser,
     currentUserFetched,
     scrollToContent,
   } = props;
@@ -38,9 +46,13 @@ const SectionHero = props => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const classes = classNames(rootClassName || css.root, className);
+  const classes = classNames(
+    rootClassName || css.root,
+    className,
+    isMobile && !currentUser && css.middleHero
+  );
 
-  const itemsToBrowse = userType === CAREGIVER ? 'jobs' : 'caregivers';
+  const itemsToBrowse = userType === CAREGIVER ? 'Jobs' : 'Caregivers';
 
   const geolocation = (currentUserListing && currentUserListing.attributes.geolocation) || {};
   const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
@@ -63,17 +75,41 @@ const SectionHero = props => {
   return (
     <div className={classes}>
       {currentUserFetched && (
-        <div className={css.heroContent}>
-          {userType ? (
-            <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
-              <FormattedMessage id={title} />
-            </h1>
+        <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>
+          {currentUser ? (
+            <>
+              <h1
+                className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}
+              >
+                <FormattedMessage id={title} />
+              </h1>
+              {userType === CAREGIVER ? (
+                <h3
+                  className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
+                >
+                  <FormattedMessage id="SectionHero.subTitleCaregiver" />
+                </h3>
+              ) : (
+                <h3
+                  className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
+                >
+                  <FormattedMessage id="SectionHero.subTitleEmployer" />
+                </h3>
+              )}
+            </>
           ) : (
-            <Logo format="hero" className={css.logo} alt="CareVine" />
+            <>
+              <Logo format="hero" className={css.logo} alt="CareVine" />
+              <h3
+                className={classNames(css.heroSubTitle, isMobile && css.centered, {
+                  [css.heroSubTitleFEDelay]: mounted,
+                })}
+              >
+                <FormattedMessage id="SectionHero.subTitleUnAuth" />
+              </h3>
+            </>
           )}
-          <h2 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
-            <FormattedMessage id="SectionHero.subTitle" />
-          </h2>
+
           {location ? (
             <NamedLink
               name="SearchPage"
@@ -100,12 +136,24 @@ const SectionHero = props => {
               </NamedLink>
             )
           ) : (
-            <NamedLink
-              name="SignupPage"
-              className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-            >
-              <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
-            </NamedLink>
+            <div className={css.heroButtonContainer}>
+              <NamedLink
+                name="SignupPage"
+                className={classNames(css.heroButtonUnAuth, {
+                  [css.heroButtonFEDelay]: mounted,
+                })}
+              >
+                <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
+              </NamedLink>
+              <Button
+                className={classNames(css.heroButtonUnAuth, {
+                  [css.heroButtonFEDelay]: mounted,
+                })}
+                onClick={scrollToContent}
+              >
+                <FormattedMessage id="SectionHero.learnMoreButton" />
+              </Button>
+            </div>
           )}
         </div>
       )}

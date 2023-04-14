@@ -25,6 +25,8 @@ import { EMPLOYER } from '../../util/constants';
 import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
 export const LandingPageComponent = props => {
   const {
     history,
@@ -45,13 +47,13 @@ export const LandingPageComponent = props => {
   const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
   const schemaImage = `${config.canonicalRootURL}${backgroundImage}`;
 
-  const { userType } = (currentUser && currentUser.attributes.profile.metadata) || EMPLOYER;
+  const userType = currentUser?.attributes.profile.metadata.userType;
 
   const contentRef = useRef(null);
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 100;
+      const elementHeight = contentRef.current.offsetTop - (isMobile ? 40 : 90);
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };
@@ -85,6 +87,7 @@ export const LandingPageComponent = props => {
               currentUserListing={currentUserListing}
               currentUserFetched={currentUserFetched}
               scrollToContent={scrollToContent}
+              currentUser={currentUser}
             />
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
