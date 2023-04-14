@@ -37,11 +37,14 @@ const PaymentInfo = props => {
       return;
     }
 
-    onCreateSetupIntent(stripeCustomerId, { payment_method_types: ['card'] });
+    onCreateSetupIntent(stripeCustomerId, {
+      payment_method_types: ['card'],
+      metadata: { backgroundCheckType },
+    });
   };
 
   useEffect(() => {
-    if (setupIntent) {
+    if (setupIntent?.metadata?.backgroundCheckType === backgroundCheckType) {
       setPromoApplied(true);
     }
   }, [setupIntent]);

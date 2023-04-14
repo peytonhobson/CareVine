@@ -36,6 +36,7 @@ import {
 } from '../../ducks/authenticate.duck';
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -164,6 +165,7 @@ const EditListingBackgroundCheckPanel = props => {
     updateInProgress,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    fetchCurrentUser,
   } = props;
 
   const {
@@ -239,7 +241,7 @@ const EditListingBackgroundCheckPanel = props => {
       backgroundCheckSubscription?.status === 'trialing'
     ) {
       setStage(CREATE_USER);
-    } else if (createPaymentSuccess && stage === PAYMENT) {
+    } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);
       setTimeout(() => {
         setStage(CREATE_USER);
@@ -255,6 +257,7 @@ const EditListingBackgroundCheckPanel = props => {
     authenticate7YearHistory,
     backgroundCheckApproved,
     backgroundCheckRejected,
+    subscription,
   ]);
 
   useEffect(() => {
@@ -359,7 +362,10 @@ const EditListingBackgroundCheckPanel = props => {
       userId,
     };
 
-    if (setupIntentClientSecret) {
+    if (
+      setupIntentClientSecret &&
+      setupIntent?.metadata?.backgroundCheckType === backgroundCheckType
+    ) {
       onConfirmSetupIntent(stripe, setupIntentClientSecret, elements).then(() =>
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
       );
@@ -451,28 +457,37 @@ const EditListingBackgroundCheckPanel = props => {
       content = clientSecret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
-            {!updateSubscriptionError && !setupIntentClientSecret && (
-              <Elements options={options} stripe={stripePromise}>
-                <PayCreditCardForm
-                  createPaymentError={createPaymentError}
-                  createPaymentInProgress={createPaymentInProgress}
-                  formId="PayCreditCardForm"
-                  intl={intl}
-                  onSubmit={handleCardSubmit}
-                />
-              </Elements>
-            )}
-            {setupIntentClientSecret && (
-              <Elements options={setupIntentOptions} stripe={stripePromise}>
-                <PayCreditCardForm
-                  createPaymentError={createPaymentError}
-                  createPaymentInProgress={createPaymentInProgress}
-                  formId="PayCreditCardForm"
-                  intl={intl}
-                  onSubmit={handleCardSubmit}
-                />
-              </Elements>
-            )}
+            {!createSubscriptionError &&
+              (!setupIntentClientSecret ||
+                (setupIntentClientSecret &&
+                  setupIntent &&
+                  setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
+                <Elements options={options} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    createPaymentError={createPaymentError}
+                    createPaymentInProgress={createPaymentInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
+            {setupIntentClientSecret &&
+              (setupIntent
+                ? setupIntent.metadata?.backgroundCheckType === backgroundCheckType
+                : true) && (
+                <Elements options={setupIntentOptions} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    confirmSetupIntentInProgress={confirmSetupIntentInProgress}
+                    confirmSetupIntentError={confirmSetupIntentError}
+                    createSubscriptionError={createSubscriptionError}
+                    createSubscriptionInProgress={createSubscriptionInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
           </div>
           <PaymentInfo
             backgroundCheckType={backgroundCheckType}
@@ -713,6 +728,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
+  fetchCurrentUser,
   onAuthenticateCreateUser: authenticateCreateUser,
   onAuthenticateSubmitConsent: authenticateSubmitConsent,
   onAuthenticateUpdateUser: authenticateUpdateUser,
