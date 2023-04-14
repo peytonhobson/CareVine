@@ -53,7 +53,7 @@ class EditListingLocationPanel extends Component {
     const travelDistance = publicData && publicData.travelDistance ? publicData.travelDistance : {};
 
     const nearPublicTransit = publicData.nearPublicTransit ? publicData.nearPublicTransit : null;
-    const residenceType = publicData.residenceType ? publicData.residenceType : null;
+    const residenceType = publicData.residenceType?.length > 0 ? publicData.residenceType[0] : null;
 
     return {
       location: locationFieldsPresent
@@ -124,6 +124,8 @@ class EditListingLocationPanel extends Component {
           onSubmit={values => {
             const { location, travelDistance, nearPublicTransit, residenceType } = values;
 
+            this.setState({ residenceType: [residenceType] });
+
             const {
               selectedPlace: { address, origin },
             } = location;
@@ -174,7 +176,7 @@ class EditListingLocationPanel extends Component {
                       },
                       nearPublicTransit,
                       availabilityPlan: availabilityPlanMaybe,
-                      residenceType,
+                      residenceType: [residenceType],
                     },
                     privateData: {
                       address: {
