@@ -4,6 +4,8 @@ import { Modal, IconConfirm, Button, IconClose, IconSpinner } from '../';
 import { ensureOwnListing } from '../../util/data';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { FormattedMessage } from 'react-intl';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import {
   ConsentModalForm,
   EditListingBackgroundCheckForm,
@@ -22,6 +24,19 @@ import {
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
 } from '../../util/constants';
+import {
+  authenticateCreateUser,
+  authenticateSubmitConsent,
+  identityProofQuiz,
+  verifyIdentityProofQuiz,
+  authenticateUpdateUser,
+  getAuthenticateTestResult,
+  authenticateGenerateCriminalBackground,
+  authenticate7YearHistory,
+} from '../../ducks/authenticate.duck';
+import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -108,41 +123,49 @@ const BASIC = 'basic';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
+    authenticate,
     className,
-    rootClassName,
-    listing,
-    onAuthenticateCreateUser,
-    disabled,
-    ready,
-    onSubmit,
-    onChange,
-    submitButtonText,
-    panelUpdated,
-    updateInProgress,
-    errors,
-    intl,
-    currentUser,
-    onManageDisableScrolling,
-    onAuthenticateSubmitConsent,
-    onCreatePayment,
-    onGetIdentityProofQuiz,
-    onVerifyIdentityProofQuiz,
-    onNextTab,
-    onCreateSubscription,
+    confirmSetupIntentError,
+    confirmSetupIntentInProgress,
+    createdPaymentMethod,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createSetupIntentError,
+    createSetupIntentInProgress,
     createSubscriptionError,
     createSubscriptionInProgress,
-    subscription,
-    authenticate,
+    currentUser,
+    disabled,
+    errors,
+    intl,
+    listing,
+    onAuthenticateCreateUser,
+    onAuthenticateSubmitConsent,
     onAuthenticateUpdateUser,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    onGetAuthenticateTestResult,
+    onChange,
+    onConfirmSetupIntent,
+    onCreatePayment,
+    onCreateSetupIntent,
+    onCreateSubscription,
     onGenerateCriminalBackground,
     onGet7YearHistory,
+    onGetAuthenticateTestResult,
+    onGetIdentityProofQuiz,
+    onManageDisableScrolling,
+    onNextTab,
     onUpdateSubscription,
+    onVerifyIdentityProofQuiz,
+    panelUpdated,
+    ready,
+    rootClassName,
+    setupIntent,
+    submitButtonText,
+    subscription,
+    updateInProgress,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    fetchCurrentUser,
   } = props;
 
   const {
@@ -168,6 +191,7 @@ const EditListingBackgroundCheckPanel = props => {
   const [stage, setStage] = useState(INITIAL);
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
+  const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -212,9 +236,12 @@ const EditListingBackgroundCheckPanel = props => {
       if (!getIdentityProofQuizInProgress) {
         setStage(SUBMIT_CONSENT);
       }
-    } else if (backgroundCheckSubscription?.status === 'active') {
+    } else if (
+      backgroundCheckSubscription?.status === 'active' ||
+      backgroundCheckSubscription?.status === 'trialing'
+    ) {
       setStage(CREATE_USER);
-    } else if (createPaymentSuccess && stage === PAYMENT) {
+    } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);
       setTimeout(() => {
         setStage(CREATE_USER);
@@ -230,6 +257,7 @@ const EditListingBackgroundCheckPanel = props => {
     authenticate7YearHistory,
     backgroundCheckApproved,
     backgroundCheckRejected,
+    subscription,
   ]);
 
   useEffect(() => {
@@ -240,10 +268,28 @@ const EditListingBackgroundCheckPanel = props => {
   }, [getIdentityProofQuizError]);
 
   useEffect(() => {
-    if (subscription?.latest_invoice?.payment_intent?.client_secret) {
-      setClientSecret(subscription.latest_invoice.payment_intent.client_secret);
-    }
+    setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
   }, [subscription]);
+
+  useEffect(() => {
+    setSetupIntentClientSecret(setupIntent?.client_secret);
+  }, [setupIntent]);
+
+  useEffect(() => {
+    if (createdPaymentMethod) {
+      onCreateSubscription(
+        stripeCustomerId,
+        backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+        currentUser.id?.uuid,
+        {
+          default_payment_method: createdPaymentMethod,
+          trial_end: moment()
+            .add(1, 'month')
+            .unix(),
+        }
+      );
+    }
+  }, createdPaymentMethod);
 
   useEffect(() => {
     if (
@@ -315,7 +361,17 @@ const EditListingBackgroundCheckPanel = props => {
       elements,
       userId,
     };
-    onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+
+    if (
+      setupIntentClientSecret &&
+      setupIntent?.metadata?.backgroundCheckType === backgroundCheckType
+    ) {
+      onConfirmSetupIntent(stripe, setupIntentClientSecret, elements).then(() =>
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      );
+    } else {
+      onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+    }
   };
 
   const handleIdentityQuizSubmit = answers => {
@@ -393,28 +449,55 @@ const EditListingBackgroundCheckPanel = props => {
         appearance,
       };
 
+      const setupIntentOptions = {
+        clientSecret: setupIntentClientSecret,
+        appearance,
+      };
+
       content = clientSecret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
-            {!updateSubscriptionError && (
-              <Elements options={options} stripe={stripePromise}>
-                <PayCreditCardForm
-                  createPaymentError={createPaymentError}
-                  createPaymentInProgress={createPaymentInProgress}
-                  formId="PayCreditCardForm"
-                  intl={intl}
-                  onSubmit={handleCardSubmit}
-                />
-              </Elements>
-            )}
+            {!createSubscriptionError &&
+              (!setupIntentClientSecret ||
+                (setupIntentClientSecret &&
+                  setupIntent &&
+                  setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
+                <Elements options={options} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    createPaymentError={createPaymentError}
+                    createPaymentInProgress={createPaymentInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
+            {setupIntentClientSecret &&
+              (setupIntent
+                ? setupIntent.metadata?.backgroundCheckType === backgroundCheckType
+                : true) && (
+                <Elements options={setupIntentOptions} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    confirmSetupIntentInProgress={confirmSetupIntentInProgress}
+                    confirmSetupIntentError={confirmSetupIntentError}
+                    createSubscriptionError={createSubscriptionError}
+                    createSubscriptionInProgress={createSubscriptionInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
           </div>
           <PaymentInfo
             backgroundCheckType={backgroundCheckType}
             subscription={subscription}
+            stripeCustomerId={stripeCustomerId}
             currentUser={currentUser}
-            onUpdateSubscription={onUpdateSubscription}
-            updateSubscriptionError={updateSubscriptionError}
-            updateSubscriptionInProgress={updateSubscriptionInProgress}
+            onCreateSetupIntent={onCreateSetupIntent}
+            setupIntent={setupIntent}
+            createSetupIntentInProgress={createSetupIntentInProgress}
+            createSetupIntentError={createSetupIntentError}
           />
         </div>
       ) : (
@@ -599,4 +682,68 @@ const EditListingBackgroundCheckPanel = props => {
   );
 };
 
-export default EditListingBackgroundCheckPanel;
+const mapStateToProps = state => {
+  const authenticate = state.Authenticate;
+
+  const { updateStripeAccountError } = state.stripeConnectAccount;
+
+  const {
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+  } = state.stripe;
+
+  const {
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    confirmSetupIntentInProgress,
+    confirmSetupIntentError,
+    createdPaymentMethod,
+  } = state.paymentMethods;
+
+  return {
+    authenticate,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
+    updateStripeAccountError,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    confirmSetupIntentInProgress,
+    confirmSetupIntentError,
+    createdPaymentMethod,
+  };
+};
+
+const mapDispatchToProps = {
+  fetchCurrentUser,
+  onAuthenticateCreateUser: authenticateCreateUser,
+  onAuthenticateSubmitConsent: authenticateSubmitConsent,
+  onAuthenticateUpdateUser: authenticateUpdateUser,
+  onConfirmSetupIntent: confirmSetupIntent,
+  onCreatePayment: createPayment,
+  onCreateSetupIntent: createSetupIntent,
+  onCreateSubscription: createSubscription,
+  onGenerateCriminalBackground: authenticateGenerateCriminalBackground,
+  onGet7YearHistory: authenticate7YearHistory,
+  onGetAuthenticateTestResult: getAuthenticateTestResult,
+  onGetIdentityProofQuiz: identityProofQuiz,
+  onUpdateSubscription: updateSubscription,
+  onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
+};
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  EditListingBackgroundCheckPanel
+);

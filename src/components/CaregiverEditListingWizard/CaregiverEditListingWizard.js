@@ -23,6 +23,7 @@ import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 import { stripeAccountClearError } from '../../ducks/stripeConnectAccount.duck';
 import { stripeCustomer } from '../../containers/PaymentMethodsPage/PaymentMethodsPage.duck.js';
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 
 import EditListingWizardTab, {
   SERVICES,
@@ -37,16 +38,6 @@ import EditListingWizardTab, {
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
 import { savePayoutDetails } from '../../containers/EditListingPage/EditListingPage.duck';
-import {
-  authenticateCreateUser,
-  authenticateSubmitConsent,
-  identityProofQuiz,
-  verifyIdentityProofQuiz,
-  authenticateUpdateUser,
-  getAuthenticateTestResult,
-  authenticateGenerateCriminalBackground,
-  authenticate7YearHistory,
-} from '../../ducks/authenticate.duck';
 import { generateBio } from '../../ducks/chatGPT.duck';
 
 import css from './CaregiverEditListingWizard.module.css';
@@ -674,6 +665,7 @@ const mapStateToProps = state => {
   } = state.stripe;
 
   const { generateBioInProgress, generateBioError, generatedBio } = state.chatGPT;
+  const { setupIntent, createSetupIntentInProgress, createSetupIntentError } = state.paymentMethods;
 
   return {
     authenticate,
@@ -694,39 +686,19 @@ const mapStateToProps = state => {
     generateBioInProgress,
     generateBioError,
     generatedBio,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onAuthenticateCreateUser: (params, userId) => dispatch(authenticateCreateUser(params, userId)),
-  onAuthenticateSubmitConsent: (userAccessCode, fullName, userId) =>
-    dispatch(authenticateSubmitConsent(userAccessCode, fullName, userId)),
-  onAuthenticateUpdateUser: (userInfo, userAccessCode) =>
-    dispatch(authenticateUpdateUser(userInfo, userAccessCode)),
-  onCreatePayment: params => dispatch(createPayment(params)),
-  onCreateSubscription: (stripeCustomerId, priceId, userId) =>
-    dispatch(createSubscription(stripeCustomerId, priceId, userId)),
-  onGenerateCriminalBackground: (userAccessCode, userId) =>
-    dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId)),
-  onGet7YearHistory: (userAccessCode, userId) =>
-    dispatch(authenticate7YearHistory(userAccessCode, userId)),
-  onGetAuthenticateTestResult: (userAccessCode, userId) =>
-    dispatch(getAuthenticateTestResult(userAccessCode, userId)),
-  onGetIdentityProofQuiz: (userAccessCode, userId) =>
-    dispatch(identityProofQuiz(userAccessCode, userId)),
   onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
-  onHandleCardSetup: params => dispatch(handleCardSetup(params)),
   onImageUpload: data => dispatch(requestImageUpload(data)),
   onPayoutDetailsFormChange: () => dispatch(stripeAccountClearError()),
   onPayoutDetailsSubmit: (values, isUpdateCall) =>
     dispatch(savePayoutDetails(values, isUpdateCall)),
-  onUpdateSubscription: (subscriptionId, params) =>
-    dispatch(updateSubscription(subscriptionId, params)),
-  onVerifyIdentityProofQuiz: (IDMSessionId, userAccessCode, userId, answers, currentAttempts) =>
-    dispatch(
-      verifyIdentityProofQuiz(IDMSessionId, userAccessCode, userId, answers, currentAttempts)
-    ),
   onGenerateBio: listing => dispatch(generateBio(listing)),
 });
 

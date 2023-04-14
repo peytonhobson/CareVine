@@ -95,18 +95,9 @@ const EditListingWizardTab = props => {
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
-    onAuthenticateCreateUser,
-    onAuthenticateSubmitConsent,
-    onAuthenticateUpdateUser,
     onChange,
     onCreateListingDraft,
-    onCreatePayment,
-    onCreateSubscription,
     onDeleteAvailabilityException,
-    onGenerateCriminalBackground,
-    onGet7YearHistory,
-    onGetAuthenticateTestResult,
-    onGetIdentityProofQuiz,
     onImageUpload,
     onManageDisableScrolling,
     onProfileImageUpload,
@@ -134,6 +125,9 @@ const EditListingWizardTab = props => {
     generateJobDescriptionError,
     generatedJobDescription,
     onGenerateJobDescription,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   } = props;
 
   const { type } = params;
@@ -393,32 +387,23 @@ const EditListingWizardTab = props => {
       return (
         <EditListingBackgroundCheckPanel
           {...panelProps(BACKGROUND_CHECK)}
-          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-          onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
-          }}
-          onAuthenticateCreateUser={onAuthenticateCreateUser}
-          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
-          onCreatePayment={onCreatePayment}
-          createPaymentInProgress={createPaymentInProgress}
+          authenticate={authenticate}
           createPaymentError={createPaymentError}
+          createPaymentInProgress={createPaymentInProgress}
           createPaymentSuccess={createPaymentSuccess}
-          onUpdateProfile={onUpdateProfile}
-          onGetIdentityProofQuiz={onGetIdentityProofQuiz}
-          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
+          createSetupIntentError={createSetupIntentError}
+          createSetupIntentInProgress={createSetupIntentInProgress}
+          createSubscriptionError={createSubscriptionError}
+          createSubscriptionInProgress={createSubscriptionInProgress}
           onNextTab={() =>
             redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
-          onCreateSubscription={onCreateSubscription}
-          createSubscriptionError={createSubscriptionError}
-          createSubscriptionInProgress={createSubscriptionInProgress}
-          subscription={subscription}
-          authenticate={authenticate}
-          onAuthenticateUpdateUser={onAuthenticateUpdateUser}
-          onGetAuthenticateTestResult={onGetAuthenticateTestResult}
-          onGenerateCriminalBackground={onGenerateCriminalBackground}
-          onGet7YearHistory={onGet7YearHistory}
+          onUpdateProfile={onUpdateProfile}
           onUpdateSubscription={onUpdateSubscription}
+          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
+          setupIntent={setupIntent}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          subscription={subscription}
           updateSubscriptionError={updateSubscriptionError}
           updateSubscriptionInProgress={updateSubscriptionInProgress}
         />

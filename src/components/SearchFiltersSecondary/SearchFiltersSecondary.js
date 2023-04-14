@@ -3,7 +3,7 @@ import { func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
 
-import { InlineTextButton, Button } from '../../components';
+import { InlineTextButton, Button, SecondaryButton } from '../../components';
 import css from './SearchFiltersSecondary.module.css';
 
 class SearchFiltersSecondaryComponent extends Component {
@@ -67,9 +67,9 @@ class SearchFiltersSecondaryComponent extends Component {
             <FormattedMessage id={'SearchFiltersSecondary.resetAll'} />
           </Button>
           <div className={css.rightFixedButtons}>
-            <Button className={css.cancelButton} onClick={this.cancelFilters}>
+            <SecondaryButton className={css.cancelButton} onClick={this.cancelFilters}>
               <FormattedMessage id={'SearchFiltersSecondary.cancel'} />
-            </Button>
+            </SecondaryButton>
             <Button className={css.applyButton} onClick={this.applyFilters}>
               <FormattedMessage id={'SearchFiltersSecondary.apply'} />
             </Button>

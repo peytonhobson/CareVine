@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 import { Button, Form } from '../../components';
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureStripeCustomer } from '../../util/data';
 
 import css from './PayCreditCardForm.module.css';
 
@@ -14,7 +13,16 @@ const STRIPE_CARD_ERROR = 'card_error';
 const CREDIT_CARD_LABEL = 'Credit Card';
 
 const PayCreditCardForm = props => {
-  const { createPaymentError, createPaymentInProgress, intl, onSubmit } = props;
+  const {
+    createPaymentError,
+    createPaymentInProgress,
+    confirmSetupIntentInProgress,
+    confirmSetupIntentError,
+    createSubscriptionInProgress,
+    createSubscriptionError,
+    intl,
+    onSubmit,
+  } = props;
 
   const stripe = useStripe();
   const elements = useElements();
@@ -64,11 +72,19 @@ const PayCreditCardForm = props => {
     );
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (createPaymentError) {
       displayErrorMessage(createPaymentError);
     }
-  }, [createPaymentError]);
+
+    if (confirmSetupIntentError) {
+      displayErrorMessage(confirmSetupIntentError);
+    }
+
+    if (createSubscriptionError) {
+      displayErrorMessage(createSubscriptionError);
+    }
+  }, [createPaymentError, confirmSetupIntentError, createSubscriptionError]);
 
   const paymentElementOptions = {
     layout: 'tabs',
@@ -82,7 +98,8 @@ const PayCreditCardForm = props => {
     },
   };
 
-  const submitInProgress = createPaymentInProgress;
+  const submitInProgress =
+    createPaymentInProgress || confirmSetupIntentInProgress || createSubscriptionInProgress;
   const submitDisabled = submitInProgress || !isElementsComplete;
 
   const buttonMessage = intl.formatMessage({ id: 'PayCreditCardForm.paymentButtonMessage' });

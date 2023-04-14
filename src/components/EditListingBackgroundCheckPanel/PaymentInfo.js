@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '..';
-import { PROMO_CODES } from '../../util/constants';
+import { PROMO_CODES, CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
+import moment from 'moment';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -14,41 +15,39 @@ const PaymentInfo = props => {
     backgroundCheckType,
     subscription,
     currentUser,
-    onUpdateSubscription,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
+    stripeCustomerId,
+    onCreateSetupIntent,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   } = props;
 
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState(false);
 
-  const handleApplyPromoCode = () => {
+  const handleApplyPromoCode = async () => {
     setPromoError(false);
 
     const promotionCode = PROMO_CODES.find(
       code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
-    )?.value;
+    );
     if (!promotionCode) {
       setPromoError(true);
       return;
     }
-    onUpdateSubscription(subscription.id, {
-      promotion_code: promotionCode,
+
+    onCreateSetupIntent(stripeCustomerId, {
+      payment_method_types: ['card'],
+      metadata: { backgroundCheckType },
     });
   };
 
   useEffect(() => {
-    if (subscription?.discount?.promotion_code) {
+    if (setupIntent?.metadata?.backgroundCheckType === backgroundCheckType) {
       setPromoApplied(true);
     }
-  }, [subscription]);
-
-  useEffect(() => {
-    if (updateSubscriptionError) {
-      setPromoError(true);
-    }
-  }, [updateSubscriptionError]);
+  }, [setupIntent]);
 
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
@@ -110,7 +109,7 @@ const PaymentInfo = props => {
         <Button
           className={css.applyButton}
           onClick={handleApplyPromoCode}
-          inProgress={updateSubscriptionInProgress}
+          inProgress={createSetupIntentInProgress}
           ready={promoApplied}
           disabled={promoCode === '' || promoApplied}
         >
@@ -125,6 +124,11 @@ const PaymentInfo = props => {
       {promoError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />
+        </p>
+      ) : null}
+      {createSetupIntentError ? (
+        <p className={css.error}>
+          <FormattedMessage id="EditListingBackgroundCheckPanel.createSetupIntentError" />
         </p>
       ) : null}
       <p className={css.textSm}>
