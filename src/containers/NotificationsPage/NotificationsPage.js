@@ -312,13 +312,12 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onUpdateNotifications: notifications => dispatch(updateNotifications(notifications)),
-  onFetchSenderListing: id => dispatch(fetchSenderListing(id)),
-  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onUpdateNotifications: updateNotifications,
+  onFetchSenderListing: fetchSenderListing,
+  onFetchCurrentUser: fetchCurrentUser,
+};
 
 const NotificationsPage = compose(
   connect(mapStateToProps, mapDispatchToProps),
