@@ -12,8 +12,8 @@ const IconLogo = props => {
   let height = '3em';
 
   if (format === 'hero') {
-    width = isMobile ? '25em' : '30em';
-    height = '10em';
+    width = isMobile ? '85vw' : '30em';
+    height = 'auto';
   }
 
   return (
@@ -24,6 +24,7 @@ const IconLogo = props => {
       viewBox="0 0 1200 343.22"
       height={height}
       width={width}
+      className={className}
     >
       <defs>
         <linearGradient
