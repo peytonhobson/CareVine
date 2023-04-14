@@ -59,7 +59,7 @@ const generateJobDescriptionPrompt = listing => {
     scheduleTimes = `Days and times of Care: ${JSON.stringify(availabilityPlan.entries)}`;
   }
 
-  const prompt = `I or someone I know is seeking care. Generate a first-person job description with less than 800 characters (including spaces) with the following traits.
+  const prompt = `I want to hire a caregiver. Generate a first-person job description with less than 800 characters (including spaces) with the following traits.
             Only include the items in the traits that are the most important.
 
             Preferred Certifications and Training: ${

@@ -3,10 +3,8 @@ import PropTypes from 'prop-types';
 
 import css from './Logo.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const IconLogo = props => {
-  const { className, format, ...rest } = props;
+  const { className, format, isMobile, ...rest } = props;
 
   let width = '8em';
   let height = '3em';

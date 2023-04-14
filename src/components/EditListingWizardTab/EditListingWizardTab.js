@@ -519,7 +519,6 @@ EditListingWizardTab.propTypes = {
     push: func.isRequired,
     replace: func.isRequired,
   }).isRequired,
-  images: array.isRequired,
   pageName: string,
 
   // We cannot use propTypes.listing since the listing might be a draft.

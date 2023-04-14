@@ -15,8 +15,6 @@ import classNames from 'classnames';
 
 import css from './NotificationsPage.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const formatPreviewDate = createdAt => {
   if (isToday(createdAt)) {
     return timestampToDate(createdAt).toLocaleTimeString('en-US', {
@@ -116,7 +114,13 @@ const TitleContent = ({ type, metadata }) => {
 };
 
 const NotificationPreview = props => {
-  const { notification, onPreviewClick, active, handleOpenDeleteNotificationModal } = props;
+  const {
+    notification,
+    onPreviewClick,
+    active,
+    handleOpenDeleteNotificationModal,
+    isMobile,
+  } = props;
 
   const { createdAt, type, id, isRead, metadata } = notification;
   const notificationDot = !isRead ? <div className={css.notificationDot} /> : null;

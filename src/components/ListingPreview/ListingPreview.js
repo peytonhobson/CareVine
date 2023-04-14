@@ -7,11 +7,18 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import css from './ListingPreview.module.css';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const ListingPreview = props => {
-  const { currentUser, currentUserListing, onShowFullProfile, onManageDisableScrolling } = props;
+  const {
+    currentUser,
+    currentUserListing,
+    onShowFullProfile,
+    onManageDisableScrolling,
+    isMobile,
+  } = props;
 
   const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
   const listingWithAuthor = {

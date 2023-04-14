@@ -4,8 +4,6 @@ import NotificationPreview from './NotificationPreview';
 
 import css from './NotificationsPage.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const SideNav = props => {
   const {
     notifications,
@@ -13,6 +11,7 @@ const SideNav = props => {
     onPreviewClick,
     activeNotificationId,
     fetchCurrentUserInProgress,
+    isMobile,
   } = props;
 
   return (
@@ -26,6 +25,7 @@ const SideNav = props => {
               active={notification.id === activeNotificationId}
               onPreviewClick={onPreviewClick}
               handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
+              isMobile={isMobile}
             />
           );
         })

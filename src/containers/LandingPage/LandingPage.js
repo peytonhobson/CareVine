@@ -21,11 +21,10 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const LandingPageComponent = props => {
   const {
@@ -38,6 +37,8 @@ export const LandingPageComponent = props => {
     currentUser,
     currentUserFetched,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org

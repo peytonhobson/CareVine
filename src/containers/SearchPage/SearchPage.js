@@ -134,7 +134,6 @@ export class SearchPageComponent extends Component {
     const validQueryParams = validURLParamsForExtendedData(searchInURL, filterConfig);
 
     const isWindowDefined = typeof window !== 'undefined';
-    const isMobileLayout = isWindowDefined && window.innerWidth < MODAL_BREAKPOINT;
 
     const onMapIconClick = () => {
       this.useLocationSearchBounds = true;

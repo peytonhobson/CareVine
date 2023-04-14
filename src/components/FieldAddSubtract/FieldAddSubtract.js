@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { func, instanceOf, object, node, string, bool, number } from 'prop-types';
+import { func, instanceOf, object, node, string, bool, number, oneOfType } from 'prop-types';
 import { Field } from 'react-final-form';
 import { injectIntl, intlShape } from '../../util/reactIntl';
 import classNames from 'classnames';
@@ -128,7 +128,7 @@ AddSubtractComponent.propTypes = {
   fieldClassName: string,
   startingCount: number,
   countLabel: string,
-  label: string,
+  label: oneOfType([object, string]),
   onChange: func,
 
   input: object.isRequired,

@@ -42,6 +42,7 @@ import {
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './EditListingPage.module.css';
 
@@ -69,6 +70,8 @@ export const EditListingPageComponent = props => {
     uploadImageError,
     ...rest
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const { id, type, returnURLType } = params;
 
@@ -208,6 +211,7 @@ export const EditListingPageComponent = props => {
           updateInProgress={page.updateInProgress || page.createListingDraftInProgress}
           payoutDetailsSaveInProgress={page.payoutDetailsSaveInProgress}
           payoutDetailsSaved={page.payoutDetailsSaved}
+          isMobile={isMobile}
         />
       );
     } else if (userType === EMPLOYER) {
@@ -229,6 +233,7 @@ export const EditListingPageComponent = props => {
           profileImage={profileImage}
           updatedTab={page.updatedTab}
           updateInProgress={page.updateInProgress || page.createListingDraftInProgress}
+          isMobile={isMobile}
         />
       );
     } else {

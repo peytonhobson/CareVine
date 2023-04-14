@@ -21,6 +21,7 @@ import {
 } from '../../components';
 import { TopbarContainer } from '..';
 import NotificationContainer from './NotificationContainer';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './NotificationsPage.module.css';
 import SideNav from './SideNav';
@@ -32,8 +33,6 @@ const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -99,6 +98,8 @@ const NotificationsPageComponent = props => {
     onFetchCurrentUser,
     params,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const { notificationId } = params;
 
@@ -211,6 +212,7 @@ const NotificationsPageComponent = props => {
             fetchCurrentUserInProgress={
               fetchCurrentUserInProgress && !state.currentUserInitialFetched
             }
+            isMobile={isMobile}
           />
         </LayoutWrapperSideNav>
 

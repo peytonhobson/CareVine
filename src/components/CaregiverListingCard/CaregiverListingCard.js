@@ -31,12 +31,11 @@ import {
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { formatPrice } from '../../util/data';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './CaregiverListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const CaregiverListingCardComponent = props => {
   const {
@@ -47,6 +46,7 @@ export const CaregiverListingCardComponent = props => {
     filtersConfig,
     currentUserListing,
     disableProfileLink,
+    isMobile,
   } = props;
 
   const currentListing = ensureListing(listing);

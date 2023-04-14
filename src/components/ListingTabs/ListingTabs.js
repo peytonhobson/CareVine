@@ -18,46 +18,44 @@ import {
 
 import css from './ListingTabs.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-const caregiverTabs = [
-  'Availability',
-  'Bio',
-  'Services',
-  isMobile ? 'Training' : 'Certifications/Training',
-  'Additional',
-];
-const employerTabs = [
-  'Job Description',
-  'Care Schedule',
-  'Care Recipients(s)',
-  'Caregiver Preferences',
-];
-
-const findLabel = (key, options) => {
-  const found = options.find(option => option.key === key);
-  return found ? found.label : null;
-};
-
-const getTabs = (listingType, onClick, selected) => {
-  const tabText = listingType === CAREGIVER ? caregiverTabs : employerTabs;
-
-  return tabText.map(tab => {
-    return {
-      text: tab,
-      selected: selected === tab,
-      onClick: () => onClick(tab),
-    };
-  });
-};
-
-const scrollToRef = ref => {
-  const elementHeight = ref.offsetTop - (isMobile ? 100 : 130);
-  window.scrollTo({ top: elementHeight, behavior: 'smooth' });
-};
-
 const ListingTabs = props => {
-  const { listing, onManageDisableScrolling, currentUserListing } = props;
+  const { listing, onManageDisableScrolling, currentUserListing, isMobile } = props;
+
+  const caregiverTabs = [
+    'Availability',
+    'Bio',
+    'Services',
+    isMobile ? 'Training' : 'Certifications/Training',
+    'Additional',
+  ];
+  const employerTabs = [
+    'Job Description',
+    'Care Schedule',
+    'Care Recipients(s)',
+    'Caregiver Preferences',
+  ];
+
+  const findLabel = (key, options) => {
+    const found = options.find(option => option.key === key);
+    return found ? found.label : null;
+  };
+
+  const getTabs = (listingType, onClick, selected) => {
+    const tabText = listingType === CAREGIVER ? caregiverTabs : employerTabs;
+
+    return tabText.map(tab => {
+      return {
+        text: tab,
+        selected: selected === tab,
+        onClick: () => onClick(tab),
+      };
+    });
+  };
+
+  const scrollToRef = ref => {
+    const elementHeight = ref.offsetTop - (isMobile ? 100 : 130);
+    window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+  };
 
   const listingType = listing?.attributes?.metadata?.listingType;
 
@@ -159,6 +157,7 @@ const ListingTabs = props => {
             availabilityPlan={availabilityPlan}
             filterConfig={config.custom.filters}
             ref={careScheduleRef}
+            isMobile={isMobile}
           />
         );
       case 'Care Recipients(s)':
