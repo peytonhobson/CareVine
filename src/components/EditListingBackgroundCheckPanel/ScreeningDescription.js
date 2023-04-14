@@ -137,7 +137,7 @@ const ScreeningDescription = props => {
           </CardContent>
           <CardActions>
             <Button className={greyButtonClasses.root} onClick={() => onPayForBC(BASIC)}>
-              Pay for CareVine Basic
+              Get CareVine Basic
             </Button>
           </CardActions>
         </Card>

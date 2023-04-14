@@ -151,10 +151,11 @@ export const filters = [
   {
     id: 'residenceType',
     label: 'Residence Type',
-    type: 'SelectSingleFilter',
+    type: 'SelectMultipleFilter',
     group: 'secondary',
     queryParamNames: ['pub_residenceType'],
     config: {
+      searchMode: 'has_any',
       options: [
         { key: 'ownHome', label: 'Own Home' },
         { key: 'withFamily', label: 'Living with Family' },

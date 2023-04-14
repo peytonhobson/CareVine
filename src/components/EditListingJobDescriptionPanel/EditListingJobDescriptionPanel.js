@@ -8,7 +8,7 @@ import { LISTING_STATE_DRAFT } from '../../util/types';
 import { ensureListing } from '../../util/data';
 import { EditListingJobDescriptionForm } from '../../forms';
 import config from '../../config';
-import { findOptionsForSelectFilter } from '../../util/search';
+import { convertFilterKeyToLabel } from '../../util/data';
 import { Modal } from '..';
 
 import css from './EditListingJobDescriptionPanel.module.css';
@@ -20,14 +20,6 @@ const AVAILABILITY_PLAN_TYPE_24HOUR = '24hour';
 const SELECT_DATES = 'One Time Care';
 const RECURRING = 'Repeat Care';
 const TWENTY_FOUR_HOUR = '24 Hour Care';
-
-const convertFilterKeyToLabel = (key, property, filter) => {
-  const filterOption = findOptionsForSelectFilter(property, filter).find(data => {
-    return key === data.key;
-  });
-
-  return filterOption ? filterOption.label : null;
-};
 
 const generateTitle = (currentListing, filterConfig) => {
   let careScheduleType = null;
@@ -80,11 +72,11 @@ const generateTitle = (currentListing, filterConfig) => {
     });
   };
 
-  const pluralizedRelationships = pluralizeRelationshipsIfMultiple(relationships);
+  const pluralizedRelationships = relationships && pluralizeRelationshipsIfMultiple(relationships);
 
   let relationshipString = null;
 
-  pluralizedRelationships.forEach((relationship, index) => {
+  pluralizedRelationships?.forEach((relationship, index) => {
     const capitalizedRelationship =
       relationship
         .replace('My ', '')
@@ -103,7 +95,7 @@ const generateTitle = (currentListing, filterConfig) => {
   const city = currentListing.attributes.publicData.location?.city;
 
   return `${careScheduleType} Needed for ${
-    !relationshipString.startsWith('Myself') ? 'My' : ''
+    !relationshipString?.startsWith('Myself') ? 'My' : ''
   } ${relationshipString} in ${city}`;
 };
 
