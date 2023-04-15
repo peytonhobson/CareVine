@@ -61,12 +61,15 @@ const AvailabilityPreview = props => {
         };
         return weekdayTooltipTitles && dayInSchedule && entries ? (
           <InfoTooltip
+            key={day.key}
             title={title}
             icon={<div className={dayClasses}>{day.label}</div>}
             styles={styles}
           />
         ) : (
-          <div className={dayClasses}>{day.label}</div>
+          <div key={day.key} className={dayClasses}>
+            {day.label}
+          </div>
         );
       })}
     </div>

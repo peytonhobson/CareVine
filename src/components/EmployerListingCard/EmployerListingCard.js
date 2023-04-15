@@ -130,7 +130,9 @@ export const EmployerListingCardComponent = props => {
   const additionalCareTypesText = (
     <ul>
       {careTypesLabels.map((careType, index) => (
-        <li>{index > 2 && careType && careType.split('/')[0]}</li>
+        <li key={`${careType}-${currentAuthorName}-${index}`}>
+          {index > 2 && careType && careType.split('/')[0]}
+        </li>
       ))}
     </ul>
   );
