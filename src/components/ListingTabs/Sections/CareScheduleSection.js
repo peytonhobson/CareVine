@@ -139,7 +139,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
           {availabilityPlan?.liveIn && <p className={css.liveIn}>*This is a live-in position</p>}
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
-              <p>
+              <p className={css.dateText}>
                 <span className={isMobile ? css.smallBold : css.bold}>Start Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.startDate
@@ -149,7 +149,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
               </p>
             </span>
             <span className={css.dateContainer}>
-              <p>
+              <p className={css.dateText}>
                 <span className={isMobile ? css.smallBold : css.bold}>End Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.endDate

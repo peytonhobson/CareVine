@@ -54,11 +54,14 @@
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
-  margin-top: 2rem;
 }
 
 .dateContainer {
   display: flex;
+}
+
+.dateText {
+  margin-top: 0;
 }
 
 .bold {
@@ -124,7 +127,7 @@
 .hoursPerDayContainer {
   border: 3px solid var(--matterColorNegative);
   padding: 0.5rem;
-  margin-top: 1rem;
+  margin: 1rem 0 2rem 0;
 }
 
 .hoursPerDay {
@@ -143,7 +146,8 @@
 
 .liveIn {
   color: var(--marketplaceColor);
-  padding: 1rem 0;
+  padding: 0 0 2rem 0;
+  margin: 0;
 }
 
 .recipients {
