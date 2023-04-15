@@ -55,7 +55,7 @@ const FeedbackPageComponent = props => {
     >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
-          <TopbarContainer />
+          <TopbarContainer currentPage="FeedbackPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
           <h1 className={css.mainTitle}>Feedback</h1>

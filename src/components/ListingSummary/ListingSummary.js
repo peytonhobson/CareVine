@@ -30,7 +30,7 @@ const ListingSummaryComponent = props => {
     onOpenBookingModal,
     onBookNow,
     onShowListingPreview,
-    isMobiles,
+    isMobile,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;

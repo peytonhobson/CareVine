@@ -122,6 +122,12 @@
   }
 }
 
+.activeLink {
+  border-bottom: 4px solid var(--marketplaceColor) !important;
+  border-radius: 0 !important;
+  text-decoration: none !important;
+}
+
 .topbarDesktopLabel {
   display: inline-block;
   margin: 1.75rem 0;

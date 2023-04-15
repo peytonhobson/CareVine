@@ -226,6 +226,8 @@ export class ListingPageComponent extends Component {
       onFetchTransactionLineItems,
     } = this.props;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     const listingId = new UUID(rawParams.id);
     const isPendingApprovalVariant = rawParams.variant === LISTING_PAGE_PENDING_APPROVAL_VARIANT;
     const isDraftVariant = rawParams.variant === LISTING_PAGE_DRAFT_VARIANT;
@@ -273,7 +275,15 @@ export class ListingPageComponent extends Component {
 
     const bookingTitle = <FormattedMessage id="ListingPage.bookingTitle" values={{ title: '' }} />;
 
-    const topbar = <TopbarContainer />;
+    const authorAvailable = currentListing && currentListing.author;
+    const userAndListingAuthorAvailable = !!(currentUser && authorAvailable);
+    const isOwnListing =
+      userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
+    const showContactUser = authorAvailable && (!currentUser || (currentUser && !isOwnListing));
+
+    const topbar = (
+      <TopbarContainer currentPage={isOwnListing ? 'OwnListingPage' : 'ListingPage'} />
+    );
 
     if (showListingError && showListingError.status === 404) {
       // 404 listing not found
@@ -324,12 +334,6 @@ export class ListingPageComponent extends Component {
         </Page>
       );
     }
-
-    const authorAvailable = currentListing && currentListing.author;
-    const userAndListingAuthorAvailable = !!(currentUser && authorAvailable);
-    const isOwnListing =
-      userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
-    const showContactUser = authorAvailable && (!currentUser || (currentUser && !isOwnListing));
 
     const currentAuthor = authorAvailable ? currentListing.author : null;
     const ensuredAuthor = ensureUser(currentAuthor);
@@ -394,8 +398,6 @@ export class ListingPageComponent extends Component {
         />
       </div>
     ) : null;
-
-    const isMobile = useCheckMobileScreen();
 
     return (
       <Page
