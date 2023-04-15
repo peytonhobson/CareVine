@@ -103,7 +103,7 @@ const EditListingBackgroundCheckPanel = props => {
     updateInProgress,
     updateSubscriptionError,
     updateSubscriptionInProgress,
-    fetchCurrentUser,
+    onFetchCurrentUser,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -407,8 +407,10 @@ const EditListingBackgroundCheckPanel = props => {
       stripeCustomerId,
       bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
       currentUser.id.uuid
-    );
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    ).then(() => {
+      onFetchCurrentUser();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    });
   };
 
   const memoizedHandlePayForBC = useCallback(handlePayForBC, [
@@ -731,7 +733,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  fetchCurrentUser,
+  onFetchCurrentUser: fetchCurrentUser,
   onAuthenticateCreateUser: authenticateCreateUser,
   onAuthenticateSubmitConsent: authenticateSubmitConsent,
   onAuthenticateUpdateUser: authenticateUpdateUser,

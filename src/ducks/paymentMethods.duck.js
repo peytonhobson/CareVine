@@ -7,6 +7,7 @@ import {
 } from '../util/api';
 import * as log from '../util/log';
 import { stripePaymentMethods } from '../util/api';
+import { fetchCurrentUser } from './user.duck';
 
 // ================ Action types ================ //
 
@@ -337,7 +338,9 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
     return sdk.stripeCustomer
       .create({ stripePaymentMethodId }, { expand: true, include: ['defaultPaymentMethod'] })
       .then(response => {
+        dispatch();
         const stripeCustomer = response.data.data;
+        dispatch(fetchCurrentUser());
         dispatch(stripeCustomerCreateSuccess(response));
         return stripeUpdateCustomer({
           stripeCustomerId: stripeCustomer?.attributes?.stripeCustomerId,
@@ -367,6 +370,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
         });
       })
       .then(response => {
+        dispatch(fetchCurrentUser());
         dispatch(stripeCustomerCreateSuccess(response));
         return response;
       })
