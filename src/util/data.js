@@ -418,7 +418,7 @@ export const convertFilterKeyToLabel = (filterType, key) => {
 export const convertFilterKeysToLabels = (filterType, keys) => {
   return findOptionsForSelectFilter(filterType, filters)
     ?.filter(data => {
-      return keys.includes(data.key);
+      return keys?.includes(data.key);
     })
     ?.map(filter => filter.label);
 };
