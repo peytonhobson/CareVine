@@ -423,7 +423,6 @@ module.exports = (request, response) => {
       break;
     case 'customer.subscription.updated':
       const customerSubscriptionUpdated = event.data.object;
-      console.log(customerSubscriptionUpdated);
       if (
         customerSubscriptionUpdated.status !== 'incomplete_expired' ||
         customerSubscriptionUpdated.status !== 'incomplete'

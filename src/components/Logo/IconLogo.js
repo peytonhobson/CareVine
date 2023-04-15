@@ -10,8 +10,8 @@ const IconLogo = props => {
   let height = '3em';
 
   if (format === 'hero') {
-    width = isMobile ? '85vw' : '30em';
-    height = 'auto';
+    width = isMobile ? '85vw' : '28em';
+    height = '8em';
   }
 
   return (
