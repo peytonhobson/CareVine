@@ -74,8 +74,6 @@ const Footer = props => {
 
   const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
 
-  console.log(currentUserListing?.attributes?.state);
-
   const geolocation = currentUserListing?.attributes?.geolocation || {};
   const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
   const distance = 'distance=30';
