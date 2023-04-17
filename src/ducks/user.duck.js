@@ -6,6 +6,7 @@ import * as log from '../util/log';
 import { authInfo } from './Auth.duck';
 import { stripeAccountCreateSuccess } from './stripeConnectAccount.duck';
 import { util as sdkUtil } from '../util/sdkLoader';
+import { addMarketplaceEntities } from './marketplaceData.duck';
 
 // ================ Action types ================ //
 
@@ -270,6 +271,7 @@ export const fetchCurrentUserHasListings = () => (dispatch, getState, sdk) => {
         hasListings &&
         ensureOwnListing(response.data.data[0]).attributes.state !== LISTING_STATE_DRAFT;
       dispatch(fetchCurrentUserHasListingsSuccess(!!hasPublishedListings, listing));
+      dispatch(addMarketplaceEntities(response));
     })
     .catch(e => dispatch(fetchCurrentUserHasListingsError(storableError(e))));
 };
