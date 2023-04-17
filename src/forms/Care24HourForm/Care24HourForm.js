@@ -166,7 +166,7 @@ const Care24HourFormComponent = props => {
 
   const hoursPerDayLabel = (
     <h2 className={css.hoursPerDayLabel}>
-      How many hours will they be working per day?<span className={css.error}>*</span>
+      How many hours of care do they need per day?<span className={css.error}>*</span>
     </h2>
   );
 

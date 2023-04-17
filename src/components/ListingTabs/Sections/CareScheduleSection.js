@@ -134,7 +134,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
           </div>
           <div className={css.hoursPerDayContainer}>
             <h1 className={css.hoursPerDay}>{availabilityPlan?.hoursPerDay}</h1>
-            <span>Working hours per day</span>
+            <span>Hours of care per day</span>
           </div>
           {availabilityPlan?.liveIn && <p className={css.liveIn}>*This is a live-in position</p>}
           <div className={css.datesContainer}>

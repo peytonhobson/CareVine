@@ -143,3 +143,7 @@ p {
 .error {
   color: var(--failColor);
 }
+
+.pastDueText {
+  color: var(--failColor);
+}
