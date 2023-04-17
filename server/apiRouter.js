@@ -51,6 +51,7 @@ const sendgridTemplateEmail = require('./api/sendgrid-template-email');
 const sendgridStandardEmail = require('./api/sendgrid-standard-email');
 const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
+const sendbirdUnreadMessages = require('./api/sendbird-unread-messages');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -125,6 +126,7 @@ router.post('/sendgrid-template-email', sendgridTemplateEmail);
 router.post('/sendgrid-standard-email', sendgridStandardEmail);
 router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
+router.post('/sendbird-unread-messages', sendbirdUnreadMessages);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
