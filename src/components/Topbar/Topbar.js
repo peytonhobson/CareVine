@@ -85,9 +85,9 @@ class TopbarComponent extends Component {
 
   componentDidMount() {
     const { currentUser } = this.props;
-    const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
+    const userAccessCode = currentUser?.id?.uuid;
 
-    if (currentUser?.id?.uuid && sbAccessToken && !this.pollingInterval) {
+    if (userAccessCode && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
       this.pollingInterval = setInterval(() => {
@@ -99,9 +99,9 @@ class TopbarComponent extends Component {
 
   componentDidUpdate(prevProps) {
     const { currentUser } = this.props;
-    const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
+    const userAccessCode = currentUser?.id?.uuid;
 
-    if (currentUser?.id?.uuid && sbAccessToken && !this.pollingInterval) {
+    if (userAccessCode && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
       this.pollingInterval = setInterval(() => {

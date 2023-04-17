@@ -283,3 +283,7 @@ export const chatGPTGenerateText = body => {
 export const updateUserNotifications = body => {
   return post('/api/update-user-notifications', body);
 };
+
+export const sendbirdUnreadMessages = body => {
+  return post('/api/sendbird-unread-messages', body);
+};

@@ -1,7 +1,7 @@
 import SendbirdChat from '@sendbird/chat';
 import { GroupChannelModule } from '@sendbird/chat/groupChannel';
 import { fetchCurrentUser } from '../ducks/user.duck';
-import { sendbirdUser } from '../util/api';
+import { sendbirdUser, sendbirdUnreadMessages } from '../util/api';
 import * as log from '../util/log';
 
 export const GENERATE_ACCESS_TOKEN_REQUEST = 'app/sendbird/CREATE_SENDBIRD_USER_REQUEST';
@@ -117,24 +117,11 @@ export const generateAccessToken = currentUser => (dispatch, getState, sdk) => {
 };
 
 export const fetchUnreadMessages = () => async (dispatch, getState, sdk) => {
-  const currentUserId = getState().user?.currentUser?.id?.uuid;
-  const accessToken = getState().user?.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
-
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
-  };
-  const sb = SendbirdChat.init(params);
+  const userAccessCode = getState().user.currentUser?.id?.uuid;
 
   try {
-    await sb.connect(currentUserId, accessToken);
-  } catch (e) {
-    log.error(e, 'connect-failed', {});
-  }
-
-  try {
-    const count = await sb.groupChannel.getTotalUnreadMessageCount();
-    dispatch(fetchUnreadMessagesSuccess(count));
+    // const { unread_count } = await sendbirdUnreadMessages({ userAccessCode });
+    dispatch(fetchUnreadMessagesSuccess(0));
   } catch (e) {
     log.error(e, 'fetch-unread-messages-failed', {});
     dispatch(fetchUnreadMessagesError(e));

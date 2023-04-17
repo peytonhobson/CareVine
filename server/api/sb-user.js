@@ -7,13 +7,9 @@ module.exports = (req, res) => {
   const { currentUser } = req.body;
 
   const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
-  const userId = currentUser && currentUser.id && currentUser.id.uuid;
-  const nickname =
-    currentUser && currentUser.attributes && currentUser.attributes.profile.displayName;
-  const profileUrl =
-    currentUser &&
-    currentUser.profileImage &&
-    currentUser.profileImage.attributes.variants['square-small'].url;
+  const userId = currentUser?.id?.uuid;
+  const nickname = currentUser?.attributes?.profile?.displayName;
+  const profileUrl = currentUser?.profileImage?.attributes?.variants['square-small']?.url;
 
   axios
     .put(
@@ -36,7 +32,7 @@ module.exports = (req, res) => {
         {
           id: userId,
           privateData: {
-            sbAccessToken: apiResponse.data.access_token,
+            sbAccessToken: apiResponse?.data?.access_token,
           },
         },
         {
