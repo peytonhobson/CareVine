@@ -17,7 +17,7 @@ import css from './SectionMarketplaceSummary.module.css';
 
 const buttonGroupOptions = [
   { key: CAREGIVER, label: 'Become a Caregiver' },
-  { key: EMPLOYER, label: 'Hire a caregiver' },
+  { key: EMPLOYER, label: 'Hire a Caregiver' },
 ];
 
 const SectionMarketplaceSummary = props => {
