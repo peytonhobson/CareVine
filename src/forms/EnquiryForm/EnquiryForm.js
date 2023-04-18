@@ -24,7 +24,7 @@ const EnquiryFormComponent = props => (
         intl,
         listingTitle,
         authorDisplayName,
-        sendEnquiryError,
+        sendErrors,
       } = fieldRenderProps;
 
       const messageLabel = intl.formatMessage(
@@ -66,7 +66,7 @@ const EnquiryFormComponent = props => (
             validate={messageRequired}
           />
           <div className={submitButtonWrapperClassName}>
-            {sendEnquiryError ? (
+            {sendErrors ? (
               <p className={css.error}>
                 <FormattedMessage id="EnquiryForm.sendEnquiryError" />
               </p>

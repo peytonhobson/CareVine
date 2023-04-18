@@ -5,18 +5,14 @@ import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
-import { denormalisedResponseEntities } from '../../util/data';
+import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
-import { TRANSITION_ENQUIRE } from '../../util/transaction';
+import { TRANSITION_ENQUIRE, TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
 } from '../../util/urlHelpers';
 import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
-import { CAREGIVER } from '../../util/constants';
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
-import { generateAccessToken } from '../../ducks/sendbird.duck';
 
 const { UUID } = sdkTypes;
 
@@ -43,9 +39,9 @@ export const SEND_ENQUIRY_REQUEST = 'app/ListingPage/SEND_ENQUIRY_REQUEST';
 export const SEND_ENQUIRY_SUCCESS = 'app/ListingPage/SEND_ENQUIRY_SUCCESS';
 export const SEND_ENQUIRY_ERROR = 'app/ListingPage/SEND_ENQUIRY_ERROR';
 
-export const FETCH_CHANNEL_REQUEST = 'app/SearchPage/FETCH_CHANNEL_REQUEST';
-export const FETCH_CHANNEL_SUCCESS = 'app/SearchPage/FETCH_CHANNEL_SUCCESS';
-export const FETCH_CHANNEL_ERROR = 'app/SearchPage/FETCH_CHANNEL_ERROR';
+export const SEND_MESSAGE_REQUEST = 'app/ListingPage/SEND_MESSAGE_REQUEST';
+export const SEND_MESSAGE_SUCCESS = 'app/ListingPage/SEND_MESSAGE_SUCCESS';
+export const SEND_MESSAGE_ERROR = 'app/ListingPage/SEND_MESSAGE_ERROR';
 
 // ================ Reducer ================ //
 
@@ -70,6 +66,8 @@ const initialState = {
   messageChannel: null,
   fetchChannelInProgress: false,
   fetchChannelError: null,
+  sendMessageInProgress: false,
+  sendMessageError: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -140,22 +138,12 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case SEND_ENQUIRY_ERROR:
       return { ...state, sendEnquiryInProgress: false, sendEnquiryError: payload };
 
-    case FETCH_CHANNEL_REQUEST: {
-      return {
-        ...state,
-        fetchChannelInProgress: true,
-        fetchChannelError: false,
-      };
-    }
-    case FETCH_CHANNEL_SUCCESS:
-      return { ...state, fetchChannelInProgress: false, messageChannel: payload };
-
-    case FETCH_CHANNEL_ERROR:
-      return {
-        ...state,
-        fetchChannelInProgress: false,
-        fetchChannelError: true,
-      };
+    case SEND_MESSAGE_REQUEST:
+      return { ...state, sendMessageInProgress: true, sendMessageError: null };
+    case SEND_MESSAGE_SUCCESS:
+      return { ...state, sendMessageInProgress: false };
+    case SEND_MESSAGE_ERROR:
+      return { ...state, sendMessageInProgress: false, sendMessageError: payload };
     default:
       return state;
   }
@@ -218,18 +206,9 @@ export const sendEnquiryRequest = () => ({ type: SEND_ENQUIRY_REQUEST });
 export const sendEnquirySuccess = () => ({ type: SEND_ENQUIRY_SUCCESS });
 export const sendEnquiryError = e => ({ type: SEND_ENQUIRY_ERROR, error: true, payload: e });
 
-export const fetchChannelRequest = () => ({
-  type: FETCH_CHANNEL_REQUEST,
-});
-export const fetchChannelSuccess = channel => ({
-  type: FETCH_CHANNEL_SUCCESS,
-  payload: channel,
-});
-export const fetchChannelError = e => ({
-  type: FETCH_CHANNEL_ERROR,
-  error: true,
-  payload: e,
-});
+export const sendMessageRequest = () => ({ type: SEND_MESSAGE_REQUEST });
+export const sendMessageSuccess = () => ({ type: SEND_MESSAGE_SUCCESS });
+export const sendMessageError = e => ({ type: SEND_MESSAGE_ERROR, error: true, payload: e });
 
 // ================ Thunks ================ //
 
@@ -318,89 +297,6 @@ export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, ge
     });
 };
 
-export const fetchChannel = (currentAuthor, currentUser, accessToken) => (
-  dispatch,
-  getState,
-  sdk
-) => {
-  dispatch(fetchChannelRequest());
-
-  const currentAuthorId = currentAuthor.id.uuid;
-  const currentUserId = currentUser.id.uuid;
-
-  const params = {
-    appId: process.env.REACT_APP_SENDBIRD_APP_ID,
-    modules: [new GroupChannelModule()],
-  };
-  const sb = SendbirdChat.init(params);
-
-  const userListQueryParams = {
-    userIdsFilter: [currentAuthorId],
-  };
-  const query = sb.createApplicationUserListQuery(userListQueryParams);
-
-  return sb
-    .connect(currentUserId, accessToken)
-    .then(() => {
-      return query.next().then(async users => {
-        if (users.length === 0) {
-          dispatch(generateAccessToken(currentAuthor));
-        }
-
-        let channelUrl = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
-
-        let channel = null;
-
-        try {
-          channel = await sb.groupChannel.getChannel(channelUrl);
-        } catch (e) {
-          // console.log(e);
-        }
-
-        console.log('past 1st');
-
-        if (!channel) {
-          channelUrl = 'sendbird_group_channel_' + currentAuthorId + '-' + currentUserId;
-          try {
-            channel = await sb.groupChannel.getChannel(channelUrl);
-          } catch (e) {
-            // console.log(e);
-          }
-        }
-
-        console.log('past 2nd', channel);
-
-        if (!channel) {
-          const channelParams = {
-            operatorUserIds: [currentUserId, currentAuthorId],
-            invitedUserIds: [currentAuthorId, currentUserId],
-            channelUrl,
-          };
-          try {
-            channel = await sb.groupChannel.createChannel(channelParams);
-          } catch (e) {
-            channelUrl = 'sendbird_group_channel_' + currentUserId + '-' + currentAuthorId;
-            channelParams.channelUrl = channelUrl;
-            try {
-              channel = await sb.groupChannel.createChannel(channelParams);
-            } catch (e) {
-              log.error(e, 'failed-to-create-channel');
-              dispatch(fetchChannelError(e));
-            }
-          }
-        }
-
-        if (channel) {
-          dispatch(fetchChannelSuccess(channel));
-        }
-      });
-    })
-    .catch(e => {
-      log.error(e);
-      dispatch(fetchChannelError(e));
-    });
-};
-
 // Helper function for loadData call.
 const fetchMonthlyTimeSlots = (dispatch, listing) => {
   const hasWindow = typeof window !== 'undefined';
@@ -441,6 +337,45 @@ export const fetchTransactionLineItems = ({ bookingData, listingId, isOwnListing
         bookingData: bookingData,
       });
     });
+};
+
+export const sendEnquiry = (listingId, message) => async (dispatch, getState, sdk) => {
+  dispatch(sendEnquiryRequest());
+
+  const senderName = userDisplayNameAsString(
+    getState().user.currentUser.attributes.profile.displayName
+  );
+  const otherUserId = listingId.author.id.uuid;
+
+  const bodyParams = {
+    transition: TRANSITION_INITIAL_MESSAGE,
+    processAlias: config.messageProcessAlias,
+    params: { listingId, protectedData: { otherUserId, senderName } },
+  };
+
+  try {
+    const response = await sdk.transactions.initiate(bodyParams);
+
+    const transactionId = response.data.data.id;
+
+    await sdk.messages.send({ transactionId, content: message });
+
+    dispatch(sendEnquirySuccess());
+  } catch (e) {
+    log.error(e, 'send-enquiry-failed', { listingId: listingId.uuid, message });
+    dispatch(sendEnquiryError(storableError(e)));
+  }
+};
+
+export const sendMessage = (txId, message) => async (dispatch, getState, sdk) => {
+  dispatch(sendMessageRequest());
+
+  try {
+    await sdk.messages.send({ transactionId: txId, content: message });
+  } catch (e) {
+    log.error(e, 'send-message-failed', { txId, message });
+    dispatch(sendMessageError(storableError(e)));
+  }
 };
 
 export const loadData = (params, search) => dispatch => {
