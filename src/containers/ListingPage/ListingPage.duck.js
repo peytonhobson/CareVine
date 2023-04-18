@@ -7,7 +7,7 @@ import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
-import { TRANSITION_ENQUIRE, TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
+import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
@@ -23,18 +23,6 @@ export const SET_INITIAL_VALUES = 'app/ListingPage/SET_INITIAL_VALUES';
 export const SHOW_LISTING_REQUEST = 'app/ListingPage/SHOW_LISTING_REQUEST';
 export const SHOW_LISTING_ERROR = 'app/ListingPage/SHOW_LISTING_ERROR';
 
-export const FETCH_REVIEWS_REQUEST = 'app/ListingPage/FETCH_REVIEWS_REQUEST';
-export const FETCH_REVIEWS_SUCCESS = 'app/ListingPage/FETCH_REVIEWS_SUCCESS';
-export const FETCH_REVIEWS_ERROR = 'app/ListingPage/FETCH_REVIEWS_ERROR';
-
-export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUEST';
-export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
-export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
-
-export const FETCH_LINE_ITEMS_REQUEST = 'app/ListingPage/FETCH_LINE_ITEMS_REQUEST';
-export const FETCH_LINE_ITEMS_SUCCESS = 'app/ListingPage/FETCH_LINE_ITEMS_SUCCESS';
-export const FETCH_LINE_ITEMS_ERROR = 'app/ListingPage/FETCH_LINE_ITEMS_ERROR';
-
 export const SEND_ENQUIRY_REQUEST = 'app/ListingPage/SEND_ENQUIRY_REQUEST';
 export const SEND_ENQUIRY_SUCCESS = 'app/ListingPage/SEND_ENQUIRY_SUCCESS';
 export const SEND_ENQUIRY_ERROR = 'app/ListingPage/SEND_ENQUIRY_ERROR';
@@ -43,31 +31,25 @@ export const SEND_MESSAGE_REQUEST = 'app/ListingPage/SEND_MESSAGE_REQUEST';
 export const SEND_MESSAGE_SUCCESS = 'app/ListingPage/SEND_MESSAGE_SUCCESS';
 export const SEND_MESSAGE_ERROR = 'app/ListingPage/SEND_MESSAGE_ERROR';
 
+export const FETCH_EXISTING_CONVERSATION_REQUEST =
+  'app/ListingPage/FETCH_EXISTING_CONVERSATION_REQUEST';
+export const FETCH_EXISTING_CONVERSATION_SUCCESS =
+  'app/ListingPage/FETCH_EXISTING_CONVERSATION_SUCCESS';
+export const FETCH_EXISTING_CONVERSATION_ERROR =
+  'app/ListingPage/FETCH_EXISTING_CONVERSATION_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
   id: null,
   showListingError: null,
-  reviews: [],
-  fetchReviewsError: null,
-  monthlyTimeSlots: {
-    '2019-12': {
-      timeSlots: [],
-      fetchTimeSlotsError: null,
-      fetchTimeSlotsInProgress: null,
-    },
-  },
-  lineItems: null,
-  fetchLineItemsInProgress: false,
-  fetchLineItemsError: null,
   sendEnquiryInProgress: false,
   sendEnquiryError: null,
-  enquiryModalOpenForListingId: null,
-  messageChannel: null,
-  fetchChannelInProgress: false,
-  fetchChannelError: null,
   sendMessageInProgress: false,
   sendMessageError: null,
+  fetchExistingConversationInProgress: false,
+  fetchExistingConversationError: null,
+  existingConversation: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -80,56 +62,6 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, id: payload.id, showListingError: null };
     case SHOW_LISTING_ERROR:
       return { ...state, showListingError: payload };
-
-    case FETCH_REVIEWS_REQUEST:
-      return { ...state, fetchReviewsError: null };
-    case FETCH_REVIEWS_SUCCESS:
-      return { ...state, reviews: payload };
-    case FETCH_REVIEWS_ERROR:
-      return { ...state, fetchReviewsError: payload };
-
-    case FETCH_TIME_SLOTS_REQUEST: {
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [payload]: {
-          ...state.monthlyTimeSlots[payload],
-          fetchTimeSlotsError: null,
-          fetchTimeSlotsInProgress: true,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_SUCCESS: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          timeSlots: payload.timeSlots,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_ERROR: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          fetchTimeSlotsError: payload.error,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
-
-    case FETCH_LINE_ITEMS_REQUEST:
-      return { ...state, fetchLineItemsInProgress: true, fetchLineItemsError: null };
-    case FETCH_LINE_ITEMS_SUCCESS:
-      return { ...state, fetchLineItemsInProgress: false, lineItems: payload };
-    case FETCH_LINE_ITEMS_ERROR:
-      return { ...state, fetchLineItemsInProgress: false, fetchLineItemsError: payload };
 
     case SEND_ENQUIRY_REQUEST:
       return { ...state, sendEnquiryInProgress: true, sendEnquiryError: null };
@@ -144,6 +76,26 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, sendMessageInProgress: false };
     case SEND_MESSAGE_ERROR:
       return { ...state, sendMessageInProgress: false, sendMessageError: payload };
+
+    case FETCH_EXISTING_CONVERSATION_REQUEST:
+      return {
+        ...state,
+        fetchExistingConversationInProgress: true,
+        fetchExistingConversationError: null,
+      };
+    case FETCH_EXISTING_CONVERSATION_SUCCESS:
+      return {
+        ...state,
+        fetchExistingConversationInProgress: false,
+        existingConversation: payload,
+      };
+    case FETCH_EXISTING_CONVERSATION_ERROR:
+      return {
+        ...state,
+        fetchExistingConversationInProgress: false,
+        fetchExistingConversationError: payload,
+      };
+
     default:
       return state;
   }
@@ -169,39 +121,6 @@ export const showListingError = e => ({
   payload: e,
 });
 
-export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
-export const fetchReviewsSuccess = reviews => ({ type: FETCH_REVIEWS_SUCCESS, payload: reviews });
-export const fetchReviewsError = error => ({
-  type: FETCH_REVIEWS_ERROR,
-  error: true,
-  payload: error,
-});
-
-export const fetchTimeSlotsRequest = monthId => ({
-  type: FETCH_TIME_SLOTS_REQUEST,
-  payload: monthId,
-});
-export const fetchTimeSlotsSuccess = (monthId, timeSlots) => ({
-  type: FETCH_TIME_SLOTS_SUCCESS,
-  payload: { timeSlots, monthId },
-});
-export const fetchTimeSlotsError = (monthId, error) => ({
-  type: FETCH_TIME_SLOTS_ERROR,
-  error: true,
-  payload: { monthId, error },
-});
-
-export const fetchLineItemsRequest = () => ({ type: FETCH_LINE_ITEMS_REQUEST });
-export const fetchLineItemsSuccess = lineItems => ({
-  type: FETCH_LINE_ITEMS_SUCCESS,
-  payload: lineItems,
-});
-export const fetchLineItemsError = error => ({
-  type: FETCH_LINE_ITEMS_ERROR,
-  error: true,
-  payload: error,
-});
-
 export const sendEnquiryRequest = () => ({ type: SEND_ENQUIRY_REQUEST });
 export const sendEnquirySuccess = () => ({ type: SEND_ENQUIRY_SUCCESS });
 export const sendEnquiryError = e => ({ type: SEND_ENQUIRY_ERROR, error: true, payload: e });
@@ -209,6 +128,19 @@ export const sendEnquiryError = e => ({ type: SEND_ENQUIRY_ERROR, error: true, p
 export const sendMessageRequest = () => ({ type: SEND_MESSAGE_REQUEST });
 export const sendMessageSuccess = () => ({ type: SEND_MESSAGE_SUCCESS });
 export const sendMessageError = e => ({ type: SEND_MESSAGE_ERROR, error: true, payload: e });
+
+export const fetchExistingConversationRequest = () => ({
+  type: FETCH_EXISTING_CONVERSATION_REQUEST,
+});
+export const fetchExistingConversationSuccess = conversation => ({
+  type: FETCH_EXISTING_CONVERSATION_SUCCESS,
+  payload: conversation,
+});
+export const fetchExistingConversationError = e => ({
+  type: FETCH_EXISTING_CONVERSATION_ERROR,
+  error: true,
+  payload: e,
+});
 
 // ================ Thunks ================ //
 
@@ -253,99 +185,12 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
     });
 };
 
-export const fetchReviews = listingId => (dispatch, getState, sdk) => {
-  dispatch(fetchReviewsRequest());
-  return sdk.reviews
-    .query({
-      listing_id: listingId,
-      state: 'public',
-      include: ['author', 'author.profileImage'],
-      'fields.image': ['variants.square-small', 'variants.square-small2x'],
-    })
-    .then(response => {
-      const reviews = denormalisedResponseEntities(response);
-      dispatch(fetchReviewsSuccess(reviews));
-    })
-    .catch(e => {
-      dispatch(fetchReviewsError(storableError(e)));
-    });
-};
-
-const timeSlotsRequest = params => (dispatch, getState, sdk) => {
-  return sdk.timeslots.query(params).then(response => {
-    return denormalisedResponseEntities(response);
-  });
-};
-
-export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, getState, sdk) => {
-  const monthId = monthIdStringInTimeZone(start, timeZone);
-
-  dispatch(fetchTimeSlotsRequest(monthId));
-
-  // The maximum pagination page size for timeSlots is 500
-  const extraParams = {
-    per_page: 500,
-    page: 1,
-  };
-
-  return dispatch(timeSlotsRequest({ listingId, start, end, ...extraParams }))
-    .then(timeSlots => {
-      dispatch(fetchTimeSlotsSuccess(monthId, timeSlots));
-    })
-    .catch(e => {
-      dispatch(fetchTimeSlotsError(monthId, storableError(e)));
-    });
-};
-
-// Helper function for loadData call.
-const fetchMonthlyTimeSlots = (dispatch, listing) => {
-  const hasWindow = typeof window !== 'undefined';
-  const attributes = listing.attributes;
-  // Listing could be ownListing entity too, so we just check if attributes key exists
-  const hasTimeZone =
-    attributes && attributes.availabilityPlan && attributes.availabilityPlan.timezone;
-
-  // Fetch time-zones on client side only.
-  if (hasWindow && listing.id && hasTimeZone) {
-    const tz = listing.attributes.availabilityPlan.timezone;
-    const nextBoundary = findNextBoundary(tz, new Date());
-
-    const nextMonth = nextMonthFn(nextBoundary, tz);
-    const nextAfterNextMonth = nextMonthFn(nextMonth, tz);
-
-    return Promise.all([
-      dispatch(fetchTimeSlots(listing.id, nextBoundary, nextMonth, tz)),
-      dispatch(fetchTimeSlots(listing.id, nextMonth, nextAfterNextMonth, tz)),
-    ]);
-  }
-
-  // By default return an empty array
-  return Promise.all([]);
-};
-
-export const fetchTransactionLineItems = ({ bookingData, listingId, isOwnListing }) => dispatch => {
-  dispatch(fetchLineItemsRequest());
-  transactionLineItems({ bookingData, listingId, isOwnListing })
-    .then(response => {
-      const lineItems = response.data;
-      dispatch(fetchLineItemsSuccess(lineItems));
-    })
-    .catch(e => {
-      dispatch(fetchLineItemsError(storableError(e)));
-      log.error(e, 'fetching-line-items-failed', {
-        listingId: listingId.uuid,
-        bookingData: bookingData,
-      });
-    });
-};
-
-export const sendEnquiry = (listingId, message) => async (dispatch, getState, sdk) => {
+export const sendEnquiry = (listing, message) => async (dispatch, getState, sdk) => {
   dispatch(sendEnquiryRequest());
 
-  const senderName = userDisplayNameAsString(
-    getState().user.currentUser.attributes.profile.displayName
-  );
-  const otherUserId = listingId.author.id.uuid;
+  const senderName = userDisplayNameAsString(getState().user.currentUser);
+  const otherUserId = listing.author.id.uuid;
+  const listingId = listing.id.uuid;
 
   const bodyParams = {
     transition: TRANSITION_INITIAL_MESSAGE,
@@ -372,9 +217,51 @@ export const sendMessage = (txId, message) => async (dispatch, getState, sdk) =>
 
   try {
     await sdk.messages.send({ transactionId: txId, content: message });
+
+    dispatch(sendMessageSuccess());
   } catch (e) {
     log.error(e, 'send-message-failed', { txId, message });
     dispatch(sendMessageError(storableError(e)));
+  }
+};
+
+export const fetchExistingConversation = (listingId, otherUserId) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(fetchExistingConversationRequest());
+
+  let authorId = otherUserId;
+
+  if (!authorId) {
+    try {
+      const response = await sdk.listings.show({
+        id: listingId,
+        include: ['author'],
+        'fields.user': ['id'],
+      });
+      const user = response.data?.data?.relationships?.author?.data;
+      authorId = user?.id?.uuid;
+    } catch (e) {
+      log.error(e, 'fetch-existing-conversation-author-failed', { listingId, otherUserId });
+      dispatch(fetchExistingConversationError(storableError(e)));
+    }
+  }
+
+  const params = {
+    lastTransitions: [TRANSITION_INITIAL_MESSAGE],
+    include: ['provider', 'customer'],
+    userId: authorId,
+  };
+
+  try {
+    const response = await sdk.transactions.query(params);
+    const tx = response.data.data.length > 0 && response.data.data[0];
+    dispatch(fetchExistingConversationSuccess(tx));
+  } catch (e) {
+    log.error(e, 'fetch-existing-conversation-failed', { listingId, otherUserId });
+    dispatch(fetchExistingConversationError(storableError(e)));
   }
 };
 
@@ -386,17 +273,8 @@ export const loadData = (params, search) => dispatch => {
     return dispatch(showListing(listingId, true));
   }
 
-  return Promise.all([dispatch(showListing(listingId)), dispatch(fetchReviews(listingId))]).then(
-    responses => {
-      if (responses[0] && responses[0].data && responses[0].data.data) {
-        const listing = responses[0].data.data;
-
-        // Fetch timeSlots.
-        // This can happen parallel to loadData.
-        // We are not interested to return them from loadData call.
-        fetchMonthlyTimeSlots(dispatch, listing);
-      }
-      return responses;
-    }
-  );
+  return Promise.all([
+    dispatch(showListing(listingId)),
+    dispatch(fetchExistingConversation(listingId)),
+  ]);
 };
