@@ -62,7 +62,7 @@ import {
   setInitialValues,
   fetchTimeSlots,
   fetchTransactionLineItems,
-  fetchChannel,
+  sendMessage,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import { useCheckMobileScreen } from '../../util/userAgent';
@@ -100,6 +100,7 @@ export class ListingPageComponent extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
+    this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
   }
 
   handleSubmit(values) {
@@ -192,38 +193,57 @@ export class ListingPageComponent extends Component {
     }
   }
 
+  async onSubmitEnquiry(values) {
+    const { history, onSendEnquiry, onSendMessage, existingTransaction, getListing } = this.props;
+    const routes = routeConfiguration();
+    const listing = ensureListing(getListing(listingId));
+    const listingId = listing.id.uuid;
+    const otherUserId = listing.author.id.uuid;
+    const { message } = values;
+
+    if (existingTransaction) {
+      const txId = existingTransaction.id.uuid;
+      try {
+        await onSendMessage(txId, message.trim());
+
+        this.setState({ enquiryModalOpen: false });
+
+        // Redirect to InboxPage
+        history.push(createResourceLocatorString('InboxPage', routes, { userId: otherUserId }));
+      } catch (e) {
+        // Error handling in duck
+      }
+    } else {
+      try {
+        await onSendEnquiry(listingId, message.trim());
+
+        this.setState({ enquiryModalOpen: false });
+
+        // Redirect to InboxPage
+        history.push(createResourceLocatorString('InboxPage', routes, { userId: otherUserId }));
+      } catch (e) {
+        // Error handling in duck
+      }
+    }
+  }
+
   render() {
     const {
-      unitType,
       isAuthenticated,
       currentUser,
       getListing,
       getOwnListing,
       intl,
       onManageDisableScrolling,
-      onFetchTimeSlots,
       params: rawParams,
       location,
       scrollingDisabled,
       showListingError,
       currentUserListing,
-      messageChannel,
-      fetchChannelInProgress,
-      fetchChannelError,
-      onFetchChannel,
-      onGenerateAccessToken,
-      generateAccessTokenInProgress,
-      history,
-      reviews,
-      fetchReviewsError,
-      monthlyTimeSlots,
       sendEnquiryInProgress,
       sendEnquiryError,
-      lineItems,
-      fetchLineItemsInProgress,
-      fetchLineItemsError,
-      enquiryModalOpenForListingId,
-      onFetchTransactionLineItems,
+      sendMessageError,
+      sendMessageInProgress,
     } = this.props;
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -452,24 +472,24 @@ export class ListingPageComponent extends Component {
               </div>
             </div>
             {this.state.enquiryModalOpen && (
-              <SendbirdModal
+              <Modal
+                id="ListingPage.enquiry"
                 contentClassName={css.enquiryModalContent}
-                containerClassName={css.modalContainer}
                 isOpen={isAuthenticated && !!this.state.enquiryModalOpen}
                 onClose={() => this.setState({ enquiryModalOpen: false })}
                 onManageDisableScrolling={onManageDisableScrolling}
-                currentUser={currentUser}
-                currentAuthor={currentAuthor}
-                onFetchChannel={onFetchChannel}
-                messageChannel={messageChannel}
-                fetchChannelInProgress={fetchChannelInProgress}
-                fetchChannelError={fetchChannelError}
-                history={history}
-                onGenerateAccessToken={onGenerateAccessToken}
-                generateAccessTokenInProgress={generateAccessTokenInProgress}
-              />
+              >
+                <EnquiryForm
+                  className={css.enquiryForm}
+                  submitButtonWrapperClassName={css.enquirySubmitButtonWrapper}
+                  authorDisplayName={userDisplayNameAsString(this.state.currentListingAuthor)}
+                  sendErrors={sendEnquiryError || sendMessageError}
+                  onSubmit={this.onSubmitEnquiry}
+                  inProgress={sendEnquiryInProgress || sendMessageInProgress}
+                />
+              </Modal>
             )}
-            {this.state.bookingModalOpen && (
+            {/* {this.state.bookingModalOpen && (
               <Modal
                 id="BookingPanel"
                 isOpen={isAuthenticated && !!this.state.bookingModalOpen}
@@ -487,7 +507,7 @@ export class ListingPageComponent extends Component {
                   onBookNow={handleBookingSubmit}
                 />
               </Modal>
-            )}
+            )} */}
           </LayoutWrapperMain>
           <LayoutWrapperFooter>
             <Footer />
@@ -578,6 +598,8 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     monthlyTimeSlots,
+    sendMessageError,
+    sendMessageInProgress,
   } = state.ListingPage;
   const { generateAccessTokenInProgress } = state.sendbird;
   const { currentUser, currentUserListing } = state.user;
@@ -610,6 +632,8 @@ const mapStateToProps = state => {
     fetchLineItemsError,
     sendEnquiryInProgress,
     sendEnquiryError,
+    sendMessageError,
+    sendMessageInProgress,
     currentUserListing,
     messageChannel,
     fetchChannelInProgress,
@@ -619,23 +643,18 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
-    dispatch(setInitialValues(values, saveToSessionStorage)),
-  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
-    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
-  onFetchChannel: (currentAuthor, currentUser, accessToken) =>
-    dispatch(fetchChannel(currentAuthor, currentUser, accessToken)),
-  onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
-  onFetchTimeSlots: (listingId, start, end, timeZone) =>
-    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
-  onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
-  onChangeModalValue: value => dispatch(changeModalValue(value)),
-  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
-    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  callSetInitialValues: setInitialValues,
+  onFetchTransactionLineItems: fetchTransactionLineItems,
+  onInitializeCardPaymentData: initializeCardPaymentData,
+  onFetchTimeSlots: fetchTimeSlots,
+  onGenerateAccessToken: generateAccessToken,
+  onChangeModalValue: changeModalValue,
+  onFetchTransactionLineItems: fetchTransactionLineItems,
+  onSendEnquiry: sendEnquiry,
+  onSendMessage: sendMessage,
+};
 
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route
