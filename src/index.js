@@ -61,25 +61,11 @@ const render = (store, shouldHydrate) => {
   info
     .then(() => {
       store.dispatch(fetchCurrentUser());
-      // Ensure that Loadable Components is ready
-      // and fetch hosted assets in parallel before initializing the ClientApp
-      return Promise.all([
-        loadableReady(),
-        store.dispatch(fetchAppAssets(config.appCdnAssets, cdnAssetsVersion)),
-      ]);
-    })
-    .then(([_, fetchedAssets]) => {
-      const translations = fetchedAssets?.translations?.data || {};
+
       if (shouldHydrate) {
-        ReactDOM.hydrate(
-          <ClientApp store={store} hostedTranslations={translations} />,
-          document.getElementById('root')
-        );
+        ReactDOM.hydrate(<ClientApp store={store} />, document.getElementById('root'));
       } else {
-        ReactDOM.render(
-          <ClientApp store={store} hostedTranslations={translations} />,
-          document.getElementById('root')
-        );
+        ReactDOM.render(<ClientApp store={store} />, document.getElementById('root'));
       }
     })
     .catch(e => {

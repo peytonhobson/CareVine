@@ -69,7 +69,7 @@ const TopbarDesktop = props => {
         to={{ search: `?${origin}&${distance}&sort=relevant` }}
       >
         {currentUserType === CAREGIVER ? (
-          <span className={css.linkText}>My Job Board</span>
+          <span className={css.linkText}>Job Listings</span>
         ) : (
           <span className={css.linkText}>Find Caregivers</span>
         )}
@@ -211,7 +211,7 @@ const TopbarDesktop = props => {
       name="NotificationsPage"
     >
       <span className={css.bell}>
-        <IconBell height="1.75em" width="1.75em" />
+        <IconBell height="2em" width="2em" />
         {unreadNotificationCountBadge}
       </span>
     </NamedLink>
@@ -281,12 +281,12 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
-        {notificationsLink}
         {feedbackLink}
       </div>
-      {profileMenu}
 
       <div className={css.unauthenticatedContainer}>
+        {notificationsLink}
+        {profileMenu}
         {signupLink}
         {loginLink}
       </div>

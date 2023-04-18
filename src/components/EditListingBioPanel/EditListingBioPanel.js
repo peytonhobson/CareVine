@@ -102,7 +102,7 @@ const EditListingBioPanel = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
-        <p className={css.modalTitle}>How does this work?</p>
+        <p className={css.modalTitle}>Please Note</p>
         <p className={css.modalMessage}>
           We used a machine learning algorithm to generate a bio for you based on the information
           you provided in your profile.

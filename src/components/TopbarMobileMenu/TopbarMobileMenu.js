@@ -201,7 +201,7 @@ const TopbarMobileMenu = props => {
             name="SearchPage"
             to={{ search: `?${origin}&${distance}&sort=relevant` }}
           >
-            {userType === CAREGIVER ? <span>My Job Board</span> : <span>Find Caregivers</span>}
+            {userType === CAREGIVER ? <span>Job Listings</span> : <span>Find Caregivers</span>}
           </NamedLink>
         ) : (
           <NamedLink className={css.createNewListingLink} name="NewListingPage">
