@@ -1,336 +1,404 @@
-import React, { useEffect, useState } from 'react';
-
-import { bool, shape, func } from 'prop-types';
+import React, { useEffect, useMemo } from 'react';
+import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
-import StripePaymentModal from '../StripePaymentModal/StripePaymentModal';
-import { IconSpinner, SendbirdApp, SendbirdAppMobile } from '../../components';
-import '@sendbird/uikit-react/dist/index.css';
-import SBProvider from '@sendbird/uikit-react/SendbirdProvider';
-import { FormattedMessage } from 'react-intl';
-
-import { isScrollingDisabled } from '../../ducks/UI.duck';
+import queryString from 'query-string';
 import { propTypes } from '../../util/types';
-import { ensureCurrentUser } from '../../util/data';
+import { ensureCurrentUser, cutTextToPreview } from '../../util/data';
+import { formatDate } from '../../util/dates';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { manageDisableScrolling } from '../../ducks/UI.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
+import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
+import { setCurrentTransaction } from '../../ducks/transactions.duck';
 import {
+  fetchMoreMessages,
+  sendMessage,
+  clearMessages,
   fetchOtherUserListing,
-  transitionToRequestPayment,
-  fetchUserFromChannelUrl,
-  sendRequestForPayment,
-  fetchOtherUsers,
 } from './InboxPage.duck';
-import { Page, LayoutWrapperMain, LayoutWrapperTopbar, FullPageError } from '../../components';
-import { TopbarContainer } from '..';
-import { generateAccessToken } from '../../ducks/sendbird.duck';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { fetchTransaction } from '../../ducks/transactions.duck';
+import { PAYMENT_DETAILS } from '../../components/ModalMissingInformation/ModalMissingInformation';
+import {
+  NotificationBadge,
+  Page,
+  PaginationLinks,
+  LinkTabNavHorizontal,
+  LayoutSideNavigation,
+  LayoutWrapperMain,
+  LayoutWrapperSideNav,
+  LayoutWrapperTopbar,
+  LayoutWrapperFooter,
+  Footer,
+  IconSpinner,
+  MessagePanel,
+  InboxItem,
+} from '../../components';
+import { TopbarContainer, NotFoundPage } from '..';
+import config from '../../config';
 
+import { getCurrentTransaction } from './InboxPage.helpers';
 import css from './InboxPage.module.css';
 
 export const InboxPageComponent = props => {
   const {
+    unitType,
     currentUser,
     currentUserListing,
-    fetchOtherUserListingError,
-    fetchOtherUserListingInProgress,
-    fetchUserFromChannelUrlError,
-    fetchUserFromChannelUrlInProgress,
-    generateAccessTokenError,
-    generateAccessTokenInProgress,
-    generateAccessTokenSuccess,
-    history,
-    onFetchOtherUserListing,
-    onFetchUserFromChannelUrl,
-    onGenerateAccessToken,
-    onManageDisableScrolling,
-    onSendRequestForPayment,
-    onTransitionToRequestPayment,
-    otherUser,
-    otherUserListing,
-    scrollingDisabled,
-    sendRequestForPaymentError,
-    sendRequestForPaymentInProgress,
-    sendRequestForPaymentSuccess,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentSuccess,
+    fetchInProgress,
+    fetchOrdersOrSalesError,
+    intl,
+    pagination,
     params,
-    onFetchOtherUsers,
-    otherUsers,
-    fetchOtherUsersError,
-    fetchOtherUsersInProgress,
+    providerNotificationCount,
+    scrollingDisabled,
+    transactions,
+    onChangeMissingInfoModal,
+    history,
+    fetchMessagesInProgress,
+    totalMessagePages,
+    messages,
+    oldestMessagePageFetched,
+    initialMessageFailedToTransaction,
+    fetchMessagesError,
+    sendMessageInProgress,
+    sendMessageError,
+    onShowMoreMessages,
+    transactionRole,
+    onClearMessages,
+    onSendMessage,
+    onFetchOtherUserListing,
+    otherUserListing,
+    onManageDisableScrolling,
+    onFetchTransaction,
+    onSetCurrentTransaction,
   } = props;
-
-  const isMobile = useCheckMobileScreen();
-
+  const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [modalInitialValues, setModalInitialValues] = useState(null);
+  const currentTxId = queryString.parse(history.location.search).id;
 
-  const onClosePaymentModal = () => {
-    setIsPaymentModalOpen(false);
-  };
+  // Memoize transactionsIds so that inboxItems dont rerender on every select
+  let transactionIds = '';
+  transactions.forEach(transaction => {
+    transactionIds = transactionIds.concat(transaction.id.uuid);
+  });
+  const currentTransactions = useMemo(() => {
+    return transactions;
+  }, [transactionIds]);
+  const currentTransaction = getCurrentTransaction(currentTransactions, history.location.search);
 
-  const onOpenPaymentModal = initialValues => {
-    setModalInitialValues(initialValues);
-    setIsPaymentModalOpen(true);
-  };
-
-  const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
-  const userId = ensuredCurrentUser.id && currentUser.id.uuid;
-  const nickname = ensuredCurrentUser.attributes.profile.displayName;
-  const profileUrl = ensuredCurrentUser.profileImage?.attributes?.variants['square-small']?.url;
-  const accessToken = ensuredCurrentUser.attributes.profile?.privateData?.sbAccessToken;
+  // Show payment details modal if user doesn't have them
+  useEffect(() => {
+    onChangeMissingInfoModal(PAYMENT_DETAILS);
+  }, []);
 
   useEffect(() => {
-    if (!!ensuredCurrentUser.id && !accessToken && !generateAccessTokenInProgress) {
-      onGenerateAccessToken(ensuredCurrentUser);
+    if (currentTxId === '' || !currentTxId) {
+      history.replace({
+        pathname: history.location.pathname,
+        search: 'id='.concat(
+          (currentTransactions &&
+            currentTransactions.length > 0 &&
+            currentTransactions[0].id.uuid) ||
+            ''
+        ),
+      });
     }
-  }, [ensuredCurrentUser, accessToken, generateAccessTokenInProgress]);
 
-  const sendbirdColorSet = {
-    '--sendbird-light-primary-500': '#5684a3',
-    '--sendbird-light-primary-400': '#5684a3',
-    '--sendbird-light-primary-300': '#6ba0b6',
-    '--sendbird-light-primary-200': '#6ba0b6',
-    '--sendbird-light-primary-100': '#6ba0b6',
-  };
+    if (currentTransaction) {
+      onSetCurrentTransaction(currentTransaction);
+      const { customer, provider } = currentTransaction;
+      const otherUser =
+        ensuredCurrentUser.id.uuid === customer && customer.id.uuid ? customer : provider;
 
-  const generateTokenErrorHeader = <FormattedMessage id="InboxPage.generateTokenErrorHeader" />;
-  const generateTokenErrorDescription = (
-    <FormattedMessage id="InboxPage.generateTokenErrorDescription" />
+      if (!!otherUser) {
+        onFetchOtherUserListing(otherUser.id.uuid);
+      }
+    }
+  }, [currentTxId, currentTransactions, history]);
+
+  const validTab = tab === 'messages' || tab === 'notifications';
+  if (!validTab) {
+    return <NotFoundPage />;
+  }
+
+  const isMessages = tab === 'messages';
+
+  const messagesTitle = intl.formatMessage({ id: 'InboxPage.messagesTitle' });
+  const notificationsTitle = intl.formatMessage({ id: 'InboxPage.notificationsTitle' });
+  const title = isMessages ? messagesTitle : notificationsTitle;
+
+  const error = fetchOrdersOrSalesError ? (
+    <p className={css.error}>
+      <FormattedMessage id="InboxPage.fetchFailed" />
+    </p>
+  ) : null;
+
+  // Need to make this dynamic when notifications are added
+  const noResults = isMessages ? (
+    !fetchInProgress && currentTransactions.length === 0 && !fetchOrdersOrSalesError ? (
+      <li key="noResults" className={css.noResults}>
+        <FormattedMessage id="InboxPage.noMessagesFound" />
+      </li>
+    ) : null
+  ) : (
+    <li key="noResults" className={css.noResults}>
+      <FormattedMessage id="InboxPage.noNotificationsFound" />
+    </li>
   );
 
+  const hasTransactions =
+    (ensuredCurrentUser.id &&
+      currentTransactions &&
+      currentTransactions.length > 0 &&
+      currentTransactions[0].customer.id.uuid === ensuredCurrentUser.id.uuid) ||
+    (ensuredCurrentUser.id &&
+      currentTransactions &&
+      currentTransactions.length > 0 &&
+      currentTransactions[0].provider.id.uuid === ensuredCurrentUser.id.uuid);
+  const pagingLinks =
+    hasTransactions && pagination && pagination.totalPages > 1 ? (
+      <PaginationLinks
+        className={css.pagination}
+        pageName="InboxPage"
+        pagePathParams={params}
+        pagination={pagination}
+      />
+    ) : null;
+
+  const providerNotificationBadge =
+    providerNotificationCount > 0 ? <NotificationBadge count={providerNotificationCount} /> : null;
+
+  const tabs = [
+    {
+      text: (
+        <span>
+          <FormattedMessage id="InboxPage.messagesTabTitle" />
+        </span>
+      ),
+      selected: isMessages,
+      linkProps: {
+        name: 'InboxPage',
+        params: {
+          tab: 'messages',
+          // Need to find permanent solution
+          search: '?id=',
+        },
+      },
+    },
+    {
+      text: (
+        <span>
+          <FormattedMessage id="InboxPage.notificationsTabTitle" />
+          {providerNotificationBadge}
+        </span>
+      ),
+      selected: !isMessages,
+      linkProps: {
+        name: 'InboxPage',
+        params: {
+          tab: 'notifications',
+          // Need to find permanent solution
+          search: '?id=',
+        },
+      },
+    },
+  ];
+  const nav = (
+    <LinkTabNavHorizontal
+      rootClassName={css.tabs}
+      tabRootClassName={css.tab}
+      tabContentClass={css.tabContent}
+      tabs={tabs}
+    />
+  );
+
+  const initialMessageFailed = !!(
+    initialMessageFailedToTransaction &&
+    currentTransaction.id &&
+    initialMessageFailedToTransaction.uuid === currentTransaction.id.uuid
+  );
+
+  const currentMessages = messages.get(currentTxId) || [];
+
   return (
-    <Page title="Inbox" scrollingDisabled={scrollingDisabled}>
-      <LayoutWrapperTopbar>
-        <TopbarContainer
-          className={css.topbar}
-          currentPage="InboxPage"
-          desktopClassName={css.desktopTopbar}
-          mobileRootClassName={css.mobileTopbar}
-        />
-      </LayoutWrapperTopbar>
-      <LayoutWrapperMain className={css.wrapper}>
-        {!generateAccessTokenError ? (
-          userId && !generateAccessTokenInProgress ? (
-            <SBProvider
-              accessToken={accessToken}
-              appId={appId}
-              colorSet={sendbirdColorSet}
-              nickname={nickname}
-              profileUrl={profileUrl}
-              userId={userId}
-            >
-              {isMobile ? (
-                <SendbirdAppMobile
-                  currentUser={ensuredCurrentUser}
-                  fetchOtherUserListingError={fetchOtherUserListingError}
-                  fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
-                  fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
-                  fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
-                  history={history}
-                  isPaymentModalOpen={isPaymentModalOpen}
-                  onFetchOtherUserListing={onFetchOtherUserListing}
-                  onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
-                  onOpenPaymentModal={onOpenPaymentModal}
-                  onRequestPayment={onTransitionToRequestPayment}
-                  onSendRequestForPayment={onSendRequestForPayment}
-                  otherUser={otherUser}
-                  otherUserListing={otherUserListing}
-                  ownListing={currentUserListing}
-                  sendRequestForPaymentError={sendRequestForPaymentError}
-                  sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-                  sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-                  transitionToRequestPaymentError={transitionToRequestPaymentError}
-                  transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
-                  transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
-                  pathParams={params}
-                  onFetchOtherUsers={onFetchOtherUsers}
-                  otherUsers={otherUsers}
-                  fetchOtherUsersError={fetchOtherUsersError}
-                  fetchOtherUsersInProgress={fetchOtherUsersInProgress}
-                />
+    <Page title={title} scrollingDisabled={scrollingDisabled}>
+      <LayoutSideNavigation className={css.sideNavigation}>
+        <LayoutWrapperTopbar>
+          <TopbarContainer
+            className={css.topbar}
+            mobileRootClassName={css.mobileTopbar}
+            desktopClassName={css.desktopTopbar}
+            currentPage="InboxPage"
+          />
+        </LayoutWrapperTopbar>
+        <LayoutWrapperSideNav className={css.navigation}>
+          <h1 className={css.title}>
+            <FormattedMessage id="InboxPage.title" />
+          </h1>
+          {currentUserListing ? nav : <div className={css.navPlaceholder} />}
+          {error}
+          <ul className={css.itemList}>
+            {isMessages ? (
+              !fetchInProgress || currentTransactions.length > 0 ? (
+                currentTransactions.map(tx => {
+                  const txMessages = messages.get(tx.id.uuid);
+                  const previewMessageLong =
+                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.content) || '';
+                  const previewMessage = cutTextToPreview(previewMessageLong, 40);
+                  const lastMessageTime =
+                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.createdAt) ||
+                    new Date();
+                  const todayString = intl.formatMessage({ id: 'InboxPage.today' });
+                  return (
+                    <InboxItem
+                      key={tx.id.uuid}
+                      unitType={unitType}
+                      tx={tx}
+                      intl={intl}
+                      params={params}
+                      currentUser={ensuredCurrentUser}
+                      selected={currentTxId === tx.id.uuid}
+                      previewMessage={previewMessage}
+                      lastMessageTime={formatDate(intl, todayString, lastMessageTime)}
+                    />
+                  );
+                })
               ) : (
-                <SendbirdApp
-                  currentUser={ensuredCurrentUser}
-                  fetchOtherUserListingError={fetchOtherUserListingError}
-                  fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
-                  fetchUserFromChannelUrlError={fetchUserFromChannelUrlError}
-                  fetchUserFromChannelUrlInProgress={fetchUserFromChannelUrlInProgress}
-                  history={history}
-                  isPaymentModalOpen={isPaymentModalOpen}
-                  onFetchOtherUserListing={onFetchOtherUserListing}
-                  onFetchUserFromChannelUrl={onFetchUserFromChannelUrl}
-                  onOpenPaymentModal={onOpenPaymentModal}
-                  onRequestPayment={onTransitionToRequestPayment}
-                  onSendRequestForPayment={onSendRequestForPayment}
-                  otherUser={otherUser}
-                  otherUserListing={otherUserListing}
-                  ownListing={currentUserListing}
-                  sendRequestForPaymentError={sendRequestForPaymentError}
-                  sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-                  sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-                  transitionToRequestPaymentError={transitionToRequestPaymentError}
-                  transitionToRequestPaymentInProgress={transitionToRequestPaymentInProgress}
-                  transitionToRequestPaymentSuccess={transitionToRequestPaymentSuccess}
-                  pathParams={params}
-                  onFetchOtherUsers={onFetchOtherUsers}
-                  otherUsers={otherUsers}
-                  fetchOtherUsersError={fetchOtherUsersError}
-                  fetchOtherUsersInProgress={fetchOtherUsersInProgress}
-                />
-              )}
-            </SBProvider>
-          ) : (
-            <IconSpinner className={css.spinner} />
-          )
-        ) : (
-          <FullPageError
-            errorDescription={generateTokenErrorDescription}
-            errorHeading={generateTokenErrorHeader}
-          />
-        )}
-        {isPaymentModalOpen && (
-          <StripePaymentModal
-            channelUrl={modalInitialValues.channelUrl}
-            isOpen={isPaymentModalOpen}
-            onClose={onClosePaymentModal}
-            provider={modalInitialValues.provider}
-            providerListing={otherUserListing}
-          />
-        )}
-      </LayoutWrapperMain>
+                <li className={css.listItemsLoading}>
+                  <IconSpinner />
+                </li>
+              )
+            ) : null}
+            {noResults}
+          </ul>
+          {pagingLinks}
+        </LayoutWrapperSideNav>
+        <LayoutWrapperMain className={css.wrapper}>
+          {currentTxId && (
+            <MessagePanel
+              transaction={currentTransaction}
+              currentUser={ensuredCurrentUser}
+              fetchMessagesError={fetchMessagesError}
+              fetchMessagesInProgress={fetchMessagesInProgress}
+              initialMessageFailed={initialMessageFailed}
+              messages={currentMessages}
+              oldestMessagePageFetched={oldestMessagePageFetched}
+              onShowMoreMessages={onShowMoreMessages}
+              totalMessagePages={totalMessagePages}
+              sendMessageInProgress={sendMessageInProgress}
+              sendMessageError={sendMessageError}
+              transactionRole={transactionRole}
+              onSendMessage={onSendMessage}
+              otherUserListing={otherUserListing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              onFetchTransaction={onFetchTransaction}
+            />
+          )}
+        </LayoutWrapperMain>
+        <LayoutWrapperFooter>
+          <Footer />
+        </LayoutWrapperFooter>
+      </LayoutSideNavigation>
     </Page>
   );
 };
 
 InboxPageComponent.defaultProps = {
-  fetchOtherUserListingError: null,
-  fetchOtherUserListingInProgress: false,
-  fetchUserFromChannelUrlError: null,
-  fetchUserFromChannelUrlInProgress: false,
-  generateAccessTokenError: null,
-  generateAccessTokenInProgress: false,
-  generateAccessTokenSuccess: false,
-  otherUserListing: null,
-  otherUserRef: null,
-  sendRequestForPaymentError: null,
-  sendRequestForPaymentInProgress: false,
-  sendRequestForPaymentSuccess: false,
-  transitionToRequestPaymentError: null,
-  transitionToRequestPaymentInProgress: false,
-  transitionToRequestPaymentSuccess: false,
+  unitType: config.bookingUnitType,
+  currentUser: null,
+  currentUserListing: null,
+  currentUserHasOrders: null,
+  fetchOrdersOrSalesError: null,
+  pagination: null,
+  providerNotificationCount: 0,
+  sendVerificationEmailError: null,
 };
 
 InboxPageComponent.propTypes = {
-  currentUser: propTypes.currentUser.isRequired,
-  currentUserListing: propTypes.ownListing.isRequired,
-  fetchOtherUserListingError: propTypes.error,
-  fetchOtherUserListingInProgress: bool,
-  fetchUserFromChannelUrlError: propTypes.error,
-  fetchUserFromChannelUrlInProgress: bool,
-  generateAccessTokenError: propTypes.error,
-  generateAccessTokenInProgress: bool,
-  generateAccessTokenSuccess: bool,
-  onFetchOtherUserListing: func.isRequired,
-  onFetchUserFromChannelUrl: func.isRequired,
-  onGenerateAccessToken: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onSendRequestForPayment: func.isRequired,
-  onTransitionToRequestPayment: func.isRequired,
-  otherUser: propTypes.user,
-  otherUserListing: propTypes.listing,
+  params: shape({
+    tab: string.isRequired,
+    id: string,
+  }).isRequired,
+  unitType: propTypes.bookingUnitType,
+  currentUser: propTypes.currentUser,
+  currentUserListing: propTypes.ownListing,
+  fetchInProgress: bool.isRequired,
+  fetchOrdersOrSalesError: propTypes.error,
+  pagination: propTypes.pagination,
+  providerNotificationCount: number,
   scrollingDisabled: bool.isRequired,
-  sendRequestForPaymentError: propTypes.error,
-  sendRequestForPaymentInProgress: bool,
-  sendRequestForPaymentSuccess: bool,
-  transitionToRequestPaymentError: propTypes.error,
-  transitionToRequestPaymentInProgress: bool,
-  transitionToRequestPaymentSuccess: bool,
+  transactions: arrayOf(propTypes.transaction).isRequired,
 
   /* from withRouter */
   history: shape({
     push: func.isRequired,
   }).isRequired,
+
+  // from injectIntl
+  intl: intlShape.isRequired,
 };
 
 const mapStateToProps = state => {
   const {
-    fetchOtherUserListingError,
-    fetchOtherUserListingInProgress,
-    fetchUserFromChannelUrlError,
-    fetchUserFromChannelUrlInProgress,
+    fetchInProgress,
+    fetchOrdersOrSalesError,
+    pagination,
+    fetchMessagesInProgress,
+    totalMessagePages,
+    messages,
+    oldestMessagePageFetched,
+    initialMessageFailedToTransaction,
+    fetchMessagesError,
+    sendMessageInProgress,
+    sendMessageError,
+    transactionRefs,
     otherUserListing,
-    otherUserRef,
-    sendRequestForPaymentError,
-    sendRequestForPaymentInProgress,
-    sendRequestForPaymentSuccess,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentSuccess,
-    fetchOtherUsersInProgress,
-    fetchOtherUsersError,
-    otherUsersRefs,
   } = state.InboxPage;
-
-  const otherUser = otherUserRef && getMarketplaceEntities(state, [otherUserRef])[0];
-
-  const otherUsers = otherUsersRefs && getMarketplaceEntities(state, otherUsersRefs);
-
   const {
-    generateAccessTokenError,
-    generateAccessTokenInProgress,
-    generateAccessTokenSuccess,
-  } = state.sendbird;
-
-  const { currentUser, currentUserListing } = state.user;
-
+    currentUser,
+    currentUserListing,
+    currentUserNotificationCount: providerNotificationCount,
+  } = state.user;
   return {
     currentUser,
     currentUserListing,
-    fetchOtherUserListingError,
-    fetchOtherUserListingInProgress,
-    fetchUserFromChannelUrlError,
-    fetchUserFromChannelUrlInProgress,
-    generateAccessTokenError,
-    generateAccessTokenInProgress,
-    generateAccessTokenSuccess,
-    otherUser,
-    otherUserListing,
+    fetchInProgress,
+    fetchOrdersOrSalesError,
+    pagination,
+    providerNotificationCount,
     scrollingDisabled: isScrollingDisabled(state),
-    sendRequestForPaymentError,
-    sendRequestForPaymentInProgress,
-    sendRequestForPaymentSuccess,
-    transitionToRequestPaymentError,
-    transitionToRequestPaymentInProgress,
-    transitionToRequestPaymentSuccess,
-    fetchOtherUsersInProgress,
-    fetchOtherUsersError,
-    otherUsers,
+    transactions: getMarketplaceEntities(state, transactionRefs),
+    fetchMessagesInProgress,
+    totalMessagePages,
+    messages,
+    oldestMessagePageFetched,
+    initialMessageFailedToTransaction,
+    fetchMessagesError,
+    sendMessageInProgress,
+    sendMessageError,
+    otherUserListing,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  onFetchOtherUserListing: (channelUrl, currentUserId, accessToken) =>
-    dispatch(fetchOtherUserListing(channelUrl, currentUserId, accessToken)),
-  onFetchUserFromChannelUrl: (channelUrl, currentUserId, accessToken) =>
-    dispatch(fetchUserFromChannelUrl(channelUrl, currentUserId, accessToken)),
-  onGenerateAccessToken: currentUser => dispatch(generateAccessToken(currentUser)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSendRequestForPayment: (currentUser, channelUrl, otherUserListing, otherUser) =>
-    dispatch(sendRequestForPayment(currentUser, channelUrl, otherUserListing, otherUser)),
-  onTransitionToRequestPayment: tx => dispatch(transitionToRequestPayment(tx)),
-  onFetchOtherUsers: (userId, accessToken) => dispatch(fetchOtherUsers(userId, accessToken)),
+  onChangeMissingInfoModal: value => dispatch(changeModalValue(value)),
+  onShowMoreMessages: txId => dispatch(fetchMoreMessages(txId)),
+  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
+  onClearMessages: () => dispatch(clearMessages()),
+  onFetchOtherUserListing: userId => dispatch(fetchOtherUserListing(userId)),
+  onFetchTransaction: txId => dispatch(fetchTransaction(txId)),
+  onSetCurrentTransaction: tx => dispatch(setCurrentTransaction(tx)),
 });
 
 const InboxPage = compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(mapStateToProps, mapDispatchToProps),
+  injectIntl
 )(InboxPageComponent);
 
 export default InboxPage;
