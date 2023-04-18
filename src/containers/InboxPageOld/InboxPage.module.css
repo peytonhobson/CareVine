@@ -1,0 +1,50 @@
+@import '../../styles/customMediaQueries.css';
+
+.topbar {
+  z-index: 1; /* ensure that Topbar shadow overlays content background */
+}
+
+.mobileTopbar {
+  /* Size */
+  width: 100%;
+  height: var(--topbarHeight);
+
+  /* Layout for child components */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  /* fill */
+  background-color: var(--matterColorLight);
+
+  /* shadows */
+  box-shadow: none;
+
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+.desktopTopbar,
+.mobileTopbar {
+  box-shadow: none;
+
+  @media (--viewportLarge) {
+    box-shadow: var(--boxShadowLight);
+  }
+}
+
+.spinner {
+  width: 70px;
+  height: 70px;
+  stroke-width: 3px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - var(--topbarHeightDesktop));
+}

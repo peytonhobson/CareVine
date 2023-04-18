@@ -17,7 +17,7 @@ const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDe
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
 const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
-const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPage/InboxPage'))
+const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPageOld/InboxPage'))
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
 const ListingPage = loadable(() => import(/* webpackChunkName: "ListingPage" */ /* webpackPrefetch: true */ './containers/ListingPage/ListingPage'));
 const PasswordChangePage = loadable(() => import(/* webpackChunkName: "PasswordChangePage" */ './containers/PasswordChangePage/PasswordChangePage'));
