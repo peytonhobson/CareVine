@@ -3,7 +3,7 @@
  [{:name :transition/initial-message,
    :actor :actor.role/customer,
    :actions [],
-   :to :state/conversing},
+   :to :state/messaging},
    {:name :transition/customer-delete-conversation,
    :actor :actor.role/customer,
    :actions [],
