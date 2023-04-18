@@ -84,7 +84,7 @@ export const EditListingPageComponent = props => {
   }
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
-  const userType = ensuredCurrentUser.attributes.profile.publicData.userType;
+  const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
 
   const listingId = page.submittedListingId || (id ? new UUID(id) : null);
   const listing = useMemo(() => getOwnListing(listingId), [getOwnListing, listingId]);

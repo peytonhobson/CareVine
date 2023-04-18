@@ -139,8 +139,9 @@
 }
 
 .unauthenticatedContainer {
+  display: flex;
   flex-wrap: nowrap;
-  flex-direction: column;
+  flex-direction: row;
   flex-shrink: 1;
 }
 
@@ -187,13 +188,14 @@
 
 .notificationsLink {
   height: 100%;
-  display: block;
+  display: inline-flex;
+  flex-shrink: 0;
   margin: 0 0.5rem;
 }
 
 .bell {
   display: inline-block;
-  margin: 1.4rem 0 1.6rem 0;
+  margin: 1.375rem 0;
   text-decoration: inherit;
   position: relative;
 }
@@ -256,7 +258,7 @@
   transition: var(--transitionStyleButton);
 
   flex-shrink: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   height: 100%;
   margin: 0;

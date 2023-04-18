@@ -166,8 +166,6 @@ const EditListingWizardTab = props => {
   };
 
   const onCompleteEditListingWizardTab = (tab, updateValues, passThrownErrors = false) => {
-    // Normalize images for API call
-
     if (isNewListingFlow) {
       const onUpsertListingDraft = isNewURI
         ? (tab, updateValues) => {
