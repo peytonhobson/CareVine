@@ -4,42 +4,61 @@ import { propTypes } from '../../util/types';
 import { oneOf } from 'prop-types';
 import { intlShape } from '../../util/reactIntl';
 import { txIsRequested } from '../../util/transaction';
-import classNames from 'classnames';
 import { createSlug, stringify } from '../../util/urlHelpers';
+import { IconVerticalDots } from '../../components';
+import { isToday, isYesterday, timestampToDate } from '../../util/dates';
+import moment from 'moment';
+import classNames from 'classnames';
 
 import css from './InboxItem.module.css';
 
-const formatDate = (intl, date) => {
-  return {
-    short: intl.formatDate(date, {
-      month: 'short',
-      day: 'numeric',
-    }),
-    long: `${intl.formatDate(date)} ${intl.formatTime(date)}`,
-  };
+const formatPreviewDate = createdAt => {
+  if (isToday(createdAt)) {
+    return timestampToDate(createdAt).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    });
+  }
+
+  if (isYesterday(createdAt)) {
+    return (
+      'yesterday at ' +
+      timestampToDate(createdAt).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      })
+    );
+  }
+
+  return moment(createdAt).format('MMM DD');
 };
 
-// Creates named link for listing that is wrapped around the avatar
-const createListingLink = (listing, otherUser, searchParams = {}, className = '') => {
-  const listingId = listing.id && listing.id.uuid;
-  const label = listing.attributes.title;
-  const listingDeleted = listing.attributes.deleted;
-
-  if (!listingDeleted) {
-    const params = { id: listingId, slug: createSlug(label) };
-    const to = { search: stringify(searchParams) };
-    return (
-      <NamedLink className={className} name="ListingPage" params={params} to={to}>
-        <Avatar user={otherUser} disableProfileLink rootClassName={css.avatarRoot} />
-      </NamedLink>
-    );
-  } else {
-    return <FormattedMessage id="TransactionPanel.deletedListingOrderTitle" />;
-  }
+const truncateString = function(fullStr, strLen) {
+  if (!strLen) strLen = 40;
+  if (fullStr === null || fullStr === undefined) return '';
+  if (fullStr.length <= strLen) return fullStr;
+  var separator = '...';
+  var sepLen = separator.length;
+  var charsToShow = strLen - sepLen;
+  var frontChars = Math.ceil(charsToShow / 2);
+  var backChars = Math.floor(charsToShow / 2);
+  return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
 };
 
 const InboxItem = props => {
-  const { tx, intl, params, currentUser, selected, previewMessage, lastMessageTime } = props;
+  const {
+    tx,
+    intl,
+    currentUser,
+    previewMessage,
+    lastMessageTime,
+    isMobile,
+    isActive,
+    onOpenDeleteConversationModal,
+    onPreviewClick,
+  } = props;
   const { customer, provider } = tx;
 
   const otherUser = currentUser.id.uuid === provider.id.uuid ? customer : provider;
@@ -48,40 +67,48 @@ const InboxItem = props => {
 
   const isSaleNotification = txIsRequested(tx);
   const rowNotificationDot = isSaleNotification ? <div className={css.notificationDot} /> : null;
-  const lastTransitionedAt = formatDate(intl, tx.attributes.lastTransitionedAt);
 
-  const currentTab = params.tab;
+  const notificationDot = false ? <div className={css.notificationDot} /> : null;
 
-  const classes = classNames(css.item, selected && css.selected);
+  const title = otherUserDisplayName;
+  const id = tx.id.uuid;
+  const text = truncateString(previewMessage, 40);
+
+  const activeClass = isActive ? css.active : null;
 
   return (
-    <NamedLink
-      className={classes}
-      name="InboxPage"
-      params={{ tab: currentTab, search: '?id=' + tx.id.uuid.toString() }}
+    <div
+      className={classNames(css.inboxPreview, activeClass)}
+      key={id}
+      onClick={() => onPreviewClick(id)}
     >
-      <div className={css.mainContent}>
-        <div className={css.itemAvatar}>
-          {/* Should make this just require list */}
-          <Avatar user={otherUser} rootClassName={css.avatarRoot} />
+      <div className={css.previewHoverLine} />
+      <Avatar user={otherUser} className={css.avatar} />
+      <div className={css.inboxPreviewContent}>
+        <div className={css.inboxPreviewUpper}>
+          {notificationDot}
+          <div className={css.inboxTitle}>{title}</div>
+          {/* TODO: Change this to last message time */}
+          <div className={css.inboxDate}>{formatPreviewDate(tx.attributes.lastTransitionedAt)}</div>
         </div>
-
-        <div className={css.itemText}>
-          <div className={css.itemInfo}>
-            <div className={css.itemUsername}>{otherUserDisplayName}</div>
-            <div className={css.itemState}>
-              <div className={css.lastTransitionedAt} title={lastTransitionedAt.long}>
-                {rowNotificationDot && (
-                  <div className={css.rowNotificationDot}>{rowNotificationDot}</div>
-                )}
-                {lastMessageTime}
-              </div>
-            </div>
-          </div>
-          <div className={css.previewMessage}>{previewMessage}</div>
+        <div className={css.inboxPreviewLower}>
+          <div className={css.inboxText}>{text}</div>
+        </div>
+        <div
+          className={css.inboxPreviewAction}
+          onClick={e => {
+            e.stopPropagation();
+            onOpenDeleteConversationModal(id);
+          }}
+        >
+          <IconVerticalDots
+            height={isMobile ? '1.5em' : '0.75em'}
+            width={isMobile ? '1.75em' : '1em'}
+            className={css.menuIcon}
+          />
         </div>
       </div>
-    </NamedLink>
+    </div>
   );
 };
 

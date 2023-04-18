@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -19,7 +19,6 @@ import {
   fetchOtherUserListing,
 } from './InboxPage.duck';
 import { fetchTransaction } from '../../ducks/transactions.duck';
-import { PAYMENT_DETAILS } from '../../components/ModalMissingInformation/ModalMissingInformation';
 import {
   NotificationBadge,
   Page,
@@ -37,9 +36,59 @@ import {
 } from '../../components';
 import { TopbarContainer, NotFoundPage } from '..';
 import config from '../../config';
+import SideNav from './SideNav';
+import { useCheckMobileScreen } from '../../util/userAgent';
 
 import { getCurrentTransaction } from './InboxPage.helpers';
 import css from './InboxPage.module.css';
+
+const DELETE_CONVERSATION = 'DELETE_CONVERSATION';
+const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
+const SET_CHAT_MODAL_OPEN = 'SET_CHAT_MODAL_OPEN';
+const SET_ACTIVE_TRANSACTION = 'SET_ACTIVE_TRANSACTION';
+const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
+const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
+const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case DELETE_CONVERSATION:
+      return {
+        ...state,
+        transactions: state.notifications.filter(n => n.id !== action.payload),
+        isDeleteModalOpen: false,
+        activeTransaction:
+          state.activeTransaction.id === action.payload
+            ? state.transactions.length > 1
+              ? state.transactions[0]
+              : null
+            : state.transactions,
+      };
+    case SET_DELETE_MODAL_OPEN:
+      return { ...state, isDeleteModalOpen: action.payload };
+    case SET_CHAT_MODAL_OPEN:
+      return { ...state, isChatModalOpen: action.payload };
+    case SET_ACTIVE_TRANSACTION:
+      return {
+        ...state,
+        activeTransaction: state.transactions.find(n => n.id === action.payload),
+      };
+    case SET_TRANSACTIONS:
+      return {
+        ...state,
+        transactions: action.payload,
+        activeTransaction: state.transactions.find(n => n.id === state.activeTransaction.id)
+          ? state.activeTransaction
+          : action.payload.length > 0
+          ? action.payload[0]
+          : null,
+      };
+    case SET_CURRENT_USER_INITIAL_FETCHED:
+      return { ...state, currentUserInitialFetched: true };
+    default:
+      return state;
+  }
+};
 
 export const InboxPageComponent = props => {
   const {
@@ -77,58 +126,67 @@ export const InboxPageComponent = props => {
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const currentTxId = queryString.parse(history.location.search).id;
+  const isMobile = useCheckMobileScreen();
 
-  // Memoize transactionsIds so that inboxItems dont rerender on every select
-  let transactionIds = '';
-  transactions.forEach(transaction => {
-    transactionIds = transactionIds.concat(transaction.id.uuid);
-  });
-  const currentTransactions = useMemo(() => {
-    return transactions;
-  }, [transactionIds]);
-  const currentTransaction = getCurrentTransaction(currentTransactions, history.location.search);
+  const initialState = {
+    transactions,
+    isDeleteModalOpen: false,
+    activeTransaction: transactions.length > 0 ? transactions[0] : null,
+    isChatModalOpen: false,
+  };
 
-  // Show payment details modal if user doesn't have them
-  useEffect(() => {
-    onChangeMissingInfoModal(PAYMENT_DETAILS);
-  }, []);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    if (currentTxId === '' || !currentTxId) {
-      history.replace({
-        pathname: history.location.pathname,
-        search: 'id='.concat(
-          (currentTransactions &&
-            currentTransactions.length > 0 &&
-            currentTransactions[0].id.uuid) ||
-            ''
-        ),
-      });
-    }
+    if (transactions.length === 0) return;
+    dispatch({ type: SET_TRANSACTIONS, payload: transactions });
+  }, [transactions.length]);
 
-    if (currentTransaction) {
-      onSetCurrentTransaction(currentTransaction);
-      const { customer, provider } = currentTransaction;
-      const otherUser =
-        ensuredCurrentUser.id.uuid === customer && customer.id.uuid ? customer : provider;
+  const transactionId = params.transactionId;
 
-      if (!!otherUser) {
-        onFetchOtherUserListing(otherUser.id.uuid);
+  useEffect(() => {
+    if (transactionId && state.transactions.find(n => n.id === transactionId)) {
+      dispatch({ type: SET_ACTIVE_TRANSACTION, payload: transactionId });
+
+      if (isMobile) {
+        dispatch({ type: SET_CHAT_MODAL_OPEN, payload: true });
       }
     }
-  }, [currentTxId, currentTransactions, history]);
+  }, [transactionId]);
 
-  const validTab = tab === 'messages' || tab === 'notifications';
-  if (!validTab) {
-    return <NotFoundPage />;
-  }
+  // TODO: Create separate hook for this and export
+  const usePrevious = value => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  };
 
-  const isMessages = tab === 'messages';
+  const previousTransactions = usePrevious(state.transactions);
 
-  const messagesTitle = intl.formatMessage({ id: 'InboxPage.messagesTitle' });
-  const notificationsTitle = intl.formatMessage({ id: 'InboxPage.notificationsTitle' });
-  const title = isMessages ? messagesTitle : notificationsTitle;
+  useEffect(() => {
+    // TODO: Make function to refetch transactions
+    if (previousTransactions && !isEqual(state.transactions, previousTransactions)) {
+      onFetchCurrentUser();
+    }
+  }, [state.transactions]);
+
+  const handleOpenDeleteConversationModal = id => {
+    dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
+  };
+
+  const handleDeleteConversation = id => {
+    dispatch({ type: DELETE_CONVERSATION, payload: id });
+  };
+
+  const handlePreviewClick = id => {
+    dispatch({ type: SET_ACTIVE_TRANSACTION, payload: id });
+
+    if (isMobile) {
+      dispatch({ type: SET_CHAT_MODAL_OPEN, payload: true });
+    }
+  };
 
   const error = fetchOrdersOrSalesError ? (
     <p className={css.error}>
@@ -137,27 +195,15 @@ export const InboxPageComponent = props => {
   ) : null;
 
   // Need to make this dynamic when notifications are added
-  const noResults = isMessages ? (
-    !fetchInProgress && currentTransactions.length === 0 && !fetchOrdersOrSalesError ? (
+  const noResults =
+    !fetchInProgress && transactions.length === 0 && !fetchOrdersOrSalesError ? (
       <li key="noResults" className={css.noResults}>
         <FormattedMessage id="InboxPage.noMessagesFound" />
       </li>
-    ) : null
-  ) : (
-    <li key="noResults" className={css.noResults}>
-      <FormattedMessage id="InboxPage.noNotificationsFound" />
-    </li>
-  );
+    ) : null;
 
-  const hasTransactions =
-    (ensuredCurrentUser.id &&
-      currentTransactions &&
-      currentTransactions.length > 0 &&
-      currentTransactions[0].customer.id.uuid === ensuredCurrentUser.id.uuid) ||
-    (ensuredCurrentUser.id &&
-      currentTransactions &&
-      currentTransactions.length > 0 &&
-      currentTransactions[0].provider.id.uuid === ensuredCurrentUser.id.uuid);
+  const hasTransactions = transactions.length > 0;
+
   const pagingLinks =
     hasTransactions && pagination && pagination.totalPages > 1 ? (
       <PaginationLinks
@@ -168,64 +214,17 @@ export const InboxPageComponent = props => {
       />
     ) : null;
 
-  const providerNotificationBadge =
-    providerNotificationCount > 0 ? <NotificationBadge count={providerNotificationCount} /> : null;
-
-  const tabs = [
-    {
-      text: (
-        <span>
-          <FormattedMessage id="InboxPage.messagesTabTitle" />
-        </span>
-      ),
-      selected: isMessages,
-      linkProps: {
-        name: 'InboxPage',
-        params: {
-          tab: 'messages',
-          // Need to find permanent solution
-          search: '?id=',
-        },
-      },
-    },
-    {
-      text: (
-        <span>
-          <FormattedMessage id="InboxPage.notificationsTabTitle" />
-          {providerNotificationBadge}
-        </span>
-      ),
-      selected: !isMessages,
-      linkProps: {
-        name: 'InboxPage',
-        params: {
-          tab: 'notifications',
-          // Need to find permanent solution
-          search: '?id=',
-        },
-      },
-    },
-  ];
-  const nav = (
-    <LinkTabNavHorizontal
-      rootClassName={css.tabs}
-      tabRootClassName={css.tab}
-      tabContentClass={css.tabContent}
-      tabs={tabs}
-    />
-  );
-
   const initialMessageFailed = !!(
     initialMessageFailedToTransaction &&
-    currentTransaction.id &&
-    initialMessageFailedToTransaction.uuid === currentTransaction.id.uuid
+    state.activeTransaction?.id &&
+    initialMessageFailedToTransaction.uuid === state.activeTransaction?.id?.uuid
   );
 
-  const currentMessages = messages.get(currentTxId) || [];
+  const currentMessages = messages.get(state.activeTransaction?.id?.uuid) || [];
 
   return (
-    <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <LayoutSideNavigation className={css.sideNavigation}>
+    <Page title="Inbox" scrollingDisabled={scrollingDisabled}>
+      <LayoutSideNavigation>
         <LayoutWrapperTopbar>
           <TopbarContainer
             className={css.topbar}
@@ -235,51 +234,26 @@ export const InboxPageComponent = props => {
           />
         </LayoutWrapperTopbar>
         <LayoutWrapperSideNav className={css.navigation}>
-          <h1 className={css.title}>
-            <FormattedMessage id="InboxPage.title" />
-          </h1>
-          {currentUserListing ? nav : <div className={css.navPlaceholder} />}
           {error}
-          <ul className={css.itemList}>
-            {isMessages ? (
-              !fetchInProgress || currentTransactions.length > 0 ? (
-                currentTransactions.map(tx => {
-                  const txMessages = messages.get(tx.id.uuid);
-                  const previewMessageLong =
-                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.content) || '';
-                  const previewMessage = cutTextToPreview(previewMessageLong, 40);
-                  const lastMessageTime =
-                    (txMessages && txMessages.length > 0 && txMessages[0].attributes.createdAt) ||
-                    new Date();
-                  const todayString = intl.formatMessage({ id: 'InboxPage.today' });
-                  return (
-                    <InboxItem
-                      key={tx.id.uuid}
-                      unitType={unitType}
-                      tx={tx}
-                      intl={intl}
-                      params={params}
-                      currentUser={ensuredCurrentUser}
-                      selected={currentTxId === tx.id.uuid}
-                      previewMessage={previewMessage}
-                      lastMessageTime={formatDate(intl, todayString, lastMessageTime)}
-                    />
-                  );
-                })
-              ) : (
-                <li className={css.listItemsLoading}>
-                  <IconSpinner />
-                </li>
-              )
-            ) : null}
-            {noResults}
-          </ul>
+          <SideNav
+            transactions={transactions}
+            currentTransaction={state.activeTransaction}
+            messages={messages}
+            fetchInProgress={fetchInProgress}
+            currentUser={ensuredCurrentUser}
+            intl={intl}
+            params={params}
+            onOpenDeleteConversationModal={handleOpenDeleteConversationModal}
+            onPreviewClick={handlePreviewClick}
+            isMobile={isMobile}
+          />
+          {noResults}
           {pagingLinks}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
-          {currentTxId && (
+          {state.activeTransaction?.id?.uuid && (
             <MessagePanel
-              transaction={currentTransaction}
+              transaction={state.activeTransaction}
               currentUser={ensuredCurrentUser}
               fetchMessagesError={fetchMessagesError}
               fetchMessagesInProgress={fetchMessagesInProgress}

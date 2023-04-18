@@ -41,35 +41,14 @@
 }
 
 .navigation {
-  /* Layout */
-  display: flex;
-  /* flex-direction: row; */
-  justify-content: center;
-  padding: 29px 24px 0 24px;
-  width: 27rem;
-  max-height: calc(100vh - var(--topbarHeight));
-
-  border-top-width: 1px;
-  border-top-color: var(--matterColorNegative);
-  border-top-style: solid;
+  padding: 0;
   background-color: var(--matterColorLight);
-  box-shadow: var(--boxShadow);
+  width: 100%;
+  height: calc(100vh - var(--topbarHeight));
 
   @media (--viewportMedium) {
-    padding: 24px 24px 0 24px;
-  }
-
-  @media (--viewportLarge) {
-    padding: 113px 0 82px 36px;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    border: none;
-    box-shadow: none;
-    background-color: transparent;
-  }
-  @media (--viewportLargeWithPaddings) {
-    padding: 40px 0 0px 0;
+    height: calc(100vh - var(--topbarHeightDesktop));
+    width: auto;
   }
 }
 
@@ -355,4 +334,51 @@
   @media (--viewportMedium) {
     width: 240px;
   }
+}
+
+.sidenavRoot {
+  flex: 1 1 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: 23rem;
+  }
+}
+
+.noNotificationsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  padding-bottom: 10rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 5rem;
+  }
+}
+
+.bell {
+  fill: var(--matterColorAnti);
+}
+
+.noNotifications {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.noNotificationsText {
+  color: var(--matterColorAnti);
+  width: 100%;
+  text-align: center;
+}
+
+.sideNavSpinner {
+  height: 4rem;
+  width: 4rem;
+  stroke: 3px;
 }
