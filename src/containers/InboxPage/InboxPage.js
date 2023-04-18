@@ -3,6 +3,7 @@ import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { isEqual } from 'lodash';
 import { withRouter } from 'react-router-dom';
 import queryString from 'query-string';
 import { propTypes } from '../../util/types';
@@ -55,10 +56,10 @@ const reducer = (state, action) => {
     case DELETE_CONVERSATION:
       return {
         ...state,
-        transactions: state.notifications.filter(n => n.id !== action.payload),
+        transactions: state.notifications.filter(n => n.id.uuid !== action.payload),
         isDeleteModalOpen: false,
         activeTransaction:
-          state.activeTransaction.id === action.payload
+          state.activeTransaction.id.uuid === action.payload
             ? state.transactions.length > 1
               ? state.transactions[0]
               : null
@@ -71,13 +72,13 @@ const reducer = (state, action) => {
     case SET_ACTIVE_TRANSACTION:
       return {
         ...state,
-        activeTransaction: state.transactions.find(n => n.id === action.payload),
+        activeTransaction: state.transactions.find(n => n.id.uuid === action.payload),
       };
     case SET_TRANSACTIONS:
       return {
         ...state,
         transactions: action.payload,
-        activeTransaction: state.transactions.find(n => n.id === state.activeTransaction.id)
+        activeTransaction: state.transactions.find(n => n.id.uuid === state.activeTransaction.id)
           ? state.activeTransaction
           : action.payload.length > 0
           ? action.payload[0]
@@ -168,7 +169,7 @@ export const InboxPageComponent = props => {
   useEffect(() => {
     // TODO: Make function to refetch transactions
     if (previousTransactions && !isEqual(state.transactions, previousTransactions)) {
-      onFetchCurrentUser();
+      // onFetchCurrentUser();
     }
   }, [state.transactions]);
 
