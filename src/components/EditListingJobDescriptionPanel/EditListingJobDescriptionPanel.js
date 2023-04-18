@@ -45,11 +45,7 @@ const generateTitle = (currentListing, filterConfig) => {
 
   if (careRecipients?.length > 0) {
     relationships = careRecipients.map(recipient =>
-      convertFilterKeyToLabel(
-        recipient.recipientRelationship,
-        'recipientRelationship',
-        filterConfig
-      )
+      convertFilterKeyToLabel('recipientRelationship', recipient.recipientRelationship)
     );
   }
 
@@ -92,11 +88,9 @@ const generateTitle = (currentListing, filterConfig) => {
     }
   });
 
-  const city = currentListing.attributes.publicData.location?.city;
-
   return `${careScheduleType} Needed for ${
     !relationshipString?.startsWith('Myself') ? 'My' : ''
-  } ${relationshipString} in ${city}`;
+  } ${relationshipString}`;
 };
 
 const EditListingJobDescriptionPanel = props => {

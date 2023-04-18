@@ -146,7 +146,6 @@ export { default as BookingContainer } from './BookingContainer/BookingContainer
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';
-export { default as CaregiverListingMainContent } from './ListingMainContent/CaregiverListingMainContent';
 export { default as CareScheduleExceptions } from './CareScheduleExceptions/CareScheduleExceptions';
 export { default as ChangeLocationFilter } from './ChangeLocationFilter/ChangeLocationFilter';
 export { default as Discussion } from './Discussion/Discussion';
@@ -194,7 +193,6 @@ export { default as WeekPanel } from './WeekPanel/WeekPanel';
 //////////////////////////////////////////////
 
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
-export { default as CaregiverListingContainer } from './ListingContainer/CaregiverListingContainer'
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
 export { default as EditListingBackgroundCheckPanel} from './EditListingBackgroundCheckPanel/EditListingBackgroundCheckPanel';
@@ -230,6 +228,5 @@ export { default as TermsOfService } from './TermsOfService/TermsOfService';
 export { default as Topbar } from './Topbar/Topbar';
 export { default as TopbarDesktop } from './TopbarDesktop/TopbarDesktop';
 export { default as TopbarMobileMenu } from './TopbarMobileMenu/TopbarMobileMenu';
-export {default as EmployerListingContainer} from './ListingContainer/EmployerListingContainer'
 export { default as LoadableComponentErrorBoundary } from './LoadableComponentErrorBoundary/LoadableComponentErrorBoundary'
 export { default as WeekCalendar } from './WeekCalendar/WeekCalendar'

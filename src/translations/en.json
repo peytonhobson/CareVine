@@ -1019,7 +1019,7 @@
   "ReviewModal.title": "Leave a review for {revieweeName}",
   "SaveBankAccountForm.createBankAccountErrorMessage": "There was an error creating your bank account. Please refresh the page and try again. If the issue persists, please contact support.",
   "SaveBankAccountForm.fetchDefaultPaymentErrorMessage": "There was an error displaying your bank account. Please refresh the page and try again. If the issue persists, please contact support.",
-  "SaveBankAccountForm.submitPaymentInfo": "Setup bank account",
+  "SaveBankAccountForm.submitPaymentInfo": "Link Bank Account",
   "SavedBankDetails.cancel": "Cancel",
   "SavedBankDetails.deletePaymentMethodError": "There was an error removing your bank account. Please refresh the page and try again. If the issue persists, please contact support.",
   "SavedBankDetails.removeBankAccount": "Remove bank account",
