@@ -19,6 +19,7 @@ import {
   NamedLink,
   TopbarDesktop,
   TopbarMobileMenu,
+  GenericError,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { ensureCurrentUser } from '../../util/data';
@@ -47,26 +48,6 @@ const redirectToURLWithoutModalState = (props, modalStateParam) => {
   const stringified = stringify(queryParams);
   const searchString = stringified ? `?${stringified}` : '';
   history.push(`${pathname}${searchString}`, state);
-};
-
-const GenericError = props => {
-  const { show } = props;
-  const classes = classNames(css.genericError, {
-    [css.genericErrorVisible]: show,
-  });
-  return (
-    <div className={classes}>
-      <div className={css.genericErrorContent}>
-        <p className={css.genericErrorText}>
-          <FormattedMessage id="Topbar.genericError" />
-        </p>
-      </div>
-    </div>
-  );
-};
-
-GenericError.propTypes = {
-  show: bool.isRequired,
 };
 
 class TopbarComponent extends Component {
@@ -310,7 +291,10 @@ class TopbarComponent extends Component {
           onChangeModalValue={onChangeModalValue}
         />
 
-        <GenericError show={showGenericError} />
+        <GenericError
+          show={showGenericError}
+          errorText={<FormattedMessage id="Topbar.genericError" />}
+        />
       </div>
     );
   }

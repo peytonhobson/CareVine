@@ -2,7 +2,12 @@ import reverse from 'lodash/reverse';
 import sortBy from 'lodash/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
-import { TRANSITION_INITIAL_MESSAGE, TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
+import {
+  TRANSITION_INITIAL_MESSAGE,
+  TRANSITION_REQUEST_PAYMENT,
+  TRANSITION_CUSTOMER_DELETE_CONVERSATION,
+  TRANSITION_PROVIDER_DELETE_CONVERSATION,
+} from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -64,6 +69,10 @@ export const TRANSITION_TO_REQUEST_PAYMENT_SUCCESS =
 export const TRANSITION_TO_REQUEST_PAYMENT_ERROR =
   'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_ERROR';
 
+export const DELETE_CONVERSATION_REQUEST = 'app/InboxPage/DELETE_CONVERSATION_REQUEST';
+export const DELETE_CONVERSATION_SUCCESS = 'app/InboxPage/DELETE_CONVERSATION_SUCCESS';
+export const DELETE_CONVERSATION_ERROR = 'app/InboxPage/DELETE_CONVERSATION_ERROR';
+
 export const CLEAR_MESSAGES_SUCCESS = 'app/InboxPage/CLEAR_MESSAGES_SUCCESS';
 
 // ================ Reducer ================ //
@@ -97,6 +106,8 @@ const initialState = {
   transitionToRequestPaymentError: null,
   transitionToRequestPaymentInProgress: false,
   transitionToRequestPaymentSuccess: false,
+  deleteConversationInProgress: false,
+  deleteConversationError: null,
 };
 
 const mergeEntityArrays = (a, b) => {
@@ -226,6 +237,24 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         transitionToRequestPaymentError: payload,
       };
 
+    case DELETE_CONVERSATION_REQUEST:
+      return {
+        ...state,
+        deleteConversationInProgress: true,
+        deleteConversationError: null,
+      };
+    case DELETE_CONVERSATION_SUCCESS:
+      return {
+        ...state,
+        deleteConversationInProgress: false,
+      };
+    case DELETE_CONVERSATION_ERROR:
+      return {
+        ...state,
+        deleteConversationInProgress: false,
+        deleteConversationError: payload,
+      };
+
     default:
       return state;
   }
@@ -285,12 +314,22 @@ export const sendRequestForPaymentError = e => ({
   payload: e,
 });
 
-const transitionToRequestPaymentRequest = () => ({ type: TRANSITION_TO_REQUEST_PAYMENT_REQUEST });
-const transitionToRequestPaymentSuccess = () => ({
+export const transitionToRequestPaymentRequest = () => ({
+  type: TRANSITION_TO_REQUEST_PAYMENT_REQUEST,
+});
+export const transitionToRequestPaymentSuccess = () => ({
   type: TRANSITION_TO_REQUEST_PAYMENT_SUCCESS,
 });
-const transitionToRequestPaymentError = e => ({
+export const transitionToRequestPaymentError = e => ({
   type: TRANSITION_TO_REQUEST_PAYMENT_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const deleteConversationRequest = () => ({ type: DELETE_CONVERSATION_REQUEST });
+export const deleteConversationSuccess = () => ({ type: DELETE_CONVERSATION_SUCCESS });
+export const deleteConversationError = e => ({
+  type: DELETE_CONVERSATION_ERROR,
   error: true,
   payload: e,
 });
@@ -480,6 +519,29 @@ export const transitionToRequestPayment = (otherUserListing, notificationId) => 
       dispatch(transitionToRequestPaymentError(storableError(e)));
       throw e;
     });
+};
+
+export const deleteConversation = (tx, currentUser) => async (dispatch, getState, sdk) => {
+  dispatch(deleteConversationRequest());
+
+  const { provider } = tx;
+  const isProvider = currentUser.id?.uuid === provider?.id?.uuid;
+
+  try {
+    await sdk.transactions.transition({
+      id: tx.id.uuid,
+      transition: isProvider
+        ? TRANSITION_PROVIDER_DELETE_CONVERSATION
+        : TRANSITION_CUSTOMER_DELETE_CONVERSATION,
+      params: {},
+    });
+
+    dispatch(deleteConversationSuccess());
+    dispatch(loadData());
+  } catch (e) {
+    log.error(e, 'delete-conversation-failed');
+    dispatch(deleteConversationError(e));
+  }
 };
 
 const IMAGE_VARIANTS = {

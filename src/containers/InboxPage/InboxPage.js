@@ -12,27 +12,30 @@ import { formatDate } from '../../util/dates';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
+import classNames from 'classnames';
 import {
   fetchMoreMessages,
   sendMessage,
   clearMessages,
   fetchOtherUserListing,
   sendRequestForPayment,
+  deleteConversation,
 } from './InboxPage.duck';
 import { fetchTransaction } from '../../ducks/transactions.duck';
 import {
-  NotificationBadge,
   Page,
   PaginationLinks,
-  LinkTabNavHorizontal,
   LayoutSideNavigation,
   LayoutWrapperMain,
   LayoutWrapperSideNav,
   LayoutWrapperTopbar,
-  LayoutWrapperFooter,
-  Footer,
+  IconSpinner,
+  IconEnquiry,
   MessagePanel,
   InboxChannelHeader,
+  Modal,
+  Button,
+  SecondaryButton,
 } from '../../components';
 import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
 import config from '../../config';
@@ -59,11 +62,11 @@ const reducer = (state, action) => {
         conversations: state.conversations.filter(n => n.id.uuid !== action.payload),
         isDeleteModalOpen: false,
         activeConversation:
-          state.activeConversation.id.uuid === action.payload
+          state.activeConversation?.id?.uuid === action.payload
             ? state.conversations.length > 1
               ? state.conversations[0]
               : null
-            : state.conversations,
+            : state.activeConversation,
       };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
@@ -134,6 +137,9 @@ export const InboxPageComponent = props => {
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
     onSendRequestForPayment,
+    onDeleteConversation,
+    deleteConversationInProgress,
+    deleteConversationError,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -173,7 +179,7 @@ export const InboxPageComponent = props => {
 
   useEffect(() => {
     if (state.activeConversation) {
-      onFetchOtherUserListing(otherUser.id.uuid);
+      onFetchOtherUserListing(otherUser?.id?.uuid);
     }
   }, [state.activeConversation?.id?.uuid]);
 
@@ -195,12 +201,20 @@ export const InboxPageComponent = props => {
     }
   }, [state.conversations]);
 
+  useEffect(() => {
+    if (!deleteConversationInProgress && !deleteConversationError) {
+      dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
+    }
+  }, [deleteConversationInProgress]);
+
   const handleOpenDeleteConversationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
   };
 
-  const handleDeleteConversation = id => {
-    dispatch({ type: DELETE_CONVERSATION, payload: id });
+  const handleDeleteConversation = () => {
+    const txToDelete = state.conversations.find(n => n.id.uuid === state.isDeleteModalOpen);
+
+    onDeleteConversation(txToDelete, ensuredCurrentUser);
   };
 
   const handlePreviewClick = id => {
@@ -255,7 +269,7 @@ export const InboxPageComponent = props => {
         <LayoutWrapperSideNav className={css.navigation}>
           {error}
           <SideNav
-            conversations={conversations}
+            conversations={state.conversations}
             currentConversation={state.activeConversation}
             messages={messages}
             fetchConversationsInProgress={fetchConversationsInProgress}
@@ -269,39 +283,58 @@ export const InboxPageComponent = props => {
           {pagingLinks}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
-          <InboxChannelHeader
-            isMobile={isMobile}
-            listing={otherUserListing}
-            otherUser={otherUser}
-            currentUser={ensuredCurrentUser}
-            fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
-            onOpenPaymentModal={handleChangeStripeModal}
-            sendRequestForPaymentError={sendRequestForPaymentError}
-            sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-            sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-            onSendRequestForPayment={onSendRequestForPayment}
-            conversationId={state.activeConversation?.id?.uuid}
-          />
-          {state.activeConversation?.id?.uuid && (
-            <MessagePanel
-              transaction={state.activeConversation}
-              currentUser={ensuredCurrentUser}
-              fetchMessagesError={fetchMessagesError}
-              fetchMessagesInProgress={fetchMessagesInProgress}
-              initialMessageFailed={initialMessageFailed}
-              messages={currentMessages}
-              oldestMessagePageFetched={oldestMessagePageFetched}
-              onShowMoreMessages={onShowMoreMessages}
-              totalMessagePages={totalMessagePages}
-              sendMessageInProgress={sendMessageInProgress}
-              sendMessageError={sendMessageError}
-              transactionRole={transactionRole}
-              onSendMessage={onSendMessage}
-              otherUserListing={otherUserListing}
-              onManageDisableScrolling={onManageDisableScrolling}
-              onFetchTransaction={onFetchTransaction}
-            />
-          )}
+          {state.activeConversation ? (
+            <>
+              <InboxChannelHeader
+                isMobile={isMobile}
+                listing={otherUserListing}
+                otherUser={otherUser}
+                currentUser={ensuredCurrentUser}
+                fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
+                onOpenPaymentModal={handleChangeStripeModal}
+                sendRequestForPaymentError={sendRequestForPaymentError}
+                sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+                sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+                onSendRequestForPayment={onSendRequestForPayment}
+                conversationId={state.activeConversation?.id?.uuid}
+              />
+
+              <MessagePanel
+                transaction={state.activeConversation}
+                currentUser={ensuredCurrentUser}
+                fetchMessagesError={fetchMessagesError}
+                fetchMessagesInProgress={fetchMessagesInProgress}
+                initialMessageFailed={initialMessageFailed}
+                messages={currentMessages}
+                oldestMessagePageFetched={oldestMessagePageFetched}
+                onShowMoreMessages={onShowMoreMessages}
+                totalMessagePages={totalMessagePages}
+                sendMessageInProgress={sendMessageInProgress}
+                sendMessageError={sendMessageError}
+                transactionRole={transactionRole}
+                onSendMessage={onSendMessage}
+                otherUserListing={otherUserListing}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onFetchTransaction={onFetchTransaction}
+              />
+            </>
+          ) : fetchConversationsInProgress ? (
+            <div className={css.spinnerContainer}>
+              <IconSpinner className={css.mainSpinner} />
+            </div>
+          ) : state.conversations?.length === 0 ? (
+            <div className={css.noConversationsContainer}>
+              <div className={css.noConversations}>
+                <IconEnquiry
+                  className={css.inquiry}
+                  strokeClass={css.inquiryStroke}
+                  height={isMobile ? '7em' : '7em'}
+                  width={isMobile ? '7em' : '7em'}
+                />
+                <h2 className={css.noConversationsText}>No Conversations</h2>
+              </div>
+            </div>
+          ) : null}
           {state.isStripeModalOpen && (
             <StripePaymentModal
               conversationId={state.activeConversation?.id?.uuid}
@@ -310,6 +343,46 @@ export const InboxPageComponent = props => {
               provider={otherUser}
               providerListing={otherUserListing}
             />
+          )}
+          {state.isDeleteModalOpen && (
+            <Modal
+              id="InboxPageDeleteModal"
+              isOpen={state.isDeleteModalOpen}
+              onClose={() => dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false })}
+              onManageDisableScrolling={onManageDisableScrolling}
+              containerClassName={css.modalContainer}
+              usePortal
+            >
+              <div className={css.modalContent}>
+                <h1 className={css.modalTitle}>
+                  <FormattedMessage id="InboxPage.deleteModalTitle" />
+                </h1>
+                <p className={css.modalMessage}>
+                  <FormattedMessage id="InboxPage.deleteModalText" />
+                </p>
+                {deleteConversationError && (
+                  <p className={classNames(css.modalMessage, css.error)}>
+                    <FormattedMessage id="InboxPage.deleteConversationError" />
+                  </p>
+                )}
+                <div className={css.modalButtons}>
+                  <SecondaryButton
+                    className={css.modalButtonCancel}
+                    onClick={() => dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false })}
+                  >
+                    <FormattedMessage id="InboxPage.deleteModalCancel" />
+                  </SecondaryButton>
+                  <Button
+                    className={css.modalButtonDelete}
+                    onClick={handleDeleteConversation}
+                    inProgress={deleteConversationInProgress}
+                    disabled={deleteConversationInProgress}
+                  >
+                    <FormattedMessage id="InboxPage.deleteModalConfirm" />
+                  </Button>
+                </div>
+              </div>
+            </Modal>
           )}
         </LayoutWrapperMain>
       </LayoutSideNavigation>
@@ -374,6 +447,7 @@ const mapDispatchToProps = {
   onFetchOtherUserListing: fetchOtherUserListing,
   onFetchTransaction: fetchTransaction,
   onSendRequestForPayment: sendRequestForPayment,
+  onDeleteConversation: deleteConversation,
 };
 
 const InboxPage = compose(

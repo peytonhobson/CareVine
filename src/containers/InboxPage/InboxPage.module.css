@@ -384,3 +384,71 @@
   width: 4rem;
   stroke: 3px;
 }
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  margin-top: 4rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.modalButtonCancel {
+  width: auto;
+  padding: 1rem 2rem;
+  width: auto;
+  min-height: 0;
+}
+
+.modalButtonDelete {
+  background-color: var(--failColor);
+  padding: 1rem 2rem;
+  width: auto;
+  min-height: 0;
+  margin-left: 1rem;
+
+  &:hover {
+    background-color: var(--failColor);
+    filter: brightness(0.8);
+  }
+
+  &:disabled {
+    background-color: var(--failColor);
+  }
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  padding-bottom: 10rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 5rem;
+  }
+}
+
+.mainSpinner {
+  height: 6rem;
+  width: 6rem;
+  stroke: 3px;
+}
