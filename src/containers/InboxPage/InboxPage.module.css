@@ -36,8 +36,8 @@
 }
 
 .wrapper {
-  height: calc(100vh - var(--topbarHeight));
-  padding: 40px 20px 30px 40px;
+  height: calc(100vh - var(--topbarHeightDesktop));
+  padding: 0;
 }
 
 .navigation {

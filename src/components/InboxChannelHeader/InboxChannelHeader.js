@@ -1,12 +1,12 @@
 import React from 'react';
-import { IconArrowHead, Avatar, NamedLink } from '../../components';
+import { IconArrowHead, Avatar, NamedLink } from '..';
 import PaymentButton from './CustomButtons/PaymentButton';
 import RequestPaymentButton from './CustomButtons/RequestPaymentButton';
 import { createSlug } from '../../util/urlHelpers';
 import { userDisplayNameAsString } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
 
-import css from './InboxPage.module.css';
+import css from './InboxChannelHeader.module.css';
 
 const InboxChannelHeader = props => {
   const {
@@ -25,7 +25,7 @@ const InboxChannelHeader = props => {
   const listingId = listing?.id?.uuid;
   const slug = listing && createSlug(listing);
 
-  const otherUserName = userDisplayNameAsString(otherUser?.attributes?.displayName);
+  const otherUserName = userDisplayNameAsString(otherUser);
   const currentUserType = currentUser.attributes.profile.metadata?.userType;
 
   return (
@@ -38,17 +38,27 @@ const InboxChannelHeader = props => {
             name="ListingPage"
             params={{ id: listingId, slug }}
           >
-            <Avatar className={css.headerAvatar} user={otherUser} disableProfileLink />
-            <h2 className={css.channelTitle} style={{ cursor: 'pointer' }}>
+            <Avatar
+              className={css.headerAvatar}
+              initialsClassName={css.avatarInitials}
+              user={otherUser}
+              disableProfileLink
+            />
+            <h1 className={css.channelTitle} style={{ cursor: 'pointer' }}>
               {otherUserName}
-            </h2>
+            </h1>
           </NamedLink>
         ) : (
           <div className={css.listingLink}>
-            <Avatar className={css.headerAvatar} user={otherUser} disableProfileLink />
-            <h2 className={css.channelTitle} style={{ cursor: 'pointer' }}>
+            <Avatar
+              className={css.headerAvatar}
+              initialsClassName={css.avatarInitials}
+              user={otherUser}
+              disableProfileLink
+            />
+            <h1 className={css.channelTitle} style={{ cursor: 'pointer' }}>
               {otherUserName}
-            </h2>
+            </h1>
           </div>
         )}
       </div>

@@ -30,15 +30,13 @@ import {
   LayoutWrapperTopbar,
   LayoutWrapperFooter,
   Footer,
-  IconSpinner,
   MessagePanel,
-  InboxItem,
+  InboxChannelHeader,
 } from '../../components';
 import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
 import config from '../../config';
 import SideNav from './SideNav';
 import { useCheckMobileScreen } from '../../util/userAgent';
-import InboxChannelHeader from './InboxChannelHeader';
 
 import css from './InboxPage.module.css';
 
