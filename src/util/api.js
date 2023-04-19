@@ -287,3 +287,7 @@ export const updateUserNotifications = body => {
 export const sendbirdUnreadMessages = body => {
   return post('/api/sendbird-unread-messages', body);
 };
+
+export const updateTransactionMetadata = body => {
+  return post('/api/update-transaction-metadata', body);
+};

@@ -19,15 +19,11 @@ const SideNav = props => {
     <div className={css.sidenavRoot}>
       {conversations.length > 0 ? (
         conversations.map(tx => {
-          const txMessages = messages.get(tx.id.uuid);
-          const previewMessageLong =
-            (txMessages && txMessages.length > 0 && txMessages[0].attributes.content) || '';
-          const previewMessage = cutTextToPreview(previewMessageLong, 40);
           return (
             <InboxItem
               key={tx.id.uuid}
               tx={tx}
-              previewMessage={previewMessage}
+              messages={messages}
               isActive={currentConversation?.id?.uuid === tx.id.uuid}
               {...rest}
             />

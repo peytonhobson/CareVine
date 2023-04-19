@@ -20,6 +20,8 @@ import {
   fetchOtherUserListing,
   sendRequestForPayment,
   deleteConversation,
+  sortedTransactions,
+  fetchConversations,
 } from './InboxPage.duck';
 import { fetchTransaction } from '../../ducks/transactions.duck';
 import {
@@ -41,6 +43,7 @@ import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
 import config from '../../config';
 import SideNav from './SideNav';
 import { useCheckMobileScreen } from '../../util/userAgent';
+import { updateTransactionMetadata } from '../../util/api';
 
 import css from './InboxPage.module.css';
 
@@ -78,11 +81,14 @@ const reducer = (state, action) => {
         activeConversation: state.conversations.find(n => n.id.uuid === action.payload),
       };
     case SET_CONVERSATIONS:
+      const hasActiveConversation = action.payload.find(
+        n => n.id.uuid === state.activeConversation?.id?.uuid
+      );
       return {
         ...state,
         conversations: action.payload,
-        activeConversation: state.conversations.find(n => n.id.uuid === state.activeConversation.id)
-          ? state.activeConversation
+        activeConversation: hasActiveConversation
+          ? hasActiveConversation
           : action.payload.length > 0
           ? action.payload[0]
           : null,
@@ -104,13 +110,10 @@ const reducer = (state, action) => {
 
 export const InboxPageComponent = props => {
   const {
-    unitType,
     currentUser,
-    currentUserListing,
     intl,
     pagination,
     params,
-    providerNotificationCount,
     scrollingDisabled,
     history,
     fetchMessagesInProgress,
@@ -123,7 +126,6 @@ export const InboxPageComponent = props => {
     sendMessageError,
     onShowMoreMessages,
     transactionRole,
-    onClearMessages,
     onSendMessage,
     onFetchOtherUserListing,
     otherUserListing,
@@ -140,6 +142,9 @@ export const InboxPageComponent = props => {
     onDeleteConversation,
     deleteConversationInProgress,
     deleteConversationError,
+    fetchInitialConversationsInProgress,
+    fetchInitialConversationsError,
+    onFetchConversations,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -161,9 +166,14 @@ export const InboxPageComponent = props => {
   const otherUser = ensuredCurrentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
 
   useEffect(() => {
-    if (conversations.length === 0) return;
-    dispatch({ type: SET_CONVERSATIONS, payload: conversations });
-  }, [conversations.length]);
+    const conversationsPoll = setInterval(() => {
+      onFetchConversations();
+    }, 5000);
+
+    return () => {
+      clearInterval(conversationsPoll);
+    };
+  }, []);
 
   const conversationId = params.id;
 
@@ -177,13 +187,6 @@ export const InboxPageComponent = props => {
     }
   }, [conversationId, state.conversations?.length]);
 
-  useEffect(() => {
-    if (state.activeConversation) {
-      onFetchOtherUserListing(otherUser?.id?.uuid);
-    }
-  }, [state.activeConversation?.id?.uuid]);
-
-  // TODO: Create separate hook for this and export
   const usePrevious = value => {
     const ref = useRef();
     useEffect(() => {
@@ -192,14 +195,40 @@ export const InboxPageComponent = props => {
     return ref.current;
   };
 
-  const previousConversations = usePrevious(state.conversations);
+  const previousActiveConversation = usePrevious(state.activeConversation);
 
   useEffect(() => {
-    // TODO: Make function to refetch conversations
-    if (previousConversations && !isEqual(state.conversations, previousConversations)) {
-      // onFetchCurrentUser();
+    if (
+      state.activeConversation &&
+      !isEqual(state.activeConversation, previousActiveConversation)
+    ) {
+      onFetchOtherUserListing(otherUser?.id?.uuid);
+
+      const id = state.activeConversation.id.uuid;
+      const unreadMessageCount = state.activeConversation.attributes.metadata.unreadMessageCount;
+      const hasUnreadMessages =
+        unreadMessageCount && unreadMessageCount[ensuredCurrentUser.id?.uuid] > 0;
+
+      if (hasUnreadMessages) {
+        const metadata = {
+          unreadMessageCount: {
+            ...unreadMessageCount,
+            [ensuredCurrentUser.id?.uuid]: 0,
+          },
+        };
+
+        updateTransactionMetadata({ txId: id, metadata }).then(() => {
+          onFetchConversations();
+        });
+      }
     }
-  }, [state.conversations]);
+  }, [previousActiveConversation, state.activeConversation]);
+
+  useEffect(() => {
+    if (!isEqual(state.conversations, conversations)) {
+      dispatch({ type: SET_CONVERSATIONS, payload: conversations });
+    }
+  }, [conversations]);
 
   useEffect(() => {
     if (!deleteConversationInProgress && !deleteConversationError) {
@@ -229,7 +258,7 @@ export const InboxPageComponent = props => {
     dispatch({ type: SET_STRIPE_MODAL_OPEN, payload: !state.isStripeModalOpen });
   };
 
-  const error = fetchConversationsError ? (
+  const error = fetchInitialConversationsError ? (
     <p className={css.error}>
       <FormattedMessage id="InboxPage.fetchFailed" />
     </p>
@@ -272,7 +301,7 @@ export const InboxPageComponent = props => {
             conversations={state.conversations}
             currentConversation={state.activeConversation}
             messages={messages}
-            fetchConversationsInProgress={fetchConversationsInProgress}
+            fetchConversationsInProgress={fetchInitialConversationsInProgress}
             currentUser={ensuredCurrentUser}
             intl={intl}
             params={params}
@@ -318,7 +347,7 @@ export const InboxPageComponent = props => {
                 onFetchTransaction={onFetchTransaction}
               />
             </>
-          ) : fetchConversationsInProgress ? (
+          ) : fetchInitialConversationsInProgress ? (
             <div className={css.spinnerContainer}>
               <IconSpinner className={css.mainSpinner} />
             </div>
@@ -425,16 +454,30 @@ InboxPageComponent.propTypes = {
   intl: intlShape.isRequired,
 };
 
+const sortTransactions = (a, b) => {
+  const aLastMessage =
+    a.messages.length > 0 && a.messages[a.messages.length - 1].attributes.createdAt;
+  const bLastMessage =
+    b.messages.length > 0 && b.messages[b.messages.length - 1].attributes.createdAt;
+
+  if (aLastMessage && bLastMessage) {
+    return new Date(bLastMessage) - new Date(aLastMessage);
+  }
+  return 0;
+};
+
 const mapStateToProps = state => {
   const { currentUser, currentUserListing } = state.user;
 
   const { transactionRefs } = state.InboxPage;
 
+  const conversations = getMarketplaceEntities(state, transactionRefs).sort(sortTransactions);
+
   return {
     currentUser,
     currentUserListing,
     scrollingDisabled: isScrollingDisabled(state),
-    conversations: getMarketplaceEntities(state, transactionRefs),
+    conversations,
     ...state.InboxPage,
   };
 };
@@ -448,6 +491,7 @@ const mapDispatchToProps = {
   onFetchTransaction: fetchTransaction,
   onSendRequestForPayment: sendRequestForPayment,
   onDeleteConversation: deleteConversation,
+  onFetchConversations: fetchConversations,
 };
 
 const InboxPage = compose(
