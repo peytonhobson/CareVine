@@ -24,7 +24,7 @@ import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
 const MESSAGES_PAGE_SIZE = 10;
 const { UUID } = sdkTypes;
 
-const sortedTransactions = txs =>
+export const sortedTransactions = txs =>
   reverse(
     sortBy(txs, tx => {
       return tx.attributes ? tx.attributes.lastTransitionedAt : null;
@@ -50,6 +50,12 @@ export const SEND_MESSAGE_ERROR = 'app/InboxPage/SEND_MESSAGE_ERROR';
 export const FETCH_OTHER_USER_LISTING_REQUEST = 'app/InboxPage/FETCH_OTHER_USER_LISTING_REQUEST';
 export const FETCH_OTHER_USER_LISTING_SUCCESS = 'app/InboxPage/FETCH_OTHER_USER_LISTING_SUCCESS';
 export const FETCH_OTHER_USER_LISTING_ERROR = 'app/InboxPage/FETCH_OTHER_USER_LISTING_ERROR';
+
+export const FETCH_INITIAL_CONVERSATIONS_REQUEST =
+  'app/InboxPage/FETCH_INITIAL_CONVERSATIONS_REQUEST';
+export const FETCH_INITIAL_CONVERSATIONS_SUCCESS =
+  'app/InboxPage/FETCH_INITIAL_CONVERSATIONS_SUCCESS';
+export const FETCH_INITIAL_CONVERSATIONS_ERROR = 'app/InboxPage/FETCH_INITIAL_CONVERSATIONS_ERROR';
 
 export const FETCH_CONVERSATIONS_REQUEST = 'app/InboxPage/FETCH_CONVERSATIONS_REQUEST';
 export const FETCH_CONVERSATIONS_SUCCESS = 'app/InboxPage/FETCH_CONVERSATIONS_SUCCESS';
@@ -100,6 +106,8 @@ const initialState = {
   fetchOtherUserListingError: false,
   fetchConversationsInProgress: false,
   fetchConversationsError: null,
+  fetchInitialConversationsInProgress: false,
+  fetchInitialConversationsError: null,
   sendRequestForPaymentError: null,
   sendRequestForPaymentInProgress: false,
   sendRequestForPaymentSuccess: false,
@@ -185,10 +193,9 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
     case FETCH_CONVERSATIONS_REQUEST:
       return { ...state, fetchConversationsInProgress: true, fetchConversationsError: null };
     case FETCH_CONVERSATIONS_SUCCESS:
-      const transactions = sortedTransactions(payload.data.data);
       return {
         ...state,
-        transactionRefs: entityRefs(transactions),
+        transactionRefs: entityRefs(payload.data.data),
         fetchConversationsInProgress: false,
       };
     case FETCH_CONVERSATIONS_ERROR:
@@ -196,6 +203,25 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         ...state,
         fetchConversationsInProgress: false,
         fetchConversationsError: payload,
+      };
+
+    case FETCH_INITIAL_CONVERSATIONS_REQUEST:
+      return {
+        ...state,
+        fetchInitialConversationsInProgress: true,
+        fetchInitialConversationsError: null,
+      };
+    case FETCH_INITIAL_CONVERSATIONS_SUCCESS:
+      return {
+        ...state,
+        transactionRefs: entityRefs(payload.data.data),
+        fetchInitialConversationsInProgress: false,
+      };
+    case FETCH_INITIAL_CONVERSATIONS_ERROR:
+      return {
+        ...state,
+        fetchInitialConversationsInProgress: false,
+        fetchInitialConversationsError: payload,
       };
 
     case SEND_REQUEST_FOR_PAYMENT_REQUEST:
@@ -287,6 +313,17 @@ const fetchOtherUserListingSuccess = response => ({
 });
 const fetchOtherUserListingError = e => ({
   type: FETCH_OTHER_USER_LISTING_ERROR,
+  error: true,
+  payload: e,
+});
+
+const fetchInitialConversationsRequest = () => ({ type: FETCH_INITIAL_CONVERSATIONS_REQUEST });
+const fetchInitialConversationsSuccess = response => ({
+  type: FETCH_INITIAL_CONVERSATIONS_SUCCESS,
+  payload: response,
+});
+const fetchInitialConversationsError = e => ({
+  type: FETCH_INITIAL_CONVERSATIONS_ERROR,
   error: true,
   payload: e,
 });
@@ -556,6 +593,34 @@ const IMAGE_VARIANTS = {
   ],
 };
 
+export const fetchConversations = () => async (dispatch, getState, sdk) => {
+  dispatch(fetchConversationsRequest());
+
+  const apiQueryParams = {
+    lastTransitions: TRANSITION_INITIAL_MESSAGE,
+    include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'messages'],
+    'fields.transaction': ['lastTransitionedAt', 'metadata'],
+    'fields.message': ['createdAt'],
+    'limit.messages': MESSAGES_PAGE_SIZE,
+    page: 1,
+    per_page: INBOX_PAGE_SIZE,
+  };
+
+  try {
+    const response = await sdk.transactions.query(apiQueryParams);
+
+    dispatch(addMarketplaceEntities(response));
+    dispatch(fetchConversationsSuccess(response));
+
+    response.data.data.forEach(transaction => {
+      dispatch(fetchMessages(transaction.id, 1));
+    });
+  } catch (e) {
+    log.error(e, 'fetch-conversations-failed');
+    dispatch(fetchConversationsError(storableError(e)));
+  }
+};
+
 const isNonEmpty = value => {
   return typeof value === 'object' || Array.isArray(value) ? !isEmpty(value) : !!value;
 };
@@ -569,14 +634,16 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const initialValues = txRef ? {} : pickBy(state, isNonEmpty);
   dispatch(setInitialValues(initialValues));
 
-  dispatch(fetchConversationsRequest());
+  dispatch(fetchInitialConversationsRequest());
 
   const { page = 1 } = parse(search);
 
   const apiQueryParams = {
     lastTransitions: TRANSITION_INITIAL_MESSAGE,
-    include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'listing'],
+    include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'messages'],
     'fields.transaction': ['lastTransitionedAt', 'metadata'],
+    'fields.message': ['createdAt'],
+    'limit.messages': MESSAGES_PAGE_SIZE,
     page,
     per_page: INBOX_PAGE_SIZE,
   };
@@ -585,7 +652,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     .query(apiQueryParams)
     .then(response => {
       dispatch(addMarketplaceEntities(response));
-      dispatch(fetchConversationsSuccess(response));
+      dispatch(fetchInitialConversationsSuccess(response));
       return response;
     })
     .then(response => {
@@ -595,6 +662,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     })
     .catch(e => {
       log.error(e, 'inbox-page-load-data-failed', {});
-      dispatch(fetchConversationsError(storableError(e)));
+      dispatch(fetchInitialConversationsError(storableError(e)));
     });
 };

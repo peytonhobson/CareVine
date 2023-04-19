@@ -56,6 +56,10 @@ const truncateString = function(fullStr, strLen) {
   return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
 };
 
+const compareMessages = (a, b) => {
+  return a.attributes.createdAt - b.attributes.createdAt;
+};
+
 const InboxItem = props => {
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
 
@@ -63,14 +67,20 @@ const InboxItem = props => {
     tx,
     intl,
     currentUser,
-    previewMessage,
-    lastMessageTime,
+    messages,
     isMobile,
     isActive,
     onOpenDeleteConversationModal,
     onPreviewClick,
   } = props;
   const { customer, provider } = tx;
+
+  const txMessages = messages.get(tx.id.uuid);
+  const lastMessageTime = null;
+  const sortedMessages = txMessages?.sort(compareMessages);
+  const previewMessage =
+    (sortedMessages?.length > 0 && sortedMessages[sortedMessages.length - 1].attributes.content) ||
+    null;
 
   const otherUser = currentUser.id.uuid === provider?.id?.uuid ? customer : provider;
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
