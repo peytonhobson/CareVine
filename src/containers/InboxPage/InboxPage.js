@@ -47,7 +47,6 @@ import { updateTransactionMetadata } from '../../util/api';
 
 import css from './InboxPage.module.css';
 
-const DELETE_CONVERSATION = 'DELETE_CONVERSATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_CHAT_MODAL_OPEN = 'SET_CHAT_MODAL_OPEN';
 const SET_ACTIVE_CONVERSATION = 'SET_ACTIVE_CONVERSATION';
@@ -59,18 +58,6 @@ const SET_INITIAL_CONVERSATION = 'SET_INITIAL_CONVERSATION';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case DELETE_CONVERSATION:
-      return {
-        ...state,
-        conversations: state.conversations.filter(n => n.id.uuid !== action.payload),
-        isDeleteModalOpen: false,
-        activeConversation:
-          state.activeConversation?.id?.uuid === action.payload
-            ? state.conversations.length > 1
-              ? state.conversations[0]
-              : null
-            : state.activeConversation,
-      };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
     case SET_CHAT_MODAL_OPEN:
@@ -243,7 +230,10 @@ export const InboxPageComponent = props => {
   const handleDeleteConversation = () => {
     const txToDelete = state.conversations.find(n => n.id.uuid === state.isDeleteModalOpen);
 
-    onDeleteConversation(txToDelete, ensuredCurrentUser);
+    onDeleteConversation(txToDelete, ensuredCurrentUser).then(() => {
+      dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
+      onFetchConversations();
+    });
   };
 
   const handlePreviewClick = id => {
