@@ -33,15 +33,15 @@
           class="body"
           style="padding: 2rem 3.5rem 2.75rem 3.5rem;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 1rem;line-height: 1.5rem;color: #6BA0B6;"
         >
-          You have a new message from {{transaction.protected-data.senderName}}. To view this
-          message on CareVine click the button below.
+          You have a new message from {{transaction.customer.display-name}}. To view this message on
+          CareVine click the button below.
         </p>
         <div
           class="button-container"
           style="width: 100%;padding-left: auto;padding-right: auto;text-align: center;"
         >
           <a
-            href="{{marketplace.url}}/inbox/{{transaction.protected-data.otherUserId}}"
+            href="{{marketplace.url}}/inbox/{{transaction.id}}"
             style="padding: 0.75rem 1.5rem;height: 2.75rem;margin-top: 0.75rem;background: #6BA0B6;border-radius: 3rem;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 0.875rem; line-height: 1.25rem; color: #FFFFFF; text-decoration: none;"
             >View Message</a
           >

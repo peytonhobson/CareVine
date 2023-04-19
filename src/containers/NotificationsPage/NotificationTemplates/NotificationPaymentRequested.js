@@ -14,7 +14,7 @@ const NotificationPaymentRequested = props => {
     fetchSenderListingError,
   } = props;
 
-  const { senderName, channelUrl, senderId } = notification.metadata;
+  const { senderName, conversationId, senderId } = notification.metadata;
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -41,8 +41,8 @@ const NotificationPaymentRequested = props => {
         </p>
       ) : null}
       <Button
-        name="InboxPageWithChannel"
-        params={{ channel: channelUrl }}
+        name="InboxPageWithId"
+        params={{ id: conversationId }}
         className={css.linkButton}
         onClick={() => setIsPaymentModalOpen(true)}
         disabled={payButtonDisabled}
@@ -51,7 +51,7 @@ const NotificationPaymentRequested = props => {
       </Button>
       {isPaymentModalOpen && (
         <StripePaymentModal
-          channelUrl={channelUrl}
+          conversationId={conversationId}
           isOpen={isPaymentModalOpen}
           onClose={() => setIsPaymentModalOpen(false)}
           provider={sender}

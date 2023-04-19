@@ -48,6 +48,7 @@ const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_CONVERSATIONS = 'SET_CONVERSATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 const SET_STRIPE_MODAL_OPEN = 'SET_STRIPE_MODAL_OPEN';
+const SET_INITIAL_CONVERSATION = 'SET_INITIAL_CONVERSATION';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -86,6 +87,12 @@ const reducer = (state, action) => {
       return { ...state, currentUserInitialFetched: true };
     case SET_STRIPE_MODAL_OPEN:
       return { ...state, isStripeModalOpen: action.payload };
+    case SET_INITIAL_CONVERSATION:
+      return {
+        ...state,
+        activeConversation: state.conversations.find(n => n.id.uuid === action.payload),
+        initialConversationSet: true,
+      };
     default:
       return state;
   }
@@ -134,6 +141,7 @@ export const InboxPageComponent = props => {
     activeConversation: conversations.length > 0 ? conversations[0] : null,
     isChatModalOpen: false,
     isStripeModalOpen: false,
+    initialConversationSet: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -149,14 +157,14 @@ export const InboxPageComponent = props => {
   const conversationId = params.id;
 
   useEffect(() => {
-    if (conversationId && state.conversations.find(n => n.id === conversationId)) {
-      dispatch({ type: SET_ACTIVE_CONVERSATION, payload: conversationId });
+    if (conversationId && state.conversations?.find(n => n?.id?.uuid === conversationId)) {
+      dispatch({ type: SET_INITIAL_CONVERSATION, payload: conversationId });
 
       if (isMobile) {
         dispatch({ type: SET_CHAT_MODAL_OPEN, payload: true });
       }
     }
-  }, [conversationId]);
+  }, [conversationId, state.conversations?.length]);
 
   useEffect(() => {
     if (state.activeConversation) {
@@ -294,6 +302,7 @@ export const InboxPageComponent = props => {
           )}
           {state.isStripeModalOpen && (
             <StripePaymentModal
+              conversationId={state.activeConversation?.id?.uuid}
               isOpen={state.isStripeModalOpen}
               onClose={handleChangeStripeModal}
               provider={otherUser}
