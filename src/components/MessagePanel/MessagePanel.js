@@ -110,13 +110,6 @@ const MessagePanelComponent = props => {
 
   return (
     <div className={css.root}>
-      <UserMessagePreview
-        currentUser={currentUser}
-        otherUser={otherUser}
-        otherUserListing={otherUserListing}
-        currentTransaction={currentTransaction}
-        onManageDisableScrolling={onManageDisableScrolling}
-      />
       <FeedSection
         rootClassName={css.feedContainer}
         currentTransaction={currentTransaction}

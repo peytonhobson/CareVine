@@ -6,12 +6,19 @@ import { formatDate } from '../../util/dates';
 import css from './InboxPage.module.css';
 
 const SideNav = props => {
-  const { transactions, currentTransaction, messages, fetchInProgress, isMobile, ...rest } = props;
+  const {
+    conversations,
+    currentTransaction,
+    messages,
+    fetchConversationsInProgress,
+    isMobile,
+    ...rest
+  } = props;
 
   return (
     <div className={css.sidenavRoot}>
-      {!fetchInProgress || transactions.length > 0 ? (
-        transactions.map(tx => {
+      {!fetchConversationsInProgress || conversations.length > 0 ? (
+        conversations.map(tx => {
           const txMessages = messages.get(tx.id.uuid);
           const previewMessageLong =
             (txMessages && txMessages.length > 0 && txMessages[0].attributes.content) || '';
@@ -28,7 +35,7 @@ const SideNav = props => {
         })
       ) : (
         <div className={css.noNotificationsContainer}>
-          {fetchInProgress ? (
+          {fetchConversationsInProgress ? (
             <IconSpinner className={css.sideNavSpinner} />
           ) : (
             <div className={css.noNotifications}>

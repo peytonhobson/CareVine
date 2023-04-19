@@ -2,7 +2,7 @@ import reverse from 'lodash/reverse';
 import sortBy from 'lodash/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
-import { TRANSITIONS } from '../../util/transaction';
+import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
@@ -10,6 +10,7 @@ import pick from 'lodash/pick';
 import pickBy from 'lodash/pickBy';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
+import * as log from '../../util/log';
 
 const MESSAGES_PAGE_SIZE = 10;
 const { UUID } = sdkTypes;
@@ -24,10 +25,6 @@ const sortedTransactions = txs =>
 // ================ Action types ================ //
 
 export const SET_INITIAL_VALUES = 'app/InboxPage/SET_INITIAL_VALUES';
-
-export const FETCH_ORDERS_OR_SALES_REQUEST = 'app/InboxPage/FETCH_ORDERS_OR_SALES_REQUEST';
-export const FETCH_ORDERS_OR_SALES_SUCCESS = 'app/InboxPage/FETCH_ORDERS_OR_SALES_SUCCESS';
-export const FETCH_ORDERS_OR_SALES_ERROR = 'app/InboxPage/FETCH_ORDERS_OR_SALES_ERROR';
 
 export const FETCH_MESSAGES_REQUEST = 'app/InboxPage/FETCH_MESSAGES_REQUEST';
 export const FETCH_MESSAGES_SUCCESS = 'app/InboxPage/FETCH_MESSAGES_SUCCESS';
@@ -45,6 +42,10 @@ export const FETCH_OTHER_USER_LISTING_REQUEST = 'app/InboxPage/FETCH_OTHER_USER_
 export const FETCH_OTHER_USER_LISTING_SUCCESS = 'app/InboxPage/FETCH_OTHER_USER_LISTING_SUCCESS';
 export const FETCH_OTHER_USER_LISTING_ERROR = 'app/InboxPage/FETCH_OTHER_USER_LISTING_ERROR';
 
+export const FETCH_CONVERSATIONS_REQUEST = 'app/InboxPage/FETCH_CONVERSATIONS_REQUEST';
+export const FETCH_CONVERSATIONS_SUCCESS = 'app/InboxPage/FETCH_CONVERSATIONS_SUCCESS';
+export const FETCH_CONVERSATIONS_ERROR = 'app/InboxPage/FETCH_CONVERSATIONS_ERROR';
+
 export const CLEAR_MESSAGES_SUCCESS = 'app/InboxPage/CLEAR_MESSAGES_SUCCESS';
 
 // ================ Reducer ================ //
@@ -56,8 +57,6 @@ const entityRefs = entities =>
   }));
 
 const initialState = {
-  fetchInProgress: false,
-  fetchOrdersOrSalesError: null,
   pagination: null,
   transactionRefs: [],
   fetchMessagesInProgress: false,
@@ -72,6 +71,9 @@ const initialState = {
   otherUserListing: null,
   fetchOtherUserListingInProgress: false,
   fetchOtherUserListingError: false,
+  conversations: [],
+  fetchConversationsInProgress: false,
+  fetchConversationsError: null,
 };
 
 const mergeEntityArrays = (a, b) => {
@@ -81,23 +83,9 @@ const mergeEntityArrays = (a, b) => {
 export default function checkoutPageReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
-    case FETCH_ORDERS_OR_SALES_REQUEST:
-      return { ...state, fetchInProgress: true, fetchOrdersOrSalesError: null };
-    case FETCH_ORDERS_OR_SALES_SUCCESS: {
-      const transactions = sortedTransactions(payload.data.data);
-      return {
-        ...state,
-        fetchInProgress: false,
-        transactionRefs: entityRefs(transactions),
-        pagination: payload.data.meta,
-      };
-    }
-    case FETCH_ORDERS_OR_SALES_ERROR:
-      console.error(payload); // eslint-disable-line
-      return { ...state, fetchInProgress: false, fetchOrdersOrSalesError: payload };
-
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
+
     case FETCH_MESSAGES_REQUEST:
       return { ...state, fetchMessagesInProgress: true, fetchMessagesError: null };
     case FETCH_MESSAGES_SUCCESS: {
@@ -159,6 +147,23 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         fetchOtherUserListingProgress: false,
         fetchOtherUserListingError: payload,
       };
+
+    case FETCH_CONVERSATIONS_REQUEST:
+      return { ...state, fetchConversationsInProgress: true, fetchConversationsError: null };
+    case FETCH_CONVERSATIONS_SUCCESS:
+      const transactions = sortedTransactions(payload.data.data);
+      return {
+        ...state,
+        transactionRefs: entityRefs(transactions),
+        fetchConversationsInProgress: false,
+      };
+    case FETCH_CONVERSATIONS_ERROR:
+      return {
+        ...state,
+        fetchConversationsInProgress: false,
+        fetchConversationsError: payload,
+      };
+
     default:
       return state;
   }
@@ -171,16 +176,6 @@ export const setInitialValues = initialValues => ({
   payload: pick(initialValues, Object.keys(initialState)),
 });
 
-const fetchOrdersOrSalesRequest = () => ({ type: FETCH_ORDERS_OR_SALES_REQUEST });
-const fetchOrdersOrSalesSuccess = response => ({
-  type: FETCH_ORDERS_OR_SALES_SUCCESS,
-  payload: response,
-});
-const fetchOrdersOrSalesError = e => ({
-  type: FETCH_ORDERS_OR_SALES_ERROR,
-  error: true,
-  payload: e,
-});
 const fetchMessagesRequest = () => ({ type: FETCH_MESSAGES_REQUEST });
 const fetchMessagesSuccess = (txId, messages, pagination) => ({
   type: FETCH_MESSAGES_SUCCESS,
@@ -201,6 +196,17 @@ const fetchOtherUserListingSuccess = response => ({
 });
 const fetchOtherUserListingError = e => ({
   type: FETCH_OTHER_USER_LISTING_ERROR,
+  error: true,
+  payload: e,
+});
+
+const fetchConversationsRequest = () => ({ type: FETCH_CONVERSATIONS_REQUEST });
+const fetchConversationsSuccess = response => ({
+  type: FETCH_CONVERSATIONS_SUCCESS,
+  payload: response,
+});
+const fetchConversationsError = e => ({
+  type: FETCH_CONVERSATIONS_ERROR,
   error: true,
   payload: e,
 });
@@ -335,29 +341,14 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const initialValues = txRef ? {} : pickBy(state, isNonEmpty);
   dispatch(setInitialValues(initialValues));
 
-  dispatch(fetchOrdersOrSalesRequest());
+  dispatch(fetchConversationsRequest());
 
   const { page = 1 } = parse(search);
 
   const apiQueryParams = {
-    lastTransitions: TRANSITIONS,
-    include: [
-      'provider',
-      'provider.profileImage',
-      'customer',
-      'customer.profileImage',
-      'booking',
-      'listing',
-    ],
-    'fields.transaction': [
-      'lastTransition',
-      'lastTransitionedAt',
-      'transitions',
-      'payinTotal',
-      'payoutTotal',
-    ],
-    'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
-    'fields.image': ['variants.square-small', 'variants.square-small2x'],
+    lastTransitions: TRANSITION_INITIAL_MESSAGE,
+    include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'listing'],
+    'fields.transaction': ['lastTransitionedAt'],
     page,
     per_page: INBOX_PAGE_SIZE,
   };
@@ -366,7 +357,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     .query(apiQueryParams)
     .then(response => {
       dispatch(addMarketplaceEntities(response));
-      dispatch(fetchOrdersOrSalesSuccess(response));
+      dispatch(fetchConversationsSuccess(response));
       return response;
     })
     .then(response => {
@@ -375,8 +366,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
       });
     })
     .catch(e => {
-      console.log(e);
-      dispatch(fetchOrdersOrSalesError(storableError(e)));
-      throw e;
+      log.error(e, 'inbox-page-load-data-failed', {});
+      dispatch(fetchConversationsError(storableError(e)));
     });
 };
