@@ -79,7 +79,7 @@ class SendMessageFormComponent extends Component {
                 inputRootClass={css.messageInput}
                 id={formId ? `${formId}.message` : 'message'}
                 name="message"
-                autocomplete="off"
+                autoComplete="off"
                 placeholder={messagePlaceholder}
                 onFocus={this.handleFocus}
                 onBlur={this.handleBlur}

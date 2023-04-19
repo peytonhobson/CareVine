@@ -44,6 +44,10 @@
     background-color: var(--marketplaceColor);
   }
 
+  &.unread {
+    background-color: rgba(116, 173, 138, 0.4);
+  }
+
   &.active {
     background-color: var(--marketplaceColor);
   }
@@ -93,6 +97,7 @@
 .inboxPreviewUpper {
   display: flex;
   justify-content: space-between;
+  position: relative;
   width: 100%;
   flex-wrap: nowrap;
   line-height: 2rem;
