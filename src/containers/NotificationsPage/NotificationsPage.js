@@ -21,7 +21,7 @@ import {
 } from '../../components';
 import { TopbarContainer } from '..';
 import NotificationContainer from './NotificationContainer';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen, usePrevious } from '../../util/userAgent';
 
 import css from './NotificationsPage.module.css';
 import SideNav from './SideNav';
@@ -136,14 +136,6 @@ const NotificationsPageComponent = props => {
       }
     }
   }, [notificationId]);
-
-  const usePrevious = value => {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
-  };
 
   const previousNotifications = usePrevious(state.notifications);
 

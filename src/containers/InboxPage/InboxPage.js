@@ -42,7 +42,7 @@ import {
 import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
 import config from '../../config';
 import SideNav from './SideNav';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen, usePrevious } from '../../util/userAgent';
 import { updateTransactionMetadata } from '../../util/api';
 
 import css from './InboxPage.module.css';
@@ -173,14 +173,6 @@ export const InboxPageComponent = props => {
       }
     }
   }, [conversationId, state.conversations?.length]);
-
-  const usePrevious = value => {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
-  };
 
   const previousActiveConversation = usePrevious(state.activeConversation);
 

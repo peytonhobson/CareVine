@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export const useCheckMobileScreen = () => {
   if (typeof window === 'undefined') {
@@ -17,6 +17,14 @@ export const useCheckMobileScreen = () => {
   }, []);
 
   return width <= 768;
+};
+
+export const usePrevious = value => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 };
 
 export const isMobileSafari = () => {
