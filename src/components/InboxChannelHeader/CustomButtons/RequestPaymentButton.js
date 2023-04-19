@@ -30,6 +30,7 @@ const RequestPaymentButton = props => {
     sendRequestForPaymentError,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
+    conversationId,
   } = props;
 
   const [paymentRequestedForUser, setPaymentRequestedForUser] = useState(false);
@@ -48,14 +49,12 @@ const RequestPaymentButton = props => {
   }, [sendRequestForPaymentSuccess, otherUser]);
 
   const clickDisabled =
-    !!disabled ||
-    !currentUser.stripeAccount?.id ||
-    checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
+    !!disabled || !currentUser.stripeAccount?.id || !conversationId || sendRequestForPaymentSuccess;
+  checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
 
   const requestPayment = () => {
-    // TODO: Add notificationId for the link of the request
     if (!paymentRequestedForUser) {
-      onSendRequestForPayment(currentUser, otherUserListing, otherUser);
+      onSendRequestForPayment(currentUser, conversationId, otherUserListing, otherUser);
     }
   };
 

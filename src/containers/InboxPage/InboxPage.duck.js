@@ -2,15 +2,19 @@ import reverse from 'lodash/reverse';
 import sortBy from 'lodash/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
-import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
+import { TRANSITION_INITIAL_MESSAGE, TRANSITION_REQUEST_PAYMENT } from '../../util/transaction';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { denormalisedResponseEntities } from '../../util/data';
+import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import pick from 'lodash/pick';
 import pickBy from 'lodash/pickBy';
 import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
 import * as log from '../../util/log';
+import { v4 as uuidv4 } from 'uuid';
+import { updateUserNotifications, updateUser } from '../../util/api';
+import config from '../../config';
+import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
 
 const MESSAGES_PAGE_SIZE = 10;
 const { UUID } = sdkTypes;
@@ -46,6 +50,20 @@ export const FETCH_CONVERSATIONS_REQUEST = 'app/InboxPage/FETCH_CONVERSATIONS_RE
 export const FETCH_CONVERSATIONS_SUCCESS = 'app/InboxPage/FETCH_CONVERSATIONS_SUCCESS';
 export const FETCH_CONVERSATIONS_ERROR = 'app/InboxPage/FETCH_CONVERSATIONS_ERROR';
 
+export const SEND_REQUEST_FOR_PAYMENT_REQUEST =
+  'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_REQUEST';
+export const SEND_REQUEST_FOR_PAYMENT_SUCCESS =
+  'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_SUCCESS';
+export const SEND_REQUEST_FOR_PAYMENT_ERROR =
+  'app/StripePaymentModal/SEND_REQUEST_FOR_PAYMENT_ERROR';
+
+export const TRANSITION_TO_REQUEST_PAYMENT_REQUEST =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_REQUEST';
+export const TRANSITION_TO_REQUEST_PAYMENT_SUCCESS =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_SUCCESS';
+export const TRANSITION_TO_REQUEST_PAYMENT_ERROR =
+  'app/InboxPage/TRANSITION_TO_REQUEST_PAYMENT_ERROR';
+
 export const CLEAR_MESSAGES_SUCCESS = 'app/InboxPage/CLEAR_MESSAGES_SUCCESS';
 
 // ================ Reducer ================ //
@@ -71,9 +89,14 @@ const initialState = {
   otherUserListing: null,
   fetchOtherUserListingInProgress: false,
   fetchOtherUserListingError: false,
-  conversations: [],
   fetchConversationsInProgress: false,
   fetchConversationsError: null,
+  sendRequestForPaymentError: null,
+  sendRequestForPaymentInProgress: false,
+  sendRequestForPaymentSuccess: false,
+  transitionToRequestPaymentError: null,
+  transitionToRequestPaymentInProgress: false,
+  transitionToRequestPaymentSuccess: false,
 };
 
 const mergeEntityArrays = (a, b) => {
@@ -164,6 +187,45 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
         fetchConversationsError: payload,
       };
 
+    case SEND_REQUEST_FOR_PAYMENT_REQUEST:
+      return {
+        ...state,
+        sendRequestForPaymentInProgress: true,
+        sendRequestForPaymentError: null,
+        sendRequestForPaymentSuccess: false,
+      };
+    case SEND_REQUEST_FOR_PAYMENT_SUCCESS:
+      return {
+        ...state,
+        sendRequestForPaymentInProgress: false,
+        sendRequestForPaymentSuccess: true,
+      };
+    case SEND_REQUEST_FOR_PAYMENT_ERROR:
+      return {
+        ...state,
+        sendRequestForPaymentInProgress: false,
+        sendRequestForPaymentError: payload,
+      };
+
+    case TRANSITION_TO_REQUEST_PAYMENT_REQUEST:
+      return {
+        ...state,
+        transitionToRequestPaymentInProgress: true,
+        transitionToRequestPaymentError: null,
+      };
+    case TRANSITION_TO_REQUEST_PAYMENT_SUCCESS:
+      return {
+        ...state,
+        transitionToRequestPaymentSuccess: true,
+        transitionToRequestPaymentInProgress: false,
+      };
+    case TRANSITION_TO_REQUEST_PAYMENT_ERROR:
+      return {
+        ...state,
+        transitionToRequestPaymentInProgress: false,
+        transitionToRequestPaymentError: payload,
+      };
+
     default:
       return state;
   }
@@ -207,6 +269,28 @@ const fetchConversationsSuccess = response => ({
 });
 const fetchConversationsError = e => ({
   type: FETCH_CONVERSATIONS_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const sendRequestForPaymentRequest = () => ({
+  type: SEND_REQUEST_FOR_PAYMENT_REQUEST,
+});
+export const sendRequestForPaymentSuccess = () => ({
+  type: SEND_REQUEST_FOR_PAYMENT_SUCCESS,
+});
+export const sendRequestForPaymentError = e => ({
+  type: SEND_REQUEST_FOR_PAYMENT_ERROR,
+  error: true,
+  payload: e,
+});
+
+const transitionToRequestPaymentRequest = () => ({ type: TRANSITION_TO_REQUEST_PAYMENT_REQUEST });
+const transitionToRequestPaymentSuccess = () => ({
+  type: TRANSITION_TO_REQUEST_PAYMENT_SUCCESS,
+});
+const transitionToRequestPaymentError = e => ({
+  type: TRANSITION_TO_REQUEST_PAYMENT_ERROR,
   error: true,
   payload: e,
 });
@@ -312,6 +396,88 @@ export const fetchOtherUserListing = userId => (dispatch, getState, sdk) => {
     })
     .catch(e => {
       dispatch(fetchOtherUserListingError(e));
+      throw e;
+    });
+};
+
+export const sendRequestForPayment = (
+  currentUser,
+  conversationId,
+  otherUserListing,
+  otherUser
+) => async (dispatch, getState, sdk) => {
+  dispatch(sendRequestForPaymentRequest());
+
+  const senderName = userDisplayNameAsString(currentUser);
+  const userId = otherUser.id.uuid;
+  const notificationId = uuidv4();
+  const newNotification = {
+    id: notificationId,
+    type: NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata: {
+      senderName,
+      conversationId,
+      senderId: currentUser.id.uuid,
+    },
+  };
+
+  try {
+    await updateUserNotifications({
+      userId,
+      newNotification,
+    });
+
+    const currentTime = new Date().getTime();
+    const oldRequestsForPayment =
+      currentUser.attributes.profile.privateData?.sentRequestsForPayment?.filter(
+        o => o.createdAt > currentTime - 1000 * 60 * 60 * 24
+      ) || [];
+
+    const newSentRequestsForPayment = [
+      ...oldRequestsForPayment,
+      { userId, createdAt: currentTime },
+    ];
+
+    await updateUser({
+      userId: currentUser.id.uuid,
+      privateData: {
+        sentRequestsForPayment: newSentRequestsForPayment,
+      },
+    });
+
+    dispatch(sendRequestForPaymentSuccess());
+    dispatch(transitionToRequestPayment(otherUserListing, notificationId));
+  } catch (e) {
+    log.error(e, 'send-request-for-payment-failed');
+    dispatch(sendRequestForPaymentError(e));
+  }
+};
+
+export const transitionToRequestPayment = (otherUserListing, notificationId) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(transitionToRequestPaymentRequest());
+
+  const listingId = otherUserListing?.id?.uuid;
+
+  const bodyParams = {
+    transition: TRANSITION_REQUEST_PAYMENT,
+    processAlias: config.singleActionProcessAlias,
+    params: { listingId, protectedData: { notificationId } },
+  };
+  return sdk.transactions
+    .initiate(bodyParams)
+    .then(response => {
+      dispatch(transitionToRequestPaymentSuccess());
+      return response;
+    })
+    .catch(e => {
+      log.error(e, 'transition-to-request-payment-failed');
+      dispatch(transitionToRequestPaymentError(storableError(e)));
       throw e;
     });
 };

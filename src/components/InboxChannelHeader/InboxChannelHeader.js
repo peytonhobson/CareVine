@@ -20,6 +20,7 @@ const InboxChannelHeader = props => {
     sendRequestForPaymentError,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
+    conversationId,
   } = props;
 
   const listingId = listing?.id?.uuid;
@@ -80,6 +81,7 @@ const InboxChannelHeader = props => {
                 onSendRequestForPayment={onSendRequestForPayment}
                 otherUser={otherUser}
                 otherUserListing={listing}
+                conversationId={conversationId}
                 sendRequestForPaymentError={sendRequestForPaymentError}
                 sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
                 sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}

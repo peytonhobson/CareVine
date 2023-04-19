@@ -17,6 +17,7 @@ import {
   sendMessage,
   clearMessages,
   fetchOtherUserListing,
+  sendRequestForPayment,
 } from './InboxPage.duck';
 import { fetchTransaction } from '../../ducks/transactions.duck';
 import {
@@ -129,6 +130,10 @@ export const InboxPageComponent = props => {
     fetchConversationsInProgress,
     fetchConversationsError,
     fetchOtherUserListingInProgress,
+    sendRequestForPaymentError,
+    sendRequestForPaymentInProgress,
+    sendRequestForPaymentSuccess,
+    onSendRequestForPayment,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -216,14 +221,6 @@ export const InboxPageComponent = props => {
     </p>
   ) : null;
 
-  // Need to make this dynamic when notifications are added
-  const noResults =
-    !fetchConversationsInProgress && conversations.length === 0 && !fetchConversationsError ? (
-      <li key="noResults" className={css.noResults}>
-        <FormattedMessage id="InboxPage.noMessagesFound" />
-      </li>
-    ) : null;
-
   const hasConversations = conversations.length > 0;
 
   const pagingLinks =
@@ -279,6 +276,11 @@ export const InboxPageComponent = props => {
             currentUser={ensuredCurrentUser}
             fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
             onOpenPaymentModal={handleChangeStripeModal}
+            sendRequestForPaymentError={sendRequestForPaymentError}
+            sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+            sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+            onSendRequestForPayment={onSendRequestForPayment}
+            conversationId={state.activeConversation?.id?.uuid}
           />
           {state.activeConversation?.id?.uuid && (
             <MessagePanel
@@ -351,58 +353,28 @@ InboxPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const {
-    pagination,
-    fetchMessagesInProgress,
-    totalMessagePages,
-    messages,
-    oldestMessagePageFetched,
-    initialMessageFailedToTransaction,
-    fetchMessagesError,
-    sendMessageInProgress,
-    sendMessageError,
-    transactionRefs,
-    otherUserListing,
-    fetchConversationsInProgress,
-    fetchConversationsError,
-    fetchOtherUserListingInProgress,
-  } = state.InboxPage;
-  const {
-    currentUser,
-    currentUserListing,
-    currentUserNotificationCount: providerNotificationCount,
-  } = state.user;
+  const { currentUser, currentUserListing } = state.user;
+
+  const { transactionRefs } = state.InboxPage;
+
   return {
     currentUser,
     currentUserListing,
-    pagination,
-    providerNotificationCount,
     scrollingDisabled: isScrollingDisabled(state),
     conversations: getMarketplaceEntities(state, transactionRefs),
-    fetchMessagesInProgress,
-    totalMessagePages,
-    messages,
-    oldestMessagePageFetched,
-    initialMessageFailedToTransaction,
-    fetchMessagesError,
-    sendMessageInProgress,
-    sendMessageError,
-    otherUserListing,
-    fetchConversationsInProgress,
-    fetchConversationsError,
-    fetchOtherUserListingInProgress,
+    ...state.InboxPage,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onShowMoreMessages: txId => dispatch(fetchMoreMessages(txId)),
-  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
-  onClearMessages: () => dispatch(clearMessages()),
-  onFetchOtherUserListing: userId => dispatch(fetchOtherUserListing(userId)),
-  onFetchTransaction: txId => dispatch(fetchTransaction(txId)),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onShowMoreMessages: fetchMoreMessages,
+  onSendMessage: sendMessage,
+  onClearMessages: clearMessages,
+  onFetchOtherUserListing: fetchOtherUserListing,
+  onFetchTransaction: fetchTransaction,
+  onSendRequestForPayment: sendRequestForPayment,
+};
 
 const InboxPage = compose(
   withRouter,
