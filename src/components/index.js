@@ -232,4 +232,5 @@ export { default as LoadableComponentErrorBoundary } from './LoadableComponentEr
 export { default as WeekCalendar } from './WeekCalendar/WeekCalendar'
 export { default as InboxItem } from './InboxItem/InboxItem'
 export { default as MessagePanel } from './MessagePanel/MessagePanel'
-export { default as UserMessagePreview} from './UserMessagePreview/UserMessagePreview'
+export { default as UserMessagePreview } from './UserMessagePreview/UserMessagePreview'
+export { default as InboxChannelHeader } from './InboxChannelHeader/InboxChannelHeader'
