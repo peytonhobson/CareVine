@@ -209,57 +209,6 @@
   composes: button buttonFont buttonText buttonBorders buttonColorsPrimary from global;
 }
 
-.genericError {
-  position: fixed;
-  top: calc(var(--topbarHeight) + 15px);
-
-  /* Place enough to the right to hide the error */
-  right: -355px;
-  opacity: 0;
-
-  max-width: 340px;
-  margin: 0 15px;
-
-  /* Animate error from the right */
-  transition: all ease-out 0.2s;
-  transition-delay: 1s;
-
-  /* Bleed the bg color from the bottom */
-  padding-bottom: 4px;
-  background-color: var(--marketplaceColor);
-  border-radius: 4px;
-
-  /* Place on top of everything */
-  z-index: var(--zIndexGenericError);
-
-  @media (--viewportMedium) {
-    top: calc(var(--topbarHeightDesktop) + 15px);
-  }
-}
-
-.genericErrorVisible {
-  right: 0;
-  opacity: 1;
-}
-
-.genericErrorContent {
-  padding: 16px 22px;
-  border-radius: 4px;
-  background-color: var(--marketplaceColorLight);
-  border-radius: 4px;
-}
-
-.genericErrorText {
-  composes: h5 from global;
-  font-weight: var(--fontWeightSemiBold);
-  margin: 0;
-  color: var(--matterColorLight);
-
-  @media (--viewportMedium) {
-    margin: 0;
-  }
-}
-
 .caregivers {
   composes: marketplaceTinyFontStyles from global;
 }
