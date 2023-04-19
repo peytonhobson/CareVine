@@ -29,10 +29,7 @@
 .desktopTopbar,
 .mobileTopbar {
   box-shadow: none;
-
-  @media (--viewportLarge) {
-    box-shadow: var(--boxShadowLight);
-  }
+  border-bottom: 1px solid var(--matterColorNegative);
 }
 
 .wrapper {
@@ -338,7 +335,7 @@
 
 .sidenavRoot {
   flex: 1 1 0;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
 
@@ -347,7 +344,7 @@
   }
 }
 
-.noNotificationsContainer {
+.noConversationsContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -361,17 +358,22 @@
   }
 }
 
-.bell {
+.inquiry {
   fill: var(--matterColorAnti);
+  stroke: var(--matterColorAnti);
 }
 
-.noNotifications {
+.inquiryStroke {
+  stroke: var(--matterColorAnti);
+}
+
+.noConversations {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.noNotificationsText {
+.noConversationsText {
   color: var(--matterColorAnti);
   width: 100%;
   text-align: center;

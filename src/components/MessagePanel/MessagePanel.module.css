@@ -28,18 +28,11 @@
 
 /* Passed-in props for FeedSection subcomponent */
 .feedContainer {
-  margin: 46px 24px 0 0px;
+  margin: 0;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   overflow-y: hidden;
-
-  @media (--viewportMedium) {
-    margin: 40px 24px 0 0px;
-  }
-  @media (--viewportLarge) {
-    margin: 43px 0 0 0;
-  }
 }
 
 /* FeedSection subcomponent */
@@ -54,22 +47,19 @@
 
 .feed {
   padding: 20px;
-  overflow-y: scroll;
+  overflow-y: auto;
   border: 1px solid;
+  border-left: none;
   border-color: var(--matterColorNegative);
+  border-top: none;
 }
 
 /* Prop to be passed to SendMessageForm component */
 .sendMessageForm {
-  margin: 46px 24px 0 24px;
-
-  @media (--viewportMedium) {
-    margin: 49px 24px 0 24px;
-    border-top: 0;
-  }
-  @media (--viewportLarge) {
-    margin: 47px 0 0 0;
-  }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 7rem;
 }
 
 .sendingMessageNotAllowed {

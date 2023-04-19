@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconBell, IconSpinner, InboxItem } from '../../components';
+import { IconEnquiry, IconSpinner, InboxItem } from '../../components';
 import { cutTextToPreview } from '../../util/data';
 import { formatDate } from '../../util/dates';
 
@@ -8,7 +8,7 @@ import css from './InboxPage.module.css';
 const SideNav = props => {
   const {
     conversations,
-    currentTransaction,
+    currentConversation,
     messages,
     fetchConversationsInProgress,
     isMobile,
@@ -17,7 +17,7 @@ const SideNav = props => {
 
   return (
     <div className={css.sidenavRoot}>
-      {!fetchConversationsInProgress || conversations.length > 0 ? (
+      {conversations.length > 0 ? (
         conversations.map(tx => {
           const txMessages = messages.get(tx.id.uuid);
           const previewMessageLong =
@@ -28,23 +28,24 @@ const SideNav = props => {
               key={tx.id.uuid}
               tx={tx}
               previewMessage={previewMessage}
-              isActive={currentTransaction?.id?.uuid === tx.id.uuid}
+              isActive={currentConversation?.id?.uuid === tx.id.uuid}
               {...rest}
             />
           );
         })
       ) : (
-        <div className={css.noNotificationsContainer}>
+        <div className={css.noConversationsContainer}>
           {fetchConversationsInProgress ? (
             <IconSpinner className={css.sideNavSpinner} />
           ) : (
-            <div className={css.noNotifications}>
-              <IconBell
-                className={css.bell}
+            <div className={css.noConversations}>
+              <IconEnquiry
+                className={css.inquiry}
+                strokeClass={css.inquiryStroke}
                 height={isMobile ? '7em' : '5em'}
                 width={isMobile ? '7em' : '5em'}
               />
-              <span className={css.noNotificationsText}>No Notifications</span>
+              <h2 className={css.noConversationsText}>No Conversations</h2>
             </div>
           )}
         </div>
