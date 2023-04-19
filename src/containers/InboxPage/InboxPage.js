@@ -139,7 +139,7 @@ export const InboxPageComponent = props => {
 
   const customer = state.activeConversation?.customer;
   const provider = state.activeConversation?.provider;
-  const otherUser = currentUser.id.uuid === provider?.id?.uuid ? customer : provider;
+  const otherUser = ensuredCurrentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
 
   useEffect(() => {
     if (conversations.length === 0) return;
@@ -261,7 +261,6 @@ export const InboxPageComponent = props => {
             onPreviewClick={handlePreviewClick}
             isMobile={isMobile}
           />
-          {noResults}
           {pagingLinks}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
@@ -269,7 +268,7 @@ export const InboxPageComponent = props => {
             isMobile={isMobile}
             listing={otherUserListing}
             otherUser={otherUser}
-            currentUser={currentUser}
+            currentUser={ensuredCurrentUser}
             fetchOtherUserListingInProgress={fetchOtherUserListingInProgress}
             onOpenPaymentModal={handleChangeStripeModal}
           />
@@ -302,9 +301,6 @@ export const InboxPageComponent = props => {
             />
           )}
         </LayoutWrapperMain>
-        <LayoutWrapperFooter>
-          <Footer />
-        </LayoutWrapperFooter>
       </LayoutSideNavigation>
     </Page>
   );
