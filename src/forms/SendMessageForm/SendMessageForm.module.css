@@ -95,6 +95,11 @@
 
   display: inline-block;
   width: auto;
+
+  &:hover {
+    background-color: var(--matterColorLight);
+    box-shadow: var(--boxShadowLight);
+  }
 }
 
 .sendIcon {

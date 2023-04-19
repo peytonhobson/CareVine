@@ -131,9 +131,6 @@ const MessagePanelComponent = props => {
           messagePlaceholder={sendMessagePlaceholder}
           inProgress={sendMessageInProgress}
           sendMessageError={sendMessageError}
-          // Is this dead code or are functions needed?
-          onFocus={() => console.log('send message form focused')}
-          onBlur={() => console.log('send message form blurred')}
           onSubmit={onMessageSubmit}
         />
       ) : (
