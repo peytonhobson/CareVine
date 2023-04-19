@@ -2,7 +2,7 @@
  :transitions
  [{:name :transition/initial-message,
    :actor :actor.role/customer,
-   :actions [],
+   :actions [{:name :action/update-protected-data},],
    :to :state/messaging},
    {:name :transition/customer-delete-conversation,
    :actor :actor.role/customer,

@@ -61,9 +61,9 @@ const InboxItem = props => {
   } = props;
   const { customer, provider } = tx;
 
-  const otherUser = currentUser.id.uuid === provider.id.uuid ? customer : provider;
+  const otherUser = currentUser.id.uuid === provider?.id?.uuid ? customer : provider;
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
-  const isOtherUserBanned = otherUser.attributes.banned;
+  const isOtherUserBanned = otherUser?.attributes?.banned;
 
   const isSaleNotification = txIsRequested(tx);
   const rowNotificationDot = isSaleNotification ? <div className={css.notificationDot} /> : null;

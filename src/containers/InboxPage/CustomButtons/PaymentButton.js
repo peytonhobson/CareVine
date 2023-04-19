@@ -9,7 +9,6 @@ const PaymentButton = props => {
 
   const openStripeModal = () => {
     const modalInitialValues = {
-      channelUrl,
       provider: otherUser,
     };
 
