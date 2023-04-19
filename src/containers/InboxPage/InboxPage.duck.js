@@ -576,7 +576,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const apiQueryParams = {
     lastTransitions: TRANSITION_INITIAL_MESSAGE,
     include: ['provider', 'provider.profileImage', 'customer', 'customer.profileImage', 'listing'],
-    'fields.transaction': ['lastTransitionedAt'],
+    'fields.transaction': ['lastTransitionedAt', 'metadata'],
     page,
     per_page: INBOX_PAGE_SIZE,
   };

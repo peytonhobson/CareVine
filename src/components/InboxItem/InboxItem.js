@@ -76,26 +76,30 @@ const InboxItem = props => {
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
   const isOtherUserBanned = otherUser?.attributes?.banned;
 
-  const notificationDot = false ? <div className={css.notificationDot} /> : null;
+  const currentUserId = currentUser.id?.uuid;
+  const hasUnreadMessages =
+    tx.attributes.metadata?.unreadMessageCount &&
+    tx.attributes.metadata?.unreadMessageCount[currentUserId] > 0;
+
+  const notificationDot = hasUnreadMessages ? <div className={css.notificationDot} /> : null;
 
   const title = otherUserDisplayName;
   const id = tx.id.uuid;
   const text = truncateString(previewMessage, 40);
 
-  const activeClass = isActive ? css.active : null;
-  const deleteOpenClass = isDeleteMenuOpen ? css.deleteOpen : null;
+  const rootClasses = classNames(
+    css.inboxPreview,
+    { [css.deleteOpen]: isDeleteMenuOpen },
+    { [css.active]: isActive },
+    { [css.unread]: hasUnreadMessages }
+  );
 
   return (
-    <div
-      className={classNames(css.inboxPreview, deleteOpenClass, activeClass)}
-      key={id}
-      onClick={() => onPreviewClick(id)}
-    >
+    <div className={rootClasses} key={id} onClick={() => onPreviewClick(id)}>
       <div className={css.previewHoverLine} />
       <Avatar user={otherUser} className={css.avatar} />
       <div className={css.inboxPreviewContent}>
         <div className={css.inboxPreviewUpper}>
-          {notificationDot}
           <div className={css.inboxTitle}>{title}</div>
           {/* TODO: Change this to last message time */}
           <div className={css.inboxDate}>{formatPreviewDate(tx.attributes.lastTransitionedAt)}</div>

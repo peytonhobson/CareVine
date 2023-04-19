@@ -415,6 +415,38 @@ const deleteUserChannels = async userId => {
   }
 };
 
+const addUnreadMessageCount = async (txId, senderId) => {
+  try {
+    const response = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['provider', 'customer'],
+    });
+    const transaction = response.data.data;
+
+    const { customer, provider } = transaction.relationships;
+
+    const customerUserId = customer.data.id.uuid;
+    const providerUserId = provider.data.id.uuid;
+    const recipientUserId = senderId === customerUserId ? providerUserId : customerUserId;
+
+    const unreadMessageCount = transaction.attributes.metadata.unreadMessageCount ?? {
+      [customerUserId]: 0,
+      [providerUserId]: 0,
+    };
+
+    unreadMessageCount[recipientUserId] += 1;
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        unreadMessageCount,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'add-unread-message-count-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -426,4 +458,5 @@ module.exports = {
   backgroundCheckRejectedNotification,
   backgroundCheckApprovedNotification,
   deleteUserChannels,
+  addUnreadMessageCount,
 };
