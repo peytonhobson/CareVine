@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  min-height: 6rem;
+  height: 6rem;
   overflow: hidden;
   text-overflow: ellipsis;
   box-sizing: border-box;
