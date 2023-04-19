@@ -40,13 +40,13 @@ const stripePromise = loadStripe(config.stripe.publishableKey);
 
 const StripePaymentModalComponent = props => {
   const {
-    channelUrl,
     confirmPaymentError,
     confirmPaymentInProgress,
     confirmPaymentSuccess,
     createPaymentIntentError,
     createPaymentIntentInProgress,
     currentUser,
+    conversationId,
     defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
@@ -123,7 +123,7 @@ const StripePaymentModalComponent = props => {
     const recipientName = userDisplayNameAsString(provider);
 
     const intentMetadata = {
-      channelUrl,
+      conversationId,
       senderName: userDisplayNameAsString(currentUser),
       listingId: providerListing.id.uuid,
       recipientId: provider.id.uuid,
@@ -483,9 +483,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, channelUrl) =>
+  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, conversationId) =>
     dispatch(
-      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, channelUrl)
+      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, conversationId)
     ),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),

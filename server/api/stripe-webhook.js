@@ -281,7 +281,7 @@ const removeBackgroundCheckSubscriptionSchedule = async data => {
 const sendChargeFailedEmail = data => {
   const failureMessage = data?.failure_message;
   const type = data?.payment_method_details?.type;
-  const { recipientName, channelUrl, userId } = data?.metadata;
+  const { recipientName, conversationId, userId } = data?.metadata;
 
   if (type !== 'card') {
     sendgridEmail(
@@ -290,7 +290,7 @@ const sendChargeFailedEmail = data => {
       {
         marketplaceUrl: rootUrl,
         failureMessage,
-        channelUrl,
+        conversationId,
         recipientName,
       },
       'send-payment-failed-email-failed'

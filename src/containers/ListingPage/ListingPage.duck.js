@@ -188,14 +188,12 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
 export const sendEnquiry = (listing, message) => async (dispatch, getState, sdk) => {
   dispatch(sendEnquiryRequest());
 
-  const senderName = userDisplayNameAsString(getState().user.currentUser);
-  const otherUserId = listing.author.id.uuid;
   const listingId = listing.id.uuid;
 
   const bodyParams = {
     transition: TRANSITION_INITIAL_MESSAGE,
     processAlias: config.messageProcessAlias,
-    params: { listingId, protectedData: { otherUserId, senderName } },
+    params: { listingId },
   };
 
   try {

@@ -7,7 +7,7 @@ import css from './NotificationTemplates.module.css';
 const NotificationNewMessage = props => {
   const { notification } = props;
 
-  const { senderName, channelUrl } = notification.metadata;
+  const { senderName, conversationId } = notification.metadata;
 
   return (
     <div className={css.root}>
@@ -18,11 +18,7 @@ const NotificationNewMessage = props => {
         You have a new message from <span className={css.noWrapText}>{senderName}</span>. To view
         this message, click the button below.
       </p>
-      <NamedLink
-        name="InboxPageWithChannel"
-        params={{ channel: channelUrl }}
-        className={css.linkButton}
-      >
+      <NamedLink name="InboxPageWithId" params={{ id: conversationId }} className={css.linkButton}>
         View Message
       </NamedLink>
     </div>
