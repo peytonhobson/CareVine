@@ -38,6 +38,7 @@ import {
   Modal,
   Button,
   SecondaryButton,
+  GenericError,
 } from '../../components';
 import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
 import config from '../../config';
@@ -99,7 +100,6 @@ export const InboxPageComponent = props => {
   const {
     currentUser,
     intl,
-    pagination,
     params,
     scrollingDisabled,
     history,
@@ -112,14 +112,12 @@ export const InboxPageComponent = props => {
     sendMessageInProgress,
     sendMessageError,
     onShowMoreMessages,
-    transactionRole,
     onSendMessage,
     onFetchOtherUserListing,
     otherUserListing,
     onManageDisableScrolling,
-    onFetchTransaction,
     conversations,
-    fetchConversationsInProgress,
+    fetchOtherUserListingError,
     fetchConversationsError,
     fetchOtherUserListingInProgress,
     sendRequestForPaymentError,
@@ -244,13 +242,22 @@ export const InboxPageComponent = props => {
     dispatch({ type: SET_STRIPE_MODAL_OPEN, payload: !state.isStripeModalOpen });
   };
 
-  const error = fetchInitialConversationsError ? (
-    <div style={{ margin: 'auto' }}>
-      <p className={css.error}>
-        <FormattedMessage id="InboxPage.fetchFailed" />
-      </p>
-    </div>
-  ) : null;
+  const error =
+    fetchInitialConversationsError || fetchConversationsError ? (
+      <div style={{ margin: 'auto' }}>
+        <p className={css.error}>
+          <FormattedMessage id="InboxPage.fetchFailed" />
+        </p>
+      </div>
+    ) : null;
+
+  const fetchListingError = fetchOtherUserListingError && (
+    <FormattedMessage id="InboxPage.fetchListingFailed" />
+  );
+
+  const requestPaymentError = sendRequestForPaymentError && (
+    <FormattedMessage id="InboxPage.requestPaymentFailed" />
+  );
 
   const initialMessageFailed = !!(
     initialMessageFailedToTransaction &&
@@ -315,11 +322,7 @@ export const InboxPageComponent = props => {
                 totalMessagePages={totalMessagePages}
                 sendMessageInProgress={sendMessageInProgress}
                 sendMessageError={sendMessageError}
-                transactionRole={transactionRole}
                 onSendMessage={onSendMessage}
-                otherUserListing={otherUserListing}
-                onManageDisableScrolling={onManageDisableScrolling}
-                onFetchTransaction={onFetchTransaction}
               />
             </>
           ) : fetchInitialConversationsInProgress ? (
@@ -390,6 +393,10 @@ export const InboxPageComponent = props => {
           )}
         </LayoutWrapperMain>
       </LayoutSideNavigation>
+      <GenericError
+        show={fetchListingError || requestPaymentError}
+        errorText={fetchListingError || requestPaymentError}
+      />
     </Page>
   );
 };
@@ -461,9 +468,7 @@ const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onShowMoreMessages: fetchMoreMessages,
   onSendMessage: sendMessage,
-  onClearMessages: clearMessages,
   onFetchOtherUserListing: fetchOtherUserListing,
-  onFetchTransaction: fetchTransaction,
   onSendRequestForPayment: sendRequestForPayment,
   onDeleteConversation: deleteConversation,
   onFetchConversations: fetchConversations,
