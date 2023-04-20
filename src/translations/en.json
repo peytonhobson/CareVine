@@ -716,6 +716,7 @@
   "NotificationsPage.deleteModalText": "Are you sure you want to delete this notification?",
   "NotificationsPage.deleteModalTitle": "Delete Notification",
   "NotificationsPage.title": "Notifications ({unreadCount})",
+  "NotificationPage.deleteNotificationError": "Failed to delete notification. Please try again.",
   "NotifyForPaymentContainer.notifyButtonLabel": "Notify",
   "NotifyForPaymentContainer.notifyDisabledMessage": "You have already notified this caregiver within the past 24 hours. Please wait until 24 hours has passed to notify them again.",
   "NotifyForPaymentContainer.providerMissingStripeAccountText": "{providerName} hasn't set up their payment details yet, so you won't be able to pay them. Click the button below to notify them that you want to send a payment.",

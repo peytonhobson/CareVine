@@ -217,7 +217,6 @@ export const InboxPageComponent = props => {
     const txToDelete = state.conversations?.find(n => n.id.uuid === state.isDeleteModalOpen);
 
     onDeleteConversation(txToDelete, ensuredCurrentUser).then(() => {
-      dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
       onFetchConversations();
     });
   };
