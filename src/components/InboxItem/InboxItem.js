@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { NamedLink, Avatar, UserDisplayName } from '../';
+import { Avatar, UserDisplayName } from '../';
 import { propTypes } from '../../util/types';
-import { oneOf } from 'prop-types';
 import { intlShape } from '../../util/reactIntl';
-import { txIsRequested } from '../../util/transaction';
-import { createSlug, stringify } from '../../util/urlHelpers';
 import {
   IconVerticalDots,
   Menu,
@@ -16,6 +13,7 @@ import {
 import { isToday, isYesterday, timestampToDate } from '../../util/dates';
 import moment from 'moment';
 import classNames from 'classnames';
+import { userDisplayNameAsString } from '../../util/data';
 
 import css from './InboxItem.module.css';
 
@@ -28,17 +26,6 @@ const formatPreviewDate = createdAt => {
       minute: 'numeric',
       hour12: true,
     });
-  }
-
-  if (isYesterday(createdAt)) {
-    return (
-      'yesterday at ' +
-      timestampToDate(createdAt).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      })
-    );
   }
 
   return moment(createdAt).format('MMM DD');
@@ -76,14 +63,13 @@ const InboxItem = props => {
   const { customer, provider } = tx;
 
   const txMessages = messages.get(tx.id.uuid);
-  const lastMessageTime = null;
   const sortedMessages = txMessages?.sort(compareMessages);
-  const previewMessage =
-    (sortedMessages?.length > 0 && sortedMessages[sortedMessages.length - 1].attributes.content) ||
-    null;
+  const lastMessage = sortedMessages?.[sortedMessages.length - 1];
+  const previewMessage = lastMessage?.attributes?.content ?? null;
+  const lastMessageTime = lastMessage?.attributes?.createdAt?.getTime() ?? null;
 
   const otherUser = currentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
-  const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
+  const otherUserDisplayName = userDisplayNameAsString(otherUser, null);
   const isOtherUserBanned = otherUser?.attributes?.banned;
 
   const currentUserId = currentUser.id?.uuid;
@@ -93,15 +79,14 @@ const InboxItem = props => {
 
   const notificationDot = hasUnreadMessages ? <div className={css.notificationDot} /> : null;
 
-  const title = otherUserDisplayName;
+  const title = truncateString(otherUserDisplayName, 10);
   const id = tx.id.uuid;
   const text = truncateString(previewMessage, 40);
 
   const rootClasses = classNames(
     css.inboxPreview,
     { [css.deleteOpen]: isDeleteMenuOpen },
-    { [css.active]: isActive },
-    { [css.unread]: hasUnreadMessages }
+    { [css.active]: isActive }
   );
 
   return (
@@ -110,9 +95,9 @@ const InboxItem = props => {
       <Avatar user={otherUser} className={css.avatar} />
       <div className={css.inboxPreviewContent}>
         <div className={css.inboxPreviewUpper}>
+          {notificationDot}
           <div className={css.inboxTitle}>{title}</div>
-          {/* TODO: Change this to last message time */}
-          <div className={css.inboxDate}>{formatPreviewDate(tx.attributes.lastTransitionedAt)}</div>
+          <div className={css.inboxDate}>{formatPreviewDate(lastMessageTime)}</div>
         </div>
         <div className={css.inboxPreviewLower}>
           <div className={css.inboxText}>{text}</div>

@@ -17,8 +17,8 @@ const SideNav = props => {
 
   return (
     <div className={css.sidenavRoot}>
-      {conversations.length > 0 ? (
-        conversations.map(tx => {
+      {conversations?.length > 0 ? (
+        conversations?.map(tx => {
           return (
             <InboxItem
               key={tx.id.uuid}
