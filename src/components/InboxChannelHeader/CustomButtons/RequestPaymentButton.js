@@ -49,8 +49,11 @@ const RequestPaymentButton = props => {
   }, [sendRequestForPaymentSuccess, otherUser]);
 
   const clickDisabled =
-    !!disabled || !currentUser.stripeAccount?.id || !conversationId || sendRequestForPaymentSuccess;
-  checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
+    !!disabled ||
+    !currentUser.stripeAccount?.id ||
+    !conversationId ||
+    sendRequestForPaymentSuccess ||
+    checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
 
   const requestPayment = () => {
     if (!paymentRequestedForUser) {

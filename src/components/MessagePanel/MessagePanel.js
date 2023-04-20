@@ -27,8 +27,6 @@ const MessagePanelComponent = props => {
     sendMessageInProgress,
     sendMessageError,
     onSendMessage,
-    otherUserListing,
-    onManageDisableScrolling,
   } = props;
 
   //   const [isMobSaf, setIsMobSaf] = useState(false);

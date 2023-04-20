@@ -191,7 +191,12 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
       };
 
     case FETCH_CONVERSATIONS_REQUEST:
-      return { ...state, fetchConversationsInProgress: true, fetchConversationsError: null };
+      return {
+        ...state,
+        fetchConversationsInProgress: true,
+        fetchConversationsError: null,
+        fetchInitialConversationsError: null,
+      };
     case FETCH_CONVERSATIONS_SUCCESS:
       return {
         ...state,
