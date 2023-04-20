@@ -602,8 +602,6 @@ export const fetchConversations = () => async (dispatch, getState, sdk) => {
     'fields.transaction': ['lastTransitionedAt', 'metadata'],
     'fields.message': ['createdAt'],
     'limit.messages': MESSAGES_PAGE_SIZE,
-    page: 1,
-    per_page: INBOX_PAGE_SIZE,
   };
 
   try {
@@ -644,8 +642,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     'fields.transaction': ['lastTransitionedAt', 'metadata'],
     'fields.message': ['createdAt'],
     'limit.messages': MESSAGES_PAGE_SIZE,
-    page,
-    per_page: INBOX_PAGE_SIZE,
+    sort: '-createdAt',
   };
 
   return sdk.transactions
