@@ -252,18 +252,6 @@ export const InboxPageComponent = props => {
     </div>
   ) : null;
 
-  const hasConversations = conversations.length > 0;
-
-  const pagingLinks =
-    hasConversations && pagination && pagination.totalPages > 1 ? (
-      <PaginationLinks
-        className={css.pagination}
-        pageName="InboxPage"
-        pagePathParams={params}
-        pagination={pagination}
-      />
-    ) : null;
-
   const initialMessageFailed = !!(
     initialMessageFailedToTransaction &&
     state.activeConversation?.id &&
@@ -297,7 +285,6 @@ export const InboxPageComponent = props => {
             onPreviewClick={handlePreviewClick}
             isMobile={isMobile}
           />
-          {pagingLinks}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
           {state.activeConversation ? (

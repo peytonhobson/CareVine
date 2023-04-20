@@ -117,7 +117,7 @@ const calculateUnreadMessages = (conversations, state) => {
   const unreadMessages = conversations?.reduce((acc, conversation) => {
     const unreadMessageCount = conversation.attributes.metadata.unreadMessageCount;
 
-    const myUnreadMessages = unreadMessageCount && unreadMessageCount[currentUser.id.uuid];
+    const myUnreadMessages = unreadMessageCount && unreadMessageCount[currentUser?.id?.uuid];
 
     return acc + (myUnreadMessages ? myUnreadMessages : 0);
   }, 0);

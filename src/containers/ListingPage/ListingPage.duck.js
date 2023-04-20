@@ -11,6 +11,9 @@ import {
 } from '../../util/urlHelpers';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
+import { v4 as uuidv4 } from 'uuid';
+import { updateUserNotifications } from '../../util/api';
+import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 
 const { UUID } = sdkTypes;
 
@@ -208,6 +211,22 @@ export const sendEnquiry = (listing, message, history, routes) => async (
     history.push(
       createResourceLocatorString('InboxPageWithId', routes, { id: transactionId.uuid })
     );
+
+    const senderName = getState().user.currentUser.attributes.profile.displayName;
+    const newNotification = {
+      id: uuidv4(),
+      type: NOTIFICATION_TYPE_NEW_MESSAGE,
+      createdAt: new Date().getTime(),
+      read: false,
+      metadata: {
+        senderName,
+        conversationId: transactionId.uuid,
+      },
+    };
+    const otherUserId = listing.author.id.uuid;
+
+    updateUserNotifications({ userId: otherUserId, newNotification });
+
     dispatch(sendEnquirySuccess());
   } catch (e) {
     log.error(e, 'send-enquiry-failed', { listingId: listingId.uuid, message });
