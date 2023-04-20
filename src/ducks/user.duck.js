@@ -299,14 +299,15 @@ export const fetchCurrentUserHasOrders = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(fetchCurrentUserHasOrdersError(storableError(e))));
 };
 
-export const updateNotifications = notifications => (dispatch, getState, sdk) => {
+export const updateNotifications = notifications => async (dispatch, getState, sdk) => {
   dispatch(updateNotificationsRequest());
 
   try {
-    const response = sdk.currentUser.updateProfile({
+    await sdk.currentUser.updateProfile({
       privateData: { notifications },
     });
 
+    dispatch(fetchCurrentUser());
     dispatch(updateNotificationsSuccess());
   } catch (e) {
     log.error(e, 'failed-to-update-notifications');

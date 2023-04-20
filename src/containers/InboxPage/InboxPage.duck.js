@@ -571,7 +571,7 @@ export const deleteConversation = (tx, currentUser) => async (dispatch, getState
 
   try {
     await sdk.transactions.transition({
-      id: tx.id.uuid,
+      id: tx.id.uui,
       transition: isProvider
         ? TRANSITION_PROVIDER_DELETE_CONVERSATION
         : TRANSITION_CUSTOMER_DELETE_CONVERSATION,
