@@ -194,18 +194,15 @@ export class ListingPageComponent extends Component {
         this.setState({ enquiryModalOpen: false });
 
         // Redirect to InboxPage
-        history.push(createResourceLocatorString('InboxPageWithId', routes, { id: otherUserId }));
+        history.push(createResourceLocatorString('InboxPageWithId', routes, { id: txId }));
       } catch (e) {
         // Error handling in duck
       }
     } else {
       try {
-        await onSendEnquiry(listing, message.trim());
+        await onSendEnquiry(listing, message.trim(), history, routes);
 
         this.setState({ enquiryModalOpen: false });
-
-        // Redirect to InboxPage
-        history.push(createResourceLocatorString('InboxPageWithId', routes, { id: otherUserId }));
       } catch (e) {
         // Error handling in duck
       }

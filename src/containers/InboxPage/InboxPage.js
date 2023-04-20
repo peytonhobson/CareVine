@@ -165,7 +165,11 @@ export const InboxPageComponent = props => {
   const conversationId = params.id;
 
   useEffect(() => {
-    if (conversationId && state.conversations?.find(n => n?.id?.uuid === conversationId)) {
+    if (
+      conversationId &&
+      state.conversations?.find(n => n?.id?.uuid === conversationId) &&
+      !state.initialConversationSet
+    ) {
       dispatch({ type: SET_INITIAL_CONVERSATION, payload: conversationId });
 
       if (isMobile) {
@@ -241,9 +245,11 @@ export const InboxPageComponent = props => {
   };
 
   const error = fetchInitialConversationsError ? (
-    <p className={css.error}>
-      <FormattedMessage id="InboxPage.fetchFailed" />
-    </p>
+    <div style={{ margin: 'auto' }}>
+      <p className={css.error}>
+        <FormattedMessage id="InboxPage.fetchFailed" />
+      </p>
+    </div>
   ) : null;
 
   const hasConversations = conversations.length > 0;

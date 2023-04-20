@@ -3,16 +3,14 @@ import config from '../../config';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { transactionLineItems } from '../../util/api';
 import * as log from '../../util/log';
-import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
-import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
 import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
 } from '../../util/urlHelpers';
-import { fetchCurrentUser, fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
+import { createResourceLocatorString } from '../../util/routes';
 
 const { UUID } = sdkTypes;
 
@@ -185,7 +183,11 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
     });
 };
 
-export const sendEnquiry = (listing, message) => async (dispatch, getState, sdk) => {
+export const sendEnquiry = (listing, message, history, routes) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(sendEnquiryRequest());
 
   const listingId = listing.id.uuid;
@@ -203,6 +205,9 @@ export const sendEnquiry = (listing, message) => async (dispatch, getState, sdk)
 
     await sdk.messages.send({ transactionId, content: message });
 
+    history.push(
+      createResourceLocatorString('InboxPageWithId', routes, { id: transactionId.uuid })
+    );
     dispatch(sendEnquirySuccess());
   } catch (e) {
     log.error(e, 'send-enquiry-failed', { listingId: listingId.uuid, message });
