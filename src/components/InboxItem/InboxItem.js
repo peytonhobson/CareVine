@@ -82,7 +82,7 @@ const InboxItem = props => {
     (sortedMessages?.length > 0 && sortedMessages[sortedMessages.length - 1].attributes.content) ||
     null;
 
-  const otherUser = currentUser.id.uuid === provider?.id?.uuid ? customer : provider;
+  const otherUser = currentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
   const otherUserDisplayName = <UserDisplayName user={otherUser} intl={intl} />;
   const isOtherUserBanned = otherUser?.attributes?.banned;
 
