@@ -11,9 +11,9 @@ import {
 } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/Auth.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
-import { changeModalValue } from './TopbarContainer.duck';
-import { fetchUnreadMessages } from '../../ducks/sendbird.duck';
+import { changeModalValue, fetchUnreadMessageCount } from './TopbarContainer.duck';
 import { Topbar } from '../../components';
+import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 
 export const TopbarContainerComponent = props => {
   const {
@@ -111,13 +111,30 @@ TopbarContainerComponent.propTypes = {
   location: shape({ state: object }).isRequired,
 };
 
+const calculateUnreadMessages = (conversations, state) => {
+  const currentUser = state.user.currentUser;
+
+  const unreadMessages = conversations?.reduce((acc, conversation) => {
+    const unreadMessageCount = conversation.attributes.metadata.unreadMessageCount;
+
+    const myUnreadMessages = unreadMessageCount && unreadMessageCount[currentUser.id.uuid];
+
+    return acc + (myUnreadMessages ? myUnreadMessages : 0);
+  }, 0);
+
+  return unreadMessages;
+};
+
 const mapStateToProps = state => {
   // Topbar needs isAuthenticated
   const { isAuthenticated, logoutError, authScopes } = state.Auth;
 
-  const { modalValue } = state.TopbarContainer;
+  const { modalValue, messageTransactionRefs } = state.TopbarContainer;
 
-  const { unreadMessages } = state.sendbird;
+  const unreadMessages = calculateUnreadMessages(
+    getMarketplaceEntities(state, messageTransactionRefs),
+    state
+  );
 
   // Topbar needs user info.
   const {
@@ -155,7 +172,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
   onChangeModalValue: value => dispatch(changeModalValue(value)),
-  onFetchUnreadMessages: () => dispatch(fetchUnreadMessages()),
+  onFetchUnreadMessages: () => dispatch(fetchUnreadMessageCount()),
   onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
 });
 
