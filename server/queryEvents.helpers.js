@@ -1,7 +1,5 @@
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const axios = require('axios');
-const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
-const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
 const log = require('./log');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const CAREGIVER = 'caregiver';
@@ -382,34 +380,7 @@ const backgroundCheckRejectedNotification = async userId => {
 
 const deleteUserChannels = async userId => {
   try {
-    const apiResponse = await axios.get(
-      `https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`,
-      {
-        headers: {
-          'Content-Type': 'application/json; charset=utf8',
-          'Api-Token': SB_API_TOKEN,
-        },
-      }
-    );
-    const channels = apiResponse?.data?.channels;
-
-    if (channels?.length > 0) {
-      channels.forEach(async channel => {
-        try {
-          await axios.delete(
-            `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
-            {
-              headers: {
-                'Content-Type': 'application/json; charset=utf8',
-                'Api-Token': SB_API_TOKEN,
-              },
-            }
-          );
-        } catch (e) {
-          log.error(e, 'delete-user-channel-failed', {});
-        }
-      });
-    }
+    // TODO: Add function here to delete conversations
   } catch (e) {
     log.error(e, 'delete-user-channels-failed', {});
   }

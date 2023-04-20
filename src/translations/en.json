@@ -1104,8 +1104,6 @@
   "SelectMultipleFilterPlainForm.labelSelected": "{labelText} • {count}",
   "SelectSingleFilter.plainClear": "Clear",
   "SelectSingleFilter.popupClear": "Clear",
-  "SendbirdModal.fetchChannelErrorMessage": "There was an error displaying the message channel. Please try again. If the issue persists, please contact support.",
-  "SendbirdModal.heading": "Send a message to {displayName}",
   "SendMessageForm.sendFailed": "Failed to send. Please try again.",
   "SendMessageForm.sendMessage": "Send message",
   "SignupForm.caregiverSelectLabel": "Become a Caregiver",

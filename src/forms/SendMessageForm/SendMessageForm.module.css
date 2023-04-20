@@ -128,7 +128,6 @@
   padding: 18px 64px 18px 16px;
   box-sizing: border-box;
   resize: none;
-  font-family: var(--sendbird-font-family-default);
   background-color: inherit;
   white-space: pre-wrap;
   color: rgba(0, 0, 0, 0.88);

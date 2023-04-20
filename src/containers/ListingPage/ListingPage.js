@@ -26,28 +26,22 @@ import {
   userDisplayNameAsString,
 } from '../../util/data';
 import { timestampToDate, calculateQuantityFromHours } from '../../util/dates';
-import { richText } from '../../util/richText';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
 import {
   Page,
   Modal,
-  NamedLink,
   NamedRedirect,
   LayoutSingleColumn,
   LayoutWrapperTopbar,
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
-  BookingPanel,
   ListingSummary,
   ListingTabs,
-  SendbirdModal,
-  BookingContainer,
   ListingPreview,
 } from '../../components';
-import { generateAccessToken } from '../../ducks/sendbird.duck';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { BACKGROUND_CHECK_APPROVED, CAREGIVER } from '../../util/constants';
@@ -59,7 +53,6 @@ import {
 } from '../../util/constants';
 import { sendEnquiry, setInitialValues, sendMessage } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
-import { useCheckMobileScreen } from '../../util/userAgent';
 
 import css from './ListingPage.module.css';
 
@@ -568,7 +561,6 @@ const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   callSetInitialValues: setInitialValues,
   onInitializeCardPaymentData: initializeCardPaymentData,
-  onGenerateAccessToken: generateAccessToken,
   onChangeModalValue: changeModalValue,
   onSendEnquiry: sendEnquiry,
   onSendMessage: sendMessage,
