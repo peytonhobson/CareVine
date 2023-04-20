@@ -410,6 +410,12 @@
   padding: 1rem 2rem;
   width: auto;
   min-height: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
 }
 
 .modalButtonDelete {
