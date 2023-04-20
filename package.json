@@ -13,8 +13,6 @@
     "@material-ui/styles": "^4.11.5",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.16",
-    "@sendbird/chat": "^4.2.0",
-    "@sendbird/uikit-react": "3.4.2",
     "@sendgrid/mail": "^7.7.0",
     "@sentry/browser": "^6.19.7",
     "@sentry/node": "^6.19.7",

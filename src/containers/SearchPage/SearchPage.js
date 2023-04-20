@@ -26,7 +26,6 @@ import {
 import MainPanel from './MainPanel';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
-import '@sendbird/uikit-react/dist/index.css';
 import css from './SearchPage.module.css';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout

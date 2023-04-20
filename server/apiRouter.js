@@ -26,7 +26,6 @@ const stripePaymentMethods = require('./api/stripe-payment-methods');
 const stripeDetachPaymentMethod = require('./api/stripe-detach-payment-method');
 const stripeUpdatePaymentIntent = require('./api/stripe-update-payment-intent');
 const userEmail = require('./api/user-email');
-const sendbirdUser = require('./api/sb-user');
 const authenticateCreateUser = require('./api/authenticate-create-user');
 const authenticateSubmitConsent = require('./api/authenticate-submit-consent');
 const getIdentityProofQuiz = require('./api/identity-proof-quiz');
@@ -51,7 +50,6 @@ const sendgridTemplateEmail = require('./api/sendgrid-template-email');
 const sendgridStandardEmail = require('./api/sendgrid-standard-email');
 const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
-const sendbirdUnreadMessages = require('./api/sendbird-unread-messages');
 const updateTransactionMetadata = require('./api/update-transaction-metadata');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
@@ -101,7 +99,6 @@ router.post('/stripe-payment-methods', stripePaymentMethods);
 router.post('/stripe-detach-payment-method', stripeDetachPaymentMethod);
 router.post('/stripe-update-payment-intent', stripeUpdatePaymentIntent);
 router.post('/user-email', userEmail);
-router.post('/sb-user', sendbirdUser);
 router.post('/stripe-create-setup-intent', createSetupIntent);
 router.post('/authenticate-create-user', authenticateCreateUser);
 router.post('/authenticate-submit-consent', authenticateSubmitConsent);
@@ -127,7 +124,6 @@ router.post('/sendgrid-template-email', sendgridTemplateEmail);
 router.post('/sendgrid-standard-email', sendgridStandardEmail);
 router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
-router.post('/sendbird-unread-messages', sendbirdUnreadMessages);
 router.post('/update-transaction-metadata', updateTransactionMetadata);
 
 // Create user with identity provider (e.g. Facebook or Google)
