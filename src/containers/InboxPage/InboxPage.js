@@ -1,32 +1,25 @@
-import React, { useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { arrayOf, bool, number, shape, string, func } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { isEqual } from 'lodash';
 import { withRouter } from 'react-router-dom';
-import queryString from 'query-string';
 import { propTypes } from '../../util/types';
-import { ensureCurrentUser, cutTextToPreview } from '../../util/data';
-import { formatDate } from '../../util/dates';
+import { ensureCurrentUser } from '../../util/data';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
-import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import classNames from 'classnames';
 import {
   fetchMoreMessages,
   sendMessage,
-  clearMessages,
   fetchOtherUserListing,
   sendRequestForPayment,
   deleteConversation,
-  sortedTransactions,
   fetchConversations,
 } from './InboxPage.duck';
-import { fetchTransaction } from '../../ducks/transactions.duck';
 import {
   Page,
-  PaginationLinks,
   LayoutSideNavigation,
   LayoutWrapperMain,
   LayoutWrapperSideNav,
@@ -40,7 +33,7 @@ import {
   SecondaryButton,
   GenericError,
 } from '../../components';
-import { TopbarContainer, NotFoundPage, StripePaymentModal } from '..';
+import { TopbarContainer, StripePaymentModal } from '..';
 import config from '../../config';
 import SideNav from './SideNav';
 import { useCheckMobileScreen, usePrevious } from '../../util/userAgent';
@@ -51,7 +44,6 @@ import css from './InboxPage.module.css';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_CHAT_MODAL_OPEN = 'SET_CHAT_MODAL_OPEN';
 const SET_ACTIVE_CONVERSATION = 'SET_ACTIVE_CONVERSATION';
-const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_CONVERSATIONS = 'SET_CONVERSATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 const SET_STRIPE_MODAL_OPEN = 'SET_STRIPE_MODAL_OPEN';
@@ -222,7 +214,7 @@ export const InboxPageComponent = props => {
   };
 
   const handleDeleteConversation = () => {
-    const txToDelete = state.conversations.find(n => n.id.uuid === state.isDeleteModalOpen);
+    const txToDelete = state.conversations?.find(n => n.id.uuid === state.isDeleteModalOpen);
 
     onDeleteConversation(txToDelete, ensuredCurrentUser).then(() => {
       dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
