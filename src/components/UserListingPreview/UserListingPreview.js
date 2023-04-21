@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import css from './UserListingPreview.module.css';
 
 const createListingLink = (listing, otherUser, searchParams = {}, className = '') => {
-  const listingId = listing.id && listing.id.uuid;
+  const listingId = listing.id?.uuid;
   const label = listing.attributes.title;
   const listingDeleted = listing.attributes.deleted;
 

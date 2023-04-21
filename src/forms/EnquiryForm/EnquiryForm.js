@@ -4,7 +4,14 @@ import { compose } from 'redux';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
-import { Form, PrimaryButton, FieldTextInput, IconEnquiry } from '../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldTextInput,
+  IconEnquiry,
+  UserListingPreview,
+  Avatar,
+} from '../../components';
 import * as validators from '../../util/validators';
 import { propTypes } from '../../util/types';
 
@@ -24,6 +31,7 @@ const EnquiryFormComponent = props => (
         intl,
         listingTitle,
         authorDisplayName,
+        author,
         sendErrors,
       } = fieldRenderProps;
 
@@ -49,8 +57,27 @@ const EnquiryFormComponent = props => (
       const submitDisabled = submitInProgress;
 
       return (
-        <Form className={classes} onSubmit={handleSubmit} enforcePagePreloadFor="OrderDetailsPage">
-          <IconEnquiry className={css.icon} />
+        <Form className={classes} onSubmit={handleSubmit}>
+          <div className={css.header}>
+            <div className={css.leftHeader}>
+              <IconEnquiry className={css.icon} />
+              <h2 className={css.heading}>
+                <FormattedMessage
+                  id="EnquiryForm.heading"
+                  values={{ displayName: authorDisplayName }}
+                />
+              </h2>
+            </div>
+            <div className={css.rightHeader}>
+              <Avatar
+                rootClassName={css.avatarRoot}
+                className={css.avatar}
+                initialsClassName={css.avatarInitials}
+                user={author}
+                disableProfileLink
+              />
+            </div>
+          </div>
           {listingTitle && (
             <h2 className={css.heading}>
               <FormattedMessage id="EnquiryForm.heading" values={{ listingTitle }} />
@@ -65,13 +92,18 @@ const EnquiryFormComponent = props => (
             placeholder={messagePlaceholder}
             validate={messageRequired}
           />
-          <div className={submitButtonWrapperClassName}>
+          <div className={css.submitButtonWrapper}>
             {sendErrors ? (
               <p className={css.error}>
                 <FormattedMessage id="EnquiryForm.sendEnquiryError" />
               </p>
             ) : null}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+            <PrimaryButton
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+              className={css.submitButton}
+            >
               <FormattedMessage id="EnquiryForm.submitButtonText" />
             </PrimaryButton>
           </div>

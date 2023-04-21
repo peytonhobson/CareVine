@@ -432,11 +432,11 @@ export class ListingPageComponent extends Component {
               >
                 <EnquiryForm
                   className={css.enquiryForm}
-                  submitButtonWrapperClassName={css.enquirySubmitButtonWrapper}
-                  authorDisplayName={userDisplayNameAsString(this.state.currentListingAuthor)}
+                  authorDisplayName={authorDisplayName}
                   sendErrors={sendEnquiryError || sendMessageError}
                   onSubmit={this.onSubmitEnquiry}
                   inProgress={sendEnquiryInProgress || sendMessageInProgress}
+                  author={currentAuthor}
                 />
               </Modal>
             )}
