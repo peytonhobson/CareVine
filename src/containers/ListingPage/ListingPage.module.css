@@ -602,7 +602,7 @@
   @media (--viewportMedium) {
     display: flex;
     flex-direction: column;
-    min-height: 400px;
+    min-height: 25rem;
     margin: 0;
   }
 }
