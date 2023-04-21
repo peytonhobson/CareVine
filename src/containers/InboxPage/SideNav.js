@@ -25,6 +25,7 @@ const SideNav = props => {
               tx={tx}
               messages={messages}
               isActive={currentConversation?.id?.uuid === tx.id.uuid}
+              isMobile={isMobile}
               {...rest}
             />
           );

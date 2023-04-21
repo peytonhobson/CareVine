@@ -378,14 +378,6 @@ const backgroundCheckRejectedNotification = async userId => {
   }
 };
 
-const deleteUserChannels = async userId => {
-  try {
-    // TODO: Add function here to delete conversations
-  } catch (e) {
-    log.error(e, 'delete-user-channels-failed', {});
-  }
-};
-
 const addUnreadMessageCount = async (txId, senderId) => {
   try {
     const response = await integrationSdk.transactions.show({
@@ -428,6 +420,5 @@ module.exports = {
   cancelSubscription,
   backgroundCheckRejectedNotification,
   backgroundCheckApprovedNotification,
-  deleteUserChannels,
   addUnreadMessageCount,
 };

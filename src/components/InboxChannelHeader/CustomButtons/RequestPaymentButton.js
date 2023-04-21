@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
 import { Button } from '../../../components';
-import classNames from 'classnames';
-import { userDisplayNameAsString } from '../../../util/data';
 
 import css from './index.module.css';
 import { useEffect } from 'react';
@@ -27,7 +25,6 @@ const RequestPaymentButton = props => {
     otherUser,
     otherUserListing,
     rootClassName,
-    sendRequestForPaymentError,
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
     conversationId,
@@ -52,6 +49,7 @@ const RequestPaymentButton = props => {
     !!disabled ||
     !currentUser.stripeAccount?.id ||
     !conversationId ||
+    !otherUser ||
     sendRequestForPaymentSuccess ||
     checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
 

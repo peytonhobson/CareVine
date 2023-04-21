@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ActivityFeed } from '..';
@@ -21,6 +21,14 @@ const FeedSection = props => {
     onOpenReviewModal,
     totalMessagePages,
   } = props;
+
+  const [showMessageFailedError, setShowMessageFailedError] = useState(false);
+
+  useEffect(() => {
+    if (fetchMessagesError) {
+      setShowMessageFailedError(true);
+    }
+  }, [fetchMessagesError]);
 
   const txTransitions = currentTransaction.attributes.transitions
     ? currentTransaction.attributes.transitions
@@ -45,7 +53,7 @@ const FeedSection = props => {
           <FormattedMessage id="TransactionPanel.initialMessageFailed" />
         </p>
       ) : null}
-      {fetchMessagesError ? (
+      {showMessageFailedError ? (
         <p className={css.messageError}>
           <FormattedMessage id="TransactionPanel.messageLoadingFailed" />
         </p>

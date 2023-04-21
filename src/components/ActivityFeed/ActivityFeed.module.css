@@ -27,7 +27,12 @@
 .ownMessage {
   /* Preserve newlines, but collapse other whitespace */
   white-space: pre-line;
-  max-width: 433px;
+
+  max-width: 80vw;
+
+  @media (--viewportMedium) {
+    max-width: 27rem;
+  }
 }
 
 .message {
@@ -56,16 +61,13 @@
 .ownMessageContent {
   composes: marketplaceMessageFontStyles from global;
 
+  word-break: break-all;
+  overflow-wrap: break-word;
   display: inline-block;
   margin: 0;
   padding: 8.5px 14px 8.5px 14px;
   border-radius: 8px;
   box-shadow: var(--boxShadow);
-
-  @media (--viewportMedium) {
-    padding: 8.5px 14px 8.5px 14px;
-    margin: 0;
-  }
 }
 
 .messageContent {

@@ -2,9 +2,13 @@
 
 .avatar {
   width: 4rem;
-  height: 3rem;
+  height: 3.5rem;
   border-radius: 50%;
   margin-right: 0.5rem;
+
+  @media (--viewportMedium) {
+    height: 3rem;
+  }
 }
 
 .root {
@@ -82,7 +86,7 @@
 }
 
 .previewHoverLine {
-  height: 5rem;
+  height: 100%;
   width: 0.35rem;
   position: absolute;
   left: 0;
@@ -179,14 +183,14 @@
 
 .notificationDot {
   /* Dimensions */
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
 
   /* Position */
   position: absolute;
-  right: 1rem;
-  top: 1.35rem;
+  right: 4rem;
+  top: 0.5rem;
 
   /* Style: red dot with white border */
   background-color: var(--failColor);
@@ -196,6 +200,8 @@
   @media (--viewportMedium) {
     right: 3.5rem;
     top: 0.3rem;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }
 
@@ -207,9 +213,21 @@
   white-space: nowrap;
   color: var(--failColor);
   padding: 1rem;
+  min-width: 100%;
 
   &:hover {
     text-decoration: none;
     background-color: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.menuContent {
+  width: auto !important;
+  left: -9rem !important;
+  display: flex;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    left: -11rem !important;
   }
 }

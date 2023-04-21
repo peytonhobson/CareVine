@@ -12,7 +12,7 @@ const SIZE_BIG = 'big';
 const SIZE_SMALL = 'small';
 
 const IconArrowHead = props => {
-  const { className, rootClassName, direction, size } = props;
+  const { className, rootClassName, direction, size, height, width, strokeWidth } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   const isRight = direction === DIRECTION_RIGHT;
@@ -26,8 +26,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="9"
-        height="13"
+        width={width || '9'}
+        height={height || '13'}
         viewBox="0 0 9 13"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -41,8 +41,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="9"
-        height="13"
+        width={width || '9'}
+        height={height || '13'}
         viewBox="0 0 9 13"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -56,8 +56,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="13"
-        height="9"
+        width={width || '13'}
+        height={height || '9'}
         viewBox="0 0 13 9"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -71,8 +71,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="13"
-        height="9"
+        width={width || '13'}
+        height={height || '9'}
         viewBox="0 0 13 9"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -86,8 +86,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="11"
-        height="15"
+        width={width || '11'}
+        height={height || '15'}
         viewBox="0 0 11 15"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -101,14 +101,15 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="11"
-        height="15"
+        width={width || '11'}
+        height={height || '15'}
         viewBox="0 0 11 15"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M9.4 1c.17 0 .34.065.458.192.214.228.182.57-.07.764L2.528 7.5l7.26 5.545c.252.194.284.535.07.763-.214.23-.592.257-.846.064l-7.8-5.958C1.077 7.81 1 7.66 1 7.5c0-.16.077-.31.212-.414l7.8-5.958C9.125 1.042 9.262 1 9.4 1"
           fillRule="evenodd"
+          stroke="var(--matterColorAnti)"
         />
       </svg>
     );
@@ -116,8 +117,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="15"
-        height="11"
+        width={width || '15'}
+        height={height || '11'}
         viewBox="0 0 15 11"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -131,8 +132,8 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="15"
-        height="11"
+        width={width || '15'}
+        height={height || '11'}
         viewBox="0 0 15 11"
         xmlns="http://www.w3.org/2000/svg"
       >

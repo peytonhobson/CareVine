@@ -48,8 +48,6 @@ const compareMessages = (a, b) => {
 };
 
 const InboxItem = props => {
-  const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
-
   const {
     tx,
     intl,
@@ -85,8 +83,8 @@ const InboxItem = props => {
 
   const rootClasses = classNames(
     css.inboxPreview,
-    { [css.deleteOpen]: isDeleteMenuOpen },
-    { [css.active]: isActive }
+    // { [css.deleteOpen]: isDeleteMenuOpen },
+    { [css.active]: !isMobile && isActive }
   );
 
   return (
@@ -97,28 +95,28 @@ const InboxItem = props => {
         <div className={css.inboxPreviewUpper}>
           {notificationDot}
           <div className={css.inboxTitle}>{title}</div>
-          <div className={css.inboxDate}>{formatPreviewDate(lastMessageTime)}</div>
+          <div className={css.inboxDate}>
+            {lastMessageTime && formatPreviewDate(lastMessageTime)}
+          </div>
         </div>
         <div className={css.inboxPreviewLower}>
           <div className={css.inboxText}>{text}</div>
         </div>
         <div className={css.inboxPreviewAction}>
           <Menu
-            className={classNames(css.menu, { [css.cardIsOpen]: !isDeleteMenuOpen })}
+            className={classNames(css.menu)}
             contentPlacementOffset={MENU_CONTENT_OFFSET}
             contentPosition="left"
             useArrow={false}
-            onToggleActive={() => setIsDeleteMenuOpen(prev => !prev)}
-            isOpen={isDeleteMenuOpen}
           >
             <MenuLabel className={css.menuLabel} isOpenClassName={css.listingMenuIsOpen}>
               <IconVerticalDots
                 height={isMobile ? '1.5em' : '0.75em'}
-                width={isMobile ? '1.75em' : '1em'}
+                width={isMobile ? '1.25em' : '1em'}
                 className={css.menuIcon}
               />
             </MenuLabel>
-            <MenuContent rootClassName={css.menuContent}>
+            <MenuContent className={css.menuContent}>
               <MenuItem key="delete-conversation" className={css.menuItem}>
                 <InlineTextButton
                   className={css.deleteButton}

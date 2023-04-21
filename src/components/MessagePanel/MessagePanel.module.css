@@ -33,7 +33,11 @@
   flex-grow: 1;
   flex-direction: column;
   overflow-y: hidden;
-  max-height: calc(100vh - var(--topbarHeightDesktop) - 12rem);
+  max-height: calc(85vh - var(--topbarHeight) - 12rem);
+
+  @media (--viewportMedium) {
+    max-height: calc(100vh - var(--topbarHeightDesktop) - 12rem);
+  }
 }
 
 /* FeedSection subcomponent */
@@ -50,15 +54,20 @@
   padding: 1.25rem;
   overflow-y: auto;
   border: 1px solid;
-  border-left: none;
+
   border-color: var(--matterColorNegative);
   border-top: none;
+  border-bottom: none;
 
   -ms-overflow-style: none;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
     width: 0 !important;
+  }
+
+  @media (--viewportMedium) {
+    border-left: none;
   }
 }
 
@@ -67,7 +76,14 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--matterColorNegative);
+
+  @media (--viewportMedium) {
+    height: 6rem;
+    align-items: center;
+    padding-top: 0;
+  }
 }
 
 .sendingMessageNotAllowed {
@@ -87,4 +103,5 @@
 
 .messageError {
   color: var(--failColor);
+  padding-inline: 3rem;
 }
