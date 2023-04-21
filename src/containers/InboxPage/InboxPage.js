@@ -32,11 +32,12 @@ import {
   Button,
   SecondaryButton,
   GenericError,
+  SessionTimeout,
 } from '../../components';
 import { TopbarContainer, StripePaymentModal } from '..';
 import config from '../../config';
 import SideNav from './SideNav';
-import { useCheckMobileScreen, usePrevious } from '../../util/userAgent';
+import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 import { updateTransactionMetadata } from '../../util/api';
 
 import css from './InboxPage.module.css';
@@ -410,6 +411,11 @@ export const InboxPageComponent = props => {
       <GenericError
         show={fetchListingError || requestPaymentError}
         errorText={fetchListingError || requestPaymentError}
+      />
+      <SessionTimeout
+        intervalFunction={onFetchConversations}
+        intervalTime="10000"
+        maxInactiveTime="1"
       />
     </Page>
   );

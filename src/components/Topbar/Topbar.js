@@ -23,6 +23,7 @@ import {
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { ensureCurrentUser } from '../../util/data';
+import { SessionTimeout } from '../../util/hooks';
 
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';

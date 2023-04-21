@@ -37,7 +37,7 @@ import {
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 

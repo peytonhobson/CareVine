@@ -31,7 +31,7 @@ import {
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { formatPrice } from '../../util/data';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './CaregiverListingCard.module.css';
 

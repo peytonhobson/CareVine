@@ -21,7 +21,7 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
