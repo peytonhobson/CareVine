@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <style type="text/css">
+      @media only screen and (max-width: 768px) {
+        .body {
+          padding: 2rem 2rem 2.75rem 2rem !important;
+        }
+      }
+    </style>
+  </head>
+  <body style="padding: 0; margin: 0">
+    <div
+      class="main-container"
+      style="max-width: 37.5rem;background-color: rgba(142, 213, 181, 0.1);margin: auto;"
+    >
+      <div class="header">
+        <a href="{{marketplace.url}}">
+          <img
+            src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
+            class="logo"
+            style="height: 3.125rem;width: 11rem;padding: 1rem;"
+          />
+        </a>
+      </div>
+      <div class="content" style="padding: 6rem 0 8rem 0;">
+        <p
+          class="title"
+          style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 1.75rem;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
+        >
+          New Message
+        </p>
+        <p
+          class="body"
+          style="padding: 2rem 3.5rem 2.75rem 3.5rem;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 1rem;line-height: 1.5rem;color: #6BA0B6;"
+        >
+          You have a new message from {{transaction.customer.display-name}}. To view this message on
+          CareVine click the button below.
+        </p>
+        <div
+          class="button-container"
+          style="width: 100%;padding-left: auto;padding-right: auto;text-align: center;"
+        >
+          <a
+            href="{{marketplace.url}}/inbox/{{transaction.id}}"
+            style="padding: 0.75rem 1.5rem;height: 2.75rem;margin-top: 0.75rem;background: #6BA0B6;border-radius: 3rem;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 0.875rem; line-height: 1.25rem; color: #FFFFFF; text-decoration: none;"
+            >View Message</a
+          >
+        </div>
+      </div>
+      <div class="footer" style="text-align: center;">
+        <div
+          class="footer-sub"
+          style="padding: 1rem 2rem 1.5rem 2rem;margin: 0 2rem;border-top: solid 1px #CCCCCC"
+        >
+          <div class="footer-link-container" style="padding-bottom: 1rem;display: inline;">
+            <a
+              class="footer-link"
+              href="{{marketplace.url}}/contact-us"
+              style="color: rgba(0, 0, 0, 0.5);margin-left: 0.5rem;margin-right: 0.5rem;font-family: Trebuchet MS, Verdana, Arial;font-size: 0.675rem;font-weight: bold;line-height: 0.75rem; white-space: nowrap;"
+              >Contact Us</a
+            >
+          </div>
+          <div class="footer-link-container" style="padding-bottom: 1rem;display: inline;">
+            <a
+              class="footer-link"
+              href="{{marketplace.url}}/privacy-policy"
+              style="color: rgba(0, 0, 0, 0.5);margin-left: 0.5rem;margin-right: 0.5rem;font-family: Trebuchet MS, Verdana, Arial;font-size: 0.675rem;font-weight: bold;line-height: 0.75rem; white-space: nowrap;"
+              >Privacy-Policy</a
+            >
+          </div>
+          <div class="footer-link-container" style="padding-bottom: 1rem;display: inline;">
+            <a
+              class="footer-link"
+              href="{{marketplace.url}}/terms-of-service"
+              style="color: rgba(0, 0, 0, 0.5);margin-left: 0.5rem;margin-right: 0.5rem;font-family: Trebuchet MS, Verdana, Arial;font-size: 0.675rem;font-weight: bold;line-height: 0.75rem; white-space: nowrap;"
+              >Terms &amp; Conditions</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

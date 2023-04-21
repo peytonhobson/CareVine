@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 import {
   Card as MuiCard,
   CardContent,

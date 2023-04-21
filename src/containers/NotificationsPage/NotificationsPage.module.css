@@ -18,7 +18,7 @@
 
 .sidenavRoot {
   flex: 1 1 0;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
 
@@ -111,7 +111,7 @@
 }
 
 .previewHoverLine {
-  height: 5rem;
+  height: 100%;
   width: 0.35rem;
   position: absolute;
   left: 0;
@@ -227,6 +227,12 @@
   padding: 1rem 2rem;
   width: auto;
   min-height: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
 }
 
 .modalButtonDelete {
@@ -236,9 +242,14 @@
   min-height: 0;
   margin-left: 1rem;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background-color: var(--failColor);
     filter: brightness(0.8);
+  }
+
+  &:disabled {
+    background-color: var(--failColor);
   }
 }
 
@@ -304,4 +315,8 @@
   width: 6rem;
   stroke: 6px;
   margin-bottom: 5rem;
+}
+
+.error {
+  color: var(--failColor);
 }

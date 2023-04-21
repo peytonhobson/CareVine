@@ -309,9 +309,7 @@ export const ensurePaymentMethodCard = stripePaymentMethod => {
  * @return {String} display name that can be rendered in the UI
  */
 export const userDisplayNameAsString = (user, defaultUserDisplayName) => {
-  const hasAttributes = user && user.attributes;
-  const hasProfile = hasAttributes && user.attributes.profile;
-  const hasDisplayName = hasProfile && user.attributes.profile.displayName;
+  const hasDisplayName = user?.attributes?.profile?.displayName;
 
   if (hasDisplayName) {
     const displayName = user.attributes.profile.displayName.split(' ');

@@ -20,6 +20,7 @@ import {
 } from './TransactionPage/TransactionPage.duck';
 import { loadData as UserTypePageLoader } from './UserTypePage/UserTypePage.duck';
 import { loadData as NotificationsPageLoader } from './NotificationsPage/NotificationsPage.duck';
+import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
@@ -35,9 +36,9 @@ const getPageDataLoadingAPI = () => {
     EmailVerificationPage: {
       loadData: EmailVerificationPageLoader,
     },
-    // InboxPage: {
-    //   loadData: InboxPageLoader,
-    // },
+    InboxPage: {
+      loadData: InboxPageLoader,
+    },
     ListingPage: {
       loadData: ListingPageLoader,
     },

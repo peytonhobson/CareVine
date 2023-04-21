@@ -21,7 +21,6 @@ import {
 } from '../../components';
 
 import css from './EditListingPhotosForm.module.css';
-import { E } from '@sendbird/uikit-react/index-43834bc0';
 
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to load img srcset

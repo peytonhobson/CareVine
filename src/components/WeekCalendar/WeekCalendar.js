@@ -3,7 +3,7 @@ import React from 'react';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { InfoTooltip } from '..';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './WeekCalendar.module.css';
 

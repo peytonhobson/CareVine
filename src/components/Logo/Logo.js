@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import IconLogo from './IconLogo';
 import css from './Logo.module.css';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const Logo = props => {
   const { className, format, ...rest } = props;

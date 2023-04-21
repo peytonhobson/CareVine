@@ -87,6 +87,7 @@ class PageComponent extends Component {
       twitterHandle,
       twitterImages,
       updated,
+      id,
     } = this.props;
 
     const classes = classNames(rootClassName || css.root, className, {
@@ -192,7 +193,7 @@ class PageComponent extends Component {
     }
 
     return (
-      <div className={classes}>
+      <div className={classes} id={id}>
         <Helmet
           htmlAttributes={{
             lang: intl.locale,

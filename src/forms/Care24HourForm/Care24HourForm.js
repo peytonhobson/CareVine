@@ -15,7 +15,7 @@ import {
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { timestampToDate } from '../../util/dates';
 import { TimelineForm } from '../../forms';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './Care24HourForm.module.css';
 
