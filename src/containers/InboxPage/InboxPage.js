@@ -415,7 +415,7 @@ export const InboxPageComponent = props => {
       <SessionTimeout
         intervalFunction={onFetchConversations}
         intervalTime="10000"
-        maxInactiveTime="1"
+        maxInactiveTime="5"
       />
     </Page>
   );

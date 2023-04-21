@@ -20,10 +20,9 @@ import {
   TopbarDesktop,
   TopbarMobileMenu,
   GenericError,
+  SessionTimeout,
 } from '../../components';
-import { TopbarSearchForm } from '../../forms';
 import { ensureCurrentUser } from '../../util/data';
-import { SessionTimeout } from '../../util/hooks';
 
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
@@ -63,32 +62,12 @@ class TopbarComponent extends Component {
     this.handleMobileSearchClose = this.handleMobileSearchClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.pollUser = this.pollUser.bind(this);
   }
 
   componentDidMount() {
-    const { currentUser } = this.props;
-
-    if (currentUser && !this.pollingInterval) {
-      this.props.onFetchUnreadMessages();
-      this.props.onFetchCurrentUser();
-      this.pollingInterval = setInterval(() => {
-        this.props.onFetchUnreadMessages();
-        this.props.onFetchCurrentUser();
-      }, 10000);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { currentUser } = this.props;
-
-    if (currentUser && !this.pollingInterval) {
-      this.props.onFetchUnreadMessages();
-      this.props.onFetchCurrentUser();
-      this.pollingInterval = setInterval(() => {
-        this.props.onFetchUnreadMessages();
-        this.props.onFetchCurrentUser();
-      }, 10000);
-    }
+    this.props.onFetchUnreadMessages();
+    this.props.onFetchCurrentUser();
   }
 
   componentWillUnmount() {
@@ -143,6 +122,13 @@ class TopbarComponent extends Component {
 
       console.log('logged out'); // eslint-disable-line
     });
+  }
+
+  pollUser() {
+    const { onFetchCurrentUser, onFetchUnreadMessages } = this.props;
+
+    onFetchUnreadMessages();
+    onFetchCurrentUser();
   }
 
   render() {
@@ -289,7 +275,13 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-
+        {currentUser && (
+          <SessionTimeout
+            intervalFunction={this.pollUser}
+            intervalTime="10000"
+            maxInactiveTime="1"
+          />
+        )}
         <GenericError
           show={showGenericError}
           errorText={<FormattedMessage id="Topbar.genericError" />}
