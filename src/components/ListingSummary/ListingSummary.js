@@ -31,6 +31,7 @@ const ListingSummaryComponent = props => {
     onBookNow,
     onShowListingPreview,
     isMobile,
+    fetchExistingConversationInProgress,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -189,7 +190,11 @@ const ListingSummaryComponent = props => {
               <FormattedMessage id="ListingSummary.bookNow" />
             </Button>
           )} */}
-          <Button className={css.secondaryButton} onClick={onContactUser}>
+          <Button
+            className={css.secondaryButton}
+            onClick={onContactUser}
+            disabled={fetchExistingConversationInProgress}
+          >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
         </div>

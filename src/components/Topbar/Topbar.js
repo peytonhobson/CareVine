@@ -19,9 +19,11 @@ import {
   NamedLink,
   TopbarDesktop,
   TopbarMobileMenu,
+  GenericError,
 } from '../../components';
 import { TopbarSearchForm } from '../../forms';
 import { ensureCurrentUser } from '../../util/data';
+import { SessionTimeout } from '../../util/hooks';
 
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
@@ -49,26 +51,6 @@ const redirectToURLWithoutModalState = (props, modalStateParam) => {
   history.push(`${pathname}${searchString}`, state);
 };
 
-const GenericError = props => {
-  const { show } = props;
-  const classes = classNames(css.genericError, {
-    [css.genericErrorVisible]: show,
-  });
-  return (
-    <div className={classes}>
-      <div className={css.genericErrorContent}>
-        <p className={css.genericErrorText}>
-          <FormattedMessage id="Topbar.genericError" />
-        </p>
-      </div>
-    </div>
-  );
-};
-
-GenericError.propTypes = {
-  show: bool.isRequired,
-};
-
 class TopbarComponent extends Component {
   constructor(props) {
     super(props);
@@ -85,9 +67,8 @@ class TopbarComponent extends Component {
 
   componentDidMount() {
     const { currentUser } = this.props;
-    const userAccessCode = currentUser?.id?.uuid;
 
-    if (userAccessCode && !this.pollingInterval) {
+    if (currentUser && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
       this.pollingInterval = setInterval(() => {
@@ -99,9 +80,8 @@ class TopbarComponent extends Component {
 
   componentDidUpdate(prevProps) {
     const { currentUser } = this.props;
-    const userAccessCode = currentUser?.id?.uuid;
 
-    if (userAccessCode && !this.pollingInterval) {
+    if (currentUser && !this.pollingInterval) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
       this.pollingInterval = setInterval(() => {
@@ -310,7 +290,10 @@ class TopbarComponent extends Component {
           onChangeModalValue={onChangeModalValue}
         />
 
-        <GenericError show={showGenericError} />
+        <GenericError
+          show={showGenericError}
+          errorText={<FormattedMessage id="Topbar.genericError" />}
+        />
       </div>
     );
   }

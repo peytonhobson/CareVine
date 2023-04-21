@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { styled } from '@material-ui/styles';
 import classNames from 'classnames';
-import { useCheckMobileScreen } from '../../../util/userAgent';
+import { useCheckMobileScreen } from '../../../util/hooks';
 
 import css from './sections.module.css';
 

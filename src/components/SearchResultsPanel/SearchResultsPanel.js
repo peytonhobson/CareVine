@@ -10,7 +10,7 @@ import {
 } from '../../components';
 import { EMPLOYER } from '../../util/constants';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './SearchResultsPanel.module.css';
 

@@ -184,10 +184,6 @@ export const fetchUserEmail = body => {
   return post('/api/user-email', body);
 };
 
-export const sendbirdUser = body => {
-  return post('/api/sb-user', body);
-};
-
 export const stripeCreateSetupIntent = body => {
   return post('/api/stripe-create-setup-intent', body);
 };
@@ -284,6 +280,6 @@ export const updateUserNotifications = body => {
   return post('/api/update-user-notifications', body);
 };
 
-export const sendbirdUnreadMessages = body => {
-  return post('/api/sendbird-unread-messages', body);
+export const updateTransactionMetadata = body => {
+  return post('/api/update-transaction-metadata', body);
 };

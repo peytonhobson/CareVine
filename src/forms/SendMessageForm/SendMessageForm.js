@@ -15,8 +15,8 @@ const IconSendMessage = () => {
   return (
     <svg
       className={css.sendIcon}
-      width="14"
-      height="14"
+      width="1.5em"
+      height="1.5em"
       viewBox="0 0 14 14"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -75,10 +75,11 @@ class SendMessageFormComponent extends Component {
           return (
             <Form className={classes} onSubmit={values => handleSubmit(values, form)}>
               <FieldTextInput
-                inputRootClass={css.textarea}
-                type="textarea"
+                rootClassName={css.messageInputRoot}
+                inputRootClass={css.messageInput}
                 id={formId ? `${formId}.message` : 'message'}
                 name="message"
+                autoComplete="off"
                 placeholder={messagePlaceholder}
                 onFocus={this.handleFocus}
                 onBlur={this.handleBlur}
@@ -98,8 +99,7 @@ class SendMessageFormComponent extends Component {
                   onFocus={this.handleFocus}
                   onBlur={this.handleBlur}
                 >
-                  <IconSendMessage />
-                  <FormattedMessage id="SendMessageForm.sendMessage" />
+                  <IconSendMessage height="3em" width="3em" />
                 </SecondaryButton>
               </div>
             </Form>

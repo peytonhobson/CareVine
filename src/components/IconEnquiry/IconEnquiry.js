@@ -5,12 +5,18 @@ import classNames from 'classnames';
 import css from './IconEnquiry.module.css';
 
 const IconEnquiry = props => {
-  const { rootClassName, className } = props;
+  const { rootClassName, className, strokeClass, height, width } = props;
   const classes = classNames(rootClassName || css.root, className);
   return (
-    <svg className={classes} width="47" height="46" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      className={classes}
+      width={width ?? '47'}
+      height={height ?? '46'}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 47 46"
+    >
       <g
-        className={css.marketplaceColorStroke}
+        className={strokeClass || css.marketplaceColorStroke}
         fill="none"
         fillRule="evenodd"
         strokeLinecap="round"

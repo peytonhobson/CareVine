@@ -42,7 +42,7 @@ import {
 import { updateProfile, uploadImage } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './EditListingPage.module.css';
 

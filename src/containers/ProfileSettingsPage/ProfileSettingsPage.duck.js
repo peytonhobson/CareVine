@@ -1,7 +1,6 @@
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { currentUserShowSuccess } from '../../ducks/user.duck';
-import { sendbirdUser } from '../../util/api';
 
 // ================ Action types ================ //
 

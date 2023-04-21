@@ -61,6 +61,11 @@ export const TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD = 'transition/expire-custo
 export const TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD = 'transition/expire-provider-review-period';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 
+// Messaging Transaction Transitions
+export const TRANSITION_INITIAL_MESSAGE = 'transition/initial-message';
+export const TRANSITION_CUSTOMER_DELETE_CONVERSATION = 'transition/customer-delete-conversation';
+export const TRANSITION_PROVIDER_DELETE_CONVERSATION = 'transition/provider-delete-conversation';
+
 /**
  * Actors
  *

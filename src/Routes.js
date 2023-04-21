@@ -22,7 +22,12 @@ import { userCanMessage, getMissingInfoModalValue } from './util/data';
 const canShowComponent = props => {
   const { isAuthenticated, route, currentUser } = props;
 
-  if (route.name === 'InboxPage' && !userCanMessage(currentUser)) {
+  if (
+    route.name === 'InboxPage' &&
+    isAuthenticated &&
+    currentUser &&
+    !userCanMessage(currentUser)
+  ) {
     return false;
   }
   const { auth } = route;

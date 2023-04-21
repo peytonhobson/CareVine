@@ -220,13 +220,15 @@ const routeConfiguration = () => {
       auth: true,
       authPage: 'LoginPage',
       component: InboxPage,
+      loadData: pageDataLoadingAPI.InboxPage.loadData,
     },
     {
-      path: '/inbox/:channel',
-      name: 'InboxPageWithChannel',
+      path: '/inbox/:id',
+      name: 'InboxPageWithId',
       auth: true,
       authPage: 'LoginPage',
       component: InboxPage,
+      loadData: pageDataLoadingAPI.InboxPage.loadData,
     },
     {
       path: '/account',

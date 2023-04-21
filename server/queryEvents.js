@@ -17,8 +17,8 @@ module.exports = queryEvents = () => {
     deEnrollUserTCM,
     cancelSubscription,
     backgroundCheckApprovedNotification,
-    deleteUserChannels,
     backgroundCheckRejectedNotification,
+    addUnreadMessageCount,
   } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
@@ -53,7 +53,13 @@ module.exports = queryEvents = () => {
   }
 
   const queryEvents = args => {
-    var filter = { eventTypes: ['user/updated, listing/updated, user/deleted', 'user/created'] };
+    var filter = {
+      eventTypes: [
+        'user/updated, listing/updated, user/deleted',
+        'user/created',
+        'message/created',
+      ],
+    };
     return integrationSdk.events
       .query({ ...args, ...filter })
       .catch(e => log.error(e, 'Error querying events'));
@@ -202,13 +208,12 @@ module.exports = queryEvents = () => {
       }
     }
 
-    // If user is deleted, delete their channels
-    if (eventType === 'user/deleted') {
-      const previousValues = event?.attributes?.previousValues;
-      const userId = previousValues?.id?.uuid;
+    if (eventType === 'message/created') {
+      const message = event?.attributes?.resource;
+      const senderId = message?.relationships?.sender?.data?.id?.uuid;
+      const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
-      console.log('delete user channels');
-      deleteUserChannels(userId);
+      addUnreadMessageCount(transactionId, senderId);
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

@@ -43,6 +43,7 @@ const sortSearchByDistance = true;
 // In a way, 'processAlias' defines which transaction process (or processes)
 // this particular web application is able to handle.
 let singleActionProcessAlias = null;
+const messageProcessAlias = `message-process/active`;
 
 if (isDev || isTest) {
   singleActionProcessAlias = `single-action-process/active`;
@@ -221,6 +222,7 @@ const config = {
   locale,
   singleActionProcessAlias,
   bookingProcessAlias,
+  messageProcessAlias,
   bookingUnitType,
   enableAvailability,
   dayCountAvailableForBooking,

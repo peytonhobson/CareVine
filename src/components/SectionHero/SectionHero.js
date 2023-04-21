@@ -11,7 +11,7 @@ import {
   Button,
 } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './SectionHero.module.css';
 

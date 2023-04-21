@@ -3,6 +3,7 @@
 .root {
   position: relative;
   box-shadow: var(--boxShadowBottomForm);
+  display: flex;
 
   @media (--viewportLarge) {
     box-shadow: none;
@@ -32,7 +33,6 @@
 
   @media (--viewportMedium) {
     margin: 0;
-    max-height: 100px;
   }
   @media (--viewportLarge) {
     padding: 0 0 5px 0;
@@ -90,14 +90,59 @@
   float: right;
   padding: 0 16px;
   min-height: auto;
-  min-width: 150px;
-  height: 41px;
+  height: 2.5rem;
+  margin-right: 2rem;
 
   display: inline-block;
-  margin: 17px 0 0 0;
   width: auto;
+
+  &:hover {
+    background-color: var(--matterColorLight);
+    box-shadow: var(--boxShadowLight);
+  }
 }
 
 .sendIcon {
-  margin: -3px 5px 0 0;
+}
+
+.messageInputRoot {
+  display: flex;
+  flex-grow: 1;
+  margin-left: 2rem;
+}
+
+.messageInput {
+  display: inline-block;
+  width: 100%;
+
+  position: relative;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.43;
+  height: 3.5rem;
+  overflow-y: scroll;
+  letter-spacing: normal;
+  padding: 18px 64px 18px 16px;
+  box-sizing: border-box;
+  resize: none;
+  background-color: inherit;
+  white-space: pre-wrap;
+  color: rgba(0, 0, 0, 0.88);
+  caret-color: var(--marketplaceColor);
+  border: solid 2px rgba(0, 0, 0, 0.38);
+  background-color: #ffffff;
+
+  &:focus {
+    outline: none;
+    color: rgba(0, 0, 0, 0.88);
+    border: solid 2px var(--marketplaceColor);
+  }
+
+  &:active {
+    border: solid 2px var(--matterColor);
+    color: rgba(0, 0, 0, 0.88);
+  }
 }
