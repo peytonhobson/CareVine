@@ -17,7 +17,6 @@ module.exports = queryEvents = () => {
     deEnrollUserTCM,
     cancelSubscription,
     backgroundCheckApprovedNotification,
-    deleteUserChannels,
     backgroundCheckRejectedNotification,
     addUnreadMessageCount,
   } = require('./queryEvents.helpers');
@@ -207,15 +206,6 @@ module.exports = queryEvents = () => {
         const userId = event?.attributes?.resource?.id?.uuid;
         backgroundCheckRejectedNotification(userId);
       }
-    }
-
-    // If user is deleted, delete their channels
-    if (eventType === 'user/deleted') {
-      const previousValues = event?.attributes?.previousValues;
-      const userId = previousValues?.id?.uuid;
-
-      console.log('delete user channels');
-      deleteUserChannels(userId);
     }
 
     if (eventType === 'message/created') {

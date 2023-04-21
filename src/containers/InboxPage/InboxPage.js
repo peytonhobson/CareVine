@@ -48,6 +48,8 @@ const SET_CONVERSATIONS = 'SET_CONVERSATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 const SET_STRIPE_MODAL_OPEN = 'SET_STRIPE_MODAL_OPEN';
 const SET_INITIAL_CONVERSATION = 'SET_INITIAL_CONVERSATION';
+const SET_CONVERSATIONS_POLL = 'SET_CONVERSATIONS_POLL';
+const SET_SHOW_FETCH_ERROR = 'SET_SHOW_FETCH_ERROR';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -83,6 +85,10 @@ const reducer = (state, action) => {
         activeConversation: state.conversations.find(n => n.id.uuid === action.payload),
         initialConversationSet: true,
       };
+    case SET_CONVERSATIONS_POLL:
+      return { ...state, conversationsPoll: action.payload };
+    case SET_SHOW_FETCH_ERROR:
+      return { ...state, showFetchError: action.payload };
     default:
       return state;
   }
@@ -135,6 +141,8 @@ export const InboxPageComponent = props => {
     isChatModalOpen: false,
     isStripeModalOpen: false,
     initialConversationSet: false,
+    conversationsPoll: null,
+    showFetchError: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -143,22 +151,26 @@ export const InboxPageComponent = props => {
   const otherUser = ensuredCurrentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
 
   useEffect(() => {
-    const conversationsPoll = setInterval(() => {
-      onFetchConversations();
-    }, 5000);
+    if (!state.conversationsPoll) {
+      const conversationsPoll = setInterval(() => {
+        onFetchConversations();
+      }, 10000);
 
-    return () => {
-      clearInterval(conversationsPoll);
-    };
+      dispatch({ type: SET_CONVERSATIONS_POLL, payload: conversationsPoll });
+
+      return () => {
+        clearInterval(state.conversationsPoll);
+      };
+    }
   }, []);
 
   const conversationId = params.id;
 
   useEffect(() => {
     if (
+      !state.initialConversationSet &&
       conversationId &&
-      state.conversations?.find(n => n?.id?.uuid === conversationId) &&
-      !state.initialConversationSet
+      state.conversations?.find(n => n?.id?.uuid === conversationId)
     ) {
       dispatch({ type: SET_INITIAL_CONVERSATION, payload: conversationId });
 
@@ -209,6 +221,12 @@ export const InboxPageComponent = props => {
     }
   }, [deleteConversationInProgress]);
 
+  useEffect(() => {
+    if (fetchInitialConversationsError || fetchInitialConversationsError) {
+      dispatch({ type: SET_SHOW_FETCH_ERROR, payload: true });
+    }
+  }, [fetchInitialConversationsError, fetchInitialConversationsError]);
+
   const handleOpenDeleteConversationModal = id => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
   };
@@ -233,14 +251,15 @@ export const InboxPageComponent = props => {
     dispatch({ type: SET_STRIPE_MODAL_OPEN, payload: !state.isStripeModalOpen });
   };
 
-  const error =
-    fetchInitialConversationsError || fetchConversationsError ? (
-      <div style={{ margin: 'auto' }}>
-        <p className={css.error}>
-          <FormattedMessage id="InboxPage.fetchFailed" />
-        </p>
-      </div>
-    ) : null;
+  const handleCloseChatModal = () => {
+    dispatch({ type: SET_CHAT_MODAL_OPEN, payload: false });
+  };
+
+  const error = state.showFetchError ? (
+    <p className={css.error}>
+      <FormattedMessage id="InboxPage.fetchFailed" />
+    </p>
+  ) : null;
 
   const fetchListingError = fetchOtherUserListingError && (
     <FormattedMessage id="InboxPage.fetchListingFailed" />
@@ -270,22 +289,26 @@ export const InboxPageComponent = props => {
           />
         </LayoutWrapperTopbar>
         <LayoutWrapperSideNav className={css.navigation}>
-          {error}
-          <SideNav
-            conversations={state.conversations}
-            currentConversation={state.activeConversation}
-            messages={messages}
-            fetchConversationsInProgress={fetchInitialConversationsInProgress}
-            currentUser={ensuredCurrentUser}
-            intl={intl}
-            params={params}
-            onOpenDeleteConversationModal={handleOpenDeleteConversationModal}
-            onPreviewClick={handlePreviewClick}
-            isMobile={isMobile}
-          />
+          {(isMobile && !state.isChatModalOpen) || !isMobile ? (
+            <>
+              {error}
+              <SideNav
+                conversations={state.conversations}
+                currentConversation={state.activeConversation}
+                messages={messages}
+                fetchConversationsInProgress={fetchInitialConversationsInProgress}
+                currentUser={ensuredCurrentUser}
+                intl={intl}
+                params={params}
+                onOpenDeleteConversationModal={handleOpenDeleteConversationModal}
+                onPreviewClick={handlePreviewClick}
+                isMobile={isMobile}
+              />
+            </>
+          ) : null}
         </LayoutWrapperSideNav>
         <LayoutWrapperMain className={css.wrapper}>
-          {state.activeConversation ? (
+          {(!isMobile && state.activeConversation) || (isMobile && state.isChatModalOpen) ? (
             <>
               <InboxChannelHeader
                 isMobile={isMobile}
@@ -299,8 +322,8 @@ export const InboxPageComponent = props => {
                 sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
                 onSendRequestForPayment={onSendRequestForPayment}
                 conversationId={state.activeConversation?.id?.uuid}
+                onCloseChatModal={handleCloseChatModal}
               />
-
               <MessagePanel
                 transaction={state.activeConversation}
                 currentUser={ensuredCurrentUser}

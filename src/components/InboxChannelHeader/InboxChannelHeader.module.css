@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .channelHeader {
   position: relative;
   display: flex;
@@ -8,10 +10,14 @@
   text-overflow: ellipsis;
   box-sizing: border-box;
 
-  padding: 0 1rem 0 1.25rem;
+  padding: 0 1rem 0 0;
 
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   background-color: #ffffff;
+
+  @media (--viewportMedium) {
+    padding: 0 1rem 0 1.25rem;
+  }
 }
 
 .listingLink {
@@ -56,4 +62,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.arrowIcon {
+  stroke-width: 1px;
+}
+
+.closeButton {
+  margin-inline: 2rem;
 }

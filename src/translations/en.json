@@ -675,7 +675,7 @@
   "ManageListingsPage.queryError": "Query failed. Please try again.",
   "ManageListingsPage.title": "Manage your profile",
   "ManageListingsPage.youHaveListings": "You have {count} {count, plural, one {listing} other {listings}}",
-  "MessagePanel.sendingMessageNotAllowed": "This user has been removed. Sending message to the user is not possible anymore.",
+  "MessagePanel.sendingMessageNotAllowed": "This user has been removed. Sending a message to the user is not possible anymore.",
   "MessagePanel.SendMessageFormId": "messageForm",
   "MessagePanel.sendMessagePlaceholder": "Send a message to {name}…",
   "Modal.close": "CLOSE",

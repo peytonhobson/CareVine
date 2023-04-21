@@ -571,7 +571,7 @@ export const deleteConversation = (tx, currentUser) => async (dispatch, getState
 
   try {
     await sdk.transactions.transition({
-      id: tx.id.uui,
+      id: tx.id.uuid,
       transition: isProvider
         ? TRANSITION_PROVIDER_DELETE_CONVERSATION
         : TRANSITION_CUSTOMER_DELETE_CONVERSATION,
@@ -607,6 +607,7 @@ export const fetchConversations = () => async (dispatch, getState, sdk) => {
     'fields.transaction': ['lastTransitionedAt', 'metadata'],
     'fields.message': ['createdAt'],
     'limit.messages': MESSAGES_PAGE_SIZE,
+    ...IMAGE_VARIANTS,
   };
 
   try {
@@ -647,7 +648,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     'fields.transaction': ['lastTransitionedAt', 'metadata'],
     'fields.message': ['createdAt'],
     'limit.messages': MESSAGES_PAGE_SIZE,
-    sort: '-createdAt',
+    ...IMAGE_VARIANTS,
   };
 
   return sdk.transactions

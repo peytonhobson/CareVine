@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useRef, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isEqual } from 'lodash';
+import { first, isEqual } from 'lodash';
 import classNames from 'classnames';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
@@ -33,6 +33,7 @@ const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
+const SET_INITIAL_NOTIFICATION = 'SET_INITIAL_NOTIFICATION';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -64,6 +65,12 @@ const reducer = (state, action) => {
       };
     case SET_CURRENT_USER_INITIAL_FETCHED:
       return { ...state, currentUserInitialFetched: true };
+    case SET_INITIAL_NOTIFICATION:
+      return {
+        ...state,
+        activeNotification: action.payload,
+        initialNotificationSet: true,
+      };
     default:
       return state;
   }
@@ -109,6 +116,7 @@ const NotificationsPageComponent = props => {
     isDeleteModalOpen: false,
     activeNotification: notifications.length > 0 ? notifications[0] : null,
     isNotificationModalOpen: false,
+    initialNotificationSet: false,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -119,14 +127,15 @@ const NotificationsPageComponent = props => {
   }, [sortedNotifications.length]);
 
   useEffect(() => {
-    if (notificationId && state.notifications.find(n => n.id === notificationId)) {
-      dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: notificationId });
+    const firstNotification = state.notifications.find(n => n.id === notificationId);
+    if (!state.initialNotificationSet && notificationId && firstNotification) {
+      dispatch({ type: SET_INITIAL_NOTIFICATION, payload: firstNotification });
 
       if (isMobile) {
         dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: true });
       }
     }
-  }, [notificationId]);
+  }, [notificationId, state.notifications?.length]);
 
   const previousNotifications = usePrevious(state.notifications);
 

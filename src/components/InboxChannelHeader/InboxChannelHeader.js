@@ -21,6 +21,7 @@ const InboxChannelHeader = props => {
     sendRequestForPaymentInProgress,
     sendRequestForPaymentSuccess,
     conversationId,
+    onCloseChatModal,
   } = props;
 
   const listingId = listing?.id?.uuid;
@@ -35,7 +36,16 @@ const InboxChannelHeader = props => {
         <>
           <div className={css.headerLeft}>
             {isMobile && (
-              <IconArrowHead direction="left" size="big" rootClassName={css.arrowIcon} />
+              <div className={css.closeButton} onClick={onCloseChatModal} role="button">
+                <IconArrowHead
+                  direction="left"
+                  size="big"
+                  height="1.5em"
+                  width="1em"
+                  rootClassName={css.arrowIcon}
+                  onClick={onCloseChatModal}
+                />
+              </div>
             )}
             {!!listing ? (
               <NamedLink
