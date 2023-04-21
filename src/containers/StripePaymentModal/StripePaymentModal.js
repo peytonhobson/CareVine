@@ -32,7 +32,7 @@ import {
   initialState as stripeInitialState,
 } from '../../ducks/stripe.duck';
 import { fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './StripePaymentModal.module.css';
 

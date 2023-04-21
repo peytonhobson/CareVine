@@ -3,7 +3,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import MuiIconButton from '@mui/material/IconButton';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const InfoTooltip = props => {
   const { title, icon, styles, onClick } = props;

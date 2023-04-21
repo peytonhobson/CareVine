@@ -22,7 +22,7 @@ import {
 } from '../../components';
 import { TopbarContainer } from '..';
 import NotificationContainer from './NotificationContainer';
-import { useCheckMobileScreen, usePrevious } from '../../util/userAgent';
+import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 
 import css from './NotificationsPage.module.css';
 import SideNav from './SideNav';

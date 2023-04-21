@@ -7,7 +7,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import css from './ListingPreview.module.css';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
-import { useCheckMobileScreen } from '../../util/userAgent';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
