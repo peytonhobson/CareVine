@@ -3,13 +3,12 @@ import moment from 'moment';
 
 const SessionTimeout = ({ intervalFunction, intervalTime, maxInactiveTime }) => {
   const [events, setEvents] = useState(['click', 'load', 'scroll']);
-  const [timeStamp, setTimestamp] = useState(moment());
 
   let inactiveInterval = useRef();
 
   // reset interval timer
   let resetTimer = () => {
-    setTimestamp(moment());
+    const timeStamp = moment();
 
     if (!inactiveInterval.current) {
       inactiveInterval.current = setInterval(() => {
@@ -33,11 +32,14 @@ const SessionTimeout = ({ intervalFunction, intervalTime, maxInactiveTime }) => 
       events.forEach(event => {
         window.addEventListener(event, resetTimer);
       });
-
-      return () => {
-        clearInterval(inactiveInterval.current);
-      };
     }
+
+    return () => {
+      clearInterval(inactiveInterval.current);
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
   }, [intervalFunction]);
 
   return <></>;
