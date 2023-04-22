@@ -95,7 +95,10 @@ const EditListingBioFormComponent = props => (
 
             {generateBioInProgress ? (
               <div className={css.spinnerContainer}>
-                <IconSpinner className={css.spinner} />
+                <div style={{ textAlign: 'center' }}>
+                  <IconSpinner className={css.spinner} />
+                  <h3 className={css.generatingBioText}>Generating bio...</h3>
+                </div>
               </div>
             ) : (
               <FieldTextInput

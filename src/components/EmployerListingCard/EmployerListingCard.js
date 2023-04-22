@@ -217,9 +217,9 @@ export const EmployerListingCardComponent = props => {
                   </span>
                 </div>
                 <div className={css.buttonContainer}>
-                  <Button className={css.messageButton}>
+                  <div className={css.messageButton}>
                     <FormattedMessage id={'EmployerListingCard.viewProfile'} />
-                  </Button>
+                  </div>
                 </div>
               </div>
             </div>

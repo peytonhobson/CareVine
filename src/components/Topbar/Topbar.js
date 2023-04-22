@@ -66,8 +66,10 @@ class TopbarComponent extends Component {
   }
 
   componentDidMount() {
-    this.props.onFetchUnreadMessages();
-    this.props.onFetchCurrentUser();
+    if (this.props.currentUser) {
+      this.props.onFetchUnreadMessages();
+      this.props.onFetchCurrentUser();
+    }
   }
 
   componentWillUnmount() {
