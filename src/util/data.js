@@ -13,7 +13,7 @@ import {
 import { types as sdkTypes } from '../util/sdkLoader';
 const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
-import { BACKGROUND_CHECK_APPROVED } from './constants';
+import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constants';
 
 /**
  * Combine the given relationships objects
@@ -448,7 +448,7 @@ export const userCanMessage = currentUser => {
   return userType === CAREGIVER
     ? emailVerified &&
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        backgroundCheckSubscription?.status === 'active'
+        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)
     : emailVerified;
 };
 
@@ -464,7 +464,7 @@ export const getMissingInfoModalValue = currentUser => {
     userType === CAREGIVER
       ? emailVerified &&
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        backgroundCheckSubscription?.status === 'active'
+        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)
       : emailVerified;
 
   if (!canMessage) {

@@ -36,7 +36,11 @@ import {
   cancelFutureSubscription,
 } from '../../ducks/stripe.duck';
 import SubscriptionCard from './SubscriptionCard';
-import { CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
+import {
+  CAREVINE_GOLD_PRICE_ID,
+  CAREVINE_BASIC_PRICE_ID,
+  SUBSCRIPTION_ACTIVE_TYPES,
+} from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
 import { useEffect } from 'react';
@@ -181,6 +185,8 @@ const SubscriptionsPageComponent = props => {
     case 'active':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.active" />;
       break;
+    case 'trialing':
+      bcStatusText = <FormattedMessage id="SubscriptionsPage.trialing" />;
     case 'past_due':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.pastDue" />;
       break;
@@ -220,7 +226,7 @@ const SubscriptionsPageComponent = props => {
 
   // Set subscription to cancel at period end
   const handleCancelSubscription = async () => {
-    if (bcStatus === 'active' || bcStatus === 'past_due') {
+    if (SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) || bcStatus === 'past_due') {
       const params = { cancel_at_period_end: true };
 
       try {
@@ -260,7 +266,7 @@ const SubscriptionsPageComponent = props => {
       defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id;
 
     // bcStatus being active indicates the user's subscription is set to cancel, but has not reached the end of the billing period.
-    if (bcStatus === 'active') {
+    if (SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus)) {
       if (changeSubscription) {
         /*
          * If the user is changing their subscription type from Vine to Basic, we need to update the current subscription
@@ -339,7 +345,7 @@ const SubscriptionsPageComponent = props => {
   const amount = backgroundCheckSubscription?.amount;
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
-    bcStatus === 'active' && !cancelAtPeriodEnd ? (
+    SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
       <>
         {bcType === BASIC && (
           <InlineTextButton
@@ -390,7 +396,7 @@ const SubscriptionsPageComponent = props => {
   ) : backgroundCheckSubscription && bcStatusText ? (
     <SubscriptionCard title={backgroundCheckTitle} headerButton={currentSubscriptionButton}>
       <div className={css.subscriptionContentContainer}>
-        {bcStatus === 'active' && !cancelAtPeriodEnd ? (
+        {SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>

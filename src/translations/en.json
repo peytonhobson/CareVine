@@ -1322,6 +1322,7 @@
   "StripePayoutPage.submitButtonText": "Save details",
   "StripePayoutPage.title": "Payout details",
   "SubscriptionsPage.active": "Active",
+  "SubscriptionsPage.trialing": "Trialing",
   "SubscriptionsPage.backgroundCheckTitle": "Background Check",
   "SubscriptionsPage.basicCheck": "Basic",
   "SubscriptionsPage.cancelButton": "Cancel",

@@ -13,7 +13,7 @@ import { richText } from '../../util/richText';
 import { compose } from 'redux';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './ListingSummary.module.css';
 
@@ -42,7 +42,7 @@ const ListingSummaryComponent = props => {
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
-    backgroundCheckSubscription?.status === 'active' &&
+    SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
     backgroundCheckSubscription?.type === 'vine';
 
   const currentUserGeolocation = currentUserListing?.attributes?.geolocation;
