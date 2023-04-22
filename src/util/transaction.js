@@ -1,6 +1,4 @@
 import { ensureTransaction } from './data';
-import { CAREGIVER } from './constants';
-import getUuid from 'uuid-by-string';
 
 /**
  * Transitions
