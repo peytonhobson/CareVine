@@ -17,7 +17,6 @@ import config from '../../config';
 import {
   NamedLink,
   Avatar,
-  Button,
   IconCheckmark,
   InfoTooltip,
   IconSearch,
@@ -27,6 +26,7 @@ import {
   IconCalendar,
   AvailabilityPreview,
   IconCareVineGold,
+  Button,
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
@@ -183,7 +183,12 @@ export const CaregiverListingCardComponent = props => {
     return isMobile ? (
       <div className={classes}>{children}</div>
     ) : (
-      <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+      <NamedLink
+        className={classes}
+        name="ListingPage"
+        params={{ id, slug }}
+        style={{ pointerEvents: disableProfileLink && 'none' }}
+      >
         {children}
       </NamedLink>
     );
@@ -330,16 +335,16 @@ export const CaregiverListingCardComponent = props => {
           </div>
         </div>
       </Wrapper>
-      <NamedLink
-        className={css.buttonContainer}
-        name="ListingPage"
-        params={{ id, slug }}
-        style={{ pointerEvents: disableProfileLink && 'none' }}
-      >
-        <Button className={css.messageButton}>
+      <div className={css.buttonContainer}>
+        <NamedLink
+          className={css.messageButton}
+          name="ListingPage"
+          params={{ id, slug }}
+          style={{ pointerEvents: disableProfileLink && 'none' }}
+        >
           <FormattedMessage id="CaregiverListingCard.viewProfile" />
-        </Button>
-      </NamedLink>
+        </NamedLink>
+      </div>
     </Card>
   );
 };

@@ -129,7 +129,10 @@ const EditListingJobDescriptionFormComponent = props => (
 
             {generateJobDescriptionInProgress ? (
               <div className={css.spinnerContainer}>
-                <IconSpinner className={css.spinner} />
+                <div style={{ textAlign: 'center' }}>
+                  <IconSpinner className={css.spinner} />
+                  <h3 className={css.generatingDescriptionText}>Generating job description...</h3>
+                </div>
               </div>
             ) : (
               <>

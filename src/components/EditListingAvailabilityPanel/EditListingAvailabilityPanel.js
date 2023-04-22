@@ -97,6 +97,7 @@ const EditListingAvailabilityPanel = props => {
 
   const handleAvailabilityPlanSubmit = values => {
     setValuesFromLastSubmit(values);
+    setShowNoEntriesError(false);
 
     setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
 

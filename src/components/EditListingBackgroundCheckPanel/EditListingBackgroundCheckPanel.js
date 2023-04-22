@@ -421,13 +421,16 @@ const EditListingBackgroundCheckPanel = props => {
     currentUser.id.uuid,
   ]);
 
+  const address = listing.attributes.privateData.address;
+  console.log(listing);
   const initialValues = {
     firstName,
     lastName,
     email,
-    city: publicData.location.city,
-    state: publicData.location.state,
-    zipCode: publicData.location.zipcode,
+    city: address?.city,
+    state: address?.state,
+    zipCode: address?.zip,
+    addressLine1: `${address?.number || ''} ${address?.street || ''} ${address?.type || ''}`,
   };
 
   const formProps = {

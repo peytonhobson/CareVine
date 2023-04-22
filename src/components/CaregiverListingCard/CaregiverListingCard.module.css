@@ -223,6 +223,7 @@
 }
 
 .messageButton {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
   min-height: 0;
 
   padding: 1rem;
