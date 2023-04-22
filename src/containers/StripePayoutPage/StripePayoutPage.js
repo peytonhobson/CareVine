@@ -93,6 +93,7 @@ export const StripePayoutPageComponent = props => {
     payoutDetailsSaved,
     params,
     intl,
+    currentUserListing,
   } = props;
 
   const { returnURLType } = params;
@@ -151,7 +152,7 @@ export const StripePayoutPageComponent = props => {
             desktopClassName={css.desktopTopbar}
             mobileClassName={css.mobileTopbar}
           />
-          <UserNav selectedPageName="StripePayoutPage" />
+          <UserNav selectedPageName="StripePayoutPage" listing={currentUserListing} />
         </LayoutWrapperTopbar>
         <LayoutWrapperAccountSettingsSideNav
           currentTab="StripePayoutPage"
@@ -263,7 +264,7 @@ const mapStateToProps = state => {
     stripeAccount,
     stripeAccountFetched,
   } = state.stripeConnectAccount;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
   const { payoutDetailsSaveInProgress, payoutDetailsSaved } = state.StripePayoutPage;
   return {
     currentUser,
@@ -277,6 +278,7 @@ const mapStateToProps = state => {
     payoutDetailsSaveInProgress,
     payoutDetailsSaved,
     scrollingDisabled: isScrollingDisabled(state),
+    currentUserListing,
   };
 };
 

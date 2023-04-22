@@ -67,6 +67,7 @@ const PaymentMethodsPageComponent = props => {
     onFetchDefaultPayment,
     onManageDisableScrolling,
     scrollingDisabled,
+    currentUserListing,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -259,7 +260,7 @@ const PaymentMethodsPageComponent = props => {
             desktopClassName={css.desktopTopbar}
             mobileClassName={css.mobileTopbar}
           />
-          <UserNav selectedPageName="PaymentMethodsPage" />
+          <UserNav selectedPageName="PaymentMethodsPage" listing={currentUserListing} />
         </LayoutWrapperTopbar>
         <LayoutWrapperAccountSettingsSideNav
           currentTab="PaymentMethodsPage"
@@ -337,7 +338,7 @@ PaymentMethodsPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const {
     createBankAccountError,
@@ -378,6 +379,7 @@ const mapStateToProps = state => {
     fetchDefaultPaymentInProgress,
     scrollingDisabled: isScrollingDisabled(state),
     stripeCustomerFetched,
+    currentUserListing,
   };
 };
 

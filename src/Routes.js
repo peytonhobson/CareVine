@@ -23,7 +23,7 @@ const canShowComponent = props => {
   const { isAuthenticated, route, currentUser } = props;
 
   if (
-    route.name === 'InboxPage' &&
+    (route.name === 'InboxPage' || route.name === 'InboxPageWithId') &&
     isAuthenticated &&
     currentUser &&
     !userCanMessage(currentUser)
@@ -138,7 +138,7 @@ class RouteComponentRenderer extends Component {
       return <NamedRedirect name="UserTypePage" />;
     }
 
-    const isInboxPage = route.name === 'InboxPage';
+    const isInboxPage = route.name === 'InboxPage' || route.name === 'InboxPageWithId';
     if (isInboxPage && !canShow && currentUser) {
       this.props.dispatch(changeModalValue(getMissingInfoModalValue(currentUser)));
     }
