@@ -1,1 +1,1 @@
-New Message on CareVine from {{transaction.protected-data.senderName}}
+New Message on CareVine from {{transaction.customer.display-name}}

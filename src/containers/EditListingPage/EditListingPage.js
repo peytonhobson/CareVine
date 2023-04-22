@@ -94,14 +94,18 @@ export const EditListingPageComponent = props => {
   const { state: currentListingState } = currentListing.attributes;
 
   const isListingDraft = currentListingState === LISTING_PAGE_PARAM_TYPE_DRAFT;
-  if (listing && type !== getListingType(isListingDraft)) {
-    history.replace(
-      createResourceLocatorString('EditListingPage', routeConfiguration(), {
-        id: listing.id?.uuid,
-        slug: createSlug(listing.attributes.title),
-        type: getListingType(isListingDraft),
-        tab: userType === 'employer' ? 'care-type' : 'services',
-      })
+
+  if (currentUserListing && (type !== getListingType(isListingDraft) || isNewURI)) {
+    return (
+      <NamedRedirect
+        name="EditListingPage"
+        params={{
+          id: currentUserListing.id?.uuid,
+          slug: createSlug(currentUserListing.attributes.title),
+          type: getListingType(isListingDraft),
+          tab: userType === 'employer' ? 'care-type' : 'services',
+        }}
+      />
     );
   }
 
@@ -358,7 +362,7 @@ const mapStateToProps = state => {
 
   const { createStripeAccountInProgress, createStripeAccountError } = state.stripeConnectAccount;
 
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const fetchInProgress = createStripeAccountInProgress;
 
@@ -378,6 +382,7 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
     uploadImageError,
     uploadInProgress,
+    currentUserListing,
   };
 };
 

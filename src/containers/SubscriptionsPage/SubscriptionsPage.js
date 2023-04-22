@@ -21,6 +21,7 @@ import {
   InlineTextButton,
   IconSpinner,
   Modal,
+  NamedRedirect,
 } from '../../components';
 import ReactivateSubscriptionPaymentModal from './Modals/ReactivateSubscriptionPaymentModal';
 import ReactivateSubscriptionModal from './Modals/ReactivateSubscriptionModal';
@@ -40,6 +41,7 @@ import {
   CAREVINE_GOLD_PRICE_ID,
   CAREVINE_BASIC_PRICE_ID,
   SUBSCRIPTION_ACTIVE_TYPES,
+  EMPLOYER,
 } from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
@@ -489,6 +491,10 @@ const SubscriptionsPageComponent = props => {
       <span className={css.loadingText}>Loading payment info...</span>
     </div>
   );
+
+  if (ensuredCurrentUser?.attributes?.profile?.metadata?.userType === EMPLOYER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
 
   return (
     <>
