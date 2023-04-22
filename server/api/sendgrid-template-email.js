@@ -30,7 +30,7 @@ module.exports = (req, res) => {
 
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
-        from: 'no-reply@carevine.us',
+        from: 'hello@carevine.us',
         personalizations: [
           {
             to: [
