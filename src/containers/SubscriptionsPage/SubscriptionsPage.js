@@ -100,6 +100,7 @@ const SubscriptionsPageComponent = props => {
     onCreateFutureSubscription,
     onCancelFutureSubscription,
     onUpdateSubscriptionItem,
+    currentUserListing,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -270,7 +271,9 @@ const SubscriptionsPageComponent = props => {
           try {
             const response = await onCreateFutureSubscription(
               stripeCustomerId,
-              backgroundCheckSubscription.currentPeriodEnd + 60000, // Start subscription a minute after the current period ends to avoid close listing
+              // Start subscription a minute after the current period ends so subscription canceled in webhook happens prior to this
+              // Stripe does unix timestamps in seconds, so we add 60 seconds to the current period end
+              backgroundCheckSubscription.currentPeriodEnd + 60,
               priceId,
               ensuredCurrentUser.id.uuid
             );
@@ -491,7 +494,7 @@ const SubscriptionsPageComponent = props => {
               desktopClassName={css.desktopTopbar}
               mobileClassName={css.mobileTopbar}
             />
-            <UserNav selectedPageName="SubscriptionsPage" />
+            <UserNav selectedPageName="SubscriptionsPage" listing={currentUserListing} />
           </LayoutWrapperTopbar>
           <LayoutWrapperAccountSettingsSideNav
             currentTab="SubscriptionsPage"
@@ -605,7 +608,7 @@ const SubscriptionsPageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const {
     cancelSubscriptionInProgress,
@@ -649,27 +652,22 @@ const mapStateToProps = state => {
     stripeCustomerFetched,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    currentUserListing,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
-  onCreateCreditCard: (stripeCustomerId, stripe, billingDetails, card) =>
-    dispatch(createCreditCard(stripeCustomerId, stripe, billingDetails, card)),
-  onCancelSubscription: subscriptionId => dispatch(cancelSubscription(subscriptionId)),
-  onUpdateSubscription: (subscriptionId, params) =>
-    dispatch(updateSubscription(subscriptionId, params)),
-  onCreateSubscription: (stripeCustomerId, stripe, card, params, payImmediate) =>
-    dispatch(createSubscription(stripeCustomerId, stripe, card, params, payImmediate)),
-  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
-  onCreateFutureSubscription: (stripeCustomerId, startDate, priceId, userId) =>
-    dispatch(createFutureSubscription(stripeCustomerId, startDate, priceId, userId)),
-  onCancelFutureSubscription: scheduleId => dispatch(cancelFutureSubscription(scheduleId)),
-  onUpdateSubscriptionItem: (subscriptionId, priceId) =>
-    dispatch(updateSubscriptionItem(subscriptionId, priceId)),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onFetchDefaultPayment: fetchDefaultPayment,
+  onCreateCreditCard: createCreditCard,
+  onCancelSubscription: cancelSubscription,
+  onUpdateSubscription: updateSubscription,
+  onCreateSubscription: createSubscription,
+  onFetchCurrentUser: fetchCurrentUser,
+  onCreateFutureSubscription: createFutureSubscription,
+  onCancelFutureSubscription: cancelFutureSubscription,
+  onUpdateSubscriptionItem: updateSubscriptionItem,
+};
 
 const SubscriptionsPage = compose(
   connect(mapStateToProps, mapDispatchToProps),

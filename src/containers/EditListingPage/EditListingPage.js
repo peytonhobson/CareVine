@@ -84,16 +84,12 @@ export const EditListingPageComponent = props => {
     history.replace(history.location.pathname.replace('/l/', '/create-profile/'));
   }
 
-  const ensuredCurrentUser = useMemo(() => {
-    ensureCurrentUser(currentUser);
-  }, [currentUser]);
+  const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
 
   const listingId = page.submittedListingId || (id ? new UUID(id) : null);
-  const listing = useMemo(() => getOwnListing(listingId), [getOwnListing, listingId]);
-  const currentListing = useMemo(() => {
-    ensureOwnListing(listing);
-  }, [listing]);
+  const listing = getOwnListing(listingId);
+  const currentListing = ensureOwnListing(listing);
 
   const { state: currentListingState } = currentListing.attributes;
 
