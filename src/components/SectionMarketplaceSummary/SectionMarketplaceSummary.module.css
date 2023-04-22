@@ -25,13 +25,14 @@
   width: 100%;
 
   @media (--viewportMedium) {
-    padding-inline: 2rem;
+    padding-right: 4rem;
+    padding-left: 0;
     margin: auto;
   }
 }
 
 .summaryText {
-  text-align: left;
+  text-align: justify;
 }
 
 .graphic {

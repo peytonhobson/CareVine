@@ -21,20 +21,12 @@ const buttonGroupOptions = [
 ];
 
 const SectionMarketplaceSummary = props => {
-  const { rootClassName, className, currentUser } = props;
+  const { rootClassName, className, onScrollIntoView } = props;
 
-  const buttonGroupRef = useRef(null);
   const [userType, setUserType] = useState(CAREGIVER);
 
   const handleUserTypeChange = userType => {
     setUserType(userType);
-  };
-
-  const scrollIntoView = () => {
-    buttonGroupRef.current.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
   };
 
   const classes = classNames(rootClassName || css.root, className);
@@ -44,7 +36,7 @@ const SectionMarketplaceSummary = props => {
         <FormattedMessage id="SectionMarketplaceSummary.title" />
       </div>
 
-      <div className={css.userButtons} ref={buttonGroupRef} onClick={scrollIntoView}>
+      <div className={css.userButtons} onClick={onScrollIntoView}>
         <ButtonGroup
           className={css.buttonGroup}
           initialSelect={CAREGIVER}
@@ -59,11 +51,15 @@ const SectionMarketplaceSummary = props => {
         <div className={css.summaryContainer}>
           <div className={css.summary}>
             <h1 className={css.summaryTitle}>
-              <FormattedMessage id="SectionMarketplaceSummary.summaryTitleCaregiver" />
+              <div>Caregiving Freedom:</div>
+              <div>Your Journey, Your Way</div>
             </h1>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
-                <FormattedMessage id="SectionMarketplaceSummary.summaryTextCaregiver" />
+                Set your rates, choose your hours, and handpick your clients in your preferred
+                location. Showcase your unique skills and passion to our community, unlocking
+                endless opportunities. Reimagine your caregiving career with freedom, flexibility,
+                and recognition—only at CareVine.
               </p>
             </div>
           </div>
@@ -75,11 +71,15 @@ const SectionMarketplaceSummary = props => {
         <div className={css.summaryContainer}>
           <div className={css.summary}>
             <h1 className={css.summaryTitle}>
-              <FormattedMessage id="SectionMarketplaceSummary.summaryTitleEmployer" />
+              <div>Your Care, In Your Hands:</div>
+              <div>Find the Perfect Caregiver for You</div>
             </h1>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
-                <FormattedMessage id="SectionMarketplaceSummary.summaryTextEmployer" />
+                Discover the seamless solution to finding the perfect caregiver. Tailor your care
+                experience by selecting professionals that fit your needs, budget, and location. Our
+                user-friendly platform eliminates the middleman, empowering you to take control of
+                your care journey. Accessible to all, CareVine puts the power in your hands.
               </p>
             </div>
           </div>
