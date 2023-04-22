@@ -602,7 +602,7 @@ export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, g
         fromEmail: 'admin-notification@carevine.us',
         receiverEmail: 'peyton.hobson@carevine.us',
         subject: 'Criminal Background Check Review',
-        html: `<span>User (${userId}) has a background check that needs reviewed.</span></br>
+        html: `<span>User (${userId}) has a background check that needs reviewed.</span><br><br>
         <span>Result: ${JSON.stringify(result)}</span></br>`,
       });
       dispatch(fetchCurrentUser());
