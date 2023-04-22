@@ -138,6 +138,7 @@ const updateBackgroundCheckSubscription = async subscription => {
     const isReactivatingSubscription =
       (prevBackgroundCheckSubscription?.status === 'canceled' ||
         prevBackgroundCheckSubscription?.cancelAtPeriodEnd) &&
+      !subscription?.cancel_at_period_end &&
       prevBackgroundCheckSubscription?.type === type &&
       activeSubscriptionTypes.includes(subscription?.status);
 
@@ -438,8 +439,10 @@ module.exports = (request, response) => {
     case 'charge.succeeded':
       const chargeSucceeded = event.data.object;
 
-      sendPaymentReceivedNotifications(chargeSucceeded);
-      updateUserPaymentHistory(chargeSucceeded);
+      if (chargeSucceeded?.metadata?.senderId) {
+        sendPaymentReceivedNotifications(chargeSucceeded);
+        updateUserPaymentHistory(chargeSucceeded);
+      }
       break;
     case 'subscription_schedule.canceled':
       console.log('subscription_schedule.canceled');
