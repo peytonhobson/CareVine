@@ -27,11 +27,13 @@ import {
   UserNav,
   ButtonTabNavHorizontal,
   SavedBankDetails,
+  NamedRedirect,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { SaveBankAccountForm, SaveCreditCardForm } from '../../forms';
 import { fetchDefaultPayment } from './PaymentMethodsPage.duck.js';
 import config from '../../config';
+import { CAREGIVER } from '../../util/constants';
 
 import css from './PaymentMethodsPage.module.css';
 
@@ -249,6 +251,10 @@ const PaymentMethodsPageComponent = props => {
     default:
       tabContentPanel = null;
       break;
+  }
+
+  if (ensuredCurrentUser.attributes.profile.metadata?.userType === CAREGIVER) {
+    return <NamedRedirect name="LandingPage" />;
   }
 
   return (

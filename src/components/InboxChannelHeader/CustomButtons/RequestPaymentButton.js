@@ -49,7 +49,6 @@ const RequestPaymentButton = props => {
     !!disabled ||
     !currentUser.stripeAccount?.id ||
     !conversationId ||
-    !otherUser ||
     sendRequestForPaymentSuccess ||
     checkIfRequestInLastDay(currentUser, otherUser.id.uuid);
 
