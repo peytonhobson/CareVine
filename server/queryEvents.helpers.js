@@ -4,6 +4,7 @@ const log = require('./log');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const CAREGIVER = 'caregiver';
 const { v4: uuidv4 } = require('uuid');
+const activeSubscriptionTypes = ['active', 'trialing'];
 
 const createSlug = str => {
   let text = str
@@ -208,7 +209,7 @@ const updateListingApproveListing = async event => {
     const metadata = user?.attributes?.profile?.metadata;
     const openListing =
       metadata?.userType === CAREGIVER
-        ? metadata?.backgroundCheckSubscription?.status === 'active' &&
+        ? activeSubscriptionTypes.includes(metadata?.backgroundCheckSubscription?.status) &&
           user?.attributes?.emailVerified
         : user?.attributes?.emailVerified;
     if (openListing) {

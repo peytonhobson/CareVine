@@ -12,6 +12,7 @@ const isDev = process.env.REACT_APP_ENV === 'development';
 const isTest = process.env.NODE_ENV === 'production' && isDev;
 const isProd = process.env.NODE_ENV === 'production' && !isDev;
 const { v4: uuidv4 } = require('uuid');
+const activeSubscriptionTypes = ['active', 'trialing'];
 
 let singleActionProcessAlias;
 
@@ -138,7 +139,7 @@ const updateBackgroundCheckSubscription = async subscription => {
       (prevBackgroundCheckSubscription?.status === 'canceled' ||
         prevBackgroundCheckSubscription?.cancelAtPeriodEnd) &&
       prevBackgroundCheckSubscription?.type === type &&
-      subscription?.status === 'active';
+      activeSubscriptionTypes.includes(subscription?.status);
 
     const isCanceling =
       !prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancel_at_period_end;
@@ -148,7 +149,7 @@ const updateBackgroundCheckSubscription = async subscription => {
     const isConfirming =
       (!prevBackgroundCheckSubscription ||
         prevBackgroundCheckSubscription.status === 'incomplete') &&
-      subscription?.status === 'active' &&
+      activeSubscriptionTypes.includes(subscription?.status) &&
       !isUpgrading;
 
     const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';

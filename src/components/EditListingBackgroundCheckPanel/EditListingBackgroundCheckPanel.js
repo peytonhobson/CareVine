@@ -23,6 +23,7 @@ import {
   BACKGROUND_CHECK_APPROVED,
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
+  SUBSCRIPTION_ACTIVE_TYPES,
 } from '../../util/constants';
 import {
   authenticateCreateUser,
@@ -239,10 +240,7 @@ const EditListingBackgroundCheckPanel = props => {
       if (!getIdentityProofQuizInProgress) {
         setStage(SUBMIT_CONSENT);
       }
-    } else if (
-      backgroundCheckSubscription?.status === 'active' ||
-      backgroundCheckSubscription?.status === 'trialing'
-    ) {
+    } else if (SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)) {
       setStage(CREATE_USER);
     } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);

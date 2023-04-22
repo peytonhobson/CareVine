@@ -31,7 +31,7 @@ import {
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { formatPrice } from '../../util/data';
-import { useCheckMobileScreen } from '../../util/hooks';
+import { SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './CaregiverListingCard.module.css';
 
@@ -71,7 +71,7 @@ export const CaregiverListingCardComponent = props => {
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
-    backgroundCheckSubscription?.status === 'active' &&
+    SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
     backgroundCheckSubscription?.type === 'vine';
 
   const classes = classNames(rootClassName || css.root, className);

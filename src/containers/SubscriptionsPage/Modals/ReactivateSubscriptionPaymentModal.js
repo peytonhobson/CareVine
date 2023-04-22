@@ -3,6 +3,7 @@ import React from 'react';
 import { Modal, Button, SavedCardDetails } from '../../../components';
 import { ensurePaymentMethodCard } from '../../../util/data';
 import ReactivateInfo from './ReactivateInfo';
+import { SUBSCRIPTION_ACTIVE_TYPES } from '../../../util/constants';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -39,7 +40,8 @@ const ReactivateSubscriptionPaymentModal = props => {
   const inProgress =
     createSubscriptionInProgress || updateSubscriptionInProgress || cancelSubscriptionInProgress;
 
-  const isUpgrading = bcType === BASIC && bcStatus === 'active' && !cancelAtPeriodEnd;
+  const isUpgrading =
+    bcType === BASIC && SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd;
 
   return (
     <Modal
