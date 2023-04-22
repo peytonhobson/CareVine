@@ -156,7 +156,7 @@ const EditListingBackgroundCheckForm = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <h1 className={css.title}>
-            Provide your <span className={css.identityText}>information</span>
+            Provide Your <span className={css.identityText}>Information</span>
           </h1>
           {update && (
             <p style={{ color: 'var(--marketplaceColor)' }}>

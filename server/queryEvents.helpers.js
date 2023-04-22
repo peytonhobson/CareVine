@@ -332,9 +332,9 @@ const cancelSubscription = async backgroundCheckSubscription => {
 
 const backgroundCheckApprovedNotification = async userId => {
   try {
-    const res = integrationSdk.listings.query({ authorId: userId });
+    const res = await integrationSdk.listings.query({ authorId: userId });
 
-    const listing = res?.data?.data?.length > 0 && res.data.data[0];
+    const listing = res?.data?.data?.length > 0 ? res.data.data[0] : null;
 
     const listingId = listing?.id?.uuid;
     await axios.post(
