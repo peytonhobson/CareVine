@@ -102,7 +102,7 @@ export const LandingPageComponent = props => {
                     currentUserListingFetched={currentUserListingFetched}
                   />
                 ) : (
-                  <SectionMarketplaceSummary />
+                  <SectionMarketplaceSummary onScrollIntoView={scrollToContent} />
                 )}
               </div>
             </li>
