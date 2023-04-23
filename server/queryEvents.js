@@ -20,6 +20,7 @@ module.exports = queryEvents = () => {
     backgroundCheckApprovedNotification,
     backgroundCheckRejectedNotification,
     addUnreadMessageCount,
+    sendQuizFailedEmail,
   } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
@@ -147,7 +148,6 @@ module.exports = queryEvents = () => {
       }
 
       if (
-        !isDev &&
         tcmEnrolled &&
         (backgroundCheckSubscription.type !== 'vine' ||
           !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status))
@@ -173,6 +173,12 @@ module.exports = queryEvents = () => {
       ) {
         console.log('cancel subscription');
         cancelSubscription(backgroundCheckSubscription);
+
+        if (identityProofQuizAttempts >= 3) {
+          console.log('send quiz failed email');
+          const userId = event.attributes.resource?.id?.uuid;
+          sendQuizFailedEmail(userId);
+        }
       }
 
       const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;

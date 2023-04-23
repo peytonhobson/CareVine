@@ -5,6 +5,8 @@ const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const CAREGIVER = 'caregiver';
 const { v4: uuidv4 } = require('uuid');
 const activeSubscriptionTypes = ['active', 'trialing'];
+const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const createSlug = str => {
   let text = str
@@ -265,7 +267,7 @@ const enrollUserTCM = async (event, userAccessCode) => {
     await axios.post(
       `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
       {
-        userAccessCode,
+        userAccessCode: isDev ? 'test' : userAccessCode,
       },
       {
         headers: {
@@ -282,7 +284,7 @@ const enrollUserTCM = async (event, userAccessCode) => {
       },
     });
   } catch (e) {
-    log.error(e, 'user-enroll-tcm-failed', {});
+    log.error(e?.data, 'user-enroll-tcm-failed', { userAccessCode });
   }
 };
 
@@ -291,7 +293,7 @@ const deEnrollUserTCM = async (event, userAccessCode) => {
     await axios.post(
       `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
       {
-        userAccessCode,
+        userAccessCode: isDev ? 'test' : userAccessCode,
       },
       {
         headers: {
@@ -308,7 +310,7 @@ const deEnrollUserTCM = async (event, userAccessCode) => {
       },
     });
   } catch (e) {
-    log.error(e, 'user-deenroll-tcm-failed', {});
+    log.error(e?.data, 'user-deenroll-tcm-failed', { userAccessCode });
   }
 };
 
@@ -411,6 +413,27 @@ const addUnreadMessageCount = async (txId, senderId) => {
   }
 };
 
+const sendQuizFailedEmail = async userId => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-standard-email`,
+      {
+        fromEmail: 'admin-notification@carevine.us',
+        receiverEmail: 'peyton.hobson@carevine.us',
+        subject: 'Identity Quiz Failed',
+        html: `<html><span>User ID: ${userId}</span></html>`,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'send-quiz-failed-email-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -422,4 +445,5 @@ module.exports = {
   backgroundCheckRejectedNotification,
   backgroundCheckApprovedNotification,
   addUnreadMessageCount,
+  sendQuizFailedEmail,
 };

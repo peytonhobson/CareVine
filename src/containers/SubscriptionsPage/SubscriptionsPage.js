@@ -189,6 +189,7 @@ const SubscriptionsPageComponent = props => {
       break;
     case 'trialing':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.trialing" />;
+      break;
     case 'past_due':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.pastDue" />;
       break;
