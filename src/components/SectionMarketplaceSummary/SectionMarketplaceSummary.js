@@ -6,12 +6,8 @@ import { propTypes } from '../../util/types';
 import { NamedLink, ButtonGroup } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
-import createProfileImage from '../../assets/profile-preview.png';
-import employerListingImage from '../../assets/employer-listing-card.png';
-import caregiverInquiryMessage from '../../assets/caregiver-inquiry-message.png';
-import employerCareTypes from '../../assets/employer-care-types.png';
 import caregiverListingImage from '../../assets/caregiver-listing-card.png';
-import employerInquiryMessage from '../../assets/employer-inquiry-message.png';
+import employerListingsImage from '../../assets/employer-listings.png';
 
 import css from './SectionMarketplaceSummary.module.css';
 
@@ -64,7 +60,7 @@ const SectionMarketplaceSummary = props => {
             </div>
           </div>
           <div className={css.graphic}>
-            <img className={css.graphicImage} src={employerListingImage} />
+            <img className={css.graphicImage} src={employerListingsImage} />
           </div>
         </div>
       ) : (

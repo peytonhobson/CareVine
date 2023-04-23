@@ -54,7 +54,7 @@
   max-width: 100%;
 
   @media (--viewportMedium) {
-    max-height: 20rem;
+    max-height: 23emrem;
   }
 }
 
