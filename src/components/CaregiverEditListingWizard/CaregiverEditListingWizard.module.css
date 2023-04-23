@@ -108,17 +108,23 @@
 
 .modalTitleContainer {
   margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
   @media (--viewportMedium) {
     margin-top: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    flex-wrap: nowrap;
   }
 }
 
 .stripeContainer {
-  display: flex;
-  justify-content: center;
+  margin: auto;
+  margin-top: 1.5rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
 }
 
 .stripeLogo {

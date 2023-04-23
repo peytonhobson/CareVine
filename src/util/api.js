@@ -14,6 +14,7 @@ export const apiBaseUrl = () => {
 
   if (useDevApiServer) {
     return `http://localhost:${port}`;
+    // return `http://10.0.0.222:${port}`;
   }
 
   // Otherwise, use the same domain and port as the frontend

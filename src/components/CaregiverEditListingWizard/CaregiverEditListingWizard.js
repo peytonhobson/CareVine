@@ -497,6 +497,7 @@ class CaregiverEditListingWizard extends Component {
                 <FormattedMessage id="CaregiverEditListingWizard.payoutModalTitlePayoutPreferences" />
               </h1>
               <div className={css.stripeContainer}>
+                <p className={css.poweredBy}>Powered by</p>
                 <img src={stripeLogo} className={css.stripeLogo} />
               </div>
             </div>
