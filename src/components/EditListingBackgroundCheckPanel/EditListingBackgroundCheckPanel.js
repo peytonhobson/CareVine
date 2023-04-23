@@ -93,7 +93,6 @@ const EditListingBackgroundCheckPanel = props => {
     onGetIdentityProofQuiz,
     onManageDisableScrolling,
     onNextTab,
-    onUpdateSubscription,
     onVerifyIdentityProofQuiz,
     panelUpdated,
     ready,
@@ -102,8 +101,6 @@ const EditListingBackgroundCheckPanel = props => {
     submitButtonText,
     subscription,
     updateInProgress,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
     onFetchCurrentUser,
   } = props;
 
@@ -199,14 +196,12 @@ const EditListingBackgroundCheckPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
-  const { description, title, publicData } = currentListing.attributes;
   const {
     profile: { firstName, lastName, metadata, privateData },
     email,
   } = currentUser.attributes;
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const panelTitle = <FormattedMessage id="EditListingBackgroundCheckPanel.createListingTitle" />;
 
   const authenticateUserAccessCode = privateData?.authenticateUserAccessCode;
   const authenticateConsent = privateData?.authenticateConsent;
@@ -319,19 +314,23 @@ const EditListingBackgroundCheckPanel = props => {
 
     const addressLine2String = addressLine2 ? `, ${addressLine2}` : '';
 
+    const phoneString = `+1${phone.replace(/-/g, '')}`;
+    const fullAddress = `${addressLine1}${addressLine2String}`;
+    const ssnString = ssn.replace(/-/g, '');
+
     const userInfo = {
-      firstName,
-      middleName,
-      lastName,
+      firstName: firstName.trim(),
+      middleName: middleName ? middleName.trim() : '',
+      lastName: lastName.trim(),
       dob: moment(dob.date).format('DD-MM-YYYY'),
-      email,
-      phone: `+1${phone.replace(/-/g, '')}`,
-      streetName: addressLine1,
-      address: `${addressLine1}${addressLine2String}`,
-      city,
-      state,
-      zipCode,
-      ssn: ssn.replace(/-/g, ''),
+      email: email.trim(),
+      phone: phoneString.trim(),
+      streetName: addressLine1.trim(),
+      address: fullAddress.trim(),
+      city: city.trim(),
+      state: state.trim(),
+      zipCode: zipCode.trim(),
+      ssn: ssnString.trim(),
     };
 
     if (stage === CREATE_USER) {
@@ -382,19 +381,19 @@ const EditListingBackgroundCheckPanel = props => {
       onVerifyIdentityProofQuiz(
         IDMSessionId,
         authenticateUserAccessCode,
-        currentUser.id.uuid,
+        currentUser.id?.uuid,
         answers,
         currentAttempts
       );
     } else if (!authenticateCriminalBackgroundGenerated) {
-      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id.uuid);
+      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (!authenticateUserTestResult) {
-      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id.uuid);
+      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (
       !authenticate7YearHistory &&
-      authenticateUserTestResult.backgroundCheck.hasCriminalRecord
+      authenticateUserTestResult?.backgroundCheck?.hasCriminalRecord
     ) {
-      onGet7YearHistory(authenticateUserAccessCode, currentUser.id.uuid);
+      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid);
     }
   };
 
@@ -404,7 +403,7 @@ const EditListingBackgroundCheckPanel = props => {
     onCreateSubscription(
       stripeCustomerId,
       bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-      currentUser.id.uuid
+      currentUser.id?.uuid
     ).then(() => {
       onFetchCurrentUser();
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });

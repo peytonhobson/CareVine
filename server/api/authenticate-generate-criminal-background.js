@@ -10,8 +10,6 @@ const mockUserAccessCodes = [
   '2d91a19f-d07b-48f0-912f-886ed67009dd', // Success
 ];
 
-const mockFullNames = ['Jonathan Doe', 'Michael Gary Scott'];
-
 module.exports = (req, res) => {
   const { userAccessCode } = req.body;
 
@@ -26,7 +24,7 @@ module.exports = (req, res) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: isDev ? '' : `Bearer ${AUTHENTICATE_API_KEY}`,
+          Authorization: `Bearer ${AUTHENTICATE_API_KEY}`,
         },
       }
     )
