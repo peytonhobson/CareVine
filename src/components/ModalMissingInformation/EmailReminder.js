@@ -12,6 +12,7 @@ const EmailReminder = props => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     onResendVerificationEmail,
+    onChangeModalValue,
   } = props;
 
   const email = user.id ? <span className={css.email}>{user.attributes.email}</span> : '';
@@ -64,7 +65,7 @@ const EmailReminder = props => {
             />
           )}
         </p>
-        <p className={css.helperText}>
+        <p className={css.helperText} onClick={() => onChangeModalValue(null)}>
           <FormattedMessage id="ModalMissingInformation.fixEmail" values={{ fixEmailLink }} />
         </p>
       </div>
