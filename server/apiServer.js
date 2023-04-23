@@ -26,6 +26,7 @@ if (isDev) {
 app.use(
   cors({
     origin: process.env.REACT_APP_CANONICAL_ROOT_URL,
+    // origin: 'http://10.0.0.222:3000',
     credentials: true,
   })
 );
