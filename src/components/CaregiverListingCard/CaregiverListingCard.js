@@ -268,13 +268,15 @@ export const CaregiverListingCardComponent = props => {
                 />
               </div>
             )}
-            <div className={css.badge}>
-              <InfoTooltip
-                title={experienceLevelTitle}
-                icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
-                styles={{ paddingInline: '0' }}
-              />
-            </div>
+            {experienceLevel !== '0' && (
+              <div className={css.badge}>
+                <InfoTooltip
+                  title={experienceLevelTitle}
+                  icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
+                  styles={{ paddingInline: '0' }}
+                />
+              </div>
+            )}
             {scheduleTypes && scheduleTypes.includes('liveIn') && (
               <div className={css.badge}>
                 <InfoTooltip
