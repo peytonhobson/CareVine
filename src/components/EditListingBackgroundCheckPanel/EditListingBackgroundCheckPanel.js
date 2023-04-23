@@ -518,15 +518,12 @@ const EditListingBackgroundCheckPanel = props => {
       );
       break;
     case CONFIRM_PAYMENT:
-      const paymentConfirmedMessage = intl.formatMessage({
-        id: 'StripePaymentModal.paymentConfirmedMessage',
-      });
       content = (
         <div className={css.confirmationContainer}>
           <div className={css.iconContainer}>
             <IconConfirm />
           </div>
-          <div className={css.confirmationText}>{paymentConfirmedMessage}</div>
+          <div className={css.confirmationText}>Subscription Confirmed</div>
           <p className={css.redirectingText}>Redirecting you to provide your info...</p>
         </div>
       );

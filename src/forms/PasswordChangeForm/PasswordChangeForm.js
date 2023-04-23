@@ -9,7 +9,7 @@ import { propTypes } from '../../util/types';
 import * as validators from '../../util/validators';
 import { ensureCurrentUser } from '../../util/data';
 import { isChangePasswordWrongPassword } from '../../util/errors';
-import { Form, PrimaryButton, FieldTextInput } from '../../components';
+import { Form, PrimaryButton, FieldTextInput, InlineTextButton, Modal } from '../../components';
 
 import css from './PasswordChangeForm.module.css';
 
@@ -22,6 +22,7 @@ class PasswordChangeFormComponent extends Component {
     this.resetTimeoutId = null;
     this.submittedValues = {};
     this.handleResetPassword = this.handleResetPassword.bind(this);
+    this.isPasswordRequirementsModalOpen = false;
   }
   componentWillUnmount() {
     window.clearTimeout(this.resetTimeoutId);
@@ -54,6 +55,7 @@ class PasswordChangeFormComponent extends Component {
             ready,
             form,
             values,
+            onManageDisableScrolling,
           } = fieldRenderProps;
 
           const user = ensureCurrentUser(currentUser);
@@ -69,14 +71,15 @@ class PasswordChangeFormComponent extends Component {
           const newPasswordPlaceholder = intl.formatMessage({
             id: 'PasswordChangeForm.newPasswordPlaceholder',
           });
-          const newPasswordRequiredMessage = intl.formatMessage({
-            id: 'PasswordChangeForm.newPasswordRequired',
+          const passwordRequiredMessage = intl.formatMessage({
+            id: 'PasswordChangeForm.passwordRequired',
           });
-          const newPasswordRequired = validators.requiredStringNoTrim(newPasswordRequiredMessage);
-
+          const passwordValidMessage = intl.formatMessage({
+            id: 'SignupForm.passwordInvalid',
+          });
           const passwordMinLengthMessage = intl.formatMessage(
             {
-              id: 'PasswordChangeForm.passwordTooShort',
+              id: 'SignupForm.passwordTooShort',
             },
             {
               minLength: validators.PASSWORD_MIN_LENGTH,
@@ -84,13 +87,12 @@ class PasswordChangeFormComponent extends Component {
           );
           const passwordMaxLengthMessage = intl.formatMessage(
             {
-              id: 'PasswordChangeForm.passwordTooLong',
+              id: 'SignupForm.passwordTooLong',
             },
             {
               maxLength: validators.PASSWORD_MAX_LENGTH,
             }
           );
-
           const passwordMinLength = validators.minLength(
             passwordMinLengthMessage,
             validators.PASSWORD_MIN_LENGTH
@@ -100,6 +102,15 @@ class PasswordChangeFormComponent extends Component {
             validators.PASSWORD_MAX_LENGTH
           );
 
+          const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
+          const passwordValid = validators.validPasswordFormat(passwordValidMessage);
+          const passwordValidators = validators.composeValidators(
+            passwordRequired,
+            passwordValid,
+            passwordMinLength,
+            passwordMaxLength
+          );
+
           // password
           const passwordLabel = intl.formatMessage({
             id: 'PasswordChangeForm.passwordLabel',
@@ -107,11 +118,6 @@ class PasswordChangeFormComponent extends Component {
           const passwordPlaceholder = intl.formatMessage({
             id: 'PasswordChangeForm.passwordPlaceholder',
           });
-          const passwordRequiredMessage = intl.formatMessage({
-            id: 'PasswordChangeForm.passwordRequired',
-          });
-
-          const passwordRequired = validators.requiredStringNoTrim(passwordRequiredMessage);
 
           const passwordFailedMessage = intl.formatMessage({
             id: 'PasswordChangeForm.passwordFailed',
@@ -165,76 +171,112 @@ class PasswordChangeFormComponent extends Component {
             );
 
           return (
-            <Form
-              className={classes}
-              onSubmit={e => {
-                this.submittedValues = values;
-                handleSubmit(e)
-                  .then(() => {
-                    this.resetTimeoutId = window.setTimeout(form.reset, RESET_TIMEOUT);
-                  })
-                  .catch(() => {
-                    // Error is handled in duck file already.
-                  });
-              }}
-            >
-              <div className={css.newPasswordSection}>
-                <FieldTextInput
-                  type="password"
-                  id={formId ? `${formId}.newPassword` : 'newPassword'}
-                  name="newPassword"
-                  autoComplete="new-password"
-                  label={newPasswordLabel}
-                  placeholder={newPasswordPlaceholder}
-                  validate={validators.composeValidators(
-                    newPasswordRequired,
-                    passwordMinLength,
-                    passwordMaxLength
-                  )}
-                />
-              </div>
-
-              <div className={confirmClasses}>
-                <h3 className={css.confirmChangesTitle}>
-                  <FormattedMessage id="PasswordChangeForm.confirmChangesTitle" />
-                </h3>
-                <p className={css.confirmChangesInfo}>
-                  <FormattedMessage id="PasswordChangeForm.confirmChangesInfo" />
-                  <br />
-                  <FormattedMessage
-                    id="PasswordChangeForm.resetPasswordInfo"
-                    values={{ resetPasswordLink }}
+            <>
+              <Form
+                className={classes}
+                onSubmit={e => {
+                  this.submittedValues = values;
+                  handleSubmit(e)
+                    .then(() => {
+                      this.resetTimeoutId = window.setTimeout(form.reset, RESET_TIMEOUT);
+                    })
+                    .catch(() => {
+                      // Error is handled in duck file already.
+                    });
+                }}
+              >
+                <div className={css.newPasswordSection}>
+                  <FieldTextInput
+                    type="password"
+                    id={formId ? `${formId}.newPassword` : 'newPassword'}
+                    name="newPassword"
+                    autoComplete="new-password"
+                    label={newPasswordLabel}
+                    placeholder={newPasswordPlaceholder}
+                    validate={passwordValidators}
                   />
-                </p>
+                  <InlineTextButton
+                    onClick={() => this.setState({ isPasswordRequirementsModalOpen: true })}
+                    className={css.passwordRequirementsButton}
+                    type="button"
+                  >
+                    <FormattedMessage id="SignupForm.passwordRequirements" />
+                  </InlineTextButton>
+                </div>
 
-                <FieldTextInput
-                  className={css.password}
-                  type="password"
-                  id="currentPassword"
-                  name="currentPassword"
-                  autoComplete="current-password"
-                  label={passwordLabel}
-                  placeholder={passwordPlaceholder}
-                  validate={validators.composeValidators(
-                    passwordRequired,
-                    passwordMinLength,
-                    passwordMaxLength
-                  )}
-                  customErrorText={passwordTouched ? null : passwordErrorText}
-                />
-              </div>
-              <div className={css.bottomWrapper}>
-                {genericFailure}
-                <PrimaryButton
-                  type="submit"
-                  inProgress={inProgress}
-                  ready={ready}
-                  disabled={submitDisabled}
-                >
-                  <FormattedMessage id="PasswordChangeForm.saveChanges" />
-                </PrimaryButton>
-              </div>
-            </Form>
+                <div className={confirmClasses}>
+                  <h3 className={css.confirmChangesTitle}>
+                    <FormattedMessage id="PasswordChangeForm.confirmChangesTitle" />
+                  </h3>
+                  <p className={css.confirmChangesInfo}>
+                    <FormattedMessage id="PasswordChangeForm.confirmChangesInfo" />
+                    <br />
+                    <FormattedMessage
+                      id="PasswordChangeForm.resetPasswordInfo"
+                      values={{ resetPasswordLink }}
+                    />
+                  </p>
+
+                  <FieldTextInput
+                    className={css.password}
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    autoComplete="current-password"
+                    label={passwordLabel}
+                    placeholder={passwordPlaceholder}
+                    validate={validators.composeValidators(
+                      passwordRequired,
+                      passwordMinLength,
+                      passwordMaxLength
+                    )}
+                    customErrorText={passwordTouched ? null : passwordErrorText}
+                  />
+                </div>
+                <div className={css.bottomWrapper}>
+                  {genericFailure}
+                  <PrimaryButton
+                    type="submit"
+                    inProgress={inProgress}
+                    ready={ready}
+                    disabled={submitDisabled}
+                  >
+                    <FormattedMessage id="PasswordChangeForm.saveChanges" />
+                  </PrimaryButton>
+                </div>
+              </Form>
+              <Modal
+                id="PasswordRequirements"
+                isOpen={this.state.isPasswordRequirementsModalOpen}
+                onClose={() => this.setState({ isPasswordRequirementsModalOpen: false })}
+                containerClassName={css.passwordReqs}
+                usePortal
+                onManageDisableScrolling={onManageDisableScrolling}
+              >
+                <div className={css.passwordRequirementsModal}>
+                  <h2 className={css.modalTitle}>
+                    <FormattedMessage id="SignupForm.passwordRequirements" />
+                  </h2>
+                  <ul className={css.passwordRequirementsModalList}>
+                    <li className={css.passwordRequirementsModalListItem}>
+                      <FormattedMessage id="SignupForm.passwordRequirementsListItem1" />
+                    </li>
+                    <li className={css.passwordRequirementsModalListItem}>
+                      <FormattedMessage id="SignupForm.passwordRequirementsListItem2" />
+                    </li>
+                    <li className={css.passwordRequirementsModalListItem}>
+                      <FormattedMessage id="SignupForm.passwordRequirementsListItem3" />
+                    </li>
+                    <li className={css.passwordRequirementsModalListItem}>
+                      <FormattedMessage id="SignupForm.passwordRequirementsListItem4" />
+                    </li>
+                    <li className={css.passwordRequirementsModalListItem}>
+                      <FormattedMessage id="SignupForm.passwordRequirementsListItem5" />
+                    </li>
+                  </ul>
+                </div>
+              </Modal>
+            </>
           );
         }}
       />
