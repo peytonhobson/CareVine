@@ -554,6 +554,7 @@ const mapStateToProps = state => {
     fetchExistingConversationInProgress,
     fetchExistingConversationError,
     existingConversation,
+    scrollingDisabled: isScrollingDisabled(state),
   };
 };
 
