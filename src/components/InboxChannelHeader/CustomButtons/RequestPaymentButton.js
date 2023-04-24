@@ -59,7 +59,7 @@ const RequestPaymentButton = props => {
   };
 
   const rootClass = rootClassName || css.root;
-  const buttonClass = className || css.buttonRoot;
+  const buttonClass = className || css.requestButtonRoot;
 
   return (
     <div className={rootClass}>

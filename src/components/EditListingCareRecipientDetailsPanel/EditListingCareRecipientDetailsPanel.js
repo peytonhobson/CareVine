@@ -182,7 +182,8 @@ const EditListingCareRecipientDetailsPanel = props => {
                 <h3 className={css.recipientLabel}>Recipient {index + 1}:</h3>
                 <div className={css.recipientTraitsContainer}>
                   <span className={css.recipientTrait}>
-                    Relationship: {recipientRelationshipLabel}
+                    <span className={css.noWrap}>Relationship:</span>{' '}
+                    <span className={css.noWrap}>{recipientRelationshipLabel}</span>
                   </span>
                   <span className={css.recipientTrait}>Gender: {genderLabel}</span>
                   <span className={css.recipientTrait}>Age: {ageLabel}</span>

@@ -126,6 +126,10 @@
   color: var(--marketplaceColor);
 }
 
+.noWrap {
+  white-space: nowrap;
+}
+
 .recipientHeader {
   display: flex;
   flex-direction: row;

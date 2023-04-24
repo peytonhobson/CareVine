@@ -18,7 +18,7 @@ const PaymentButton = props => {
   const clickDisabled = !!disabled;
 
   const rootClass = rootClassName || css.root;
-  const buttonClass = className || css.buttonRoot;
+  const buttonClass = className || css.payButtonRoot;
 
   return (
     <div className={rootClass}>
