@@ -95,12 +95,12 @@ export const EditListingPageComponent = props => {
 
   const isListingDraft = currentListingState === LISTING_PAGE_PARAM_TYPE_DRAFT;
 
-  if (currentUserListing && (type !== getListingType(isListingDraft) || isNewURI)) {
+  if (currentUserListing?.id?.uuid && (type !== getListingType(isListingDraft) || isNewURI)) {
     return (
       <NamedRedirect
         name="EditListingPage"
         params={{
-          id: currentUserListing.id?.uuid,
+          id: currentUserListing.id.uuid ?? ' ',
           slug: createSlug(currentUserListing.attributes.title),
           type: getListingType(isListingDraft),
           tab: userType === 'employer' ? 'care-type' : 'services',
@@ -151,7 +151,7 @@ export const EditListingPageComponent = props => {
       <NamedRedirect
         name="EditListingPage"
         params={{
-          id: currentListing.id?.uuid,
+          id: currentListing.id?.uuid ?? ' ',
           slug: createSlug(currentListing.attributes.title),
           type: LISTING_PAGE_PARAM_TYPE_EDIT,
           tab: userType === 'employer' ? 'care-type' : 'services',
