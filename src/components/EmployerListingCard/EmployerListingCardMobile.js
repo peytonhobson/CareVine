@@ -232,9 +232,9 @@ export const EmployerListingCardMobileComponent = props => {
               <FormattedMessage id={'EmployerListingCard.perUnit'} />
             </span>
           </div>
-          <Button className={css.messageButton}>
-            <FormattedMessage id="EmployerListingCard.viewProfile" />
-          </Button>
+          <div className={css.messageButton}>
+            <FormattedMessage id={'EmployerListingCard.viewProfile'} />
+          </div>
         </NamedLink>
       </Card>
       {onManageDisableScrolling && (
