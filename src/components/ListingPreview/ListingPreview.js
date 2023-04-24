@@ -36,6 +36,7 @@ const ListingPreview = props => {
           currentUserListing={listingWithAuthor}
           listing={listingWithAuthor}
           disableProfileLink
+          isMobile={isMobile}
         />
       ) : isMobile ? (
         <EmployerListingCardMobile
