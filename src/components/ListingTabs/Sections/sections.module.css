@@ -176,6 +176,8 @@
   justify-content: space-between;
   align-items: center;
 
+  padding-right: 1rem;
+
   @media (--viewportMedium) {
     padding: 12px 24px 12px 0px;
   }
@@ -199,6 +201,12 @@
   @media (--viewportMedium) {
     font-size: 1rem;
   }
+}
+
+.noWrap {
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
 }
 
 .recipientLabel {

@@ -4,13 +4,25 @@
   justify-content: center;
 }
 
-.buttonRoot {
+.requestButtonRoot {
   composes: buttonFont buttonText buttonBorders buttonColors from global;
 
   /* Clear padding that is set for link elements looking like buttons */
   /* padding: 0; */
-  height: 2.5rem;
-  padding-inline: 1.5rem;
+  padding: 0.75rem 1rem;
+  min-height: 0;
+
+  transition: all var(--transitionStyleButton);
+  cursor: pointer;
+}
+
+.payButtonRoot {
+  composes: buttonFont buttonText buttonBorders buttonColors from global;
+
+  /* Clear padding that is set for link elements looking like buttons */
+  /* padding: 0; */
+  padding: 0.75rem 1.5rem;
+  min-height: 0;
 
   transition: all var(--transitionStyleButton);
   cursor: pointer;
