@@ -24,17 +24,6 @@ const formatPreviewDate = createdAt => {
     });
   }
 
-  if (isYesterday(createdAt)) {
-    return (
-      'yesterday at ' +
-      timestampToDate(createdAt).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      })
-    );
-  }
-
   return moment(createdAt).format('MMM DD');
 };
 
@@ -139,7 +128,7 @@ const NotificationPreview = props => {
       <div className={css.notificationPreviewContent}>
         <div className={css.notificationPreviewUpper}>
           {notificationDot}
-          <div className={css.notificationTitle}>{title}</div>
+          <span className={css.notificationTitle}>{title}</span>
           <div className={css.notificationDate}>{formatPreviewDate(createdAt)}</div>
         </div>
         <div className={css.notificationPreviewLower}>
