@@ -131,6 +131,15 @@
   padding-left: 1rem;
 }
 
+.viewScheduleButton {
+  min-height: 0;
+  padding: 0.25rem 1rem;
+  width: auto;
+  font-size: 0.85rem;
+  font-weight: normal;
+  margin-top: 0.75rem;
+}
+
 .title {
   /* Font */
   composes: h3 from global;
@@ -255,8 +264,12 @@
   padding-inline: 0.5rem;
   border-radius: 0.5rem;
   background-color: var(--matterColorNegative);
-  margin-right: 0.7rem;
+  margin-left: 0.7rem;
   margin-block: 0;
+}
+
+.serviceCardItem:first-of-type {
+  margin-left: 0;
 }
 
 .buttonContainer {

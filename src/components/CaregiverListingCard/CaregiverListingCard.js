@@ -315,7 +315,7 @@ export const CaregiverListingCardComponent = props => {
               ))}
               {providedServices?.length > 3 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={
                     <ul>
                       {providedServices?.slice(3, providedServices?.length).map(service => (

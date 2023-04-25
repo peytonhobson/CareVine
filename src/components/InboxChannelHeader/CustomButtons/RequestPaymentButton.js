@@ -62,17 +62,15 @@ const RequestPaymentButton = props => {
   const buttonClass = className || css.requestButtonRoot;
 
   return (
-    <div className={rootClass}>
-      <Button
-        disabled={clickDisabled}
-        inProgress={sendRequestForPaymentInProgress}
-        onClick={requestPayment}
-        ready={paymentRequestedForUser}
-        rootClassName={buttonClass}
-      >
-        Request Payment
-      </Button>
-    </div>
+    <Button
+      disabled={clickDisabled}
+      inProgress={sendRequestForPaymentInProgress}
+      onClick={requestPayment}
+      ready={paymentRequestedForUser}
+      className={buttonClass}
+    >
+      Request Payment
+    </Button>
   );
 };
 

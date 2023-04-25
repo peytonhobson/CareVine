@@ -32,10 +32,10 @@
 
   border-radius: 100%;
 
-  width: 6rem;
-  height: 4rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  width: 7em;
+  height: 5em;
+  font-size: 0.75em;
+  line-height: 1em;
 
   &:hover,
   &:focus {
@@ -72,10 +72,10 @@
 
   border-radius: 100%;
 
-  width: 6rem;
-  height: 4rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  width: 7em;
+  height: 5em;
+  font-size: 0.75em;
+  line-height: 1em;
 
   &:hover,
   &:focus {

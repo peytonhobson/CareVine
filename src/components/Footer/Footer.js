@@ -16,6 +16,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 import { createSlug } from '../../util/urlHelpers';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './Footer.module.css';
 
@@ -80,11 +81,17 @@ const Footer = props => {
   const location = currentUserListing?.attributes?.publicData?.location;
   const userType = currentUser?.attributes?.profile?.metadata?.userType;
 
+  const oppositeUserType =
+    userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
+
   const searchPageLink = (
     <NamedLink
       className={css.link}
       name="SearchPage"
-      to={{ search: `?${origin}&${distance}&sort=relevant` }}
+      to={{
+        search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+          `&listingTypes=${oppositeUserType}`}`,
+      }}
     >
       <FormattedMessage id="Footer.growYourVines" />
     </NamedLink>

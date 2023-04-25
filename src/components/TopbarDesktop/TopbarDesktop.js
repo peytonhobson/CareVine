@@ -61,12 +61,20 @@ const TopbarDesktop = props => {
   const distance = 'distance=30';
   const location = currentUserListing?.attributes?.publicData?.location;
 
+  const oppositeUserType =
+    currentUserType === EMPLOYER ? CAREGIVER : currentUserType === CAREGIVER ? EMPLOYER : null;
+
+  console.log(oppositeUserType);
+
   const searchListings =
     isAuthenticatedOrJustHydrated && location ? (
       <NamedLink
         className={classNames(css.regularLink, currentPage === 'SearchPage' && css.activeLink)}
         name="SearchPage"
-        to={{ search: `?${origin}&${distance}&sort=relevant` }}
+        to={{
+          search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+            `&listingTypes=${oppositeUserType}`}`,
+        }}
       >
         {currentUserType === CAREGIVER ? (
           <span className={css.linkText}>Job Listings</span>

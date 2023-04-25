@@ -8,7 +8,7 @@ import {
   CaregiverListingCard,
   EmployerListingCard,
 } from '../../components';
-import { EMPLOYER } from '../../util/constants';
+import { EMPLOYER, CAREGIVER } from '../../util/constants';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
 import { useCheckMobileScreen } from '../../util/hooks';
 
@@ -96,7 +96,7 @@ const SearchResultsPanel = props => {
         )}
         {props.children}
       </div>
-      {paginationLinks}
+      {/* {paginationLinks} */}
     </div>
   );
 };

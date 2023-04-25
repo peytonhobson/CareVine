@@ -73,6 +73,9 @@ const SectionHero = props => {
       title = 'SectionHero.title';
   }
 
+  const oppositeUserType =
+    userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
+
   return (
     <div className={classes}>
       {currentUserFetched && (
@@ -114,7 +117,10 @@ const SectionHero = props => {
           {location ? (
             <NamedLink
               name="SearchPage"
-              to={{ search: `?${origin}&${distance}&sort=relevant` }}
+              to={{
+                search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+                  `&listingTypes=${oppositeUserType}`}`,
+              }}
               className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
             >
               <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />

@@ -61,12 +61,12 @@
 
   width: 100%;
   padding: 0;
-  margin-top: 30px;
+  margin-top: 1.875rem;
 
   @media (--viewportMedium) {
     flex-wrap: nowrap;
     padding: 0;
-    margin-top: 24px;
+    margin-top: 1.5rem;
   }
 }
 
@@ -74,10 +74,10 @@
   display: flex;
   align-items: flex-end;
   position: relative;
-  margin-inline: 0.75rem;
+  margin-inline: 0.75em;
 
   &:nth-child(2n) {
-    margin-top: 12px;
+    margin-top: 0.75rem;
   }
 
   @media (--viewportMedium) {

@@ -30,9 +30,9 @@ const CareScheduleSection = forwardRef((props, ref) => {
   const careScheduleCardTitle = (
     <h1 className={css.title}>
       Care Schedule{' '}
-      <span style={{ display: isMobile && 'inline-block' }}>
+      <div style={{ display: 'inline-block' }}>
         ({scheduleTypes.find(s => s.key === availabilityPlan?.type)?.label})
-      </span>
+      </div>
     </h1>
   );
 
