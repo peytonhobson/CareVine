@@ -329,7 +329,7 @@ const EditListingBackgroundCheckPanel = props => {
       dob: moment(dob.date).format('DD-MM-YYYY'),
       email: email.trim(),
       phone: phoneString.trim(),
-      streetName: addressLine1.trim(),
+      streetName: `${parsedAddress?.street} ${parsedAddress?.type}`.trim(),
       address: fullAddress.trim(),
       city: city.trim(),
       state: state.trim(),
