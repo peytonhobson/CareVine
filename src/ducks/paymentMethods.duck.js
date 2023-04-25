@@ -335,7 +335,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
   dispatch(stripeCustomerCreateRequest());
 
   const currentUser = getState().user.currentUser;
-  const email = currentUser.attributes.email;
+  const email = currentUser?.attributes?.email;
 
   if (stripePaymentMethodId) {
     return sdk.stripeCustomer
