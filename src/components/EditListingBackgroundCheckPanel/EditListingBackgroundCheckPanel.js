@@ -39,6 +39,7 @@ import { createPayment, createSubscription, updateSubscription } from '../../duc
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
+import parser from 'parse-address';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -319,6 +320,8 @@ const EditListingBackgroundCheckPanel = props => {
     const fullAddress = `${addressLine1}${addressLine2String}`;
     const ssnString = ssn.replace(/-/g, '');
 
+    const parsedAddress = parser.parseLocation(addressLine1);
+
     const userInfo = {
       firstName: firstName.trim(),
       middleName: middleName ? middleName.trim() : '',
@@ -332,6 +335,7 @@ const EditListingBackgroundCheckPanel = props => {
       state: state.trim(),
       zipCode: zipCode.trim(),
       ssn: ssnString.trim(),
+      houseNumber: parsedAddress?.number,
     };
 
     if (stage === CREATE_USER) {
