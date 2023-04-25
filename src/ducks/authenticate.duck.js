@@ -473,6 +473,7 @@ export const verifyIdentityProofQuiz = (
         dispatch(verifyIdentityProofQuizSuccess());
       } else {
         dispatch(verifyIdentityProofQuizFailure());
+        dispatch(identityProofQuiz());
       }
       return response;
     })
