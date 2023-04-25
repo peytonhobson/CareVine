@@ -42,15 +42,8 @@ const sortSearchByDistance = true;
 //
 // In a way, 'processAlias' defines which transaction process (or processes)
 // this particular web application is able to handle.
-let singleActionProcessAlias = null;
 const messageProcessAlias = `message-process/active`;
-
-if (isDev || isTest) {
-  singleActionProcessAlias = `single-action-process/active`;
-}
-if (isProd) {
-  singleActionProcessAlias = `single-action-process/release-1`;
-}
+const singleActionProcessAlias = `single-action-process/active`;
 
 const bookingProcessAlias = `flex-default-process/release-1`;
 
