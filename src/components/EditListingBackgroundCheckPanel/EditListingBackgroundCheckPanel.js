@@ -346,7 +346,7 @@ const EditListingBackgroundCheckPanel = props => {
   };
 
   const handleConsentSubmit = values => {
-    const fullName = privateData && privateData.authenticateFullName;
+    const fullName = privateData?.authenticateFullName;
     const userId = currentUser.id.uuid;
     onAuthenticateSubmitConsent(authenticateUserAccessCode, fullName, userId).then(() => {
       onGetIdentityProofQuiz(authenticateUserAccessCode, userId);
