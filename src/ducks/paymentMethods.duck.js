@@ -334,6 +334,9 @@ export const confirmSetupIntentError = e => ({
 export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState, sdk) => {
   dispatch(stripeCustomerCreateRequest());
 
+  const currentUser = getState().user.currentUser;
+  const email = currentUser.attributes.email;
+
   if (stripePaymentMethodId) {
     return sdk.stripeCustomer
       .create({ stripePaymentMethodId }, { expand: true, include: ['defaultPaymentMethod'] })
@@ -345,6 +348,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
         return stripeUpdateCustomer({
           stripeCustomerId: stripeCustomer?.attributes?.stripeCustomerId,
           update: {
+            email,
             address: {
               country: 'US',
             },
@@ -363,6 +367,7 @@ export const createStripeCustomer = stripePaymentMethodId => (dispatch, getState
         return stripeUpdateCustomer({
           stripeCustomerId,
           params: {
+            email,
             address: {
               country: 'US',
             },
