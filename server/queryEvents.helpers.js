@@ -82,8 +82,12 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = async (userId, userName, listingId) => {
+const approveListingNotification = async (userId, listingId) => {
   try {
+    const userResponse = await integrationSdk.users.show({ id: userId });
+
+    const userName = userResponse?.data.data.attributes.profile.displayName;
+
     const urlParams = `/l/${createSlug(userName)}/${listingId}`;
 
     await axios.post(
@@ -220,9 +224,6 @@ const updateListingApproveListing = async event => {
       await integrationSdk.listings.approve({
         id: listingId,
       });
-
-      const userName = user?.attributes?.profile?.displayName;
-      approveListingNotification(userId, userName, listingId);
     }
   } catch (e) {
     log.error(e, 'listing-update-approved-failed', {});
@@ -240,22 +241,17 @@ const updateUserListingApproved = async event => {
 
     const userListingId = res.data.data[0].id.uuid;
     listingState = res.data.data[0].attributes.state;
-    const displayName = event.attributes.resource.attributes.profile.displayName;
 
     if (listingState === 'pendingApproval') {
       await integrationSdk.listings.approve({
         id: userListingId,
       });
-
-      approveListingNotification(userId, displayName, userListingId);
     }
 
     if (listingState === 'closed') {
       await integrationSdk.listings.open({
         id: userListingId,
       });
-
-      approveListingNotification(userId, displayName, userListingId);
     }
   } catch (e) {
     log.error(e, 'user-update-approved-failed', {});

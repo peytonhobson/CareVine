@@ -21,6 +21,7 @@ module.exports = queryEvents = () => {
     backgroundCheckRejectedNotification,
     addUnreadMessageCount,
     sendQuizFailedEmail,
+    approveListingNotification,
   } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
@@ -92,12 +93,18 @@ module.exports = queryEvents = () => {
     const eventType = event.attributes.eventType;
 
     if (eventType === 'listing/updated') {
-      const prevListingState = event?.attributes?.previousValues?.attributes?.state;
-      const newListingState = event?.attributes?.resource?.attributes?.state;
+      const prevListingState = event.attributes.previousValues.attributes.state;
+      const newListingState = event.attributes.resource.attributes?.state;
+      const listingId = event.attributes.resource.id.uuid;
 
       // Approve listing if they meet requirements when listing is published
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
         updateListingApproveListing(event);
+      }
+
+      if (prevListingState !== 'published' && newListingState === 'published') {
+        const userId = event.attributes.resource.relationships.author.data.id.uuid;
+        approveListingNotification(userId, listingId);
       }
     }
 
@@ -146,6 +153,7 @@ module.exports = queryEvents = () => {
 
       if (
         tcmEnrolled &&
+        !isDev &&
         (backgroundCheckSubscription?.type !== 'vine' ||
           !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status))
       ) {
@@ -222,7 +230,7 @@ module.exports = queryEvents = () => {
       const userAccessCode =
         previousValues.attributes.profile.privateData.authenticateUserAccessCode;
 
-      if (tcmEnrolled && userAccessCode) {
+      if (tcmEnrolled && userAccessCode && !isDev) {
         deEnrollUserTCM(event, userAccessCode);
       }
     }
