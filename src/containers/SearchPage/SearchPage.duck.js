@@ -211,7 +211,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     location,
     sort,
     pub_maxPrice,
-    listingTypes,
+    listingType,
     ...rest
   } = searchParams;
   // const priceMaybe = priceSearchParams(price);
@@ -236,7 +236,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     per_page: perPage,
     bounds: expandBounds(selectedLocation || origin, distance),
     ...sortMaybe,
-    meta_listingType: listingTypes,
+    meta_listingType: listingType,
   };
 
   return sdk.listings

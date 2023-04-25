@@ -126,7 +126,7 @@ export class SearchPageComponent extends Component {
       latlngBounds: ['bounds'],
     });
 
-    const { listingTypes } = searchParams;
+    const { listingType } = searchParams;
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
     const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
@@ -134,7 +134,7 @@ export class SearchPageComponent extends Component {
     const oppositeUserType =
       userType === CAREGIVER ? EMPLOYER : userType === EMPLOYER ? CAREGIVER : null;
 
-    if (oppositeUserType && oppositeUserType !== listingTypes) {
+    if (oppositeUserType && oppositeUserType !== listingType) {
       return <NamedRedirect name="LandingPage" />;
     }
 

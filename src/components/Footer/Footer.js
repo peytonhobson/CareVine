@@ -90,7 +90,7 @@ const Footer = props => {
       name="SearchPage"
       to={{
         search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-          `&listingTypes=${oppositeUserType}`}`,
+          `&listingType=${oppositeUserType}`}`,
       }}
     >
       <FormattedMessage id="Footer.growYourVines" />

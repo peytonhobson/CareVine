@@ -119,7 +119,7 @@ const SectionHero = props => {
               name="SearchPage"
               to={{
                 search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-                  `&listingTypes=${oppositeUserType}`}`,
+                  `&listingType=${oppositeUserType}`}`,
               }}
               className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
             >

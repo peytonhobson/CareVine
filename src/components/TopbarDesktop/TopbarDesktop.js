@@ -71,7 +71,7 @@ const TopbarDesktop = props => {
         name="SearchPage"
         to={{
           search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-            `&listingTypes=${oppositeUserType}`}`,
+            `&listingType=${oppositeUserType}`}`,
         }}
       >
         {currentUserType === CAREGIVER ? (
