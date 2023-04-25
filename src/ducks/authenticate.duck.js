@@ -430,6 +430,11 @@ export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState
   return getIdentityProofQuiz({ userAccessCode })
     .then(response => {
       dispatch(getIdentityProofQuizSuccess(response.data));
+      return sdk.currentUser.updateProfile({
+        privateData: { identityProofQuiz: response.data },
+      });
+    })
+    .then(response => {
       dispatch(fetchCurrentUser());
       return response;
     })
