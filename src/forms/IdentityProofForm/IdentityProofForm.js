@@ -55,8 +55,10 @@ const IdentityProofFormComponent = props => (
         invalid || disabled || submitInProgress || identityProofQuizAttempts >= MAX_QUIZ_ATTEMPTS;
 
       useEffect(() => {
-        onGetIdentityProofQuiz(authenticateUserAccessCode, currentUserId);
-      }, []);
+        if (currentUserId && !identityProofQuiz) {
+          onGetIdentityProofQuiz(authenticateUserAccessCode, currentUserId);
+        }
+      }, [currentUserId, identityProofQuiz]);
 
       const onSubmit = e => {
         e.preventDefault();

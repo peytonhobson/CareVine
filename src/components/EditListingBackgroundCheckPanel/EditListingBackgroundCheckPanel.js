@@ -187,7 +187,6 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
-    identityProofQuiz,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
@@ -216,6 +215,7 @@ const EditListingBackgroundCheckPanel = props => {
   const backgroundCheckRejected = privateData?.backgroundCheckRejected;
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
+  const identityProofQuiz = privateData?.identityProofQuiz;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
