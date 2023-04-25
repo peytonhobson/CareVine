@@ -136,10 +136,10 @@ module.exports = queryEvents = () => {
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
         !isDev &&
         !tcmEnrolled &&
-        backgroundCheckSubscription.type === 'vine' &&
+        backgroundCheckSubscription?.type === 'vine' &&
         activeSubscriptionTypes.includes(backgroundCheckSubscription?.status)
       ) {
-        const userAccessCode = privateData.authenticateUserAccessCode;
+        const userAccessCode = privateData?.authenticateUserAccessCode;
 
         enrollUserTCM(event, userAccessCode);
       }
