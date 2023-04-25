@@ -17,9 +17,9 @@ module.exports = (req, res) => {
       `https://api-v3.authenticating.com/${mockString}user/consent`,
       {
         userAccessCode,
-        isBackgroundDisclosureAccepted: 1,
-        GLBPurposeAndDPPAPurpose: 1,
-        FCRAPurpose: 1,
+        isBackgroundDisclosureAccepted: '1',
+        GLBPurposeAndDPPAPurpose: '1',
+        FCRAPurpose: '1',
         fullName: isDev ? mockFullNames[1] : fullName,
       },
       {
