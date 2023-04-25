@@ -342,7 +342,9 @@ export const authenticateGenerateCriminalBackgroundError = errorAction(
 export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState, sdk) => {
   dispatch(authenticateCreateUserRequest());
 
-  const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
+  const fullName = `${userInfo.firstName}${userInfo.middleName ? ` ${userInfo.middleName}` : ''} ${
+    userInfo.lastName
+  }`;
 
   return dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }))
     .then(() => {
@@ -367,7 +369,9 @@ export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState,
 export const authenticateUpdateUser = (userInfo, userAccessCode) => (dispatch, getState, sdk) => {
   dispatch(authenticateUpdateUserRequest());
 
-  const fullName = `${userInfo.firstName} ${userInfo.lastName}`;
+  const fullName = `${userInfo.firstName}${userInfo.middleName ? ` ${userInfo.middleName}` : ''} ${
+    userInfo.lastName
+  }`;
 
   return dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }))
     .then(() => {
