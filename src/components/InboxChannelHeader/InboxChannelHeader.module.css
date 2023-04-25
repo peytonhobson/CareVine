@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   height: 6rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -17,6 +18,7 @@
 
   @media (--viewportMedium) {
     padding: 0 1rem 0 1.25rem;
+    justify-content: flex-start;
   }
 }
 
@@ -24,7 +26,7 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   background-color: var(--matterColorNegative);
   border-radius: 0.25rem;
@@ -72,7 +74,11 @@
 }
 
 .headerLeft {
-  margin-right: 3rem;
+  margin-right: 1rem;
+
+  @media (--viewportMedium) {
+    margin-right: 3rem;
+  }
 }
 
 .headerLeft,
