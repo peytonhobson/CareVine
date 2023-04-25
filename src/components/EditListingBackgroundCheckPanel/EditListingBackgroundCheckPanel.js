@@ -187,6 +187,7 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
+    identityProofQuiz: identityProofQuizData,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
@@ -215,7 +216,7 @@ const EditListingBackgroundCheckPanel = props => {
   const backgroundCheckRejected = privateData?.backgroundCheckRejected;
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
-  const identityProofQuiz = privateData?.identityProofQuiz;
+  const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
@@ -372,7 +373,7 @@ const EditListingBackgroundCheckPanel = props => {
     }
   };
 
-  const handleIdentityQuizSubmit = answers => {
+  const handleIdentityQuizSubmit = (answers, form) => {
     const IDMSessionId = identityProofQuiz.data.IDMSessionId;
     const currentAttempts = !!identityProofQuizAttempts ? identityProofQuizAttempts : 0;
     if (!identityProofQuizVerification) {
@@ -382,16 +383,24 @@ const EditListingBackgroundCheckPanel = props => {
         currentUser.id?.uuid,
         answers,
         currentAttempts
-      );
+      ).then(() => {
+        form.reset();
+      });
     } else if (!authenticateCriminalBackgroundGenerated) {
-      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
+        form.reset();
+      });
     } else if (!authenticateUserTestResult) {
-      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
+        form.reset();
+      });
     } else if (
       !authenticate7YearHistory &&
       authenticateUserTestResult?.backgroundCheck?.hasCriminalRecord
     ) {
-      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
+        form.reset();
+      });
     }
   };
 
@@ -592,6 +601,7 @@ const EditListingBackgroundCheckPanel = props => {
             authenticateUserAccessCode={authenticateUserAccessCode}
             currentUserId={currentUser.id?.uuid}
             onGetIdentityProofQuiz={onGetIdentityProofQuiz}
+            getIdentityProofQuizInProgress={getIdentityProofQuizInProgress}
           />
         </div>
       );

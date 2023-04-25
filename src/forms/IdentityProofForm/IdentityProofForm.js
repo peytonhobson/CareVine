@@ -34,6 +34,8 @@ const IdentityProofFormComponent = props => (
         authenticateUserAccessCode,
         currentUserId,
         onGetIdentityProofQuiz,
+        getIdentityProofQuizInProgress,
+        form,
       } = formRenderProps;
 
       const [disabledOptions, setDisabledOptions] = React.useState(Array(5).fill(false));
@@ -72,16 +74,16 @@ const IdentityProofFormComponent = props => (
         const answers = questionArray.map((target, index) => {
           return {
             QuestionId: index + 1,
-            AnswerId: target.selectedIndex + 1,
+            AnswerId: target.selectedIndex,
           };
         });
 
-        onVerify(answers);
+        onVerify(answers, form);
       };
 
       return (
         <Form className={classes} onSubmit={onSubmit}>
-          {questions ? (
+          {!getIdentityProofQuizInProgress ? (
             questions?.map((question, index) => {
               const options = question.Options.map(option => {
                 return {
@@ -124,6 +126,11 @@ const IdentityProofFormComponent = props => (
               <IconSpinner className={css.spinner} />
             </div>
           )}
+          {verifyIdentityProofQuizError ? (
+            <p className={css.error}>
+              Failed to fetch quiz. Please try refreshing the page to try again.
+            </p>
+          ) : null}
           {verifyIdentityProofQuizError ? (
             <p className={css.error}>
               <FormattedMessage id="IdentityProofForm.verifyIdentityProofQuizFailed" />
