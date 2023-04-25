@@ -36,7 +36,6 @@ export const requiredStringNoTrim = message => value => {
 };
 
 export const requiredChecked = message => value => {
-  console.log(value);
   return value ? VALID : message;
 };
 
