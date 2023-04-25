@@ -133,6 +133,51 @@ const approveListingNotification = async (userId, listingId) => {
   }
 };
 
+const closeListingNotification = async userId => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: userId,
+        templateName: 'listing-closed',
+        templateData: { marketplaceUrl: rootUrl },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'listing-closed-email-failed', {});
+  }
+
+  try {
+    const newNotification = {
+      id: uuidv4(),
+      type: 'listingRemoved',
+      createdAt: new Date().getTime(),
+      isRead: false,
+      metadata: {},
+    };
+
+    await axios.post(
+      `${apiBaseUrl()}/api/update-user-notifications`,
+      {
+        userId,
+        newNotification,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (e) {
+    log.error(e, 'listing-closed-notifications-failed', {});
+  }
+};
+
 const closeListing = async userId => {
   let listing;
 
@@ -155,49 +200,6 @@ const closeListing = async userId => {
       );
     } catch (e) {
       log.error(e, 'listing-closed-failed', {});
-    }
-
-    try {
-      await axios.post(
-        `${apiBaseUrl()}/api/sendgrid-template-email`,
-        {
-          receiverId: userId,
-          templateName: 'listing-closed',
-          templateData: { marketplaceUrl: rootUrl },
-        },
-        {
-          headers: {
-            'Content-Type': 'application/transit+json',
-          },
-        }
-      );
-    } catch (e) {
-      log.error(e, 'listing-closed-email-failed', {});
-    }
-
-    try {
-      const newNotification = {
-        id: uuidv4(),
-        type: 'listingRemoved',
-        createdAt: new Date().getTime(),
-        isRead: false,
-        metadata: {},
-      };
-
-      await axios.post(
-        `${apiBaseUrl()}/api/update-user-notifications`,
-        {
-          userId,
-          newNotification,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/transit+json',
-          },
-        }
-      );
-    } catch (e) {
-      log.error(e, 'listing-closed-notifications-failed', {});
     }
   }
 };
@@ -442,4 +444,5 @@ module.exports = {
   backgroundCheckApprovedNotification,
   addUnreadMessageCount,
   sendQuizFailedEmail,
+  closeListingNotification,
 };

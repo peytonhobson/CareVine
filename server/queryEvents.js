@@ -22,6 +22,7 @@ module.exports = queryEvents = () => {
     addUnreadMessageCount,
     sendQuizFailedEmail,
     approveListingNotification,
+    closeListingNotification,
   } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
@@ -105,6 +106,11 @@ module.exports = queryEvents = () => {
       if (prevListingState !== 'published' && newListingState === 'published') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
         approveListingNotification(userId, listingId);
+      }
+
+      if (prevListingState === 'published' && newListingState === 'closed') {
+        const userId = event.attributes.resource.relationships.author.data.id.uuid;
+        closeListingNotification(userId);
       }
     }
 
