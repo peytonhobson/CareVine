@@ -117,7 +117,18 @@ const ListingTabs = props => {
             ref={servicesRef}
           />
         );
-      case isMobile ? 'Training' : 'Certifications/Training':
+      case 'Training':
+        return (
+          <CertificationsSection
+            key={key}
+            listing={listing}
+            currentUserListing={currentUserListing}
+            filterConfig={config.custom.filters}
+            findLabel={findLabel}
+            ref={certificationsAndTrainingRef}
+          />
+        );
+      case 'Certifications/Training':
         return (
           <CertificationsSection
             key={key}
