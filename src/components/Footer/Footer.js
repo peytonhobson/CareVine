@@ -12,8 +12,15 @@ import {
   ExternalLink,
   NamedLink,
 } from '../../components';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
+import { createSlug } from '../../util/urlHelpers';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './Footer.module.css';
+
+const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
 
 const renderSocialMediaLinks = intl => {
   const { siteFacebookPage, siteInstagramPage, siteTwitterHandle } = config;
@@ -54,9 +61,45 @@ const renderSocialMediaLinks = intl => {
 };
 
 const Footer = props => {
-  const { rootClassName, className, intl } = props;
+  const {
+    rootClassName,
+    className,
+    intl,
+    currentUserListing,
+    currentUserListingFetched,
+    currentUser,
+    fetchCurrentUserInProgress,
+  } = props;
   const socialMediaLinks = renderSocialMediaLinks(intl);
   const classes = classNames(rootClassName || css.root, className);
+
+  const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
+
+  const geolocation = currentUserListing?.attributes?.geolocation || {};
+  const origin = `origin=${geolocation.lat}%2C${geolocation.lng}`;
+  const distance = 'distance=30';
+  const location = currentUserListing?.attributes?.publicData?.location;
+  const userType = currentUser?.attributes?.profile?.metadata?.userType;
+
+  const oppositeUserType =
+    userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
+
+  const searchPageLink = (
+    <NamedLink
+      className={css.link}
+      name="SearchPage"
+      to={{
+        search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+          `&listingTypes=${oppositeUserType}`}`,
+      }}
+    >
+      <FormattedMessage id="Footer.growYourVines" />
+    </NamedLink>
+  );
+
+  const listingId = currentUserListing?.id?.uuid;
+  const title = currentUserListing?.attributes?.title;
+  const slug = title && createSlug(title);
 
   return (
     <div className={classes}>
@@ -84,9 +127,38 @@ const Footer = props => {
             <div className={css.infoLinks}>
               <ul className={css.list}>
                 <li className={css.listItem}>
-                  <NamedLink name="NewListingPage" className={css.link}>
-                    <FormattedMessage id="Footer.toNewListingPage" />
-                  </NamedLink>
+                  {!fetchCurrentUserInProgress ? (
+                    currentUser ? (
+                      userType && !isNewListing && currentUserListing ? (
+                        searchPageLink
+                      ) : slug && listingId ? (
+                        <NamedLink
+                          name="EditListingPage"
+                          params={{
+                            id: listingId,
+                            slug,
+                            type: LISTING_PAGE_PARAM_TYPE_DRAFT,
+                            tab: 'photos',
+                          }}
+                          className={css.link}
+                        >
+                          <FormattedMessage id="Footer.growYourVines" />
+                        </NamedLink>
+                      ) : (
+                        <NamedLink name="NewListingPage" className={css.link}>
+                          <FormattedMessage id="Footer.growYourVines" />
+                        </NamedLink>
+                      )
+                    ) : (
+                      <NamedLink name="SignupPage" className={css.link}>
+                        <FormattedMessage id="Footer.growYourVines" />
+                      </NamedLink>
+                    )
+                  ) : (
+                    <span className={css.link}>
+                      <FormattedMessage id="Footer.growYourVines" />
+                    </span>
+                  )}
                 </li>
                 <li className={css.listItem}>
                   <NamedLink name="FeedbackPage" className={css.link}>
@@ -157,4 +229,20 @@ Footer.propTypes = {
   intl: intlShape.isRequired,
 };
 
-export default injectIntl(Footer);
+const mapStateToProps = state => {
+  const {
+    currentUser,
+    fetchCurrentUserInProgress,
+    currentUserListing,
+    currentUserListingFetched,
+  } = state.user;
+
+  return {
+    currentUser,
+    fetchCurrentUserInProgress,
+    currentUserListing,
+    currentUserListingFetched,
+  };
+};
+
+export default compose(connect(mapStateToProps), injectIntl)(Footer);

@@ -69,7 +69,7 @@ const EditListingCareSchedulePanel = props => {
     className,
     disabled,
     errors,
-    listing,
+    listing: currentListing,
     onManageDisableScrolling,
     onNextTab,
     onSubmit,
@@ -81,9 +81,8 @@ const EditListingCareSchedulePanel = props => {
   } = props;
 
   const classes = classNames(className, rootClassName || css.root);
-  const currentListing = ensureOwnListing(listing);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const availabilityPlanMaybe = currentListing.attributes.publicData?.availabilityPlan;
+  const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
 
   const [state, dispatch] = useReducer(reducer, availabilityPlanMaybe, init);
 
@@ -92,7 +91,7 @@ const EditListingCareSchedulePanel = props => {
   }, [errors.updateListingError]);
 
   const handle24HourCareSubmit = values => {
-    const currentZipcode = currentListing.attributes.publicData?.location?.zipcode;
+    const currentZipcode = currentListing.attributes.publicData.location?.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
 
     const availabilityPlan = {

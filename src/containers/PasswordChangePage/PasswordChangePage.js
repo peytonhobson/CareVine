@@ -17,6 +17,7 @@ import {
 } from '../../components';
 import { PasswordChangeForm } from '../../forms';
 import { TopbarContainer } from '../../containers';
+import { manageDisableScrolling } from '../../ducks/UI.duck';
 
 import { changePassword, changePasswordClear, resetPassword } from './PasswordChangePage.duck';
 import css from './PasswordChangePage.module.css';
@@ -34,6 +35,8 @@ export const PasswordChangePageComponent = props => {
     passwordChanged,
     scrollingDisabled,
     intl,
+    currentUserListing,
+    onManageDisableScrolling,
   } = props;
 
   const changePasswordForm =
@@ -49,6 +52,7 @@ export const PasswordChangePageComponent = props => {
         resetPasswordError={resetPasswordError}
         inProgress={changePasswordInProgress}
         ready={passwordChanged}
+        onManageDisableScrolling={onManageDisableScrolling}
       />
     ) : null;
 
@@ -63,7 +67,7 @@ export const PasswordChangePageComponent = props => {
             desktopClassName={css.desktopTopbar}
             mobileClassName={css.mobileTopbar}
           />
-          <UserNav selectedPageName="PasswordChangePage" />
+          <UserNav selectedPageName="PasswordChangePage" listing={currentUserListing} />
         </LayoutWrapperTopbar>
         <LayoutWrapperAccountSettingsSideNav
           currentTab="PasswordChangePage"
@@ -118,7 +122,7 @@ const mapStateToProps = state => {
     resetPasswordInProgress,
     resetPasswordError,
   } = state.PasswordChangePage;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
   return {
     changePasswordError,
     changePasswordInProgress,
@@ -127,14 +131,16 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
     resetPasswordInProgress,
     resetPasswordError,
+    currentUserListing,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onChange: () => dispatch(changePasswordClear()),
-  onSubmitChangePassword: values => dispatch(changePassword(values)),
-  onResetPassword: values => dispatch(resetPassword(values)),
-});
+const mapDispatchToProps = {
+  onChange: changePasswordClear,
+  onSubmitChangePassword: changePassword,
+  onResetPassword: resetPassword,
+  onManageDisableScrolling: manageDisableScrolling,
+};
 
 const PasswordChangePage = compose(
   connect(mapStateToProps, mapDispatchToProps),

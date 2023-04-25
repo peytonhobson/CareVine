@@ -30,8 +30,6 @@ import css from './EmployerListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const priceData = (rates, intl) => {
   const minPriceMoney = new Money(rates[0], 'USD');
   const maxPriceMoney = new Money(rates[1], 'USD');
@@ -188,14 +186,15 @@ export const EmployerListingCardMobileComponent = props => {
               {scheduleType === '24hour' || scheduleType === 'repeat' ? (
                 <AvailabilityPreview entries={entries} availableDays={availableDays} />
               ) : (
-                <InlineTextButton
+                <Button
                   onClick={e => {
                     e.preventDefault();
                     setIsOneTimeScheduleModalOpen(true);
                   }}
+                  className={css.viewScheduleButton}
                 >
                   <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                </InlineTextButton>
+                </Button>
               )}
             </div>
           </div>
@@ -206,7 +205,7 @@ export const EmployerListingCardMobileComponent = props => {
               ))}
               {careTypes?.length > 3 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={additionalCareTypesText}
                   icon={
                     <p className={css.serviceCardItem}>
@@ -234,9 +233,9 @@ export const EmployerListingCardMobileComponent = props => {
               <FormattedMessage id={'EmployerListingCard.perUnit'} />
             </span>
           </div>
-          <Button className={css.messageButton}>
-            <FormattedMessage id="EmployerListingCard.viewProfile" />
-          </Button>
+          <div className={css.messageButton}>
+            <FormattedMessage id={'EmployerListingCard.viewProfile'} />
+          </div>
         </NamedLink>
       </Card>
       {onManageDisableScrolling && (

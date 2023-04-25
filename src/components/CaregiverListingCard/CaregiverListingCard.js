@@ -17,7 +17,6 @@ import config from '../../config';
 import {
   NamedLink,
   Avatar,
-  Button,
   IconCheckmark,
   InfoTooltip,
   IconSearch,
@@ -27,16 +26,16 @@ import {
   IconCalendar,
   AvailabilityPreview,
   IconCareVineGold,
+  Button,
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { formatPrice } from '../../util/data';
+import { SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './CaregiverListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 export const CaregiverListingCardComponent = props => {
   const {
@@ -47,6 +46,7 @@ export const CaregiverListingCardComponent = props => {
     filtersConfig,
     currentUserListing,
     disableProfileLink,
+    isMobile,
   } = props;
 
   const currentListing = ensureListing(listing);
@@ -71,7 +71,7 @@ export const CaregiverListingCardComponent = props => {
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
-    backgroundCheckSubscription?.status === 'active' &&
+    SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
     backgroundCheckSubscription?.type === 'vine';
 
   const classes = classNames(rootClassName || css.root, className);
@@ -183,7 +183,12 @@ export const CaregiverListingCardComponent = props => {
     return isMobile ? (
       <div className={classes}>{children}</div>
     ) : (
-      <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+      <NamedLink
+        className={classes}
+        name="ListingPage"
+        params={{ id, slug }}
+        style={{ pointerEvents: disableProfileLink && 'none' }}
+      >
         {children}
       </NamedLink>
     );
@@ -263,13 +268,15 @@ export const CaregiverListingCardComponent = props => {
                 />
               </div>
             )}
-            <div className={css.badge}>
-              <InfoTooltip
-                title={experienceLevelTitle}
-                icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
-                styles={{ paddingInline: '0' }}
-              />
-            </div>
+            {experienceLevel !== '0' && (
+              <div className={css.badge}>
+                <InfoTooltip
+                  title={experienceLevelTitle}
+                  icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
+                  styles={{ paddingInline: '0' }}
+                />
+              </div>
+            )}
             {scheduleTypes && scheduleTypes.includes('liveIn') && (
               <div className={css.badge}>
                 <InfoTooltip
@@ -308,7 +315,7 @@ export const CaregiverListingCardComponent = props => {
               ))}
               {providedServices?.length > 3 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={
                     <ul>
                       {providedServices?.slice(3, providedServices?.length).map(service => (
@@ -330,16 +337,16 @@ export const CaregiverListingCardComponent = props => {
           </div>
         </div>
       </Wrapper>
-      <NamedLink
-        className={css.buttonContainer}
-        name="ListingPage"
-        params={{ id, slug }}
-        style={{ pointerEvents: disableProfileLink && 'none' }}
-      >
-        <Button className={css.messageButton}>
+      <div className={css.buttonContainer}>
+        <NamedLink
+          className={css.messageButton}
+          name="ListingPage"
+          params={{ id, slug }}
+          style={{ pointerEvents: disableProfileLink && 'none' }}
+        >
           <FormattedMessage id="CaregiverListingCard.viewProfile" />
-        </Button>
-      </NamedLink>
+        </NamedLink>
+      </div>
     </Card>
   );
 };

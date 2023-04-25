@@ -7,10 +7,8 @@ import CareScheduleRecurringTimesContainer from '../EditListingCareSchedulePanel
 import { timestampToDate } from '../../util/dates';
 import { getDefaultTimeZoneOnBrowser } from '../../util/dates';
 import { AVAILABILITY_PLAN_REPEAT } from '../../util/constants';
-import { createInitialValues } from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
 
 import css from './BookingContainer.module.css';
-import { SignalCellularNull } from '@mui/icons-material';
 
 const CALENDAR_VIEW = 'calendar';
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
@@ -114,20 +112,14 @@ const ViewRepeat = props => {
       containerClassName={css.repeatEditModalContainer}
       usePortal
     >
-      {/* TODO: replace null values */}
       <CareScheduleRecurringTimesContainer
         availabilityPlan={formAvailabilityPlan}
         currentListing={currentUserListing}
-        disabled={null}
         errors={{}}
         isPublished
         onManageDisableScrolling={onManageDisableScrolling}
         onSubmit={handleSubmit}
-        ready={null}
         submitButtonText="Save Schedule"
-        updateInProgress={null}
-        showErrors={null}
-        panelUpdated={null}
         isBooking
       />
     </Modal>

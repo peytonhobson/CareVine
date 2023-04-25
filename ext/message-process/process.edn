@@ -1,0 +1,22 @@
+{:format :v3,
+ :transitions
+ [{:name :transition/initial-message,
+   :actor :actor.role/customer,
+   :actions [{:name :action/update-protected-data},],
+   :to :state/messaging},
+   {:name :transition/customer-delete-conversation,
+   :actor :actor.role/customer,
+   :actions [],
+   :from :state/messaging,
+   :to :state/deleted},
+   {:name :transition/provider-delete-conversation,
+   :actor :actor.role/provider,
+   :actions [],
+   :from :state/messaging,
+   :to :state/deleted},],
+ :notifications
+ [{:name :notification/new-message,
+   :on :transition/initial-message,
+   :to :actor.role/provider,
+   :template :new-message},
+   ]}

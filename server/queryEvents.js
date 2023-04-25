@@ -9,6 +9,7 @@ module.exports = queryEvents = () => {
   const isTest = process.env.NODE_ENV === 'production' && isDev;
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
+  const activeSubscriptionTypes = ['active', 'trialing'];
   const {
     closeListing,
     updateListingApproveListing,
@@ -17,8 +18,9 @@ module.exports = queryEvents = () => {
     deEnrollUserTCM,
     cancelSubscription,
     backgroundCheckApprovedNotification,
-    deleteUserChannels,
     backgroundCheckRejectedNotification,
+    addUnreadMessageCount,
+    sendQuizFailedEmail,
   } = require('./queryEvents.helpers');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
@@ -53,7 +55,13 @@ module.exports = queryEvents = () => {
   }
 
   const queryEvents = args => {
-    var filter = { eventTypes: ['user/updated, listing/updated, user/deleted', 'user/created'] };
+    var filter = {
+      eventTypes: [
+        'user/updated, listing/updated, user/deleted',
+        'user/created',
+        'message/created',
+      ],
+    };
     return integrationSdk.events
       .query({ ...args, ...filter })
       .catch(e => log.error(e, 'Error querying events'));
@@ -111,10 +119,10 @@ module.exports = queryEvents = () => {
 
       const openListing =
         metadata?.userType === CAREGIVER
-          ? backgroundCheckSubscription?.status === 'active' &&
+          ? activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
             emailVerified &&
             ((prevBackgroundCheckSubscription?.status &&
-              prevBackgroundCheckSubscription?.status !== 'active') ||
+              !activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status)) ||
               (prevEmailVerified !== undefined && !prevEmailVerified))
           : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
@@ -131,7 +139,7 @@ module.exports = queryEvents = () => {
         !isDev &&
         !tcmEnrolled &&
         backgroundCheckSubscription.type === 'vine' &&
-        backgroundCheckSubscription.status === 'active'
+        activeSubscriptionTypes.includes(backgroundCheckSubscription?.status)
       ) {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
@@ -140,10 +148,9 @@ module.exports = queryEvents = () => {
       }
 
       if (
-        !isDev &&
         tcmEnrolled &&
         (backgroundCheckSubscription.type !== 'vine' ||
-          backgroundCheckSubscription.status !== 'active')
+          !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status))
       ) {
         const userAccessCode = privateData?.authenticateUserAccessCode;
 
@@ -162,18 +169,24 @@ module.exports = queryEvents = () => {
       if (
         ((identityProofQuizAttempts >= 3 && previousQuizAttempts < 3) ||
           (backgroundCheckRejected && !previousBackgroundCheckRejected)) &&
-        backgroundCheckSubscription?.status === 'active'
+        activeSubscriptionTypes.includes(backgroundCheckSubscription?.status)
       ) {
         console.log('cancel subscription');
         cancelSubscription(backgroundCheckSubscription);
+
+        if (identityProofQuizAttempts >= 3) {
+          console.log('send quiz failed email');
+          const userId = event.attributes.resource?.id?.uuid;
+          sendQuizFailedEmail(userId);
+        }
       }
 
       const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
 
       // Close user listing if background check subscription is cancelled and they don't have a subscription schedule
       if (
-        backgroundCheckSubscription?.status !== 'active' &&
-        previousBCSubscription?.status === 'active' &&
+        !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
+        activeSubscriptionTypes.includes(previousBCSubscription?.status) &&
         !backgroundCheckSubscriptionSchedule
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
@@ -202,13 +215,12 @@ module.exports = queryEvents = () => {
       }
     }
 
-    // If user is deleted, delete their channels
-    if (eventType === 'user/deleted') {
-      const previousValues = event?.attributes?.previousValues;
-      const userId = previousValues?.id?.uuid;
+    if (eventType === 'message/created') {
+      const message = event?.attributes?.resource;
+      const senderId = message?.relationships?.sender?.data?.id?.uuid;
+      const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
-      console.log('delete user channels');
-      deleteUserChannels(userId);
+      addUnreadMessageCount(transactionId, senderId);
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

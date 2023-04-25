@@ -1,0 +1,101 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-height: 100%;
+}
+
+.loading {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.error {
+  margin-left: 24px;
+  margin-right: 24px;
+  color: var(--failColor);
+}
+
+.tabContent {
+  display: none;
+}
+
+.tabContentVisible {
+  display: block;
+}
+
+/* Passed-in props for FeedSection subcomponent */
+.feedContainer {
+  margin: 0;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  overflow-y: hidden;
+  max-height: calc(85vh - var(--topbarHeight) - 12rem);
+
+  @media (--viewportMedium) {
+    max-height: calc(100vh - var(--topbarHeightDesktop) - 12rem);
+  }
+}
+
+/* FeedSection subcomponent */
+.feedHeading {
+  color: var(--matterColorAnti);
+  margin: 0;
+
+  @media (--viewportMedium) {
+    margin: 0;
+  }
+}
+
+.feed {
+  padding: 1.25rem;
+  overflow-y: auto;
+  border: 1px solid;
+
+  border-color: var(--matterColorNegative);
+  border-top: none;
+  border-bottom: none;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0 !important;
+  }
+
+  @media (--viewportMedium) {
+    border-left: none;
+  }
+}
+
+/* Prop to be passed to SendMessageForm component */
+.sendMessageForm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 2rem;
+  border-top: 1px solid var(--matterColorNegative);
+
+  @media (--viewportMedium) {
+    height: 6rem;
+    align-items: center;
+    padding-top: 0;
+  }
+}
+
+.sendingMessageNotAllowed {
+  color: var(--matterColorAnti);
+
+  width: 100%;
+  text-align: center;
+
+  position: relative;
+}
+
+.messageError {
+  color: var(--failColor);
+  padding-inline: 3rem;
+}

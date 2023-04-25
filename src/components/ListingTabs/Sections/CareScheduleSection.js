@@ -22,19 +22,17 @@ const weekdayMap = [
   { day: 'sun', label: 'Sunday' },
 ];
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const CareScheduleSection = forwardRef((props, ref) => {
-  const { availabilityPlan, filterConfig } = props;
+  const { availabilityPlan, filterConfig, isMobile } = props;
 
   const scheduleTypes = findOptionsForSelectFilter('scheduleType', filterConfig);
 
   const careScheduleCardTitle = (
     <h1 className={css.title}>
       Care Schedule{' '}
-      <span style={{ display: isMobile && 'inline-block' }}>
+      <div style={{ display: 'inline-block' }}>
         ({scheduleTypes.find(s => s.key === availabilityPlan?.type)?.label})
-      </span>
+      </div>
     </h1>
   );
 
@@ -136,12 +134,12 @@ const CareScheduleSection = forwardRef((props, ref) => {
           </div>
           <div className={css.hoursPerDayContainer}>
             <h1 className={css.hoursPerDay}>{availabilityPlan?.hoursPerDay}</h1>
-            <span>Working hours per day</span>
+            <span>Hours of care per day</span>
           </div>
           {availabilityPlan?.liveIn && <p className={css.liveIn}>*This is a live-in position</p>}
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
-              <p>
+              <p className={css.dateText}>
                 <span className={isMobile ? css.smallBold : css.bold}>Start Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.startDate
@@ -151,7 +149,7 @@ const CareScheduleSection = forwardRef((props, ref) => {
               </p>
             </span>
             <span className={css.dateContainer}>
-              <p>
+              <p className={css.dateText}>
                 <span className={isMobile ? css.smallBold : css.bold}>End Date: </span>
                 <span className={css.item}>
                   {availabilityPlan?.endDate

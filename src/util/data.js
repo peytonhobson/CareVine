@@ -13,7 +13,7 @@ import {
 import { types as sdkTypes } from '../util/sdkLoader';
 const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
-import { BACKGROUND_CHECK_APPROVED } from './constants';
+import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constants';
 
 /**
  * Combine the given relationships objects
@@ -189,7 +189,7 @@ export const ensureListing = listing => {
   const empty = {
     id: null,
     type: 'listing',
-    attributes: { publicData: {} },
+    attributes: { publicData: {}, privateData: {}, metadata: {} },
     images: [],
   };
   return { ...empty, ...listing };
@@ -309,9 +309,7 @@ export const ensurePaymentMethodCard = stripePaymentMethod => {
  * @return {String} display name that can be rendered in the UI
  */
 export const userDisplayNameAsString = (user, defaultUserDisplayName) => {
-  const hasAttributes = user && user.attributes;
-  const hasProfile = hasAttributes && user.attributes.profile;
-  const hasDisplayName = hasProfile && user.attributes.profile.displayName;
+  const hasDisplayName = user?.attributes?.profile?.displayName;
 
   if (hasDisplayName) {
     const displayName = user.attributes.profile.displayName.split(' ');
@@ -412,15 +410,15 @@ export const humanizeLineItemCode = code => {
 };
 
 export const convertFilterKeyToLabel = (filterType, key) => {
-  return findOptionsForSelectFilter(filterType, filters).find(data => data.key === key).label;
+  return findOptionsForSelectFilter(filterType, filters)?.find(data => data.key === key)?.label;
 };
 
 export const convertFilterKeysToLabels = (filterType, keys) => {
   return findOptionsForSelectFilter(filterType, filters)
-    .filter(data => {
-      return keys.includes(data.key);
+    ?.filter(data => {
+      return keys?.includes(data.key);
     })
-    .map(filter => filter.label);
+    ?.map(filter => filter.label);
 };
 
 export const cutTextToPreview = (text, length) => {
@@ -450,7 +448,7 @@ export const userCanMessage = currentUser => {
   return userType === CAREGIVER
     ? emailVerified &&
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        backgroundCheckSubscription?.status === 'active'
+        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)
     : emailVerified;
 };
 
@@ -466,7 +464,7 @@ export const getMissingInfoModalValue = currentUser => {
     userType === CAREGIVER
       ? emailVerified &&
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        backgroundCheckSubscription?.status === 'active'
+        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)
       : emailVerified;
 
   if (!canMessage) {

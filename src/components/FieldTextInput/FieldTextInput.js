@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { bool, func, object, shape, string } from 'prop-types';
+import { bool, func, object, oneOfType, shape, string } from 'prop-types';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { ValidationError, ExpandingTextarea } from '../../components';
@@ -46,7 +46,7 @@ class FieldTextInputComponent extends Component {
     const fieldMeta = { touched: hasError, error: errorText };
 
     const getIOSInputEventHandlers = () => {
-      if (!isIOS(window)) {
+      if (typeof window !== 'undefined' && !isIOS()) {
         return {};
       }
 
@@ -164,7 +164,7 @@ FieldTextInputComponent.propTypes = {
   // Label is optional, but if it is given, an id is also required so
   // the label can reference the input in the `for` attribute
   id: string,
-  label: string,
+  label: oneOfType([string, object]),
 
   // Uncontrolled input uses defaultValue prop, but doesn't pass value from form to the field.
   // https://reactjs.org/docs/uncontrolled-components.html#default-values

@@ -2,12 +2,13 @@ import React, { useEffect, useReducer, useRef, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isEqual } from 'lodash';
+import { first, isEqual } from 'lodash';
+import classNames from 'classnames';
 
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { updateNotifications, fetchCurrentUser } from '../../ducks/user.duck';
-import { fetchSenderListing } from './NotificationsPage.duck';
+import { deleteNotification, fetchSenderListing } from './NotificationsPage.duck';
 
 import {
   Page,
@@ -21,34 +22,21 @@ import {
 } from '../../components';
 import { TopbarContainer } from '..';
 import NotificationContainer from './NotificationContainer';
+import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 
 import css from './NotificationsPage.module.css';
 import SideNav from './SideNav';
 
-const DELETE_NOTIFICATION = 'DELETE_NOTIFICATION';
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_NOTIFICATION_MODAL_OPEN = 'SET_NOTIFICATION_MODAL_OPEN';
 const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const SET_INITIAL_NOTIFICATION = 'SET_INITIAL_NOTIFICATION';
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case DELETE_NOTIFICATION:
-      return {
-        ...state,
-        notifications: state.notifications.filter(n => n.id !== action.payload),
-        isDeleteModalOpen: false,
-        activeNotification:
-          state.activeNotification.id === action.payload
-            ? state.notifications.length > 1
-              ? state.notifications[0]
-              : null
-            : state.activeNotification,
-      };
     case SET_DELETE_MODAL_OPEN:
       return { ...state, isDeleteModalOpen: action.payload };
     case SET_NOTIFICATION_MODAL_OPEN:
@@ -77,6 +65,12 @@ const reducer = (state, action) => {
       };
     case SET_CURRENT_USER_INITIAL_FETCHED:
       return { ...state, currentUserInitialFetched: true };
+    case SET_INITIAL_NOTIFICATION:
+      return {
+        ...state,
+        activeNotification: action.payload,
+        initialNotificationSet: true,
+      };
     default:
       return state;
   }
@@ -97,8 +91,13 @@ const NotificationsPageComponent = props => {
     fetchSenderListingInProgress,
     fetchSenderListingError,
     onFetchCurrentUser,
+    deleteNotificationInProgress,
+    deleteNotificationError,
+    onDeleteNotification,
     params,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const { notificationId } = params;
 
@@ -117,6 +116,7 @@ const NotificationsPageComponent = props => {
     isDeleteModalOpen: false,
     activeNotification: notifications.length > 0 ? notifications[0] : null,
     isNotificationModalOpen: false,
+    initialNotificationSet: false,
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -127,22 +127,15 @@ const NotificationsPageComponent = props => {
   }, [sortedNotifications.length]);
 
   useEffect(() => {
-    if (notificationId && state.notifications.find(n => n.id === notificationId)) {
-      dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: notificationId });
+    const firstNotification = state.notifications.find(n => n.id === notificationId);
+    if (!state.initialNotificationSet && notificationId && firstNotification) {
+      dispatch({ type: SET_INITIAL_NOTIFICATION, payload: firstNotification });
 
       if (isMobile) {
         dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: true });
       }
     }
-  }, [notificationId]);
-
-  const usePrevious = value => {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
-  };
+  }, [notificationId, state.notifications?.length]);
 
   const previousNotifications = usePrevious(state.notifications);
 
@@ -171,8 +164,14 @@ const NotificationsPageComponent = props => {
     dispatch({ type: SET_DELETE_MODAL_OPEN, payload: id });
   };
 
+  useEffect(() => {
+    if (!deleteNotificationInProgress && !deleteNotificationError) {
+      dispatch({ type: SET_DELETE_MODAL_OPEN, payload: false });
+    }
+  }, [deleteNotificationInProgress]);
+
   const handleDeleteNotification = () => {
-    dispatch({ type: DELETE_NOTIFICATION, payload: state.isDeleteModalOpen });
+    onDeleteNotification(state.isDeleteModalOpen, currentUser);
   };
 
   const handlePreviewClick = id => {
@@ -211,6 +210,7 @@ const NotificationsPageComponent = props => {
             fetchCurrentUserInProgress={
               fetchCurrentUserInProgress && !state.currentUserInitialFetched
             }
+            isMobile={isMobile}
           />
         </LayoutWrapperSideNav>
 
@@ -271,6 +271,11 @@ const NotificationsPageComponent = props => {
           <p className={css.modalMessage}>
             <FormattedMessage id="NotificationsPage.deleteModalText" />
           </p>
+          {deleteNotificationError && (
+            <p className={classNames(css.modalMessage, css.error)}>
+              <FormattedMessage id="NotificationPage.deleteNotificationError" />
+            </p>
+          )}
           <div className={css.modalButtons}>
             <SecondaryButton
               className={css.modalButtonCancel}
@@ -278,7 +283,12 @@ const NotificationsPageComponent = props => {
             >
               <FormattedMessage id="NotificationsPage.deleteModalCancel" />
             </SecondaryButton>
-            <Button className={css.modalButtonDelete} onClick={handleDeleteNotification}>
+            <Button
+              className={css.modalButtonDelete}
+              onClick={handleDeleteNotification}
+              inProgress={deleteNotificationInProgress}
+              disabled={deleteNotificationInProgress}
+            >
               <FormattedMessage id="NotificationsPage.deleteModalConfirm" />
             </Button>
           </div>
@@ -291,32 +301,22 @@ const NotificationsPageComponent = props => {
 const mapStateToProps = state => {
   const { currentUser, fetchCurrentUserInProgress, currentUserListing } = state.user;
 
-  const {
-    senderListing,
-    sender,
-    fetchSenderListingInProgress,
-    fetchSenderListingError,
-  } = state.NotificationsPage;
-
   return {
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
     fetchCurrentUserInProgress,
-    senderListing,
-    sender,
-    fetchSenderListingInProgress,
-    fetchSenderListingError,
+    ...state.NotificationsPage,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onUpdateNotifications: notifications => dispatch(updateNotifications(notifications)),
-  onFetchSenderListing: id => dispatch(fetchSenderListing(id)),
-  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onUpdateNotifications: updateNotifications,
+  onFetchSenderListing: fetchSenderListing,
+  onFetchCurrentUser: fetchCurrentUser,
+  onDeleteNotification: deleteNotification,
+};
 
 const NotificationsPage = compose(
   connect(mapStateToProps, mapDispatchToProps),

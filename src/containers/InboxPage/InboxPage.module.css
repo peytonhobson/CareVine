@@ -29,22 +29,437 @@
 .desktopTopbar,
 .mobileTopbar {
   box-shadow: none;
-
-  @media (--viewportLarge) {
-    box-shadow: var(--boxShadowLight);
-  }
-}
-
-.spinner {
-  width: 70px;
-  height: 70px;
-  stroke-width: 3px;
+  border-bottom: 1px solid var(--matterColorNegative);
 }
 
 .wrapper {
+  height: calc(100vh - var(--topbarHeight));
+  padding: 0;
+
+  @media (--viewportMedium) {
+    max-height: calc(100vh - var(--topbarHeightDesktop));
+    padding: 0;
+  }
+}
+
+.navigation {
+  padding: 0;
+  background-color: var(--matterColorLight);
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: 23rem;
+  }
+}
+
+.title {
+  /* Font */
+  color: var(--matterColor);
+  display: flex;
+  justify-content: center;
+
+  /* Layout */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  padding-bottom: 10px;
+
+  @media (--viewportMedium) {
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  @media (--viewportLarge) {
+    padding-bottom: 0;
+  }
+}
+
+.tabs {
+  padding-top: 2px;
+
+  display: flex;
+  flex-direction: row;
+  /* overflow-x: auto; */
+
+  @media (--viewportMedium) {
+    padding-top: 12px;
+    padding-top: 20px;
+  }
+
+  @media (--viewportLarge) {
+    /* padding-top: 53px; */
+    /* flex-direction: column; */
+  }
+}
+
+.tab {
+  margin-left: 16px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+
+  @media (--viewportLarge) {
+    margin-left: 0;
+  }
+}
+
+.tabContent {
+  /* Font */
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 18px;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.tabContentVisible {
+  display: block;
+}
+
+.error {
+  color: var(--failColor);
+
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.noResults {
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-top: 1px;
+
+  @media (--viewportLarge) {
+    margin-top: 6px;
+  }
+}
+
+.itemList {
+  margin-top: 20px;
+  padding-inline: 10%;
+  display: flex;
+  max-height: 100%;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+}
+
+@keyframes loadingSpinnerFadeIn {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.listItemsLoading {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  opacity: 0;
+
+  /* animation shorthand property doesn't work with local scope of CSS Modules */
+  animation-duration: 1s;
+  animation-name: loadingSpinnerFadeIn;
+  animation-fill-mode: forwards;
+}
+
+.listItem {
+  /* Layout */
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  width: 100%;
+  min-height: 6rem;
+
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: var(--matterColorNegative);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (--viewportLarge) {
+    margin-bottom: 16px;
+    padding-bottom: 7px;
+  }
+}
+
+.avatarBase {
+  font-family: 'poppins', Helvetica, Arial, sans-serif;
+  border-radius: 50%;
+
+  /* Position possible initials to the center of the component */
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - var(--topbarHeightDesktop));
+
+  /* Colors */
+  background-image: linear-gradient(
+    -180deg,
+    var(--marketplaceColorLight) 0%,
+    var(--marketplaceColor) 100%
+  );
+  color: var(--matterColorLight);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+/* Small Avatar */
+
+.avatarRoot {
+  composes: avatarBase;
+
+  /* Layout */
+  width: 100%;
+  height: 100%;
+}
+
+.itemInfo {
+  composes: h5 from global;
+
+  font-weight: var(--fontWeightSemiBold);
+
+  /* Layout */
+  flex-grow: 1;
+  flex: 1;
+  flex-direction: column;
+
+  margin-top: 5px;
+  margin-bottom: 0;
+  margin-left: 4px;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  color: var(--matterColor);
+}
+
+.bookingInfoWrapper {
+  composes: marketplaceTinyFontStyles from global;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  line-height: 14px;
+  margin-top: 2px;
+  padding-top: 2px;
+
+  @media (--viewportMedium) {
+    padding-top: 0px;
+    margin-top: 2px;
+    line-height: 16px;
+  }
+}
+
+.itemPrice {
+  &::before {
+    font-size: 10px;
+    margin: 0 6px;
+    display: inline-block;
+    content: '\25CF'; /* middot */
+  }
+}
+
+.pagination {
+  margin: auto 24px 0 24px;
+}
+
+/* Transaction status affects to certain font colors and weights */
+
+.stateName {
+  /* This class is empty on purpose, it is used below for banned users */
+}
+
+.stateActionNeeded {
+  font-weight: var(--fontWeightSemiBold);
+  color: var(--attentionColor);
+}
+
+.stateNoActionNeeded {
+  color: var(--matterColorAnti);
+}
+
+.stateSucces {
+  font-weight: var(--fontWeightSemiBold);
+  color: var(--successColor);
+}
+
+.nameEmphasized {
+  font-weight: var(--fontWeightBold);
+
+  /* baseline alignment fixes */
+  margin-top: -1px;
+  margin-bottom: 1px;
+}
+
+.bookingActionNeeded {
+  color: var(--matterColor);
+  margin-top: 4px;
+
+  @media (--viewportMedium) {
+    margin-top: 9px;
+  }
+}
+
+.bookingNoActionNeeded {
+  color: var(--matterColorAnti);
+}
+
+.lastTransitionedAtEmphasized {
+  color: var(--matterColor);
+  font-weight: var(--fontWeightMedium);
+}
+
+.lastTransitionedAtNotEmphasized {
+  color: var(--matterColorAnti);
+}
+
+.navPlaceholder {
+  @media (--viewportMedium) {
+    width: 240px;
+  }
+}
+
+.sidenavRoot {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    height: calc(100vh - var(--topbarHeightDesktop));
+  }
+}
+
+.noConversationsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  padding-bottom: 10rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 5rem;
+  }
+}
+
+.inquiry {
+  fill: var(--matterColorAnti);
+  stroke: var(--matterColorAnti);
+}
+
+.inquiryStroke {
+  stroke: var(--matterColorAnti);
+}
+
+.noConversations {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.noConversationsText {
+  color: var(--matterColorAnti);
+  width: 100%;
+  text-align: center;
+}
+
+.sideNavSpinner {
+  height: 4rem;
+  width: 4rem;
+  stroke: 3px;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  margin-top: 4rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.modalButtonCancel {
+  width: auto;
+  padding: 1rem 2rem;
+  width: auto;
+  min-height: 0;
+
+  &:hover,
+  &:focus {
+    background-color: var(--matterColorLight);
+    color: var(--matterColor);
+  }
+}
+
+.modalButtonDelete {
+  background-color: var(--failColor);
+  padding: 1rem 2rem;
+  width: auto;
+  min-height: 0;
+  margin-left: 1rem;
+
+  &:hover {
+    background-color: var(--failColor);
+    filter: brightness(0.8);
+  }
+
+  &:disabled {
+    background-color: var(--failColor);
+  }
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+  padding-bottom: 10rem;
+
+  @media (--viewportMedium) {
+    padding-bottom: 5rem;
+  }
+}
+
+.mainSpinner {
+  height: 6rem;
+  width: 6rem;
+  stroke: 3px;
 }

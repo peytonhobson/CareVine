@@ -13,13 +13,11 @@ import { richText } from '../../util/richText';
 import { compose } from 'redux';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './ListingSummary.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
-
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
 const ListingSummaryComponent = props => {
   const {
@@ -32,6 +30,8 @@ const ListingSummaryComponent = props => {
     onOpenBookingModal,
     onBookNow,
     onShowListingPreview,
+    isMobile,
+    fetchExistingConversationInProgress,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -42,7 +42,7 @@ const ListingSummaryComponent = props => {
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
-    backgroundCheckSubscription?.status === 'active' &&
+    SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
     backgroundCheckSubscription?.type === 'vine';
 
   const currentUserGeolocation = currentUserListing?.attributes?.geolocation;
@@ -190,7 +190,11 @@ const ListingSummaryComponent = props => {
               <FormattedMessage id="ListingSummary.bookNow" />
             </Button>
           )} */}
-          <Button className={css.secondaryButton} onClick={onContactUser}>
+          <Button
+            className={css.secondaryButton}
+            onClick={onContactUser}
+            disabled={fetchExistingConversationInProgress}
+          >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
         </div>

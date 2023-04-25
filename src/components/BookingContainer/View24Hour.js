@@ -109,7 +109,6 @@ const View24Hour = props => {
       containerClassName={css.bookingModalContainer}
       usePortal
     >
-      {/* TODO: Replace null values */}
       <Care24HourForm
         availabilityPlan={formAvailabilityPlan}
         currentListing={currentUserListing}

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureOwnListing } from '../../util/data';
-import { findOptionsForSelectFilter } from '../../util/search';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { Modal } from '..';
 import { EditListingBioForm } from '../../forms';
@@ -13,27 +11,26 @@ import css from './EditListingBioPanel.module.css';
 const EditListingBioPanel = props => {
   const {
     className,
-    rootClassName,
-    listing,
     disabled,
-    ready,
-    onSubmit,
-    onChange,
-    submitButtonText,
-    panelUpdated,
-    updateInProgress,
     errors,
-    onGenerateBio,
-    generateBioInProgress,
     generateBioError,
+    generateBioInProgress,
     generatedBio,
+    listing: currentListing,
+    onChange,
+    onGenerateBio,
     onManageDisableScrolling,
+    onSubmit,
+    panelUpdated,
+    ready,
+    rootClassName,
+    submitButtonText,
+    updateInProgress,
     ...rest
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
-  const currentListing = ensureOwnListing(listing);
-  const { description, title, publicData } = currentListing.attributes;
+  const { description } = currentListing.attributes;
 
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
@@ -105,7 +102,7 @@ const EditListingBioPanel = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
-        <p className={css.modalTitle}>How does this work?</p>
+        <p className={css.modalTitle}>Please Note</p>
         <p className={css.modalMessage}>
           We used a machine learning algorithm to generate a bio for you based on the information
           you provided in your profile.

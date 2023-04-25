@@ -1,6 +1,19 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 10px;
+  height: 60vh;
+  flex-wrap: wrap;
+  overflow-x: none;
+
+  @media (--viewportMedium) {
+    min-height: 25rem;
+    min-width: 32rem;
+  }
 }
 
 .icon {
@@ -12,16 +25,10 @@
   }
 }
 
-.heading {
-  composes: marketplaceModalTitleStyles from global;
-}
-
 .field {
-  margin: 25px 0 24px 0;
-
-  @media (--viewportMedium) {
-    margin: 22px 0 24px 0;
-  }
+  margin: 1.5rem 0;
+  width: 100%;
+  display: block;
 }
 
 .error {
@@ -31,4 +38,56 @@
   @media (--viewportMedium) {
     margin-top: 0;
   }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.heading {
+  max-width: 80%;
+
+  @media (--viewportMedium) {
+    max-width: 25rem;
+  }
+}
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+  margin-left: 3rem;
+}
+
+/* Small Avatar */
+
+.avatar {
+  /* Layout */
+  width: 6.25rem;
+  height: 6.25rem;
+}
+
+.avatarInitials {
+  font-size: 3rem;
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.submitButtonWrapper {
+  padding: 2rem 0;
+  width: 100%;
+  display: block;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-top: 4rem;
+  }
+}
+
+.submitButton {
+  min-width: 100%;
 }

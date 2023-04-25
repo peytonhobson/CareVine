@@ -11,51 +11,102 @@ const PrivacyPolicy = props => {
   // prettier-ignore
   return (
     <div className={classes}>
-      <p className={css.lastUpdated}>Last updated: November 22, 2019</p>
+      <p className={css.lastUpdated}>Last updated: April 11, 2023</p>
 
+      <h2>Welcome to CareVine's Privacy Policy - Your Privacy Matters to Us!</h2>
       <p>
-        Thank you for using Yogatime! Every marketplace business needs Terms of Service and
-        Privacy Policy agreements. To help you launch your marketplace faster, we've compiled 
-        two templates you can use as a baseline for the agreements between your online marketplace 
-        business and its users. You can access these templates at 
-        https://www.sharetribe.com/docs/operator-guides/free-templates/
+        At CareVine, we care about your privacy and want to provide an engaging and enjoyable
+        experience on our website. To make our policy easy to understand, we've outlined our
+        commitment to protecting your privacy below:
       </p>
 
-      <h2>1 Lorem ipsum dolor sit amet</h2>
+      <ul>
+        <li>🔒 We only ask for personal data when we really need it.</li>
+        <li>
+          🔒 We never share your personal data, except to follow the law, improve our products, or
+          protect our rights.
+        </li>
+        <li>🔒 We store personal data only when needed for our services.</li>
+      </ul>
+
+      <p>Now, let's dive deeper into how we handle your data:</p>
+
+      <h2>🌐 Website Visitors:</h2>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        When you visit our website, we collect non-personal information (browser type, language,
+        referring site, date, and time) to better understand how you interact with our site.
+        Occasionally, we might share aggregated, non-personal data, such as trends in website usage.
+      </p>
+      <p>
+        We also collect potentially personal data like IP addresses for logged-in users. We only
+        disclose IP addresses and other personal data under certain conditions, such as legal
+        requirements or to protect our rights.
       </p>
 
-      <h2>2 Sed ut perspiciatis unde</h2>
+      <h2>📝 Gathering of Personally-Identifying Information:</h2>
       <p>
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
-        laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
-        architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-        aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-        voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
-        consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et
-        dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum
-        exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
-        consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil
-        molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+        Sometimes, we need to collect personally-identifying information (PII) to provide our
+        services. We only collect PII when necessary and do not disclose it, except as described
+        below. You can always choose not to provide PII, but it might limit your website activities.
       </p>
 
-      <h2>3 At vero eos et accusamus</h2>
+      <h2>📊 Aggregated Statistics:</h2>
       <p>
-        At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-        voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-        cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id
-        est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam
-        libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod
-        maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-        Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut
-        et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a
-        sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis
-        doloribus asperiores repellat
+        We may collect and share visitor behavior statistics without disclosing PII to protect your
+        privacy.
+      </p>
+
+      <h2>🛡️ Protection of Personally-Identifying Information:</h2>
+      <p>
+        We only share PII with employees, contractors, and affiliated organizations that need the
+        information and promise not to disclose it. By using our website, you agree to the transfer
+        of PII to parties outside your home country. We won't rent or sell PII and will only
+        disclose it for legal reasons or to protect others' rights.
+      </p>
+
+      <h2>💌 Communication:</h2>
+      <p>
+        Registered users may receive occasional emails about new features, feedback requests, or
+        updates on CareVine products. We aim to minimize these emails. If you contact us, we might
+        publish your message to clarify your request or help other users.
+      </p>
+
+      <h2>🔐 Security:</h2>
+
+      <p>
+        We take reasonable steps to protect against unauthorized access, use, alteration, or
+        destruction of PII.
+      </p>
+
+      <h2>🍪 Cookies:</h2>
+      <p>
+        A cookie is a string of information that a website stores on a visitor’s computer, and that
+        the visitor’s browser provides to the website each time the visitor returns. We use cookies
+        to identify and track visitors and their preferences. You can refuse cookies, but some
+        website features may not work properly. Our policy covers cookies by CareVine, not
+        third-party advertisers.
+      </p>
+
+      <h2>🚀 Business Transfers:</h2>
+      <p>
+        If CareVine is acquired or goes bankrupt, your information may be transferred to a third
+        party. By using our website, you accept the possibility of such transfers.
+      </p>
+
+      <h2>📢 Ads:</h2>
+      <p>
+        Advertisers may set cookies to gather information about you. Our policy doesn't cover
+        third-party advertisers' cookie usage.
+      </p>
+
+      <h2>🔧 Privacy Policy Changes:</h2>
+      <p>
+        We may change our policy from time to time. Please check this page frequently for updates.
+        By continuing to use our website, you accept any changes to our policy.
+      </p>
+      <p>
+        Thank you for trusting CareVine with your data. We promise to keep your privacy at the
+        forefront of our work.{' '}
       </p>
     </div>
   );

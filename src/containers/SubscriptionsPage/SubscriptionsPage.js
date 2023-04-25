@@ -21,6 +21,7 @@ import {
   InlineTextButton,
   IconSpinner,
   Modal,
+  NamedRedirect,
 } from '../../components';
 import ReactivateSubscriptionPaymentModal from './Modals/ReactivateSubscriptionPaymentModal';
 import ReactivateSubscriptionModal from './Modals/ReactivateSubscriptionModal';
@@ -36,7 +37,12 @@ import {
   cancelFutureSubscription,
 } from '../../ducks/stripe.duck';
 import SubscriptionCard from './SubscriptionCard';
-import { CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
+import {
+  CAREVINE_GOLD_PRICE_ID,
+  CAREVINE_BASIC_PRICE_ID,
+  SUBSCRIPTION_ACTIVE_TYPES,
+  EMPLOYER,
+} from '../../util/constants';
 
 import css from './SubscriptionsPage.module.css';
 import { useEffect } from 'react';
@@ -100,6 +106,7 @@ const SubscriptionsPageComponent = props => {
     onCreateFutureSubscription,
     onCancelFutureSubscription,
     onUpdateSubscriptionItem,
+    currentUserListing,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -180,6 +187,9 @@ const SubscriptionsPageComponent = props => {
     case 'active':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.active" />;
       break;
+    case 'trialing':
+      bcStatusText = <FormattedMessage id="SubscriptionsPage.trialing" />;
+      break;
     case 'past_due':
       bcStatusText = <FormattedMessage id="SubscriptionsPage.pastDue" />;
       break;
@@ -219,7 +229,7 @@ const SubscriptionsPageComponent = props => {
 
   // Set subscription to cancel at period end
   const handleCancelSubscription = async () => {
-    if (bcStatus === 'active' || bcStatus === 'past_due') {
+    if (SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) || bcStatus === 'past_due') {
       const params = { cancel_at_period_end: true };
 
       try {
@@ -259,7 +269,7 @@ const SubscriptionsPageComponent = props => {
       defaultPaymentMethods && defaultPaymentMethods.card && defaultPaymentMethods.card.id;
 
     // bcStatus being active indicates the user's subscription is set to cancel, but has not reached the end of the billing period.
-    if (bcStatus === 'active') {
+    if (SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus)) {
       if (changeSubscription) {
         /*
          * If the user is changing their subscription type from Vine to Basic, we need to update the current subscription
@@ -270,7 +280,9 @@ const SubscriptionsPageComponent = props => {
           try {
             const response = await onCreateFutureSubscription(
               stripeCustomerId,
-              backgroundCheckSubscription.currentPeriodEnd + 60000, // Start subscription a minute after the current period ends to avoid close listing
+              // Start subscription a minute after the current period ends so subscription canceled in webhook happens prior to this
+              // Stripe does unix timestamps in seconds, so we add 60 seconds to the current period end
+              backgroundCheckSubscription.currentPeriodEnd + 60,
               priceId,
               ensuredCurrentUser.id.uuid
             );
@@ -336,7 +348,7 @@ const SubscriptionsPageComponent = props => {
   const amount = backgroundCheckSubscription?.amount;
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
-    bcStatus === 'active' && !cancelAtPeriodEnd ? (
+    SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
       <>
         {bcType === BASIC && (
           <InlineTextButton
@@ -387,7 +399,7 @@ const SubscriptionsPageComponent = props => {
   ) : backgroundCheckSubscription && bcStatusText ? (
     <SubscriptionCard title={backgroundCheckTitle} headerButton={currentSubscriptionButton}>
       <div className={css.subscriptionContentContainer}>
-        {bcStatus === 'active' && !cancelAtPeriodEnd ? (
+        {SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>
@@ -481,6 +493,10 @@ const SubscriptionsPageComponent = props => {
     </div>
   );
 
+  if (ensuredCurrentUser?.attributes?.profile?.metadata?.userType === EMPLOYER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
+
   return (
     <>
       <Page title={title} scrollingDisabled={scrollingDisabled}>
@@ -491,7 +507,7 @@ const SubscriptionsPageComponent = props => {
               desktopClassName={css.desktopTopbar}
               mobileClassName={css.mobileTopbar}
             />
-            <UserNav selectedPageName="SubscriptionsPage" />
+            <UserNav selectedPageName="SubscriptionsPage" listing={currentUserListing} />
           </LayoutWrapperTopbar>
           <LayoutWrapperAccountSettingsSideNav
             currentTab="SubscriptionsPage"
@@ -605,7 +621,7 @@ const SubscriptionsPageComponent = props => {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const {
     cancelSubscriptionInProgress,
@@ -649,27 +665,22 @@ const mapStateToProps = state => {
     stripeCustomerFetched,
     updateSubscriptionError,
     updateSubscriptionInProgress,
+    currentUserListing,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
-  onCreateCreditCard: (stripeCustomerId, stripe, billingDetails, card) =>
-    dispatch(createCreditCard(stripeCustomerId, stripe, billingDetails, card)),
-  onCancelSubscription: subscriptionId => dispatch(cancelSubscription(subscriptionId)),
-  onUpdateSubscription: (subscriptionId, params) =>
-    dispatch(updateSubscription(subscriptionId, params)),
-  onCreateSubscription: (stripeCustomerId, stripe, card, params, payImmediate) =>
-    dispatch(createSubscription(stripeCustomerId, stripe, card, params, payImmediate)),
-  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
-  onCreateFutureSubscription: (stripeCustomerId, startDate, priceId, userId) =>
-    dispatch(createFutureSubscription(stripeCustomerId, startDate, priceId, userId)),
-  onCancelFutureSubscription: scheduleId => dispatch(cancelFutureSubscription(scheduleId)),
-  onUpdateSubscriptionItem: (subscriptionId, priceId) =>
-    dispatch(updateSubscriptionItem(subscriptionId, priceId)),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onFetchDefaultPayment: fetchDefaultPayment,
+  onCreateCreditCard: createCreditCard,
+  onCancelSubscription: cancelSubscription,
+  onUpdateSubscription: updateSubscription,
+  onCreateSubscription: createSubscription,
+  onFetchCurrentUser: fetchCurrentUser,
+  onCreateFutureSubscription: createFutureSubscription,
+  onCancelFutureSubscription: cancelFutureSubscription,
+  onUpdateSubscriptionItem: updateSubscriptionItem,
+};
 
 const SubscriptionsPage = compose(
   connect(mapStateToProps, mapDispatchToProps),

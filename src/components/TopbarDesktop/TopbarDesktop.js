@@ -18,7 +18,6 @@ import {
   NotificationBadge,
   IconBell,
 } from '../../components';
-import { TopbarSearchForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { userCanMessage, getMissingInfoModalValue } from '../../util/data';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
@@ -35,14 +34,11 @@ const TopbarDesktop = props => {
     currentUser,
     currentPage,
     rootClassName,
-    currentUserHasListings,
     currentUserListing,
     currentUserListingFetched,
     intl,
     isAuthenticated,
     onLogout,
-    onSearchSubmit,
-    initialSearchFormValues,
     onChangeModalValue,
     unreadMessages,
     unreadNotificationCount,
@@ -65,15 +61,23 @@ const TopbarDesktop = props => {
   const distance = 'distance=30';
   const location = currentUserListing?.attributes?.publicData?.location;
 
+  const oppositeUserType =
+    currentUserType === EMPLOYER ? CAREGIVER : currentUserType === CAREGIVER ? EMPLOYER : null;
+
+  console.log(oppositeUserType);
+
   const searchListings =
     isAuthenticatedOrJustHydrated && location ? (
       <NamedLink
-        className={css.regularLink}
+        className={classNames(css.regularLink, currentPage === 'SearchPage' && css.activeLink)}
         name="SearchPage"
-        to={{ search: `?${origin}&${distance}&sort=relevant` }}
+        to={{
+          search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+            `&listingTypes=${oppositeUserType}`}`,
+        }}
       >
         {currentUserType === CAREGIVER ? (
-          <span className={css.linkText}>My Job Board</span>
+          <span className={css.linkText}>Job Listings</span>
         ) : (
           <span className={css.linkText}>Find Caregivers</span>
         )}
@@ -93,7 +97,11 @@ const TopbarDesktop = props => {
   const inboxLink = authenticatedOnClientSide ? (
     userCanMessage(currentUser) ? (
       <NamedLink
-        className={classNames(css.regularLink, css.inboxLink)}
+        className={classNames(
+          css.regularLink,
+          css.inboxLink,
+          currentPage === 'InboxPage' && css.activeLink
+        )}
         name="InboxPage"
         params={{ tab: 'messages' }}
       >
@@ -116,7 +124,10 @@ const TopbarDesktop = props => {
   ) : null;
 
   const feedbackLink = isDev ? (
-    <NamedLink className={css.regularLink} name="FeedbackPage">
+    <NamedLink
+      className={classNames(css.regularLink, currentPage === 'FeedbackPage' && css.activeLink)}
+      name="FeedbackPage"
+    >
       <span className={css.feedbackText}>
         <FormattedMessage id="TopbarDesktop.feedback" />
       </span>
@@ -177,7 +188,10 @@ const TopbarDesktop = props => {
   ) : null;
 
   const signupLink = isAuthenticatedOrJustHydrated ? null : (
-    <NamedLink name="SignupPage" className={css.signupLink}>
+    <NamedLink
+      name="SignupPage"
+      className={classNames(css.signupLink, currentPage === 'InboxPage' && css.activeLink)}
+    >
       <span className={css.signup}>
         <FormattedMessage id="TopbarDesktop.signup" />
       </span>
@@ -185,7 +199,10 @@ const TopbarDesktop = props => {
   );
 
   const loginLink = isAuthenticatedOrJustHydrated ? null : (
-    <NamedLink name="LoginPage" className={css.loginLink}>
+    <NamedLink
+      name="LoginPage"
+      className={classNames(css.loginLink, currentPage === 'LoginPage' && css.activeLink)}
+    >
       <span className={css.login}>
         <FormattedMessage id="TopbarDesktop.login" />
       </span>
@@ -194,11 +211,15 @@ const TopbarDesktop = props => {
 
   const notificationsLink = authenticatedOnClientSide ? (
     <NamedLink
-      className={classNames(css.regularLink, css.notificationsLink)}
+      className={classNames(
+        css.regularLink,
+        css.notificationsLink,
+        currentPage === 'NotificationsPage' && css.activeLink
+      )}
       name="NotificationsPage"
     >
       <span className={css.bell}>
-        <IconBell height="1.75em" width="1.75em" />
+        <IconBell height="2em" width="2em" />
         {unreadNotificationCountBadge}
       </span>
     </NamedLink>
@@ -210,7 +231,10 @@ const TopbarDesktop = props => {
     currentUserListing &&
     !isNewListing ? (
       <ListingLink
-        className={css.createListingLink}
+        className={classNames(
+          css.createListingLink,
+          currentPage === 'OwnListingPage' && css.activeLink
+        )}
         listing={currentUserListing}
         children={
           <span className={css.createListing}>
@@ -224,17 +248,31 @@ const TopbarDesktop = props => {
     !isAuthenticatedOrJustHydrated || !(currentUserListingFetched && !currentUserListing) ? (
       isNewListing ? (
         <OwnListingLink
-          className={css.createListingLink}
+          className={classNames(
+            css.createListingLink,
+            currentPage === 'EditListingPage' && css.activeLink
+          )}
           listingFetched={currentUserListingFetched}
           listing={currentUserListing}
         >
-          <span className={css.createListing}>
+          <span
+            className={classNames(
+              css.createListing,
+              currentPage === 'EditListingPage' && css.activeLink
+            )}
+          >
             <FormattedMessage id="TopbarDesktop.finishYourListingLink" />
           </span>
         </OwnListingLink>
       ) : null
     ) : (
-      <NamedLink className={css.createListingLink} name="NewListingPage">
+      <NamedLink
+        className={classNames(
+          css.createListingLink,
+          currentPage === 'EditListingPage' && css.activeLink
+        )}
+        name="NewListingPage"
+      >
         <span className={css.createListing}>
           <FormattedMessage id="TopbarDesktop.createListing" />
         </span>
@@ -251,12 +289,12 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
-        {notificationsLink}
         {feedbackLink}
       </div>
-      {profileMenu}
 
       <div className={css.unauthenticatedContainer}>
+        {notificationsLink}
+        {profileMenu}
         {signupLink}
         {loginLink}
       </div>

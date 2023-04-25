@@ -27,7 +27,7 @@ import css from './SearchPage.module.css';
 // With this offset we move the dropdown to the left a few pixels on desktop layout.
 const FILTER_DROPDOWN_OFFSET = -14;
 
-// Search filters that can be used to filter employers as a caregiver
+// Search filters that can be used to filter caregivers as an employer
 const employerSearchFilters = [
   'distance',
   'price',
@@ -35,13 +35,12 @@ const employerSearchFilters = [
   'careTypes',
   'scheduleTypes',
   'experienceAreas',
-  'detailedCareNeeds',
   'certificationsAndTraining',
   'additionalInfo',
   'languagesSpoken',
 ];
 
-// Search filters that can be used to filter caregivers as an employer
+// Search filters that can be used to filter employers as a caregiver
 const caregiverSearchFilters = [
   'distance',
   'minPrice',
@@ -52,6 +51,7 @@ const caregiverSearchFilters = [
   'detailedCareNeeds',
   'additionalInfo',
   'languagesSpoken',
+  'nearPublicTransit',
 ];
 
 const cleanSearchFromConflictingParams = (searchParams, sortConfig, filterConfig) => {

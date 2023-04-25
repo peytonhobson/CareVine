@@ -25,10 +25,7 @@ const ConsentModalForm = props => (
       const userFullName =
         currentUser.attributes.profile.firstName + ' ' + currentUser.attributes.profile.lastName;
       const textWrapper = useRef();
-      const authenticateConsent =
-        currentUser &&
-        currentUser.attributes.profile.metadata &&
-        currentUser.attributes.profile.metadata.authenticateConsent;
+      const authenticateConsent = currentUser.attributes.profile.metadata.authenticateConsent;
 
       const handleScroll = e => {
         if (e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 30) {

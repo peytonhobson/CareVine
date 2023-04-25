@@ -19,7 +19,7 @@ const generateBioPrompt = listing => {
     experienceLevel,
   } = publicData;
 
-  const prompt = `Generate a first-person bio between 80 and 120 words for a caregiver with the following traits.
+  const prompt = `Generate a first-person bio with less than 800 characters (including spaces) for a caregiver with the following traits.
             Don't include every trait. Leave some space in brackets for the caregiver to fill in their past history:
 
             Certifications and Training: ${convertFilterKeysToLabels(
@@ -28,8 +28,8 @@ const generateBioPrompt = listing => {
             )}
             Languages Spoken:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
             Care Types: ${convertFilterKeysToLabels('careTypes', careTypes)}
-            Experience Areas: ${convertFilterKeysToLabels('detailedCareNeeds', experienceAreas)}
-            Experience Level: ${convertFilterKeysToLabels('experienceLevel', experienceLevel)}
+            Experience Areas: ${convertFilterKeysToLabels('experienceAreas', experienceAreas)}
+            Experience Level: ${convertFilterKeyToLabel('experienceLevel', experienceLevel)}
     `;
 
   return prompt;
@@ -59,7 +59,7 @@ const generateJobDescriptionPrompt = listing => {
     scheduleTimes = `Days and times of Care: ${JSON.stringify(availabilityPlan.entries)}`;
   }
 
-  const prompt = `I or someone I know is seeking care. Generate a first-person job description between 80 and 120 words with the following traits.
+  const prompt = `I want to hire a caregiver. Generate a first-person job description with less than 800 characters (including spaces) with the following traits.
             Only include the items in the traits that are the most important.
 
             Preferred Certifications and Training: ${

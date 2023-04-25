@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { useCheckMobileScreen } from '../../util/hooks';
 import {
   Card as MuiCard,
   CardContent,
@@ -11,16 +12,14 @@ import {
 import { makeStyles } from '@material-ui/styles';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
-import { flexbox } from '@mui/system';
-import IconCheckmark from '../IconCheckmark/IconCheckmark';
 
 const BASIC = 'basic';
 const GOLD = 'gold';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const ScreeningDescription = props => {
   const { onPayForBC } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const CardHeader = styled(props => <MuiCardHeader {...props} />)(({ theme }) => ({
     textAlign: 'center',
@@ -138,7 +137,7 @@ const ScreeningDescription = props => {
           </CardContent>
           <CardActions>
             <Button className={greyButtonClasses.root} onClick={() => onPayForBC(BASIC)}>
-              Pay for CareVine Basic
+              Get CareVine Basic
             </Button>
           </CardActions>
         </Card>

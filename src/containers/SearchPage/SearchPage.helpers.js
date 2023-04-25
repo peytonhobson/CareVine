@@ -6,6 +6,7 @@ import { createSlug } from '../../util/urlHelpers';
 import routeConfiguration from '../../routeConfiguration';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { isArray } from 'lodash';
+import { SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 const flatten = (acc, val) => acc.concat(val);
 
@@ -144,7 +145,7 @@ export const createSearchResultSchema = (listings, address, intl) => {
 
   const schemaMainEntity = JSON.stringify({
     '@type': 'ItemList',
-    name: searchAddress,
+    name: 'search',
     itemListOrder: 'http://schema.org/ItemListOrderAscending',
     itemListElement: schemaListings,
   });
@@ -256,8 +257,9 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
   const caregiverAuthorMetadata = caregiverAuthor?.attributes?.profile?.metadata;
 
   const hasPremiumSubscription =
-    caregiverAuthorMetadata?.backgroundCheckSubscription?.status === 'active' ||
-    caregiverAuthorMetadata?.backgroundCheckSubscription?.type === 'vine';
+    SUBSCRIPTION_ACTIVE_TYPES.includes(
+      caregiverAuthorMetadata?.backgroundCheckSubscription?.status
+    ) || caregiverAuthorMetadata?.backgroundCheckSubscription?.type === 'vine';
 
   if (hasPremiumSubscription) {
     cgScore += 35;

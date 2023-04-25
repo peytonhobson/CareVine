@@ -80,7 +80,6 @@ const CareScheduleExceptions = props => {
 
     const available = availability === 'available' || availability === 'care-needed';
 
-    // TODO: add proper seat handling
     const seats = isRecurring ? (available ? 1 : 0) : available ? 3 : 2;
 
     onSave({

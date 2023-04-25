@@ -3,15 +3,16 @@ import React from 'react';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { InfoTooltip } from '..';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './WeekCalendar.module.css';
 
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const WeekCalendar = props => {
   const { entries, mappedTimesToDay } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const renderDays = () => {
     const days = weekdays.map(day => <div className={css.day}>{day}</div>);

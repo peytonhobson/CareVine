@@ -24,13 +24,38 @@
 
 .root {
   composes: avatarBase;
+  position: relative;
 
   /* Layout */
   width: 40px;
   height: 40px;
 }
 
+.defaultContainer1 {
+  background-image: url('../../assets/Dava1.png') !important;
+  background-size: 105%;
+  background-position: center center;
+}
+
+.defaultContainer2 {
+  background-image: url('../../assets/Dava2.png') !important;
+  background-size: 105%;
+  background-position: center center;
+}
+.defaultContainer3 {
+  background-image: url('../../assets/Dava3.png') !important;
+  background-size: 105%;
+  background-position: center center;
+}
+
+.defaultContainer4 {
+  background-image: url('../../assets/Dava4.png') !important;
+  background-size: 105%;
+  background-position: center center;
+}
+
 .initials {
+  position: absolute;
   font-size: 14px;
   font-weight: var(--fontWeightBold);
   text-decoration: none;
@@ -75,28 +100,4 @@
 .bannedUserIcon {
   width: 100%;
   height: 100%;
-}
-
-.linearGradientGreen {
-  background-image: linear-gradient(
-    -180deg,
-    var(--marketplaceColor) 20%,
-    var(--marketplaceColorLight) 100%
-  );
-}
-
-.linearGradientRed {
-  background-image: linear-gradient(-180deg, var(--marketplaceColor) 20%, var(--failColor) 100%);
-}
-
-.linearGradientOrange {
-  background-image: linear-gradient(
-    -180deg,
-    var(--marketplaceColor) 20%,
-    var(--attentionColor) 100%
-  );
-}
-
-.linearGradientPink {
-  background-image: linear-gradient(-180deg, var(--marketplaceColor) 20%, pink 100%);
 }

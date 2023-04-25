@@ -55,12 +55,12 @@ const EditListingExperienceFormComponent = props => (
       const experienceAreasFeaturesLabel = intl.formatMessage({
         id: 'EditListingExperienceForm.experienceAreasFormLabel',
       });
-      const experienceAreasOptions = findOptionsForSelectFilter('detailedCareNeeds', filterConfig);
+      const experienceAreasOptions = findOptionsForSelectFilter('experienceAreas', filterConfig);
       if (history.location.pathname.includes(CREATE_PROFILE)) {
         experienceAreasOptions.splice(16, experienceAreasOptions.length);
       }
 
-      const { updateListingError, createListingDraftError, showListingsError } = fetchErrors || {};
+      const { updateListingError, showListingsError } = fetchErrors || {};
       const errorMessageUpdateListing = updateListingError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingExperienceForm.updateFailed" />

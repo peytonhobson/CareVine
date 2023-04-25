@@ -1,5 +1,5 @@
 export const isMobileSafari = () => {
-  if (!window) {
+  if (typeof window === 'undefined') {
     return false;
   }
 
@@ -13,8 +13,8 @@ export const isMobileSafari = () => {
   return iOS && webkit;
 };
 
-export const isIOS = window => {
-  if (!window) {
+export const isIOS = () => {
+  if (typeof window === 'undefined') {
     return false;
   }
 

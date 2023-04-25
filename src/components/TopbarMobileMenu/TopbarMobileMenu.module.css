@@ -32,6 +32,8 @@
   /* Layout */
   flex-shrink: 0;
   margin: var(--TopbarMobileMenu_topMargin) 0 0 0;
+  width: 6rem;
+  height: 6rem;
 }
 
 .avatarInitials {

@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
 import { LISTING_STATE_DRAFT } from '../../util/types';
-import { ensureListing, ensureCurrentUser } from '../../util/data';
 import { EditListingFeaturesForm } from '../../forms';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { findOptionsForSelectFilter } from '../../util/search';
@@ -20,7 +19,7 @@ const EditListingCareTypesPanel = props => {
     disabled,
     errors,
     intl,
-    listing,
+    listing: currentListing,
     onChange,
     onSubmit,
     panelUpdated,
@@ -32,11 +31,9 @@ const EditListingCareTypesPanel = props => {
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
-  const currentListing = ensureListing(listing);
   const { publicData } = currentListing.attributes;
 
-  const user = ensureCurrentUser(currentUser);
-  const userType = user.attributes?.profile.metadata.userType;
+  const userType = currentUser.attributes.profile.metadata.userType;
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle =
@@ -88,12 +85,9 @@ const EditListingCareTypesPanel = props => {
       />
     );
 
-  const careTypes =
-    publicData &&
-    publicData.careTypes &&
-    publicData.careTypes.filter(careType =>
-      findOptionsForSelectFilter('careTypes', filterConfig).find(option => option.key === careType)
-    );
+  const careTypes = publicData.careTypes?.filter(careType =>
+    findOptionsForSelectFilter('careTypes', filterConfig)?.find(option => option.key === careType)
+  );
   const initialValues = { careTypes };
 
   const careTypesFeaturesLabel = intl.formatMessage(

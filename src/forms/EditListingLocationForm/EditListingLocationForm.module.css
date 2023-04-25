@@ -28,8 +28,8 @@
 }
 
 .travelDistance {
-  margin-top: 2rem;
-  padding-top: 2rem;
+  /* margin-top: 2rem;
+  padding-top: 2rem; */
 }
 
 .travelDistanceButton {
@@ -110,11 +110,12 @@
 }
 
 .locationAutocompleteRoot {
+  composes: formMargins;
+
   margin-top: 2rem;
 
   @media (--viewportMedium) {
     margin-top: 0;
-    margin-bottom: 0;
   }
 }
 
@@ -127,8 +128,4 @@
     width: 241px;
     margin-top: 50px;
   }
-}
-
-.residenceType {
-  composes: formMargins;
 }

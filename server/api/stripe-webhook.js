@@ -12,6 +12,7 @@ const isDev = process.env.REACT_APP_ENV === 'development';
 const isTest = process.env.NODE_ENV === 'production' && isDev;
 const isProd = process.env.NODE_ENV === 'production' && !isDev;
 const { v4: uuidv4 } = require('uuid');
+const activeSubscriptionTypes = ['active', 'trialing'];
 
 let singleActionProcessAlias;
 
@@ -137,8 +138,9 @@ const updateBackgroundCheckSubscription = async subscription => {
     const isReactivatingSubscription =
       (prevBackgroundCheckSubscription?.status === 'canceled' ||
         prevBackgroundCheckSubscription?.cancelAtPeriodEnd) &&
+      !subscription?.cancel_at_period_end &&
       prevBackgroundCheckSubscription?.type === type &&
-      subscription?.status === 'active';
+      activeSubscriptionTypes.includes(subscription?.status);
 
     const isCanceling =
       !prevBackgroundCheckSubscription?.cancelAtPeriodEnd && subscription?.cancel_at_period_end;
@@ -148,7 +150,7 @@ const updateBackgroundCheckSubscription = async subscription => {
     const isConfirming =
       (!prevBackgroundCheckSubscription ||
         prevBackgroundCheckSubscription.status === 'incomplete') &&
-      subscription?.status === 'active' &&
+      activeSubscriptionTypes.includes(subscription?.status) &&
       !isUpgrading;
 
     const subscriptionName = type === 'vine' ? 'Carevine Gold' : 'Carevine Basic';
@@ -279,11 +281,9 @@ const removeBackgroundCheckSubscriptionSchedule = async data => {
 };
 
 const sendChargeFailedEmail = data => {
-  // const feeAmount = Number.parseFloat(data?.application_fee_amount / 100).toFixed(2);
-  // const amount = Number.parseFloat(data?.amount / 100 - feeAmount).toFixed(2);
   const failureMessage = data?.failure_message;
   const type = data?.payment_method_details?.type;
-  const { recipientName, channelUrl, userId } = data?.metadata;
+  const { recipientName, conversationId, userId } = data?.metadata;
 
   if (type !== 'card') {
     sendgridEmail(
@@ -292,7 +292,7 @@ const sendChargeFailedEmail = data => {
       {
         marketplaceUrl: rootUrl,
         failureMessage,
-        channelUrl,
+        conversationId,
         recipientName,
       },
       'send-payment-failed-email-failed'
@@ -301,14 +301,14 @@ const sendChargeFailedEmail = data => {
 };
 
 const sendPaymentReceivedNotifications = data => {
-  const { userId, senderName } = data?.metadata;
+  const { recipientId, senderName } = data?.metadata;
 
   const paymentAmount = (data?.amount - data?.application_fee_amount) / 100;
   const notificationId = uuidv4();
 
   if (senderName) {
     sendgridEmail(
-      userId,
+      recipientId,
       'payment-received',
       {
         marketplaceUrl: rootUrl,
@@ -320,12 +320,70 @@ const sendPaymentReceivedNotifications = data => {
     );
 
     createNotifications(
-      userId,
+      recipientId,
       'paymentReceived',
       { metadata: { senderName, paymentAmount } },
       'payment-received-notification-failed',
       notificationId
     );
+  }
+};
+
+const updateUserPaymentHistory = async data => {
+  const {
+    metadata,
+    amount,
+    application_fee_amount,
+    created,
+    description,
+    payment_method_details,
+  } = data;
+
+  const { senderId, recipientId, senderName, recipientName } = metadata;
+
+  try {
+    const senderResponse = await integrationSdk.users.show({ id: senderId });
+
+    const oldPaymentsSent =
+      senderResponse?.data?.data?.attributes?.profile?.metadata.paymentsSent || [];
+    const newPaymentSent = {
+      amount: amount - application_fee_amount, // This will be in integer format and need to be converted to decimal (/100)
+      createdAt: created,
+      fee: application_fee_amount, // This will be in integer format and need to be converted to decimal (/100)
+      description,
+      paymentMethod: payment_method_details,
+      to: recipientName,
+    };
+
+    await integrationSdk.users.updateProfile({
+      id: senderId,
+      metadata: {
+        paymentsSent: [...oldPaymentsSent, newPaymentSent],
+      },
+    });
+  } catch (e) {
+    log.error(e, 'update-user-payment-sent-history-failed');
+  }
+
+  try {
+    const recipientResponse = await integrationSdk.users.show({ id: recipientId });
+
+    const oldPaymentsReceived =
+      recipientResponse?.data?.data?.attributes?.profile?.metadata.paymentsReceived || [];
+    const newPaymentReceived = {
+      amount: amount - application_fee_amount, // This will be in integer format and need to be converted to decimal (/100)
+      createdAt: created,
+      from: senderName,
+    };
+
+    await integrationSdk.users.updateProfile({
+      id: recipientId,
+      metadata: {
+        paymentsReceived: [...oldPaymentsReceived, newPaymentReceived],
+      },
+    });
+  } catch (e) {
+    log.error(e, 'update-user-payment-received-history-failed');
   }
 };
 
@@ -337,7 +395,7 @@ module.exports = (request, response) => {
   try {
     event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
-    log.error(err);
+    log.error(err, 'stripe-webhook-error');
     response
       .status(400)
       .send(
@@ -346,26 +404,26 @@ module.exports = (request, response) => {
     return;
   }
 
+  if (isDev || isTest) {
+    console.log(event.type);
+  }
+
   // Handle the event
   switch (event.type) {
     case 'customer.subscription.created':
-      console.log('customer.subscription.created');
       const customerSubscriptionCreated = event.data.object;
       // console.log(customerSubscriptionCreated);
       updateBackgroundCheckSubscription(customerSubscriptionCreated);
       break;
     case 'customer.subscription.paused':
-      console.log('customer.subscription.paused');
       const customerSubscriptionPaused = event.data.object;
       updateBackgroundCheckSubscription(customerSubscriptionPaused);
       break;
     case 'customer.subscription.resumed':
-      console.log('customer.subscription.resumed');
       const customerSubscriptionResumed = event.data.object;
       updateBackgroundCheckSubscription(customerSubscriptionResumed);
       break;
     case 'customer.subscription.updated':
-      console.log('customer.subscription.updated');
       const customerSubscriptionUpdated = event.data.object;
       if (
         customerSubscriptionUpdated.status !== 'incomplete_expired' ||
@@ -375,17 +433,16 @@ module.exports = (request, response) => {
       }
       break;
     case 'charge.failed':
-      console.log('charge.failed');
       const chargeFailed = event.data.object;
       sendChargeFailedEmail(chargeFailed);
       break;
     case 'charge.succeeded':
-      console.log('charge.succeeded');
       const chargeSucceeded = event.data.object;
 
-      // TODO: Add function to update user notifications when notification page is created
-
-      sendPaymentReceivedNotifications(chargeSucceeded);
+      if (chargeSucceeded?.metadata?.senderId) {
+        sendPaymentReceivedNotifications(chargeSucceeded);
+        updateUserPaymentHistory(chargeSucceeded);
+      }
       break;
     case 'subscription_schedule.canceled':
       console.log('subscription_schedule.canceled');
@@ -398,7 +455,6 @@ module.exports = (request, response) => {
       updateBackgroundCheckSubscriptionSchedule(subscriptionScheduleCreated);
       break;
     case 'subscription_schedule.updated':
-      console.log('subscription_schedule.updated');
       const subscriptionScheduleUpdated = event.data.object;
       if (subscriptionScheduleUpdated.current_phase) {
         removeBackgroundCheckSubscriptionSchedule(subscriptionScheduleUpdated);

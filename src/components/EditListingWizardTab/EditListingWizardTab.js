@@ -9,7 +9,6 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { ensureListing } from '../../util/data';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   EditListingAdditionalDetailsPanel,
@@ -92,23 +91,13 @@ const EditListingWizardTab = props => {
     history,
     image,
     intl,
-    listing,
+    listing: currentListing,
     marketplaceTabs,
     newListingPublished,
     onAddAvailabilityException,
-    onApplyBCPromoCode,
-    onAuthenticateCreateUser,
-    onAuthenticateSubmitConsent,
-    onAuthenticateUpdateUser,
     onChange,
     onCreateListingDraft,
-    onCreatePayment,
-    onCreateSubscription,
     onDeleteAvailabilityException,
-    onGenerateCriminalBackground,
-    onGet7YearHistory,
-    onGetAuthenticateTestResult,
-    onGetIdentityProofQuiz,
     onImageUpload,
     onManageDisableScrolling,
     onProfileImageUpload,
@@ -136,18 +125,16 @@ const EditListingWizardTab = props => {
     generateJobDescriptionError,
     generatedJobDescription,
     onGenerateJobDescription,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
   } = props;
 
   const { type } = params;
   const isNewURI = type === LISTING_PAGE_PARAM_TYPE_NEW;
   const isDraftURI = type === LISTING_PAGE_PARAM_TYPE_DRAFT;
   const isNewListingFlow = isNewURI || isDraftURI;
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-
-  const currentListing = ensureListing(listing);
-  const imageIds = images => {
-    return images ? images.map(img => img.imageId || img.id) : null;
-  };
+  const userType = currentUser.attributes.profile.metadata.userType;
 
   // When user has update draft listing, he should be redirected to next EditListingWizardTab
   const redirectAfterDraftUpdate = (listingId, params, tab, marketplaceTabs, history) => {
@@ -179,8 +166,6 @@ const EditListingWizardTab = props => {
   };
 
   const onCompleteEditListingWizardTab = (tab, updateValues, passThrownErrors = false) => {
-    // Normalize images for API call
-
     if (isNewListingFlow) {
       const onUpsertListingDraft = isNewURI
         ? (tab, updateValues) => {
@@ -221,7 +206,7 @@ const EditListingWizardTab = props => {
     return {
       className: css.panel,
       errors,
-      listing,
+      listing: currentListing,
       onChange,
       panelUpdated: updatedTab === tab,
       updateInProgress,
@@ -366,7 +351,7 @@ const EditListingWizardTab = props => {
             return onCompleteEditListingWizardTab(tab, values, true);
           }}
           onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
         />
       );
@@ -389,7 +374,7 @@ const EditListingWizardTab = props => {
             return onCompleteEditListingWizardTab(tab, values, true);
           }}
           onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
         />
       );
@@ -400,33 +385,23 @@ const EditListingWizardTab = props => {
       return (
         <EditListingBackgroundCheckPanel
           {...panelProps(BACKGROUND_CHECK)}
-          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-          onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
-          }}
-          onAuthenticateCreateUser={onAuthenticateCreateUser}
-          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
-          onCreatePayment={onCreatePayment}
-          createPaymentInProgress={createPaymentInProgress}
+          authenticate={authenticate}
           createPaymentError={createPaymentError}
+          createPaymentInProgress={createPaymentInProgress}
           createPaymentSuccess={createPaymentSuccess}
-          onUpdateProfile={onUpdateProfile}
-          onGetIdentityProofQuiz={onGetIdentityProofQuiz}
-          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
-          onNextTab={() =>
-            redirectAfterDraftUpdate(listing.id.uuid, params, tab, marketplaceTabs, history)
-          }
-          onCreateSubscription={onCreateSubscription}
+          createSetupIntentError={createSetupIntentError}
+          createSetupIntentInProgress={createSetupIntentInProgress}
           createSubscriptionError={createSubscriptionError}
           createSubscriptionInProgress={createSubscriptionInProgress}
-          subscription={subscription}
-          authenticate={authenticate}
-          onAuthenticateUpdateUser={onAuthenticateUpdateUser}
-          onGetAuthenticateTestResult={onGetAuthenticateTestResult}
-          onGenerateCriminalBackground={onGenerateCriminalBackground}
-          onGet7YearHistory={onGet7YearHistory}
-          onApplyBCPromoCode={onApplyBCPromoCode}
+          onNextTab={() =>
+            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
+          }
+          onUpdateProfile={onUpdateProfile}
           onUpdateSubscription={onUpdateSubscription}
+          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
+          setupIntent={setupIntent}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          subscription={subscription}
           updateSubscriptionError={updateSubscriptionError}
           updateSubscriptionInProgress={updateSubscriptionInProgress}
         />
@@ -542,7 +517,6 @@ EditListingWizardTab.propTypes = {
     push: func.isRequired,
     replace: func.isRequired,
   }).isRequired,
-  images: array.isRequired,
   pageName: string,
 
   // We cannot use propTypes.listing since the listing might be a draft.

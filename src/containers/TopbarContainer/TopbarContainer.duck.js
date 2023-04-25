@@ -1,6 +1,6 @@
-import SendbirdChat from '@sendbird/chat';
-import { GroupChannelModule } from '@sendbird/chat/groupChannel';
+import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
+import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
 
 // ================ Action types ================ //
 
@@ -8,12 +8,28 @@ export const CHANGE_MODAL_VALUE_REQUEST = 'app/TopbarContainer/CHANGE_MODAL_VALU
 export const CHANGE_MODAL_VALUE_SUCCESS = 'app/TopbarContainer/CHANGE_MODAL_VALUE_SUCCESS';
 export const CHANGE_MODAL_VALUE_ERROR = 'app/TopbarContainer/CHANGE_MODAL_VALUE_ERROR';
 
+export const FETCH_UNREAD_MESSAGE_COUNT_REQUEST =
+  'app/TopbarContainer/FETCH_UNREAD_MESSAGE_COUNT_REQUEST';
+export const FETCH_UNREAD_MESSAGE_COUNT_SUCCESS =
+  'app/TopbarContainer/FETCH_UNREAD_MESSAGE_COUNT_SUCCESS';
+export const FETCH_UNREAD_MESSAGE_COUNT_ERROR =
+  'app/TopbarContainer/FETCH_UNREAD_MESSAGE_COUNT_ERROR';
+
 // ================ Reducer ================ //
+
+const entityRefs = entities =>
+  entities.map(entity => ({
+    id: entity.id,
+    type: entity.type,
+  }));
 
 const initialState = {
   modalValue: null,
   changeModalValueInProgress: false,
   changeModalValueError: null,
+  messageTransactionRefs: [],
+  fetchUnreadMessageCountInProgress: false,
+  fetchUnreadMessageCountError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -38,6 +54,25 @@ export default function reducer(state = initialState, action = {}) {
         changeModalValueError: payload,
       };
 
+    case FETCH_UNREAD_MESSAGE_COUNT_REQUEST:
+      return {
+        ...state,
+        fetchUnreadMessageCountInProgress: true,
+        fetchUnreadMessageCountError: false,
+      };
+    case FETCH_UNREAD_MESSAGE_COUNT_SUCCESS:
+      return {
+        ...state,
+        messageTransactionRefs: entityRefs(payload.data.data),
+        fetchUnreadMessageCountInProgress: false,
+      };
+    case FETCH_UNREAD_MESSAGE_COUNT_ERROR:
+      return {
+        ...state,
+        fetchUnreadMessageCountInProgress: false,
+        fetchUnreadMessageCountError: payload,
+      };
+
     default:
       return state;
   }
@@ -58,10 +93,41 @@ export const changeModalValueError = e => ({
   error: true,
 });
 
+export const fetchUnreadMessageCountRequest = () => ({
+  type: FETCH_UNREAD_MESSAGE_COUNT_REQUEST,
+});
+export const fetchUnreadMessageCountSuccess = unreadMessageCount => ({
+  type: FETCH_UNREAD_MESSAGE_COUNT_SUCCESS,
+  payload: unreadMessageCount,
+});
+export const fetchUnreadMessageCountError = e => ({
+  type: FETCH_UNREAD_MESSAGE_COUNT_ERROR,
+  payload: e,
+  error: true,
+});
+
 // ================ Thunks ================ //
 
 export const changeModalValue = value => (dispatch, getState, sdk) => {
   return dispatch(changeModalValueSuccess(value));
+};
+
+export const fetchUnreadMessageCount = () => async (dispatch, getState, sdk) => {
+  dispatch(fetchUnreadMessageCountRequest());
+
+  const apiQueryParams = {
+    lastTransitions: TRANSITION_INITIAL_MESSAGE,
+    'fields.transaction': ['metadata'],
+  };
+
+  try {
+    const response = await sdk.transactions.query(apiQueryParams);
+
+    dispatch(addMarketplaceEntities(response));
+    dispatch(fetchUnreadMessageCountSuccess(response));
+  } catch (e) {
+    dispatch(fetchUnreadMessageCountError(e));
+  }
 };
 
 export const loadData = () => (dispatch, getState, sdk) => {

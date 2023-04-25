@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import classNames from 'classnames';
 import { Modal, IconConfirm, Button, IconClose, IconSpinner } from '../';
 import { ensureOwnListing } from '../../util/data';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import { FormattedMessage } from 'react-intl';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import {
   ConsentModalForm,
   EditListingBackgroundCheckForm,
@@ -21,74 +23,26 @@ import {
   BACKGROUND_CHECK_APPROVED,
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
+  SUBSCRIPTION_ACTIVE_TYPES,
 } from '../../util/constants';
+import {
+  authenticateCreateUser,
+  authenticateSubmitConsent,
+  identityProofQuiz,
+  verifyIdentityProofQuiz,
+  authenticateUpdateUser,
+  getAuthenticateTestResult,
+  authenticateGenerateCriminalBackground,
+  authenticate7YearHistory,
+} from '../../ducks/authenticate.duck';
+import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-const appearance = {
-  theme: 'stripe',
-  variables: {
-    colorPrimary: '#568a6e',
-    fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    borderRadius: '2px',
-  },
-  rules: {
-    '.Input': {
-      display: 'block',
-      width: '100%',
-      margin: '0',
-      paddingLeft: '0',
-      paddingBlock: isMobile ? '5px' : '4px',
-      height: '24px',
-      boxShadow: 'none',
-
-      /* Borders */
-      border: 'none',
-      borderBottomWidth: '2px',
-      borderBottomStyle: 'solid',
-      borderBottomColor: '#4a4a4a',
-      borderRadius: 0,
-      transition: 'border-bottom-color ease-in 0.2s',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-      fontSize: '16px',
-      lineHeight: isMobile ? '24px' : '32px;',
-      letterSpacing: '-0.1px',
-      fontWeight: '500',
-    },
-    '.Input:hover, .Input:focus': {
-      boxShadow: 'none',
-      borderColor: '#568a6e',
-    },
-    '.Input::placeholder': {
-      color: '#b2b2b2',
-      fontWeight: '500',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    },
-    '.Input--invalid': {
-      boxShadow: 'none',
-      borderBottomColor: '#ff0000',
-      color: '#ff0000',
-    },
-    '.Error': {
-      color: '#ff0000',
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-    },
-    '.Label': {
-      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
-      display: 'block',
-      fontWeight: '600',
-      fontSize: '14px',
-      lineHeight: isMobile ? '18px' : '16px',
-      letterSpacing: 0,
-      marginTop: 0,
-      marginBottom: 0,
-      paddingTop: isMobile ? '0px' : '6px',
-      color: '#4a4a4a',
-    },
-  },
-};
 
 const INITIAL = 'INITIAL';
 const PAYMENT = 'PAYMENT';
@@ -108,43 +62,112 @@ const BASIC = 'basic';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
+    authenticate,
     className,
-    rootClassName,
-    listing,
-    onAuthenticateCreateUser,
-    disabled,
-    ready,
-    onSubmit,
-    onChange,
-    submitButtonText,
-    panelUpdated,
-    updateInProgress,
-    errors,
-    intl,
-    currentUser,
-    onManageDisableScrolling,
-    onAuthenticateSubmitConsent,
-    onCreatePayment,
-    onGetIdentityProofQuiz,
-    onVerifyIdentityProofQuiz,
-    onNextTab,
-    onCreateSubscription,
+    confirmSetupIntentError,
+    confirmSetupIntentInProgress,
+    createdPaymentMethod,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createSetupIntentError,
+    createSetupIntentInProgress,
     createSubscriptionError,
     createSubscriptionInProgress,
-    subscription,
-    authenticate,
+    currentUser,
+    disabled,
+    errors,
+    intl,
+    listing,
+    onAuthenticateCreateUser,
+    onAuthenticateSubmitConsent,
     onAuthenticateUpdateUser,
-    createPaymentInProgress,
-    createPaymentError,
-    createPaymentSuccess,
-    onGetAuthenticateTestResult,
+    onChange,
+    onConfirmSetupIntent,
+    onCreatePayment,
+    onCreateSetupIntent,
+    onCreateSubscription,
     onGenerateCriminalBackground,
     onGet7YearHistory,
-    onApplyBCPromoCode,
-    onUpdateSubscription,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
+    onGetAuthenticateTestResult,
+    onGetIdentityProofQuiz,
+    onManageDisableScrolling,
+    onNextTab,
+    onVerifyIdentityProofQuiz,
+    panelUpdated,
+    ready,
+    rootClassName,
+    setupIntent,
+    submitButtonText,
+    subscription,
+    updateInProgress,
+    onFetchCurrentUser,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
+
+  const appearance = {
+    theme: 'stripe',
+    variables: {
+      colorPrimary: '#568a6e',
+      fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      borderRadius: '2px',
+    },
+    rules: {
+      '.Input': {
+        display: 'block',
+        width: '100%',
+        margin: '0',
+        paddingLeft: '0',
+        paddingBlock: isMobile ? '5px' : '4px',
+        height: '24px',
+        boxShadow: 'none',
+
+        /* Borders */
+        border: 'none',
+        borderBottomWidth: '2px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: '#4a4a4a',
+        borderRadius: 0,
+        transition: 'border-bottom-color ease-in 0.2s',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+        fontSize: '16px',
+        lineHeight: isMobile ? '24px' : '32px;',
+        letterSpacing: '-0.1px',
+        fontWeight: '500',
+      },
+      '.Input:hover, .Input:focus': {
+        boxShadow: 'none',
+        borderColor: '#568a6e',
+      },
+      '.Input::placeholder': {
+        color: '#b2b2b2',
+        fontWeight: '500',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      },
+      '.Input--invalid': {
+        boxShadow: 'none',
+        borderBottomColor: '#ff0000',
+        color: '#ff0000',
+      },
+      '.Error': {
+        color: '#ff0000',
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+      },
+      '.Label': {
+        fontFamily: '"poppins", Helvetica, Arial, sans-serif',
+        display: 'block',
+        fontWeight: '600',
+        fontSize: '14px',
+        lineHeight: isMobile ? '18px' : '16px',
+        letterSpacing: 0,
+        marginTop: 0,
+        marginBottom: 0,
+        paddingTop: isMobile ? '0px' : '6px',
+        color: '#4a4a4a',
+      },
+    },
+  };
 
   const {
     authenticateCreateUserError,
@@ -164,39 +187,35 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
-    applyBCPromoInProgress,
-    applyBCPromoError,
-    bcPromo,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
-  const { description, title, publicData } = currentListing.attributes;
   const {
     profile: { firstName, lastName, metadata, privateData },
     email,
   } = currentUser.attributes;
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const panelTitle = <FormattedMessage id="EditListingBackgroundCheckPanel.createListingTitle" />;
 
-  const authenticateUserAccessCode = privateData && privateData.authenticateUserAccessCode;
-  const authenticateConsent = privateData && privateData.authenticateConsent;
+  const authenticateUserAccessCode = privateData?.authenticateUserAccessCode;
+  const authenticateConsent = privateData?.authenticateConsent;
   const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
-  const identityProofQuiz = privateData && privateData.identityProofQuiz;
-  const identityProofQuizVerification = privateData && privateData.identityProofQuizVerification;
+  const identityProofQuiz = privateData?.identityProofQuiz;
+  const identityProofQuizVerification = privateData?.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
-    privateData && privateData.authenticateCriminalBackgroundGenerated;
-  const authenticateUserTestResult = privateData && privateData.authenticateUserTestResult;
-  const authenticate7YearHistory = privateData && privateData.authenticate7YearHistory;
-  const backgroundCheckApproved = metadata && metadata.backgroundCheckApproved;
-  const backgroundCheckRejected = privateData && privateData.backgroundCheckRejected;
+    privateData?.authenticateCriminalBackgroundGenerated;
+  const authenticateUserTestResult = privateData?.authenticateUserTestResult;
+  const authenticate7YearHistory = privateData?.authenticate7YearHistory;
+  const backgroundCheckApproved = metadata?.backgroundCheckApproved;
+  const backgroundCheckRejected = privateData?.backgroundCheckRejected;
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
-  const identityProofQuizAttempts = privateData && privateData.identityProofQuizAttempts;
-  const backgroundCheckPromo = metadata?.backgroundCheckPromo;
+  const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
 
   // Need to add data to user that they paid for background check
   useEffect(() => {
@@ -216,9 +235,9 @@ const EditListingBackgroundCheckPanel = props => {
       if (!getIdentityProofQuizInProgress) {
         setStage(SUBMIT_CONSENT);
       }
-    } else if (backgroundCheckSubscription?.status === 'active') {
+    } else if (SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)) {
       setStage(CREATE_USER);
-    } else if (createPaymentSuccess && stage === PAYMENT) {
+    } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
       setStage(CONFIRM_PAYMENT);
       setTimeout(() => {
         setStage(CREATE_USER);
@@ -234,6 +253,7 @@ const EditListingBackgroundCheckPanel = props => {
     authenticate7YearHistory,
     backgroundCheckApproved,
     backgroundCheckRejected,
+    subscription,
   ]);
 
   useEffect(() => {
@@ -242,6 +262,30 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(UPDATE_USER);
     }
   }, [getIdentityProofQuizError]);
+
+  useEffect(() => {
+    setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
+  }, [subscription]);
+
+  useEffect(() => {
+    setSetupIntentClientSecret(setupIntent?.client_secret);
+  }, [setupIntent]);
+
+  useEffect(() => {
+    if (createdPaymentMethod) {
+      onCreateSubscription(
+        stripeCustomerId,
+        backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+        currentUser.id?.uuid,
+        {
+          default_payment_method: createdPaymentMethod,
+          trial_end: moment()
+            .add(1, 'month')
+            .unix(),
+        }
+      );
+    }
+  }, createdPaymentMethod);
 
   useEffect(() => {
     if (
@@ -270,19 +314,23 @@ const EditListingBackgroundCheckPanel = props => {
 
     const addressLine2String = addressLine2 ? `, ${addressLine2}` : '';
 
+    const phoneString = `+1${phone.replace(/-/g, '')}`;
+    const fullAddress = `${addressLine1}${addressLine2String}`;
+    const ssnString = ssn.replace(/-/g, '');
+
     const userInfo = {
-      firstName,
-      middleName,
-      lastName,
+      firstName: firstName.trim(),
+      middleName: middleName ? middleName.trim() : '',
+      lastName: lastName.trim(),
       dob: moment(dob.date).format('DD-MM-YYYY'),
-      email,
-      phone: `+1${phone.replace(/-/g, '')}`,
-      streetName: addressLine1,
-      address: `${addressLine1}${addressLine2String}`,
-      city,
-      state,
-      zipCode,
-      ssn: ssn.replace(/-/g, ''),
+      email: email.trim(),
+      phone: phoneString.trim(),
+      streetName: addressLine1.trim(),
+      address: fullAddress.trim(),
+      city: city.trim(),
+      state: state.trim(),
+      zipCode: zipCode.trim(),
+      ssn: ssnString.trim(),
     };
 
     if (stage === CREATE_USER) {
@@ -313,7 +361,17 @@ const EditListingBackgroundCheckPanel = props => {
       elements,
       userId,
     };
-    onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+
+    if (
+      setupIntentClientSecret &&
+      setupIntent?.metadata?.backgroundCheckType === backgroundCheckType
+    ) {
+      onConfirmSetupIntent(stripe, setupIntentClientSecret, elements).then(() =>
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      );
+    } else {
+      onCreatePayment(params).then(() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' }));
+    }
   };
 
   const handleIdentityQuizSubmit = answers => {
@@ -323,29 +381,53 @@ const EditListingBackgroundCheckPanel = props => {
       onVerifyIdentityProofQuiz(
         IDMSessionId,
         authenticateUserAccessCode,
-        currentUser.id.uuid,
+        currentUser.id?.uuid,
         answers,
         currentAttempts
       );
     } else if (!authenticateCriminalBackgroundGenerated) {
-      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id.uuid);
+      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (!authenticateUserTestResult) {
-      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id.uuid);
+      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (
       !authenticate7YearHistory &&
-      authenticateUserTestResult.backgroundCheck.hasCriminalRecord
+      authenticateUserTestResult?.backgroundCheck?.hasCriminalRecord
     ) {
-      onGet7YearHistory(authenticateUserAccessCode, currentUser.id.uuid);
+      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid);
     }
   };
 
+  const handlePayForBC = bcType => {
+    setStage(PAYMENT);
+    setBackgroundCheckType(bcType);
+    onCreateSubscription(
+      stripeCustomerId,
+      bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+      currentUser.id?.uuid
+    ).then(() => {
+      onFetchCurrentUser();
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    });
+  };
+
+  const memoizedHandlePayForBC = useCallback(handlePayForBC, [
+    setStage,
+    setBackgroundCheckType,
+    onCreateSubscription,
+    stripeCustomerId,
+    currentUser.id.uuid,
+  ]);
+
+  const address = listing.attributes.privateData.address;
+  console.log(listing);
   const initialValues = {
     firstName,
     lastName,
     email,
-    city: publicData.location.city,
-    state: publicData.location.state,
-    zipCode: publicData.location.zipcode,
+    city: address?.city,
+    state: address?.state,
+    zipCode: address?.zip,
+    addressLine1: `${address?.number || ''} ${address?.street || ''} ${address?.type || ''}`,
   };
 
   const formProps = {
@@ -364,55 +446,63 @@ const EditListingBackgroundCheckPanel = props => {
 
   switch (stage) {
     case INITIAL:
-      content = (
-        <ScreeningDescription
-          onPayForBC={bcType => {
-            setStage(PAYMENT);
-            setBackgroundCheckType(bcType);
-            onCreateSubscription(
-              stripeCustomerId,
-              bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-              currentUser.id.uuid,
-              backgroundCheckPromo?.discount ? { coupon: backgroundCheckPromo?.discount } : null
-            );
-            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-          }}
-        />
-      );
+      content = <ScreeningDescription onPayForBC={memoizedHandlePayForBC} />;
       break;
     case PAYMENT:
       const options = {
-        clientSecret: subscription?.latest_invoice?.payment_intent?.client_secret,
+        clientSecret,
         appearance,
       };
 
-      content = subscription?.latest_invoice?.payment_intent?.client_secret ? (
+      const setupIntentOptions = {
+        clientSecret: setupIntentClientSecret,
+        appearance,
+      };
+
+      content = clientSecret ? (
         <div className={css.paymentContainer}>
           <div className={css.paymentForm}>
-            {!updateSubscriptionError && (
-              <Elements options={options} stripe={stripePromise}>
-                <PayCreditCardForm
-                  createPaymentError={createPaymentError}
-                  createPaymentInProgress={createPaymentInProgress}
-                  formId="PayCreditCardForm"
-                  intl={intl}
-                  onSubmit={handleCardSubmit}
-                />
-              </Elements>
-            )}
+            {!createSubscriptionError &&
+              (!setupIntentClientSecret ||
+                (setupIntentClientSecret &&
+                  setupIntent &&
+                  setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
+                <Elements options={options} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    createPaymentError={createPaymentError}
+                    createPaymentInProgress={createPaymentInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
+            {setupIntentClientSecret &&
+              (setupIntent
+                ? setupIntent.metadata?.backgroundCheckType === backgroundCheckType
+                : true) && (
+                <Elements options={setupIntentOptions} stripe={stripePromise}>
+                  <PayCreditCardForm
+                    confirmSetupIntentInProgress={confirmSetupIntentInProgress}
+                    confirmSetupIntentError={confirmSetupIntentError}
+                    createSubscriptionError={createSubscriptionError}
+                    createSubscriptionInProgress={createSubscriptionInProgress}
+                    formId="PayCreditCardForm"
+                    intl={intl}
+                    onSubmit={handleCardSubmit}
+                  />
+                </Elements>
+              )}
           </div>
           <PaymentInfo
             backgroundCheckType={backgroundCheckType}
             subscription={subscription}
-            onApplyBCPromoCode={onApplyBCPromoCode}
+            stripeCustomerId={stripeCustomerId}
             currentUser={currentUser}
-            applyBCPromoInProgress={applyBCPromoInProgress}
-            applyBCPromoError={applyBCPromoError}
-            bcPromo={bcPromo}
-            backgroundCheckPromo={backgroundCheckPromo}
-            onUpdateSubscription={onUpdateSubscription}
-            updateSubscriptionError={updateSubscriptionError}
-            updateSubscriptionInProgress={updateSubscriptionInProgress}
+            onCreateSetupIntent={onCreateSetupIntent}
+            setupIntent={setupIntent}
+            createSetupIntentInProgress={createSetupIntentInProgress}
+            createSetupIntentError={createSetupIntentError}
           />
         </div>
       ) : (
@@ -428,15 +518,12 @@ const EditListingBackgroundCheckPanel = props => {
       );
       break;
     case CONFIRM_PAYMENT:
-      const paymentConfirmedMessage = intl.formatMessage({
-        id: 'StripePaymentModal.paymentConfirmedMessage',
-      });
       content = (
         <div className={css.confirmationContainer}>
           <div className={css.iconContainer}>
             <IconConfirm />
           </div>
-          <div className={css.confirmationText}>{paymentConfirmedMessage}</div>
+          <div className={css.confirmationText}>Subscription Confirmed</div>
           <p className={css.redirectingText}>Redirecting you to provide your info...</p>
         </div>
       );
@@ -597,4 +684,68 @@ const EditListingBackgroundCheckPanel = props => {
   );
 };
 
-export default EditListingBackgroundCheckPanel;
+const mapStateToProps = state => {
+  const authenticate = state.Authenticate;
+
+  const { updateStripeAccountError } = state.stripeConnectAccount;
+
+  const {
+    createPaymentInProgress,
+    createPaymentError,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+  } = state.stripe;
+
+  const {
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    confirmSetupIntentInProgress,
+    confirmSetupIntentError,
+    createdPaymentMethod,
+  } = state.paymentMethods;
+
+  return {
+    authenticate,
+    createPaymentError,
+    createPaymentInProgress,
+    createPaymentSuccess,
+    createSubscriptionError,
+    createSubscriptionInProgress,
+    subscription,
+    updateStripeAccountError,
+    updateSubscriptionError,
+    updateSubscriptionInProgress,
+    setupIntent,
+    createSetupIntentInProgress,
+    createSetupIntentError,
+    confirmSetupIntentInProgress,
+    confirmSetupIntentError,
+    createdPaymentMethod,
+  };
+};
+
+const mapDispatchToProps = {
+  onFetchCurrentUser: fetchCurrentUser,
+  onAuthenticateCreateUser: authenticateCreateUser,
+  onAuthenticateSubmitConsent: authenticateSubmitConsent,
+  onAuthenticateUpdateUser: authenticateUpdateUser,
+  onConfirmSetupIntent: confirmSetupIntent,
+  onCreatePayment: createPayment,
+  onCreateSetupIntent: createSetupIntent,
+  onCreateSubscription: createSubscription,
+  onGenerateCriminalBackground: authenticateGenerateCriminalBackground,
+  onGet7YearHistory: authenticate7YearHistory,
+  onGetAuthenticateTestResult: getAuthenticateTestResult,
+  onGetIdentityProofQuiz: identityProofQuiz,
+  onUpdateSubscription: updateSubscription,
+  onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
+};
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  EditListingBackgroundCheckPanel
+);

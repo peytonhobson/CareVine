@@ -39,6 +39,11 @@
   /* Text positioning is done with paddings */
 }
 
+.middleHero {
+  justify-content: center !important;
+  align-items: center !important;
+}
+
 .heroContent {
   margin: 0 24px 0 24px;
 
@@ -80,11 +85,10 @@
 }
 
 .heroSubTitle {
-  composes: h4 from global;
-
   color: var(--matterColorLight);
   margin: 0 0 2rem 0;
   composes: animation;
+  font-weight: normal;
 
   @media (--viewportMedium) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
@@ -92,8 +96,20 @@
   }
 }
 
+.centered {
+  text-align: center;
+}
+
 .heroSubTitleFEDelay {
   animation-delay: 0.15s;
+}
+
+.heroButtonContainer {
+  display: flex;
+
+  @media (--viewportMedium) {
+    max-width: 30em;
+  }
 }
 
 .heroButton {
@@ -105,8 +121,33 @@
     width: 16.25rem;
   }
 }
+
 .heroButtonFEDelay {
   animation-delay: 0.3s;
+}
+
+.heroButtonUnAuth {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+  composes: animation;
+  margin-inline: 1rem;
+
+  @media (--viewportMedium) {
+    display: block;
+    margin-right: 2.5rem;
+    margin-left: 0;
+  }
+}
+
+.logo {
+  display: block;
+  margin-inline: auto;
+  margin-bottom: 1rem;
+  composes: animation;
+  composes: heroMainTitleFEDelay;
+
+  @media (--viewportMedium) {
+    margin-inline: 0;
+  }
 }
 
 .learnMoreButtonContainer {

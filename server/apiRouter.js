@@ -26,7 +26,6 @@ const stripePaymentMethods = require('./api/stripe-payment-methods');
 const stripeDetachPaymentMethod = require('./api/stripe-detach-payment-method');
 const stripeUpdatePaymentIntent = require('./api/stripe-update-payment-intent');
 const userEmail = require('./api/user-email');
-const sendbirdUser = require('./api/sb-user');
 const authenticateCreateUser = require('./api/authenticate-create-user');
 const authenticateSubmitConsent = require('./api/authenticate-submit-consent');
 const getIdentityProofQuiz = require('./api/identity-proof-quiz');
@@ -46,12 +45,12 @@ const authenticateDeenrollTCM = require('./api/authenticate-deenroll-tcm');
 const stripeCreateSubscriptionSchedule = require('./api/stripe-create-subscription-schedule');
 const stripeCancelSubscriptionSchedule = require('./api/stripe-cancel-subscription-schedule');
 const stripeUpdateSubscriptionItem = require('./api/stripe-update-subscription-item');
-const applyPromo = require('./api/apply-promo');
 const sendFeedbackEmail = require('./api/send-feedback-email');
 const sendgridTemplateEmail = require('./api/sendgrid-template-email');
 const sendgridStandardEmail = require('./api/sendgrid-standard-email');
 const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
+const updateTransactionMetadata = require('./api/update-transaction-metadata');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -100,7 +99,6 @@ router.post('/stripe-payment-methods', stripePaymentMethods);
 router.post('/stripe-detach-payment-method', stripeDetachPaymentMethod);
 router.post('/stripe-update-payment-intent', stripeUpdatePaymentIntent);
 router.post('/user-email', userEmail);
-router.post('/sb-user', sendbirdUser);
 router.post('/stripe-create-setup-intent', createSetupIntent);
 router.post('/authenticate-create-user', authenticateCreateUser);
 router.post('/authenticate-submit-consent', authenticateSubmitConsent);
@@ -121,12 +119,12 @@ router.post('/authenticate-deenroll-tcm', authenticateDeenrollTCM);
 router.post('/stripe-create-subscription-schedule', stripeCreateSubscriptionSchedule);
 router.post('/stripe-cancel-subscription-schedule', stripeCancelSubscriptionSchedule);
 router.post('/stripe-update-subscription-item', stripeUpdateSubscriptionItem);
-router.post('/apply-promo', applyPromo);
 router.post('/send-feedback-email', sendFeedbackEmail);
 router.post('/sendgrid-template-email', sendgridTemplateEmail);
 router.post('/sendgrid-standard-email', sendgridStandardEmail);
 router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
+router.post('/update-transaction-metadata', updateTransactionMetadata);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

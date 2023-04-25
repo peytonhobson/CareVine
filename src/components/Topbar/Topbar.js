@@ -19,8 +19,9 @@ import {
   NamedLink,
   TopbarDesktop,
   TopbarMobileMenu,
+  GenericError,
+  SessionTimeout,
 } from '../../components';
-import { TopbarSearchForm } from '../../forms';
 import { ensureCurrentUser } from '../../util/data';
 
 import MenuIcon from './MenuIcon';
@@ -49,26 +50,6 @@ const redirectToURLWithoutModalState = (props, modalStateParam) => {
   history.push(`${pathname}${searchString}`, state);
 };
 
-const GenericError = props => {
-  const { show } = props;
-  const classes = classNames(css.genericError, {
-    [css.genericErrorVisible]: show,
-  });
-  return (
-    <div className={classes}>
-      <div className={css.genericErrorContent}>
-        <p className={css.genericErrorText}>
-          <FormattedMessage id="Topbar.genericError" />
-        </p>
-      </div>
-    </div>
-  );
-};
-
-GenericError.propTypes = {
-  show: bool.isRequired,
-};
-
 class TopbarComponent extends Component {
   constructor(props) {
     super(props);
@@ -81,32 +62,13 @@ class TopbarComponent extends Component {
     this.handleMobileSearchClose = this.handleMobileSearchClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
+    this.pollUser = this.pollUser.bind(this);
   }
 
   componentDidMount() {
-    const { currentUser } = this.props;
-    const sbAccessToken = currentUser?.attributes?.profile?.privateData?.sbAccessToken;
-
-    if (sbAccessToken && !this.pollingInterval) {
+    if (this.props.currentUser) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
-      this.pollingInterval = setInterval(() => {
-        this.props.onFetchUnreadMessages();
-        this.props.onFetchCurrentUser();
-      }, 10000);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const sbAccessToken = this.props.currentUser?.attributes?.profile?.privateData?.sbAccessToken;
-
-    if (sbAccessToken && !this.pollingInterval) {
-      this.props.onFetchUnreadMessages();
-      this.props.onFetchCurrentUser();
-      this.pollingInterval = setInterval(() => {
-        this.props.onFetchUnreadMessages();
-        this.props.onFetchCurrentUser();
-      }, 10000);
     }
   }
 
@@ -164,6 +126,13 @@ class TopbarComponent extends Component {
     });
   }
 
+  pollUser() {
+    const { onFetchCurrentUser, onFetchUnreadMessages } = this.props;
+
+    onFetchUnreadMessages();
+    onFetchCurrentUser();
+  }
+
   render() {
     const {
       className,
@@ -193,7 +162,7 @@ class TopbarComponent extends Component {
       unreadMessages,
     } = this.props;
 
-    const { mobilemenu, mobilesearch, address, origin, bounds } = parse(location.search, {
+    const { mobilemenu } = parse(location.search, {
       latlng: ['origin'],
       latlngBounds: ['bounds'],
     });
@@ -210,7 +179,6 @@ class TopbarComponent extends Component {
 
     const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
     const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
-    const isMobileSearchOpen = isMobileLayout && mobilesearch === 'open';
 
     const mobileMenu = (
       <TopbarMobileMenu
@@ -226,19 +194,6 @@ class TopbarComponent extends Component {
         unreadNotificationCount={unreadNotificationCount}
       />
     );
-
-    // Only render current search if full place object is available in the URL params
-    const locationFieldsPresent = config.sortSearchByDistance
-      ? address && origin && bounds
-      : address && bounds;
-    const initialSearchFormValues = {
-      location: locationFieldsPresent
-        ? {
-            search: address,
-            selectedPlace: { address, origin, bounds },
-          }
-        : null,
-    };
 
     const classes = classNames(rootClassName || css.root, className);
 
@@ -288,7 +243,6 @@ class TopbarComponent extends Component {
               currentUserListingFetched={currentUserListingFetched}
               currentUser={currentUser}
               currentPage={currentPage}
-              initialSearchFormValues={initialSearchFormValues}
               intl={intl}
               isAuthenticated={isAuthenticated}
               onLogout={this.handleLogout}
@@ -323,8 +277,17 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-
-        <GenericError show={showGenericError} />
+        {currentUser && (
+          <SessionTimeout
+            intervalFunction={this.pollUser}
+            intervalTime="10000"
+            maxInactiveTime="1"
+          />
+        )}
+        <GenericError
+          show={showGenericError}
+          errorText={<FormattedMessage id="Topbar.genericError" />}
+        />
       </div>
     );
   }

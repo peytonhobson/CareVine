@@ -13,7 +13,7 @@ class EditListingPhotosPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedAvatar: props.currentUser.attributes.profile.publicData?.avatarLinearGradient,
+      selectedAvatar: props.currentUser.attributes.profile.publicData?.defaultAvatar,
     };
   }
 
@@ -91,11 +91,11 @@ class EditListingPhotosPanel extends Component {
             const updatedValues = !values.selectedAvatar
               ? {
                   profileImageId: uploadedImage?.imageId,
-                  publicData: { avatarLinearGradient: null },
+                  publicData: { defaultAvatar: null },
                 }
               : {
                   profileImageId: null,
-                  publicData: { avatarLinearGradient: values.selectedAvatar },
+                  publicData: { defaultAvatar: values.selectedAvatar },
                 };
 
             onUpdateProfile(updatedValues);

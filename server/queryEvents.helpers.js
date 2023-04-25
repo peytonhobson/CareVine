@@ -1,11 +1,12 @@
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const axios = require('axios');
-const SB_API_TOKEN = process.env.SENDBIRD_API_TOKEN;
-const appId = process.env.REACT_APP_SENDBIRD_APP_ID;
 const log = require('./log');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const CAREGIVER = 'caregiver';
 const { v4: uuidv4 } = require('uuid');
+const activeSubscriptionTypes = ['active', 'trialing'];
+const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const createSlug = str => {
   let text = str
@@ -210,7 +211,7 @@ const updateListingApproveListing = async event => {
     const metadata = user?.attributes?.profile?.metadata;
     const openListing =
       metadata?.userType === CAREGIVER
-        ? metadata?.backgroundCheckSubscription?.status === 'active' &&
+        ? activeSubscriptionTypes.includes(metadata?.backgroundCheckSubscription?.status) &&
           user?.attributes?.emailVerified
         : user?.attributes?.emailVerified;
     if (openListing) {
@@ -266,7 +267,7 @@ const enrollUserTCM = async (event, userAccessCode) => {
     await axios.post(
       `${apiBaseUrl()}/api/authenticate-enroll-tcm`,
       {
-        userAccessCode,
+        userAccessCode: isDev ? 'test' : userAccessCode,
       },
       {
         headers: {
@@ -283,7 +284,7 @@ const enrollUserTCM = async (event, userAccessCode) => {
       },
     });
   } catch (e) {
-    log.error(e, 'user-enroll-tcm-failed', {});
+    log.error(e?.data, 'user-enroll-tcm-failed', { userAccessCode });
   }
 };
 
@@ -292,7 +293,7 @@ const deEnrollUserTCM = async (event, userAccessCode) => {
     await axios.post(
       `${apiBaseUrl()}/api/authenticate-deenroll-tcm`,
       {
-        userAccessCode,
+        userAccessCode: isDev ? 'test' : userAccessCode,
       },
       {
         headers: {
@@ -309,7 +310,7 @@ const deEnrollUserTCM = async (event, userAccessCode) => {
       },
     });
   } catch (e) {
-    log.error(e, 'user-deenroll-tcm-failed', {});
+    log.error(e?.data, 'user-deenroll-tcm-failed', { userAccessCode });
   }
 };
 
@@ -334,9 +335,9 @@ const cancelSubscription = async backgroundCheckSubscription => {
 
 const backgroundCheckApprovedNotification = async userId => {
   try {
-    const res = integrationSdk.listings.query({ authorId: userId });
+    const res = await integrationSdk.listings.query({ authorId: userId });
 
-    const listing = res?.data?.data?.length > 0 && res.data.data[0];
+    const listing = res?.data?.data?.length > 0 ? res.data.data[0] : null;
 
     const listingId = listing?.id?.uuid;
     await axios.post(
@@ -380,38 +381,56 @@ const backgroundCheckRejectedNotification = async userId => {
   }
 };
 
-const deleteUserChannels = async userId => {
+const addUnreadMessageCount = async (txId, senderId) => {
   try {
-    const apiResponse = await axios.get(
-      `https://api-${appId}.sendbird.com/v3/users/${userId}/my_group_channels`,
+    const response = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['provider', 'customer'],
+    });
+    const transaction = response.data.data;
+
+    const { customer, provider } = transaction.relationships;
+
+    const customerUserId = customer.data.id.uuid;
+    const providerUserId = provider.data.id.uuid;
+    const recipientUserId = senderId === customerUserId ? providerUserId : customerUserId;
+
+    const unreadMessageCount = transaction.attributes.metadata.unreadMessageCount ?? {
+      [customerUserId]: 0,
+      [providerUserId]: 0,
+    };
+
+    unreadMessageCount[recipientUserId] += 1;
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        unreadMessageCount,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'add-unread-message-count-failed', {});
+  }
+};
+
+const sendQuizFailedEmail = async userId => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-standard-email`,
+      {
+        fromEmail: 'admin-notification@carevine.us',
+        receiverEmail: 'peyton.hobson@carevine.us',
+        subject: 'Identity Quiz Failed',
+        html: `<html><span>User ID: ${userId}</span></html>`,
+      },
       {
         headers: {
-          'Content-Type': 'application/json; charset=utf8',
-          'Api-Token': SB_API_TOKEN,
+          'Content-Type': 'application/transit+json',
         },
       }
     );
-    const channels = apiResponse?.data?.channels;
-
-    if (channels?.length > 0) {
-      channels.forEach(async channel => {
-        try {
-          await axios.delete(
-            `https://api-${appId}.sendbird.com/v3/group_channels/${channel.channel_url}`,
-            {
-              headers: {
-                'Content-Type': 'application/json; charset=utf8',
-                'Api-Token': SB_API_TOKEN,
-              },
-            }
-          );
-        } catch (e) {
-          log.error(e, 'delete-user-channel-failed', {});
-        }
-      });
-    }
   } catch (e) {
-    log.error(e, 'delete-user-channels-failed', {});
+    log.error(e, 'send-quiz-failed-email-failed', {});
   }
 };
 
@@ -425,5 +444,6 @@ module.exports = {
   cancelSubscription,
   backgroundCheckRejectedNotification,
   backgroundCheckApprovedNotification,
-  deleteUserChannels,
+  addUnreadMessageCount,
+  sendQuizFailedEmail,
 };

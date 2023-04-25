@@ -4,6 +4,7 @@ import { InfoTooltip } from '..';
 import classNames from 'classnames';
 
 import css from './AvailabilityPreview.module.css';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const weekdayAbbreviations = [
   { key: 'sun', label: 'Su' },
@@ -40,6 +41,8 @@ const weekdayTooltipTitle = entries => {
 const AvailabilityPreview = props => {
   const { className, entries, availableDays } = props;
 
+  const isMobile = useCheckMobileScreen();
+
   const weekdayTooltipTitles = entries && weekdayTooltipTitle(entries);
 
   const daysInSchedule = weekdayAbbreviations.filter(day =>
@@ -61,12 +64,15 @@ const AvailabilityPreview = props => {
         };
         return weekdayTooltipTitles && dayInSchedule && entries ? (
           <InfoTooltip
+            key={day.key}
             title={title}
             icon={<div className={dayClasses}>{day.label}</div>}
             styles={styles}
           />
         ) : (
-          <div className={dayClasses}>{day.label}</div>
+          <div key={day.key} className={dayClasses}>
+            {day.label}
+          </div>
         );
       })}
     </div>

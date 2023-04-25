@@ -125,12 +125,14 @@ export const EmployerListingCardComponent = props => {
   const currentAuthorName = currentAuthor && userDisplayNameAsString(currentAuthor);
 
   const careTypesLabels = findOptionsForSelectFilter('careTypes', filtersConfig)
-    .filter(option => careTypes.includes(option.key))
+    .filter(option => careTypes?.includes(option.key))
     .map(option => option.label);
   const additionalCareTypesText = (
     <ul>
       {careTypesLabels.map((careType, index) => (
-        <li>{index > 2 && careType && careType.split('/')[0]}</li>
+        <li key={`${careType}-${currentAuthorName}-${index}`}>
+          {index > 2 && careType && careType.split('/')[0]}
+        </li>
       ))}
     </ul>
   );
@@ -194,14 +196,15 @@ export const EmployerListingCardComponent = props => {
                   {scheduleType === '24hour' || scheduleType === 'repeat' ? (
                     <AvailabilityPreview entries={entries} availableDays={availableDays} />
                   ) : (
-                    <InlineTextButton
+                    <Button
                       onClick={e => {
                         e.preventDefault();
                         setIsOneTimeScheduleModalOpen(true);
                       }}
+                      className={css.viewScheduleButton}
                     >
                       <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                    </InlineTextButton>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -215,9 +218,9 @@ export const EmployerListingCardComponent = props => {
                   </span>
                 </div>
                 <div className={css.buttonContainer}>
-                  <Button className={css.messageButton}>
+                  <div className={css.messageButton}>
                     <FormattedMessage id={'EmployerListingCard.viewProfile'} />
-                  </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -229,7 +232,7 @@ export const EmployerListingCardComponent = props => {
               ))}
               {careTypes?.length > 3 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={additionalCareTypesText}
                   icon={
                     <p className={css.serviceCardItem}>

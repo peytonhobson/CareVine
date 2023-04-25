@@ -17,7 +17,6 @@ import {
 
 import css from './EditListingBioForm.module.css';
 
-const TITLE_MAX_LENGTH = 60;
 const DESCRIPTION_MIN_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 1000;
 
@@ -37,7 +36,6 @@ const EditListingBioFormComponent = props => (
         updated,
         updateInProgress,
         fetchErrors,
-        values,
         onManageDisableScrolling,
         generateBioInProgress,
       } = formRenderProps;
@@ -97,7 +95,10 @@ const EditListingBioFormComponent = props => (
 
             {generateBioInProgress ? (
               <div className={css.spinnerContainer}>
-                <IconSpinner className={css.spinner} />
+                <div style={{ textAlign: 'center' }}>
+                  <IconSpinner className={css.spinner} />
+                  <h3 className={css.generatingBioText}>Generating bio...</h3>
+                </div>
               </div>
             ) : (
               <FieldTextInput

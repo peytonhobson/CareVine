@@ -48,9 +48,7 @@ const CareScheduleSelectDatesContainer = props => {
       : []
   );
 
-  const timeZone = zipcodeToTimezone.lookup(
-    listing && listing.attributes.publicData.location.zipcode
-  );
+  const timeZone = zipcodeToTimezone.lookup(listing.attributes.publicData.location?.zipcode);
   const sortedSessions = selectedSessions.sort(sortSessionsByStartTime);
 
   useEffect(() => {

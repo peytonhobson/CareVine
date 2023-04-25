@@ -23,9 +23,6 @@ const FeedbackPageComponent = props => {
   const {
     intl,
     scrollingDisabled,
-    currentUserListing,
-    currentUserListingFetched,
-    currentUser,
     onSendFeedbackEmail,
     sendFeedbackEmailInProgress,
     sendFeedbackEmailError,
@@ -35,8 +32,8 @@ const FeedbackPageComponent = props => {
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
   const siteTitle = config.siteTitle;
-  const schemaTitle = intl.formatMessage({ id: 'LandingPage.schemaTitle' }, { siteTitle });
-  const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
+  const schemaTitle = intl.formatMessage({ id: 'FeedbackPage.schemaTitle' }, { siteTitle });
+  const schemaDescription = intl.formatMessage({ id: 'FeedbackPage.schemaDescription' });
 
   const handleSubmit = values => {
     onSendFeedbackEmail(values);
@@ -58,7 +55,7 @@ const FeedbackPageComponent = props => {
     >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
-          <TopbarContainer />
+          <TopbarContainer currentPage="FeedbackPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
           <h1 className={css.mainTitle}>Feedback</h1>

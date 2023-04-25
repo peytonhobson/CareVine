@@ -10,7 +10,7 @@ import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser, userCanMessage, getMissingInfoModalValue } from '../../util/data';
 import {
-  AvatarLarge,
+  Avatar,
   InlineTextButton,
   NamedLink,
   NotificationBadge,
@@ -18,7 +18,7 @@ import {
   ListingLink,
   IconBell,
 } from '../../components';
-import { CAREGIVER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 
 import css from './TopbarMobileMenu.module.css';
@@ -113,6 +113,9 @@ const TopbarMobileMenu = props => {
   const distance = 'distance=30';
   const location = currentUserListing?.attributes?.publicData?.location;
 
+  const oppositeUserType =
+    userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
+
   const listingLink =
     isAuthenticated && currentUserListingFetched && currentUserListing && !isNewListing ? (
       <ListingLink
@@ -153,11 +156,7 @@ const TopbarMobileMenu = props => {
 
   return (
     <div className={css.root}>
-      <AvatarLarge
-        className={css.avatar}
-        initialsClassName={css.avatarInitials}
-        user={currentUser}
-      />
+      <Avatar className={css.avatar} initialsClassName={css.avatarInitials} user={currentUser} />
       <div className={css.content}>
         <span className={css.greeting}>
           <FormattedMessage id="TopbarMobileMenu.greeting" values={{ displayName }} />
@@ -199,9 +198,12 @@ const TopbarMobileMenu = props => {
           <NamedLink
             className={css.createNewListingLink}
             name="SearchPage"
-            to={{ search: `?${origin}&${distance}&sort=relevant` }}
+            to={{
+              search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+                `&listingTypes=${oppositeUserType}`}`,
+            }}
           >
-            {userType === CAREGIVER ? <span>My Job Board</span> : <span>Find Caregivers</span>}
+            {userType === CAREGIVER ? <span>Job Listings</span> : <span>Find Caregivers</span>}
           </NamedLink>
         ) : (
           <NamedLink className={css.createNewListingLink} name="NewListingPage">

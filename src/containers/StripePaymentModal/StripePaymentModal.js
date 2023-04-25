@@ -32,22 +32,21 @@ import {
   initialState as stripeInitialState,
 } from '../../ducks/stripe.duck';
 import { fetchDefaultPayment } from '../../ducks/paymentMethods.duck';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './StripePaymentModal.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const StripePaymentModalComponent = props => {
   const {
-    channelUrl,
     confirmPaymentError,
     confirmPaymentInProgress,
     confirmPaymentSuccess,
     createPaymentIntentError,
     createPaymentIntentInProgress,
     currentUser,
+    conversationId,
     defaultPaymentMethods,
     defaultPaymentFetched,
     fetchDefaultPaymentError,
@@ -75,6 +74,8 @@ const StripePaymentModalComponent = props => {
     onConfirmPayment,
     onCreatePayment,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const [clientSecret, setClientSecret] = useState(null);
   const [rootClass, setRootClass] = useState(classNames(css.root, css.single));
@@ -122,10 +123,11 @@ const StripePaymentModalComponent = props => {
     const recipientName = userDisplayNameAsString(provider);
 
     const intentMetadata = {
-      channelUrl,
+      conversationId,
       senderName: userDisplayNameAsString(currentUser),
       listingId: providerListing.id.uuid,
-      userId: provider.id.uuid,
+      recipientId: provider.id.uuid,
+      senderId: currentUser.id.uuid,
       recipientName,
     };
 
@@ -201,7 +203,6 @@ const StripePaymentModalComponent = props => {
     setRootClass(classNames(css.root, css.single));
   };
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const appearance = {
     theme: 'stripe',
     variables: {
@@ -482,9 +483,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, channelUrl) =>
+  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, conversationId) =>
     dispatch(
-      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, channelUrl)
+      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, conversationId)
     ),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),

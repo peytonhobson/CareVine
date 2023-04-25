@@ -13,8 +13,6 @@
     "@material-ui/styles": "^4.11.5",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.16",
-    "@sendbird/chat": "^4.2.0",
-    "@sendbird/uikit-react": "3.4.2",
     "@sendgrid/mail": "^7.7.0",
     "@sentry/browser": "^6.19.7",
     "@sentry/node": "^6.19.7",
@@ -27,8 +25,6 @@
     "array-includes": "^3.1.5",
     "array.prototype.find": "^2.2.0",
     "autosize": "^5.0.1",
-    "aws-config": "^1.4.0",
-    "aws-sdk": "^2.1318.0",
     "axios": "^1.2.1",
     "basic-auth": "^2.0.1",
     "body-parser": "^1.20.0",
@@ -63,7 +59,6 @@
     "passport": "^0.5.3",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
-    "patch-package": "^6.5.0",
     "path-to-regexp": "^6.2.1",
     "postinstall-postinstall": "^2.1.0",
     "prop-types": "^15.8.1",
@@ -95,9 +90,7 @@
     "stripe": "^11.1.0",
     "turf": "^3.0.14",
     "url": "^0.11.0",
-    "use-long-press": "^2.0.3",
     "uuid": "^9.0.0",
-    "uuid-by-string": "^4.0.0",
     "zipcode-to-timezone": "^0.0.9"
   },
   "devDependencies": {
@@ -148,8 +141,7 @@
     "timezones": "node scripts/parse-iana-timezones.js",
     "translate": "node scripts/translations.js",
     "build:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
-    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
-    "postinstall": "yarn patch-package"
+    "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css"
   },
   "browserslist": {
     "production": [

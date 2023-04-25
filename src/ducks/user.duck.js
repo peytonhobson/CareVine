@@ -6,12 +6,15 @@ import * as log from '../util/log';
 import { authInfo } from './Auth.duck';
 import { stripeAccountCreateSuccess } from './stripeConnectAccount.duck';
 import { util as sdkUtil } from '../util/sdkLoader';
+import { addMarketplaceEntities } from './marketplaceData.duck';
+import { isEqual } from 'lodash';
 
 // ================ Action types ================ //
 
 export const CURRENT_USER_SHOW_REQUEST = 'app/user/CURRENT_USER_SHOW_REQUEST';
 export const CURRENT_USER_SHOW_SUCCESS = 'app/user/CURRENT_USER_SHOW_SUCCESS';
 export const CURRENT_USER_SHOW_ERROR = 'app/user/CURRENT_USER_SHOW_ERROR';
+export const CURRENT_USER_SHOW_NOCHANGE_SUCCESS = 'app/user/CURRENT_USER_SHOW_NOCHANGE_SUCCESS';
 
 export const CLEAR_CURRENT_USER = 'app/user/CLEAR_CURRENT_USER';
 
@@ -21,6 +24,8 @@ export const FETCH_CURRENT_USER_HAS_LISTINGS_SUCCESS =
   'app/user/FETCH_CURRENT_USER_HAS_LISTINGS_SUCCESS';
 export const FETCH_CURRENT_USER_HAS_LISTINGS_ERROR =
   'app/user/FETCH_CURRENT_USER_HAS_LISTINGS_ERROR';
+export const FETCH_CURRENT_USER_HAS_LISTINGS_NOCHANGE_SUCCESS =
+  'app/user/FETCH_CURRENT_USER_HAS_LISTINGS_NOCHANGE_SUCCESS';
 
 export const UPDATE_NOTIFICATIONS_REQUEST = 'app/user/UPDATE_NOTIFICATIONS_REQUEST';
 export const UPDATE_NOTIFICATIONS_SUCCESS = 'app/user/UPDATE_NOTIFICATIONS_SUCCESS';
@@ -85,6 +90,12 @@ export default function reducer(state = initialState, action = {}) {
       // eslint-disable-next-line no-console
       console.error(payload);
       return { ...state, currentUserShowError: payload, fetchCurrentUserInProgress: false };
+    case CURRENT_USER_SHOW_NOCHANGE_SUCCESS:
+      return {
+        ...state,
+        currentUserFetched: true,
+        fetchCurrentUserInProgress: false,
+      };
 
     case CLEAR_CURRENT_USER:
       return {
@@ -104,6 +115,11 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         currentUserHasListings: payload.hasListings,
         currentUserListing: payload.listing,
+        currentUserListingFetched: true,
+      };
+    case FETCH_CURRENT_USER_HAS_LISTINGS_NOCHANGE_SUCCESS:
+      return {
+        ...state,
         currentUserListingFetched: true,
       };
     case FETCH_CURRENT_USER_HAS_LISTINGS_ERROR:
@@ -177,12 +193,13 @@ export const verificationSendingInProgress = state => {
 // ================ Action creators ================ //
 
 export const currentUserShowRequest = () => ({ type: CURRENT_USER_SHOW_REQUEST });
-
 export const currentUserShowSuccess = user => ({
   type: CURRENT_USER_SHOW_SUCCESS,
   payload: user,
 });
-
+export const currentUserShowNoChangeSuccess = () => ({
+  type: CURRENT_USER_SHOW_NOCHANGE_SUCCESS,
+});
 export const currentUserShowError = e => ({
   type: CURRENT_USER_SHOW_ERROR,
   payload: e,
@@ -197,6 +214,9 @@ const fetchCurrentUserHasListingsRequest = () => ({
 export const fetchCurrentUserHasListingsSuccess = (hasListings, listing) => ({
   type: FETCH_CURRENT_USER_HAS_LISTINGS_SUCCESS,
   payload: { hasListings, listing },
+});
+export const fetchCurrentUserHasListingsNoChangeSuccess = () => ({
+  type: FETCH_CURRENT_USER_HAS_LISTINGS_NOCHANGE_SUCCESS,
 });
 const fetchCurrentUserHasListingsError = e => ({
   type: FETCH_CURRENT_USER_HAS_LISTINGS_ERROR,
@@ -269,7 +289,14 @@ export const fetchCurrentUserHasListings = () => (dispatch, getState, sdk) => {
       const hasPublishedListings =
         hasListings &&
         ensureOwnListing(response.data.data[0]).attributes.state !== LISTING_STATE_DRAFT;
+
+      if (isEqual(listing, getState().user.currentUserListing)) {
+        dispatch(fetchCurrentUserHasListingsNoChangeSuccess());
+        return;
+      }
+
       dispatch(fetchCurrentUserHasListingsSuccess(!!hasPublishedListings, listing));
+      dispatch(addMarketplaceEntities(response));
     })
     .catch(e => dispatch(fetchCurrentUserHasListingsError(storableError(e))));
 };
@@ -297,14 +324,15 @@ export const fetchCurrentUserHasOrders = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(fetchCurrentUserHasOrdersError(storableError(e))));
 };
 
-export const updateNotifications = notifications => (dispatch, getState, sdk) => {
+export const updateNotifications = notifications => async (dispatch, getState, sdk) => {
   dispatch(updateNotificationsRequest());
 
   try {
-    const response = sdk.currentUser.updateProfile({
+    await sdk.currentUser.updateProfile({
       privateData: { notifications },
     });
 
+    dispatch(fetchCurrentUser());
     dispatch(updateNotificationsSuccess());
   } catch (e) {
     log.error(e, 'failed-to-update-notifications');
@@ -350,6 +378,11 @@ export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => 
         throw new Error('Expected a resource in the sdk.currentUser.show response');
       }
       const currentUser = entities[0];
+
+      if (isEqual(currentUser, getState().user.currentUser)) {
+        dispatch(currentUserShowNoChangeSuccess());
+        return currentUser;
+      }
 
       // Save stripeAccount to store.stripe.stripeAccount if it exists
       if (currentUser.stripeAccount) {

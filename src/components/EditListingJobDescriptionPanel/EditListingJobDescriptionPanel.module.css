@@ -27,15 +27,29 @@
 
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
+  text-align: center;
 
   margin-top: 4rem;
+  font-size: 2.25rem;
+  line-height: 2.25rem;
 
   @media (--viewportMedium) {
     margin-top: 0;
+    line-height: 2.5rem;
+    letter-spacing: -0.9px;
+    font-size: 1.875rem;
   }
 }
 
 /* Paragraph for the Modal */
 .modalMessage {
   composes: marketplaceModalParagraphStyles from global;
+
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+
+  @media (--viewportMedium) {
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
 }

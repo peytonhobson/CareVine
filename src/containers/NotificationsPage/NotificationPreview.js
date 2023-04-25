@@ -15,8 +15,6 @@ import classNames from 'classnames';
 
 import css from './NotificationsPage.module.css';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 const formatPreviewDate = createdAt => {
   if (isToday(createdAt)) {
     return timestampToDate(createdAt).toLocaleTimeString('en-US', {
@@ -24,17 +22,6 @@ const formatPreviewDate = createdAt => {
       minute: 'numeric',
       hour12: true,
     });
-  }
-
-  if (isYesterday(createdAt)) {
-    return (
-      'yesterday at ' +
-      timestampToDate(createdAt).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      })
-    );
   }
 
   return moment(createdAt).format('MMM DD');
@@ -116,7 +103,13 @@ const TitleContent = ({ type, metadata }) => {
 };
 
 const NotificationPreview = props => {
-  const { notification, onPreviewClick, active, handleOpenDeleteNotificationModal } = props;
+  const {
+    notification,
+    onPreviewClick,
+    active,
+    handleOpenDeleteNotificationModal,
+    isMobile,
+  } = props;
 
   const { createdAt, type, id, isRead, metadata } = notification;
   const notificationDot = !isRead ? <div className={css.notificationDot} /> : null;
@@ -135,7 +128,7 @@ const NotificationPreview = props => {
       <div className={css.notificationPreviewContent}>
         <div className={css.notificationPreviewUpper}>
           {notificationDot}
-          <div className={css.notificationTitle}>{title}</div>
+          <span className={css.notificationTitle}>{title}</span>
           <div className={css.notificationDate}>{formatPreviewDate(createdAt)}</div>
         </div>
         <div className={css.notificationPreviewLower}>

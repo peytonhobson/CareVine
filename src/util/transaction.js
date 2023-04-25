@@ -1,6 +1,4 @@
 import { ensureTransaction } from './data';
-import { CAREGIVER } from './constants';
-import getUuid from 'uuid-by-string';
 
 /**
  * Transitions
@@ -60,6 +58,11 @@ export const TRANSITION_REVIEW_2_BY_CUSTOMER = 'transition/review-2-by-customer'
 export const TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD = 'transition/expire-customer-review-period';
 export const TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD = 'transition/expire-provider-review-period';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
+
+// Messaging Transaction Transitions
+export const TRANSITION_INITIAL_MESSAGE = 'transition/initial-message';
+export const TRANSITION_CUSTOMER_DELETE_CONVERSATION = 'transition/customer-delete-conversation';
+export const TRANSITION_PROVIDER_DELETE_CONVERSATION = 'transition/provider-delete-conversation';
 
 /**
  * Actors

@@ -11,7 +11,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0 12px 0 0;
+  padding: 0 0.75rem 0 0;
 
   /* fill */
   background-color: var(--matterColorLight);
@@ -20,7 +20,7 @@
   box-shadow: var(--boxShadowLight);
 
   @media (--viewportLarge) {
-    padding: 0 24px 0 0;
+    padding: 0 1.5rem 0 0;
   }
 }
 
@@ -39,59 +39,25 @@
   }
 }
 .logoLink:hover {
-  border-bottom: 4px solid var(--marketplaceColor);
+  border-bottom: 0.25rem solid var(--marketplaceColor);
   border-radius: 0;
   text-decoration: none;
 }
 
 .logo {
-  /* If height is increased, change link paddings accordingly */
-  height: 27px;
-
   /* Good aspect ratio should be less than 160/27 (width/height) */
   /* NOTE: extremely wide logos, need special handling. */
   width: auto;
-  max-width: 220px;
   object-fit: contain;
   object-position: left center;
 }
 
-/* Search */
-.searchLink {
-  flex-grow: 1;
-  height: 100%;
-  margin-right: 24px;
-  border-left-style: solid;
-  border-left-width: 1px;
-  border-left-color: var(--matterColorNegative);
-
-  @media (--viewportLarge) {
-    padding-left: 0;
-  }
-}
-
-.search {
-  font-weight: var(--fontWeightMedium);
-  font-size: 15px;
-  line-height: 24px;
-  letter-spacing: 0;
-  color: var(--matterColor);
-
-  display: inline-block;
-  margin: 28px 0;
-  text-decoration: inherit;
-
-  @media (--viewportMedium) {
-    font-weight: var(--fontWeightMedium);
-  }
-}
-
 .topbarSearchWithLeftPadding {
-  padding-left: 24px;
+  padding-left: 1.5rem;
   height: var(--topbarHeightDesktop);
 
   @media (--viewportLarge) {
-    padding-left: 34px;
+    padding-left: 2.125rem;
   }
 }
 
@@ -101,20 +67,20 @@
   transition: var(--transitionStyleButton);
 
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
   letter-spacing: 0;
 
   flex-shrink: 0;
   height: 100%;
-  padding: 0 12px 0 12px;
+  padding: 0 0.75rem 0 0.75rem;
   color: var(--marketplaceColor);
   margin-top: 0;
   margin-bottom: 0;
 
   &:hover {
     color: var(--marketplaceColorDark);
-    border-bottom: 4px solid var(--marketplaceColor);
+    border-bottom: 0.25rem solid var(--marketplaceColor);
     border-radius: 0;
     text-decoration: none;
   }
@@ -124,6 +90,12 @@
     margin-top: 0;
     margin-bottom: 0;
   }
+}
+
+.activeLink {
+  border-bottom: 0.25rem solid var(--marketplaceColor) !important;
+  border-radius: 0 !important;
+  text-decoration: none !important;
 }
 
 .topbarDesktopLabel {
@@ -137,8 +109,9 @@
 }
 
 .unauthenticatedContainer {
+  display: flex;
   flex-wrap: nowrap;
-  flex-direction: column;
+  flex-direction: row;
   flex-shrink: 1;
 }
 
@@ -159,19 +132,19 @@
   transition: var(--transitionStyleButton);
 
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
   letter-spacing: 0;
 
   height: 100%;
-  padding: 0 12px 0 12px;
+  padding: 0 0.75rem 0 0.75rem;
   margin: 0 1rem;
   color: var(--matterColor);
   cursor: pointer;
 
   &:hover {
     color: var(--matterColorDark);
-    border-bottom: 4px solid var(--marketplaceColor);
+    border-bottom: 0.25rem solid var(--marketplaceColor);
     border-radius: 0;
     text-decoration: none;
   }
@@ -185,13 +158,14 @@
 
 .notificationsLink {
   height: 100%;
-  display: block;
+  display: inline-flex;
+  flex-shrink: 0;
   margin: 0 0.5rem;
 }
 
 .bell {
   display: inline-block;
-  margin: 1.4rem 0 1.1rem 0;
+  margin: 1.375rem 0;
   text-decoration: inherit;
   position: relative;
 }
@@ -215,14 +189,14 @@
 
 .feedbackText .notificationDot {
   /* Dimensions */
-  width: 7px;
-  height: 7px;
+  width: 0.438rem;
+  height: 0.438rem;
   border-radius: 50%;
 
   /* Position */
   position: absolute;
-  top: 3px;
-  right: -9px;
+  top: 0.188rem;
+  right: -0.563rem;
 
   /* Style: red dot */
   background-color: var(--failColor);
@@ -254,14 +228,14 @@
   transition: var(--transitionStyleButton);
 
   flex-shrink: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   height: 100%;
   margin: 0;
-  padding: 0 12px 0 12px;
+  padding: 0 0.75rem 0 0.75rem;
 
   &:hover {
-    border-bottom: 4px solid var(--marketplaceColor);
+    border-bottom: 0.25rem solid var(--marketplaceColor);
     border-radius: 0;
     text-decoration: none;
   }
@@ -294,13 +268,13 @@
   display: inline-flex;
   flex-shrink: 0;
   height: 100%;
-  padding: 0 12px 0 12px;
+  padding: 0 0.75rem 0 0.75rem;
 
   color: var(--matterColor);
 
   &:hover {
     color: var(--matterColorDark);
-    border-bottom: 4px solid var(--marketplaceColor);
+    border-bottom: 0.25rem solid var(--marketplaceColor);
     border-radius: 0;
     text-decoration: none;
   }
@@ -313,13 +287,13 @@
   display: inline-flex;
   flex-shrink: 0;
   height: 100%;
-  padding: 0 12px 0 12px;
+  padding: 0 0.75rem 0 0.75rem;
 
   color: var(--matterColor);
 
   &:hover {
     color: var(--matterColorDark);
-    border-bottom: 4px solid var(--marketplaceColor);
+    border-bottom: 0.25rem solid var(--marketplaceColor);
     border-radius: 0;
     text-decoration: none;
   }
@@ -330,20 +304,20 @@
   composes: h5 from global;
 
   display: inline-block;
-  margin: 28px 0;
+  margin: 1.75rem 0;
   text-decoration: inherit;
 
   @media (--viewportMedium) {
-    margin: 28px 0;
+    margin: 1.75rem 0;
   }
 }
 
 /* left animated "border" like hover element */
 .menuItemBorder {
   position: absolute;
-  top: 2px;
+  top: 0.125rem;
   left: 0px;
-  height: calc(100% - 4px);
+  height: calc(100% - 0.25rem);
   width: 0;
   transition: width var(--transitionStyleButton);
 }
@@ -357,7 +331,7 @@
   /* Dimensions */
   width: 100%;
   margin: 0;
-  padding: 4px 24px;
+  padding: 0.25rem 1.5rem;
 
   /* Layout details */
   color: var(--matterColor);
@@ -387,16 +361,16 @@
 
   /* Font is specific to this component */
   font-weight: var(--fontWeightMedium);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
   letter-spacing: 0;
 
   /* Dimensions */
   position: relative;
   width: 100%;
-  min-width: 276px;
+  min-width: 17.25rem;
   margin: 0;
-  padding: 20px 24px;
+  padding: 1.25rem 1.5rem;
 
   /* Layout details */
   color: var(--marketplaceColor);
@@ -417,7 +391,7 @@
 
     & .menuItemBorder {
       height: 100%;
-      width: 6px;
+      width: 0.375rem;
       top: 0;
       background-color: var(--marketplaceColor);
     }
@@ -435,7 +409,7 @@
   position: relative;
 
   & .menuItemBorder {
-    width: 6px;
+    width: 0.375rem;
     background-color: var(--matterColorDark);
   }
 

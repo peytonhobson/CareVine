@@ -83,8 +83,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   height: 100%;
   width: 100%;
+}
+
+.generatingBioText {
+  width: 100%;
+  text-align: center;
+  color: var(--marketplaceColor);
 }
 
 .spinner {

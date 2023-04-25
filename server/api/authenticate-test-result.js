@@ -27,7 +27,7 @@ module.exports = (req, res) => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: isDev ? '' : `Bearer ${AUTHENTICATE_API_KEY}`,
+          Authorization: `Bearer ${AUTHENTICATE_API_KEY}`,
         },
       }
     )

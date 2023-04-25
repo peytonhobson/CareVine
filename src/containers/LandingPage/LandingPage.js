@@ -21,6 +21,7 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
@@ -37,22 +38,23 @@ export const LandingPageComponent = props => {
     currentUserFetched,
   } = props;
 
+  const isMobile = useCheckMobileScreen();
+
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
   // We are using JSON-LD format
   const siteTitle = config.siteTitle;
   const schemaTitle = intl.formatMessage({ id: 'LandingPage.schemaTitle' }, { siteTitle });
   const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
-  // TODO: Need to change to smaller badge
   const schemaImage = `${config.canonicalRootURL}${backgroundImage}`;
 
-  const { userType } = (currentUser && currentUser.attributes.profile.metadata) || EMPLOYER;
+  const userType = currentUser?.attributes.profile.metadata.userType;
 
   const contentRef = useRef(null);
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 100;
+      const elementHeight = contentRef.current.offsetTop - (isMobile ? 40 : 90);
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };
@@ -74,7 +76,7 @@ export const LandingPageComponent = props => {
     >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
-          <TopbarContainer />
+          <TopbarContainer currentPage="LandingPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain>
           <div className={css.heroContainer}>
@@ -86,6 +88,7 @@ export const LandingPageComponent = props => {
               currentUserListing={currentUserListing}
               currentUserFetched={currentUserFetched}
               scrollToContent={scrollToContent}
+              currentUser={currentUser}
             />
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
@@ -99,7 +102,7 @@ export const LandingPageComponent = props => {
                     currentUserListingFetched={currentUserListingFetched}
                   />
                 ) : (
-                  <SectionMarketplaceSummary />
+                  <SectionMarketplaceSummary onScrollIntoView={scrollToContent} />
                 )}
               </div>
             </li>

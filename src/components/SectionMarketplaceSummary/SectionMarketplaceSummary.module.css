@@ -16,7 +16,7 @@
   @media (--viewportMedium) {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    margin-top: 5rem;
+    margin-top: 3rem;
   }
 }
 
@@ -25,13 +25,15 @@
   width: 100%;
 
   @media (--viewportMedium) {
-    padding-inline: 2rem;
+    padding-right: 4rem;
+    padding-left: 0;
     margin: auto;
   }
 }
 
 .summaryText {
-  text-align: left;
+  padding-right: 2rem;
+  text-align: justify;
 }
 
 .graphic {
@@ -53,7 +55,7 @@
   max-width: 100%;
 
   @media (--viewportMedium) {
-    max-height: 20rem;
+    max-height: 23rem;
   }
 }
 

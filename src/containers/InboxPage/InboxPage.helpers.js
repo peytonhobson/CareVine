@@ -3,9 +3,13 @@ import queryString from 'query-string';
 export const getCurrentTransaction = (transactions, queryParams) => {
   const transactionId = queryString.parse(queryParams).id;
 
-  const currentTransaction = transactions.find(
-    transaction => transaction.id.uuid === transactionId
-  );
+  let currentTransaction = null;
+
+  transactions.forEach(transaction => {
+    if (transaction.id.uuid === transactionId) {
+      currentTransaction = transaction;
+    }
+  });
 
   return currentTransaction;
 };

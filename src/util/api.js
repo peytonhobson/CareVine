@@ -6,8 +6,6 @@ import { types as sdkTypes, transit } from './sdkLoader';
 import config from '../config';
 import Decimal from 'decimal.js';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
 export const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
   const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
@@ -15,7 +13,8 @@ export const apiBaseUrl = () => {
   // In development, the dev API server is running in a different port
 
   if (useDevApiServer) {
-    return `http://localhost:${port}`;
+    // return `http://localhost:${port}`;
+    return `http://10.0.0.222:${port}`;
   }
 
   // Otherwise, use the same domain and port as the frontend
@@ -186,10 +185,6 @@ export const fetchUserEmail = body => {
   return post('/api/user-email', body);
 };
 
-export const sendbirdUser = body => {
-  return post('/api/sb-user', body);
-};
-
 export const stripeCreateSetupIntent = body => {
   return post('/api/stripe-create-setup-intent', body);
 };
@@ -284,4 +279,8 @@ export const chatGPTGenerateText = body => {
 
 export const updateUserNotifications = body => {
   return post('/api/update-user-notifications', body);
+};
+
+export const updateTransactionMetadata = body => {
+  return post('/api/update-transaction-metadata', body);
 };

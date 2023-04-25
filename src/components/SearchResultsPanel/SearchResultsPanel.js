@@ -8,11 +8,11 @@ import {
   CaregiverListingCard,
   EmployerListingCard,
 } from '../../components';
-import { EMPLOYER } from '../../util/constants';
-import css from './SearchResultsPanel.module.css';
+import { EMPLOYER, CAREGIVER } from '../../util/constants';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
+import { useCheckMobileScreen } from '../../util/hooks';
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+import css from './SearchResultsPanel.module.css';
 
 const SearchResultsPanel = props => {
   const {
@@ -29,6 +29,8 @@ const SearchResultsPanel = props => {
     onManageDisableScrolling,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
+
+  const isMobile = useCheckMobileScreen();
 
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
@@ -64,6 +66,7 @@ const SearchResultsPanel = props => {
               currentUser={currentUser}
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
+              isMobile={isMobile}
             />
           ) : isMobile ? (
             <EmployerListingCardMobile
@@ -93,7 +96,7 @@ const SearchResultsPanel = props => {
         )}
         {props.children}
       </div>
-      {paginationLinks}
+      {/* {paginationLinks} */}
     </div>
   );
 };

@@ -6,35 +6,23 @@ import { propTypes } from '../../util/types';
 import { NamedLink, ButtonGroup } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
-import createProfileImage from '../../assets/profile-preview.png';
-import employerListingImage from '../../assets/employer-listing-card.png';
-import caregiverInquiryMessage from '../../assets/caregiver-inquiry-message.png';
-import employerCareTypes from '../../assets/employer-care-types.png';
 import caregiverListingImage from '../../assets/caregiver-listing-card.png';
-import employerInquiryMessage from '../../assets/employer-inquiry-message.png';
+import employerListingsImage from '../../assets/employer-listings.png';
 
 import css from './SectionMarketplaceSummary.module.css';
 
 const buttonGroupOptions = [
-  { key: CAREGIVER, label: 'Find a job' },
-  { key: EMPLOYER, label: 'Hire a caregiver' },
+  { key: CAREGIVER, label: 'Become a Caregiver' },
+  { key: EMPLOYER, label: 'Hire a Caregiver' },
 ];
 
 const SectionMarketplaceSummary = props => {
-  const { rootClassName, className, currentUser } = props;
+  const { rootClassName, className, onScrollIntoView } = props;
 
-  const buttonGroupRef = useRef(null);
   const [userType, setUserType] = useState(CAREGIVER);
 
   const handleUserTypeChange = userType => {
     setUserType(userType);
-  };
-
-  const scrollIntoView = () => {
-    buttonGroupRef.current.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
   };
 
   const classes = classNames(rootClassName || css.root, className);
@@ -44,7 +32,7 @@ const SectionMarketplaceSummary = props => {
         <FormattedMessage id="SectionMarketplaceSummary.title" />
       </div>
 
-      <div className={css.userButtons} ref={buttonGroupRef} onClick={scrollIntoView}>
+      <div className={css.userButtons} onClick={onScrollIntoView}>
         <ButtonGroup
           className={css.buttonGroup}
           initialSelect={CAREGIVER}
@@ -59,27 +47,35 @@ const SectionMarketplaceSummary = props => {
         <div className={css.summaryContainer}>
           <div className={css.summary}>
             <h1 className={css.summaryTitle}>
-              <FormattedMessage id="SectionMarketplaceSummary.summaryTitleCaregiver" />
+              <div>Caregiving Freedom:</div>
+              <div>Your Journey, Your Way</div>
             </h1>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
-                <FormattedMessage id="SectionMarketplaceSummary.summaryTextCaregiver" />
+                Set your rates, choose your hours, and handpick your clients in your preferred
+                location. Showcase your unique skills and passion to our community, unlocking
+                endless opportunities. Reimagine your caregiving career with freedom, flexibility,
+                and recognition—only at CareVine.
               </p>
             </div>
           </div>
           <div className={css.graphic}>
-            <img className={css.graphicImage} src={employerListingImage} />
+            <img className={css.graphicImage} src={employerListingsImage} />
           </div>
         </div>
       ) : (
         <div className={css.summaryContainer}>
           <div className={css.summary}>
             <h1 className={css.summaryTitle}>
-              <FormattedMessage id="SectionMarketplaceSummary.summaryTitleEmployer" />
+              <div>Your Care, In Your Hands:</div>
+              <div>Find the Perfect Caregiver for You</div>
             </h1>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
-                <FormattedMessage id="SectionMarketplaceSummary.summaryTextEmployer" />
+                Discover the seamless solution to finding the perfect caregiver. Tailor your care
+                experience by selecting professionals that fit your needs, budget, and location. Our
+                user-friendly platform eliminates the middleman, empowering you to take control of
+                your care journey. Accessible to all, CareVine puts the power in your hands.
               </p>
             </div>
           </div>

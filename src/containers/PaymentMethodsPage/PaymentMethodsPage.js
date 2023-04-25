@@ -27,11 +27,13 @@ import {
   UserNav,
   ButtonTabNavHorizontal,
   SavedBankDetails,
+  NamedRedirect,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { SaveBankAccountForm, SaveCreditCardForm } from '../../forms';
 import { fetchDefaultPayment } from './PaymentMethodsPage.duck.js';
 import config from '../../config';
+import { CAREGIVER } from '../../util/constants';
 
 import css from './PaymentMethodsPage.module.css';
 
@@ -67,16 +69,13 @@ const PaymentMethodsPageComponent = props => {
     onFetchDefaultPayment,
     onManageDisableScrolling,
     scrollingDisabled,
+    currentUserListing,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const card =
-    !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.card;
-  const bankAccount =
-    !!defaultPaymentMethods &&
-    !!defaultPaymentMethods.bankAccount &&
-    defaultPaymentMethods.bankAccount.us_bank_account;
+  const card = defaultPaymentMethods?.card?.card;
+  const bankAccount = defaultPaymentMethods?.bankAccount?.us_bank_account;
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
 
@@ -254,6 +253,10 @@ const PaymentMethodsPageComponent = props => {
       break;
   }
 
+  if (ensuredCurrentUser.attributes.profile.metadata?.userType === CAREGIVER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
+
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation>
@@ -263,7 +266,7 @@ const PaymentMethodsPageComponent = props => {
             desktopClassName={css.desktopTopbar}
             mobileClassName={css.mobileTopbar}
           />
-          <UserNav selectedPageName="PaymentMethodsPage" />
+          <UserNav selectedPageName="PaymentMethodsPage" listing={currentUserListing} />
         </LayoutWrapperTopbar>
         <LayoutWrapperAccountSettingsSideNav
           currentTab="PaymentMethodsPage"
@@ -341,7 +344,7 @@ PaymentMethodsPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => {
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   const {
     createBankAccountError,
@@ -382,6 +385,7 @@ const mapStateToProps = state => {
     fetchDefaultPaymentInProgress,
     scrollingDisabled: isScrollingDisabled(state),
     stripeCustomerFetched,
+    currentUserListing,
   };
 };
 
