@@ -102,7 +102,6 @@ const initialState = {
   getAuthenticateTestResultInProgress: false,
   getIdentityProofQuizError: null,
   getIdentityProofQuizInProgress: false,
-  identityProofQuiz: null,
   verifyIdentityProofQuizError: null,
   verifyIdentityProofQuizInProgress: false,
   verifyIdentityProofQuizFailure: false,
@@ -186,7 +185,6 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         getIdentityProofQuizInProgress: false,
-        identityProofQuiz: payload,
       };
 
     case VERIFY_IDENTITY_PROOF_QUIZ_REQUEST:
@@ -429,7 +427,12 @@ export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState
 
   return getIdentityProofQuiz({ userAccessCode })
     .then(response => {
-      dispatch(getIdentityProofQuizSuccess(response.data));
+      return sdk.currentUser.updateProfile({
+        privateData: { identityProofQuiz: response.data },
+      });
+    })
+    .then(response => {
+      dispatch(getIdentityProofQuizSuccess());
       dispatch(fetchCurrentUser());
       return response;
     })
