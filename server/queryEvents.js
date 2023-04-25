@@ -146,7 +146,7 @@ module.exports = queryEvents = () => {
 
       if (
         tcmEnrolled &&
-        (backgroundCheckSubscription.type !== 'vine' ||
+        (backgroundCheckSubscription?.type !== 'vine' ||
           !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status))
       ) {
         const userAccessCode = privateData?.authenticateUserAccessCode;
@@ -214,6 +214,17 @@ module.exports = queryEvents = () => {
       const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
       addUnreadMessageCount(transactionId, senderId);
+    }
+
+    if (eventType === 'user/deleted') {
+      const previousValues = event.attributes.previousValues;
+      const tcmEnrolled = previousValues.attributes.profile.privateData.tcmEnrolled;
+      const userAccessCode =
+        previousValues.attributes.profile.privateData.authenticateUserAccessCode;
+
+      if (tcmEnrolled && userAccessCode) {
+        deEnrollUserTCM(event, userAccessCode);
+      }
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);
