@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { arrayOf, bool, func, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
@@ -6,7 +6,7 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { minLength, maxLength, required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldTextInput, FieldSelect } from '../../components';
+import { Form, Button, FieldTextInput, FieldSelect, IconSpinner } from '../../components';
 
 import css from './IdentityProofForm.module.css';
 
@@ -31,6 +31,9 @@ const IdentityProofFormComponent = props => (
         inProgress,
         identityProofQuizAttempts,
         identityProofQuizVerification,
+        authenticateUserAccessCode,
+        currentUserId,
+        onGetIdentityProofQuiz,
       } = formRenderProps;
 
       const [disabledOptions, setDisabledOptions] = React.useState(Array(5).fill(false));
@@ -44,12 +47,16 @@ const IdentityProofFormComponent = props => (
         verifyIdentityProofQuizFailure,
       } = fetchErrors || {};
 
-      const questions = identityProofQuiz.data.IDMKBAResponse.KBAQuestion;
+      const questions = identityProofQuiz?.data.IDMKBAResponse.KBAQuestion;
 
       const classes = classNames(css.root, className);
       const submitInProgress = inProgress;
       const submitDisabled =
         invalid || disabled || submitInProgress || identityProofQuizAttempts >= MAX_QUIZ_ATTEMPTS;
+
+      useEffect(() => {
+        onGetIdentityProofQuiz(authenticateUserAccessCode, currentUserId);
+      }, []);
 
       const onSubmit = e => {
         e.preventDefault();
@@ -72,8 +79,8 @@ const IdentityProofFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={onSubmit}>
-          {questions &&
-            questions.map((question, index) => {
+          {questions ? (
+            questions?.map((question, index) => {
               const options = question.Options.map(option => {
                 return {
                   key: option.id,
@@ -109,7 +116,12 @@ const IdentityProofFormComponent = props => (
                   })}
                 </FieldSelect>
               );
-            })}
+            })
+          ) : (
+            <div className={css.spinnerContainer}>
+              <IconSpinner className={css.spinner} />
+            </div>
+          )}
           {verifyIdentityProofQuizError ? (
             <p className={css.error}>
               <FormattedMessage id="IdentityProofForm.verifyIdentityProofQuizFailed" />

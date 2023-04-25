@@ -187,6 +187,7 @@ const EditListingBackgroundCheckPanel = props => {
     getAuthenticateTestResultError,
     getAuthenticateTestResultInProgress,
     verifyIdentityProofQuizFailure,
+    identityProofQuiz,
   } = authenticate;
 
   const [stage, setStage] = useState(INITIAL);
@@ -206,7 +207,6 @@ const EditListingBackgroundCheckPanel = props => {
   const authenticateUserAccessCode = privateData?.authenticateUserAccessCode;
   const authenticateConsent = privateData?.authenticateConsent;
   const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
-  const identityProofQuiz = privateData?.identityProofQuiz;
   const identityProofQuizVerification = privateData?.identityProofQuizVerification;
   const authenticateCriminalBackgroundGenerated =
     privateData?.authenticateCriminalBackgroundGenerated;
@@ -227,10 +227,10 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(BACKGROUND_CHECK_IN_REVIEW);
     } else if (identityProofQuizAttempts >= MAX_QUIZ_ATTEMPTS) {
       setStage(QUIZ_MAX_ATTEMPTS_FAILED);
-    } else if (identityProofQuiz) {
-      setStage(IDENTITY_PROOF_QUIZ);
-    } else if (authenticateConsent && !getIdentityProofQuizInProgress) {
+    } else if (authenticateConsent && getIdentityProofQuizError) {
       setStage(UPDATE_USER);
+    } else if (authenticateConsent) {
+      setStage(IDENTITY_PROOF_QUIZ);
     } else if (authenticateUserAccessCode) {
       if (!getIdentityProofQuizInProgress) {
         setStage(SUBMIT_CONSENT);
@@ -339,7 +339,6 @@ const EditListingBackgroundCheckPanel = props => {
       );
     } else if (stage === UPDATE_USER) {
       onAuthenticateUpdateUser(userInfo, authenticateUserAccessCode).then(() => {
-        onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser.id.uuid);
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     }
@@ -349,7 +348,6 @@ const EditListingBackgroundCheckPanel = props => {
     const fullName = privateData?.authenticateFullName;
     const userId = currentUser.id.uuid;
     onAuthenticateSubmitConsent(authenticateUserAccessCode, fullName, userId).then(() => {
-      onGetIdentityProofQuiz(authenticateUserAccessCode, userId);
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     });
   };
@@ -570,7 +568,7 @@ const EditListingBackgroundCheckPanel = props => {
         authenticateGenerateCriminalBackgroundInProgress ||
         getAuthenticateTestResultInProgress;
       content = (
-        <div className={css.content}>
+        <div className={css.quizContent}>
           <h1 className={css.quizTitle}>
             Verify Your <span className={css.identityText}>Identity</span>
           </h1>
@@ -591,6 +589,9 @@ const EditListingBackgroundCheckPanel = props => {
             inProgress={quizInProgress}
             identityProofQuizAttempts={identityProofQuizAttempts}
             identityProofQuizVerification={identityProofQuizVerification}
+            authenticateUserAccessCode={authenticateUserAccessCode}
+            currentUserId={currentUser.id?.uuid}
+            onGetIdentityProofQuiz={onGetIdentityProofQuiz}
           />
         </div>
       );

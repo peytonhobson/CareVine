@@ -350,6 +350,29 @@
   }
 }
 
+.quizContent {
+  width: 100%;
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  @media (--viewportMedium) {
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin: 32px auto 0 auto;
+    width: 100%;
+    max-width: 564px;
+    flex-wrap: wrap;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0;
+  }
+}
+
 .identityText {
   color: var(--marketplaceColor);
 }
