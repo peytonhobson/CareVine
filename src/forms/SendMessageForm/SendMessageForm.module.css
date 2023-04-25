@@ -19,7 +19,7 @@
   border-bottom-width: 0;
 
   /* Avoid text going behind the submit button */
-  padding: 22px 52px 25px 0;
+  padding: 1.375rem 1rem 1.375rem 0;
 
   margin: 0;
 
@@ -125,7 +125,7 @@
   height: 3.5rem;
   overflow-y: scroll;
   letter-spacing: normal;
-  padding: 18px 64px 18px 16px;
+  padding: 18px 2rem 18px 16px;
   box-sizing: border-box;
   resize: none;
   background-color: inherit;
@@ -144,5 +144,9 @@
   &:active {
     border: solid 2px var(--matterColor);
     color: rgba(0, 0, 0, 0.88);
+  }
+
+  @media (--viewportMedium) {
+    padding-right: 4rem;
   }
 }
