@@ -22,8 +22,7 @@ const ConsentModalForm = props => (
 
       const [scrollAtBottom, setScrollAtBottom] = useState(false);
 
-      const userFullName =
-        currentUser.attributes.profile.firstName + ' ' + currentUser.attributes.profile.lastName;
+      const userFullName = currentUser.attributes.profile.privateData.authenticateFullName ?? '';
       const textWrapper = useRef();
       const authenticateConsent = currentUser.attributes.profile.metadata.authenticateConsent;
 
