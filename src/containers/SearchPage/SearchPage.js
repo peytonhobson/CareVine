@@ -13,7 +13,7 @@ import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { injectIntl, intlShape } from '../../util/reactIntl';
-import { Page } from '../../components';
+import { NamedRedirect, Page } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { setActiveListing } from './SearchPage.duck';
 import {
@@ -24,6 +24,7 @@ import {
   sortEmployerMatch,
 } from './SearchPage.helpers';
 import MainPanel from './MainPanel';
+import { ensureCurrentUser } from '../../util/data';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 import css from './SearchPage.module.css';
@@ -116,6 +117,7 @@ export class SearchPageComponent extends Component {
       searchInProgress,
       searchListingsError,
       searchParams,
+      params,
       sortConfig,
     } = this.props;
     // eslint-disable-next-line no-unused-vars
@@ -123,6 +125,18 @@ export class SearchPageComponent extends Component {
       latlng: ['origin'],
       latlngBounds: ['bounds'],
     });
+
+    const { listingTypes } = searchParams;
+
+    const ensuredCurrentUser = ensureCurrentUser(currentUser);
+    const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
+
+    const oppositeUserType =
+      userType === CAREGIVER ? EMPLOYER : userType === EMPLOYER ? CAREGIVER : null;
+
+    if (oppositeUserType && oppositeUserType !== listingTypes) {
+      return <NamedRedirect name="LandingPage" />;
+    }
 
     // urlQueryParams doesn't contain page specific url params
     // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)

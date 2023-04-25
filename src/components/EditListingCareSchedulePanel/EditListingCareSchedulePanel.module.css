@@ -222,7 +222,7 @@
   min-height: 0;
 
   /* Clear padding that is set for link elements looking like buttons */
-  padding: 0;
+  padding: 0 0.5rem;
 
   &:hover {
     background-color: var(--marketplaceColor);
@@ -241,7 +241,7 @@
   min-height: 0;
 
   /* Clear padding that is set for link elements looking like buttons */
-  padding: 0;
+  padding: 0 0.5rem;
 
   &:hover,
   &:focus {

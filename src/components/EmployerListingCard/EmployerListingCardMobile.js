@@ -186,14 +186,15 @@ export const EmployerListingCardMobileComponent = props => {
               {scheduleType === '24hour' || scheduleType === 'repeat' ? (
                 <AvailabilityPreview entries={entries} availableDays={availableDays} />
               ) : (
-                <InlineTextButton
+                <Button
                   onClick={e => {
                     e.preventDefault();
                     setIsOneTimeScheduleModalOpen(true);
                   }}
+                  className={css.viewScheduleButton}
                 >
                   <FormattedMessage id={'EmployerListingCard.viewSchedule'} />
-                </InlineTextButton>
+                </Button>
               )}
             </div>
           </div>
@@ -204,7 +205,7 @@ export const EmployerListingCardMobileComponent = props => {
               ))}
               {careTypes?.length > 3 && (
                 <InfoTooltip
-                  styles={{ paddingInline: 0, color: 'var(--matterColor)' }}
+                  styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={additionalCareTypesText}
                   icon={
                     <p className={css.serviceCardItem}>

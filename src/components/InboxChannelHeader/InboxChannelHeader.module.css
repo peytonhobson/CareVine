@@ -38,8 +38,8 @@
 }
 
 .headerAvatar {
-  width: 3rem;
-  height: 3rem;
+  width: 2.5em;
+  height: 2.5em;
   border-radius: 50%;
 
   @media (--viewportMedium) {
@@ -49,7 +49,11 @@
 }
 
 .avatarInitials {
-  font-size: 1.5rem;
+  font-size: 1rem;
+
+  @media (--viewportMedium) {
+    font-size: 1.5rem;
+  }
 }
 
 .channelTitle {
@@ -76,6 +80,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: row;
+  flex-shrink: 1;
   align-items: center;
 }
 
