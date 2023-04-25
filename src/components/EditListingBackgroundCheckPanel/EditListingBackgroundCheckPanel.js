@@ -419,7 +419,6 @@ const EditListingBackgroundCheckPanel = props => {
   ]);
 
   const address = listing.attributes.privateData.address;
-  console.log(listing);
   const initialValues = {
     firstName,
     lastName,
