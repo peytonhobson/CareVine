@@ -64,8 +64,6 @@ const TopbarDesktop = props => {
   const oppositeUserType =
     currentUserType === EMPLOYER ? CAREGIVER : currentUserType === CAREGIVER ? EMPLOYER : null;
 
-  console.log(oppositeUserType);
-
   const searchListings =
     isAuthenticatedOrJustHydrated && location ? (
       <NamedLink

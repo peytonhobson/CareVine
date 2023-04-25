@@ -310,7 +310,6 @@ class PagedFeed extends Component {
     const messages = this.state.showAllMessages ? [msg1, msg2, msg3, msg4] : [msg2, msg3, msg4];
 
     const handleShowOlder = () => {
-      console.log('show older messages');
       this.setState({ showAllMessages: true });
     };
 

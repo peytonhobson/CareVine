@@ -412,7 +412,6 @@ module.exports = (request, response) => {
   switch (event.type) {
     case 'customer.subscription.created':
       const customerSubscriptionCreated = event.data.object;
-      // console.log(customerSubscriptionCreated);
       updateBackgroundCheckSubscription(customerSubscriptionCreated);
       break;
     case 'customer.subscription.paused':
@@ -445,12 +444,10 @@ module.exports = (request, response) => {
       }
       break;
     case 'subscription_schedule.canceled':
-      console.log('subscription_schedule.canceled');
       const subscriptionScheduleCanceled = event.data.object;
       cancelBackgroundCheckSubscriptionSchedule(subscriptionScheduleCanceled);
       break;
     case 'subscription_schedule.created':
-      console.log('subscription_schedule.created');
       const subscriptionScheduleCreated = event.data.object;
       updateBackgroundCheckSubscriptionSchedule(subscriptionScheduleCreated);
       break;
@@ -469,7 +466,7 @@ module.exports = (request, response) => {
         JSON.stringify(disputeCreated)
       );
     default:
-      console.log(`Unhandled event type ${event.type}`);
+    // Unexpected event type
   }
 
   // Return a 200 response to acknowledge receipt of the event

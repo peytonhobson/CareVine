@@ -97,7 +97,6 @@ module.exports = queryEvents = () => {
 
       // Approve listing if they meet requirements when listing is published
       if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
-        console.log('approve listing listing update');
         updateListingApproveListing(event);
       }
     }
@@ -128,7 +127,6 @@ module.exports = queryEvents = () => {
 
       // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
-        console.log('approve listing 2');
         updateUserListingApproved(event);
       }
 
@@ -143,7 +141,6 @@ module.exports = queryEvents = () => {
       ) {
         const userAccessCode = privateData.authenticateUserAccessCode;
 
-        console.log('enroll tcm');
         enrollUserTCM(event, userAccessCode);
       }
 
@@ -154,7 +151,6 @@ module.exports = queryEvents = () => {
       ) {
         const userAccessCode = privateData?.authenticateUserAccessCode;
 
-        console.log('deenroll tcm');
         deEnrollUserTCM(event, userAccessCode);
       }
       const prevBackgroundCheckApprovedStatus =
@@ -171,11 +167,9 @@ module.exports = queryEvents = () => {
           (backgroundCheckRejected && !previousBackgroundCheckRejected)) &&
         activeSubscriptionTypes.includes(backgroundCheckSubscription?.status)
       ) {
-        console.log('cancel subscription');
         cancelSubscription(backgroundCheckSubscription);
 
         if (identityProofQuizAttempts >= 3) {
-          console.log('send quiz failed email');
           const userId = event.attributes.resource?.id?.uuid;
           sendQuizFailedEmail(userId);
         }
@@ -191,7 +185,6 @@ module.exports = queryEvents = () => {
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
 
-        console.log('close listing');
         closeListing(userId);
       }
 
