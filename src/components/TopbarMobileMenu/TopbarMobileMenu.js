@@ -200,7 +200,7 @@ const TopbarMobileMenu = props => {
             name="SearchPage"
             to={{
               search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-                `&listingTypes=${oppositeUserType}`}`,
+                `&listingType=${oppositeUserType}`}`,
             }}
           >
             {userType === CAREGIVER ? <span>Job Listings</span> : <span>Find Caregivers</span>}
