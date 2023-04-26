@@ -5,9 +5,6 @@ import { currencyConfiguration } from './currency-config';
 
 const env = process.env.REACT_APP_ENV;
 const dev = process.env.REACT_APP_ENV === 'development';
-const isDev = process.env.REACT_APP_ENV === 'development';
-const isTest = process.env.NODE_ENV === 'production' && isDev;
-const isProd = process.env.NODE_ENV === 'production' && !isDev;
 
 // CDN assets for the app. Configurable through Flex Console.
 // Currently, only translation.json is available.
