@@ -14,18 +14,6 @@ const isProd = process.env.NODE_ENV === 'production' && !isDev;
 const { v4: uuidv4 } = require('uuid');
 const activeSubscriptionTypes = ['active', 'trialing'];
 
-let singleActionProcessAlias;
-
-if (isDev) {
-  singleActionProcessAlias = `single-action-process/release-10`;
-}
-if (isTest) {
-  singleActionProcessAlias = `single-action-process/active`;
-}
-if (isProd) {
-  singleActionProcessAlias = `single-action-process/release-1`;
-}
-
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
