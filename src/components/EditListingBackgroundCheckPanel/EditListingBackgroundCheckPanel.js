@@ -323,7 +323,6 @@ const EditListingBackgroundCheckPanel = props => {
 
     const phoneString = `+1${phone.replace(/-/g, '')}`;
     const fullAddress = `${addressLine1}${addressLine2String}`;
-    const ssnString = ssn.replace(/-/g, '');
 
     const parsedAddress = parser.parseLocation(addressLine1);
 
@@ -339,7 +338,7 @@ const EditListingBackgroundCheckPanel = props => {
       city: city.trim(),
       state: state.trim(),
       zipCode: zipCode.trim(),
-      ssn: ssnString.trim(),
+      ssn: ssn,
       houseNumber: parsedAddress?.number,
     };
 

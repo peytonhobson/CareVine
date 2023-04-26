@@ -113,17 +113,11 @@ const formatSSN = value => {
   const ssnLength = ssn.length;
 
   // we need to return the value with no formatting if its less than four digits
-  if (ssnLength < 4) return ssn;
-
-  // if ssnLength is greater than 4 and less the 6 we start to return
-  // the formatted number
-  if (ssnLength < 6) {
-    return `${ssn.slice(0, 3)}-${ssn.slice(3)}`;
-  }
+  if (ssnLength < 5) return ssn;
 
   // finally, if the ssnLength is greater then 6, we add the last
   // bit of formatting and return it.
-  return `${ssn.slice(0, 3)}-${ssn.slice(3, 5)}-${ssn.slice(5, 9)}`;
+  return `${ssn.slice(0, 4)}`;
 };
 
 const EditListingBackgroundCheckForm = props => (
@@ -320,7 +314,7 @@ const EditListingBackgroundCheckForm = props => (
               ))}
             </FieldSelect>
           </div>
-          <div className={css.row}>
+          <div className={css.ssnRow}>
             <FieldDateInput
               id="dob"
               name="dob"
@@ -335,20 +329,30 @@ const EditListingBackgroundCheckForm = props => (
               displayFormat="MM/DD/YYYY"
               required
             />
-            <FieldTextInput
-              id="ssn"
-              name="ssn"
-              type="text"
-              className={css.secondField}
-              label="SSN"
-              placeholder="xxx-xx-xxxx"
-              validate={composeValidators(
-                ssnFormatValid('Invalid SSN'),
-                required('SSN is required')
-              )}
-              onChange={ssnFormatter}
-              required
-            />
+            <div className={css.ssnMain}>
+              <div className={css.ssnContainer}>
+                <label>
+                  Last 4 of SSN<span className={css.error}>*</span>
+                </label>
+                <div>
+                  <input disabled placeholder="••• – •• – " className={css.ssnPlaceholder} />
+                </div>
+                <FieldTextInput
+                  className={css.ssn}
+                  id="ssn"
+                  name="ssn"
+                  type="text"
+                  placeholder="xxxx"
+                  validate={composeValidators(
+                    ssnFormatValid('Invalid SSN'),
+                    required('SSN is required')
+                  )}
+                  inputRootClass={css.ssnInputRoot}
+                  onChange={ssnFormatter}
+                  required
+                />
+              </div>
+            </div>
           </div>
           <div className={css.row}>
             <FieldTextInput
