@@ -15,11 +15,20 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+}
+
+.ssnRow {
+  composes: row;
+  justify-content: space-between;
+
+  @media (--viewportMedium) {
+    justify-content: flex-start;
+  }
 }
 
 .thirdField {
-  width: calc(33% - 24px);
+  width: calc(33% - 1.5rem);
 
   & > label {
     white-space: nowrap;
@@ -27,7 +36,7 @@
 }
 
 .secondField {
-  width: calc(50% - 24px);
+  width: calc(50% - 1.5rem);
   & > label {
     white-space: nowrap;
   }
@@ -67,4 +76,42 @@
 
 .error {
   color: var(--failColor);
+}
+
+.ssnMain {
+  display: flex;
+  flex-wrap: wrap;
+  width: calc(50% - 1.5rem);
+
+  @media (--viewportMedium) {
+    width: calc(33% - 1.5rem);
+    margin: auto;
+  }
+}
+
+label {
+  width: 100%;
+}
+
+.ssnContainer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ssnPlaceholder {
+  width: 5rem;
+  border-color: black;
+}
+
+.ssn {
+  width: calc(100% - 5rem);
+
+  @media (--viewportMedium) {
+    max-width: 3.5rem;
+  }
+}
+
+.ssnInputRoot {
+  text-align: center;
 }
