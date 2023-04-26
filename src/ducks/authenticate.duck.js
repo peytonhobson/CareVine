@@ -439,7 +439,7 @@ export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState
       return response;
     })
     .catch(e => {
-      log.error(e, 'identity-proof-quiz-failed', {});
+      log.error(e, 'identity-proof-quiz-failed', { userAccessCode });
       dispatch(getIdentityProofQuizError(storableError(e)));
     });
 };
@@ -467,7 +467,10 @@ export const verifyIdentityProofQuiz = (
 
       const privateData = !!response.data.success
         ? { identityProofQuizVerification: response.data }
-        : { identityProofQuizAttempts: currentAttempts + 1 };
+        : {
+            identityProofQuizVerification: response.data,
+            identityProofQuizAttempts: currentAttempts + 1,
+          };
 
       return sdk.currentUser.updateProfile({
         privateData,
@@ -493,7 +496,7 @@ export const verifyIdentityProofQuiz = (
       return response;
     })
     .catch(e => {
-      log.error(e, 'verify-identity-proof-quiz-failed', {});
+      log.error(e, 'verify-identity-proof-quiz-failed', { payload });
       dispatch(verifyIdentityProofQuizError(storableError(e)));
     });
 };
