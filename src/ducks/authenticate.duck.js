@@ -384,7 +384,7 @@ export const authenticateUpdateUser = (userInfo, userAccessCode) => async (
 
     dispatch(authenticateUpdateUserSuccess());
     dispatch(fetchCurrentUser());
-    dispatch(identityProofQuiz());
+    dispatch(identityProofQuiz(userAccessCode));
 
     return response;
   } catch (e) {
@@ -478,7 +478,7 @@ export const verifyIdentityProofQuiz = (
     } else {
       // If users fails quiz, get a new one
       dispatch(verifyIdentityProofQuizFailure());
-      dispatch(identityProofQuiz());
+      dispatch(identityProofQuiz(userAccessCode));
     }
   } catch (e) {
     log.error(e, 'verify-identity-proof-quiz-failed', { userAccessCode });
