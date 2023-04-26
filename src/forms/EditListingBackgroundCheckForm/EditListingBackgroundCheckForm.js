@@ -16,11 +16,65 @@ import {
   postalCodeFormatValid,
   ssnFormatValid,
 } from '../../util/validators';
-import { Form, Button, FieldTextInput, FieldDateInput } from '../../components';
+import { Form, Button, FieldTextInput, FieldDateInput, FieldSelect } from '../../components';
 import moment from 'moment';
 
 import css from './EditListingBackgroundCheckForm.module.css';
 import { useEffect } from 'react';
+
+// Create an array of state abbreviations
+const stateAbbreviations = [
+  { key: 'AL', label: 'AL' },
+  { key: 'AK', label: 'AK' },
+  { key: 'AZ', label: 'AZ' },
+  { key: 'AR', label: 'AR' },
+  { key: 'CA', label: 'CA' },
+  { key: 'CO', label: 'CO' },
+  { key: 'CT', label: 'CT' },
+  { key: 'DE', label: 'DE' },
+  { key: 'FL', label: 'FL' },
+  { key: 'GA', label: 'GA' },
+  { key: 'HI', label: 'HI' },
+  { key: 'ID', label: 'ID' },
+  { key: 'IL', label: 'IL' },
+  { key: 'IN', label: 'IN' },
+  { key: 'IA', label: 'IA' },
+  { key: 'KS', label: 'KS' },
+  { key: 'KY', label: 'KY' },
+  { key: 'LA', label: 'LA' },
+  { key: 'ME', label: 'ME' },
+  { key: 'MD', label: 'MD' },
+  { key: 'MA', label: 'MA' },
+  { key: 'MI', label: 'MI' },
+  { key: 'MN', label: 'MN' },
+  { key: 'MS', label: 'MS' },
+  { key: 'MO', label: 'MO' },
+  { key: 'MT', label: 'MT' },
+  { key: 'NE', label: 'NE' },
+  { key: 'NV', label: 'NV' },
+  { key: 'NH', label: 'NH' },
+  { key: 'NJ', label: 'NJ' },
+  { key: 'NM', label: 'NM' },
+  { key: 'NY', label: 'NY' },
+  { key: 'NC', label: 'NC' },
+  { key: 'ND', label: 'ND' },
+  { key: 'OH', label: 'OH' },
+  { key: 'OK', label: 'OK' },
+  { key: 'OR', label: 'OR' },
+  { key: 'PA', label: 'PA' },
+  { key: 'RI', label: 'RI' },
+  { key: 'SC', label: 'SC' },
+  { key: 'SD', label: 'SD' },
+  { key: 'TN', label: 'TN' },
+  { key: 'TX', label: 'TX' },
+  { key: 'UT', label: 'UT' },
+  { key: 'VT', label: 'VT' },
+  { key: 'VA', label: 'VA' },
+  { key: 'WA', label: 'WA' },
+  { key: 'WV', label: 'WV' },
+  { key: 'WI', label: 'WI' },
+  { key: 'WY', label: 'WY' },
+];
 
 const isDayBlocked = day => day.isAfter(moment().subtract(18, 'years'));
 
@@ -247,18 +301,24 @@ const EditListingBackgroundCheckForm = props => (
               validate={required('City is required')}
               required
             />
-            <FieldTextInput
+            <FieldSelect
               id="state"
               name="state"
               disabled={disabled}
               className={css.thirdField}
-              type="text"
-              autoComplete="billing address-level1"
               label="State"
-              placeholder="State"
-              required
               validate={required('State is required')}
-            />
+              required
+            >
+              <option disabled value="">
+                Select a state
+              </option>
+              {stateAbbreviations.map(state => (
+                <option key={state.key} value={state.key}>
+                  {state.label}
+                </option>
+              ))}
+            </FieldSelect>
           </div>
           <div className={css.row}>
             <FieldDateInput
