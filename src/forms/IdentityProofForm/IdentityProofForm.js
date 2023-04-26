@@ -49,6 +49,10 @@ const IdentityProofFormComponent = props => (
         verifyIdentityProofQuizFailure,
       } = fetchErrors || {};
 
+      const expiredSessionError = verifyIdentityProofQuizError?.data?.errorMessage?.includes(
+        'Expired'
+      );
+
       const questions = identityProofQuiz?.data.IDMKBAResponse.KBAQuestion;
 
       const classes = classNames(css.root, className);
@@ -126,12 +130,17 @@ const IdentityProofFormComponent = props => (
               <IconSpinner className={css.spinner} />
             </div>
           )}
-          {verifyIdentityProofQuizError ? (
+          {getIdentityProofQuizError ? (
             <p className={css.error}>
               Failed to fetch quiz. Please try refreshing the page to try again.
             </p>
           ) : null}
-          {verifyIdentityProofQuizError ? (
+          {expiredSessionError ? (
+            <p className={css.error}>
+              The last quiz has expired. Please try attempting the quiz again.
+            </p>
+          ) : null}
+          {verifyIdentityProofQuizError && !expiredSessionError ? (
             <p className={css.error}>
               <FormattedMessage id="IdentityProofForm.verifyIdentityProofQuizFailed" />
             </p>
