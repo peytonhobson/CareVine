@@ -49,9 +49,7 @@ const IdentityProofFormComponent = props => (
         verifyIdentityProofQuizFailure,
       } = fetchErrors || {};
 
-      const expiredSessionError = verifyIdentityProofQuizError?.data?.errorMessage
-        ?.toLowerCase()
-        .includes('expired');
+      const expiredSessionError = verifyIdentityProofQuizError?.status === 400;
 
       const questions = identityProofQuiz?.data.IDMKBAResponse.KBAQuestion;
 
@@ -61,10 +59,10 @@ const IdentityProofFormComponent = props => (
         invalid || disabled || submitInProgress || identityProofQuizAttempts >= MAX_QUIZ_ATTEMPTS;
 
       useEffect(() => {
-        if (currentUserId && !identityProofQuiz) {
-          onGetIdentityProofQuiz(authenticateUserAccessCode, currentUserId);
+        if (authenticateUserAccessCode && !identityProofQuiz) {
+          onGetIdentityProofQuiz(authenticateUserAccessCode);
         }
-      }, [currentUserId, identityProofQuiz]);
+      }, [authenticateUserAccessCode, identityProofQuiz]);
 
       const onSubmit = e => {
         e.preventDefault();

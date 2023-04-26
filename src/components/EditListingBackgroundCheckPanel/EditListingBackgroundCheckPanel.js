@@ -51,7 +51,6 @@ const CONFIRM_PAYMENT = 'CONFIRM_PAYMENT';
 const CREATE_USER = 'CREATE_USER';
 const SUBMIT_CONSENT = 'SUBMIT_CONSENT';
 const IDENTITY_PROOF_QUIZ = 'IDENTITY_PROOF_QUIZ';
-const LOADING = 'LOADING';
 const BACKGROUND_CHECK_COMPLETE = 'BACKGROUND_CHECK_COMPLETE';
 const BACKGROUND_CHECK_IN_REVIEW = 'BACKGROUND_CHECK_IN_REVIEW';
 const UPDATE_USER = 'UPDATE_USER';
@@ -205,6 +204,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
+  // Get all authenticate related data from user
   const authenticateUserAccessCode = privateData?.authenticateUserAccessCode;
   const authenticateConsent = privateData?.authenticateConsent;
   const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
@@ -219,7 +219,7 @@ const EditListingBackgroundCheckPanel = props => {
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
   const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
 
-  // Need to add data to user that they paid for background check
+  // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
     if (backgroundCheckApproved?.status === BACKGROUND_CHECK_REJECTED) {
       setStage(BACKGROUND_CHECK_REJECTED);
@@ -256,6 +256,7 @@ const EditListingBackgroundCheckPanel = props => {
     subscription,
   ]);
 
+  // These error codes indicate the user needs to be updated to get identity proof quiz
   useEffect(() => {
     const errorStatuses = [400, 417];
     if (getIdentityProofQuizError && errorStatuses.includes(getIdentityProofQuizError.status)) {
@@ -263,14 +264,17 @@ const EditListingBackgroundCheckPanel = props => {
     }
   }, [getIdentityProofQuizError]);
 
+  // Set client secret for subscription payment
   useEffect(() => {
     setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
   }, [subscription]);
 
+  // Set setup intent secret for when user is using promo code
   useEffect(() => {
     setSetupIntentClientSecret(setupIntent?.client_secret);
   }, [setupIntent]);
 
+  // After user has created payment method in promo code flow, create subscription with 1 month trial
   useEffect(() => {
     if (createdPaymentMethod) {
       onCreateSubscription(
@@ -289,8 +293,9 @@ const EditListingBackgroundCheckPanel = props => {
 
   // If current quiz session has expired, fetch a new quiz
   useEffect(() => {
+    console.log('verifyIdentityProofQuizError', verifyIdentityProofQuizError);
     if (
-      verifyIdentityProofQuizError?.data?.errorMessage?.toLowerCase().includes('expired') &&
+      verifyIdentityProofQuizError?.status === 400 &&
       authenticateUserAccessCode &&
       currentUser.id.uuid
     ) {
@@ -298,6 +303,7 @@ const EditListingBackgroundCheckPanel = props => {
     }
   }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser.id.uuid]);
 
+  // Submit user form (create of update) for authenticate user
   const handleSubmit = values => {
     const {
       firstName,
@@ -349,6 +355,7 @@ const EditListingBackgroundCheckPanel = props => {
     }
   };
 
+  // Submit authenticate consent
   const handleConsentSubmit = values => {
     const fullName = privateData?.authenticateFullName;
     const userId = currentUser.id.uuid;
@@ -357,6 +364,7 @@ const EditListingBackgroundCheckPanel = props => {
     });
   };
 
+  // This creates payment or setup intent, depending on if user is using promo code
   const handleCardSubmit = (stripe, elements) => {
     const userId = currentUser.id.uuid;
     const params = {
@@ -377,6 +385,14 @@ const EditListingBackgroundCheckPanel = props => {
     }
   };
 
+  /*
+   * This function is called when user submits identity proof quiz
+   * If quiz is not verified, verify quiz
+   * If quiz is verified, generate criminal background
+   * If criminal background is generated, get test result
+   * If test result is received and user has criminal record, get 7 year history
+   * TODO: Need a way to handle when user has already verified quiz. They shouldn't need to submit quiz again, but other calls should happen on load.
+   */
   const handleIdentityQuizSubmit = (answers, form) => {
     const IDMSessionId = identityProofQuiz.data.IDMSessionId;
     const currentAttempts = !!identityProofQuizAttempts ? identityProofQuizAttempts : 0;
@@ -402,27 +418,21 @@ const EditListingBackgroundCheckPanel = props => {
     }
   };
 
-  const handlePayForBC = bcType => {
-    setStage(PAYMENT);
-    setBackgroundCheckType(bcType);
-    onCreateSubscription(
-      stripeCustomerId,
-      bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-      currentUser.id?.uuid
-    ).then(() => {
-      onFetchCurrentUser();
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    });
-  };
-
-  // This makes 0 sense
-  const memoizedHandlePayForBC = useCallback(handlePayForBC, [
-    setStage,
-    setBackgroundCheckType,
-    onCreateSubscription,
-    stripeCustomerId,
-    currentUser.id.uuid,
-  ]);
+  const handlePayForBC = useCallback(
+    bcType => {
+      setStage(PAYMENT);
+      setBackgroundCheckType(bcType);
+      onCreateSubscription(
+        stripeCustomerId,
+        bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+        currentUser.id?.uuid
+      ).then(() => {
+        onFetchCurrentUser();
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      });
+    },
+    [setStage, setBackgroundCheckType, onCreateSubscription, stripeCustomerId, currentUser.id.uuid]
+  );
 
   const address = listing.attributes.privateData.address;
   const initialValues = {
@@ -451,7 +461,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   switch (stage) {
     case INITIAL:
-      content = <ScreeningDescription onPayForBC={memoizedHandlePayForBC} />;
+      content = <ScreeningDescription onPayForBC={handlePayForBC} />;
       break;
     case PAYMENT:
       const options = {
