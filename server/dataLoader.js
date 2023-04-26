@@ -21,12 +21,8 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
   // Then make loadData calls
   // And return object containing preloaded state and translations
   // This order supports other asset (in the future) that should be fetched before data calls.
-  return store
-    .dispatch()
-    .then(fetchedAssets => {
-      translations = fetchedAssets?.translations?.data || {};
-      return Promise.all(dataLoadingCalls);
-    })
+
+  return Promise.all(dataLoadingCalls)
     .then(() => {
       return { preloadedState: store.getState(), translations: {} };
     })
