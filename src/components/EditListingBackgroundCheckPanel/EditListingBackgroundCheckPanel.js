@@ -290,7 +290,7 @@ const EditListingBackgroundCheckPanel = props => {
   // If current quiz session has expired, fetch a new quiz
   useEffect(() => {
     if (
-      verifyIdentityProofQuizError?.data?.errorMessage?.includes('Expired') &&
+      verifyIdentityProofQuizError?.data?.errorMessage?.toLowerCase().includes('expired') &&
       authenticateUserAccessCode &&
       currentUser.id.uuid
     ) {
