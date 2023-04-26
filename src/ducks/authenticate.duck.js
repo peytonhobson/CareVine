@@ -10,7 +10,6 @@ import {
   submitConsentAuthenticate,
   updateUserAuthenticate,
   updateUser,
-  applyPromo,
   sendgridStandardEmail,
 } from '../util/api';
 import * as log from '../util/log';
@@ -341,108 +340,104 @@ export const authenticateGenerateCriminalBackgroundError = errorAction(
 
 // ================ Thunk ================ //
 
-export const authenticateCreateUser = (userInfo, userId) => (dispatch, getState, sdk) => {
+export const authenticateCreateUser = (userInfo, userId) => async (dispatch, getState, sdk) => {
   dispatch(authenticateCreateUserRequest());
 
   const fullName = `${userInfo.firstName}${userInfo.middleName ? ` ${userInfo.middleName}` : ''} ${
     userInfo.lastName
   }`;
 
-  return dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }))
-    .then(() => {
-      return createUserAuthenticate({ userInfo });
-    })
-    .then(response => {
-      return sdk.currentUser.updateProfile({
-        privateData: { authenticateUserAccessCode: response.data },
-      });
-    })
-    .then(response => {
-      dispatch(authenticateCreateUserSuccess());
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'authenticate-create-user-failed', {});
-      dispatch(authenticateCreateUserError(storableError(e)));
+  try {
+    await dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }));
+
+    const response = await createUserAuthenticate({ userInfo });
+
+    await sdk.currentUser.updateProfile({
+      privateData: { authenticateUserAccessCode: response.data },
     });
+
+    dispatch(authenticateCreateUserSuccess());
+    dispatch(fetchCurrentUser());
+
+    return response;
+  } catch (e) {
+    log.error(e, 'authenticate-create-user-failed', {});
+    dispatch(authenticateCreateUserError(storableError(e)));
+  }
 };
 
-export const authenticateUpdateUser = (userInfo, userAccessCode) => (dispatch, getState, sdk) => {
+export const authenticateUpdateUser = (userInfo, userAccessCode) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(authenticateUpdateUserRequest());
 
   const fullName = `${userInfo.firstName}${userInfo.middleName ? ` ${userInfo.middleName}` : ''} ${
     userInfo.lastName
   }`;
 
-  return dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }))
-    .then(() => {
-      return updateUserAuthenticate({ userInfo, userAccessCode });
-    })
-    .then(response => {
-      dispatch(authenticateUpdateUserSuccess());
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'authenticate-update-user-failed', {});
-      dispatch(authenticateUpdateUserError(storableError(e)));
-    });
+  try {
+    await dispatch(updateProfile({ privateData: { authenticateFullName: fullName } }));
+
+    const response = await updateUserAuthenticate({ userInfo, userAccessCode });
+
+    dispatch(authenticateUpdateUserSuccess());
+    dispatch(fetchCurrentUser());
+    dispatch(identityProofQuiz());
+
+    return response;
+  } catch (e) {
+    log.error(e, 'authenticate-update-user-failed', {});
+    dispatch(authenticateUpdateUserError(storableError(e)));
+  }
 };
 
-export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => (
+export const authenticateSubmitConsent = (userAccessCode, fullName, userId) => async (
   dispatch,
   getState,
   sdk
 ) => {
   dispatch(authenticateSubmitConsentRequest());
 
-  return submitConsentAuthenticate({ userAccessCode, fullName })
-    .then(response => {
-      return sdk.currentUser.updateProfile({
-        privateData: { authenticateConsent: true },
-      });
-    })
-    .then(() => {
-      return updateUser({
-        userId,
-        metadata: {
-          backgroundCheckApproved: {
-            status: 'started',
-          },
+  try {
+    await submitConsentAuthenticate({ userAccessCode, fullName });
+
+    await updateUser({
+      userId,
+      privateData: { authenticateConsent: true },
+      metadata: {
+        backgroundCheckApproved: {
+          status: 'started',
         },
-      });
-    })
-    .then(response => {
-      dispatch(authenticateSubmitConsentSuccess());
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'authenticate-submit-consent-failed', {});
-      dispatch(authenticateSubmitConsentError(storableError(e)));
+      },
     });
+
+    dispatch(authenticateSubmitConsentSuccess());
+    dispatch(fetchCurrentUser());
+  } catch (e) {
+    log.error(e, 'authenticate-submit-consent-failed', {});
+    dispatch(authenticateSubmitConsentError(storableError(e)));
+  }
 };
 
-export const identityProofQuiz = (userAccessCode, userId) => (dispatch, getState, sdk) => {
+export const identityProofQuiz = userAccessCode => async (dispatch, getState, sdk) => {
   dispatch(getIdentityProofQuizRequest());
 
-  return getIdentityProofQuiz({ userAccessCode })
-    .then(response => {
-      dispatch(getIdentityProofQuizSuccess(response.data));
-      return sdk.currentUser.updateProfile({
-        privateData: { identityProofQuiz: response.data },
-      });
-    })
-    .then(response => {
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      console.log('here');
-      log.error(e, 'identity-proof-quiz-failed', { userAccessCode });
-      dispatch(getIdentityProofQuizError(storableError(e)));
+  try {
+    const response = await getIdentityProofQuiz({ userAccessCode });
+
+    dispatch(getIdentityProofQuizSuccess(response.data));
+
+    await sdk.currentUser.updateProfile({
+      privateData: { identityProofQuiz: response.data },
     });
+
+    dispatch(fetchCurrentUser());
+  } catch (e) {
+    log.error(e, 'identity-proof-quiz-failed', { userAccessCode });
+    dispatch(getIdentityProofQuizError(storableError(e)));
+  }
 };
 
 export const verifyIdentityProofQuiz = (
@@ -451,7 +446,7 @@ export const verifyIdentityProofQuiz = (
   userId,
   questionAnswers,
   currentAttempts
-) => (dispatch, getState, sdk) => {
+) => async (dispatch, getState, sdk) => {
   dispatch(verifyIdentityProofQuizRequest());
 
   const payload = {
@@ -460,201 +455,140 @@ export const verifyIdentityProofQuiz = (
     questionAnswers,
   };
 
-  let success = false;
+  try {
+    const response = await identityProofQuizVerification({ payload });
+    const success = response?.data?.success;
 
-  return identityProofQuizVerification({ payload })
-    .then(response => {
-      success = response?.data?.success;
+    const privateData = !!response.data.success
+      ? { identityProofQuizVerification: response.data }
+      : {
+          identityProofQuizVerificationAttempt: response.data,
+          identityProofQuizAttempts: currentAttempts + 1,
+        };
 
-      const privateData = !!response.data.success
-        ? { identityProofQuizVerification: response.data }
-        : {
-            identityProofQuizVerificationAttempt: response.data,
-            identityProofQuizAttempts: currentAttempts + 1,
-          };
-
-      return sdk.currentUser.updateProfile({
-        privateData,
-      });
-    })
-    .then(response => {
-      if (success) {
-        dispatch(verifyIdentityProofQuizSuccess());
-      } else {
-        dispatch(verifyIdentityProofQuizFailure());
-        dispatch(identityProofQuiz());
-      }
-      return response;
-    })
-    .then(response => {
-      if (success) {
-        return dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId));
-      }
-      return response;
-    })
-    .then(response => {
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'verify-identity-proof-quiz-failed', { payload });
-      dispatch(verifyIdentityProofQuizError(e));
+    await sdk.currentUser.updateProfile({
+      privateData,
     });
+
+    dispatch(fetchCurrentUser());
+
+    if (success) {
+      dispatch(verifyIdentityProofQuizSuccess());
+      dispatch(authenticateGenerateCriminalBackground(userAccessCode, userId));
+    } else {
+      // If users fails quiz, get a new one
+      dispatch(verifyIdentityProofQuizFailure());
+      dispatch(identityProofQuiz());
+    }
+  } catch (e) {
+    log.error(e, 'verify-identity-proof-quiz-failed', { userAccessCode });
+    dispatch(verifyIdentityProofQuizError(storableError(e)));
+  }
 };
 
-export const authenticateGenerateCriminalBackground = (userAccessCode, userId) => (
+export const authenticateGenerateCriminalBackground = (userAccessCode, userId) => async (
   dispatch,
   getState,
   sdk
 ) => {
   dispatch(authenticateGenerateCriminalBackgroundRequest());
 
-  let success = false;
+  try {
+    const response = await authenticateGenerateCriminalBackgroundCheck({ userAccessCode });
+    const success = response?.data?.success;
 
-  return authenticateGenerateCriminalBackgroundCheck({ userAccessCode })
-    .then(response => {
-      success = response?.data?.success;
-
-      return sdk.currentUser.updateProfile({
-        privateData: { authenticateCriminalBackgroundGenerated: response?.data?.success },
-      });
-    })
-    .then(response => {
-      dispatch(authenticateGenerateCriminalBackgroundSuccess());
-      if (success) {
-        dispatch(getAuthenticateTestResult(userAccessCode, userId));
-      }
-      return response;
-    })
-    .then(response => {
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'authenticate-generate-criminal-background-failed', {});
-      dispatch(authenticateGenerateCriminalBackgroundError(storableError(e)));
+    await sdk.currentUser.updateProfile({
+      privateData: { authenticateCriminalBackgroundGenerated: response?.data?.success },
     });
+
+    dispatch(fetchCurrentUser());
+    dispatch(authenticateGenerateCriminalBackgroundSuccess());
+
+    if (success) {
+      dispatch(getAuthenticateTestResult(userAccessCode, userId));
+    }
+  } catch (e) {
+    log.error(e, 'authenticate-generate-criminal-background-failed', { userAccessCode });
+    dispatch(authenticateGenerateCriminalBackgroundError(storableError(e)));
+  }
 };
 
-export const getAuthenticateTestResult = (userAccessCode, userId) => (dispatch, getState, sdk) => {
+export const getAuthenticateTestResult = (userAccessCode, userId) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(getAuthenticateTestResultRequest());
 
-  let hasCriminalRecord = null;
+  try {
+    const response = await authenticateTestResult({ userAccessCode });
+    const hasCriminalRecord = response?.data?.backgroundCheck?.hasCriminalRecord;
 
-  return authenticateTestResult({ userAccessCode })
-    .then(response => {
-      hasCriminalRecord = response?.data?.backgroundCheck?.hasCriminalRecord;
-
-      return sdk.currentUser.updateProfile({
-        privateData: {
-          authenticateUserTestResult: response.data,
+    const newDate = new Date();
+    await updateUser({
+      userId,
+      privateData: {
+        authenticateUserTestResult: response.data,
+      },
+      metadata: {
+        backgroundCheckApproved: {
+          status: !hasCriminalRecord ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
+          date: newDate.getTime(),
         },
-      });
-    })
-    .then(() => {
-      const newDate = new Date();
-      return updateUser({
-        userId,
-        metadata: {
-          backgroundCheckApproved: {
-            status: !hasCriminalRecord ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
-            date: newDate.getTime(),
-          },
-        },
-      });
-    })
-    .then(response => {
-      dispatch(getAuthenticateTestResultSuccess(response));
-      if (hasCriminalRecord) {
-        dispatch(authenticate7YearHistory(userAccessCode, userId));
-      }
-      return response;
-    })
-    .then(response => {
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'get-authenticate-test-result-failed', {});
-      dispatch(getAuthenticateTestResultError(storableError(e)));
+      },
     });
+
+    dispatch(fetchCurrentUser());
+    dispatch(getAuthenticateTestResultSuccess(response));
+
+    if (hasCriminalRecord) {
+      dispatch(authenticate7YearHistory(userAccessCode, userId));
+    }
+  } catch (e) {
+    log.error(e, 'get-authenticate-test-result-failed', { userAccessCode });
+    dispatch(getAuthenticateTestResultError(storableError(e)));
+  }
 };
 
-export const authenticate7YearHistory = (userAccessCode, userId) => (dispatch, getState, sdk) => {
+export const authenticate7YearHistory = (userAccessCode, userId) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(authenticate7YearHistoryRequest());
 
-  let result = null;
+  try {
+    const response = await getAuthenticate7YearHistory({ userAccessCode });
+    const result = response.data;
 
-  return getAuthenticate7YearHistory({ userAccessCode })
-    .then(response => {
-      result = response.data;
-      return sdk.currentUser.updateProfile({
-        privateData: {
-          authenticate7YearHistory: result,
-        },
-      });
-    })
-    .then(() => {
-      const newDate = new Date();
-      const { Candidate } = result.result.Candidates;
+    const newDate = new Date();
+    const { Candidate } = result.result?.Candidates;
 
-      return updateUser({
-        userId,
-        metadata: {
-          backgroundCheckApproved: {
-            status: !Candidate ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
-            date: newDate.getTime(),
-          },
+    await updateUser({
+      userId,
+      privateData: {
+        authenticate7YearHistory: result,
+      },
+      metadata: {
+        backgroundCheckApproved: {
+          status: !Candidate ? BACKGROUND_CHECK_APPROVED : BACKGROUND_CHECK_PENDING,
+          date: newDate.getTime(),
         },
-      });
-    })
-    .then(response => {
-      sendgridStandardEmail({
-        fromEmail: 'admin-notification@carevine.us',
-        receiverEmail: 'peyton.hobson@carevine.us',
-        subject: 'Criminal Background Check Review',
-        html: `<span>User (${userId}) has a background check that needs reviewed.</span><br><br>
+      },
+    });
+
+    dispatch(fetchCurrentUser());
+    dispatch(authenticate7YearHistorySuccess(response));
+
+    await sendgridStandardEmail({
+      fromEmail: 'admin-notification@carevine.us',
+      receiverEmail: 'peyton.hobson@carevine.us',
+      subject: 'Criminal Background Check Review',
+      html: `<span>User (${userId}) has a background check that needs reviewed.</span><br><br>
         <span>Result: ${JSON.stringify(result)}</span></br>`,
-      });
-      dispatch(fetchCurrentUser());
-      dispatch(authenticate7YearHistorySuccess(response));
-      return response;
-    })
-    .then(response => {
-      dispatch(fetchCurrentUser());
-      return response;
-    })
-    .catch(e => {
-      log.error(e, 'authenticate-7-year-history-failed', {});
-      dispatch(authenticate7YearHistoryError(storableError(e)));
     });
-};
-
-export const applyBCPromo = (promoCode, userId) => (dispatch, getState, sdk) => {
-  dispatch(applyBCPromoRequest());
-
-  return applyPromo({ promoCode })
-    .then(response => {
-      const result = {
-        promoCode,
-        discount: response?.data?.discount,
-        date: new Date().getTime(),
-      };
-
-      return updateUser({
-        userId,
-        metadata: {
-          backgroundCheckPromo: result,
-        },
-      }).then(() => result);
-    })
-    .then(result => {
-      dispatch(fetchCurrentUser());
-      dispatch(applyBCPromoSuccess(result));
-      return result;
-    })
-    .catch(e => {
-      log.error(e, 'apply-bc-promo-failed', {});
-      dispatch(applyBCPromoError(storableError(e)));
-    });
+  } catch (e) {
+    log.error(e, 'authenticate-7-year-history-failed', { userAccessCode });
+    dispatch(authenticate7YearHistoryError(storableError(e)));
+  }
 };
