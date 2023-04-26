@@ -22,13 +22,13 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
   // And return object containing preloaded state and translations
   // This order supports other asset (in the future) that should be fetched before data calls.
   return store
-    .dispatch(fetchAppAssets(config.appCdnAssets))
+    .dispatch()
     .then(fetchedAssets => {
       translations = fetchedAssets?.translations?.data || {};
       return Promise.all(dataLoadingCalls);
     })
     .then(() => {
-      return { preloadedState: store.getState(), translations };
+      return { preloadedState: store.getState(), translations: {} };
     })
     .catch(e => {
       log.error(e, 'server-side-data-load-failed');
