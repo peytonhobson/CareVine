@@ -609,6 +609,7 @@ const EditListingBackgroundCheckPanel = props => {
             currentUserId={currentUser.id?.uuid}
             onGetIdentityProofQuiz={onGetIdentityProofQuiz}
             getIdentityProofQuizInProgress={getIdentityProofQuizInProgress}
+            onManageDisableScrolling={onManageDisableScrolling}
           />
         </div>
       );

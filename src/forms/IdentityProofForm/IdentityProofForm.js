@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { arrayOf, bool, func, shape, string } from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { bool, func, shape, string } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { minLength, maxLength, required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldTextInput, FieldSelect, IconSpinner } from '../../components';
+import { required, composeValidators } from '../../util/validators';
+import { Form, Button, FieldSelect, IconSpinner, Modal } from '../../components';
 
 import css from './IdentityProofForm.module.css';
 
@@ -36,9 +36,11 @@ const IdentityProofFormComponent = props => (
         onGetIdentityProofQuiz,
         getIdentityProofQuizInProgress,
         form,
+        onManageDisableScrolling,
       } = formRenderProps;
 
-      const [disabledOptions, setDisabledOptions] = React.useState(Array(5).fill(false));
+      const [disabledOptions, setDisabledOptions] = useState(Array(5).fill(false));
+      const [isQuizNoticeModalOpen, setIsQuizNoticeModalOpen] = useState(false);
 
       const {
         getIdentityProofQuizError,
@@ -61,6 +63,7 @@ const IdentityProofFormComponent = props => (
       useEffect(() => {
         if (authenticateUserAccessCode && !identityProofQuiz) {
           onGetIdentityProofQuiz(authenticateUserAccessCode);
+          setIsQuizNoticeModalOpen(true);
         }
       }, [authenticateUserAccessCode, identityProofQuiz]);
 
@@ -84,107 +87,132 @@ const IdentityProofFormComponent = props => (
       };
 
       return (
-        <Form className={classes} onSubmit={onSubmit}>
-          {!getIdentityProofQuizInProgress ? (
-            questions?.map((question, index) => {
-              const options = question.Options.map(option => {
-                return {
-                  key: option.id,
-                  label: option.option,
-                };
-              });
-              return (
-                <FieldSelect
-                  className={css.question}
-                  key={index}
-                  id={`question${index}`}
-                  name={`question${index}`}
-                  label={question.Question.trim()}
-                  options={options}
-                  required
-                  validate={composeValidators(required('Please select an option'))}
-                  onChange={() =>
-                    setDisabledOptions(prevOptions =>
-                      prevOptions.map((option, i) => (i === index ? true : option))
-                    )
-                  }
-                  selectClassName={css.select}
-                >
-                  <option value={null} disabled={disabledOptions[index]}>
-                    Select an option
-                  </option>
-                  {options.map(option => {
-                    return (
-                      <option key={option.key} value={option.label}>
-                        {option.label}
-                      </option>
-                    );
-                  })}
-                </FieldSelect>
-              );
-            })
-          ) : (
-            <div className={css.spinnerContainer}>
-              <IconSpinner className={css.spinner} />
-            </div>
-          )}
-          {getIdentityProofQuizError ? (
-            <p className={css.error}>
-              Failed to fetch quiz. Please try refreshing the page to try again.
-            </p>
-          ) : null}
-          {expiredSessionError ? (
-            <p className={css.error}>
-              The last quiz has expired. Please try attempting the quiz again.
-            </p>
-          ) : null}
-          {verifyIdentityProofQuizError && !expiredSessionError ? (
-            <p className={css.error}>
-              <FormattedMessage id="IdentityProofForm.verifyIdentityProofQuizFailed" />
-            </p>
-          ) : null}
-          {authenticateGenerateCriminalBackgroundError ? (
-            <p className={css.error}>
-              <FormattedMessage id="IdentityProofForm.generateCriminalBackgroundFailed" />
-            </p>
-          ) : null}
-          {getAuthenticateTestResultError ? (
-            <p className={css.error}>
-              <FormattedMessage id="IdentityProofForm.getTestResultFailed" />
-            </p>
-          ) : null}
-          {authenticate7YearHistoryError ? (
-            <p className={css.error}>
-              <FormattedMessage id="IdentityProofForm.7YearHistoryFailed" />
-            </p>
-          ) : null}
-          {verifyIdentityProofQuizFailure ? (
-            <>
+        <>
+          <Form className={classes} onSubmit={onSubmit}>
+            {!getIdentityProofQuizInProgress ? (
+              questions?.map((question, index) => {
+                const options = question.Options.map(option => {
+                  return {
+                    key: option.id,
+                    label: option.option,
+                  };
+                });
+                return (
+                  <FieldSelect
+                    className={css.question}
+                    key={index}
+                    id={`question${index}`}
+                    name={`question${index}`}
+                    label={question.Question.trim()}
+                    options={options}
+                    required
+                    validate={composeValidators(required('Please select an option'))}
+                    onChange={() =>
+                      setDisabledOptions(prevOptions =>
+                        prevOptions.map((option, i) => (i === index ? true : option))
+                      )
+                    }
+                    selectClassName={css.select}
+                  >
+                    <option value={null} disabled={disabledOptions[index]}>
+                      Select an option
+                    </option>
+                    {options.map(option => {
+                      return (
+                        <option key={option.key} value={option.label}>
+                          {option.label}
+                        </option>
+                      );
+                    })}
+                  </FieldSelect>
+                );
+              })
+            ) : (
+              <div className={css.spinnerContainer}>
+                <IconSpinner className={css.spinner} />
+              </div>
+            )}
+            {getIdentityProofQuizError ? (
               <p className={css.error}>
-                <FormattedMessage id="IdentityProofForm.quizFailureMessage" />
+                Failed to fetch quiz. Please try refreshing the page to try again.
               </p>
+            ) : null}
+            {expiredSessionError ? (
               <p className={css.error}>
-                <FormattedMessage
-                  id="IdentityProofForm.attemptsRemainingMessage"
-                  values={{
-                    attemptsRemaining: !!identityProofQuizAttempts
-                      ? 3 - identityProofQuizAttempts
-                      : '',
-                  }}
-                />
+                The last quiz has expired. Please try attempting the quiz again.
               </p>
-            </>
-          ) : null}
+            ) : null}
+            {verifyIdentityProofQuizError && !expiredSessionError ? (
+              <p className={css.error}>
+                <FormattedMessage id="IdentityProofForm.verifyIdentityProofQuizFailed" />
+              </p>
+            ) : null}
+            {authenticateGenerateCriminalBackgroundError ? (
+              <p className={css.error}>
+                <FormattedMessage id="IdentityProofForm.generateCriminalBackgroundFailed" />
+              </p>
+            ) : null}
+            {getAuthenticateTestResultError ? (
+              <p className={css.error}>
+                <FormattedMessage id="IdentityProofForm.getTestResultFailed" />
+              </p>
+            ) : null}
+            {authenticate7YearHistoryError ? (
+              <p className={css.error}>
+                <FormattedMessage id="IdentityProofForm.7YearHistoryFailed" />
+              </p>
+            ) : null}
+            {verifyIdentityProofQuizFailure ? (
+              <>
+                <p className={css.error}>
+                  <FormattedMessage id="IdentityProofForm.quizFailureMessage" />
+                </p>
+                <p className={css.error}>
+                  <FormattedMessage
+                    id="IdentityProofForm.attemptsRemainingMessage"
+                    values={{
+                      attemptsRemaining: !!identityProofQuizAttempts
+                        ? 3 - identityProofQuizAttempts
+                        : '',
+                    }}
+                  />
+                </p>
+              </>
+            ) : null}
 
-          <Button
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
+            <Button
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={submitDisabled}
+            >
+              {saveActionMsg}
+            </Button>
+          </Form>
+          <Modal
+            id="QuizNotice"
+            isOpen={isQuizNoticeModalOpen}
+            onClose={() => setIsQuizNoticeModalOpen(false)}
+            onManageDisableScrolling={onManageDisableScrolling}
+            usePortal
           >
-            {saveActionMsg}
-          </Button>
-        </Form>
+            <p className={css.modalTitle}>Please Note</p>
+            <p className={css.modalMessage}>
+              To verify your identity, you will be asked to complete a quiz. This quiz is generated
+              by a third party and is sometimes inaccurate, so don't worry if it takes you a few
+              tries.
+            </p>
+            <p className={css.modalMessage}>
+              Each quiz session expires after 15 minutes. Please complete the quiz as soon as
+              possible, or you will lose an attempt.
+            </p>
+            <p className={css.modalMessage}>
+              If you fail the quiz three times, please contact us at{' '}
+              <a href="mailto:support@carevine.us">support@carevine.us</a> and we will help you
+              finish the process.
+            </p>
+          </Modal>
+        </>
       );
     }}
   />
