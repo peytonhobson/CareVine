@@ -234,9 +234,7 @@ const EditListingBackgroundCheckPanel = props => {
     } else if (authenticateConsent) {
       setStage(IDENTITY_PROOF_QUIZ);
     } else if (authenticateUserAccessCode) {
-      if (!getIdentityProofQuizInProgress) {
-        setStage(SUBMIT_CONSENT);
-      }
+      setStage(SUBMIT_CONSENT);
     } else if (SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)) {
       setStage(CREATE_USER);
     } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
@@ -289,14 +287,16 @@ const EditListingBackgroundCheckPanel = props => {
     }
   }, createdPaymentMethod);
 
+  // If current quiz session has expired, fetch a new quiz
   useEffect(() => {
     if (
-      verifyIdentityProofQuizError &&
-      verifyIdentityProofQuizError.statusText.includes('Expired')
+      verifyIdentityProofQuizError?.data?.errorMessage?.includes('Expired') &&
+      authenticateUserAccessCode &&
+      currentUser.id.uuid
     ) {
       onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser.id.uuid);
     }
-  }, [verifyIdentityProofQuizError]);
+  }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser.id.uuid]);
 
   const handleSubmit = values => {
     const {
@@ -388,23 +388,17 @@ const EditListingBackgroundCheckPanel = props => {
         answers,
         currentAttempts
       ).then(() => {
-        form.reset();
+        form.restart();
       });
     } else if (!authenticateCriminalBackgroundGenerated) {
-      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
-        form.reset();
-      });
+      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (!authenticateUserTestResult) {
-      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
-        form.reset();
-      });
+      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid);
     } else if (
       !authenticate7YearHistory &&
       authenticateUserTestResult?.backgroundCheck?.hasCriminalRecord
     ) {
-      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid).then(() => {
-        form.reset();
-      });
+      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid);
     }
   };
 
@@ -421,6 +415,7 @@ const EditListingBackgroundCheckPanel = props => {
     });
   };
 
+  // This makes 0 sense
   const memoizedHandlePayForBC = useCallback(handlePayForBC, [
     setStage,
     setBackgroundCheckType,
