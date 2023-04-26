@@ -427,10 +427,10 @@ export const identityProofQuiz = userAccessCode => async (dispatch, getState, sd
   try {
     const response = await getIdentityProofQuiz({ userAccessCode });
 
-    dispatch(getIdentityProofQuizSuccess(response.data));
+    dispatch(getIdentityProofQuizSuccess({ ...response.data, timeGenerated: Date.now() }));
 
     await sdk.currentUser.updateProfile({
-      privateData: { identityProofQuiz: response.data },
+      privateData: { identityProofQuiz: { ...response.data, timeGenerated: Date.now() } },
     });
 
     dispatch(fetchCurrentUser());
