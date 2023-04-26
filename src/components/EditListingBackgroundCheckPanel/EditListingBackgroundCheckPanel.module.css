@@ -436,3 +436,12 @@
     margin-top: 2rem;
   }
 }
+
+.quizTimer {
+  border: 1px solid;
+  border-radius: 4px;
+  margin-left: 1rem;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 8rem;
+}
