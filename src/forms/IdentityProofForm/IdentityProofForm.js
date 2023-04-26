@@ -49,9 +49,7 @@ const IdentityProofFormComponent = props => (
         verifyIdentityProofQuizFailure,
       } = fetchErrors || {};
 
-      const expiredSessionError = verifyIdentityProofQuizError?.data?.errorMessage
-        ?.toLowerCase()
-        .includes('expired');
+      const expiredSessionError = verifyIdentityProofQuizError?.status === 400;
 
       const questions = identityProofQuiz?.data.IDMKBAResponse.KBAQuestion;
 
