@@ -18,15 +18,6 @@ const Accordion = props => {
     onChange,
   } = props;
 
-  const [isExpanded, setExpanded] = useState(false);
-
-  const handleChange = () => {
-    if (onChange) {
-      onChange(!isExpanded);
-    }
-    setExpanded(oldIsExpanded => !oldIsExpanded);
-  };
-
   const Accordion = styled(props => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
   ))(({ theme }) => ({
@@ -45,7 +36,7 @@ const Accordion = props => {
   }));
 
   return (
-    <Accordion className={className} expanded={isExpanded} onChange={handleChange}>
+    <Accordion className={className}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>{label}</AccordionSummary>
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
