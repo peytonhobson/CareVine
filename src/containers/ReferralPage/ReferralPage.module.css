@@ -1,10 +1,118 @@
 .mainWrapper {
+  background-color: #f5f5f5;
+  min-height: calc(100vh - var(--topbarHeightDesktop));
+  padding-bottom: 2rem;
+}
+
+.content {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   height: 100%;
+  width: 45rem;
+  margin-inline: auto;
+}
+
+.sendCard {
+  display: grid;
+  grid-auto-flow: column;
   width: 100%;
-  background-color: #f5f5f5;
-  padding: 0 20%;
+  margin-block: 2rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px;
+}
+
+.shareCareVineContainer {
+  padding-right: 4rem;
+}
+
+.shareCareVine {
+  text-align: left;
+  width: 100%;
+  margin-block: 0;
+}
+
+.smallLineHeight {
+  line-height: 1.5rem;
+}
+
+.textBold {
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.discountButton {
+  width: auto;
+  padding: 0 3rem;
+}
+
+.discountInstructions {
+  margin-bottom: 0;
+}
+
+.iconContainer {
+  height: 100%;
+  columns: 1/1;
+  padding-right: 1rem;
+}
+
+.giftGif {
+  max-height: 10rem;
+  max-width: 10rem;
+  margin: auto;
+}
+
+.accordionLabel {
+  display: flex;
+}
+
+.myDiscounts {
+  margin: 0 1rem;
+}
+
+.discountsText {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+  line-height: 1.5rem;
+}
+
+.discountAccordionContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2rem;
+}
+
+.discountDisplayContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: rgba(107, 160, 182, 0.5);
+  padding: 1rem;
+}
+
+.discountsReceived {
+  font-size: 3rem;
+  font-weight: var(--fontWeightSemiBold);
+  text-align: center;
+  padding: 1rem 0;
+  color: var(--matterColorLight);
+}
+
+.discountsPending {
+  composes: discountsReceived;
+
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.tooltipContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.sendInvitesButton {
+  margin-top: 2rem;
 }
