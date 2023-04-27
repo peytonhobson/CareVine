@@ -103,3 +103,37 @@
     line-height: 1.25rem;
   }
 }
+
+.quizTitle {
+  width: 100%;
+
+  @media (--viewportLarge) {
+    margin-bottom: 0;
+    padding: 1px 0 7px 0;
+  }
+}
+
+.identityText {
+  color: var(--marketplaceColor);
+}
+
+.quizTimer {
+  border: 1px solid;
+  border-radius: 4px;
+  margin-left: 1rem;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 8rem;
+}
+
+.attemptsContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.attemptsHeader {
+  display: inline;
+  color: var(--marketplaceColor);
+  margin-right: 2rem;
+}
