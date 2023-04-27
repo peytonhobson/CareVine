@@ -17,7 +17,6 @@ import {
   Avatar,
   Button,
   InfoTooltip,
-  InlineTextButton,
   Modal,
   ViewCalendar,
   AvailabilityPreview,
