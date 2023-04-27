@@ -59,27 +59,6 @@
   }
 }
 
-.quizTitle {
-  width: 100%;
-
-  @media (--viewportLarge) {
-    margin-bottom: 0;
-    padding: 1px 0 7px 0;
-  }
-}
-
-.attemptsContainer {
-  display: flex;
-  width: 100%;
-  margin-top: 2rem;
-}
-
-.attemptsHeader {
-  display: inline;
-  color: var(--marketplaceColor);
-  margin-right: 2rem;
-}
-
 .bioText {
   color: var(--marketplaceColor);
 }
@@ -373,10 +352,6 @@
   }
 }
 
-.identityText {
-  color: var(--marketplaceColor);
-}
-
 .basicCard {
   margin-block: 2rem;
 
@@ -435,13 +410,4 @@
     margin-inline: 2rem;
     margin-top: 2rem;
   }
-}
-
-.quizTimer {
-  border: 1px solid;
-  border-radius: 4px;
-  margin-left: 1rem;
-  display: inline-flex;
-  justify-content: center;
-  min-width: 8rem;
 }

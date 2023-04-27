@@ -185,6 +185,7 @@ export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export { default as AvailabilityPreview } from './AvailabilityPreview/AvailabilityPreview';
 export { default as WeekPanel } from './WeekPanel/WeekPanel';
+export { default as QuizTimer} from './QuizTimer/QuizTimer';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

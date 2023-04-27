@@ -12,6 +12,7 @@ const QuizTimer = props => {
     identityProofQuizAttempts,
     onAddQuizAttempt,
     currentUser,
+    form,
   } = props;
 
   const [timer, setTimer] = useState('00:00');
@@ -38,7 +39,9 @@ const QuizTimer = props => {
         (!identityProofQuizAttempts || identityProofQuizAttempts < 2) &&
         identityProofQuiz?.attemptNumber < 3
       ) {
-        onGetIdentityProofQuiz(authenticateUserAccessCode);
+        onGetIdentityProofQuiz(authenticateUserAccessCode).then(() => {
+          form.restart();
+        });
       }
     }
   }, [identityProofQuiz?.timeGenerated, timer]);

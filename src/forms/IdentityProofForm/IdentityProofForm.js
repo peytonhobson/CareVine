@@ -6,7 +6,7 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { required, composeValidators } from '../../util/validators';
-import { Form, Button, FieldSelect, IconSpinner, Modal } from '../../components';
+import { Form, Button, FieldSelect, IconSpinner, Modal, QuizTimer } from '../../components';
 
 import css from './IdentityProofForm.module.css';
 
@@ -30,13 +30,13 @@ const IdentityProofFormComponent = props => (
         onVerify,
         inProgress,
         identityProofQuizAttempts,
-        identityProofQuizVerification,
         authenticateUserAccessCode,
-        currentUserId,
         onGetIdentityProofQuiz,
         getIdentityProofQuizInProgress,
         form,
         onManageDisableScrolling,
+        onAddQuizAttempt,
+        currentUser,
       } = formRenderProps;
 
       const [disabledOptions, setDisabledOptions] = useState(Array(5).fill(false));
@@ -88,6 +88,27 @@ const IdentityProofFormComponent = props => (
 
       return (
         <>
+          <h1 className={css.quizTitle}>
+            Verify Your <span className={css.identityText}>Identity</span>
+            <QuizTimer
+              identityProofQuiz={identityProofQuiz}
+              className={css.quizTimer}
+              onGetIdentityProofQuiz={onGetIdentityProofQuiz}
+              authenticateUserAccessCode={authenticateUserAccessCode}
+              identityProofQuizAttempts={identityProofQuizAttempts}
+              onAddQuizAttempt={onAddQuizAttempt}
+              currentUser={currentUser}
+              form={form}
+            />
+          </h1>
+          <div className={css.attemptsContainer}>
+            <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>
+            <h3 className={css.attemptsHeader}>
+              {' '}
+              Attempts Remaining:{' '}
+              {!!identityProofQuizAttempts ? MAX_QUIZ_ATTEMPTS - identityProofQuizAttempts : 3}
+            </h3>
+          </div>
           <Form className={classes} onSubmit={onSubmit}>
             {!getIdentityProofQuizInProgress ? (
               questions?.map((question, index) => {

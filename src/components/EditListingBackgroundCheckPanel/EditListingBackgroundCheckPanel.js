@@ -41,7 +41,6 @@ import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethod
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
 import parser from 'parse-address';
-import QuizTimer from './QuizTimer';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
 
@@ -588,26 +587,6 @@ const EditListingBackgroundCheckPanel = props => {
         getAuthenticateTestResultInProgress;
       content = (
         <div className={css.quizContent}>
-          <h1 className={css.quizTitle}>
-            Verify Your <span className={css.identityText}>Identity</span>
-            <QuizTimer
-              identityProofQuiz={identityProofQuiz}
-              className={css.quizTimer}
-              onGetIdentityProofQuiz={onGetIdentityProofQuiz}
-              authenticateUserAccessCode={authenticateUserAccessCode}
-              identityProofQuizAttempts={identityProofQuizAttempts}
-              onAddQuizAttempt={onAddQuizAttempt}
-              currentUser={currentUser}
-            />
-          </h1>
-          <div className={css.attemptsContainer}>
-            <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>
-            <h3 className={css.attemptsHeader}>
-              {' '}
-              Attempts Remaining:{' '}
-              {!!identityProofQuizAttempts ? MAX_QUIZ_ATTEMPTS - identityProofQuizAttempts : 3}
-            </h3>
-          </div>
           <IdentityProofForm
             saveActionMsg="Submit"
             onSubmit={() => {}}
@@ -622,6 +601,8 @@ const EditListingBackgroundCheckPanel = props => {
             onGetIdentityProofQuiz={onGetIdentityProofQuiz}
             getIdentityProofQuizInProgress={getIdentityProofQuizInProgress}
             onManageDisableScrolling={onManageDisableScrolling}
+            onAddQuizAttempt={onAddQuizAttempt}
+            currentUser={currentUser}
           />
         </div>
       );
