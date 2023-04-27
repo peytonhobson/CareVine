@@ -18,7 +18,7 @@
   display: grid;
   grid-auto-flow: column;
   width: 100%;
-  margin-block: 2rem;
+  margin-top: 2rem;
   padding: 1.5rem;
   background-color: #fff;
   border-radius: 0.5rem;
@@ -121,4 +121,55 @@
 .whatIsThisButton {
   font-size: 1rem;
   padding-left: 0.25rem;
+}
+
+.noDiscounts {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  & > p {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.sentDiscountAccordionContainer {
+  display: block;
+  padding: 0 1rem;
+}
+
+.sentDiscount {
+  width: 100%;
+  border-bottom: 1px solid var(--matterColorNegative);
+  padding: 0.25rem 0;
+
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.sentDiscount:last-of-type {
+  border-bottom: none;
+}
+
+.discountEmail {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.discountClaimed {
+  color: var(--marketplaceColor);
+  margin-block: 0.5rem;
+}
+
+.discountReminderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.remind {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
 }

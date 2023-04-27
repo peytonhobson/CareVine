@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Page,
@@ -13,32 +13,67 @@ import {
   Footer,
   InlineTextButton,
   InfoTooltip,
+  IconEnquiry,
 } from '../../components';
 import InfoIcon from '@mui/icons-material/Info';
 import { TopbarContainer } from '..';
 import { injectIntl, intlShape } from '../../util/reactIntl';
-import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { ensureCurrentUser } from '../../util/data';
+import SentDiscount from './SentDiscount';
+import { generateReferralCode } from './ReferralPage.duck';
 
 import { compose } from 'redux';
 
 import css from './ReferralPage.module.css';
-import { Icon } from '@mui/material';
 
 const ReferralPageComponent = props => {
-  const { intl, scrollingDisabled } = props;
+  const {
+    intl,
+    scrollingDisabled,
+    currentUser,
+    onGenerateReferralCode,
+    generateReferralCodeInProgress,
+    generateReferralCodeError,
+  } = props;
+
+  const [isSendDiscountModalOpen, setIsSendDiscountModalOpen] = useState(false);
+
+  const ensuredCurrentUser = ensureCurrentUser(currentUser);
+  const referralCode = ensuredCurrentUser.attributes.profile.metadata.referralCode;
+
+  useEffect(() => {
+    if (!referralCode && ensuredCurrentUser.id?.uuid) {
+      onGenerateReferralCode();
+    }
+  }, [ensuredCurrentUser.id?.uuid]);
 
   const schemaTitle = intl.formatMessage({ id: 'ReferralPage.schemaTitle' });
 
-  const [discountExpanded, setDiscountExpanded] = useState(false);
-  const [discountSentExpanded, setDiscountSentExpanded] = useState(false);
+  const sentDiscounts = [
+    {
+      id: 'discount1',
+      email: 'peyton.hobson1@gmail.com',
+      claimed: false,
+      lastReminder: new Date(),
+    },
+    {
+      id: 'discount2',
+      email: 'clairkaji@gmail.com',
+      claimed: true,
+      lastReminder: new Date() - 359200000,
+    },
+  ];
+
+  const discountsClaimed = sentDiscounts.filter(discount => discount.claimed);
 
   const accordionStyles = {
     width: '100%',
     borderRadius: '0.5rem',
     boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px',
-    marginBottom: '2rem',
+    marginTop: '2rem',
     '&.MuiAccordion-root:before': {
       display: 'none',
     },
@@ -48,7 +83,6 @@ const ReferralPageComponent = props => {
     '&.MuiAccordionSummary-root': {
       padding: '1.5rem',
       '&:hover': {
-        backgroundColor: !discountExpanded && 'rgba(107, 160, 182, 0.3)',
         cursor: 'pointer',
       },
     },
@@ -58,14 +92,13 @@ const ReferralPageComponent = props => {
     '&.MuiAccordionSummary-root': {
       padding: '1.5rem',
       '&:hover': {
-        backgroundColor: !discountSentExpanded && 'rgba(107, 160, 182, 0.3)',
         cursor: 'pointer',
       },
     },
   };
 
   const detailStyles = {
-    padding: '1.5rem',
+    padding: '0 1.5rem 1.5rem 1.5rem',
   };
 
   const accordionDiscountLabel = (
@@ -75,7 +108,8 @@ const ReferralPageComponent = props => {
       <h4 className={css.myDiscounts}>My Discounts</h4>
       {/* Make discount number dynamic */}
       <p className={css.discountsText}>
-        0 discounts received - Keep an eye on your email for discounts
+        {discountsClaimed.length} {discountsClaimed.length === 1 ? 'discount' : 'discounts'}{' '}
+        received{discountsClaimed.length === 0 && '- Keep an eye on your email for discounts'}
       </p>
     </div>
   );
@@ -84,8 +118,9 @@ const ReferralPageComponent = props => {
     <div className={css.accordionLabel}>
       {/* TODO: Swap out icon */}
       <IconCar />
-      {/* Make discount number dynamic */}
-      <h4 className={css.myDiscounts}>2 Discounts sent by e-mail</h4>
+      <h4 className={css.myDiscounts}>
+        {sentDiscounts ? sentDiscounts.length : 0} Discounts sent by e-mail
+      </h4>
     </div>
   );
 
@@ -115,7 +150,14 @@ const ReferralPageComponent = props => {
                   Give friends 50% off on their first month of CareVine Gold and you'll also receive
                   a month 50% off when they use your code.
                 </p>
-                <GradientButton className={css.discountButton}>Send Discount</GradientButton>
+                <GradientButton
+                  className={css.discountButton}
+                  disabled={!referralCode}
+                  inProgress={generateReferralCodeInProgress}
+                  onClick={() => setIsSendDiscountModalOpen(true)}
+                >
+                  Send Discount
+                </GradientButton>
               </div>
               <img
                 alt="Gift Within a Gift Gifs, 3d Video, Happy Birthday Candles, Gif Gifts, Image Gifts, Diamond Gift, Christmas Gif, Birthday Gif, Moving Image"
@@ -132,7 +174,6 @@ const ReferralPageComponent = props => {
               summaryStyles={summaryDiscountStyles}
               detailStyles={detailStyles}
               label={accordionDiscountLabel}
-              onChange={expanded => setDiscountExpanded(expanded)}
             >
               <div className={css.discountAccordionContainer}>
                 <div>
@@ -191,14 +232,35 @@ const ReferralPageComponent = props => {
               summaryStyles={summaryDiscountSentStyles}
               detailStyles={detailStyles}
               label={accordionDiscountsSentLabel}
-              onChange={expanded => setDiscountSentExpanded(expanded)}
-            ></Accordion>
+            >
+              {sentDiscounts.length > 0 ? (
+                <div className={css.sentDiscountAccordionContainer}>
+                  {sentDiscounts.map(discount => (
+                    <SentDiscount key={discount.id} discount={discount} />
+                  ))}
+                </div>
+              ) : (
+                <div className={css.noDiscounts}>
+                  <IconEnquiry />
+                  <p className={css.noDiscountsText}>You haven't sent any discounts yet.</p>
+                </div>
+              )}
+            </Accordion>
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
+      <Modal
+        id="ReferralPage.sendDiscount"
+        isOpen={isSendDiscountModalOpen}
+        onClose={() => setIsSendDiscountModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        containerClassName={css.modalContainer}
+        className={css.modalContent}
+        usePortal
+      ></Modal>
     </Page>
   );
 };
@@ -209,10 +271,14 @@ const mapStateToProps = state => {
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
+    ...state.ReferralPage,
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  onGenerateReferralCode: generateReferralCode,
+  onManageDisableScrolling: manageDisableScrolling,
+};
 
 const ReferralPage = compose(
   connect(mapStateToProps, mapDispatchToProps),
