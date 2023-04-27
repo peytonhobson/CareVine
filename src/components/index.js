@@ -191,6 +191,7 @@ export { default as QuizTimer} from './QuizTimer/QuizTimer';
 // Page sections and modal content wrappers //
 //////////////////////////////////////////////
 
+export { default as Accordion } from './Accordion/Accordion';
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
