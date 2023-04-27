@@ -43,6 +43,7 @@ export {
   PaymentMethodsPage,
   ProfilePage,
   ProfileSettingsPage,
+  ReferralPage,
   SearchPage,
   StripePaymentModal,
   StripePayoutPage,

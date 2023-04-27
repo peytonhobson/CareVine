@@ -43,12 +43,12 @@
   font-weight: var(--fontWeightSemiBold);
 }
 
-.discountButton {
+.referralButton {
   width: auto;
   padding: 0 3rem;
 }
 
-.discountInstructions {
+.referralInstructions {
   margin-bottom: 0;
 }
 
@@ -69,30 +69,30 @@
   padding: 0;
 }
 
-.myDiscounts {
+.myReferrals {
   margin: 0 1rem;
 }
 
-.discountsText {
+.referralsText {
   composes: marketplaceTinyFontStyles from global;
   margin: 0;
   line-height: 1.5rem;
 }
 
-.discountAccordionContainer {
+.referralAccordionContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 2rem;
 }
 
-.discountDisplayContainer {
+.referralDisplayContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background-color: rgba(107, 160, 182, 0.3);
+  background-color: var(--marketplaceColor);
   padding-block: 1rem;
 }
 
-.discountsReceived {
+.referralsReceived {
   font-size: 3rem;
   line-height: 3rem;
   font-weight: var(--fontWeightSemiBold);
@@ -100,8 +100,8 @@
   color: var(--matterColorLight);
 }
 
-.discountsPending {
-  composes: discountsReceived;
+.referralsPending {
+  composes: referralsReceived;
 
   border-left: 1px solid var(--matterColorNegative);
 }
@@ -123,7 +123,7 @@
   padding-left: 0.25rem;
 }
 
-.noDiscounts {
+.noReferrals {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -134,12 +134,12 @@
   }
 }
 
-.sentDiscountAccordionContainer {
+.sentReferralAccordionContainer {
   display: block;
   padding: 0 1rem;
 }
 
-.sentDiscount {
+.sentReferral {
   width: 100%;
   border-bottom: 1px solid var(--matterColorNegative);
   padding: 0.25rem 0;
@@ -148,22 +148,27 @@
   grid-auto-flow: column;
 }
 
-.sentDiscount:last-of-type {
+.sentReferral:last-of-type {
   border-bottom: none;
 }
 
-.discountEmail {
+.referralEmail {
   margin: 0;
   font-size: 0.75rem;
   font-weight: var(--fontWeightSemiBold);
 }
 
-.discountClaimed {
+.referralClaimed {
+  color: var(--successColor);
+  margin-block: 0.5rem;
+}
+
+.referralUnclaimed {
   color: var(--marketplaceColor);
   margin-block: 0.5rem;
 }
 
-.discountReminderContainer {
+.referralReminderContainer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -172,4 +177,16 @@
 .remind {
   composes: marketplaceTinyFontStyles from global;
   margin: 0;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  text-align: center;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
 }

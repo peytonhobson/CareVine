@@ -284,3 +284,7 @@ export const updateUserNotifications = body => {
 export const updateTransactionMetadata = body => {
   return post('/api/update-transaction-metadata', body);
 };
+
+export const sendgridReferralEmail = body => {
+  return post('/api/sendgrid-referral-email', body);
+};

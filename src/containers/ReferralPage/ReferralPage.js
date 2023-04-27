@@ -14,6 +14,8 @@ import {
   InlineTextButton,
   InfoTooltip,
   IconEnquiry,
+  Modal,
+  NamedRedirect,
 } from '../../components';
 import InfoIcon from '@mui/icons-material/Info';
 import { TopbarContainer } from '..';
@@ -22,8 +24,10 @@ import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { ensureCurrentUser } from '../../util/data';
-import SentDiscount from './SentDiscount';
-import { generateReferralCode } from './ReferralPage.duck';
+import SentReferral from './SentReferral';
+import { generateReferralCode, sendReferral } from './ReferralPage.duck';
+import { CAREGIVER } from '../../util/constants';
+import { SendReferralForm } from '../../forms';
 
 import { compose } from 'redux';
 
@@ -37,12 +41,21 @@ const ReferralPageComponent = props => {
     onGenerateReferralCode,
     generateReferralCodeInProgress,
     generateReferralCodeError,
+    sendReferralInProgress,
+    sendReferralError,
+    onManageDisableScrolling,
+    onSendReferral,
+    referralSent,
   } = props;
 
-  const [isSendDiscountModalOpen, setIsSendDiscountModalOpen] = useState(false);
+  const [isSendReferralModalOpen, setIsSendReferralModalOpen] = useState(false);
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
-  const referralCode = ensuredCurrentUser.attributes.profile.metadata.referralCode;
+  const { referralCode, userType, referrals = [] } = ensuredCurrentUser.attributes.profile.metadata;
+
+  if (ensuredCurrentUser.id?.uuid && userType !== CAREGIVER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
 
   useEffect(() => {
     if (!referralCode && ensuredCurrentUser.id?.uuid) {
@@ -52,22 +65,7 @@ const ReferralPageComponent = props => {
 
   const schemaTitle = intl.formatMessage({ id: 'ReferralPage.schemaTitle' });
 
-  const sentDiscounts = [
-    {
-      id: 'discount1',
-      email: 'peyton.hobson1@gmail.com',
-      claimed: false,
-      lastReminder: new Date(),
-    },
-    {
-      id: 'discount2',
-      email: 'clairkaji@gmail.com',
-      claimed: true,
-      lastReminder: new Date() - 359200000,
-    },
-  ];
-
-  const discountsClaimed = sentDiscounts.filter(discount => discount.claimed);
+  const referralsClaimed = referrals.filter(referral => referral.claimed);
 
   const accordionStyles = {
     width: '100%',
@@ -79,7 +77,7 @@ const ReferralPageComponent = props => {
     },
   };
 
-  const summaryDiscountStyles = {
+  const summaryReferralStyles = {
     '&.MuiAccordionSummary-root': {
       padding: '1.5rem',
       '&:hover': {
@@ -88,7 +86,7 @@ const ReferralPageComponent = props => {
     },
   };
 
-  const summaryDiscountSentStyles = {
+  const summaryReferralSentStyles = {
     '&.MuiAccordionSummary-root': {
       padding: '1.5rem',
       '&:hover': {
@@ -101,25 +99,27 @@ const ReferralPageComponent = props => {
     padding: '0 1.5rem 1.5rem 1.5rem',
   };
 
-  const accordionDiscountLabel = (
+  const accordionReferralLabel = (
     <div className={css.accordionLabel}>
       {/* TODO: Swap out icon */}
       <IconCar />
-      <h4 className={css.myDiscounts}>My Discounts</h4>
-      {/* Make discount number dynamic */}
-      <p className={css.discountsText}>
-        {discountsClaimed.length} {discountsClaimed.length === 1 ? 'discount' : 'discounts'}{' '}
-        received{discountsClaimed.length === 0 && '- Keep an eye on your email for discounts'}
+      <h4 className={css.myReferrals}>My Referrals</h4>
+      {/* Make referral number dynamic */}
+      <p className={css.referralsText}>
+        {referralsClaimed.length} {referralsClaimed.length === 1 ? 'referral' : 'referrals'}{' '}
+        received{' '}
+        {referralsClaimed.length === 0 && '- Keep an eye on your email for claimed referrals'}
       </p>
     </div>
   );
 
-  const accordionDiscountsSentLabel = (
+  const accordionReferralsSentLabel = (
     <div className={css.accordionLabel}>
       {/* TODO: Swap out icon */}
       <IconCar />
-      <h4 className={css.myDiscounts}>
-        {sentDiscounts ? sentDiscounts.length : 0} Discounts sent by e-mail
+      <h4 className={css.myReferrals}>
+        {referrals ? referrals.length : 0} {referrals.length === 1 ? 'referral' : 'referrals'} sent
+        by e-mail
       </h4>
     </div>
   );
@@ -151,12 +151,11 @@ const ReferralPageComponent = props => {
                   a month 50% off when they use your code.
                 </p>
                 <GradientButton
-                  className={css.discountButton}
+                  className={css.referralButton}
                   disabled={!referralCode}
-                  inProgress={generateReferralCodeInProgress}
-                  onClick={() => setIsSendDiscountModalOpen(true)}
+                  onClick={() => setIsSendReferralModalOpen(true)}
                 >
-                  Send Discount
+                  Send Referral
                 </GradientButton>
               </div>
               <img
@@ -171,11 +170,11 @@ const ReferralPageComponent = props => {
 
             <Accordion
               accordionStyles={accordionStyles}
-              summaryStyles={summaryDiscountStyles}
+              summaryStyles={summaryReferralStyles}
               detailStyles={detailStyles}
-              label={accordionDiscountLabel}
+              label={accordionReferralLabel}
             >
-              <div className={css.discountAccordionContainer}>
+              <div className={css.referralAccordionContainer}>
                 <div>
                   <img
                     className={css.giftGif}
@@ -188,18 +187,18 @@ const ReferralPageComponent = props => {
                   <p className={classNames(css.smallLineHeight, css.textBold)}>
                     Remember to keep an eye on your email.
                   </p>
-                  <p className={classNames(css.smallLineHeight, css.discountInstructions)}>
-                    Begin receiving discounted subscription months by sending discounts to other
+                  <p className={classNames(css.smallLineHeight, css.referralInstructions)}>
+                    Begin receiving referraled subscription months by sending referrals to other
                     caregivers.
                   </p>
                 </div>
                 <div style={{ paddingInline: '1rem' }}>
-                  <div className={css.discountDisplayContainer}>
+                  <div className={css.referralDisplayContainer}>
                     {/* TODO: Make numbers dynamic */}
-                    <div className={css.discountsReceived}>
+                    <div className={css.referralsReceived}>
                       0<p style={{ margin: 0 }}>Received</p>
                     </div>
-                    <div className={css.discountsPending}>
+                    <div className={css.referralsPending}>
                       0<p style={{ margin: 0 }}>Pending</p>
                     </div>
                   </div>
@@ -216,8 +215,8 @@ const ReferralPageComponent = props => {
                       }
                       title={
                         <p className={css.smallLineHeight}>
-                          Once other caregivers accept your invitations, your discounts will move
-                          from pending to received. This amount is the total discounts you've
+                          Once other caregivers accept your invitations, your referrals will move
+                          from pending to received. This amount is the total referrals you've
                           received, not your remaining balance.
                         </p>
                       }
@@ -229,20 +228,20 @@ const ReferralPageComponent = props => {
             </Accordion>
             <Accordion
               accordionStyles={accordionStyles}
-              summaryStyles={summaryDiscountSentStyles}
+              summaryStyles={summaryReferralSentStyles}
               detailStyles={detailStyles}
-              label={accordionDiscountsSentLabel}
+              label={accordionReferralsSentLabel}
             >
-              {sentDiscounts.length > 0 ? (
-                <div className={css.sentDiscountAccordionContainer}>
-                  {sentDiscounts.map(discount => (
-                    <SentDiscount key={discount.id} discount={discount} />
+              {referrals.length > 0 ? (
+                <div className={css.sentReferralAccordionContainer}>
+                  {referrals.map(referral => (
+                    <SentReferral key={referral.id} referral={referral} />
                   ))}
                 </div>
               ) : (
-                <div className={css.noDiscounts}>
+                <div className={css.noReferrals}>
                   <IconEnquiry />
-                  <p className={css.noDiscountsText}>You haven't sent any discounts yet.</p>
+                  <p className={css.noReferralsText}>You haven't sent any referrals yet.</p>
                 </div>
               )}
             </Accordion>
@@ -253,14 +252,24 @@ const ReferralPageComponent = props => {
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
       <Modal
-        id="ReferralPage.sendDiscount"
-        isOpen={isSendDiscountModalOpen}
-        onClose={() => setIsSendDiscountModalOpen(false)}
+        id="ReferralPage.sendReferral"
+        isOpen={isSendReferralModalOpen}
+        onClose={() => setIsSendReferralModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         containerClassName={css.modalContainer}
         className={css.modalContent}
         usePortal
-      ></Modal>
+      >
+        <h1 className={css.modalTitle}>Send a Referral</h1>
+        <SendReferralForm
+          intl={intl}
+          onSubmit={values => onSendReferral(values.email)}
+          sendReferralInProgress={sendReferralInProgress}
+          sendReferralError={sendReferralError}
+          referralSent={referralSent}
+          referrals={referrals}
+        />
+      </Modal>
     </Page>
   );
 };
@@ -278,6 +287,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   onGenerateReferralCode: generateReferralCode,
   onManageDisableScrolling: manageDisableScrolling,
+  onSendReferral: sendReferral,
 };
 
 const ReferralPage = compose(

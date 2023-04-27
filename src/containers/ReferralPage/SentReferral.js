@@ -6,8 +6,8 @@ import css from './ReferralPage.module.css';
 
 const MILLISECONDS_THREE_DAYS = 259200000;
 
-const SentDiscount = props => {
-  const { discount } = props;
+const SentReferral = props => {
+  const { referral } = props;
 
   // TODO: Implement function
   const handleSendReminder = () => {
@@ -15,7 +15,7 @@ const SentDiscount = props => {
   };
 
   const canRemind =
-    Date.now() - discount.lastReminder > MILLISECONDS_THREE_DAYS && !discount.claimed;
+    Date.now() - referral.lastReminder > MILLISECONDS_THREE_DAYS && !referral.claimed;
 
   const reminderTooSoon = (
     <p>It's a little too soon to send a reminder. Check back in a few days!</p>
@@ -42,13 +42,17 @@ const SentDiscount = props => {
   };
 
   return (
-    <div className={css.sentDiscount}>
+    <div className={css.sentReferral}>
       <div>
-        <p className={css.discountEmail}>{discount.email}</p>
-        <p className={css.discountClaimed}>{discount.claimed ? 'Claimed' : 'Unclaimed'}</p>
+        <p className={css.referralEmail}>{referral.email}</p>
+        {referral.claimed ? (
+          <p className={css.referralClaimed}>Claimed</p>
+        ) : (
+          <p className={css.referralUnclaimed}>Unclaimed</p>
+        )}
       </div>
-      <div className={css.discountReminderContainer}>
-        {!discount.claimed && (
+      <div className={css.referralReminderContainer}>
+        {!referral.claimed && (
           <InfoTooltip
             icon={remind}
             onClick={canRemind ? handleSendReminder : null}
@@ -61,4 +65,4 @@ const SentDiscount = props => {
   );
 };
 
-export default SentDiscount;
+export default SentReferral;

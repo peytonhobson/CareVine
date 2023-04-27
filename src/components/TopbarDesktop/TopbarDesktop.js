@@ -176,13 +176,15 @@ const TopbarDesktop = props => {
           </NamedLink>
         </MenuItem>
         <MenuItem key="referral">
-          <NamedLink
-            className={classNames(css.yourListingsLink, currentPageClass('ReferralPage'))}
-            name="ReferralPage"
-          >
-            <span className={css.menuItemBorder} />
-            <FormattedMessage id="TopbarDesktop.referAFriendLink" />
-          </NamedLink>
+          {currentUserType === CAREGIVER ? (
+            <NamedLink
+              className={classNames(css.yourListingsLink, currentPageClass('ReferralPage'))}
+              name="ReferralPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.referAFriendLink" />
+            </NamedLink>
+          ) : null}
         </MenuItem>
         <MenuItem key="logout">
           <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>
