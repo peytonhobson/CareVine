@@ -14,6 +14,7 @@ import {
   InlineTextButton,
   InfoTooltip,
 } from '../../components';
+import InfoIcon from '@mui/icons-material/Info';
 import { TopbarContainer } from '..';
 import { injectIntl, intlShape } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
@@ -30,18 +31,44 @@ const ReferralPageComponent = props => {
 
   const schemaTitle = intl.formatMessage({ id: 'ReferralPage.schemaTitle' });
 
+  const [discountExpanded, setDiscountExpanded] = useState(false);
+  const [discountSentExpanded, setDiscountSentExpanded] = useState(false);
+
   const accordionStyles = {
     width: '100%',
-    padding: '1.5rem',
     borderRadius: '0.5rem',
     boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px',
     marginBottom: '2rem',
   };
 
+  const summaryDiscountStyles = {
+    '&.MuiAccordionSummary-root': {
+      padding: '1.5rem',
+      '&:hover': {
+        backgroundColor: !discountExpanded && 'rgba(107, 160, 182, 0.3)',
+        cursor: 'pointer',
+      },
+    },
+  };
+
+  const summaryDiscountSentStyles = {
+    '&.MuiAccordionSummary-root': {
+      padding: '1.5rem',
+      '&:hover': {
+        backgroundColor: !discountSentExpanded && 'rgba(107, 160, 182, 0.3)',
+        cursor: 'pointer',
+      },
+    },
+  };
+
+  const detailStyles = {
+    padding: '1.5rem',
+  };
+
   const accordionDiscountLabel = (
     <div className={css.accordionLabel}>
       {/* TODO: Swap out icon */}
-      <IconCalendar />
+      <IconCar />
       <h4 className={css.myDiscounts}>My Discounts</h4>
       {/* Make discount number dynamic */}
       <p className={css.discountsText}>
@@ -53,7 +80,7 @@ const ReferralPageComponent = props => {
   const accordionDiscountsSentLabel = (
     <div className={css.accordionLabel}>
       {/* TODO: Swap out icon */}
-      <IconCalendar />
+      <IconCar />
       {/* Make discount number dynamic */}
       <h4 className={css.myDiscounts}>2 Discounts sent by e-mail</h4>
     </div>
@@ -77,7 +104,7 @@ const ReferralPageComponent = props => {
             <div className={css.sendCard}>
               <div className={css.iconContainer}>
                 {/* TODO: Swap out icon */}
-                <IconCar height="1.5em" width="1.5em" />
+                <IconCar />
               </div>
               <div className={css.shareCareVineContainer}>
                 <h3 className={css.shareCareVine}>Share CareVine and get 50% off</h3>
@@ -97,7 +124,13 @@ const ReferralPageComponent = props => {
               ></img>
             </div>
 
-            <Accordion accordionStyles={accordionStyles} label={accordionDiscountLabel}>
+            <Accordion
+              accordionStyles={accordionStyles}
+              summaryStyles={summaryDiscountStyles}
+              detailStyles={detailStyles}
+              label={accordionDiscountLabel}
+              onChange={expanded => setDiscountExpanded(expanded)}
+            >
               <div className={css.discountAccordionContainer}>
                 <div>
                   <img
@@ -125,6 +158,14 @@ const ReferralPageComponent = props => {
                   <div className={css.tooltipContainer}>
                     <InfoTooltip
                       className={css.tooltip}
+                      icon={
+                        <>
+                          <InfoIcon />
+                          <InlineTextButton className={css.whatIsThisButton}>
+                            What is this?
+                          </InlineTextButton>
+                        </>
+                      }
                       title={
                         <p className={css.smallLineHeight}>
                           Once other caregivers accept your invitations, your discounts will move
@@ -140,7 +181,10 @@ const ReferralPageComponent = props => {
             </Accordion>
             <Accordion
               accordionStyles={accordionStyles}
+              summaryStyles={summaryDiscountSentStyles}
+              detailStyles={detailStyles}
               label={accordionDiscountsSentLabel}
+              onChange={expanded => setDiscountSentExpanded(expanded)}
             ></Accordion>
           </div>
         </LayoutWrapperMain>
