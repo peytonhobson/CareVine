@@ -89,14 +89,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   background-color: rgba(107, 160, 182, 0.3);
-  padding: 1rem;
+  padding-block: 1rem;
 }
 
 .discountsReceived {
   font-size: 3rem;
+  line-height: 3rem;
   font-weight: var(--fontWeightSemiBold);
   text-align: center;
-  padding: 1rem 0;
   color: var(--matterColorLight);
 }
 
