@@ -34,6 +34,7 @@ import {
   getAuthenticateTestResult,
   authenticateGenerateCriminalBackground,
   authenticate7YearHistory,
+  addQuizAttempt,
 } from '../../ducks/authenticate.duck';
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
@@ -103,6 +104,7 @@ const EditListingBackgroundCheckPanel = props => {
     subscription,
     updateInProgress,
     onFetchCurrentUser,
+    onAddQuizAttempt,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -588,7 +590,15 @@ const EditListingBackgroundCheckPanel = props => {
         <div className={css.quizContent}>
           <h1 className={css.quizTitle}>
             Verify Your <span className={css.identityText}>Identity</span>
-            <QuizTimer identityProofQuiz={identityProofQuiz} className={css.quizTimer} />
+            <QuizTimer
+              identityProofQuiz={identityProofQuiz}
+              className={css.quizTimer}
+              onGetIdentityProofQuiz={onGetIdentityProofQuiz}
+              authenticateUserAccessCode={authenticateUserAccessCode}
+              identityProofQuizAttempts={identityProofQuizAttempts}
+              onAddQuizAttempt={onAddQuizAttempt}
+              currentUser={currentUser}
+            />
           </h1>
           <div className={css.attemptsContainer}>
             <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>
@@ -764,6 +774,7 @@ const mapDispatchToProps = {
   onGetIdentityProofQuiz: identityProofQuiz,
   onUpdateSubscription: updateSubscription,
   onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
+  onAddQuizAttempt: addQuizAttempt,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
