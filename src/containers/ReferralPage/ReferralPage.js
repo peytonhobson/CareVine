@@ -39,6 +39,9 @@ const ReferralPageComponent = props => {
     borderRadius: '0.5rem',
     boxShadow: 'rgba(0, 0, 0, 0.1) 0px 1px 3px 0px',
     marginBottom: '2rem',
+    '&.MuiAccordion-root:before': {
+      display: 'none',
+    },
   };
 
   const summaryDiscountStyles = {
@@ -100,7 +103,7 @@ const ReferralPageComponent = props => {
         <LayoutWrapperMain className={css.mainWrapper}>
           <div className={css.content}>
             <h1 className={css.mainTitle}>Refer a Friend</h1>
-            <h3>Invite your friends to CareVine and get rewards when they sign up.</h3>
+            <h3>Invite your friends to CareVine and get rewards when they subscribe.</h3>
             <div className={css.sendCard}>
               <div className={css.iconContainer}>
                 {/* TODO: Swap out icon */}
@@ -152,8 +155,12 @@ const ReferralPageComponent = props => {
                 <div style={{ paddingInline: '1rem' }}>
                   <div className={css.discountDisplayContainer}>
                     {/* TODO: Make numbers dynamic */}
-                    <div className={css.discountsReceived}>0</div>
-                    <div className={css.discountsPending}>0</div>
+                    <div className={css.discountsReceived}>
+                      0<p style={{ margin: 0 }}>Received</p>
+                    </div>
+                    <div className={css.discountsPending}>
+                      0<p style={{ margin: 0 }}>Pending</p>
+                    </div>
                   </div>
                   <div className={css.tooltipContainer}>
                     <InfoTooltip
