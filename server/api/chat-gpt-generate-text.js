@@ -1,6 +1,7 @@
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 const { Configuration, OpenAIApi } = require('openai');
+const { default: next } = require('next');
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -28,5 +29,6 @@ module.exports = async (req, res) => {
       .end();
   } catch (error) {
     log.error(error?.response?.data, 'chatgpt-generate-text-failed');
+    next(error);
   }
 };

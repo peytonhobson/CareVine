@@ -46,11 +46,12 @@ const stripeCreateSubscriptionSchedule = require('./api/stripe-create-subscripti
 const stripeCancelSubscriptionSchedule = require('./api/stripe-cancel-subscription-schedule');
 const stripeUpdateSubscriptionItem = require('./api/stripe-update-subscription-item');
 const sendFeedbackEmail = require('./api/send-feedback-email');
-const sendgridTemplateEmail = require('./api/sendgrid-template-email');
-const sendgridStandardEmail = require('./api/sendgrid-standard-email');
+const sendgridTemplateEmail = require('./api/sendgrid/sendgrid-template-email');
+const sendgridStandardEmail = require('./api/sendgrid/sendgrid-standard-email');
 const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
 const updateTransactionMetadata = require('./api/update-transaction-metadata');
+const sendgridReferralEmail = require('./api/sendgrid/sendgrid-referral-email');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -125,6 +126,7 @@ router.post('/sendgrid-standard-email', sendgridStandardEmail);
 router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
 router.post('/update-transaction-metadata', updateTransactionMetadata);
+router.post('/sendgrid-referral-email', sendgridReferralEmail);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

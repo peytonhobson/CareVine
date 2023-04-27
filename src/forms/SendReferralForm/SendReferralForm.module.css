@@ -1,0 +1,18 @@
+.root {
+  padding: 0 3rem;
+}
+.email {
+  margin: 2rem 0 5rem 0;
+}
+
+.submitButton {
+  min-height: 0;
+  width: auto;
+
+  padding: 1rem 5rem;
+  margin: auto;
+}
+
+.error {
+  color: var(--failColor);
+}
