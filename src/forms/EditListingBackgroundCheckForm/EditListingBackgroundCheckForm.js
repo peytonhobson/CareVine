@@ -21,7 +21,6 @@ import { Form, Button, FieldTextInput, FieldDateInput, FieldSelect } from '../..
 import moment from 'moment';
 
 import css from './EditListingBackgroundCheckForm.module.css';
-import { useEffect } from 'react';
 
 // Create an array of state abbreviations
 const stateAbbreviations = [
@@ -167,7 +166,9 @@ const EditListingBackgroundCheckForm = props => (
         authenticateUserAccessCode,
         authenticateUpdateUserError,
         authenticateUpdateUserInProgress,
+        getIdentityProofQuizError,
         update,
+        updateUserSubmitted,
       } = formRenderProps;
 
       const classes = classNames(css.root, className);
@@ -440,6 +441,11 @@ const EditListingBackgroundCheckForm = props => (
           {authenticateUpdateUserError ? (
             <p className={css.error}>
               <FormattedMessage id="EditListingBackgroundCheckForm.authenticateUpdateUserError" />
+            </p>
+          ) : null}
+          {getIdentityProofQuizError && update && updateUserSubmitted ? (
+            <p className={css.error}>
+              <FormattedMessage id="EditListingBackgroundCheckForm.getIdentityProofQuizError" />
             </p>
           ) : null}
 
