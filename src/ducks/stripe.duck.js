@@ -11,6 +11,7 @@ import {
   stripeCancelSubscriptionSchedule,
   stripeUpdatePaymentIntent,
   stripeDetachPaymentMethod,
+  stripeUpdateCustomerCreditBalance,
 } from '../util/api';
 import { createStripeCustomer } from './paymentMethods.duck';
 import { fetchCurrentUser } from './user.duck';
@@ -945,11 +946,7 @@ export const updateSubscription = (subscriptionId, params) => (dispatch, getStat
     .catch(e => handleError(e));
 };
 
-export const updateCustomerCreditBalance = (stripeCustomerId, amount) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const updateCustomerCreditBalance = (referralCode, amount) => (dispatch, getState, sdk) => {
   dispatch(updateCustomerCreditBalanceRequest());
 
   const handleSuccess = response => {
@@ -963,7 +960,7 @@ export const updateCustomerCreditBalance = (stripeCustomerId, amount) => (
     throw e;
   };
 
-  return stripeUpdateCustomerCreditBalance({ stripeCustomerId, amount })
+  return stripeUpdateCustomerCreditBalance({ referralCode, amount })
     .then(res => handleSuccess(res))
     .catch(e => handleError(e));
 };

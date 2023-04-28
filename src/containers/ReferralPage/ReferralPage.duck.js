@@ -1,4 +1,4 @@
-import { updateUser, sendgridReferralEmail } from '../../util/api';
+import { updateUser, sendgridReferralEmail, stripeUpdateCustomer } from '../../util/api';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
@@ -134,6 +134,9 @@ export const generateReferralCode = () => async (dispatch, getState, sdk) => {
 
   try {
     await updateUser({ userId, metadata: { referralCode } });
+
+    const stripeCustomerId = currentUser.stripeCustomer.attributes.stripeCustomerId;
+    await stripeUpdateCustomer({ stripeCustomerId, params: { metadata: { referralCode } } });
 
     dispatch(fetchCurrentUser());
     dispatch(generateReferralCodeSuccess());

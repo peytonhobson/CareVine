@@ -139,6 +139,7 @@ const TopbarDesktop = props => {
   };
 
   const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
+  const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
 
   const profileMenu = authenticatedOnClientSide ? (
     <Menu>
@@ -176,7 +177,7 @@ const TopbarDesktop = props => {
           </NamedLink>
         </MenuItem>
         <MenuItem key="referral">
-          {currentUserType === CAREGIVER ? (
+          {currentUserType === CAREGIVER && stripeCustomerId ? (
             <NamedLink
               className={classNames(css.yourListingsLink, currentPageClass('ReferralPage'))}
               name="ReferralPage"
