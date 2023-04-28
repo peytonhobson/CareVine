@@ -260,7 +260,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   // These error codes indicate the user needs to be updated to get identity proof quiz
   useEffect(() => {
-    const errorStatuses = [400, 417];
+    const errorStatuses = [400, 417, 404];
     if (getIdentityProofQuizError && errorStatuses.includes(getIdentityProofQuizError.status)) {
       setStage(UPDATE_USER);
     }
@@ -340,7 +340,7 @@ const EditListingBackgroundCheckPanel = props => {
       city: city.trim(),
       state: state.trim(),
       zipCode: zipCode.trim(),
-      ssn: ssn,
+      ssn: ssn.replace(/-/g, '').trim(),
       houseNumber: parsedAddress?.number,
     };
 
