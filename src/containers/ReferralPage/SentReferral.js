@@ -1,21 +1,18 @@
 import React from 'react';
 
-import { IconBell, InfoTooltip } from '../../components';
+import { IconBell, InfoTooltip, IconSpinner, IconCheckmark } from '../../components';
 
 import css from './ReferralPage.module.css';
 
 const MILLISECONDS_THREE_DAYS = 259200000;
 
 const SentReferral = props => {
-  const { referral } = props;
-
-  // TODO: Implement function
-  const handleSendReminder = () => {
-    console.log('Send reminder');
-  };
+  const { referral, onRemind, sendReminderInProgress, reminderSent } = props;
 
   const canRemind =
-    Date.now() - referral.lastReminder > MILLISECONDS_THREE_DAYS && !referral.claimed;
+    (Date.now() - referral.lastReminder > MILLISECONDS_THREE_DAYS || !referral.lastReminder) &&
+    Date.now() - referral.createdAt > MILLISECONDS_THREE_DAYS &&
+    !referral.claimed;
 
   const reminderTooSoon = (
     <p>It's a little too soon to send a reminder. Check back in a few days!</p>
@@ -23,8 +20,14 @@ const SentReferral = props => {
 
   const remind = (
     <div>
-      <IconBell height="1.25em" width="1.25em" />
-      <p className={css.remind}>Remind</p>
+      {sendReminderInProgress === referral.email ? (
+        <IconSpinner />
+      ) : reminderSent === referral.email ? (
+        <IconCheckmark />
+      ) : (
+        <IconBell height="1.25em" width="1.25em" />
+      )}
+      {reminderSent !== referral.email && <p className={css.remind}>Remind</p>}
     </div>
   );
 
@@ -55,7 +58,7 @@ const SentReferral = props => {
         {!referral.claimed && (
           <InfoTooltip
             icon={remind}
-            onClick={canRemind ? handleSendReminder : null}
+            onClick={canRemind && !sendReminderInProgress ? () => onRemind(referral) : null}
             title={!canRemind ? reminderTooSoon : null}
             styles={canRemind ? canRemindTooltipStyles : cantRemindTooltipStyles}
           />

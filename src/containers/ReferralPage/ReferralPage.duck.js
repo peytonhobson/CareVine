@@ -14,6 +14,10 @@ export const SEND_REFERRAL_REQUEST = 'app/ReferralPage/SEND_REFERRAL_REQUEST';
 export const SEND_REFERRAL_SUCCESS = 'app/ReferralPage/SEND_REFERRAL_SUCCESS';
 export const SEND_REFERRAL_ERROR = 'app/ReferralPage/SEND_REFERRAL_ERROR';
 
+export const SEND_REMINDER_REQUEST = 'app/ReferralPage/SEND_REMINDER_REQUEST';
+export const SEND_REMINDER_SUCCESS = 'app/ReferralPage/SEND_REMINDER_SUCCESS';
+export const SEND_REMINDER_ERROR = 'app/ReferralPage/SEND_REMINDER_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -22,6 +26,9 @@ const initialState = {
   sendReferralInProgress: false,
   sendReferralError: null,
   referralSent: false,
+  sendReminderInProgress: false,
+  sendReminderError: null,
+  reminderSent: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -65,6 +72,26 @@ export default function reducer(state = initialState, action = {}) {
         sendReferralError: payload,
       };
 
+    case SEND_REMINDER_REQUEST:
+      return {
+        ...state,
+        sendReminderInProgress: payload,
+        sendReminderError: null,
+        reminderSent: false,
+      };
+    case SEND_REMINDER_SUCCESS:
+      return {
+        ...state,
+        sendReminderInProgress: false,
+        reminderSent: payload,
+      };
+    case SEND_REMINDER_ERROR:
+      return {
+        ...state,
+        sendReminderInProgress: false,
+        sendReminderError: payload,
+      };
+
     default:
       return state;
   }
@@ -84,6 +111,14 @@ export const sendReferralRequest = () => ({ type: SEND_REFERRAL_REQUEST });
 export const sendReferralSuccess = () => ({ type: SEND_REFERRAL_SUCCESS });
 export const sendReferralError = error => ({
   type: SEND_REFERRAL_ERROR,
+  payload: error,
+  error: true,
+});
+
+export const sendReminderRequest = email => ({ type: SEND_REMINDER_REQUEST, payload: email });
+export const sendReminderSuccess = email => ({ type: SEND_REMINDER_SUCCESS, payload: email });
+export const sendReminderError = error => ({
+  type: SEND_REMINDER_ERROR,
   payload: error,
   error: true,
 });
@@ -135,6 +170,42 @@ export const sendReferral = email => async (dispatch, getState, sdk) => {
   } catch (e) {
     dispatch(sendReferralError(storableError(e)));
     log.error(e, 'send-referral-failed', {
+      email,
+      referralCode,
+    });
+  }
+};
+
+export const sendReminder = referral => async (dispatch, getState, sdk) => {
+  const email = referral.email;
+
+  dispatch(sendReminderRequest(email));
+
+  const { currentUser } = getState().user;
+  const senderName = currentUser.attributes.profile.firstName;
+  const { referralCode, referrals: oldReferrals } = currentUser.attributes.profile.metadata;
+
+  // TODO: Update user referrals
+  try {
+    await sendgridReferralEmail({ email, referralCode, senderName });
+
+    const newReferrals = oldReferrals.map(r => {
+      if (r.email === email) {
+        return {
+          ...r,
+          lastReminder: Date.now(),
+        };
+      }
+      return r;
+    });
+
+    await updateUser({ userId: currentUser.id.uuid, metadata: { referrals: newReferrals } });
+
+    dispatch(fetchCurrentUser());
+    dispatch(sendReminderSuccess(email));
+  } catch (e) {
+    dispatch(sendReminderError(storableError(e)));
+    log.error(e, 'send-reminder-failed', {
       email,
       referralCode,
     });
