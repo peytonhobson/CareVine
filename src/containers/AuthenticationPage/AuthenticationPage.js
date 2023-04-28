@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { isEmpty } from 'lodash';
 import { useHistory } from 'react-router-dom';
 
+import queryString from 'query-string';
 import routeConfiguration from '../../routeConfiguration';
 import { pathByRouteName } from '../../util/routes';
 import { apiBaseUrl } from '../../util/api';
@@ -96,6 +97,9 @@ export class AuthenticationPageComponent extends Component {
       this.state.authInfo && this.state.authInfo.from ? this.state.authInfo.from : null;
     const from = locationFrom ? locationFrom : authinfoFrom ? authinfoFrom : null;
 
+    const parsedSearchParams = queryString.parse(location.search);
+    const { referralCode } = parsedSearchParams;
+
     const user = ensureCurrentUser(currentUser);
     const currentUserLoaded = !!user.id;
 
@@ -178,6 +182,7 @@ export class AuthenticationPageComponent extends Component {
       const params = {
         firstName: capitalizeFirstLetter(fname.trim()),
         lastName: capitalizeFirstLetter(lname.trim()),
+        referralCode,
         ...rest,
       };
       submitSignup(params);
