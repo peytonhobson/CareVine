@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
-import { createUserWithIdp } from '../util/api';
+import { createUserWithIdp, updateUser } from '../util/api';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
 
@@ -200,12 +200,12 @@ export const logout = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(logoutError(storableError(e))));
 };
 
-export const signup = params => (dispatch, getState, sdk) => {
+export const signup = params => async (dispatch, getState, sdk) => {
   if (authenticationInProgress(getState())) {
     return Promise.reject(new Error('Login or logout already in progress'));
   }
   dispatch(signupRequest());
-  const { email, password, firstName, lastName, ...rest } = params;
+  const { email, password, firstName, lastName, referralCode, ...rest } = params;
 
   const createUserParams = isEmpty(rest)
     ? { email, password, firstName, lastName }
@@ -219,21 +219,26 @@ export const signup = params => (dispatch, getState, sdk) => {
 
   // We must login the user if signup succeeds since the API doesn't
   // do that automatically.
-  return (
-    sdk.currentUser
-      .create(createUserParams)
-      .then(() => dispatch(signupSuccess()))
-      //Need to change login to create profile path
-      .then(() => dispatch(login(email, password)))
-      .catch(e => {
-        dispatch(signupError(storableError(e)));
-        log.error(e, 'signup-failed', {
-          email: params.email,
-          firstName: params.firstName,
-          lastName: params.lastName,
-        });
-      })
-  );
+
+  try {
+    const response = await sdk.currentUser.create(createUserParams);
+
+    const user = response.data.data;
+
+    dispatch(signupSuccess());
+    dispatch(login(email, password));
+
+    if (referralCode) {
+      await updateUser({ userId: user.id.uuid, metadata: { signupReferralCode: referralCode } });
+    }
+  } catch (e) {
+    dispatch(signupError(storableError(e)));
+    log.error(e, 'signup-failed', {
+      email: params.email,
+      firstName: params.firstName,
+      lastName: params.lastName,
+    });
+  }
 };
 
 export const signupWithIdp = params => (dispatch, getState, sdk) => {
