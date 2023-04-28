@@ -196,6 +196,7 @@ const EditListingBackgroundCheckPanel = props => {
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
   const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
+  const [updateUserSubmitted, setUpdateUserSubmitted] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -350,6 +351,7 @@ const EditListingBackgroundCheckPanel = props => {
       );
     } else if (stage === UPDATE_USER) {
       onAuthenticateUpdateUser(userInfo, authenticateUserAccessCode).then(() => {
+        setUpdateUserSubmitted(true);
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     }
@@ -567,6 +569,8 @@ const EditListingBackgroundCheckPanel = props => {
             onSubmit={handleSubmit}
             saveActionMsg="Submit"
             update
+            getIdentityProofQuizError={getIdentityProofQuizError}
+            updateUserSubmitted={updateUserSubmitted}
           />
         </div>
       );
