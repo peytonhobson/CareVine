@@ -4,8 +4,8 @@ export const CAREGIVER = 'caregiver';
 // Price IDs for Stripe
 export const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
-    ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
-    : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
+    ? 'price_1N1q9EJsU2TVwfKBaFF1g5Fr'
+    : 'price_1N1q8PJsU2TVwfKBgE80ln2P';
 export const CAREVINE_BASIC_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1MXTzRJsU2TVwfKBbucAL3ns'
@@ -18,6 +18,8 @@ export const PROMO_CODES = [
   { key: 'YOUAREGOLDEN', type: 'gold' },
   { key: 'CAREMORE', type: 'basic' },
 ];
+export const CAREVINE_GOLD_HALF_OFF_COUPON =
+  process.env.REACT_APP_ENV === 'development' ? 'dr9TuFdf' : 'egjIPKza';
 
 // Modal Missing Information Types
 export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';

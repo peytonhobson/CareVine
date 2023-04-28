@@ -24,6 +24,7 @@ import {
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
   SUBSCRIPTION_ACTIVE_TYPES,
+  CAREVINE_GOLD_HALF_OFF_COUPON,
 } from '../../util/constants';
 import {
   authenticateCreateUser,
@@ -220,6 +221,7 @@ const EditListingBackgroundCheckPanel = props => {
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
   const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
+  const signupReferralCode = metadata?.signupReferralCode;
 
   // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
@@ -422,10 +424,12 @@ const EditListingBackgroundCheckPanel = props => {
     bcType => {
       setStage(PAYMENT);
       setBackgroundCheckType(bcType);
+
       onCreateSubscription(
         stripeCustomerId,
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-        currentUser.id?.uuid
+        currentUser.id?.uuid,
+        { coupon: signupReferralCode ? CAREVINE_GOLD_HALF_OFF_COUPON : null }
       ).then(() => {
         onFetchCurrentUser();
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
