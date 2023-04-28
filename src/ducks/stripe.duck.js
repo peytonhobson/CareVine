@@ -72,6 +72,13 @@ export const UPDATE_SUBSCRIPTION_REQUEST = 'app/stripe/UPDATE_SUBSCRIPTION_REQUE
 export const UPDATE_SUBSCRIPTION_SUCCESS = 'app/stripe/UPDATE_SUBSCRIPTION_SUCCESS';
 export const UPDATE_SUBSCRIPTION_ERROR = 'app/stripe/UPDATE_SUBSCRIPTION_ERROR';
 
+export const UPDATE_CUSTOMER_CREDIT_BALANCE_REQUEST =
+  'app/stripe/UPDATE_CUSTOMER_CREDIT_BALANCE_REQUEST';
+export const UPDATE_CUSTOMER_CREDIT_BALANCE_SUCCESS =
+  'app/stripe/UPDATE_CUSTOMER_CREDIT_BALANCE_SUCCESS';
+export const UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR =
+  'app/stripe/UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR';
+
 // ================ Reducer ================ //
 
 export const initialState = {
@@ -99,6 +106,8 @@ export const initialState = {
   cancelSubscriptionError: null,
   updateSubscriptionInProgress: false,
   updateSubscriptionError: null,
+  updateCustomerCreditBalanceInProgress: false,
+  updateCustomerCreditBalanceError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -302,6 +311,21 @@ export default function reducer(state = initialState, action = {}) {
         updateSubscriptionInProgress: false,
       };
 
+    case UPDATE_CUSTOMER_CREDIT_BALANCE_REQUEST:
+      return {
+        ...state,
+        updateCustomerCreditBalanceError: null,
+        updateCustomerCreditBalanceInProgress: true,
+      };
+    case UPDATE_CUSTOMER_CREDIT_BALANCE_SUCCESS:
+      return { ...state, updateCustomerCreditBalanceInProgress: false, customer: payload };
+    case UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR:
+      return {
+        ...state,
+        updateCustomerCreditBalanceError: payload,
+        updateCustomerCreditBalanceInProgress: false,
+      };
+
     default:
       return state;
   }
@@ -440,6 +464,18 @@ export const updateSubscriptionSuccess = payload => ({
 });
 export const updateSubscriptionError = payload => ({
   type: UPDATE_SUBSCRIPTION_ERROR,
+  payload,
+  error: true,
+});
+
+export const updateCustomerCreditBalanceRequest = () => ({
+  type: UPDATE_CUSTOMER_CREDIT_BALANCE_REQUEST,
+});
+export const updateCustomerCreditBalanceSuccess = () => ({
+  type: UPDATE_CUSTOMER_CREDIT_BALANCE_SUCCESS,
+});
+export const updateCustomerCreditBalanceError = payload => ({
+  type: UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR,
   payload,
   error: true,
 });
@@ -905,6 +941,29 @@ export const updateSubscription = (subscriptionId, params) => (dispatch, getStat
   };
 
   return stripeUpdateSubscription({ subscriptionId, params })
+    .then(res => handleSuccess(res))
+    .catch(e => handleError(e));
+};
+
+export const updateCustomerCreditBalance = (stripeCustomerId, amount) => (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(updateCustomerCreditBalanceRequest());
+
+  const handleSuccess = response => {
+    dispatch(updateCustomerCreditBalanceSuccess(response));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(updateCustomerCreditBalanceError(e));
+    log.error(e, 'update-customer-credit-balance-Failed', {});
+    throw e;
+  };
+
+  return stripeUpdateCustomerCreditBalance({ stripeCustomerId, amount })
     .then(res => handleSuccess(res))
     .catch(e => handleError(e));
 };
