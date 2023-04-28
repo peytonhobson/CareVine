@@ -67,6 +67,7 @@ const QUIZ_MAX_ATTEMPTS_FAILED = 'QUIZ_MAX_ATTEMPTS_FAILED';
 const MAX_QUIZ_ATTEMPTS = 3;
 
 const BASIC = 'basic';
+const GOLD = 'gold';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
@@ -269,7 +270,7 @@ const EditListingBackgroundCheckPanel = props => {
   ]);
 
   useEffect(() => {
-    if (createPaymentSuccess && signupReferralCode) {
+    if (createPaymentSuccess && signupReferralCode && backgroundCheckType === GOLD) {
       onUpdateCustomerCreditBalance(signupReferralCode, 500).then(() => {
         const email = currentUser.attributes.email;
         onClaimReferral(email, signupReferralCode);
