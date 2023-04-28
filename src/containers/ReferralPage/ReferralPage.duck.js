@@ -148,7 +148,7 @@ export const generateReferralCode = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const sendReferral = email => async (dispatch, getState, sdk) => {
+export const sendReferral = emails => async (dispatch, getState, sdk) => {
   dispatch(sendReferralRequest());
 
   const { currentUser } = getState().user;
@@ -156,24 +156,32 @@ export const sendReferral = email => async (dispatch, getState, sdk) => {
   const senderName = currentUser.attributes.profile.firstName;
   const { referrals = [], referralCode } = currentUser.attributes.profile.metadata;
 
+  let newReferrals = [];
+
   try {
-    await sendgridReferralEmail({ email, referralCode, senderName });
+    await Promise.all(
+      emails.map(async email => {
+        const newReferral = {
+          id: uuidv4(),
+          email,
+          claimed: false,
+          createdAt: Date.now(),
+        };
 
-    const newReferral = {
-      id: uuidv4(),
-      email,
-      claimed: false,
-      createdAt: Date.now(),
-    };
+        await sendgridReferralEmail({ email, referralCode, senderName });
 
-    await updateUser({ userId, metadata: { referrals: [...referrals, newReferral] } });
+        newReferrals.push(newReferral);
+      })
+    );
+
+    await updateUser({ userId, metadata: { referrals: [...referrals, ...newReferrals] } });
 
     dispatch(fetchCurrentUser());
     dispatch(sendReferralSuccess());
   } catch (e) {
     dispatch(sendReferralError(storableError(e)));
     log.error(e, 'send-referral-failed', {
-      email,
+      emails,
       referralCode,
     });
   }

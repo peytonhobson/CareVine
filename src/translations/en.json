@@ -1115,6 +1115,7 @@
   "SendReferralForm.emailInvalid": "A valid email address is required.",
   "SendReferralForm.sendReferralCodeError": "Failed to send referral code. Please try again.",
   "SendReferralForm.sameEmailError": "You have already sent this person a referral.",
+  "SendReferralForm.duplicateEmailError": "Please remove the duplicate emails before submitting.",
   "SignupForm.caregiverSelectLabel": "Become a Caregiver",
   "SignupForm.caregiverSelectValue": "caregiver",
   "SignupForm.emailInvalid": "A valid email address is required",

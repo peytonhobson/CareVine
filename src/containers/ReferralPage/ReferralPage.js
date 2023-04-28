@@ -76,6 +76,14 @@ const ReferralPageComponent = props => {
     }
   }, [ensuredCurrentUser.id?.uuid]);
 
+  const handleSendReferral = values => {
+    const emailKeys = Object.keys(values).filter(key => key.includes('email'));
+
+    const emails = emailKeys.map(key => values[key]);
+
+    onSendReferral(emails);
+  };
+
   const schemaTitle = intl.formatMessage({ id: 'ReferralPage.schemaTitle' });
 
   const referralsClaimed = referrals.filter(referral => referral.claimed).length;
@@ -311,11 +319,12 @@ const ReferralPageComponent = props => {
         <h1 className={css.modalTitle}>Send a Referral</h1>
         <SendReferralForm
           intl={intl}
-          onSubmit={values => onSendReferral(values.email)}
+          onSubmit={handleSendReferral}
           sendReferralInProgress={sendReferralInProgress}
           sendReferralError={sendReferralError}
           referralSent={referralSent}
           referrals={referrals}
+          isSendReferralModalOpen={isSendReferralModalOpen}
         />
       </Modal>
       <GenericError show={hasGenericError} errorText={genericErrorText} />

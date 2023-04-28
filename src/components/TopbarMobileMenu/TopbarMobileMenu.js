@@ -43,7 +43,8 @@ const TopbarMobileMenu = props => {
 
   const user = ensureCurrentUser(currentUser);
 
-  const userType = user?.attributes?.profile?.metadata?.userType;
+  const userType = user.attributes.profile.metadata.userType;
+  const stripeCustomerId = user.stripeCustomer?.attributes?.stripeCustomerId;
   const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
 
   if (!isAuthenticated) {
@@ -82,6 +83,13 @@ const TopbarMobileMenu = props => {
       </div>
     );
   }
+
+  const referralLink =
+    userType === CAREGIVER && stripeCustomerId ? (
+      <NamedLink className={css.navigationLink} name="ReferralPage">
+        <FormattedMessage id="TopbarDesktop.referAFriendLink" />
+      </NamedLink>
+    ) : null;
 
   const feedbackLink = isDev ? (
     <NamedLink className={css.navigationLink} name="FeedbackPage">
@@ -191,6 +199,7 @@ const TopbarMobileMenu = props => {
         >
           <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
         </NamedLink>
+        {referralLink}
         {feedbackLink}
       </div>
       <div className={css.footer}>
