@@ -2,7 +2,12 @@
   padding: 0 3rem;
 }
 .email {
-  margin: 2rem 0 5rem 0;
+  margin-top: 2rem;
+}
+
+.addEmailButton {
+  margin-top: 2rem;
+  width: 100%;
 }
 
 .submitButton {
@@ -11,8 +16,22 @@
 
   padding: 1rem 5rem;
   margin: auto;
+  margin-top: 5rem;
 }
 
 .error {
   color: var(--failColor);
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.iconClose {
+  position: absolute;
+  right: -2rem;
+  top: 3rem;
+  margin-left: 0.5rem;
+  stroke: var(--matterColorAnti);
+  cursor: pointer;
 }
