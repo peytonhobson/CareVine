@@ -25,7 +25,12 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { ensureCurrentUser } from '../../util/data';
 import SentReferral from './SentReferral';
-import { generateReferralCode, sendReferral, sendReminder } from './ReferralPage.duck';
+import {
+  generateReferralCode,
+  sendReferral,
+  sendReminder,
+  fetchCustomerCreditBalance,
+} from './ReferralPage.duck';
 import { CAREGIVER } from '../../util/constants';
 import { SendReferralForm } from '../../forms';
 import {
@@ -56,6 +61,9 @@ const ReferralPageComponent = props => {
     sendReminderInProgress,
     sendReminderError,
     reminderSent,
+    customerCreditBalance,
+    fetchCustomerCreditBalanceError,
+    onFetchCustomerCreditBalance,
   } = props;
 
   const [isSendReferralModalOpen, setIsSendReferralModalOpen] = useState(false);
@@ -71,8 +79,11 @@ const ReferralPageComponent = props => {
   }
 
   useEffect(() => {
-    if (!referralCode && stripeCustomerId) {
-      onGenerateReferralCode();
+    if (stripeCustomerId) {
+      onFetchCustomerCreditBalance();
+      if (!referralCode) {
+        onGenerateReferralCode();
+      }
     }
   }, [ensuredCurrentUser.id?.uuid]);
 
@@ -231,35 +242,18 @@ const ReferralPageComponent = props => {
                   </div>
                   <div style={{ paddingInline: '1rem' }}>
                     <div className={css.referralDisplayContainer}>
-                      {/* TODO: Make numbers reflect received credits instead of claim*/}
-                      <div className={css.referralsReceived}>
-                        {referralsClaimed}
-                        <p style={{ margin: 0 }}>Received</p>
+                      <div className={css.referralsTotal}>
+                        ${referralsClaimed * 5}
+                        <p className={css.creditsDisplayText}>Received</p>
+                      </div>
+                      <div className={css.referralsRemaining}>
+                        ${customerCreditBalance}
+                        <p className={css.creditsDisplayText}>Remaining</p>
                       </div>
                       <div className={css.referralsPending}>
-                        {referralsNotClaimed}
-                        <p style={{ margin: 0 }}>Pending</p>
+                        ${referralsNotClaimed * 5}
+                        <p className={css.creditsDisplayText}>Pending</p>
                       </div>
-                    </div>
-                    <div className={css.tooltipContainer}>
-                      <InfoTooltip
-                        className={css.tooltip}
-                        icon={
-                          <>
-                            <InfoIcon />
-                            <InlineTextButton className={css.whatIsThisButton}>
-                              What is this?
-                            </InlineTextButton>
-                          </>
-                        }
-                        title={
-                          <p className={css.smallLineHeight}>
-                            Once other caregivers accept your invitations, your referrals will move
-                            from pending to received. This amount is the total referrals you've
-                            received, not your remaining balance.
-                          </p>
-                        }
-                      />
                     </div>
                     <GradientButton
                       className={css.sendInvitesButton}
@@ -282,7 +276,7 @@ const ReferralPageComponent = props => {
               <AccordionDetails>
                 {referrals.length > 0 ? (
                   <div className={css.sentReferralAccordionContainer}>
-                    {referrals.map(referral => (
+                    {referrals.reverse().map(referral => (
                       <SentReferral
                         key={referral.id}
                         referral={referral}
@@ -347,6 +341,7 @@ const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onSendReferral: sendReferral,
   onSendReminder: sendReminder,
+  onFetchCustomerCreditBalance: fetchCustomerCreditBalance,
 };
 
 const ReferralPage = compose(

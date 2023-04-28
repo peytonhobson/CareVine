@@ -292,3 +292,11 @@ export const sendgridReferralEmail = body => {
 export const stripeUpdateCustomerCreditBalance = body => {
   return post('/api/update-customer-credit-balance', body);
 };
+
+export const fetchStripeCustomer = body => {
+  return post('/api/fetch-stripe-customer', body);
+};
+
+export const updateUserReferrals = body => {
+  return post('/api/update-user-referrals', body);
+};

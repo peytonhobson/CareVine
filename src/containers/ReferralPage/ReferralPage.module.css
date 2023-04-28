@@ -87,23 +87,34 @@
 
 .referralDisplayContainer {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   background-color: var(--marketplaceColor);
   padding-block: 1rem;
 }
 
-.referralsReceived {
-  font-size: 3rem;
-  line-height: 3rem;
+.referralsTotal {
+  font-size: 1.5rem;
+  line-height: 1.5rem;
   font-weight: var(--fontWeightSemiBold);
   text-align: center;
   color: var(--matterColorLight);
 }
 
-.referralsPending {
-  composes: referralsReceived;
+.referralsRemaining {
+  composes: referralsTotal;
 
   border-left: 1px solid var(--matterColorNegative);
+}
+
+.referralsPending {
+  composes: referralsTotal;
+
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.creditsDisplayText {
+  font-size: 0.75rem;
+  margin: 0;
 }
 
 .tooltipContainer {

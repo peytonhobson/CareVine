@@ -45,6 +45,7 @@ import {
 } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { claimReferral } from '../../containers/ReferralPage/ReferralPage.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
 import parser from 'parse-address';
 
@@ -111,6 +112,7 @@ const EditListingBackgroundCheckPanel = props => {
     onFetchCurrentUser,
     onAddQuizAttempt,
     onUpdateCustomerCreditBalance,
+    onClaimReferral,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -268,7 +270,10 @@ const EditListingBackgroundCheckPanel = props => {
 
   useEffect(() => {
     if (createPaymentSuccess && signupReferralCode) {
-      onUpdateCustomerCreditBalance(signupReferralCode, 500);
+      onUpdateCustomerCreditBalance(signupReferralCode, 500).then(() => {
+        const email = currentUser.attributes.email;
+        onClaimReferral(email, signupReferralCode);
+      });
     }
   }, [createPaymentSuccess]);
 
@@ -773,6 +778,7 @@ const mapDispatchToProps = {
   onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
   onAddQuizAttempt: addQuizAttempt,
   onUpdateCustomerCreditBalance: updateCustomerCreditBalance,
+  onClaimReferral: claimReferral,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

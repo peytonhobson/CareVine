@@ -11,11 +11,11 @@ module.exports = (req, res) => {
     })
     .then(response => {
       const users = response.data;
-      if (users.length === 0) {
-        res.status(404).send('User not found');
-        return;
+      const user = users.length > 0 ? users[0] : null;
+
+      if (!user) {
+        throw new Error('User not found');
       }
-      const user = users[0];
 
       return user.id;
     })
