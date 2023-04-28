@@ -205,7 +205,7 @@ export const signup = params => async (dispatch, getState, sdk) => {
     return Promise.reject(new Error('Login or logout already in progress'));
   }
   dispatch(signupRequest());
-  const { email, password, firstName, lastName, referralCode, ...rest } = params;
+  const { email, password, firstName, lastName, ...rest } = params;
 
   const createUserParams = isEmpty(rest)
     ? { email, password, firstName, lastName }
@@ -216,6 +216,8 @@ export const signup = params => async (dispatch, getState, sdk) => {
         lastName,
         protectedData: { ...rest },
       };
+
+  const referralCode = sessionStorage.getItem('signupReferralCode');
 
   // We must login the user if signup succeeds since the API doesn't
   // do that automatically.
@@ -230,6 +232,7 @@ export const signup = params => async (dispatch, getState, sdk) => {
 
     if (referralCode) {
       await updateUser({ userId: user.id.uuid, metadata: { signupReferralCode: referralCode } });
+      sessionStorage.removeItem('signupReferralCode');
     }
   } catch (e) {
     dispatch(signupError(storableError(e)));
