@@ -131,7 +131,7 @@ export const postalCodeFormatValid = message => value => {
   return value && POSTAL_CODE_RE.test(value) ? VALID : message;
 };
 
-const SSN_RE = /^[0-9]{3}-?[0-9]{2}?-?[0-9]{4}$/;
+const SSN_RE = /^[0-9]{4}$/;
 
 export const ssnFormatValid = message => value => {
   return value && SSN_RE.test(value) ? VALID : message;

@@ -74,3 +74,70 @@
   justify-content: center;
   align-items: center;
 }
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  text-align: center;
+
+  margin-top: 4rem;
+  font-size: 2.25rem;
+  line-height: 2.25rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    line-height: 2.5rem;
+    letter-spacing: -0.9px;
+    font-size: 1.875rem;
+  }
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+
+  @media (--viewportMedium) {
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
+}
+
+.quizTitle {
+  width: 100%;
+
+  @media (--viewportLarge) {
+    margin-bottom: 0;
+    padding: 1px 0 7px 0;
+  }
+}
+
+.identityText {
+  color: var(--marketplaceColor);
+}
+
+.quizTimer {
+  border: 1px solid;
+  border-radius: 4px;
+  margin-left: 1rem;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 5.5rem;
+
+  @media (--viewportMedium) {
+    min-width: 8rem;
+  }
+}
+
+.attemptsContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.attemptsHeader {
+  display: inline;
+  color: var(--marketplaceColor);
+  margin-right: 2rem;
+}

@@ -327,20 +327,6 @@
   }
 }
 
-.badge {
-  padding: 0.1rem;
-  border: solid 2px var(--marketplaceColor);
-  margin-right: 1rem;
-}
-
-.badges {
-  display: flex;
-  flex-direction: row;
-  margin-block: 1rem;
-  align-items: center;
-  width: 100%;
-}
-
 .certAndTrainWrapper {
   padding: 0.5rem;
 }

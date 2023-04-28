@@ -34,6 +34,7 @@ import {
   getAuthenticateTestResult,
   authenticateGenerateCriminalBackground,
   authenticate7YearHistory,
+  addQuizAttempt,
 } from '../../ducks/authenticate.duck';
 import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
@@ -102,6 +103,7 @@ const EditListingBackgroundCheckPanel = props => {
     subscription,
     updateInProgress,
     onFetchCurrentUser,
+    onAddQuizAttempt,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -323,7 +325,6 @@ const EditListingBackgroundCheckPanel = props => {
 
     const phoneString = `+1${phone.replace(/-/g, '')}`;
     const fullAddress = `${addressLine1}${addressLine2String}`;
-    const ssnString = ssn.replace(/-/g, '');
 
     const parsedAddress = parser.parseLocation(addressLine1);
 
@@ -339,7 +340,7 @@ const EditListingBackgroundCheckPanel = props => {
       city: city.trim(),
       state: state.trim(),
       zipCode: zipCode.trim(),
-      ssn: ssnString.trim(),
+      ssn: ssn,
       houseNumber: parsedAddress?.number,
     };
 
@@ -586,17 +587,6 @@ const EditListingBackgroundCheckPanel = props => {
         getAuthenticateTestResultInProgress;
       content = (
         <div className={css.quizContent}>
-          <h1 className={css.quizTitle}>
-            Verify Your <span className={css.identityText}>Identity</span>
-          </h1>
-          <div className={css.attemptsContainer}>
-            <h3 className={css.attemptsHeader}>Maximum Attempts: {MAX_QUIZ_ATTEMPTS}</h3>
-            <h3 className={css.attemptsHeader}>
-              {' '}
-              Attempts Remaining:{' '}
-              {!!identityProofQuizAttempts ? MAX_QUIZ_ATTEMPTS - identityProofQuizAttempts : 3}
-            </h3>
-          </div>
           <IdentityProofForm
             saveActionMsg="Submit"
             onSubmit={() => {}}
@@ -610,6 +600,9 @@ const EditListingBackgroundCheckPanel = props => {
             currentUserId={currentUser.id?.uuid}
             onGetIdentityProofQuiz={onGetIdentityProofQuiz}
             getIdentityProofQuizInProgress={getIdentityProofQuizInProgress}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onAddQuizAttempt={onAddQuizAttempt}
+            currentUser={currentUser}
           />
         </div>
       );
@@ -762,6 +755,7 @@ const mapDispatchToProps = {
   onGetIdentityProofQuiz: identityProofQuiz,
   onUpdateSubscription: updateSubscription,
   onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
+  onAddQuizAttempt: addQuizAttempt,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

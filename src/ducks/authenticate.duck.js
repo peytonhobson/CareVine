@@ -83,6 +83,8 @@ export const APPLY_BC_PROMO_REQUEST = 'app/Authenticate/APPLY_BC_PROMO';
 export const APPLY_BC_PROMO_SUCCESS = 'app/Authenticate/APPLY_BC_PROMO_SUCCESS';
 export const APPLY_BC_PROMO_ERROR = 'app/Authenticate/APPLY_BC_PROMO_ERROR';
 
+export const ADD_QUIZ_ATTEMPT = 'app/Authenticate/ADD_QUIZ_ATTEMPT';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -338,6 +340,25 @@ export const authenticateGenerateCriminalBackgroundError = errorAction(
   AUTHENTICATE_GENERATE_CRIMINAL_BACKGROUND_ERROR
 );
 
+export const addQuizAttempt = () => async (dispatch, getState, sdk) => {
+  const { currentUser } = getState().user;
+  const { identityProofQuizAttempts } = currentUser.attributes.profile.privateData;
+
+  const privateData = {
+    identityProofQuizAttempts: identityProofQuizAttempts ? identityProofQuizAttempts + 1 : 1,
+  };
+
+  try {
+    await sdk.currentUser.updateProfile({
+      privateData,
+    });
+
+    dispatch(fetchCurrentUser());
+  } catch (e) {
+    log.error(e, 'add-quiz-attempt-failed', {});
+  }
+};
+
 // ================ Thunk ================ //
 
 export const authenticateCreateUser = (userInfo, userId) => async (dispatch, getState, sdk) => {
@@ -427,10 +448,12 @@ export const identityProofQuiz = userAccessCode => async (dispatch, getState, sd
   try {
     const response = await getIdentityProofQuiz({ userAccessCode });
 
-    dispatch(getIdentityProofQuizSuccess(response.data));
+    const now = Date.now();
+
+    dispatch(getIdentityProofQuizSuccess({ ...response.data, timeGenerated: now }));
 
     await sdk.currentUser.updateProfile({
-      privateData: { identityProofQuiz: response.data },
+      privateData: { identityProofQuiz: { ...response.data, timeGenerated: now } },
     });
 
     dispatch(fetchCurrentUser());

@@ -59,27 +59,6 @@
   }
 }
 
-.quizTitle {
-  width: 100%;
-
-  @media (--viewportLarge) {
-    margin-bottom: 0;
-    padding: 1px 0 7px 0;
-  }
-}
-
-.attemptsContainer {
-  display: flex;
-  width: 100%;
-  margin-top: 2rem;
-}
-
-.attemptsHeader {
-  display: inline;
-  color: var(--marketplaceColor);
-  margin-right: 2rem;
-}
-
 .bioText {
   color: var(--marketplaceColor);
 }
@@ -371,10 +350,6 @@
   @media (--viewportLarge) {
     margin: 0;
   }
-}
-
-.identityText {
-  color: var(--marketplaceColor);
 }
 
 .basicCard {
