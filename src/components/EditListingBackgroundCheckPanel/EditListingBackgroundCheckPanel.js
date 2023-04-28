@@ -37,7 +37,12 @@ import {
   authenticate7YearHistory,
   addQuizAttempt,
 } from '../../ducks/authenticate.duck';
-import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import {
+  createPayment,
+  createSubscription,
+  updateSubscription,
+  updateCustomerCreditBalance,
+} from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
@@ -105,6 +110,7 @@ const EditListingBackgroundCheckPanel = props => {
     updateInProgress,
     onFetchCurrentUser,
     onAddQuizAttempt,
+    onUpdateCustomerCreditBalance,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -259,6 +265,12 @@ const EditListingBackgroundCheckPanel = props => {
     backgroundCheckRejected,
     subscription,
   ]);
+
+  useEffect(() => {
+    if (createPaymentSuccess && signupReferralCode) {
+      onUpdateCustomerCreditBalance(signupReferralCode, 500);
+    }
+  }, [createPaymentSuccess]);
 
   // These error codes indicate the user needs to be updated to get identity proof quiz
   useEffect(() => {
@@ -760,6 +772,7 @@ const mapDispatchToProps = {
   onUpdateSubscription: updateSubscription,
   onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
   onAddQuizAttempt: addQuizAttempt,
+  onUpdateCustomerCreditBalance: updateCustomerCreditBalance,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

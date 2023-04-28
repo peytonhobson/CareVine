@@ -288,3 +288,7 @@ export const updateTransactionMetadata = body => {
 export const sendgridReferralEmail = body => {
   return post('/api/sendgrid-referral-email', body);
 };
+
+export const stripeUpdateCustomerCreditBalance = body => {
+  return post('/api/update-customer-credit-balance', body);
+};

@@ -18,6 +18,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      log.error(e, 'stripe-customer-update-failed');
       handleStripeError(res, e);
     });
 };

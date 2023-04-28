@@ -37,6 +37,7 @@ const stripeConfirmPayment = require('./api/stripe/stripe-confirm-payment');
 const stripeCreateSubscriptionSchedule = require('./api/stripe/stripe-create-subscription-schedule');
 const stripeCancelSubscriptionSchedule = require('./api/stripe/stripe-cancel-subscription-schedule');
 const stripeUpdateSubscriptionItem = require('./api/stripe/stripe-update-subscription-item');
+const updateCustomerCreditBalance = require('./api/stripe/update-customer-credit-balance');
 
 const userEmail = require('./api/user-email');
 const authenticateCreateUser = require('./api/authenticate-create-user');
@@ -131,6 +132,7 @@ router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
 router.post('/update-transaction-metadata', updateTransactionMetadata);
 router.post('/sendgrid-referral-email', sendgridReferralEmail);
+router.post('/update-customer-credit-balance', updateCustomerCreditBalance);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

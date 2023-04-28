@@ -64,13 +64,14 @@ const ReferralPageComponent = props => {
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const { referralCode, userType, referrals = [] } = ensuredCurrentUser.attributes.profile.metadata;
+  const stripeCustomerId = ensuredCurrentUser.stripeCustomer?.attributes?.stripeCustomerId;
 
-  if (ensuredCurrentUser.id?.uuid && userType !== CAREGIVER) {
+  if (ensuredCurrentUser.id?.uuid && (userType !== CAREGIVER || !stripeCustomerId)) {
     return <NamedRedirect name="LandingPage" />;
   }
 
   useEffect(() => {
-    if (!referralCode && ensuredCurrentUser.id?.uuid) {
+    if (!referralCode && stripeCustomerId) {
       onGenerateReferralCode();
     }
   }, [ensuredCurrentUser.id?.uuid]);
