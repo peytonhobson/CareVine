@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-// TODO: Change to time when we figure it out
-const QUIZ_EXPIRE_MINUTES = 60;
+const QUIZ_EXPIRE_MINUTES = 10;
 
 const QuizTimer = props => {
   const {

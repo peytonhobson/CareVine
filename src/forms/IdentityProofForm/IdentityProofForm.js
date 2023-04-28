@@ -223,9 +223,8 @@ const IdentityProofFormComponent = props => (
               by a third party and is sometimes inaccurate, so don't worry if it takes you a few
               tries.
             </p>
-            {/* TODO: Change this to match actual time */}
             <p className={css.modalMessage}>
-              Each quiz session expires after 15 minutes. Please complete the quiz as soon as
+              Each quiz session expires after 10 minutes. Please complete the quiz as soon as
               possible, or you will lose an attempt.
             </p>
             <p className={css.modalMessage}>
