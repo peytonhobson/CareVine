@@ -340,7 +340,7 @@ const EditListingBackgroundCheckPanel = props => {
       city: city.trim(),
       state: state.trim(),
       zipCode: zipCode.trim(),
-      ssn: ssn,
+      ssn: ssn.replace(/-/g, '').trim(),
       houseNumber: parsedAddress?.number,
     };
 
