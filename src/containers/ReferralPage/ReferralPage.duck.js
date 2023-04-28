@@ -1,4 +1,10 @@
-import { updateUser, sendgridReferralEmail, stripeUpdateCustomer } from '../../util/api';
+import {
+  updateUser,
+  sendgridReferralEmail,
+  stripeUpdateCustomer,
+  fetchStripeCustomer,
+  updateUserReferrals,
+} from '../../util/api';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { fetchCurrentUser } from '../../ducks/user.duck';
@@ -18,6 +24,17 @@ export const SEND_REMINDER_REQUEST = 'app/ReferralPage/SEND_REMINDER_REQUEST';
 export const SEND_REMINDER_SUCCESS = 'app/ReferralPage/SEND_REMINDER_SUCCESS';
 export const SEND_REMINDER_ERROR = 'app/ReferralPage/SEND_REMINDER_ERROR';
 
+export const FETCH_CUSTOMER_CREDIT_BALANCE_REQUEST =
+  'app/ReferralPage/FETCH_CUSTOMER_CREDIT_BALANCE_REQUEST';
+export const FETCH_CUSTOMER_CREDIT_BALANCE_SUCCESS =
+  'app/ReferralPage/FETCH_CUSTOMER_CREDIT_BALANCE_SUCCESS';
+export const FETCH_CUSTOMER_CREDIT_BALANCE_ERROR =
+  'app/ReferralPage/FETCH_CUSTOMER_CREDIT_BALANCE_ERROR';
+
+export const CLAIM_REFERRAL_REQUEST = 'app/ReferralPage/CLAIM_REFERRAL_REQUEST';
+export const CLAIM_REFERRAL_SUCCESS = 'app/ReferralPage/CLAIM_REFERRAL_SUCCESS';
+export const CLAIM_REFERRAL_ERROR = 'app/ReferralPage/CLAIM_REFERRAL_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -29,6 +46,11 @@ const initialState = {
   sendReminderInProgress: false,
   sendReminderError: null,
   reminderSent: false,
+  customerCreditBalance: null,
+  fetchCustomerCreditBalanceInProgress: false,
+  fetchCustomerCreditBalanceError: null,
+  claimReferralInProgress: false,
+  claimReferralError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -92,6 +114,43 @@ export default function reducer(state = initialState, action = {}) {
         sendReminderError: payload,
       };
 
+    case FETCH_CUSTOMER_CREDIT_BALANCE_REQUEST:
+      return {
+        ...state,
+        fetchCustomerCreditBalanceInProgress: true,
+        fetchCustomerCreditBalanceError: null,
+      };
+    case FETCH_CUSTOMER_CREDIT_BALANCE_SUCCESS:
+      return {
+        ...state,
+        fetchCustomerCreditBalanceInProgress: false,
+        customerCreditBalance: payload,
+      };
+    case FETCH_CUSTOMER_CREDIT_BALANCE_ERROR:
+      return {
+        ...state,
+        fetchCustomerCreditBalanceInProgress: false,
+        fetchCustomerCreditBalanceError: payload,
+      };
+
+    case CLAIM_REFERRAL_REQUEST:
+      return {
+        ...state,
+        claimReferralInProgress: true,
+        claimReferralError: null,
+      };
+    case CLAIM_REFERRAL_SUCCESS:
+      return {
+        ...state,
+        claimReferralInProgress: false,
+      };
+    case CLAIM_REFERRAL_ERROR:
+      return {
+        ...state,
+        claimReferralInProgress: false,
+        claimReferralError: payload,
+      };
+
     default:
       return state;
   }
@@ -119,6 +178,27 @@ export const sendReminderRequest = email => ({ type: SEND_REMINDER_REQUEST, payl
 export const sendReminderSuccess = email => ({ type: SEND_REMINDER_SUCCESS, payload: email });
 export const sendReminderError = error => ({
   type: SEND_REMINDER_ERROR,
+  payload: error,
+  error: true,
+});
+
+export const fetchCustomerCreditBalanceRequest = () => ({
+  type: FETCH_CUSTOMER_CREDIT_BALANCE_REQUEST,
+});
+export const fetchCustomerCreditBalanceSuccess = balance => ({
+  type: FETCH_CUSTOMER_CREDIT_BALANCE_SUCCESS,
+  payload: balance,
+});
+export const fetchCustomerCreditBalanceError = error => ({
+  type: FETCH_CUSTOMER_CREDIT_BALANCE_ERROR,
+  payload: error,
+  error: true,
+});
+
+export const claimReferralRequest = () => ({ type: CLAIM_REFERRAL_REQUEST });
+export const claimReferralSuccess = () => ({ type: CLAIM_REFERRAL_SUCCESS });
+export const claimReferralError = error => ({
+  type: CLAIM_REFERRAL_ERROR,
   payload: error,
   error: true,
 });
@@ -219,6 +299,41 @@ export const sendReminder = referral => async (dispatch, getState, sdk) => {
     log.error(e, 'send-reminder-failed', {
       email,
       referralCode,
+    });
+  }
+};
+
+export const fetchCustomerCreditBalance = () => async (dispatch, getState, sdk) => {
+  dispatch(fetchCustomerCreditBalanceRequest());
+
+  const { currentUser } = getState().user;
+  const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
+
+  try {
+    const customer = await fetchStripeCustomer({ stripeCustomerId });
+
+    const balance = customer.data.balance;
+
+    dispatch(fetchCustomerCreditBalanceSuccess(balance / 100));
+  } catch (e) {
+    dispatch(fetchCustomerCreditBalanceError(storableError(e)));
+    log.error(e, 'fetch-customer-credit-balance-failed', {
+      stripeCustomerId,
+    });
+  }
+};
+
+export const claimReferral = (email, referralCode) => async (dispatch, getState, sdk) => {
+  dispatch(claimReferralRequest());
+
+  try {
+    await updateUserReferrals({ email, referralCode });
+
+    dispatch(claimReferralSuccess());
+  } catch (e) {
+    dispatch(claimReferralError(storableError(e)));
+    log.error(e, 'claim-referral-failed', {
+      email,
     });
   }
 };

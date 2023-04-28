@@ -38,6 +38,7 @@ const stripeCreateSubscriptionSchedule = require('./api/stripe/stripe-create-sub
 const stripeCancelSubscriptionSchedule = require('./api/stripe/stripe-cancel-subscription-schedule');
 const stripeUpdateSubscriptionItem = require('./api/stripe/stripe-update-subscription-item');
 const updateCustomerCreditBalance = require('./api/stripe/update-customer-credit-balance');
+const fetchStripeCustomer = require('./api/stripe/fetch-customer');
 
 const userEmail = require('./api/user-email');
 const authenticateCreateUser = require('./api/authenticate-create-user');
@@ -57,6 +58,7 @@ const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
 const updateTransactionMetadata = require('./api/update-transaction-metadata');
 const sendgridReferralEmail = require('./api/sendgrid/sendgrid-referral-email');
+const updateUserReferrals = require('./api/update-user-referrals');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -133,6 +135,8 @@ router.post('/update-user-notifications', updateUserNotifications);
 router.post('/update-transaction-metadata', updateTransactionMetadata);
 router.post('/sendgrid-referral-email', sendgridReferralEmail);
 router.post('/update-customer-credit-balance', updateCustomerCreditBalance);
+router.post('/fetch-stripe-customer', fetchStripeCustomer);
+router.post('/update-user-referrals', updateUserReferrals);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
