@@ -232,9 +232,9 @@ module.exports = queryEvents = () => {
 
     if (eventType === 'user/deleted') {
       const previousValues = event.attributes.previousValues;
-      const tcmEnrolled = previousValues.attributes.profile.privateData.tcmEnrolled;
+      const tcmEnrolled = previousValues.attributes.profile.privateData?.tcmEnrolled;
       const userAccessCode =
-        previousValues.attributes.profile.privateData.authenticateUserAccessCode;
+        previousValues.attributes.profile.privateData?.authenticateUserAccessCode;
 
       if (tcmEnrolled && userAccessCode && !isDev) {
         deEnrollUserTCM(event, userAccessCode);
