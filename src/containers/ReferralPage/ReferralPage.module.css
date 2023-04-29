@@ -1,7 +1,18 @@
+@import '../../styles/customMediaQueries.css';
+
 .mainWrapper {
   background-color: #f5f5f5;
-  min-height: calc(100vh - var(--topbarHeightDesktop));
   padding-bottom: 2rem;
+  min-height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+    padding-inline: 0;
+  }
+}
+
+.subtitle {
+  text-align: center;
 }
 
 .content {
@@ -10,29 +21,48 @@
   align-items: center;
   justify-content: flex-start;
   height: 100%;
-  width: 45rem;
   margin-inline: auto;
+  width: 90vw;
+
+  @media (--viewportMedium) {
+    width: 45rem;
+  }
 }
 
 .sendCard {
-  display: grid;
-  grid-auto-flow: column;
   width: 100%;
   margin-top: 2rem;
   padding: 1.5rem;
   background-color: #fff;
   border-radius: 0.5rem;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-auto-flow: column;
+  }
 }
 
 .shareCareVineContainer {
-  padding-right: 4rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  @media (--viewportMedium) {
+    padding-right: 4rem;
+    justify-content: flex-start;
+  }
 }
 
 .shareCareVine {
   text-align: left;
   width: 100%;
   margin-block: 0;
+  padding-top: 1rem;
+
+  @media (--viewportMedium) {
+    padding-top: 0;
+  }
 }
 
 .smallLineHeight {
@@ -46,6 +76,11 @@
 .referralButton {
   width: auto;
   padding: 0 3rem;
+  margin-top: 1rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
 }
 
 .referralInstructions {
@@ -80,9 +115,20 @@
 }
 
 .referralAccordionContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 2rem;
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+  }
+}
+
+.creditGiftContainer {
+  display: flex;
+
+  @media (--viewportMedium) {
+    flex-direction: column;
+    padding-right: 2rem;
+  }
 }
 
 .referralDisplayContainer {
@@ -90,6 +136,11 @@
   grid-template-columns: 1fr 1fr 1fr;
   background-color: var(--marketplaceColor);
   padding-block: 1rem;
+  margin-top: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
 }
 
 .referralsTotal {
@@ -188,6 +239,46 @@
 .remind {
   composes: marketplaceTinyFontStyles from global;
   margin: 0;
+}
+
+.modalContainer {
+  /* Create context so the close button can be positioned within it */
+  position: relative;
+
+  /* Display and dimensions */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--modalPadding);
+
+  background-color: var(--matterColorLight);
+  border-radius: var(--borderRadius);
+  border-bottom: none;
+
+  min-height: 100vh;
+  height: 100%;
+
+  @media (--viewportMedium) {
+    flex-grow: 0;
+    min-height: auto;
+    height: auto;
+    width: auto;
+
+    padding: var(--modalPaddingMedium);
+    margin-top: 12.5vh;
+    margin-bottom: 12.5vh;
+    border-bottom: 8px solid var(--marketplaceColor);
+  }
+}
+
+.modalContent {
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: auto;
+  }
 }
 
 /* Title of the modal */
