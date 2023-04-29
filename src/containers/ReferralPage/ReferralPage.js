@@ -38,6 +38,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import { compose } from 'redux';
 
@@ -63,6 +64,8 @@ const ReferralPageComponent = props => {
     fetchCustomerCreditBalanceError,
     onFetchCustomerCreditBalance,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const [isSendReferralModalOpen, setIsSendReferralModalOpen] = useState(false);
   const [isCreditsAccordionExpanded, setIsCreditsAccordionExpanded] = useState(false);
@@ -150,7 +153,9 @@ const ReferralPageComponent = props => {
           values={{
             credits: referralsClaimed * 5,
             keepAnEye:
-              referralsClaimed === 0 && '- Keep an eye on your email for claimed referrals',
+              referralsClaimed === 0 && !isMobile
+                ? '- Keep an eye on your email for claimed referrals'
+                : '',
           }}
         />
       </p>
@@ -199,7 +204,7 @@ const ReferralPageComponent = props => {
             <h1 className={css.mainTitle}>
               <FormattedMessage id="ReferralPage.title" />
             </h1>
-            <h3>
+            <h3 className={css.subtitle}>
               <FormattedMessage id="ReferralPage.subTitle" />
             </h3>
             <div className={css.sendCard}>
@@ -208,7 +213,11 @@ const ReferralPageComponent = props => {
               </div>
               <div className={css.shareCareVineContainer}>
                 <h3 className={css.shareCareVine}>
-                  <FormattedMessage id="ReferralPage.cardTitle" />
+                  {isMobile ? (
+                    <FormattedMessage id="ReferralPage.cardTitleMobile" />
+                  ) : (
+                    <FormattedMessage id="ReferralPage.cardTitle" />
+                  )}
                 </h3>
                 <p className={css.smallLineHeight}>
                   <FormattedMessage id="ReferralPage.cardSubtitle" />
@@ -221,14 +230,16 @@ const ReferralPageComponent = props => {
                   <FormattedMessage id="ReferralPage.senReferralButton" />
                 </GradientButton>
               </div>
-              <img
-                alt="Gift Within a Gift Gifs, 3d Video, Happy Birthday Candles, Gif Gifts, Image Gifts, Diamond Gift, Christmas Gif, Birthday Gif, Moving Image"
-                className={css.giftGif}
-                elementtiming="closeupImage"
-                fetchpriority="auto"
-                loading="auto"
-                src="https://i.pinimg.com/originals/14/12/58/141258a3d8ac3129bc0e2abb7c3bd78e.gif"
-              ></img>
+              {!isMobile && (
+                <img
+                  alt="Gift Within a Gift Gifs, 3d Video, Happy Birthday Candles, Gif Gifts, Image Gifts, Diamond Gift, Christmas Gif, Birthday Gif, Moving Image"
+                  className={css.giftGif}
+                  elementtiming="closeupImage"
+                  fetchpriority="auto"
+                  loading="auto"
+                  src="https://i.pinimg.com/originals/14/12/58/141258a3d8ac3129bc0e2abb7c3bd78e.gif"
+                ></img>
+              )}
             </div>
             <Accordion
               expanded={isCreditsAccordionExpanded}
@@ -239,7 +250,7 @@ const ReferralPageComponent = props => {
               </AccordionSummary>
               <AccordionDetails>
                 <div className={css.referralAccordionContainer}>
-                  <div>
+                  <div className={css.creditGiftContainer}>
                     <img
                       className={css.giftGif}
                       alt="Gift marvel Palm Springs, Graphics Gift, Origami Templates, Box Templates, Gif Gifts, Image Gifts, 3d Christmas, 3d Drawings, Animation Reference"
@@ -248,12 +259,14 @@ const ReferralPageComponent = props => {
                       loading="auto"
                       src="https://i.pinimg.com/originals/fd/2c/1a/fd2c1a96b654e220d09525f006482477.gif"
                     ></img>
-                    <p className={classNames(css.smallLineHeight, css.textBold)}>
-                      <FormattedMessage id="ReferralPage.firstAccordionTitle" />
-                    </p>
-                    <p className={classNames(css.smallLineHeight, css.referralInstructions)}>
-                      <FormattedMessage id="ReferralPage.firstAccordionSubtitle" />
-                    </p>
+                    <div>
+                      <p className={classNames(css.smallLineHeight, css.textBold)}>
+                        <FormattedMessage id="ReferralPage.firstAccordionTitle" />
+                      </p>
+                      <p className={classNames(css.smallLineHeight, css.referralInstructions)}>
+                        <FormattedMessage id="ReferralPage.firstAccordionSubtitle" />
+                      </p>
+                    </div>
                   </div>
                   <div style={{ paddingInline: '1rem' }}>
                     <div className={css.referralDisplayContainer}>
@@ -330,7 +343,7 @@ const ReferralPageComponent = props => {
         onClose={() => setIsSendReferralModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         containerClassName={css.modalContainer}
-        className={css.modalContent}
+        contentClassName={css.modalContent}
         usePortal
       >
         <h1 className={css.modalTitle}>

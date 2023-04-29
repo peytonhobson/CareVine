@@ -1,5 +1,11 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   padding: 0 3rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
 }
 .email {
   margin-top: 2rem;
