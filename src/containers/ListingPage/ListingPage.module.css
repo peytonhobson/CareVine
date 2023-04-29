@@ -21,7 +21,7 @@
 .subContainer {
   max-width: 100%;
 
-  @media (--viewportMedium) {
+  @media (--viewportLarge) {
     width: 60%;
   }
 }
