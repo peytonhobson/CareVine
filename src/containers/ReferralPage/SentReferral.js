@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { FormattedMessage } from '../../util/reactIntl';
 import { IconBell, InfoTooltip, IconSpinner, IconCheckmark } from '../../components';
 
 import css from './ReferralPage.module.css';
@@ -15,7 +16,9 @@ const SentReferral = props => {
     !referral.claimed;
 
   const reminderTooSoon = (
-    <p>It's a little too soon to send a reminder. Check back in a few days!</p>
+    <p>
+      <FormattedMessage id="SentReferral.reminderTooSoon" />
+    </p>
   );
 
   const remind = (
@@ -27,7 +30,11 @@ const SentReferral = props => {
       ) : (
         <IconBell height="1.25em" width="1.25em" />
       )}
-      {reminderSent !== referral.email && <p className={css.remind}>Remind</p>}
+      {reminderSent !== referral.email && (
+        <p className={css.remind}>
+          <FormattedMessage id="SentReferral.remind" />
+        </p>
+      )}
     </div>
   );
 
@@ -49,9 +56,13 @@ const SentReferral = props => {
       <div>
         <p className={css.referralEmail}>{referral.email}</p>
         {referral.claimed ? (
-          <p className={css.referralClaimed}>Claimed</p>
+          <p className={css.referralClaimed}>
+            <FormattedMessage id="SentReferral.claimed" />
+          </p>
         ) : (
-          <p className={css.referralUnclaimed}>Unclaimed</p>
+          <p className={css.referralUnclaimed}>
+            <FormattedMessage id="SentReferral.unclaimed" />
+          </p>
         )}
       </div>
       <div className={css.referralReminderContainer}>

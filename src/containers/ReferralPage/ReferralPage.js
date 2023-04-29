@@ -6,20 +6,18 @@ import {
   LayoutWrapperTopbar,
   LayoutWrapperMain,
   GradientButton,
-  IconCar,
-  IconCalendar,
   LayoutWrapperFooter,
   Footer,
-  InlineTextButton,
-  InfoTooltip,
   IconEnquiry,
   Modal,
   NamedRedirect,
   GenericError,
+  IconWallet,
+  IconGift,
+  IconEnvelopes,
 } from '../../components';
-import InfoIcon from '@mui/icons-material/Info';
 import { TopbarContainer } from '..';
-import { injectIntl, intlShape } from '../../util/reactIntl';
+import { injectIntl, FormattedMessage } from '../../util/reactIntl';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -142,35 +140,48 @@ const ReferralPageComponent = props => {
 
   const accordionReferralLabel = (
     <div className={css.accordionLabel}>
-      {/* TODO: Swap out icon */}
-      <IconCar />
-      <h4 className={css.myReferrals}>My Credits</h4>
-      {/* Make referral number dynamic */}
+      <IconWallet height="1.5em" width="1.5em" />
+      <h4 className={css.myReferrals}>
+        <FormattedMessage id="ReferralPage.myCredits" />
+      </h4>
       <p className={css.referralsText}>
-        {referralsClaimed} credits received{' '}
-        {referralsClaimed === 0 && '- Keep an eye on your email for claimed referrals'}
+        <FormattedMessage
+          id="ReferralPage.creditsReceived"
+          values={{
+            credits: referralsClaimed * 5,
+            keepAnEye:
+              referralsClaimed === 0 && '- Keep an eye on your email for claimed referrals',
+          }}
+        />
       </p>
     </div>
   );
 
   const accordionReferralsSentLabel = (
     <div className={css.accordionLabel}>
-      {/* TODO: Swap out icon */}
-      <IconCar />
+      <IconEnvelopes width="1.5em" height="1.5em" />
       <h4 className={css.myReferrals}>
-        {referrals ? referrals.length : 0} {referrals.length === 1 ? 'referral' : 'referrals'} sent
-        by e-mail
+        <FormattedMessage
+          id="ReferralPage.referralsSentByEmail"
+          values={{
+            numberReferrals: referrals ? referrals.length : 0,
+            referrals: referrals.length === 1 ? 'referral' : 'referrals',
+          }}
+        />
       </h4>
     </div>
   );
 
-  const hasGenericError = generateReferralCodeError || sendReminderError;
+  const hasGenericError =
+    generateReferralCodeError || sendReminderError | fetchCustomerCreditBalanceError;
 
-  const genericErrorText = generateReferralCodeError
-    ? 'Something went wrong while generating your referral code. Please try again later.'
-    : sendReminderError
-    ? 'Something went wrong while sending your reminder. Please try again later.'
-    : null;
+  const genericErrorText = generateReferralCodeError ? (
+    <FormattedMessage id="ReferralPage.generateReferralCodeError" />
+  ) : sendReminderError ? (
+    <FormattedMessage id="ReferralPage.sendReminderError" />
+  ) : fetchCustomerCreditBalanceError ? (
+    <FormattedMessage id="ReferralPage.fetchCustomerCreditBalanceError" />
+  ) : null;
 
   return (
     <Page
@@ -185,25 +196,29 @@ const ReferralPageComponent = props => {
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
           <div className={css.content}>
-            <h1 className={css.mainTitle}>Refer a Friend</h1>
-            <h3>Invite your friends to CareVine and get rewards when they subscribe.</h3>
+            <h1 className={css.mainTitle}>
+              <FormattedMessage id="ReferralPage.title" />
+            </h1>
+            <h3>
+              <FormattedMessage id="ReferralPage.subTitle" />
+            </h3>
             <div className={css.sendCard}>
               <div className={css.iconContainer}>
-                {/* TODO: Swap out icon */}
-                <IconCar />
+                <IconGift height="1.5em" width="1.5em" />
               </div>
               <div className={css.shareCareVineContainer}>
-                <h3 className={css.shareCareVine}>Share CareVine and get $5 in credits</h3>
+                <h3 className={css.shareCareVine}>
+                  <FormattedMessage id="ReferralPage.cardTitle" />
+                </h3>
                 <p className={css.smallLineHeight}>
-                  Give friends 50% off on their first month of CareVine Gold and you'll also receive
-                  a $5 subscription credit for each friend who subscribes.
+                  <FormattedMessage id="ReferralPage.cardSubtitle" />
                 </p>
                 <GradientButton
                   className={css.referralButton}
                   disabled={!referralCode}
                   onClick={() => setIsSendReferralModalOpen(true)}
                 >
-                  Send Referral
+                  <FormattedMessage id="ReferralPage.senReferralButton" />
                 </GradientButton>
               </div>
               <img
@@ -234,25 +249,31 @@ const ReferralPageComponent = props => {
                       src="https://i.pinimg.com/originals/fd/2c/1a/fd2c1a96b654e220d09525f006482477.gif"
                     ></img>
                     <p className={classNames(css.smallLineHeight, css.textBold)}>
-                      Remember to keep an eye on your email.
+                      <FormattedMessage id="ReferralPage.firstAccordionTitle" />
                     </p>
                     <p className={classNames(css.smallLineHeight, css.referralInstructions)}>
-                      Begin receiving subscription credits by sending referrals to other caregivers.
+                      <FormattedMessage id="ReferralPage.firstAccordionSubtitle" />
                     </p>
                   </div>
                   <div style={{ paddingInline: '1rem' }}>
                     <div className={css.referralDisplayContainer}>
                       <div className={css.referralsTotal}>
                         ${referralsClaimed * 5}
-                        <p className={css.creditsDisplayText}>Received</p>
+                        <p className={css.creditsDisplayText}>
+                          <FormattedMessage id="ReferralPage.received" />
+                        </p>
                       </div>
                       <div className={css.referralsRemaining}>
                         ${customerCreditBalance}
-                        <p className={css.creditsDisplayText}>Remaining</p>
+                        <p className={css.creditsDisplayText}>
+                          <FormattedMessage id="ReferralPage.remaining" />
+                        </p>
                       </div>
                       <div className={css.referralsPending}>
                         ${referralsNotClaimed * 5}
-                        <p className={css.creditsDisplayText}>Pending</p>
+                        <p className={css.creditsDisplayText}>
+                          <FormattedMessage id="ReferralPage.pending" />
+                        </p>
                       </div>
                     </div>
                     <GradientButton
@@ -260,7 +281,7 @@ const ReferralPageComponent = props => {
                       disabled={!referralCode}
                       onClick={() => setIsSendReferralModalOpen(true)}
                     >
-                      Send Invites
+                      <FormattedMessage id="ReferralPage.sendInvites" />
                     </GradientButton>
                   </div>
                 </div>
@@ -276,9 +297,9 @@ const ReferralPageComponent = props => {
               <AccordionDetails>
                 {referrals.length > 0 ? (
                   <div className={css.sentReferralAccordionContainer}>
-                    {referrals.reverse().map(referral => (
+                    {[...referrals].reverse().map(referral => (
                       <SentReferral
-                        key={referral.id}
+                        key={1 / referral.createdAt}
                         referral={referral}
                         onRemind={email => onSendReminder(email)}
                         sendReminderInProgress={sendReminderInProgress}
@@ -290,7 +311,9 @@ const ReferralPageComponent = props => {
                 ) : (
                   <div className={css.noReferrals}>
                     <IconEnquiry />
-                    <p className={css.noReferralsText}>You haven't sent any referrals yet.</p>
+                    <p className={css.noReferralsText}>
+                      <FormattedMessage id="ReferralPage.noReferrals" />
+                    </p>
                   </div>
                 )}
               </AccordionDetails>
@@ -310,7 +333,9 @@ const ReferralPageComponent = props => {
         className={css.modalContent}
         usePortal
       >
-        <h1 className={css.modalTitle}>Send a Referral</h1>
+        <h1 className={css.modalTitle}>
+          <FormattedMessage id="ReferralPage.sendAReferral" />
+        </h1>
         <SendReferralForm
           intl={intl}
           onSubmit={handleSendReferral}
