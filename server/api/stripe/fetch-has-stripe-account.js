@@ -1,5 +1,5 @@
-const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
-const log = require('../log');
+const { integrationSdk, handleError, serialize } = require('../../api-util/sdk');
+const log = require('../../log');
 
 module.exports = (req, res) => {
   // Create a PaymentIntent with the order amount and currency

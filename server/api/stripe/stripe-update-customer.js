@@ -1,12 +1,12 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleStripeError, serialize } = require('../api-util/sdk');
-const log = require('../log');
+const { integrationSdk, handleStripeError, serialize } = require('../../api-util/sdk');
+const log = require('../../log');
 
 module.exports = (req, res) => {
-  const { subscriptionId } = req.body;
+  const { stripeCustomerId, params } = req.body;
 
-  stripe.subscriptions
-    .del(subscriptionId)
+  return stripe.customers
+    .update(stripeCustomerId, { ...params })
     .then(apiResponse => {
       res
         .set('Content-Type', 'application/transit+json')
@@ -18,6 +18,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      log.error(e, 'stripe-customer-update-failed');
       handleStripeError(res, e);
     });
 };
