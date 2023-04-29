@@ -126,24 +126,6 @@ const formatSSN = value => {
   return `${ssn.slice(0, 3)}-${ssn.slice(3, 5)}-${ssn.slice(5, 9)}`;
 };
 
-const formatLast4 = value => {
-  // if input value is falsy eg if the user deletes the input, then just return
-  if (!value) return value;
-
-  // clean the input for any non-digit values.
-  const ssn = value.replace(/[^\d]/g, '');
-
-  // ssnLength is used to know when to apply our formatting for the ssn
-  const ssnLength = ssn.length;
-
-  // we need to return the value with no formatting if its less than four digits
-  if (ssnLength < 5) return ssn;
-
-  // finally, if the ssnLength is greater then 6, we add the last
-  // bit of formatting and return it.
-  return `${ssn.slice(0, 4)}`;
-};
-
 const EditListingBackgroundCheckForm = props => (
   <FinalForm
     {...props}
@@ -216,13 +198,6 @@ const EditListingBackgroundCheckForm = props => (
       const ssnFormatter = e => {
         // next, we're going to format this input with the `formatSSN` function, which we'll write next.
         const formattedValue = formatSSN(e.currentTarget.value);
-        // Then we'll set the value of the inputField to the formattedValue we generated with the formatSSN function
-        form.change('ssn', formattedValue);
-      };
-
-      const last4Formatter = e => {
-        // next, we're going to format this input with the `formatSSN` function, which we'll write next.
-        const formattedValue = formatLast4(e.currentTarget.value);
         // Then we'll set the value of the inputField to the formattedValue we generated with the formatSSN function
         form.change('ssn', formattedValue);
       };
@@ -347,7 +322,7 @@ const EditListingBackgroundCheckForm = props => (
               ))}
             </FieldSelect>
           </div>
-          <div className={update ? css.row : css.ssnRow}>
+          <div className={css.row}>
             <FieldDateInput
               id="dob"
               name="dob"
@@ -362,47 +337,20 @@ const EditListingBackgroundCheckForm = props => (
               displayFormat="MM/DD/YYYY"
               required
             />
-            {update ? (
-              <FieldTextInput
-                id="ssn"
-                name="ssn"
-                type="text"
-                className={css.secondField}
-                label="SSN"
-                placeholder="xxx-xx-xxxx"
-                validate={composeValidators(
-                  ssnFormatValid('Invalid SSN'),
-                  required('SSN is required')
-                )}
-                onChange={ssnFormatter}
-                required
-              />
-            ) : (
-              <div className={css.ssnMain}>
-                <div className={css.ssnContainer}>
-                  <label>
-                    Last 4 of SSN<span className={css.error}>*</span>
-                  </label>
-                  <div>
-                    <input disabled placeholder="••• – •• – " className={css.ssnPlaceholder} />
-                  </div>
-                  <FieldTextInput
-                    className={css.ssn}
-                    id="ssn"
-                    name="ssn"
-                    type="text"
-                    placeholder="xxxx"
-                    validate={composeValidators(
-                      last4FormatValid('Invalid SSN'),
-                      required('SSN is required')
-                    )}
-                    inputRootClass={css.ssnInputRoot}
-                    onChange={last4Formatter}
-                    required
-                  />
-                </div>
-              </div>
-            )}
+            <FieldTextInput
+              id="ssn"
+              name="ssn"
+              type="text"
+              className={css.secondField}
+              label="SSN"
+              placeholder="xxx-xx-xxxx"
+              validate={composeValidators(
+                ssnFormatValid('Invalid SSN'),
+                required('SSN is required')
+              )}
+              onChange={ssnFormatter}
+              required
+            />
           </div>
           <div className={css.row}>
             <FieldTextInput
