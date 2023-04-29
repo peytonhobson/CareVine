@@ -39,6 +39,7 @@ const stripeCancelSubscriptionSchedule = require('./api/stripe/stripe-cancel-sub
 const stripeUpdateSubscriptionItem = require('./api/stripe/stripe-update-subscription-item');
 const updateCustomerCreditBalance = require('./api/stripe/update-customer-credit-balance');
 const fetchStripeCustomer = require('./api/stripe/fetch-customer');
+const fetchStripeSubscription = require('./api/stripe/fetch-subscription');
 
 const userEmail = require('./api/user-email');
 const authenticateCreateUser = require('./api/authenticate-create-user');
@@ -137,6 +138,7 @@ router.post('/sendgrid-referral-email', sendgridReferralEmail);
 router.post('/update-customer-credit-balance', updateCustomerCreditBalance);
 router.post('/fetch-stripe-customer', fetchStripeCustomer);
 router.post('/update-user-referrals', updateUserReferrals);
+router.post('/stripe-fetch-subscription', fetchStripeSubscription);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

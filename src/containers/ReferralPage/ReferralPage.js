@@ -264,7 +264,7 @@ const ReferralPageComponent = props => {
                         </p>
                       </div>
                       <div className={css.referralsRemaining}>
-                        ${customerCreditBalance}
+                        ${-1 * customerCreditBalance}
                         <p className={css.creditsDisplayText}>
                           <FormattedMessage id="ReferralPage.remaining" />
                         </p>

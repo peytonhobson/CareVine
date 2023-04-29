@@ -272,7 +272,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   useEffect(() => {
     if (createPaymentSuccess && signupReferralCode && backgroundCheckType === GOLD) {
-      onUpdateCustomerCreditBalance(signupReferralCode, 500).then(() => {
+      onUpdateCustomerCreditBalance(signupReferralCode, -500).then(() => {
         const email = currentUser.attributes.email;
         onClaimReferral(email, signupReferralCode);
       });

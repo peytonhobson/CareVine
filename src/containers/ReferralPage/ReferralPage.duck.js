@@ -276,7 +276,6 @@ export const sendReminder = referral => async (dispatch, getState, sdk) => {
   const senderName = currentUser.attributes.profile.firstName;
   const { referralCode, referrals: oldReferrals } = currentUser.attributes.profile.metadata;
 
-  // TODO: Update user referrals
   try {
     await sendgridReferralEmail({ email, referralCode, senderName });
 

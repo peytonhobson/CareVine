@@ -300,3 +300,7 @@ export const fetchStripeCustomer = body => {
 export const updateUserReferrals = body => {
   return post('/api/update-user-referrals', body);
 };
+
+export const fetchStripeSubscription = body => {
+  return post('/api/stripe-fetch-subscription', body);
+};
