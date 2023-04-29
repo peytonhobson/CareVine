@@ -295,6 +295,7 @@
   "EditListingAvailabilityPlanForm.title": "Edit default schedule",
   "EditListingAvailabilityPlanForm.unfinishedError": "Please finish adding time slots to your schedule.",
   "EditListingAvailabilityPlanForm.updateFailed": "Failed to update. Please try again.",
+  "EditListingBackgroundCheckForm.getIdentityProofQuizError": "Failed to load identity proof quiz. Please try contacting support at support@carevine.us.",
   "EditListingBackgroundCheckForm.authenticateCreateUserError": "Failed to create user on authenticate.com. Please try again.",
   "EditListingBackgroundCheckForm.authenticateUpdateUserError": "Failed to update user on authenticate.com. Please try again.",
   "EditListingBackgroundCheckPanel.applyPromoError": "Failed to apply promo code. Please try again.",

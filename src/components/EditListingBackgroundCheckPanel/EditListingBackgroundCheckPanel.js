@@ -206,6 +206,7 @@ const EditListingBackgroundCheckPanel = props => {
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
   const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
+  const [updateUserSubmitted, setUpdateUserSubmitted] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
@@ -280,7 +281,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   // These error codes indicate the user needs to be updated to get identity proof quiz
   useEffect(() => {
-    const errorStatuses = [400, 417];
+    const errorStatuses = [400, 417, 404];
     if (getIdentityProofQuizError && errorStatuses.includes(getIdentityProofQuizError.status)) {
       setStage(UPDATE_USER);
     }
@@ -360,7 +361,7 @@ const EditListingBackgroundCheckPanel = props => {
       city: city.trim(),
       state: state.trim(),
       zipCode: zipCode.trim(),
-      ssn: ssn,
+      ssn: ssn.replace(/-/g, '').trim(),
       houseNumber: parsedAddress?.number,
     };
 
@@ -370,6 +371,7 @@ const EditListingBackgroundCheckPanel = props => {
       );
     } else if (stage === UPDATE_USER) {
       onAuthenticateUpdateUser(userInfo, authenticateUserAccessCode).then(() => {
+        setUpdateUserSubmitted(true);
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     }
@@ -589,6 +591,8 @@ const EditListingBackgroundCheckPanel = props => {
             onSubmit={handleSubmit}
             saveActionMsg="Submit"
             update
+            getIdentityProofQuizError={getIdentityProofQuizError}
+            updateUserSubmitted={updateUserSubmitted}
           />
         </div>
       );
