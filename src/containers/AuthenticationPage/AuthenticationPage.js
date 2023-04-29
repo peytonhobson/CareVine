@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { isEmpty } from 'lodash';
 import { useHistory } from 'react-router-dom';
 
+import queryString from 'query-string';
 import routeConfiguration from '../../routeConfiguration';
 import { pathByRouteName } from '../../util/routes';
 import { apiBaseUrl } from '../../util/api';
@@ -66,6 +67,17 @@ export class AuthenticationPageComponent extends Component {
     // Remove the autherror cookie once the content is saved to state
     // because we don't want to show the error message e.g. after page refresh
     Cookies.remove('st-autherror');
+  }
+
+  componentDidUpdate(prevProps) {
+    const { location } = this.props;
+
+    const parsedSearchParams = queryString.parse(location.search);
+    const { referralCode } = parsedSearchParams;
+
+    if (referralCode) {
+      sessionStorage.setItem('signupReferralCode', referralCode);
+    }
   }
 
   render() {

@@ -1,6 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleStripeError, serialize } = require('../api-util/sdk');
-const log = require('../log');
+const { handleStripeError, serialize } = require('../../api-util/sdk');
+const log = require('../../log');
 
 const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'

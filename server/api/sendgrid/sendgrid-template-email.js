@@ -1,6 +1,6 @@
 const sgMail = require('@sendgrid/mail');
-const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
-const log = require('../log');
+const { integrationSdk, handleError, serialize } = require('../../api-util/sdk');
+const log = require('../../log');
 
 const SENDGRID_TEMPLATE_IDS = {
   'new-message': 'd-99a691ae1af04a42abe2669208474925',
@@ -30,7 +30,7 @@ module.exports = (req, res) => {
 
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
-        from: 'hello@carevine.us',
+        from: 'CareVine@carevine.us',
         personalizations: [
           {
             to: [

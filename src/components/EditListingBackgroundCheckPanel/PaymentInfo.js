@@ -54,7 +54,8 @@ const PaymentInfo = props => {
 
   const latestInvoice = subscription.latest_invoice;
 
-  const subTotal = latestInvoice?.total_excluding_tax || subscription?.plan?.amount;
+  const amountDue = latestInvoice?.amount_due;
+  const planAmount = subscription?.plan?.amount;
   //   let tax = 0;
   //   latestInvoice.total_tax_amounts.forEach(taxAmount => {
   //     tax += taxAmount.amount;
@@ -66,13 +67,13 @@ const PaymentInfo = props => {
       <h2>Order Summary</h2>
       <div className={css.spreadSection}>
         <h3>{backgroundCheckType === BASIC ? 'Screening Fee' : '1-Month Subscription'}:</h3>
-        {promoApplied ? (
+        {amountDue !== planAmount ? (
           <h3>
-            <span className={css.greyedtext}>${subTotal / 100}</span>
-            <span className={css.newDiscount}>$0.00</span>
+            <span className={css.greyedtext}>${planAmount / 100}</span>
+            <span className={css.newDiscount}>${amountDue / 100}</span>
           </h3>
         ) : (
-          <h3>${subTotal / 100}</h3>
+          <h3>${amountDue / 100}</h3>
         )}
       </div>
       <div className={css.spreadSection}>
@@ -83,10 +84,10 @@ const PaymentInfo = props => {
       <hr></hr>
       <div className={css.spreadSection}>
         <h3>Total:</h3>
-        {promoApplied ? (
+        {amountDue !== planAmount ? (
           <h3>
-            <span className={css.greyedtext}>${total / 100} </span>
-            <span className={css.newDiscount}>$0.00</span>
+            <span className={css.greyedtext}>${planAmount / 100} </span>
+            <span className={css.newDiscount}>${amountDue / 100}</span>
           </h3>
         ) : (
           <h3>${total / 100}</h3>
@@ -135,14 +136,14 @@ const PaymentInfo = props => {
         <FormattedMessage
           id="EditListingBackgroundCheckPanel.submitFormText"
           values={{
-            paymentAmount: subTotal / 100,
+            paymentAmount: amountDue / 100,
           }}
         />
       </p>
       <p className={css.textSm}>
         <FormattedMessage
           id="EditListingBackgroundCheckPanel.feeAgreementMessage"
-          values={{ paymentAmount: subTotal / 100, renewalTerm, feeName }}
+          values={{ paymentAmount: planAmount / 100, renewalTerm, feeName }}
         />
       </p>
     </div>

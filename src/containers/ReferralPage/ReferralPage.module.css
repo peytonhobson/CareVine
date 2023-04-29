@@ -1,0 +1,294 @@
+@import '../../styles/customMediaQueries.css';
+
+.mainWrapper {
+  background-color: #f5f5f5;
+  padding-bottom: 2rem;
+  min-height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+    padding-inline: 0;
+  }
+}
+
+.subtitle {
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  margin-inline: auto;
+  width: 90vw;
+
+  @media (--viewportMedium) {
+    width: 45rem;
+  }
+}
+
+.sendCard {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-auto-flow: column;
+  }
+}
+
+.shareCareVineContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  @media (--viewportMedium) {
+    padding-right: 4rem;
+    justify-content: flex-start;
+  }
+}
+
+.shareCareVine {
+  text-align: left;
+  width: 100%;
+  margin-block: 0;
+  padding-top: 1rem;
+
+  @media (--viewportMedium) {
+    padding-top: 0;
+  }
+}
+
+.smallLineHeight {
+  line-height: 1.5rem;
+}
+
+.textBold {
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.referralButton {
+  width: auto;
+  padding: 0 3rem;
+  margin-top: 1rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.referralInstructions {
+  margin-bottom: 0;
+}
+
+.iconContainer {
+  height: 100%;
+  columns: 1/1;
+  padding-right: 1rem;
+}
+
+.giftGif {
+  max-height: 10rem;
+  max-width: 10rem;
+  margin: auto;
+}
+
+.accordionLabel {
+  display: flex;
+  padding: 0;
+}
+
+.myReferrals {
+  margin: 0 1rem;
+}
+
+.referralsText {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+  line-height: 1.5rem;
+}
+
+.referralAccordionContainer {
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
+  }
+}
+
+.creditGiftContainer {
+  display: flex;
+
+  @media (--viewportMedium) {
+    flex-direction: column;
+    padding-right: 2rem;
+  }
+}
+
+.referralDisplayContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background-color: var(--marketplaceColor);
+  padding-block: 1rem;
+  margin-top: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.referralsTotal {
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: var(--fontWeightSemiBold);
+  text-align: center;
+  color: var(--matterColorLight);
+}
+
+.referralsRemaining {
+  composes: referralsTotal;
+
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.referralsPending {
+  composes: referralsTotal;
+
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.creditsDisplayText {
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.tooltipContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.sendInvitesButton {
+  margin-top: 2rem;
+}
+
+.whatIsThisButton {
+  font-size: 1rem;
+  padding-left: 0.25rem;
+}
+
+.noReferrals {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  & > p {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.sentReferralAccordionContainer {
+  display: block;
+  padding: 0 1rem;
+}
+
+.sentReferral {
+  width: 100%;
+  border-bottom: 1px solid var(--matterColorNegative);
+  padding: 0.25rem 0;
+
+  display: grid;
+  grid-auto-flow: column;
+}
+
+.sentReferral:last-of-type {
+  border-bottom: none;
+}
+
+.referralEmail {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: var(--fontWeightSemiBold);
+}
+
+.referralClaimed {
+  color: var(--successColor);
+  margin-block: 0.5rem;
+}
+
+.referralUnclaimed {
+  color: var(--marketplaceColor);
+  margin-block: 0.5rem;
+}
+
+.referralReminderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.remind {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.modalContainer {
+  /* Create context so the close button can be positioned within it */
+  position: relative;
+
+  /* Display and dimensions */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--modalPadding);
+
+  background-color: var(--matterColorLight);
+  border-radius: var(--borderRadius);
+  border-bottom: none;
+
+  min-height: 100vh;
+  height: 100%;
+
+  @media (--viewportMedium) {
+    flex-grow: 0;
+    min-height: auto;
+    height: auto;
+    width: auto;
+
+    padding: var(--modalPaddingMedium);
+    margin-top: 12.5vh;
+    margin-bottom: 12.5vh;
+    border-bottom: 8px solid var(--marketplaceColor);
+  }
+}
+
+.modalContent {
+  width: 100%;
+
+  @media (--viewportMedium) {
+    width: auto;
+  }
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  text-align: center;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
