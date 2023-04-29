@@ -30,5 +30,8 @@ module.exports = (req, res) => {
         )
         .end();
     })
-    .catch(e => handleError(res, e.response));
+    .catch(e => {
+      log.error(e, 'failed-authenticate-enroll-tcm', { userAccessCode });
+      handleError(res, e.response);
+    });
 };
