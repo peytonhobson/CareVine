@@ -411,6 +411,11 @@
     margin-bottom: 24px;
     padding-top: 4px;
     padding-bottom: 4px;
+    text-align: center;
+  }
+
+  @media (--viewportLarge) {
+    text-align: left;
   }
 }
 
@@ -421,6 +426,14 @@
 .avatarsContainer {
   display: flex;
   flex-wrap: nowrap;
+
+  @media (--viewportMedium) {
+    justify-content: center;
+  }
+
+  @media (--viewportLarge) {
+    justify-content: flex-start;
+  }
 }
 
 .defaultProfiles {
