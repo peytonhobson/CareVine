@@ -9,6 +9,8 @@ import { formatDate } from '../../util/dates';
 import { ensureTransaction, ensureUser, ensureListing } from '../../util/data';
 import { isRelevantPastTransition } from '../../util/transaction';
 import { propTypes } from '../../util/types';
+import { usePrevious } from '../../util/hooks';
+import isEqual from 'lodash/isEqual';
 
 import css from './ActivityFeed.module.css';
 
@@ -195,12 +197,17 @@ export const ActivityFeedComponent = props => {
   const [showingOlderMessages, setShowingOlderMessages] = useState(false);
 
   const feedContainerRef = useRef(null);
+  const oldMessages = usePrevious(messages);
 
   useEffect(() => {
-    if (feedContainerRef && feedContainerRef.current && !showingOlderMessages) {
+    if (
+      feedContainerRef &&
+      feedContainerRef.current &&
+      !showingOlderMessages &&
+      !isEqual(oldMessages, messages)
+    ) {
       feedContainerRef.current.scrollTop = feedContainerRef.current.scrollHeight;
     }
-    setShowingOlderMessages(false);
   }, [messages]);
 
   const onShowMoreMessages = () => {
