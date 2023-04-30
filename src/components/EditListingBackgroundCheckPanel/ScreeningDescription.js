@@ -146,7 +146,7 @@ const ScreeningDescription = props => {
           <CardContent>
             <div className={css.screeningTitleContainer}>
               <h2 className={css.screeningTitle}>Find jobs faster</h2>
-              <p className={css.amountPerYear}>$4.99/month</p>
+              <p className={css.amountPerYear}>$9.99/month</p>
             </div>
             <div className={css.benefitsListContainer}>
               <h3 style={{ width: '100%', marginBottom: '0' }}>Benefits</h3>

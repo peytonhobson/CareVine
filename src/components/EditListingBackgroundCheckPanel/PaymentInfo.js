@@ -122,6 +122,11 @@ const PaymentInfo = props => {
           <FormattedMessage id="EditListingBackgroundCheckPanel.discountApplied" />
         </p>
       ) : null}
+      {amountDue !== planAmount ? (
+        <p className={css.marketplaceColor}>
+          <FormattedMessage id="EditListingBackgroundCheckPanel.planAmountWarning" />
+        </p>
+      ) : null}
       {promoError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />

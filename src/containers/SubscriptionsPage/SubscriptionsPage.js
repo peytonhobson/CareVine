@@ -441,6 +441,10 @@ const SubscriptionsPageComponent = props => {
     id: 'SubscriptionsPage.futureSubscriptionsTitle',
   });
 
+  const futureSubscriptionAmountDue =
+    backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance > 0
+      ? backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance
+      : '0.00';
   const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
     backgroundCheckSubscriptionSchedule.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
@@ -451,7 +455,7 @@ const SubscriptionsPageComponent = props => {
             <p className={css.dateText}>
               {new Date(backgroundCheckSubscriptionSchedule.startDate * 1000).toLocaleDateString()}
             </p>
-            <p className={css.amountText}>(${backgroundCheckSubscriptionSchedule.amount / 100})</p>
+            <p className={css.amountText}>(${futureSubscriptionAmountDue})</p>
           </div>
           <div>
             <h3>Plan Information</h3>
@@ -620,6 +624,7 @@ const SubscriptionsPageComponent = props => {
           handleReactivateSubscription={handleReactivateSubscription}
           bcStatus={bcStatus}
           cancelAtPeriodEnd={cancelAtPeriodEnd}
+          customerCreditBalance={customerCreditBalance}
         />
       ) : null}
     </>

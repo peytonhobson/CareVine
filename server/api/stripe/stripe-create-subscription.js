@@ -11,39 +11,60 @@ module.exports = (req, res) => {
   const { stripeCustomerId, priceId, userId, params } = req.body;
 
   stripe.subscriptions
-    .create({
+    .list({
       customer: stripeCustomerId,
-      items: [
-        {
-          price: priceId,
-        },
-      ],
-      collection_method: 'charge_automatically',
-      payment_behavior: 'default_incomplete',
-      payment_settings: {
-        payment_method_types: ['card'],
-      },
-      description: `Payment for ${
-        priceId === CAREVINE_GOLD_PRICE_ID ? 'Carevine Gold' : 'CareVine Basic'
-      }`,
-      //   automatic_tax: {
-      //     enabled: true,
-      //   },
-      metadata: {
-        userId,
-      },
-      expand: ['latest_invoice.payment_intent'],
-      ...params,
     })
-    .then(apiResponse => {
-      res
-        .set('Content-Type', 'application/transit+json')
-        .send(
-          serialize({
-            ...apiResponse,
-          })
-        )
-        .end();
+    .then(response => {
+      const subscriptions = response.data;
+
+      if (subscriptions.length > 0) {
+        subscriptions.forEach(sub => {
+          if (sub.status === 'incomplete') {
+            stripe.subscriptions.del(sub.id).catch(() => {
+              log.error(`Failed to delete incomplete subscription ${sub.id}`);
+            });
+          }
+        });
+      }
+
+      return response;
+    })
+    .then(() => {
+      stripe.subscriptions
+        .create({
+          customer: stripeCustomerId,
+          items: [
+            {
+              price: priceId,
+            },
+          ],
+          collection_method: 'charge_automatically',
+          payment_behavior: 'default_incomplete',
+          payment_settings: {
+            payment_method_types: ['card'],
+          },
+          description: `Payment for ${
+            priceId === CAREVINE_GOLD_PRICE_ID ? 'Carevine Gold' : 'CareVine Basic'
+          }`,
+          //   automatic_tax: {
+          //     enabled: true,
+          //   },
+          metadata: {
+            userId,
+          },
+          expand: ['latest_invoice.payment_intent'],
+          ...params,
+        })
+        .then(apiResponse => {
+          res
+            .set('Content-Type', 'application/transit+json')
+            .send(
+              serialize({
+                ...apiResponse,
+              })
+            )
+            .end();
+        });
     })
     .catch(e => {
       handleStripeError(res, e);
