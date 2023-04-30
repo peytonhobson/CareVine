@@ -284,3 +284,23 @@ export const updateUserNotifications = body => {
 export const updateTransactionMetadata = body => {
   return post('/api/update-transaction-metadata', body);
 };
+
+export const sendgridReferralEmail = body => {
+  return post('/api/sendgrid-referral-email', body);
+};
+
+export const stripeUpdateCustomerCreditBalance = body => {
+  return post('/api/update-customer-credit-balance', body);
+};
+
+export const fetchStripeCustomer = body => {
+  return post('/api/fetch-stripe-customer', body);
+};
+
+export const updateUserReferrals = body => {
+  return post('/api/update-user-referrals', body);
+};
+
+export const fetchStripeSubscription = body => {
+  return post('/api/stripe-fetch-subscription', body);
+};

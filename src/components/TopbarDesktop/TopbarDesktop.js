@@ -139,6 +139,7 @@ const TopbarDesktop = props => {
   };
 
   const isNewListing = newListingStates.includes(currentUserListing?.attributes?.state);
+  const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
 
   const profileMenu = authenticatedOnClientSide ? (
     <Menu>
@@ -174,6 +175,17 @@ const TopbarDesktop = props => {
             <span className={css.menuItemBorder} />
             <FormattedMessage id="TopbarDesktop.accountSettingsLink" />
           </NamedLink>
+        </MenuItem>
+        <MenuItem key="referral">
+          {currentUserType === CAREGIVER && stripeCustomerId ? (
+            <NamedLink
+              className={classNames(css.yourListingsLink, currentPageClass('ReferralPage'))}
+              name="ReferralPage"
+            >
+              <span className={css.menuItemBorder} />
+              <FormattedMessage id="TopbarDesktop.referAFriendLink" />
+            </NamedLink>
+          ) : null}
         </MenuItem>
         <MenuItem key="logout">
           <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>

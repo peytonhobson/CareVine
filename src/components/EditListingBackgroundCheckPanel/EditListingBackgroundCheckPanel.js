@@ -24,6 +24,7 @@ import {
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
   SUBSCRIPTION_ACTIVE_TYPES,
+  CAREVINE_GOLD_HALF_OFF_COUPON,
 } from '../../util/constants';
 import {
   authenticateCreateUser,
@@ -36,9 +37,15 @@ import {
   authenticate7YearHistory,
   addQuizAttempt,
 } from '../../ducks/authenticate.duck';
-import { createPayment, createSubscription, updateSubscription } from '../../ducks/stripe.duck';
+import {
+  createPayment,
+  createSubscription,
+  updateSubscription,
+  updateCustomerCreditBalance,
+} from '../../ducks/stripe.duck';
 import { createSetupIntent, confirmSetupIntent } from '../../ducks/paymentMethods.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { claimReferral } from '../../containers/ReferralPage/ReferralPage.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
 import parser from 'parse-address';
 
@@ -60,6 +67,7 @@ const QUIZ_MAX_ATTEMPTS_FAILED = 'QUIZ_MAX_ATTEMPTS_FAILED';
 const MAX_QUIZ_ATTEMPTS = 3;
 
 const BASIC = 'basic';
+const GOLD = 'gold';
 
 const EditListingBackgroundCheckPanel = props => {
   const {
@@ -104,6 +112,8 @@ const EditListingBackgroundCheckPanel = props => {
     updateInProgress,
     onFetchCurrentUser,
     onAddQuizAttempt,
+    onUpdateCustomerCreditBalance,
+    onClaimReferral,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -221,6 +231,7 @@ const EditListingBackgroundCheckPanel = props => {
   const stripeCustomerId = currentUser?.stripeCustomer?.attributes?.stripeCustomerId;
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
   const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
+  const signupReferralCode = metadata?.signupReferralCode;
 
   // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
@@ -258,6 +269,15 @@ const EditListingBackgroundCheckPanel = props => {
     backgroundCheckRejected,
     subscription,
   ]);
+
+  useEffect(() => {
+    if (createPaymentSuccess && signupReferralCode && backgroundCheckType === GOLD) {
+      onUpdateCustomerCreditBalance(signupReferralCode, -500).then(() => {
+        const email = currentUser.attributes.email;
+        onClaimReferral(email, signupReferralCode);
+      });
+    }
+  }, [createPaymentSuccess]);
 
   // These error codes indicate the user needs to be updated to get identity proof quiz
   useEffect(() => {
@@ -424,10 +444,14 @@ const EditListingBackgroundCheckPanel = props => {
     bcType => {
       setStage(PAYMENT);
       setBackgroundCheckType(bcType);
+
+      console.log(signupReferralCode);
+
       onCreateSubscription(
         stripeCustomerId,
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-        currentUser.id?.uuid
+        currentUser.id?.uuid,
+        { coupon: signupReferralCode ? CAREVINE_GOLD_HALF_OFF_COUPON : null }
       ).then(() => {
         onFetchCurrentUser();
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -760,6 +784,8 @@ const mapDispatchToProps = {
   onUpdateSubscription: updateSubscription,
   onVerifyIdentityProofQuiz: verifyIdentityProofQuiz,
   onAddQuizAttempt: addQuizAttempt,
+  onUpdateCustomerCreditBalance: updateCustomerCreditBalance,
+  onClaimReferral: claimReferral,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

@@ -1,11 +1,11 @@
-import React, { useEffect, useReducer, useRef, useMemo } from 'react';
+import React, { useEffect, useReducer, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { first, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import classNames from 'classnames';
 
-import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { updateNotifications, fetchCurrentUser } from '../../ducks/user.duck';
 import { deleteNotification, fetchSenderListing } from './NotificationsPage.duck';
@@ -192,7 +192,7 @@ const NotificationsPageComponent = props => {
 
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
-      <LayoutSideNavigation className={css.layoutSideNav}>
+      <LayoutSideNavigation className={css.layoutSideNav} containerClassName={css.layoutContainer}>
         <LayoutWrapperTopbar>
           <TopbarContainer
             className={css.topbar}

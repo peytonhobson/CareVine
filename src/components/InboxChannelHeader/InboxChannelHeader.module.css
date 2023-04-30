@@ -68,6 +68,11 @@
   line-height: 1.5rem;
 
   @media (--viewportMedium) {
+    font-size: 1.75rem;
+    line-height: 2rem;
+  }
+
+  @media (--viewportLarge) {
     font-size: 2.5rem;
     line-height: 3rem;
   }

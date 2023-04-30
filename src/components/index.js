@@ -42,6 +42,9 @@ export { default as IconSpinner } from './IconSpinner/IconSpinner';
 export { default as IconSuccess } from './IconSuccess/IconSuccess';
 export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
 export { default as IconVerticalDots } from './IconVerticalDots/IconVerticalDots';
+export { default as IconWallet } from './IconWallet/IconWallet';
+export { default as IconGift } from './IconGift/IconGift';
+export { default as IconEnvelopes } from './IconEnvelopes/IconEnvelopes';
 
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
@@ -191,6 +194,7 @@ export { default as QuizTimer} from './QuizTimer/QuizTimer';
 // Page sections and modal content wrappers //
 //////////////////////////////////////////////
 
+export { default as Accordion } from './Accordion/Accordion';
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';

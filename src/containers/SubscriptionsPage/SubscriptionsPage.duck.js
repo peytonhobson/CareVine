@@ -4,7 +4,7 @@ import {
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
 import { storableError } from '../../util/errors';
-import { stripeUpdateSubscriptionItem } from '../../util/api';
+import { stripeUpdateSubscriptionItem, fetchStripeSubscription } from '../../util/api';
 import * as log from '../../util/log';
 
 // ================ Action types ================ //
@@ -20,12 +20,22 @@ export const UPDATE_SUBSCRIPTION_ITEM_SUCCESS =
 export const UPDATE_SUBSCRIPTION_ITEM_ERROR =
   'app/PaymentMethodsPage/UPDATE_SUBSCRIPTION_ITEM_ERROR';
 
+export const FETCH_STRIPE_SUBSCRIPTION_REQUEST =
+  'app/SubscriptionsPage/FETCH_STRIPE_SUBSCRIPTION_REQUEST';
+export const FETCH_STRIPE_SUBSCRIPTION_SUCCESS =
+  'app/SubscriptionsPage/FETCH_STRIPE_SUBSCRIPTION_SUCCESS';
+export const FETCH_STRIPE_SUBSCRIPTION_ERROR =
+  'app/SubscriptionsPage/FETCH_STRIPE_SUBSCRIPTION_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
   stripeCustomerFetched: false,
   updateSubscriptionItemInProgress: false,
   updateSubscriptionItemError: null,
+  subscription: null,
+  fetchSubscriptionInProgress: false,
+  fetchSubscriptionError: null,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -54,6 +64,25 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         updateSubscriptionItemError: payload,
       };
 
+    case FETCH_STRIPE_SUBSCRIPTION_REQUEST:
+      return {
+        ...state,
+        fetchSubscriptionInProgress: true,
+        fetchSubscriptionError: null,
+      };
+    case FETCH_STRIPE_SUBSCRIPTION_SUCCESS:
+      return {
+        ...state,
+        fetchSubscriptionInProgress: false,
+        subscription: payload.data,
+      };
+    case FETCH_STRIPE_SUBSCRIPTION_ERROR:
+      return {
+        ...state,
+        fetchSubscriptionInProgress: false,
+        fetchSubscriptionError: payload,
+      };
+
     default:
       return state;
   }
@@ -73,6 +102,17 @@ export const updateSubscriptionItemRequest = () => ({ type: UPDATE_SUBSCRIPTION_
 export const updateSubscriptionItemSuccess = () => ({ type: UPDATE_SUBSCRIPTION_ITEM_SUCCESS });
 export const updateSubscriptionItemError = e => ({
   type: UPDATE_SUBSCRIPTION_ITEM_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const fetchStripeSubscriptionRequest = () => ({ type: FETCH_STRIPE_SUBSCRIPTION_REQUEST });
+export const fetchStripeSubscriptionSuccess = payload => ({
+  type: FETCH_STRIPE_SUBSCRIPTION_SUCCESS,
+  payload,
+});
+export const fetchStripeSubscriptionError = e => ({
+  type: FETCH_STRIPE_SUBSCRIPTION_ERROR,
   error: true,
   payload: e,
 });
@@ -122,5 +162,18 @@ export const updateSubscriptionItem = (subscriptionId, priceId) => async (
   } catch (e) {
     log.error(e, 'update-subscription-item-failed');
     dispatch(updateSubscriptionItemError(e));
+  }
+};
+
+export const fetchSubscription = subscriptionId => async (dispatch, getState, sdk) => {
+  dispatch(fetchStripeSubscriptionRequest());
+
+  try {
+    const response = await fetchStripeSubscription({ subscriptionId });
+
+    dispatch(fetchStripeSubscriptionSuccess(response));
+  } catch (e) {
+    log.error(e, 'fetch-stripe-subscription-failed');
+    dispatch(fetchStripeSubscriptionError(e));
   }
 };

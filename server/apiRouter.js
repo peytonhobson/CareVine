@@ -19,12 +19,28 @@ const transitionPrivileged = require('./api/transition-privileged');
 const updateUser = require('./api/update-user');
 const updateListingMetadata = require('./api/update-listing-metadata');
 const deleteAccount = require('./api/delete-account');
-const createPaymentIntent = require('./api/stripe-create-payment-intent');
-const createSetupIntent = require('./api/stripe-create-setup-intent');
-const fetchHasStripeAccount = require('./api/fetch-has-stripe-account');
-const stripePaymentMethods = require('./api/stripe-payment-methods');
-const stripeDetachPaymentMethod = require('./api/stripe-detach-payment-method');
-const stripeUpdatePaymentIntent = require('./api/stripe-update-payment-intent');
+
+// Stripe
+
+const createPaymentIntent = require('./api/stripe/stripe-create-payment-intent');
+const createSetupIntent = require('./api/stripe/stripe-create-setup-intent');
+const fetchHasStripeAccount = require('./api/stripe/fetch-has-stripe-account');
+const stripePaymentMethods = require('./api/stripe/stripe-payment-methods');
+const stripeDetachPaymentMethod = require('./api/stripe/stripe-detach-payment-method');
+const stripeUpdatePaymentIntent = require('./api/stripe/stripe-update-payment-intent');
+const stripeCreateSubscription = require('./api/stripe/stripe-create-subscription');
+const stripeUpdateCustomer = require('./api/stripe/stripe-update-customer');
+const stripeWebhook = require('./api/stripe/stripe-webhook');
+const stripeCancelSubscription = require('./api/stripe/stripe-cancel-subscription');
+const stripeUpdateSubscription = require('./api/stripe/stripe-update-subscription');
+const stripeConfirmPayment = require('./api/stripe/stripe-confirm-payment');
+const stripeCreateSubscriptionSchedule = require('./api/stripe/stripe-create-subscription-schedule');
+const stripeCancelSubscriptionSchedule = require('./api/stripe/stripe-cancel-subscription-schedule');
+const stripeUpdateSubscriptionItem = require('./api/stripe/stripe-update-subscription-item');
+const updateCustomerCreditBalance = require('./api/stripe/update-customer-credit-balance');
+const fetchStripeCustomer = require('./api/stripe/fetch-customer');
+const fetchStripeSubscription = require('./api/stripe/fetch-subscription');
+
 const userEmail = require('./api/user-email');
 const authenticateCreateUser = require('./api/authenticate-create-user');
 const authenticateSubmitConsent = require('./api/authenticate-submit-consent');
@@ -35,22 +51,15 @@ const authenticate7YearHistory = require('./api/authenticate-7-year-history');
 const authenticateGenerateCriminalBackground = require('./api/authenticate-generate-criminal-background');
 const authenticateUpdateUser = require('./api/authenticate-update-user');
 const authenticateEnrollTCM = require('./api/authenticate-enroll-tcm');
-const stripeCreateSubscription = require('./api/stripe-create-subscription');
-const stripeUpdateCustomer = require('./api/stripe-update-customer');
-const stripeWebhook = require('./api/stripe-webhook');
-const stripeCancelSubscription = require('./api/stripe-cancel-subscription');
-const stripeUpdateSubscription = require('./api/stripe-update-subscription');
-const stripeConfirmPayment = require('./api/stripe-confirm-payment');
 const authenticateDeenrollTCM = require('./api/authenticate-deenroll-tcm');
-const stripeCreateSubscriptionSchedule = require('./api/stripe-create-subscription-schedule');
-const stripeCancelSubscriptionSchedule = require('./api/stripe-cancel-subscription-schedule');
-const stripeUpdateSubscriptionItem = require('./api/stripe-update-subscription-item');
 const sendFeedbackEmail = require('./api/send-feedback-email');
-const sendgridTemplateEmail = require('./api/sendgrid-template-email');
-const sendgridStandardEmail = require('./api/sendgrid-standard-email');
+const sendgridTemplateEmail = require('./api/sendgrid/sendgrid-template-email');
+const sendgridStandardEmail = require('./api/sendgrid/sendgrid-standard-email');
 const chatGPTGenerateText = require('./api/chat-gpt-generate-text');
 const updateUserNotifications = require('./api/update-user-notifications');
 const updateTransactionMetadata = require('./api/update-transaction-metadata');
+const sendgridReferralEmail = require('./api/sendgrid/sendgrid-referral-email');
+const updateUserReferrals = require('./api/update-user-referrals');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -125,6 +134,11 @@ router.post('/sendgrid-standard-email', sendgridStandardEmail);
 router.post('/chat-gpt-generate-text', chatGPTGenerateText);
 router.post('/update-user-notifications', updateUserNotifications);
 router.post('/update-transaction-metadata', updateTransactionMetadata);
+router.post('/sendgrid-referral-email', sendgridReferralEmail);
+router.post('/update-customer-credit-balance', updateCustomerCreditBalance);
+router.post('/fetch-stripe-customer', fetchStripeCustomer);
+router.post('/update-user-referrals', updateUserReferrals);
+router.post('/stripe-fetch-subscription', fetchStripeSubscription);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

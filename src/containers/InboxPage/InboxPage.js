@@ -280,7 +280,7 @@ export const InboxPageComponent = props => {
 
   return (
     <Page title="Inbox" scrollingDisabled={scrollingDisabled}>
-      <LayoutSideNavigation>
+      <LayoutSideNavigation containerClassName={css.layoutContainer}>
         <LayoutWrapperTopbar>
           <TopbarContainer
             className={css.topbar}
@@ -350,8 +350,8 @@ export const InboxPageComponent = props => {
                 <IconEnquiry
                   className={css.inquiry}
                   strokeClass={css.inquiryStroke}
-                  height={isMobile ? '7em' : '7em'}
-                  width={isMobile ? '7em' : '7em'}
+                  height="7em"
+                  width="7em"
                 />
                 <h2 className={css.noConversationsText}>No Conversations</h2>
               </div>

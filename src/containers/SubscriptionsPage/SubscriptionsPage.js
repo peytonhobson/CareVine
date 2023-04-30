@@ -29,6 +29,7 @@ import CancelSubscriptionModal from './Modals/CancelSubscriptionModal';
 import { TopbarContainer } from '../../containers';
 import { SaveCreditCardForm } from '../../forms';
 import { updateSubscriptionItem } from './SubscriptionsPage.duck';
+import { fetchCustomerCreditBalance } from '../ReferralPage/ReferralPage.duck';
 import {
   cancelSubscription,
   updateSubscription,
@@ -107,6 +108,8 @@ const SubscriptionsPageComponent = props => {
     onCancelFutureSubscription,
     onUpdateSubscriptionItem,
     currentUserListing,
+    onFetchCustomerCreditBalance,
+    customerCreditBalance,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -155,6 +158,7 @@ const SubscriptionsPageComponent = props => {
   useEffect(() => {
     if (stripeCustomerId) {
       onFetchDefaultPayment(stripeCustomerId);
+      onFetchCustomerCreditBalance();
     }
   }, [stripeCustomerId]);
 
@@ -345,7 +349,9 @@ const SubscriptionsPageComponent = props => {
   const renewalDate =
     backgroundCheckSubscription?.currentPeriodEnd &&
     new Date(backgroundCheckSubscription.currentPeriodEnd * 1000);
-  const amount = backgroundCheckSubscription?.amount;
+  const subscriptionsMinusBalance =
+    backgroundCheckSubscription?.amount / 100 + customerCreditBalance;
+  const amount = subscriptionsMinusBalance > 0 ? subscriptionsMinusBalance : '0.00';
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
     SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
@@ -403,7 +409,7 @@ const SubscriptionsPageComponent = props => {
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>
-            <p className={css.amountText}>(${amount / 100})</p>
+            <p className={css.amountText}>(${amount})</p>
           </div>
         ) : null}
         <div className={css.planInfoContainer}>
@@ -435,6 +441,10 @@ const SubscriptionsPageComponent = props => {
     id: 'SubscriptionsPage.futureSubscriptionsTitle',
   });
 
+  const futureSubscriptionAmountDue =
+    backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance > 0
+      ? backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance
+      : '0.00';
   const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
     backgroundCheckSubscriptionSchedule.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
@@ -445,7 +455,7 @@ const SubscriptionsPageComponent = props => {
             <p className={css.dateText}>
               {new Date(backgroundCheckSubscriptionSchedule.startDate * 1000).toLocaleDateString()}
             </p>
-            <p className={css.amountText}>(${backgroundCheckSubscriptionSchedule.amount / 100})</p>
+            <p className={css.amountText}>(${futureSubscriptionAmountDue})</p>
           </div>
           <div>
             <h3>Plan Information</h3>
@@ -614,6 +624,7 @@ const SubscriptionsPageComponent = props => {
           handleReactivateSubscription={handleReactivateSubscription}
           bcStatus={bcStatus}
           cancelAtPeriodEnd={cancelAtPeriodEnd}
+          customerCreditBalance={customerCreditBalance}
         />
       ) : null}
     </>
@@ -645,6 +656,7 @@ const mapStateToProps = state => {
   } = state.paymentMethods;
 
   const { stripeCustomerFetched } = state.SubscriptionsPage;
+  const { customerCreditBalance } = state.ReferralPage;
 
   return {
     cancelSubscriptionError,
@@ -666,6 +678,7 @@ const mapStateToProps = state => {
     updateSubscriptionError,
     updateSubscriptionInProgress,
     currentUserListing,
+    customerCreditBalance,
   };
 };
 
@@ -680,6 +693,7 @@ const mapDispatchToProps = {
   onCreateFutureSubscription: createFutureSubscription,
   onCancelFutureSubscription: cancelFutureSubscription,
   onUpdateSubscriptionItem: updateSubscriptionItem,
+  onFetchCustomerCreditBalance: fetchCustomerCreditBalance,
 };
 
 const SubscriptionsPage = compose(
