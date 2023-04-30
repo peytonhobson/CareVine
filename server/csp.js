@@ -106,10 +106,12 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   const { connectSrc = [self], imgSrc = [self] } = defaultDirectives;
   const customConnectSrc = connectSrc.concat('*.sentry.io').concat('*.ingest.sentry.io');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
+  const customScriptSrc = scriptSrc.concat('*.weglot.com');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
     imgSrc: customImgSrc,
+    scriptSrc: customScriptSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //
