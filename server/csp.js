@@ -103,7 +103,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   // Example: extend default img directive with custom domain
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
-  const { connectSrc = [self], imgSrc = [self] } = defaultDirectives;
+  const { connectSrc = [self], imgSrc = [self], scriptSrc = [self] } = defaultDirectives;
   const customConnectSrc = connectSrc.concat('*.sentry.io').concat('*.ingest.sentry.io');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc.concat('*.weglot.com');
