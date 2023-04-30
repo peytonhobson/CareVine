@@ -96,3 +96,17 @@
   color: var(--marketplaceColor);
   margin-bottom: 1rem;
 }
+
+.marketplaceColor {
+  color: var(--marketplaceColor);
+}
+
+.greyedtext {
+  color: var(--matterColorAnti);
+  text-decoration: line-through;
+  margin-right: 0.5rem;
+}
+
+.newDiscount {
+  color: var(--successColor);
+}

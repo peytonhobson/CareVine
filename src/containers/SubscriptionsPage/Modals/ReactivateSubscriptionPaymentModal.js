@@ -34,6 +34,7 @@ const ReactivateSubscriptionPaymentModal = props => {
     updateSubscriptionInProgress,
     bcStatus,
     cancelAtPeriodEnd,
+    customerCreditBalance,
   } = props;
 
   const hasErrors = createSubscriptionError || updateSubscriptionError || cancelSubscriptionError;
@@ -71,7 +72,10 @@ const ReactivateSubscriptionPaymentModal = props => {
             />
           )}
         </div>
-        <ReactivateInfo backgroundCheckType={openType} />
+        <ReactivateInfo
+          backgroundCheckType={openType}
+          customerCreditBalance={customerCreditBalance}
+        />
         {renewalDate && renewalDate > TODAY && !(openType === VINE && bcType === BASIC) ? (
           <div className={css.wontChargeUntil}>
             <FormattedMessage
