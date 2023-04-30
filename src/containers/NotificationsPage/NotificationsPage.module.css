@@ -23,6 +23,10 @@
   width: 100%;
 
   @media (--viewportMedium) {
+    width: 20rem;
+  }
+
+  @media (--viewportLarge) {
     width: 23rem;
   }
 }
@@ -292,6 +296,25 @@
   }
 }
 
+.layoutContainer {
+  /* parent aka root is flexbox, this container takes all available space */
+  flex-grow: 1;
+  flex-shrink: 0;
+
+  /* This container uses flexbox layout */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  /* When side nav is shown as a column, Topbar's box-shadow should be visible */
+  z-index: calc(var(--zIndexTopbar) - 1);
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
 .notificationContainerRoot {
   display: flex;
   justify-content: center;
@@ -302,6 +325,10 @@
 
   @media (--viewportMedium) {
     height: 100%;
+    padding: 0 3rem;
+  }
+
+  @media (--viewportLarge) {
     padding: 0 15rem;
   }
 }

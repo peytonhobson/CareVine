@@ -12,8 +12,11 @@
   padding: 1.5rem 2rem !important;
 
   @media (--viewportMedium) {
-    padding: 3rem calc((100% - 75rem) / 2) 5.125rem 3.688rem !important;
     justify-content: center;
+  }
+
+  @media (--viewportLarge) {
+    padding: 3rem calc((100% - 75rem) / 2) 5.125rem 3.688rem !important;
   }
 }
 
@@ -69,6 +72,7 @@
   padding-inline: 2rem;
 
   @media (--viewportMedium) {
+    flex-basis: 40rem;
     padding-inline: 4rem;
   }
 }

@@ -445,6 +445,8 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(PAYMENT);
       setBackgroundCheckType(bcType);
 
+      console.log(signupReferralCode);
+
       onCreateSubscription(
         stripeCustomerId,
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,

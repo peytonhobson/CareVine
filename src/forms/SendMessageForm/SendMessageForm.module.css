@@ -112,7 +112,7 @@
 }
 
 .messageInput {
-  display: inline-block;
+  display: inline;
   width: 100%;
 
   position: relative;
