@@ -41,6 +41,10 @@
 
   @media (--viewportMedium) {
     padding: 0 0;
+    max-width: 35rem;
+  }
+
+  @media (--viewportLarge) {
     max-width: 50rem;
   }
 }
@@ -50,8 +54,12 @@
   width: 100%;
 
   @media (--viewportMedium) {
-    max-width: 50rem;
+    max-width: 35rem;
     padding: 4rem 0;
+  }
+
+  @media (--viewportLarge) {
+    max-width: 50rem;
   }
 }
 
