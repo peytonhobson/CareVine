@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { injectIntl, intlShape } from '../../util/reactIntl';
-import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { propTypes } from '../../util/types';
 import config from '../../config';
 import {
@@ -18,10 +18,12 @@ import {
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
+  Modal,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
+import queryString from 'query-string';
 
 import backgroundImage from '../../assets/Logo_1200x630.png';
 import css from './LandingPage.module.css';
@@ -36,9 +38,21 @@ export const LandingPageComponent = props => {
     currentUserListingFetched,
     currentUser,
     currentUserFetched,
+    onManageDisableScrolling,
   } = props;
 
+  const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = React.useState(false);
+
   const isMobile = useCheckMobileScreen();
+
+  const parsedSearchParams = queryString.parse(location.search);
+  const { externalPromo } = parsedSearchParams;
+
+  useEffect(() => {
+    if (externalPromo) {
+      setIsExternalPromoModalOpen(true);
+    }
+  }, [externalPromo]);
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -112,6 +126,31 @@ export const LandingPageComponent = props => {
           <Footer />
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
+      <Modal
+        id="LandingPage.externalPromoModal"
+        isOpen={isExternalPromoModalOpen}
+        onClose={() => setIsExternalPromoModalOpen(false)}
+        usePortal
+        onManageDisableScrolling={onManageDisableScrolling}
+        containerClassName={css.modalContainer}
+        scrollLayerClassName={css.modalScrollLayer}
+      >
+        <h2 className={css.modalTitle}>Welcome to CareVine!</h2>
+        <p className={css.modalMessage}>
+          Thank you for joining our community of dedicated caregivers.
+        </p>
+
+        <p className={css.modalMessage}>
+          As a token of our appreciation, enjoy 50% off our premium subscription,{' '}
+          <span className={css.goldenText}>CareVine Gold</span>, using the promo code:
+        </p>
+
+        <div className={css.promoContainer}>
+          <h1>YOUAREGOLDEN</h1>
+        </div>
+
+        <p className={css.modalMessage}>Happy caregiving!</p>
+      </Modal>
     </Page>
   );
 };
@@ -151,12 +190,20 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+};
+
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route
 // components since connect implements a shouldComponentUpdate
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const LandingPage = compose(withRouter, connect(mapStateToProps), injectIntl)(LandingPageComponent);
+const LandingPage = compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps),
+  injectIntl
+)(LandingPageComponent);
 
 export default LandingPage;
