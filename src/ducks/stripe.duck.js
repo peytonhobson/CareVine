@@ -761,7 +761,7 @@ export const createPayment = params => (dispatch, getState, sdk) => {
         if (saveMethodAsDefault && stripeCustomerId) {
           const paymentMethodId = res?.paymentIntent?.payment_method;
 
-          return stripeUpdateCustomer({
+          stripeUpdateCustomer({
             stripeCustomerId,
             params: {
               invoice_settings: {
