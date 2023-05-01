@@ -115,6 +115,7 @@ const updateBackgroundCheckSubscription = async subscription => {
           // May set this to null if webhooks work
           status: subscription?.status,
           subscriptionId: subscription?.id,
+          subscriptionItemId: subscription?.items?.data[0]?.id,
           type,
           currentPeriodEnd: subscription?.current_period_end,
           amount: subscription?.plan?.amount,
@@ -166,6 +167,13 @@ const updateBackgroundCheckSubscription = async subscription => {
     }
 
     if (isUpgrading) {
+      const invoice = await stripe.invoices.create({
+        customer: subscription.customer,
+        subscription: subscription.id,
+      });
+
+      await stripe.invoices.pay(invoice.id);
+
       failStage = 'subscription-upgraded-email-failed';
       sendgridEmail(userId, 'subscription-upgraded', { marketplaceUrl: rootUrl }, failStage);
     }

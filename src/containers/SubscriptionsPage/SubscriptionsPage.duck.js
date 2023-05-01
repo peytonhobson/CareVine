@@ -145,7 +145,7 @@ export const loadData = () => (dispatch, getState, sdk) => {
   });
 };
 
-export const updateSubscriptionItem = (subscriptionId, priceId) => async (
+export const updateSubscriptionItem = (subscriptionId, priceId, params) => async (
   dispatch,
   getState,
   sdk
@@ -155,7 +155,7 @@ export const updateSubscriptionItem = (subscriptionId, priceId) => async (
   try {
     const response = await stripeUpdateSubscriptionItem({
       subscriptionId,
-      params: { price: priceId },
+      params: { ...params, price: priceId },
     });
 
     dispatch(updateSubscriptionItemSuccess());
