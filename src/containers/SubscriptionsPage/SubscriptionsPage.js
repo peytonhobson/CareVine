@@ -229,6 +229,11 @@ const SubscriptionsPageComponent = props => {
         onFetchCurrentUser();
       }, 300)
     );
+
+    setTimeout(() => {
+      clearInterval(fetchingUserInterval);
+      setFetchingUserInterval(null);
+    }, 5000);
   };
 
   // Set subscription to cancel at period end
