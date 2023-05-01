@@ -266,7 +266,7 @@ const SubscriptionsPageComponent = props => {
   const handleReactivateSubscription = async () => {
     const changeSubscription = bcType !== isReactivateSubscriptionPaymentModalOpen;
     const priceId =
-      isReactivateSubscriptionPaymentModalOpen == VINE
+      isReactivateSubscriptionPaymentModalOpen === VINE
         ? CAREVINE_GOLD_PRICE_ID
         : CAREVINE_BASIC_PRICE_ID;
     const cardId =
@@ -301,6 +301,7 @@ const SubscriptionsPageComponent = props => {
           const subscriptionId = backgroundCheckSubscription.subscriptionId;
 
           try {
+            // TODO: DO we need to set cancel at period end to false here?
             const response = await onUpdateSubscriptionItem(subscriptionId, priceId);
 
             createFetchUserInterval();
