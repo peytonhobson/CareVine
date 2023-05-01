@@ -385,25 +385,11 @@ const EditListingWizardTab = props => {
       return (
         <EditListingBackgroundCheckPanel
           {...panelProps(BACKGROUND_CHECK)}
-          authenticate={authenticate}
-          createPaymentError={createPaymentError}
-          createPaymentInProgress={createPaymentInProgress}
-          createPaymentSuccess={createPaymentSuccess}
-          createSetupIntentError={createSetupIntentError}
-          createSetupIntentInProgress={createSetupIntentInProgress}
-          createSubscriptionError={createSubscriptionError}
-          createSubscriptionInProgress={createSubscriptionInProgress}
           onNextTab={() =>
             redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
           onUpdateProfile={onUpdateProfile}
-          onUpdateSubscription={onUpdateSubscription}
-          onVerifyIdentityProofQuiz={onVerifyIdentityProofQuiz}
-          setupIntent={setupIntent}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-          subscription={subscription}
-          updateSubscriptionError={updateSubscriptionError}
-          updateSubscriptionInProgress={updateSubscriptionInProgress}
         />
       );
     }

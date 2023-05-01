@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Button } from '..';
-import { PROMO_CODES, CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
+import {
+  PROMO_CODES,
+  CAREVINE_GOLD_PRICE_ID,
+  CAREVINE_BASIC_PRICE_ID,
+  CAREVINE_GOLD_HALF_OFF_COUPON,
+} from '../../util/constants';
 import moment from 'moment';
 
 import css from './EditListingBackgroundCheckPanel.module.css';
@@ -18,8 +23,12 @@ const PaymentInfo = props => {
     stripeCustomerId,
     onCreateSetupIntent,
     setupIntent,
+    onUpdateSubscription,
+    onCreateSubscription,
     createSetupIntentInProgress,
     createSetupIntentError,
+    createSubscriptionInProgress,
+    createSubscriptionError,
   } = props;
 
   const [promoCode, setPromoCode] = useState('');
@@ -37,17 +46,32 @@ const PaymentInfo = props => {
       return;
     }
 
-    onCreateSetupIntent(stripeCustomerId, {
-      payment_method_types: ['card'],
-      metadata: { backgroundCheckType },
-    });
+    if (promotionCode && promotionCode.type === BASIC) {
+      onCreateSetupIntent(stripeCustomerId, {
+        payment_method_types: ['card'],
+        metadata: { backgroundCheckType },
+      });
+    } else {
+      onCreateSubscription(
+        stripeCustomerId,
+        backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
+        currentUser.id?.uuid,
+        {
+          coupon: CAREVINE_GOLD_HALF_OFF_COUPON,
+          proration_behavior: 'none',
+        }
+      );
+    }
   };
 
   useEffect(() => {
-    if (setupIntent?.metadata?.backgroundCheckType === backgroundCheckType) {
+    if (
+      setupIntent?.metadata?.backgroundCheckType === backgroundCheckType ||
+      subscription?.latest_invoice?.discount
+    ) {
       setPromoApplied(true);
     }
-  }, [setupIntent]);
+  }, [setupIntent, subscription?.id]);
 
   const renewalTerm = backgroundCheckType === BASIC ? 'yearly' : 'monthly';
   const feeName = backgroundCheckType === BASIC ? 'screening fee' : 'subscription';
@@ -110,7 +134,7 @@ const PaymentInfo = props => {
         <Button
           className={css.applyButton}
           onClick={handleApplyPromoCode}
-          inProgress={createSetupIntentInProgress}
+          inProgress={createSetupIntentInProgress || createSubscriptionInProgress}
           ready={promoApplied}
           disabled={promoCode === '' || promoApplied}
         >
@@ -122,7 +146,7 @@ const PaymentInfo = props => {
           <FormattedMessage id="EditListingBackgroundCheckPanel.discountApplied" />
         </p>
       ) : null}
-      {amountDue !== planAmount ? (
+      {amountDue !== planAmount && !promoApplied ? (
         <p className={css.marketplaceColor}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.planAmountWarning" />
         </p>
@@ -132,7 +156,7 @@ const PaymentInfo = props => {
           <FormattedMessage id="EditListingBackgroundCheckPanel.nullPromoError" />
         </p>
       ) : null}
-      {createSetupIntentError ? (
+      {createSetupIntentError || createSubscriptionError ? (
         <p className={css.error}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.createSetupIntentError" />
         </p>
