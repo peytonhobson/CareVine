@@ -442,18 +442,18 @@ const SubscriptionsPageComponent = props => {
   });
 
   const futureSubscriptionAmountDue =
-    backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance > 0
-      ? backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance
+    backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance > 0
+      ? backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance
       : '0.00';
   const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
-    backgroundCheckSubscriptionSchedule.startDate > todayTimestamp / 1000 ? (
+    backgroundCheckSubscriptionSchedule?.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
       <SubscriptionCard title={futureSubscriptionTitle} headerButton={futureSubscriptionButton}>
         <div className={css.subscriptionContentContainer}>
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>
-              {new Date(backgroundCheckSubscriptionSchedule.startDate * 1000).toLocaleDateString()}
+              {new Date(backgroundCheckSubscriptionSchedule?.startDate * 1000).toLocaleDateString()}
             </p>
             <p className={css.amountText}>(${futureSubscriptionAmountDue})</p>
           </div>
@@ -461,7 +461,7 @@ const SubscriptionsPageComponent = props => {
             <h3>Plan Information</h3>
             <p>
               Type:&nbsp;
-              {backgroundCheckSubscriptionSchedule.type === VINE ? (
+              {backgroundCheckSubscriptionSchedule?.type === VINE ? (
                 <FormattedMessage id="SubscriptionsPage.vineCheck" />
               ) : (
                 <FormattedMessage id="SubscriptionsPage.basicCheck" />
