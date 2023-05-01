@@ -15,6 +15,7 @@ const csvWriter = createCsvWriter({
     { id: 'city', title: 'city' },
     { id: 'state', title: 'state_province_region' },
     { id: 'postalCode', title: 'postal_code' },
+    { id: 'county', title: 'county' },
     { id: 'licenseType', title: 'license_type' },
   ],
 });
@@ -34,6 +35,7 @@ fs.createReadStream(`${filePath}/in/Oregon_Nursing_Mailing_List.csv`)
         city: row['City'],
         state: row['State'],
         postalCode: row['Postal Code'],
+        county: row['County'],
         licenseType: row['License Type'],
       };
 

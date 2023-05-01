@@ -114,6 +114,7 @@ const EditListingBackgroundCheckPanel = props => {
     onAddQuizAttempt,
     onUpdateCustomerCreditBalance,
     onClaimReferral,
+    onUpdateSubscription,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -289,7 +290,9 @@ const EditListingBackgroundCheckPanel = props => {
 
   // Set client secret for subscription payment
   useEffect(() => {
-    setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
+    if (subscription?.latest_invoice?.payment_intent?.client_secret) {
+      setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
+    }
   }, [subscription]);
 
   // Set setup intent secret for when user is using promo code
@@ -512,7 +515,7 @@ const EditListingBackgroundCheckPanel = props => {
                 (setupIntentClientSecret &&
                   setupIntent &&
                   setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
-                <Elements options={options} stripe={stripePromise}>
+                <Elements options={options} stripe={stripePromise} key={clientSecret}>
                   <PayCreditCardForm
                     createPaymentError={createPaymentError}
                     createPaymentInProgress={createPaymentInProgress}
@@ -548,6 +551,9 @@ const EditListingBackgroundCheckPanel = props => {
             setupIntent={setupIntent}
             createSetupIntentInProgress={createSetupIntentInProgress}
             createSetupIntentError={createSetupIntentError}
+            onCreateSubscription={onCreateSubscription}
+            createSubscriptionInProgress={createSubscriptionInProgress}
+            createSubscriptionError={createSubscriptionError}
           />
         </div>
       ) : (
