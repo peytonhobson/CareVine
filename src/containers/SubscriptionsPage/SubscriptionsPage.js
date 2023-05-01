@@ -299,16 +299,19 @@ const SubscriptionsPageComponent = props => {
         } else {
           // Upgrade current subscription from basic to gold
           const subscriptionId = backgroundCheckSubscription.subscriptionId;
+          const subscriptionItemId = backgroundCheckSubscription.subscriptionItemId;
+          const params = {
+            cancel_at_period_end: false,
+            items: [{ id: subscriptionItemId, price: priceId }],
+            billing_cycle_anchor: 'now',
+            proration_behavior: 'none',
+          };
 
-          try {
-            // TODO: DO we need to set cancel at period end to false here?
-            const response = await onUpdateSubscriptionItem(subscriptionId, priceId);
-
+          // TODO: DO we need to set cancel at period end to false here?
+          onUpdateSubscription(subscriptionId, params).then(() => {
             createFetchUserInterval();
             setIsReactivateSubscriptionPaymentModalOpen(false);
-          } catch (e) {
-            console.log(e);
-          }
+          });
         }
       } else {
         // Reactive canceled subscription that hasn't reached the end of the billing period

@@ -791,7 +791,7 @@
   "PayCreditCardForm.paymentButtonMessage": "Purchase",
   "PayCreditCardForm.stripeCardErrorMessage": "A payment error occurred: {stripeErrorMessage}",
   "PayCreditCardForm.stripeInvalidRequestErrorMessage": "An invalid request occurred: {stripeErrorMessage}",
-  "PayCreditCardForm.stripeOtherErrorMessage": "Another problem occurred, maybe unrelated to Stripe.",
+  "PayCreditCardForm.stripeOtherErrorMessage": "Another problem occurred, maybe unrelated to Stripe. If the issue persists, please try refreshing the page.",
   "PaymentDetailsForm.amountLabel": "Pay Amount",
   "PaymentDetailsForm.amountPlaceholder": "$0.00",
   "PaymentDetailsForm.amountRequired": "Payment amount is required",

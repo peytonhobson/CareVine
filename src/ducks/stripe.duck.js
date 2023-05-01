@@ -670,7 +670,15 @@ export const handleCardSetup = params => dispatch => {
 };
 
 export const createPayment = params => (dispatch, getState, sdk) => {
-  const { stripe, elements, userId, saveMethodAsDefault, paymentIntent, defaultMethodId } = params;
+  const {
+    stripe,
+    elements,
+    userId,
+    saveMethodAsDefault,
+    paymentIntent,
+    defaultMethodId,
+    stripeCustomerId,
+  } = params;
 
   dispatch(createPaymentRequest());
 
@@ -704,7 +712,7 @@ export const createPayment = params => (dispatch, getState, sdk) => {
     redirect: 'if_required',
   };
 
-  if (saveMethodAsDefault) {
+  if (saveMethodAsDefault && paymentIntent) {
     let stripeCustomerId = null;
     // If user is saving card as default
 
@@ -748,6 +756,19 @@ export const createPayment = params => (dispatch, getState, sdk) => {
       .then(res => {
         if (res.error) {
           throw res.error;
+        }
+
+        if (saveMethodAsDefault && stripeCustomerId) {
+          const paymentMethodId = res?.paymentIntent?.payment_method;
+
+          return stripeUpdateCustomer({
+            stripeCustomerId,
+            params: {
+              invoice_settings: {
+                default_payment_method: paymentMethodId,
+              },
+            },
+          });
         }
 
         handleSuccess(res);
@@ -881,7 +902,6 @@ export const createFutureSubscription = (stripeCustomerId, startDate, priceId, u
   const handleError = e => {
     dispatch(createSubscriptionError(e));
     log.error(e, 'create-future-subscription-Failed', {});
-    throw e;
   };
 
   return stripeCreateSubscriptionSchedule({ stripeCustomerId, startDate, priceId, userId })
@@ -900,7 +920,6 @@ export const cancelFutureSubscription = scheduleId => (dispatch, getState, sdk) 
   const handleError = e => {
     dispatch(cancelSubscriptionError(e));
     log.error(e, 'cancel-future-subscription-Failed', {});
-    throw e;
   };
 
   return stripeCancelSubscriptionSchedule({ scheduleId })
@@ -919,7 +938,6 @@ export const cancelSubscription = subscriptionId => (dispatch, getState, sdk) =>
   const handleError = e => {
     dispatch(cancelSubscriptionError(e));
     log.error(e, 'cancel-subscription-Failed', {});
-    throw e;
   };
 
   return stripeCancelSubscription({ subscriptionId })
@@ -938,7 +956,6 @@ export const updateSubscription = (subscriptionId, params) => (dispatch, getStat
   const handleError = e => {
     dispatch(updateSubscriptionError(e));
     log.error(e, 'cancel-subscription-Failed', {});
-    throw e;
   };
 
   return stripeUpdateSubscription({ subscriptionId, params })
@@ -957,7 +974,6 @@ export const updateCustomerCreditBalance = (referralCode, amount) => (dispatch, 
   const handleError = e => {
     dispatch(updateCustomerCreditBalanceError(e));
     log.error(e, 'update-customer-credit-balance-Failed', {});
-    throw e;
   };
 
   return stripeUpdateCustomerCreditBalance({ referralCode, amount })
