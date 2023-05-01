@@ -67,6 +67,15 @@ export class AuthenticationPageComponent extends Component {
     // Remove the autherror cookie once the content is saved to state
     // because we don't want to show the error message e.g. after page refresh
     Cookies.remove('st-autherror');
+
+    const { location } = this.props;
+
+    const parsedSearchParams = queryString.parse(location.search);
+    const { referralCode } = parsedSearchParams;
+
+    if (referralCode) {
+      sessionStorage.setItem('signupReferralCode', referralCode);
+    }
   }
 
   componentDidUpdate(prevProps) {
