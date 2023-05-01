@@ -333,7 +333,7 @@ const EditListingBackgroundCheckForm = props => (
               renderMonthElement={renderMonthElement}
               isDayBlocked={isDayBlocked}
               isOutsideRange={isDayBlocked}
-              initialVisibleMonth={() => moment().subtract(18, 'years')}
+              initialVisibleMonth={() => moment('2000-01-01')}
               displayFormat="MM/DD/YYYY"
               required
             />

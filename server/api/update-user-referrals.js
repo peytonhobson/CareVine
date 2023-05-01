@@ -1,14 +1,18 @@
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
+const sgMail = require('@sendgrid/mail');
+const REFERRAL_CLAIMED_EMAIL_ID = 'd-91417a3cbcc9433ca89633ce6507b704';
 
 module.exports = async (req, res) => {
   const { email, referralCode } = req.body;
+
+  let user = null;
 
   integrationSdk.users
     .query({ meta_referralCode: referralCode, include: ['profile.metadata'] })
     .then(response => {
       const users = response.data.data;
-      const user = users.length > 0 ? users[0] : null;
+      user = users.length > 0 ? users[0] : null;
 
       if (!user) {
         throw new Error('No user found with that referral code');
@@ -33,16 +37,37 @@ module.exports = async (req, res) => {
         },
       });
     })
+    .then(() => {
+      const referrerEmail = user.attributes.email;
+
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
+        from: 'CareVine@carevine.us',
+        personalizations: [
+          {
+            to: [
+              {
+                email: referrerEmail,
+              },
+            ],
+            dynamic_template_data: {
+              marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+            },
+          },
+        ],
+        template_id: REFERRAL_CLAIMED_EMAIL_ID,
+      };
+
+      return sgMail.send(msg);
+    })
     .then(apiResponse => {
-      const { status, statusText, data } = apiResponse;
+      console.log(apiResponse);
       res
-        .status(status)
+        .status(200)
         .set('Content-Type', 'application/transit+json')
         .send(
           serialize({
-            status,
-            statusText,
-            data,
+            data: apiResponse,
           })
         )
         .end();

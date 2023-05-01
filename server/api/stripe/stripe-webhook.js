@@ -3,8 +3,8 @@ const { handleError, serialize, integrationSdk, getSdk } = require('../../api-ut
 const log = require('../../log');
 const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
-    ? 'price_1MXTvhJsU2TVwfKBFEkLhUKp'
-    : 'price_1MXTyYJsU2TVwfKBrzI6O23S';
+    ? 'price_1N1q9EJsU2TVwfKBaFF1g5Fr'
+    : 'price_1N1q8PJsU2TVwfKBgE80ln2P';
 const axios = require('axios');
 const rootUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 const moment = require('moment');
@@ -115,6 +115,7 @@ const updateBackgroundCheckSubscription = async subscription => {
           // May set this to null if webhooks work
           status: subscription?.status,
           subscriptionId: subscription?.id,
+          subscriptionItemId: subscription?.items?.data[0]?.id,
           type,
           currentPeriodEnd: subscription?.current_period_end,
           amount: subscription?.plan?.amount,
@@ -166,6 +167,13 @@ const updateBackgroundCheckSubscription = async subscription => {
     }
 
     if (isUpgrading) {
+      const invoice = await stripe.invoices.create({
+        customer: subscription.customer,
+        subscription: subscription.id,
+      });
+
+      await stripe.invoices.pay(invoice.id);
+
       failStage = 'subscription-upgraded-email-failed';
       sendgridEmail(userId, 'subscription-upgraded', { marketplaceUrl: rootUrl }, failStage);
     }

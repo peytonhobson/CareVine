@@ -389,10 +389,13 @@ const EditListingBackgroundCheckPanel = props => {
   // This creates payment or setup intent, depending on if user is using promo code
   const handleCardSubmit = (stripe, elements) => {
     const userId = currentUser.id.uuid;
+    const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
     const params = {
       stripe,
       elements,
       userId,
+      saveMethodAsDefault: true,
+      stripeCustomerId,
     };
 
     if (
@@ -445,13 +448,14 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(PAYMENT);
       setBackgroundCheckType(bcType);
 
-      console.log(signupReferralCode);
-
       onCreateSubscription(
         stripeCustomerId,
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
         currentUser.id?.uuid,
-        { coupon: signupReferralCode ? CAREVINE_GOLD_HALF_OFF_COUPON : null }
+        {
+          coupon: signupReferralCode ? CAREVINE_GOLD_HALF_OFF_COUPON : null,
+          proration_behavior: 'none',
+        }
       ).then(() => {
         onFetchCurrentUser();
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });

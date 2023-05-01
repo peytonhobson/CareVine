@@ -229,6 +229,11 @@ const SubscriptionsPageComponent = props => {
         onFetchCurrentUser();
       }, 300)
     );
+
+    setTimeout(() => {
+      clearInterval(fetchingUserInterval);
+      setFetchingUserInterval(null);
+    }, 5000);
   };
 
   // Set subscription to cancel at period end
@@ -266,7 +271,7 @@ const SubscriptionsPageComponent = props => {
   const handleReactivateSubscription = async () => {
     const changeSubscription = bcType !== isReactivateSubscriptionPaymentModalOpen;
     const priceId =
-      isReactivateSubscriptionPaymentModalOpen == VINE
+      isReactivateSubscriptionPaymentModalOpen === VINE
         ? CAREVINE_GOLD_PRICE_ID
         : CAREVINE_BASIC_PRICE_ID;
     const cardId =
@@ -299,15 +304,19 @@ const SubscriptionsPageComponent = props => {
         } else {
           // Upgrade current subscription from basic to gold
           const subscriptionId = backgroundCheckSubscription.subscriptionId;
+          const subscriptionItemId = backgroundCheckSubscription.subscriptionItemId;
+          const params = {
+            cancel_at_period_end: false,
+            items: [{ id: subscriptionItemId, price: priceId }],
+            billing_cycle_anchor: 'now',
+            proration_behavior: 'none',
+          };
 
-          try {
-            const response = await onUpdateSubscriptionItem(subscriptionId, priceId);
-
+          // TODO: DO we need to set cancel at period end to false here?
+          onUpdateSubscription(subscriptionId, params).then(() => {
             createFetchUserInterval();
             setIsReactivateSubscriptionPaymentModalOpen(false);
-          } catch (e) {
-            console.log(e);
-          }
+          });
         }
       } else {
         // Reactive canceled subscription that hasn't reached the end of the billing period
@@ -442,18 +451,18 @@ const SubscriptionsPageComponent = props => {
   });
 
   const futureSubscriptionAmountDue =
-    backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance > 0
-      ? backgroundCheckSubscriptionSchedule.amount / 100 + customerCreditBalance
+    backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance > 0
+      ? backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance
       : '0.00';
   const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
-    backgroundCheckSubscriptionSchedule.startDate > todayTimestamp / 1000 ? (
+    backgroundCheckSubscriptionSchedule?.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
       <SubscriptionCard title={futureSubscriptionTitle} headerButton={futureSubscriptionButton}>
         <div className={css.subscriptionContentContainer}>
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>
-              {new Date(backgroundCheckSubscriptionSchedule.startDate * 1000).toLocaleDateString()}
+              {new Date(backgroundCheckSubscriptionSchedule?.startDate * 1000).toLocaleDateString()}
             </p>
             <p className={css.amountText}>(${futureSubscriptionAmountDue})</p>
           </div>
@@ -461,7 +470,7 @@ const SubscriptionsPageComponent = props => {
             <h3>Plan Information</h3>
             <p>
               Type:&nbsp;
-              {backgroundCheckSubscriptionSchedule.type === VINE ? (
+              {backgroundCheckSubscriptionSchedule?.type === VINE ? (
                 <FormattedMessage id="SubscriptionsPage.vineCheck" />
               ) : (
                 <FormattedMessage id="SubscriptionsPage.basicCheck" />
