@@ -111,3 +111,17 @@
 .ssnInputRoot {
   text-align: center;
 }
+
+.marketplaceColor {
+  color: var(--marketplaceColor);
+  margin-top: 0;
+}
+
+.pleaseNote {
+  color: var(--marketplaceColor);
+  composes: marketplaceTinyFontStyles from global;
+}
+
+.descriptionText {
+  margin-bottom: 1.5rem;
+}

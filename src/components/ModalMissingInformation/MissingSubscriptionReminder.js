@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
-import IconCheckmark from '../IconCheckmark/IconCheckmark';
-import { NamedLink } from '../';
+import { NamedLink, IconCheckmark } from '../';
 
 import css from './ModalMissingInformation.module.css';
 import { createSlug } from '../../util/urlHelpers';
