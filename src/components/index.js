@@ -11,41 +11,41 @@
  */
 
 // Icons
-export { default as IconAdd } from './IconAdd/IconAdd';
-export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
-export { default as IconBank } from './IconBank/IconBank';
-export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
-export { default as IconBell } from './IconBell/IconBell';
-export { default as IconCalendar } from './IconCalendar/IconCalendar'
-export { default as IconCar } from './IconCar/IconCar';
-export { default as IconCard } from './IconCard/IconCard';
-export { default as IconCareVineGold } from './IconCareVineGold/IconCareVineGold';
-export { default as IconCertification } from './IconCertification/IconCertification';
-export { default as IconCheckmark } from './IconCheckmark/IconCheckmark';
-export { default as IconClose } from './IconClose/IconClose';
-export { default as IconConfirm } from './IconConfirm/IconConfirm';
-export { default as IconEdit } from './IconEdit/IconEdit';
-export { default as IconEmailAttention } from './IconEmailAttention/IconEmailAttention';
-export { default as IconEmailSent } from './IconEmailSent/IconEmailSent';
-export { default as IconEmailSuccess } from './IconEmailSuccess/IconEmailSuccess';
-export { default as IconEnquiry } from './IconEnquiry/IconEnquiry';
-export { default as IconHouse } from './IconHouse/IconHouse'
-export { default as IconKeys } from './IconKeys/IconKeys';
-export { default as IconKeysSuccess } from './IconKeysSuccess/IconKeysSuccess';
-export { default as IconReviewStar } from './IconReviewStar/IconReviewStar';
-export { default as IconReviewUser } from './IconReviewUser/IconReviewUser';
-export { default as IconSearch } from './IconSearch/IconSearch';
-export { default as IconSocialMediaFacebook } from './IconSocialMediaFacebook/IconSocialMediaFacebook';
-export { default as IconSocialMediaInstagram } from './IconSocialMediaInstagram/IconSocialMediaInstagram';
-export { default as IconSocialMediaTwitter } from './IconSocialMediaTwitter/IconSocialMediaTwitter';
-export { default as IconSpinner } from './IconSpinner/IconSpinner';
-export { default as IconSuccess } from './IconSuccess/IconSuccess';
-export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
-export { default as IconVerticalDots } from './IconVerticalDots/IconVerticalDots';
-export { default as IconWallet } from './IconWallet/IconWallet';
-export { default as IconGift } from './IconGift/IconGift';
-export { default as IconEnvelopes } from './IconEnvelopes/IconEnvelopes';
-
+export {
+    IconAdd,
+    IconArrowHead,
+    IconBank,
+    IconBannedUser,
+    IconBell,
+    IconCalendar,
+    IconCar,
+    IconCard,
+    IconCareVineGold,
+    IconCertification,
+    IconCheckmark,
+    IconClose,
+    IconConfirm,
+    IconEdit,
+    IconEmailAttention,
+    IconEmailSent,
+    IconEmailSuccess,
+    IconEnquiry,
+    IconHouse,
+    IconKeys,
+    IconKeysSuccess,
+    IconReviewStar,
+    IconReviewUser,
+    IconSearch,
+    IconSocialMediaFacebook,
+    IconSocialMediaInstagram,
+    IconSocialMediaTwitter,
+    IconSpinner,
+    IconSuccess,
+    IconVerticalDots,
+    IconWallet,
+    IconGift,
+    IconEnvelopes
+} from './Icons';
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
 export { default as Badge } from './Badge/Badge';
@@ -66,6 +66,7 @@ export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as UserListingPreview } from './UserListingPreview/UserListingPreview';
 export { default as ValidationError } from './ValidationError/ValidationError';
+export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
 
 /**
  * Composite components

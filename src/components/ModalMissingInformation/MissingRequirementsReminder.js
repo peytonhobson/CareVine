@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
-import IconCheckmark from '../IconCheckmark/IconCheckmark';
-import { NamedLink } from '../';
+import { NamedLink, IconCheckmark } from '../';
 import { LISTING_STATE_DRAFT } from '../../util/types';
 import {
   LISTING_PAGE_PARAM_TYPE_DRAFT,
