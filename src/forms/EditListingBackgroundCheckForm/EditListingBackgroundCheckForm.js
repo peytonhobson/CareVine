@@ -214,12 +214,24 @@ const EditListingBackgroundCheckForm = props => (
           <h1 className={css.title}>
             Provide Your <span className={css.identityText}>Information</span>
           </h1>
-          {update && (
-            <p style={{ color: 'var(--marketplaceColor)' }}>
-              We were unable to verify your identity with the information you provided. Please fill
-              in your information again. If the issue persists, please contact support.
-            </p>
-          )}
+          <div className={css.descriptionText}>
+            {update ? (
+              <p className={css.marketplaceColor}>
+                We were unable to verify your identity with the information you provided. Please
+                fill in your information again. If the issue persists, please contact support.
+              </p>
+            ) : (
+              <>
+                <p className={css.marketplaceColor}>
+                  We need to verify your identity before you can message other users.
+                </p>
+                <p className={css.pleaseNote}>
+                  *We do not store any of this information and it will only be used to verify your
+                  identity. If you have any questions, please contact support.
+                </p>
+              </>
+            )}
+          </div>
           <div className={css.row}>
             <FieldTextInput
               id="firstName"
