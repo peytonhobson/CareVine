@@ -5,16 +5,11 @@ const path = require('path');
 const filePath = path.join(__dirname);
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: `${filePath}/out/Oregon_Nursing_Contact_List.csv`,
+  path: `${filePath}/out/Oregon_Nursing_Contact_List2.csv`,
   header: [
     { id: 'email', title: 'email' },
     { id: 'firstName', title: 'first_name' },
     { id: 'lastName', title: 'last_name' },
-    { id: 'addressLine1', title: 'address_line_1' },
-    { id: 'addressLine2', title: 'address_line_2' },
-    { id: 'city', title: 'city' },
-    { id: 'state', title: 'state_province_region' },
-    { id: 'postalCode', title: 'postal_code' },
     { id: 'county', title: 'county' },
     { id: 'licenseType', title: 'license_type' },
   ],
@@ -30,11 +25,6 @@ fs.createReadStream(`${filePath}/in/Oregon_Nursing_Mailing_List.csv`)
         email: row['Email Address'],
         firstName: row['First Name'],
         lastName: row['Last Name'],
-        addressLine1: row['Address 1'],
-        addressLine2: row['Address 2'],
-        city: row['City'],
-        state: row['State'],
-        postalCode: row['Postal Code'],
         county: row['County'],
         licenseType: row['License Type'],
       };
@@ -43,6 +33,7 @@ fs.createReadStream(`${filePath}/in/Oregon_Nursing_Mailing_List.csv`)
     }
   })
   .on('end', () => {
+    console.log(contacts.length);
     csvWriter
       .writeRecords(contacts)
       .then(() => console.log('The CSV file was written successfully'));
