@@ -6,28 +6,41 @@ const sgMail = require('@sendgrid/mail');
 
 const filePath = path.join(__dirname);
 
-let contacts = [];
+let contacts = [
+  'peyton.hobson@carevine.us',
+  'janelle.leavell1@gmail.com',
+  'patrick.hobson@carevine.us',
+];
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List.csv`)
   .pipe(csv())
   .on('data', async row => {
-    contacts.push(row.email);
+    if (row.county === 'WASHINGTON' || row.county === 'LANE' || row.county === 'CLACKAMAS') {
+      contacts.push(row.email);
+    }
   })
   .on('end', () => {
-    console.log(contacts);
-    const msg = {
-      from: 'CareVine@carevine.us',
-      to: ['peyton.hobson@carevine.us', 'peyton.hobson1@gmail.com', 'peyton.hobson@carevine.us'],
-      template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
-      category: 'Oregon Nursing',
-    };
-    sgMail
-      .sendMultiple(msg)
-      .then(() => {
-        console.log('Emails sent successfully');
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    const splits = Math.ceil(contacts.length / 1000);
+
+    for (let i = 0; i < splits; i++) {
+      const toSend = contacts.slice(i * 1000, (i + 1) * 1000);
+
+      console.log(toSend.length);
+
+      const msg = {
+        from: 'CareVine@carevine.us',
+        // to: toSend,
+        template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
+        category: 'Oregon Nursing (Clackamas, Lane, Washington)',
+      };
+      sgMail
+        .sendMultiple(msg)
+        .then(() => {
+          console.log('Emails sent successfully');
+        })
+        .catch(error => {
+          console.log(error?.response?.body?.errors);
+        });
+    }
   });
