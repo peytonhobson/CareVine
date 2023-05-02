@@ -7,18 +7,15 @@ module.exports = (req, res) => {
   const { userAccessCode } = req.body;
 
   axios
-    .delete(
-      `https://api-v3.authenticating.com/user/service/monitoring`,
-      {
+    .delete(`https://api-v3.authenticating.com/user/service/monitoring`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${AUTHENTICATE_API_KEY}`,
+      },
+      data: {
         userAccessCode,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${AUTHENTICATE_API_KEY}`,
-        },
-      }
-    )
+    })
     .then(apiResponse => {
       res
         .status(200)
