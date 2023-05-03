@@ -409,7 +409,7 @@ export const InboxPageComponent = props => {
       <GenericError show={fetchListingError} errorText={fetchListingError} />
       <SessionTimeout
         intervalFunction={onFetchConversations}
-        intervalTime="10000"
+        intervalTime="20000"
         maxInactiveTime="5"
       />
     </Page>
