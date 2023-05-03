@@ -43,6 +43,7 @@ import * as log from './util/log';
 import { authInfo } from './ducks/Auth.duck';
 import { fetchAppAssets } from './ducks/hostedAssets.duck';
 import { fetchCurrentUser } from './ducks/user.duck';
+import TagManager from 'react-gtm-module';
 
 // Route config
 import routeConfiguration from './routeConfiguration';
@@ -79,6 +80,13 @@ const setupAnalyticsHandlers = () => {
   // Log analytics page views and events in dev mode
   if (config.dev) {
     handlers.push(new LoggingAnalyticsHandler());
+  }
+
+  if (process.env.REACT_APP_GTM_ID) {
+    const tagManagerArgs = {
+      gtmId: process.env.REACT_APP_GTM_ID,
+    };
+    TagManager.initialize(tagManagerArgs);
   }
 
   // Add Google Analytics 4 (GA4) handler if tracker ID is found
