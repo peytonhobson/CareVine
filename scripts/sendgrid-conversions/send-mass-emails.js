@@ -16,31 +16,32 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List.csv`)
   .pipe(csv())
   .on('data', async row => {
-    if (row.county === 'WASHINGTON' || row.county === 'LANE' || row.county === 'CLACKAMAS') {
+    if (row.email.includes('@')) {
       contacts.push(row.email);
     }
   })
   .on('end', () => {
     const splits = Math.ceil(contacts.length / 1000);
 
-    for (let i = 0; i < splits; i++) {
-      const toSend = contacts.slice(i * 1000, (i + 1) * 1000);
+    // const toSend = contacts.slice(i * 1000, (i + 1) * 1000);
 
-      console.log(toSend.length);
+    // console.log(toSend.length);s
 
-      const msg = {
-        from: 'CareVine@carevine.us',
-        // to: toSend,
-        template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
-        category: 'Oregon Nursing (Clackamas, Lane, Washington)',
-      };
-      sgMail
-        .sendMultiple(msg)
-        .then(() => {
-          console.log('Emails sent successfully');
-        })
-        .catch(error => {
-          console.log(error?.response?.body?.errors);
-        });
-    }
+    const msg = {
+      from: 'CareVine@carevine-mail.us',
+      to: 'test-c5d0dc@test.mailgenius.com',
+      template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
+      category: 'Testing',
+      asm: {
+        group_id: 22860,
+      },
+    };
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   });
