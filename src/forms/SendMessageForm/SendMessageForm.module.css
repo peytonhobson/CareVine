@@ -132,17 +132,17 @@
   white-space: pre-wrap;
   color: rgba(0, 0, 0, 0.88);
   caret-color: var(--marketplaceColor);
-  border: solid 2px rgba(0, 0, 0, 0.38);
+  border: solid 2px rgba(0, 0, 0, 0.38) !important;
   background-color: #ffffff;
 
   &:focus {
     outline: none;
     color: rgba(0, 0, 0, 0.88);
-    border: solid 2px var(--marketplaceColor);
+    border: solid 2px var(--marketplaceColor) !important;
   }
 
   &:active {
-    border: solid 2px var(--matterColor);
+    border: solid 2px var(--matterColor) !important;
     color: rgba(0, 0, 0, 0.88);
   }
 

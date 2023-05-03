@@ -1,0 +1,57 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  height: 100%;
+}
+
+.amountContainer {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  min-width: 0;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.amountLabel {
+  font-size: 25px;
+  padding-left: 0.25rem;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.currencyInput {
+  display: flex;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  font-size: 40px;
+  margin-inline: 20%;
+}
+
+.currencyRoot {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.notifyDisabledMessage {
+  margin: 0;
+  color: var(--marketplaceColor);
+}
+
+.submitButton {
+  margin-top: 4rem;
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.payoutLink {
+  text-decoration: underline;
+}

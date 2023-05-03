@@ -28,8 +28,8 @@ fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List.csv`)
     // console.log(toSend.length);s
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
-      to: 'test-c5d0dc@test.mailgenius.com',
+      from: 'CareVine@carevine.us',
+      to: 'peyton.hobson@carevine.us',
       template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
       category: 'Testing',
       asm: {
