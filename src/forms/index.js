@@ -48,3 +48,4 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 export { default as StripePaymentForm } from './StripePaymentForm/StripePaymentForm';
 export { default as TimelineForm } from './TimelineForm/TimelineForm';
 export { default as TopbarSearchForm } from './TopbarSearchForm/TopbarSearchForm';
+export { default as RequestPaymentForm} from './RequestPaymentForm/RequestPaymentForm'
