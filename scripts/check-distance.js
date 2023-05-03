@@ -2,6 +2,7 @@ require('dotenv').config();
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 var crypto = require('crypto');
 const { point, distance } = require('@turf/turf');
+const sgMail = require('@sendgrid/mail');
 
 const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
   const options = { units: 'miles' };
@@ -26,20 +27,51 @@ const main = async () => {
 
     const listing = res.data.data;
 
-    const response = await integrationSdk.listings.query({ meta_listingType: 'caregiver' });
+    const response = await integrationSdk.listings.query({
+      meta_listingType: 'caregiver',
+      include: ['author'],
+    });
 
     const listings = response.data.data;
 
     const geolocation = listing?.attributes?.geolocation;
 
-    console.log(listing.attributes);
+    const authorIds = listings
+      .filter(l => {
+        const { geolocation: cGeolocation } = l?.attributes;
+        return calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20;
+      })
+      .map(l => l.relationships.author.data.id.uuid);
 
-    const distances = listings.map(l => {
-      const { geolocation: cGeolocation } = l?.attributes;
-      return calculateDistanceBetweenOrigins(geolocation, cGeolocation);
-    });
+    const userResponse = await Promise.all(
+      authorIds.map(async id => {
+        return await integrationSdk.users.show({ id });
+      })
+    );
 
-    console.log(distances);
+    const emails = userResponse.map(u => u.data.data.attributes.email);
+
+    console.log(emails);
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    const msg = {
+      from: 'CareVine@carevine-mail.us',
+      to: emails,
+      template_id: 'd-7da4e1b9c133497499ddcb6ad1ccff9f',
+      asm: {
+        group_id: 22860,
+      },
+    };
+
+    // sgMail
+    //   .sendMultiple(msg)
+    //   .then(() => {
+    //     console.log('Emails sent successfully');
+    //   })
+    //   .catch(error => {
+    //     console.log(error?.response?.body?.errors);
+    //   });
   } catch (err) {
     console.log(err);
   }
