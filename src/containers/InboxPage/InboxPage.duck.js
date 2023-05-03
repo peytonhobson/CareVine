@@ -240,7 +240,7 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
       return {
         ...state,
         sendRequestForPaymentInProgress: false,
-        sendRequestForPaymentSuccess: true,
+        sendRequestForPaymentSuccess: payload,
       };
     case SEND_REQUEST_FOR_PAYMENT_ERROR:
       return {
@@ -347,8 +347,9 @@ const fetchConversationsError = e => ({
 export const sendRequestForPaymentRequest = () => ({
   type: SEND_REQUEST_FOR_PAYMENT_REQUEST,
 });
-export const sendRequestForPaymentSuccess = () => ({
+export const sendRequestForPaymentSuccess = payload => ({
   type: SEND_REQUEST_FOR_PAYMENT_SUCCESS,
+  payload,
 });
 export const sendRequestForPaymentError = e => ({
   type: SEND_REQUEST_FOR_PAYMENT_ERROR,
@@ -485,7 +486,8 @@ export const sendRequestForPayment = (
   currentUser,
   conversationId,
   otherUserListing,
-  otherUser
+  otherUser,
+  amount
 ) => async (dispatch, getState, sdk) => {
   dispatch(sendRequestForPaymentRequest());
 
@@ -501,6 +503,7 @@ export const sendRequestForPayment = (
       senderName,
       conversationId,
       senderId: currentUser.id.uuid,
+      amount,
     },
   };
 
@@ -528,7 +531,7 @@ export const sendRequestForPayment = (
       },
     });
 
-    dispatch(sendRequestForPaymentSuccess());
+    dispatch(sendRequestForPaymentSuccess(otherUser?.id?.uuid));
     dispatch(transitionToRequestPayment(otherUserListing, notificationId));
   } catch (e) {
     log.error(e, 'send-request-for-payment-failed');

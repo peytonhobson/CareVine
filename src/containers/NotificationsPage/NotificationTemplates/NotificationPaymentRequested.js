@@ -14,7 +14,7 @@ const NotificationPaymentRequested = props => {
     fetchSenderListingError,
   } = props;
 
-  const { senderName, conversationId, senderId } = notification.metadata;
+  const { senderName, conversationId, senderId, amount } = notification.metadata;
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -31,8 +31,8 @@ const NotificationPaymentRequested = props => {
     <div className={css.root}>
       <h1 className={css.title}>Payment Requested</h1>
       <p className={css.message}>
-        <span className={css.noWrapText}>{senderName}</span> has requested payment from you. Click
-        the button below to pay them.
+        <span className={css.noWrapText}>{senderName}</span> has requested ${amount / 100} for their
+        services. Click the button below to pay them.
       </p>
 
       {fetchSenderListingError ? (

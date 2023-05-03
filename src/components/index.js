@@ -103,6 +103,7 @@ export { default as Menu } from './Menu/Menu';
 // Modal
 export { default as Modal } from './Modal/Modal';
 export { default as ModalInMobile } from './ModalInMobile/ModalInMobile';
+export { default as RequestPaymentModal } from './RequestPaymentModal/RequestPaymentModal'
 
 // Fields (for Final Form)
 export { default as FieldBirthdayInput } from './FieldBirthdayInput/FieldBirthdayInput';

@@ -1,10 +1,10 @@
-import React from 'react';
-import { IconArrowHead, Avatar, NamedLink } from '..';
+import React, { useState } from 'react';
+import { IconArrowHead, Avatar, NamedLink, Button, RequestPaymentModal } from '..';
 import PaymentButton from './CustomButtons/PaymentButton';
-import RequestPaymentButton from './CustomButtons/RequestPaymentButton';
 import { createSlug } from '../../util/urlHelpers';
 import { userDisplayNameAsString } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
+import { FormattedMessage } from 'react-intl';
 
 import css from './InboxChannelHeader.module.css';
 
@@ -22,7 +22,11 @@ const InboxChannelHeader = props => {
     sendRequestForPaymentSuccess,
     conversationId,
     onCloseChatModal,
+    intl,
+    onManageDisableScrolling,
   } = props;
+
+  const [isRequestPaymentModalOpen, setIsRequestPaymentModalOpen] = useState(false);
 
   const listingId = listing?.id?.uuid;
   const slug = listing && createSlug(listing);
@@ -85,21 +89,31 @@ const InboxChannelHeader = props => {
                 otherUser={otherUser}
               />
             ) : (
-              <RequestPaymentButton
-                currentUser={currentUser}
-                disabled={!otherUser || !listing || fetchOtherUserListingInProgress}
-                onSendRequestForPayment={onSendRequestForPayment}
-                otherUser={otherUser}
-                otherUserListing={listing}
-                conversationId={conversationId}
-                sendRequestForPaymentError={sendRequestForPaymentError}
-                sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
-                sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
-              />
+              // TODO: Change this to generic button that opens modal
+              <Button
+                onClick={() => setIsRequestPaymentModalOpen(true)}
+                className={css.requestButton}
+              >
+                <FormattedMessage id="InboxChannelHeader.requestPayment" />
+              </Button>
             )}
           </div>
         </>
       )}
+      <RequestPaymentModal
+        currentUser={currentUser}
+        intl={intl}
+        onHandleClose={() => setIsRequestPaymentModalOpen(false)}
+        isOpen={isRequestPaymentModalOpen}
+        otherUser={otherUser}
+        otherUserListing={listing}
+        onSendRequestForPayment={onSendRequestForPayment}
+        conversationId={conversationId}
+        sendRequestForPaymentError={sendRequestForPaymentError}
+        sendRequestForPaymentInProgress={sendRequestForPaymentInProgress}
+        sendRequestForPaymentSuccess={sendRequestForPaymentSuccess}
+        onManageDisableScrolling={onManageDisableScrolling}
+      ></RequestPaymentModal>
     </div>
   );
 };
