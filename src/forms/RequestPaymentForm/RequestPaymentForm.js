@@ -32,6 +32,7 @@ const RequestPaymentForm = props => (
         requestDisabled,
         otherUser,
         invalid,
+        form,
       } = formRenderProps;
 
       const amountLabel = intl.formatMessage({ id: 'RequestPaymentForm.amountLabel' });

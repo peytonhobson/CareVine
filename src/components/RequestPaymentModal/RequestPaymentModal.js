@@ -80,6 +80,7 @@ const RequestPaymentModal = props => {
           requestedInLastDay={requestedInLastDay}
           requestDisabled={requestDisabled}
           otherUser={otherUser}
+          key={otherUser?.id?.uuid}
         />
       </div>
     </Modal>
