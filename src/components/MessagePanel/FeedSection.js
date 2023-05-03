@@ -63,7 +63,7 @@ const FeedSection = props => {
         messages={messages}
         transaction={currentTransaction}
         currentUser={currentUser}
-        hasOlderMessages={hasOlderMessages && !fetchMessagesInProgress}
+        hasOlderMessages={hasOlderMessages}
         onOpenReviewModal={onOpenReviewModal}
         onShowOlderMessages={onShowMoreMessages}
         fetchMessagesInProgress={fetchMessagesInProgress}
