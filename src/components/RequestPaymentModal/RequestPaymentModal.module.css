@@ -1,0 +1,20 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.notifyButtonWrapper {
+  composes: marketplaceModalBottomWrapper from global;
+
+  text-align: left;
+}
+
+.notifyDisabledMessage {
+  color: var(--marketplaceColor);
+  margin-bottom: 0;
+}

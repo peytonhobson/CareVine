@@ -266,10 +266,6 @@ export const InboxPageComponent = props => {
     <FormattedMessage id="InboxPage.fetchListingFailed" />
   );
 
-  const requestPaymentError = sendRequestForPaymentError && (
-    <FormattedMessage id="InboxPage.requestPaymentFailed" />
-  );
-
   const initialMessageFailed = !!(
     initialMessageFailedToTransaction &&
     state.activeConversation?.id &&
@@ -324,6 +320,8 @@ export const InboxPageComponent = props => {
                 onSendRequestForPayment={onSendRequestForPayment}
                 conversationId={state.activeConversation?.id?.uuid}
                 onCloseChatModal={handleCloseChatModal}
+                intl={intl}
+                onManageDisableScrolling={onManageDisableScrolling}
               />
               <MessagePanel
                 transaction={state.activeConversation}
@@ -408,10 +406,7 @@ export const InboxPageComponent = props => {
           )}
         </LayoutWrapperMain>
       </LayoutSideNavigation>
-      <GenericError
-        show={fetchListingError || requestPaymentError}
-        errorText={fetchListingError || requestPaymentError}
-      />
+      <GenericError show={fetchListingError} errorText={fetchListingError} />
       <SessionTimeout
         intervalFunction={onFetchConversations}
         intervalTime="10000"
