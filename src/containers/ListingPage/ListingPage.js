@@ -41,6 +41,7 @@ import {
   ListingSummary,
   ListingTabs,
   ListingPreview,
+  GenericError,
 } from '../../components';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
@@ -51,7 +52,13 @@ import {
   MISSING_REQUIREMENTS,
   EMAIL_VERIFICATION,
 } from '../../util/constants';
-import { sendEnquiry, setInitialValues, sendMessage } from './ListingPage.duck';
+import {
+  sendEnquiry,
+  setInitialValues,
+  sendMessage,
+  closeListing,
+  openListing,
+} from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -220,6 +227,12 @@ export class ListingPageComponent extends Component {
       sendMessageError,
       sendMessageInProgress,
       fetchExistingConversationInProgress,
+      onCloseListing,
+      closeListingInProgress,
+      closeListingError,
+      openListingInProgress,
+      openListingError,
+      onOpenListing,
     } = this.props;
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -369,6 +382,18 @@ export class ListingPageComponent extends Component {
       </div>
     ) : null;
 
+    const clostListingErrorText = closeListingError ? (
+      <p className={css.errorText}>
+        <FormattedMessage id="ListingPage.closeListingFailed" />
+      </p>
+    ) : null;
+
+    const openListingErrorText = openListingError ? (
+      <p className={css.errorText}>
+        <FormattedMessage id="ListingPage.openListingFailed" />
+      </p>
+    ) : null;
+
     return (
       <Page
         title={schemaTitle}
@@ -402,6 +427,12 @@ export class ListingPageComponent extends Component {
                       onShowListingPreview={showListingPreview}
                       isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
+                      closeListingInProgress={closeListingInProgress}
+                      closeListingError={closeListingError}
+                      onCloseListing={onCloseListing}
+                      openListingInProgress={openListingInProgress}
+                      openListingError={openListingError}
+                      onOpenListing={onOpenListing}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -464,6 +495,10 @@ export class ListingPageComponent extends Component {
             <Footer />
           </LayoutWrapperFooter>
         </LayoutSingleColumn>
+        <GenericError
+          show={closeListingError || openListingError}
+          errorText={clostListingErrorText || openListingErrorText}
+        />
       </Page>
     );
   }
@@ -525,6 +560,12 @@ const mapStateToProps = state => {
     fetchExistingConversationInProgress,
     fetchExistingConversationError,
     existingConversation,
+    closeListingInProgress,
+    closeListingError,
+    listingClosed,
+    openListingInProgress,
+    openListingError,
+    listingOpened,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -555,6 +596,10 @@ const mapStateToProps = state => {
     fetchExistingConversationError,
     existingConversation,
     scrollingDisabled: isScrollingDisabled(state),
+    closeListingInProgress,
+    closeListingError,
+    openListingInProgress,
+    openListingError,
   };
 };
 
@@ -565,6 +610,8 @@ const mapDispatchToProps = {
   onChangeModalValue: changeModalValue,
   onSendEnquiry: sendEnquiry,
   onSendMessage: sendMessage,
+  onCloseListing: closeListing,
+  onOpenListing: openListing,
 };
 
 // Note: it is important that the withRouter HOC is **outside** the

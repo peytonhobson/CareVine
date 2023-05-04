@@ -28,9 +28,9 @@ fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List.csv`)
     // console.log(toSend.length);s
 
     const msg = {
-      from: 'CareVine@carevine.us',
-      to: 'peyton.hobson@carevine.us',
-      template_id: 'd-accd3ced34404fdb94aa12e95a35941d',
+      from: 'CareVine@carevine-mail.us',
+      to: 'asdfsdf5445a@gmail.com',
+      template_id: 'd-9c4c3363ed4d4771aafdd4e221e7c1eb',
       category: 'Testing',
       asm: {
         group_id: 22860,
