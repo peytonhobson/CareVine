@@ -1,13 +1,6 @@
 import React from 'react';
 
-import {
-  Avatar,
-  AvailabilityPreview,
-  Button,
-  SecondaryButton,
-  IconCareVineGold,
-  InfoTooltip,
-} from '..';
+import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead } from '..';
 import { formatPrice, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { compose } from 'redux';
@@ -36,6 +29,8 @@ const ListingSummaryComponent = props => {
     closeListingInProgress,
     openListingInProgress,
     onOpenListing,
+    isFromSearchPage,
+    onGoBackToSearchResults,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -94,6 +89,16 @@ const ListingSummaryComponent = props => {
 
   return (
     <div className={css.root}>
+      {isFromSearchPage && !isOwnListing && (
+        <div className={css.backButtonContainer}>
+          <Button onClick={onGoBackToSearchResults} rootClassName={css.goBackButton} type="button">
+            <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+            <span className={css.goBackText}>
+              {isMobile ? 'Go Back' : 'Back to Search Results'}
+            </span>
+          </Button>
+        </div>
+      )}
       <div className={css.user}>
         <div className={css.userDisplay}>
           <Avatar

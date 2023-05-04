@@ -35,20 +35,18 @@
   /* white-space: nowrap; */
   max-width: 25%;
 
+  margin-left: 1rem;
+
   &:first-child {
     /* margin-left: 0; */
 
     /* Padding added to tab so that it will be visible after call to scrollToTab */
-    margin-left: 1.5rem;
+    margin-left: 1rem;
   }
 
   &:last-child {
     /* Padding added to tab so that it will be visible after call to scrollToTab */
-    margin-right: 1.5rem;
-  }
-
-  @media (--viewportMedium) {
-    margin-left: 1rem;
+    margin-right: 1rem;
   }
 
   @media (--viewportLarge) {
@@ -69,7 +67,7 @@
 .tabContent {
   /* Font */
   font-weight: var(--fontWeightSemiBold);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   line-height: 1.5rem;
   letter-spacing: 0;
   display: flex;

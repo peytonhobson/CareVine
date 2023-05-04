@@ -165,6 +165,7 @@ export const EmployerListingCardComponent = props => {
           name="ListingPage"
           params={{ id, slug }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
+          to={{ state: { from: 'SearchPage' } }}
         >
           <div className={css.topRow}>
             <div className={css.user}>
