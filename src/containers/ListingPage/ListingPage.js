@@ -41,6 +41,7 @@ import {
   ListingSummary,
   ListingTabs,
   ListingPreview,
+  GenericError,
 } from '../../components';
 import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
@@ -51,7 +52,7 @@ import {
   MISSING_REQUIREMENTS,
   EMAIL_VERIFICATION,
 } from '../../util/constants';
-import { sendEnquiry, setInitialValues, sendMessage } from './ListingPage.duck';
+import { sendEnquiry, setInitialValues, sendMessage, closeListing } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -220,6 +221,10 @@ export class ListingPageComponent extends Component {
       sendMessageError,
       sendMessageInProgress,
       fetchExistingConversationInProgress,
+      onCloseListing,
+      listingClosed,
+      closeListingInProgress,
+      closeListingError,
     } = this.props;
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -402,6 +407,10 @@ export class ListingPageComponent extends Component {
                       onShowListingPreview={showListingPreview}
                       isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
+                      closeListingInProgress={closeListingInProgress}
+                      closeListingError={closeListingError}
+                      listingClosed={listingClosed}
+                      onCloseListing={onCloseListing}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -464,6 +473,10 @@ export class ListingPageComponent extends Component {
             <Footer />
           </LayoutWrapperFooter>
         </LayoutSingleColumn>
+        <GenericError
+          show={closeListingError}
+          errorText={intl.formatMessage({ id: 'ListingPage.closeListingFailed' })}
+        />
       </Page>
     );
   }
@@ -525,6 +538,9 @@ const mapStateToProps = state => {
     fetchExistingConversationInProgress,
     fetchExistingConversationError,
     existingConversation,
+    closeListingInProgress,
+    closeListingError,
+    listingClosed,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -555,6 +571,9 @@ const mapStateToProps = state => {
     fetchExistingConversationError,
     existingConversation,
     scrollingDisabled: isScrollingDisabled(state),
+    closeListingInProgress,
+    closeListingError,
+    listingClosed,
   };
 };
 
@@ -565,6 +584,7 @@ const mapDispatchToProps = {
   onChangeModalValue: changeModalValue,
   onSendEnquiry: sendEnquiry,
   onSendMessage: sendMessage,
+  onCloseListing: closeListing,
 };
 
 // Note: it is important that the withRouter HOC is **outside** the

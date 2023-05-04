@@ -32,6 +32,10 @@ const ListingSummaryComponent = props => {
     onShowListingPreview,
     isMobile,
     fetchExistingConversationInProgress,
+    onCloseListing,
+    closeListingInProgress,
+    closeListingError,
+    listingClosed,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -62,6 +66,8 @@ const ListingSummaryComponent = props => {
       })}
     </span>
   );
+
+  const isListingClosed = listing.attributes.state !== 'published';
 
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
@@ -199,7 +205,28 @@ const ListingSummaryComponent = props => {
           </Button>
         </div>
       ) : (
-        <div className={css.buttonContainer}>
+        <div className={css.ownListingButtonContainer}>
+          {isListingClosed ? (
+            <Button
+              className={css.previewButton}
+              onClick={() => onCloseListing(listing.id.uuid)}
+              disabled={closeListingInProgress || isListingClosed}
+              inProgress={closeListingInProgress}
+              ready={isListingClosed || listingClosed}
+            >
+              <FormattedMessage id="ListingSummary.closeListing" />
+            </Button>
+          ) : null
+          // <Button
+          //   className={css.previewButton}
+          //   onClick={() => onOpenListing(listing.id.uuid)}
+          //   disabled={openListingInProgress || !isListingClosed}
+          //   inProgress={openListingInProgress}
+          //   ready={!isListingClosed || listingClosed}
+          // >
+          //   <FormattedMessage id="ListingSummary.openListing" />
+          // </Button>
+          }
           <Button className={css.previewButton} onClick={onShowListingPreview}>
             <FormattedMessage id="ListingSummary.viewPreview" />
           </Button>
