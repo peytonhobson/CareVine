@@ -1,7 +1,7 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
-  padding-block: 2rem;
+  padding-bottom: 2rem;
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
@@ -212,4 +212,31 @@
 
 .topInfo {
   display: flex;
+}
+
+.backButtonContainer {
+  width: 100%;
+}
+
+.goBackButton {
+  composes: marketplaceModalCloseStyles from global;
+  position: static;
+  padding: 0 0 2rem 1rem;
+
+  @media (--viewportLarge) {
+    padding: 0 0 2rem 0;
+  }
+}
+
+.goBackText {
+  composes: marketplaceModalCloseText from global;
+  color: var(--matterColorAnti);
+}
+
+.arrowIcon {
+  composes: marketplaceModalCloseIcon from global;
+  margin-right: 0.5rem;
+  stroke-width: 3px;
+  margin-left: 0;
+  fill: var(--matterColorAnti);
 }
