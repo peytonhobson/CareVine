@@ -39,6 +39,10 @@ export const FETCH_EXISTING_CONVERSATION_SUCCESS =
 export const FETCH_EXISTING_CONVERSATION_ERROR =
   'app/ListingPage/FETCH_EXISTING_CONVERSATION_ERROR';
 
+export const CLOSE_LISTING_REQUEST = 'app/ListingPage/CLOSE_LISTING_REQUEST';
+export const CLOSE_LISTING_SUCCESS = 'app/ListingPage/CLOSE_LISTING_SUCCESS';
+export const CLOSE_LISTING_ERROR = 'app/ListingPage/CLOSE_LISTING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -51,6 +55,9 @@ const initialState = {
   fetchExistingConversationInProgress: false,
   fetchExistingConversationError: null,
   existingConversation: null,
+  closeListingInProgress: false,
+  closeListingError: null,
+  listingClosed: false,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -97,6 +104,13 @@ const listingPageReducer = (state = initialState, action = {}) => {
         fetchExistingConversationError: payload,
       };
 
+    case CLOSE_LISTING_REQUEST:
+      return { ...state, closeListingInProgress: true, closeListingError: null };
+    case CLOSE_LISTING_SUCCESS:
+      return { ...state, closeListingInProgress: false, listingClosed: true };
+    case CLOSE_LISTING_ERROR:
+      return { ...state, closeListingInProgress: false, closeListingError: payload };
+
     default:
       return state;
   }
@@ -142,6 +156,10 @@ export const fetchExistingConversationError = e => ({
   error: true,
   payload: e,
 });
+
+export const closeListingRequest = () => ({ type: CLOSE_LISTING_REQUEST });
+export const closeListingSuccess = () => ({ type: CLOSE_LISTING_SUCCESS });
+export const closeListingError = e => ({ type: CLOSE_LISTING_ERROR, error: true, payload: e });
 
 // ================ Thunks ================ //
 
@@ -299,4 +317,26 @@ export const loadData = (params, search) => dispatch => {
     dispatch(showListing(listingId)),
     dispatch(fetchExistingConversation(listingId)),
   ]);
+};
+
+export const closeListing = listingId => (dispatch, getState, sdk) => {
+  dispatch(closeListingRequest());
+
+  sdk.ownListings
+    .close(
+      {
+        id: listingId,
+      },
+      {
+        expand: true,
+      }
+    )
+    .then(response => {
+      dispatch(closeListingSuccess());
+      dispatch(addMarketplaceEntities(response));
+    })
+    .catch(e => {
+      log.error(e, 'close-listing-failed', { listingId });
+      dispatch(closeListingError(storableError(e)));
+    });
 };

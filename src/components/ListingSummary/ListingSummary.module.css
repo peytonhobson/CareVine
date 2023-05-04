@@ -51,6 +51,22 @@
   }
 }
 
+.ownListingButtonContainer {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    width: auto;
+    margin-top: 0;
+
+    flex-direction: column;
+  }
+}
+
 .button {
   min-height: 0;
   padding: 0.75rem 2rem;
