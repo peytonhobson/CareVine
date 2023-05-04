@@ -10,6 +10,7 @@ module.exports = queryEvents = () => {
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const activeSubscriptionTypes = ['active', 'trialing'];
+  var Readable = require('stream').Readable;
   const {
     closeListing,
     updateListingApproveListing,
@@ -24,6 +25,7 @@ module.exports = queryEvents = () => {
     approveListingNotification,
     closeListingNotification,
   } = require('./queryEvents.helpers');
+  const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
   const integrationSdk = flexIntegrationSdk.createInstance({
     // These two env vars need to be set in the `.env` file.
@@ -49,12 +51,18 @@ module.exports = queryEvents = () => {
   let stateFile = null;
 
   if (isLocal) {
-    stateFile = './server/last-sequence-id.state';
+    stateFile = 'state-files/last-sequence-id.state';
   } else if (isTest) {
-    stateFile = './server/last-sequence-id-test.state';
+    stateFile = 'state-files/last-sequence-id-test.state';
   } else if (isProd) {
-    stateFile = './server/last-sequence-id-prod.state';
+    stateFile = 'state-files/last-sequence-id-prod.state';
   }
+
+  const client = new S3Client({ region: 'us-west-2' });
+  const readCommand = new GetObjectCommand({
+    Bucket: 'carevine',
+    Key: stateFile,
+  });
 
   const queryEvents = args => {
     var filter = {
@@ -69,24 +77,33 @@ module.exports = queryEvents = () => {
       .catch(e => log.error(e, 'Error querying events'));
   };
 
-  const saveLastEventSequenceId = sequenceId => {
+  const saveLastEventSequenceId = async sequenceId => {
+    const buf = Buffer.from(JSON.stringify(sequenceId));
+
     // Save state to local file
+    const command = new PutObjectCommand({
+      Bucket: 'carevine',
+      Key: stateFile,
+      Body: buf,
+    });
+
     try {
-      fs.writeFileSync(stateFile, sequenceId.toString());
+      const response = await client.send(command);
     } catch (err) {
       log.error(err);
-      throw err;
     }
   };
 
-  const loadLastEventSequenceId = () => {
+  const loadLastEventSequenceId = async () => {
     // Load state from local file, if any
     try {
-      const data = fs.readFileSync(stateFile);
+      const response = await client.send(readCommand);
+      // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
+      const data = await response.Body.transformToString();
       return parseInt(data, 10);
     } catch (err) {
+      console.log(err);
       log.error(err);
-      return null;
     }
   };
 
@@ -99,16 +116,20 @@ module.exports = queryEvents = () => {
       const listingId = event.attributes.resource.id.uuid;
 
       // Approve listing if they meet requirements when listing is published
-      if (prevListingState === 'draft' && newListingState === 'pendingApproval') {
+      if (
+        prevListingState &&
+        prevListingState === 'draft' &&
+        newListingState === 'pendingApproval'
+      ) {
         updateListingApproveListing(event);
       }
 
-      if (prevListingState !== 'published' && newListingState === 'published') {
+      if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
         approveListingNotification(userId, listingId);
       }
 
-      if (prevListingState === 'published' && newListingState === 'closed') {
+      if (prevListingState && prevListingState === 'published' && newListingState === 'closed') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
         closeListingNotification(userId);
       }
@@ -124,7 +145,6 @@ module.exports = queryEvents = () => {
       const prevEmailVerified = previousValues?.attributes?.emailVerified;
       const emailVerified = event?.attributes?.resource?.attributes?.emailVerified;
       const backgroundCheckApprovedStatus = metadata?.backgroundCheckApproved?.status;
-      const previousBCSubscription = previousValuesProfile?.metadata?.backgroundCheckSubscription;
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
       const prevBackgroundCheckSubscription =
         previousValuesProfile?.metadata?.backgroundCheckSubscription;
@@ -140,6 +160,7 @@ module.exports = queryEvents = () => {
 
       // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
+        console.log(openListing);
         updateUserListingApproved(event);
       }
 
@@ -194,7 +215,7 @@ module.exports = queryEvents = () => {
       // Close user listing if background check subscription is cancelled and they don't have a subscription schedule
       if (
         !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
-        activeSubscriptionTypes.includes(previousBCSubscription?.status) &&
+        activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status) &&
         !backgroundCheckSubscriptionSchedule
       ) {
         const userId = event?.attributes?.resource?.id?.uuid;
@@ -264,8 +285,7 @@ module.exports = queryEvents = () => {
   };
 
   // Load state from local file, if any
-  const lastSequenceId = loadLastEventSequenceId();
-
-  // kick off the polling loop
-  pollLoop(lastSequenceId);
+  loadLastEventSequenceId().then(lastSequenceId => {
+    pollLoop(lastSequenceId);
+  });
 };
