@@ -224,6 +224,7 @@ export const EmployerListingCardMobileComponent = props => {
           name="ListingPage"
           params={{ id, slug }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
+          to={{ state: { from: 'SearchPage' } }}
         >
           <div className={css.priceValue} title={priceTitle}>
             {formattedMinPrice}-{maxPrice / 100}

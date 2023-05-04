@@ -188,6 +188,7 @@ export const CaregiverListingCardComponent = props => {
         name="ListingPage"
         params={{ id, slug }}
         style={{ pointerEvents: disableProfileLink && 'none' }}
+        to={{ state: { from: 'SearchPage' } }}
       >
         {children}
       </NamedLink>
@@ -343,6 +344,7 @@ export const CaregiverListingCardComponent = props => {
           name="ListingPage"
           params={{ id, slug }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
+          to={{ state: { from: 'SearchPage' } }}
         >
           <FormattedMessage id="CaregiverListingCard.viewProfile" />
         </NamedLink>

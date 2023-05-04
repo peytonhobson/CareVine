@@ -79,6 +79,7 @@ export class ListingPageComponent extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
     this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
+    this.goBackToSearchResults = this.goBackToSearchResults.bind(this);
   }
 
   handleSubmit(values) {
@@ -209,6 +210,14 @@ export class ListingPageComponent extends Component {
     }
   }
 
+  goBackToSearchResults() {
+    const { history, location } = this.props;
+
+    history.goBack();
+
+    // TODO: Make scroll back to search position
+  }
+
   render() {
     const {
       isAuthenticated,
@@ -235,6 +244,7 @@ export class ListingPageComponent extends Component {
       onOpenListing,
     } = this.props;
 
+    const isFromSearchPage = location.state?.from === 'SearchPage';
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     const listingId = new UUID(rawParams.id);
@@ -433,6 +443,8 @@ export class ListingPageComponent extends Component {
                       openListingInProgress={openListingInProgress}
                       openListingError={openListingError}
                       onOpenListing={onOpenListing}
+                      isFromSearchPage={isFromSearchPage}
+                      onGoBackToSearchResults={this.goBackToSearchResults}
                     />
                     <ListingTabs
                       currentUser={currentUser}
