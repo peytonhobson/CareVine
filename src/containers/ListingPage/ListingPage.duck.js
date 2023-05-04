@@ -43,6 +43,10 @@ export const CLOSE_LISTING_REQUEST = 'app/ListingPage/CLOSE_LISTING_REQUEST';
 export const CLOSE_LISTING_SUCCESS = 'app/ListingPage/CLOSE_LISTING_SUCCESS';
 export const CLOSE_LISTING_ERROR = 'app/ListingPage/CLOSE_LISTING_ERROR';
 
+export const OPEN_LISTING_REQUEST = 'app/ListingPage/OPEN_LISTING_REQUEST';
+export const OPEN_LISTING_SUCCESS = 'app/ListingPage/OPEN_LISTING_SUCCESS';
+export const OPEN_LISTING_ERROR = 'app/ListingPage/OPEN_LISTING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -57,7 +61,8 @@ const initialState = {
   existingConversation: null,
   closeListingInProgress: false,
   closeListingError: null,
-  listingClosed: false,
+  openListingInProgress: false,
+  openListingError: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -107,9 +112,16 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case CLOSE_LISTING_REQUEST:
       return { ...state, closeListingInProgress: true, closeListingError: null };
     case CLOSE_LISTING_SUCCESS:
-      return { ...state, closeListingInProgress: false, listingClosed: true };
+      return { ...state, closeListingInProgress: false };
     case CLOSE_LISTING_ERROR:
       return { ...state, closeListingInProgress: false, closeListingError: payload };
+
+    case OPEN_LISTING_REQUEST:
+      return { ...state, openListingInProgress: true, openListingError: null };
+    case OPEN_LISTING_SUCCESS:
+      return { ...state, openListingInProgress: false };
+    case OPEN_LISTING_ERROR:
+      return { ...state, openListingInProgress: false, openListingError: payload };
 
     default:
       return state;
@@ -160,6 +172,10 @@ export const fetchExistingConversationError = e => ({
 export const closeListingRequest = () => ({ type: CLOSE_LISTING_REQUEST });
 export const closeListingSuccess = () => ({ type: CLOSE_LISTING_SUCCESS });
 export const closeListingError = e => ({ type: CLOSE_LISTING_ERROR, error: true, payload: e });
+
+export const openListingRequest = () => ({ type: OPEN_LISTING_REQUEST });
+export const openListingSuccess = () => ({ type: OPEN_LISTING_SUCCESS });
+export const openListingError = e => ({ type: OPEN_LISTING_ERROR, error: true, payload: e });
 
 // ================ Thunks ================ //
 
@@ -305,20 +321,6 @@ export const fetchExistingConversation = (listingId, otherUserId) => async (
   }
 };
 
-export const loadData = (params, search) => dispatch => {
-  const listingId = new UUID(params.id);
-
-  const ownListingVariants = [LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT];
-  if (ownListingVariants.includes(params.variant)) {
-    return dispatch(showListing(listingId, true));
-  }
-
-  return Promise.all([
-    dispatch(showListing(listingId)),
-    dispatch(fetchExistingConversation(listingId)),
-  ]);
-};
-
 export const closeListing = listingId => (dispatch, getState, sdk) => {
   dispatch(closeListingRequest());
 
@@ -333,10 +335,46 @@ export const closeListing = listingId => (dispatch, getState, sdk) => {
     )
     .then(response => {
       dispatch(closeListingSuccess());
-      dispatch(addMarketplaceEntities(response));
+      dispatch(showListing(listingId));
     })
     .catch(e => {
       log.error(e, 'close-listing-failed', { listingId });
       dispatch(closeListingError(storableError(e)));
     });
+};
+
+export const openListing = listingId => (dispatch, getState, sdk) => {
+  dispatch(openListingRequest());
+
+  sdk.ownListings
+    .open(
+      {
+        id: listingId,
+      },
+      {
+        expand: true,
+      }
+    )
+    .then(response => {
+      dispatch(openListingSuccess());
+      dispatch(showListing(listingId));
+    })
+    .catch(e => {
+      log.error(e, 'open-listing-failed', { listingId });
+      dispatch(openListingError(storableError(e)));
+    });
+};
+
+export const loadData = (params, search) => dispatch => {
+  const listingId = new UUID(params.id);
+
+  const ownListingVariants = [LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT];
+  if (ownListingVariants.includes(params.variant)) {
+    return dispatch(showListing(listingId, true));
+  }
+
+  return Promise.all([
+    dispatch(showListing(listingId)),
+    dispatch(fetchExistingConversation(listingId)),
+  ]);
 };
