@@ -17,7 +17,7 @@ const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
 const useStyles = makeStyles(theme => ({
   hero: {
     backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1558981852-426c6c22a060?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80')`,
-    height: '500px',
+    height: '31rem',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',

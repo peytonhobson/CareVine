@@ -10,6 +10,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import { NamedLink } from '..';
 
 import css from './BlogCard.module.css';
 
@@ -31,40 +32,42 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const BlogCard = props => {
-  const { hero, title, description, authorName, authorProfilePicture, date } = props;
+  const { hero, title, description, authorName, authorProfilePicture, date, slug } = props;
 
   const classes = useStyles();
 
   return (
-    <Card className={classes.card}>
-      <CardActionArea>
-        <CardMedia className={classes.media} image={hero} title="Contemplative Reptile" />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {description}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions className={classes.cardActions}>
-        <Box className={classes.author}>
-          <Avatar src={authorProfilePicture} />
-          <Box ml={2}>
-            <Typography variant="subtitle2" component="p">
-              {authorName}
+    <NamedLink name="BlogPostPage" params={{ slug: slug }}>
+      <Card className={classes.card}>
+        <CardActionArea>
+          <CardMedia className={classes.media} image={hero} title="Contemplative Reptile" />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {title}
             </Typography>
-            <Typography variant="subtitle2" color="textSecondary" component="p">
-              {date}
+            <Typography variant="body2" color="textSecondary" component="p">
+              {description}
             </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions className={classes.cardActions}>
+          <Box className={classes.author}>
+            <Avatar src={authorProfilePicture} />
+            <Box ml={2}>
+              <Typography variant="subtitle2" component="p">
+                {authorName}
+              </Typography>
+              <Typography variant="subtitle2" color="textSecondary" component="p">
+                {date}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-        <Box>
-          <BookmarkBorderIcon />
-        </Box>
-      </CardActions>
-    </Card>
+          <Box>
+            <BookmarkBorderIcon />
+          </Box>
+        </CardActions>
+      </Card>
+    </NamedLink>
   );
 };
 
