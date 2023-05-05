@@ -29,3 +29,14 @@
   margin-left: 0;
   fill: var(--matterColorAnti);
 }
+
+.spinner {
+  width: 5rem;
+  height: 5rem;
+  stroke-width: 0.3rem;
+  margin: auto;
+}
+
+.error {
+  color: var(--failColor);
+}

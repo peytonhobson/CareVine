@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Box, Container, Avatar } from '@material-ui/core';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from 'graphql-hooks';
 import DOMPurify from 'dompurify';
-import { NamedRedirect, NamedLink, IconArrowHead } from '../../components';
+import { NamedRedirect, NamedLink, IconArrowHead, IconSpinner } from '../../components';
 
 import css from './BlogPostPage.module.css';
 
@@ -92,9 +92,15 @@ const useStyles = makeStyles(theme => ({
   image: {
     maxWidth: '100%',
   },
+  spinnerContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '80vh',
+  },
 }));
 
-const BLOG = gql`
+const BLOG = `
   query getBlog($slug: String) {
     blogs(filters: { slug: { eq: $slug } }) {
       data {
@@ -114,7 +120,7 @@ const BLOG = gql`
               attributes {
                 name
                 bio
-                profilePicture {
+                avatar {
                   data {
                     attributes {
                       url
@@ -126,6 +132,17 @@ const BLOG = gql`
           }
           body
           status
+          seo {
+            metaTitle
+            metaDescription
+            shareImage {
+              data {
+                attributes {
+                  url
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -133,10 +150,18 @@ const BLOG = gql`
 `;
 
 const BlogPostContainer = props => {
+  const { onSEOChange, slug } = props;
   const classes = useStyles();
 
-  // TODO: handle loading and error
-  const { loading, error, data } = useQuery(BLOG, { slug: props.slug });
+  const { loading, error, data } = useQuery(BLOG, {
+    variables: { slug },
+  });
+
+  const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
+
+  useEffect(() => {
+    onSEOChange(seo);
+  }, [seo.metaTitle]);
 
   const formattedData =
     data?.blogs?.data?.length > 0
@@ -145,7 +170,7 @@ const BlogPostContainer = props => {
           date: data.blogs.data[0].attributes.date,
           hero: `${STRAPI_URL}${data.blogs.data[0].attributes.hero.data.attributes.url}`,
           body: data.blogs.data[0].attributes.body,
-          authorProfilePicture: `${STRAPI_URL}${data.blogs.data[0].attributes.author.data.attributes.profilePicture.data.attributes.url}`,
+          authorProfilePicture: `${STRAPI_URL}${data.blogs.data[0].attributes.author.data.attributes.avatar.data.attributes.url}`,
           authorName: data.blogs.data[0].attributes.author.data.attributes.name,
           authorBio: data.blogs.data[0].attributes.author.data.attributes.bio,
           status: data.blogs.data[0].attributes.status,
@@ -164,35 +189,45 @@ const BlogPostContainer = props => {
           <span className={css.goBackText}>Back to Blog List</span>
         </NamedLink>
       </Box>
-      <Typography variant="h2" className={classes.blogTitle}>
-        {formattedData.title}
-      </Typography>
-      <Box className={classes.author}>
-        <Typography variant="subtitle1" component="p" className={classes.authorText}>
-          {formattedData.date} | By {formattedData.authorName}
-        </Typography>
-        <Avatar src={formattedData.authorProfilePicture} className={classes.avatar} />
-      </Box>
-      <Box className={classes.hero}>
-        <img className={classes.image} src={formattedData.hero} alt="blog" />
-      </Box>
-      <Box className={classes.blogBody}>
-        <Typography
-          variant="body1"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formattedData.body) }}
-        ></Typography>
-      </Box>
-      <Box className={classes.authorContainer}>
-        <Box className={classes.authorDisplay}>
-          <Avatar src={formattedData.authorProfilePicture} className={classes.bottomAvatar} />
-          <Typography variant="h4" component="h4" className={classes.authorName}>
-            {formattedData.authorName}
-          </Typography>
+      {loading ? (
+        <Box className={classes.spinnerContainer}>
+          <IconSpinner className={css.spinner} />
         </Box>
-        <Typography variant="subtitle1" component="p" className={classes.authorBio}>
-          {formattedData.authorBio}
-        </Typography>
-      </Box>
+      ) : data ? (
+        <>
+          <Typography variant="h2" className={classes.blogTitle}>
+            {formattedData.title}
+          </Typography>
+          <Box className={classes.author}>
+            <Typography variant="subtitle1" component="p" className={classes.authorText}>
+              {formattedData.date} | By {formattedData.authorName}
+            </Typography>
+            <Avatar src={formattedData.authorProfilePicture} className={classes.avatar} />
+          </Box>
+          <Box className={classes.hero}>
+            <img className={classes.image} src={formattedData.hero} alt="blog" />
+          </Box>
+          <Box className={classes.blogBody}>
+            <Typography
+              variant="body1"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formattedData.body) }}
+            ></Typography>
+          </Box>
+          <Box className={classes.authorContainer}>
+            <Box className={classes.authorDisplay}>
+              <Avatar src={formattedData.authorProfilePicture} className={classes.bottomAvatar} />
+              <Typography variant="h4" component="h4" className={classes.authorName}>
+                {formattedData.authorName}
+              </Typography>
+            </Box>
+            <Typography variant="subtitle1" component="p" className={classes.authorBio}>
+              {formattedData.authorBio}
+            </Typography>
+          </Box>
+        </>
+      ) : error ? (
+        <p className={css.error}>Failed to load blog. Please try refreshing the page.</p>
+      ) : null}
     </Container>
   );
 };

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
 import BlogPostContainer from './BlogPostContainer';
 
 import {
@@ -19,30 +19,31 @@ import css from './BlogPostPage.module.css';
 
 const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
 
-const client = new ApolloClient({
-  uri: STRAPI_API_URL,
-  cache: new InMemoryCache(),
+const client = new GraphQLClient({
+  url: STRAPI_API_URL,
 });
 
-const BlogHomePageComponent = props => {
+const BlogPostPageComponent = props => {
   const { scrollingDisabled, params } = props;
+  const [seo, setSeo] = useState({});
 
-  // TODO: Update these for SEO
-  const schemaTitle = 'Blog Post';
-  const schemaDescription = 'Blog Post';
+  const handleSEOChange = val => {
+    setSeo(val);
+  };
 
   return (
     <Page
       className={css.root}
       scrollingDisabled={scrollingDisabled}
       contentType="website"
-      description={schemaDescription}
-      title={schemaTitle}
+      description={seo.metaDescription}
+      title={seo.metaTitle}
       schema={{
         '@context': 'http://schema.org',
         '@type': 'WebPage',
-        description: schemaDescription,
-        name: schemaTitle,
+        description: seo.metaDescription,
+        name: seo.metaTitle,
+        image: [seo.shareImage],
       }}
     >
       <LayoutSingleColumn>
@@ -50,9 +51,9 @@ const BlogHomePageComponent = props => {
           <TopbarContainer currentPage="BlogPostPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
-          <ApolloProvider client={client}>
-            <BlogPostContainer slug={params.slug} />
-          </ApolloProvider>
+          <ClientContext.Provider value={client}>
+            <BlogPostContainer slug={params.slug} onSEOChange={handleSEOChange} />
+          </ClientContext.Provider>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />
@@ -68,6 +69,6 @@ const mapStateToProps = state => {
   };
 };
 
-const BlogPostPage = compose(connect(mapStateToProps))(BlogHomePageComponent);
+const BlogPostPage = compose(connect(mapStateToProps))(BlogPostPageComponent);
 
 export default BlogPostPage;

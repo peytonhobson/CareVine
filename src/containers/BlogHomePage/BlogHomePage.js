@@ -5,7 +5,7 @@ import CardGrid from './CardGrid';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
 
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
@@ -34,9 +34,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const client = new ApolloClient({
-  uri: STRAPI_API_URL,
-  cache: new InMemoryCache(),
+const client = new GraphQLClient({
+  url: STRAPI_API_URL,
 });
 
 const BlogHomePageComponent = props => {
@@ -69,9 +68,9 @@ const BlogHomePageComponent = props => {
           <Box className={classes.hero}>
             <Box>Blog</Box>
           </Box>
-          <ApolloProvider client={client}>
+          <ClientContext.Provider value={client}>
             <CardGrid />
-          </ApolloProvider>
+          </ClientContext.Provider>
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>

@@ -50,6 +50,7 @@
     "fs": "^0.0.1-security",
     "full-icu": "^1.4.0",
     "graphql": "^16.6.0",
+    "graphql-hooks": "^6.2.3",
     "helmet": "^4.6.0",
     "jose": "4.9.2",
     "jstimezonedetect": "^1.0.7",
