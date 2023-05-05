@@ -33,6 +33,7 @@ const BLOG = gql`
     blogs {
       data {
         attributes {
+          slug
           title
           date
           description
@@ -57,9 +58,6 @@ const BLOG = gql`
               }
             }
           }
-          body {
-            section
-          }
         }
       }
     }
@@ -69,6 +67,7 @@ const BLOG = gql`
 const CardGrid = props => {
   const classes = useStyles();
 
+  // DO something with loading and error
   const { loading, error, data } = useQuery(BLOG, {});
 
   if (data) {
@@ -87,10 +86,11 @@ const CardGrid = props => {
             authorName: blog.attributes.author?.data?.attributes?.name,
             authorProfilePicture: `${STRAPI_URL}${blog.attributes.author?.data?.attributes?.profilePicture?.data?.attributes?.url}`,
             date: blog.attributes.date,
+            slug: blog.attributes.slug,
           };
 
           return (
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
               <BlogCard {...blogCardProps} />
             </Grid>
           );
