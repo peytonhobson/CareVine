@@ -61,12 +61,14 @@ exports.sitemapStructure = () => {
       '/': ['get'],
       '/signup': ['get'],
       '/login': ['get'],
-      '/s?address=Helsinki%2C%20Finland%26bounds=60.2978389%2C25.254484899999966%2C59.9224887%2C24.782875800000056%26country=FI%26origin=60.16985569999999%2C24.93837910000002': [
-        'get',
-      ],
       '/account': ['get'],
       '/reset-password': ['get'],
       '/verify-email': ['get'],
+      '/feedback': ['get'],
+      '/about': ['get'],
+      '/contact-us': ['get'],
+      '/privacy-policy': ['get'],
+      '/terms-of-service': ['get'],
     },
     route: {
       '/': {
@@ -84,9 +86,30 @@ exports.sitemapStructure = () => {
         changefreq: 'always',
         priority: 1.0,
       },
-      '/s?address=Helsinki%2C%20Finland%26bounds=60.2978389%2C25.254484899999966%2C59.9224887%2C24.782875800000056%26country=FI%26origin=60.16985569999999%2C24.93837910000002': {
+      '/feedback': {
+        lastmod: now,
         changefreq: 'always',
-        priority: 1.0,
+        priority: 0.8,
+      },
+      '/about': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.8,
+      },
+      '/contact-us': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.8,
+      },
+      '/privacy-policy': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.5,
+      },
+      '/terms-of-service': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.5,
       },
       '/account': {
         disallow: true,
