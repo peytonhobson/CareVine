@@ -11,20 +11,29 @@ import CardContent from '@material-ui/core/CardContent';
 import Avatar from '@material-ui/core/Avatar';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import { NamedLink } from '..';
+import { truncateString } from '../../util/data';
 
 import css from './BlogCard.module.css';
 
 const useStyles = makeStyles(theme => ({
   card: {
     maxWidth: '100%',
+    height: '30rem',
   },
   media: {
-    height: 240,
+    height: '12rem',
   },
   cardActions: {
     display: 'flex',
     margin: '0 10px',
     justifyContent: 'space-between',
+  },
+  cardDescription: {
+    height: '4.5rem',
+    marginTop: '1rem',
+  },
+  cardTitle: {
+    height: '6rem',
   },
   author: {
     display: 'flex',
@@ -42,11 +51,16 @@ const BlogCard = props => {
         <CardActionArea>
           <CardMedia className={classes.media} image={hero} title="Contemplative Reptile" />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
+            <Typography gutterBottom variant="h5" component="h2" className={classes.cardTitle}>
               {title}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              {description}
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.cardDescription}
+            >
+              {truncateString(description, 150)}
             </Typography>
           </CardContent>
         </CardActionArea>

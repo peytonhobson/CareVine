@@ -5,7 +5,14 @@ import { connect } from 'react-redux';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import BlogPostContainer from './BlogPostContainer';
 
-import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
+import {
+  Page,
+  LayoutSingleColumn,
+  LayoutWrapperTopbar,
+  LayoutWrapperMain,
+  LayoutWrapperFooter,
+  Footer,
+} from '../../components';
 import { TopbarContainer } from '..';
 
 import css from './BlogPostPage.module.css';
@@ -47,6 +54,9 @@ const BlogHomePageComponent = props => {
             <BlogPostContainer slug={params.slug} />
           </ApolloProvider>
         </LayoutWrapperMain>
+        <LayoutWrapperFooter>
+          <Footer />
+        </LayoutWrapperFooter>
       </LayoutSingleColumn>
     </Page>
   );
