@@ -43,9 +43,9 @@ const BlogHomePageComponent = props => {
           <TopbarContainer currentPage="BlogPostPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
-          {/* <ApolloProvider client={client}>
+          <ApolloProvider client={client}>
             <BlogPostContainer slug={params.slug} />
-          </ApolloProvider> */}
+          </ApolloProvider>
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>
