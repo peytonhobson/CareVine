@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Box, Container, Avatar } from '@material-ui/core';
 import { useQuery, gql } from '@apollo/client';
 import DOMPurify from 'dompurify';
-import { NamedRedirect } from '../../components';
+import { NamedRedirect, NamedLink, IconArrowHead } from '../../components';
 
 import css from './BlogPostPage.module.css';
 
@@ -37,11 +37,12 @@ const useStyles = makeStyles(theme => ({
     fontFamily: '"Trebuchet MS", Helvetica, sans-serif',
   },
   authorContainer: {
-    width: '100%',
+    width: '85%',
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: theme.spacing(10),
+    paddingTop: theme.spacing(7),
+    borderTop: '1px solid #eaeaea',
   },
   authorDisplay: {
     width: '100%',
@@ -52,11 +53,16 @@ const useStyles = makeStyles(theme => ({
   },
   authorBio: {
     textAlign: 'justify',
-    maxWidth: '50%',
+    maxWidth: '58%',
     fontFamily: '"Trebuchet MS", Helvetica, sans-serif',
   },
+  backContainer: {
+    width: '100%',
+    paddingBottom: theme.spacing(2),
+  },
   blogsContainer: {
-    paddingBlock: theme.spacing(10),
+    paddingTop: theme.spacing(7),
+    paddingBottom: theme.spacing(10),
     maxWidth: '70vw',
     display: 'flex',
     justifyContent: 'center',
@@ -70,7 +76,7 @@ const useStyles = makeStyles(theme => ({
   blogBody: {
     width: '80%',
     margin: 'auto',
-    paddingTop: theme.spacing(5),
+    paddingBlock: theme.spacing(5),
   },
   hero: {
     display: 'flex',
@@ -152,6 +158,12 @@ const BlogPostContainer = props => {
 
   return (
     <Container maxWidth="lg" className={classes.blogsContainer}>
+      <Box className={classes.backContainer}>
+        <NamedLink name="BlogHomePage" className={css.goBackButton} type="button">
+          <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+          <span className={css.goBackText}>Back to Blog List</span>
+        </NamedLink>
+      </Box>
       <Typography variant="h2" className={classes.blogTitle}>
         {formattedData.title}
       </Typography>

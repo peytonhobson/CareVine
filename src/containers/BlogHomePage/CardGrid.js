@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
@@ -7,6 +7,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import { BlogCard } from '../../components';
 import { useQuery, gql } from '@apollo/client';
 const isDev = process.env.NODE_ENV === 'development';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BlogHomePage.module.css';
 
@@ -79,6 +80,19 @@ const CardGrid = props => {
   const classes = useStyles();
   const [page, setPage] = useState(1);
 
+  const containerRef = useRef(null);
+  const isMobile = useCheckMobileScreen();
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    if (containerRef.current) {
+      const elementHeight = containerRef.current.offsetTop - (isMobile ? 100 : 130);
+      setTimeout(() => {
+        window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+      }, 10);
+    }
+  };
+
   // DO something with loading and error
   const { loading, error, data } = useQuery(BLOG, { variables: { page, pageSize: PAGE_SIZE } });
 
@@ -89,7 +103,7 @@ const CardGrid = props => {
   }
 
   return (
-    <Container maxWidth="lg" className={classes.blogsContainer}>
+    <Container maxWidth="lg" className={classes.blogsContainer} ref={containerRef}>
       <h1>Articles</h1>
       <Grid container spacing={3}>
         {data?.blogs.data
@@ -113,11 +127,7 @@ const CardGrid = props => {
           })}
       </Grid>
       <Box my={4} className={classes.paginationContainer}>
-        <Pagination
-          count={pageCount}
-          page={page}
-          onChange={(e, pageNumber) => setPage(pageNumber)}
-        />
+        <Pagination count={pageCount} page={page} onChange={handlePageChange} />
       </Box>
     </Container>
   );

@@ -46,7 +46,7 @@ const BlogCard = props => {
   const classes = useStyles();
 
   return (
-    <NamedLink name="BlogPostPage" params={{ slug: slug }}>
+    <NamedLink name="BlogPostPage" params={{ slug: slug }} className={css.link}>
       <Card className={classes.card}>
         <CardActionArea>
           <CardMedia className={classes.media} image={hero} title="Contemplative Reptile" />
@@ -76,9 +76,10 @@ const BlogCard = props => {
               </Typography>
             </Box>
           </Box>
-          <Box>
+          {/* TODO: Add bookmark functionality */}
+          {/* <Box>
             <BookmarkBorderIcon />
-          </Box>
+          </Box> */}
         </CardActions>
       </Card>
     </NamedLink>
