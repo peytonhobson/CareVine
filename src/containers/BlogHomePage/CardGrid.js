@@ -9,6 +9,7 @@ import { useQuery, gql } from '@apollo/client';
 
 import css from './BlogHomePage.module.css';
 
+const STRAPI_URL = process.env.REACT_APP_STRAPI_URL;
 const useStyles = makeStyles(theme => ({
   appBar: {
     backgroundColor: '#fff',
@@ -32,7 +33,33 @@ const BLOG = gql`
     blogs {
       data {
         attributes {
-          Title
+          title
+          date
+          description
+          hero {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          author {
+            data {
+              attributes {
+                name
+                profilePicture {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+          body {
+            section
+          }
         }
       }
     }
@@ -48,26 +75,26 @@ const CardGrid = props => {
     console.log(data);
   }
 
-  if (error) {
-    console.log(error);
-  }
-
   return (
     <Container maxWidth="lg" className={classes.blogsContainer}>
       <h1>Articles</h1>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={4}>
-          <BlogCard />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <BlogCard />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <BlogCard />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <BlogCard />
-        </Grid>
+        {data?.blogs.data.map(blog => {
+          const blogCardProps = {
+            hero: `${STRAPI_URL}${blog.attributes.hero?.data?.attributes?.url}`,
+            title: blog.attributes.title,
+            description: blog.attributes.description,
+            authorName: blog.attributes.author?.data?.attributes?.name,
+            authorProfilePicture: `${STRAPI_URL}${blog.attributes.author?.data?.attributes?.profilePicture?.data?.attributes?.url}`,
+            date: blog.attributes.date,
+          };
+
+          return (
+            <Grid item xs={12} sm={6} md={4}>
+              <BlogCard {...blogCardProps} />
+            </Grid>
+          );
+        })}
       </Grid>
       <Box my={4} className={classes.paginationContainer}>
         <Pagination count={10} />

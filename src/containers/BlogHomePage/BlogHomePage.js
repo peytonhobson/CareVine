@@ -12,6 +12,8 @@ import { TopbarContainer } from '..';
 
 import css from './BlogHomePage.module.css';
 
+const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
+
 const useStyles = makeStyles(theme => ({
   hero: {
     backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1558981852-426c6c22a060?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80')`,
@@ -33,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const client = new ApolloClient({
-  uri: 'http://localhost:1337/graphql',
+  uri: STRAPI_API_URL,
   cache: new InMemoryCache(),
 });
 
