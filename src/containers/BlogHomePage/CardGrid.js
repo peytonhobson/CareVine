@@ -12,7 +12,7 @@ import css from './BlogHomePage.module.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 const PAGE_SIZE = 9;
-const STRAPI_URL = process.env.REACT_APP_STRAPI_URL;
+
 const useStyles = makeStyles(theme => ({
   appBar: {
     backgroundColor: '#fff',
@@ -102,7 +102,9 @@ const CardGrid = props => {
     variables: { page, pageSize: PAGE_SIZE },
   });
 
-  const pageCount = data?.blogs.meta.pagination.pageCount;
+  console.log(data);
+
+  const pageCount = data?.blogs?.meta.pagination.pageCount;
 
   return (
     <Container maxWidth="lg" className={classes.blogsContainer} ref={containerRef}>
@@ -113,15 +115,16 @@ const CardGrid = props => {
         </Box>
       ) : data ? (
         <Grid container spacing={3}>
-          {data?.blogs.data
+          {data?.blogs?.data
             .filter(d => d.attributes.status !== 'TEST' || isDev)
             .map(blog => {
               const blogCardProps = {
-                hero: `${STRAPI_URL}${blog.attributes.hero?.data?.attributes?.url}`,
+                hero: blog.attributes.hero?.data?.attributes?.url,
                 title: blog.attributes.title,
                 description: blog.attributes.description,
                 authorName: blog.attributes.author?.data?.attributes?.name,
-                authorProfilePicture: `${STRAPI_URL}${blog.attributes.author?.data?.attributes?.avatar?.data?.attributes?.url}`,
+                authorProfilePicture:
+                  blog.attributes.author?.data?.attributes?.avatar?.data?.attributes?.url,
                 date: blog.attributes.date,
                 slug: blog.attributes.slug,
               };
