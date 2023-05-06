@@ -32,8 +32,11 @@
 }
 
 .summaryText {
-  padding-right: 2rem;
   text-align: justify;
+
+  @viewportmedium {
+    padding-right: 2rem;
+  }
 }
 
 .graphic {
