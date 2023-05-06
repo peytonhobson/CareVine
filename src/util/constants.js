@@ -20,6 +20,8 @@ export const PROMO_CODES = [
 ];
 export const CAREVINE_GOLD_HALF_OFF_COUPON =
   process.env.REACT_APP_ENV === 'development' ? 'dr9TuFdf' : 'egjIPKza';
+export const CAREVINE_8_OFF_3_MONTHS_COUPON =
+  process.env.REACT_APP_ENV === 'development' ? 'CqtjzNe3' : 'tODCbFOl';
 
 // Modal Missing Information Types
 export const EMAIL_VERIFICATION = 'EMAIL_VERIFICATION';
