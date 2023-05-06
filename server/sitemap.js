@@ -67,8 +67,6 @@ exports.sitemapStructure = () => {
       '/feedback': ['get'],
       '/about': ['get'],
       '/contact-us': ['get'],
-      '/privacy-policy': ['get'],
-      '/terms-of-service': ['get'],
     },
     route: {
       '/': {
@@ -100,16 +98,6 @@ exports.sitemapStructure = () => {
         lastmod: now,
         changefreq: 'always',
         priority: 0.8,
-      },
-      '/privacy-policy': {
-        lastmod: now,
-        changefreq: 'always',
-        priority: 0.5,
-      },
-      '/terms-of-service': {
-        lastmod: now,
-        changefreq: 'always',
-        priority: 0.5,
       },
       '/account': {
         disallow: true,
