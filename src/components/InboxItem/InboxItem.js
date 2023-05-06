@@ -13,7 +13,7 @@ import {
 import { isToday, isYesterday, timestampToDate } from '../../util/dates';
 import moment from 'moment';
 import classNames from 'classnames';
-import { userDisplayNameAsString } from '../../util/data';
+import { userDisplayNameAsString, truncateString } from '../../util/data';
 
 import css from './InboxItem.module.css';
 
@@ -29,18 +29,6 @@ const formatPreviewDate = createdAt => {
   }
 
   return moment(createdAt).format('MMM DD');
-};
-
-const truncateString = function(fullStr, strLen) {
-  if (!strLen) strLen = 40;
-  if (fullStr === null || fullStr === undefined) return '';
-  if (fullStr.length <= strLen) return fullStr;
-  var separator = '...';
-  var sepLen = separator.length;
-  var charsToShow = strLen - sepLen;
-  var frontChars = Math.ceil(charsToShow / 2);
-  var backChars = Math.floor(charsToShow / 2);
-  return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
 };
 
 const compareMessages = (a, b) => {

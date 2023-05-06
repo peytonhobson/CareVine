@@ -17,14 +17,6 @@
   }
 }
 
-.features {
-  margin-bottom: 24px;
-
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
-  }
-}
-
 .languagesRadio {
   margin-bottom: 12px;
 }
@@ -34,10 +26,10 @@
 }
 
 .formMargins {
-  margin-bottom: 24px;
+  margin-bottom: 24px !important;
 
   @media (--viewportMedium) {
-    margin-bottom: 32px;
+    margin-bottom: 32px !important;
   }
 }
 
@@ -49,10 +41,6 @@
 .description {
   composes: formMargins;
   flex-shrink: 0;
-}
-
-.certificate {
-  composes: formMargins;
 }
 
 .submitButton {

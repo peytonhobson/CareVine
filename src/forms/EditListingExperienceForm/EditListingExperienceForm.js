@@ -83,7 +83,7 @@ const EditListingExperienceFormComponent = props => (
           {errorMessageShowListing}
 
           <FieldRadioButtonGroup
-            className={css.group}
+            rootClassName={css.formMargins}
             id="experienceLevel"
             name="experienceLevel"
             label={experienceLevelFeaturesLabel}
@@ -93,7 +93,7 @@ const EditListingExperienceFormComponent = props => (
           />
 
           <FieldCheckboxGroup
-            className={css.group}
+            className={css.formMargins}
             id="experienceAreas"
             name="experienceAreas"
             label={experienceAreasFeaturesLabel}

@@ -18,13 +18,14 @@ import ScreeningDescription from './ScreeningDescription';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import PaymentInfo from './PaymentInfo';
-import { CAREVINE_GOLD_PRICE_ID, CAREVINE_BASIC_PRICE_ID } from '../../util/constants';
 import {
+  CAREVINE_GOLD_PRICE_ID,
+  CAREVINE_BASIC_PRICE_ID,
+  CAREVINE_8_OFF_3_MONTHS_COUPON,
   BACKGROUND_CHECK_APPROVED,
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
   SUBSCRIPTION_ACTIVE_TYPES,
-  CAREVINE_GOLD_HALF_OFF_COUPON,
 } from '../../util/constants';
 import {
   authenticateCreateUser,
@@ -315,7 +316,7 @@ const EditListingBackgroundCheckPanel = props => {
         }
       );
     }
-  }, createdPaymentMethod);
+  }, [createdPaymentMethod]);
 
   // If current quiz session has expired, fetch a new quiz
   useEffect(() => {
@@ -456,7 +457,7 @@ const EditListingBackgroundCheckPanel = props => {
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
         currentUser.id?.uuid,
         {
-          coupon: signupReferralCode ? CAREVINE_GOLD_HALF_OFF_COUPON : null,
+          coupon: bcType === BASIC ? null : CAREVINE_8_OFF_3_MONTHS_COUPON,
           proration_behavior: 'none',
         }
       ).then(() => {
@@ -507,66 +508,67 @@ const EditListingBackgroundCheckPanel = props => {
         appearance,
       };
 
-      content = clientSecret ? (
-        <div className={css.paymentContainer}>
-          <div className={css.paymentForm}>
-            {!createSubscriptionError &&
-              (!setupIntentClientSecret ||
-                (setupIntentClientSecret &&
-                  setupIntent &&
-                  setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
-                <Elements options={options} stripe={stripePromise} key={clientSecret}>
-                  <PayCreditCardForm
-                    createPaymentError={createPaymentError}
-                    createPaymentInProgress={createPaymentInProgress}
-                    formId="PayCreditCardForm"
-                    intl={intl}
-                    onSubmit={handleCardSubmit}
-                  />
-                </Elements>
-              )}
-            {setupIntentClientSecret &&
-              (setupIntent
-                ? setupIntent.metadata?.backgroundCheckType === backgroundCheckType
-                : true) && (
-                <Elements options={setupIntentOptions} stripe={stripePromise}>
-                  <PayCreditCardForm
-                    confirmSetupIntentInProgress={confirmSetupIntentInProgress}
-                    confirmSetupIntentError={confirmSetupIntentError}
-                    createSubscriptionError={createSubscriptionError}
-                    createSubscriptionInProgress={createSubscriptionInProgress}
-                    formId="PayCreditCardForm"
-                    intl={intl}
-                    onSubmit={handleCardSubmit}
-                  />
-                </Elements>
-              )}
+      content =
+        clientSecret && !createSubscriptionInProgress ? (
+          <div className={css.paymentContainer}>
+            <div className={css.paymentForm}>
+              {!createSubscriptionError &&
+                (!setupIntentClientSecret ||
+                  (setupIntentClientSecret &&
+                    setupIntent &&
+                    setupIntent.metadata?.backgroundCheckType !== backgroundCheckType)) && (
+                  <Elements options={options} stripe={stripePromise} key={clientSecret}>
+                    <PayCreditCardForm
+                      createPaymentError={createPaymentError}
+                      createPaymentInProgress={createPaymentInProgress}
+                      formId="PayCreditCardForm"
+                      intl={intl}
+                      onSubmit={handleCardSubmit}
+                    />
+                  </Elements>
+                )}
+              {setupIntentClientSecret &&
+                (setupIntent
+                  ? setupIntent.metadata?.backgroundCheckType === backgroundCheckType
+                  : true) && (
+                  <Elements options={setupIntentOptions} stripe={stripePromise}>
+                    <PayCreditCardForm
+                      confirmSetupIntentInProgress={confirmSetupIntentInProgress}
+                      confirmSetupIntentError={confirmSetupIntentError}
+                      createSubscriptionError={createSubscriptionError}
+                      createSubscriptionInProgress={createSubscriptionInProgress}
+                      formId="PayCreditCardForm"
+                      intl={intl}
+                      onSubmit={handleCardSubmit}
+                    />
+                  </Elements>
+                )}
+            </div>
+            <PaymentInfo
+              backgroundCheckType={backgroundCheckType}
+              subscription={subscription}
+              stripeCustomerId={stripeCustomerId}
+              currentUser={currentUser}
+              onCreateSetupIntent={onCreateSetupIntent}
+              setupIntent={setupIntent}
+              createSetupIntentInProgress={createSetupIntentInProgress}
+              createSetupIntentError={createSetupIntentError}
+              onCreateSubscription={onCreateSubscription}
+              createSubscriptionInProgress={createSubscriptionInProgress}
+              createSubscriptionError={createSubscriptionError}
+            />
           </div>
-          <PaymentInfo
-            backgroundCheckType={backgroundCheckType}
-            subscription={subscription}
-            stripeCustomerId={stripeCustomerId}
-            currentUser={currentUser}
-            onCreateSetupIntent={onCreateSetupIntent}
-            setupIntent={setupIntent}
-            createSetupIntentInProgress={createSetupIntentInProgress}
-            createSetupIntentError={createSetupIntentError}
-            onCreateSubscription={onCreateSubscription}
-            createSubscriptionInProgress={createSubscriptionInProgress}
-            createSubscriptionError={createSubscriptionError}
-          />
-        </div>
-      ) : (
-        <div className={css.spinnerContainer}>
-          {createSubscriptionError ? (
-            <p className={css.error}>
-              <FormattedMessage id="EditListingBackgroundCheckPanel.createSubscriptionError" />
-            </p>
-          ) : (
-            <IconSpinner className={css.spinner} />
-          )}
-        </div>
-      );
+        ) : (
+          <div className={css.spinnerContainer}>
+            {createSubscriptionError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingBackgroundCheckPanel.createSubscriptionError" />
+              </p>
+            ) : (
+              <IconSpinner className={css.spinner} />
+            )}
+          </div>
+        );
       break;
     case CONFIRM_PAYMENT:
       content = (

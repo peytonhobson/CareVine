@@ -38,9 +38,10 @@ const PaymentInfo = props => {
   const handleApplyPromoCode = async () => {
     setPromoError(false);
 
-    const promotionCode = PROMO_CODES.find(
-      code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
-    );
+    const promotionCode = null;
+    // PROMO_CODES.find(
+    //       code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
+    //     );
     if (!promotionCode) {
       setPromoError(true);
       return;
@@ -134,19 +135,19 @@ const PaymentInfo = props => {
         <Button
           className={css.applyButton}
           onClick={handleApplyPromoCode}
-          inProgress={createSetupIntentInProgress || createSubscriptionInProgress}
-          ready={promoApplied}
+          // inProgress={createSetupIntentInProgress || createSubscriptionInProgress}
+          // ready={promoApplied}
           disabled={promoCode === '' || promoApplied}
         >
           Apply
         </Button>
       </div>
-      {promoApplied ? (
+      {/* {promoApplied ? (
         <p className={css.success}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.discountApplied" />
         </p>
-      ) : null}
-      {amountDue !== planAmount && !promoApplied ? (
+      ) : null} */}
+      {amountDue !== planAmount ? (
         <p className={css.marketplaceColor}>
           <FormattedMessage id="EditListingBackgroundCheckPanel.planAmountWarning" />
         </p>

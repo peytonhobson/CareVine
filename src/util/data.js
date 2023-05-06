@@ -511,3 +511,15 @@ export const formatPrice = (rates, intl) => {
   }
   return {};
 };
+
+export const truncateString = function(fullStr, strLen) {
+  if (!strLen) strLen = 40;
+  if (fullStr === null || fullStr === undefined) return '';
+  if (fullStr.length <= strLen) return fullStr;
+  var separator = '...';
+  var sepLen = separator.length;
+  var charsToShow = strLen - sepLen;
+  var frontChars = Math.ceil(charsToShow / 2);
+  var backChars = Math.floor(charsToShow / 2);
+  return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
+};
