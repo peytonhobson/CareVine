@@ -124,7 +124,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
           {errorMessageShowListing}
 
           <FieldCheckboxGroup
-            className={css.features}
+            className={css.formMargins}
             id={certificationsName}
             name={certificationsName}
             options={certificationsOptions}
@@ -132,7 +132,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
             twoColumns
           />
           <FieldCheckboxGroup
-            className={css.features}
+            className={css.formMargins}
             id={additionalInfoName}
             name={additionalInfoName}
             options={additionalInfoOptions}
@@ -140,7 +140,7 @@ const EditListingAdditionalDetailsFormComponent = props => (
             twoColumns
           />
           <FieldRadioButtonGroup
-            className={css.features}
+            className={css.formMargins}
             id={covidVaccinationName}
             name={covidVaccinationName}
             options={covidVaccinationOptions}

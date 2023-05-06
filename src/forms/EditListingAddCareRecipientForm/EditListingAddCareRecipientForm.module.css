@@ -19,7 +19,7 @@
 }
 
 .formMargins {
-  margin-bottom: 2rem;
+  margin-bottom: 2rem !important;
 }
 
 .select {
