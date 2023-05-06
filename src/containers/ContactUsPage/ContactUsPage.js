@@ -53,8 +53,22 @@ export const ContactUsPageComponent = props => {
     });
   };
 
+  const metaDescription =
+    "Get in touch with the CareVine team today. Contact us for any questions or inquiries about seeking care or finding caregiving opportunities. We're here to help!";
+
+  const metaTitle = 'Contact Us | CareVine';
+
   return (
-    <Page title="Contact Us" scrollingDisabled={scrollingDisabled}>
+    <Page
+      title="Contact Us | CareVine"
+      scrollingDisabled={scrollingDisabled}
+      schema={{
+        '@context': 'http://schema.org',
+        '@type': 'WebPage',
+        description: metaDescription,
+        name: metaTitle,
+      }}
+    >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
           <TopbarContainer currentPage="ContactUsPage" />
