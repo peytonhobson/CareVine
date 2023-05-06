@@ -87,13 +87,14 @@
 }
 
 .amountPerYear {
-  margin-top: 0;
+  margin-block: 0;
   color: var(--marketplaceColor);
   font-weight: 600;
+  line-height: 1rem;
+  margin-top: 0.5rem;
 }
 
 .benefitsListContainer {
-  margin-top: 1rem;
   display: flex;
   flex-wrap: wrap;
   padding-inline: 2rem;
@@ -418,4 +419,9 @@
 
 .marketplaceColor {
   color: var(--marketplaceColor);
+}
+
+.smallText {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
 }
