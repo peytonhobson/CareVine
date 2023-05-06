@@ -21,6 +21,7 @@ import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import css from './Footer.module.css';
 
 const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
+const isDev = process.env.NODE_ENV === 'development';
 
 const renderSocialMediaLinks = intl => {
   const { siteFacebookPage, siteInstagramPage, siteTwitterHandle } = config;
@@ -165,11 +166,13 @@ const Footer = props => {
                     <FormattedMessage id="Footer.toFeedbackPage" />
                   </NamedLink>
                 </li>
-                <li className={css.listItem}>
-                  <NamedLink name="BlogHomePage" className={css.link}>
-                    <FormattedMessage id="Footer.toBlog" />
-                  </NamedLink>
-                </li>
+                {isDev && (
+                  <li className={css.listItem}>
+                    <NamedLink name="BlogHomePage" className={css.link}>
+                      <FormattedMessage id="Footer.toBlog" />
+                    </NamedLink>
+                  </li>
+                )}
               </ul>
             </div>
             <div className={css.infoLinks}>
