@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     justifyContent: 'center',
     paddingTop: theme.spacing(7),
-    borderTop: '1px solid #eaeaea',
+    borderTop: '1px solid var(--matterColorNegative)',
   },
   authorDisplay: {
     width: '100%',
