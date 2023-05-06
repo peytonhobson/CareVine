@@ -18,15 +18,18 @@ const AboutPage = () => {
   const { siteTwitterHandle, siteFacebookPage } = config;
   const siteTwitterPage = twitterPageURL(siteTwitterHandle);
 
+  const metaDescription =
+    'Discover CareVine, the peer-to-peer marketplace connecting caregivers and care seekers. Our mission is to provide personalized care solutions with safety and security. Join us today.';
+
   // prettier-ignore
   return (
     <StaticPage
-      title="About Us"
+      title="About Us | CareVine"
       schema={{
         '@context': 'http://schema.org',
-        '@type': 'AboutPage',
-        description: 'About CareVine',
-        name: 'About Page',
+        '@type': 'WebPage',
+        description: metaDescription,
+        name: 'About Us | CareVine',
       }}
     >
       <LayoutSingleColumn>
