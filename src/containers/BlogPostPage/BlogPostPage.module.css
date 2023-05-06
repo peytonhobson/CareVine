@@ -1,0 +1,42 @@
+.mainWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.goBackButton {
+  composes: marketplaceModalCloseStyles from global;
+  position: static;
+  padding: 0 0 2rem 1rem;
+
+  @media (--viewportLarge) {
+    padding: 0 0 2rem 0;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.goBackText {
+  composes: marketplaceModalCloseText from global;
+  color: var(--matterColorAnti);
+}
+
+.arrowIcon {
+  composes: marketplaceModalCloseIcon from global;
+  margin-right: 0.5rem;
+  stroke-width: 3px;
+  margin-left: 0;
+  fill: var(--matterColorAnti);
+}
+
+.spinner {
+  width: 5rem;
+  height: 5rem;
+  stroke-width: 0.2rem;
+  margin: auto;
+}
+
+.error {
+  color: var(--failColor);
+}
