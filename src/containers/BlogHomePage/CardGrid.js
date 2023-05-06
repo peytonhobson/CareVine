@@ -38,7 +38,9 @@ const useStyles = makeStyles(theme => ({
 //Create the query
 const BLOG = `
   query getBlogs($page: Int, $pageSize: Int) {
-    blogs(pagination: { page: $page, pageSize: $pageSize }, sort: "date:desc") {
+    blogs(pagination: { page: $page, pageSize: $pageSize }, sort: "date:desc"${
+      !isDev ? `, filters: { status: { eq: "PROD" } }` : ''
+    }) {
       data {
         attributes {
           slug
@@ -102,8 +104,6 @@ const CardGrid = props => {
     variables: { page, pageSize: PAGE_SIZE },
   });
 
-  console.log(data);
-
   const pageCount = data?.blogs?.meta.pagination.pageCount;
 
   return (
@@ -115,26 +115,24 @@ const CardGrid = props => {
         </Box>
       ) : data ? (
         <Grid container spacing={3}>
-          {data?.blogs?.data
-            .filter(d => d.attributes.status !== 'TEST' || isDev)
-            .map(blog => {
-              const blogCardProps = {
-                hero: blog.attributes.hero?.data?.attributes?.url,
-                title: blog.attributes.title,
-                description: blog.attributes.description,
-                authorName: blog.attributes.author?.data?.attributes?.name,
-                authorProfilePicture:
-                  blog.attributes.author?.data?.attributes?.avatar?.data?.attributes?.url,
-                date: blog.attributes.date,
-                slug: blog.attributes.slug,
-              };
+          {data?.blogs?.data.map(blog => {
+            const blogCardProps = {
+              hero: blog.attributes.hero?.data?.attributes?.url,
+              title: blog.attributes.title,
+              description: blog.attributes.description,
+              authorName: blog.attributes.author?.data?.attributes?.name,
+              authorProfilePicture:
+                blog.attributes.author?.data?.attributes?.avatar?.data?.attributes?.url,
+              date: blog.attributes.date,
+              slug: blog.attributes.slug,
+            };
 
-              return (
-                <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
-                  <BlogCard {...blogCardProps} />
-                </Grid>
-              );
-            })}
+            return (
+              <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
+                <BlogCard {...blogCardProps} />
+              </Grid>
+            );
+          })}
         </Grid>
       ) : error ? (
         <p className={css.error}>Error loading blogs</p>
