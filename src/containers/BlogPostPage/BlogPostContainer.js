@@ -53,8 +53,11 @@ const useStyles = makeStyles(theme => ({
   },
   authorBio: {
     textAlign: 'justify',
-    maxWidth: '100%',
+    maxWidth: '30rem',
     fontFamily: '"Trebuchet MS", Helvetica, sans-serif',
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '100%',
+    },
   },
   backContainer: {
     width: '100%',
@@ -204,7 +207,7 @@ const BlogPostContainer = props => {
         </Box>
       ) : data ? (
         <>
-          <Typography variant={isMobile ? 'h3' : 'h2'} className={classes.blogTitle}>
+          <Typography variant={isMobile ? 'h4' : 'h2'} className={classes.blogTitle}>
             {formattedData.title}
           </Typography>
           <Box className={classes.author}>
