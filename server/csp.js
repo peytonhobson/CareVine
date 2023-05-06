@@ -104,7 +104,10 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
   const { connectSrc = [self], imgSrc = [self], scriptSrc = [self] } = defaultDirectives;
-  const customConnectSrc = connectSrc.concat('*.sentry.io').concat('*.ingest.sentry.io');
+  const customConnectSrc = connectSrc
+    .concat('*.sentry.io')
+    .concat('*.ingest.sentry.io')
+    .concat('54.187.6.213:1337');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc.concat('*.weglot.com');
 
