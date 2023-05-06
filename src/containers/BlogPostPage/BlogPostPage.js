@@ -43,7 +43,7 @@ const BlogPostPageComponent = props => {
         '@type': 'WebPage',
         description: seo.metaDescription,
         name: seo.metaTitle,
-        image: [seo.shareImage?.data.attributes.url],
+        image: [seo.shareImage?.data?.attributes.url],
       }}
     >
       <LayoutSingleColumn>

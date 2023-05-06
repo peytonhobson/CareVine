@@ -7,7 +7,6 @@ import { NamedRedirect, NamedLink, IconArrowHead, IconSpinner } from '../../comp
 
 import css from './BlogPostPage.module.css';
 
-const STRAPI_URL = process.env.REACT_APP_STRAPI_URL;
 const isDev = process.env.NODE_ENV === 'development';
 
 const useStyles = makeStyles(theme => ({
@@ -168,14 +167,17 @@ const BlogPostContainer = props => {
       ? {
           title: data.blogs.data[0].attributes.title,
           date: data.blogs.data[0].attributes.date,
-          hero: `${STRAPI_URL}${data.blogs.data[0].attributes.hero.data.attributes.url}`,
+          hero: data.blogs.data[0].attributes.hero.data.attributes.url,
           body: data.blogs.data[0].attributes.body,
-          authorProfilePicture: `${STRAPI_URL}${data.blogs.data[0].attributes.author.data.attributes.avatar.data.attributes.url}`,
+          authorProfilePicture:
+            data.blogs.data[0].attributes.author.data.attributes.avatar.data.attributes.url,
           authorName: data.blogs.data[0].attributes.author.data.attributes.name,
           authorBio: data.blogs.data[0].attributes.author.data.attributes.bio,
           status: data.blogs.data[0].attributes.status,
         }
       : {};
+
+  console.log(formattedData.authorProfilePicture);
 
   if (formattedData.status === 'TEST' && !isDev) {
     return <NamedRedirect name="BlogHomePage" />;
