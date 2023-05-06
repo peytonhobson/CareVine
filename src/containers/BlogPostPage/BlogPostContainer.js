@@ -4,6 +4,7 @@ import { Typography, Box, Container, Avatar } from '@material-ui/core';
 import { useQuery } from 'graphql-hooks';
 import DOMPurify from 'dompurify';
 import { NamedRedirect, NamedLink, IconArrowHead, IconSpinner } from '../../components';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BlogPostPage.module.css';
 
@@ -36,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     fontFamily: '"Trebuchet MS", Helvetica, sans-serif',
   },
   authorContainer: {
-    width: '85%',
+    width: '100%',
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
@@ -52,7 +53,7 @@ const useStyles = makeStyles(theme => ({
   },
   authorBio: {
     textAlign: 'justify',
-    maxWidth: '58%',
+    maxWidth: '100%',
     fontFamily: '"Trebuchet MS", Helvetica, sans-serif',
   },
   backContainer: {
@@ -66,6 +67,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     flexWrap: 'wrap',
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '90vw',
+    },
   },
   blogTitle: {
     fontWeight: 600,
@@ -76,16 +80,19 @@ const useStyles = makeStyles(theme => ({
     width: '80%',
     margin: 'auto',
     paddingBlock: theme.spacing(5),
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      maxWidth: '100%',
+    },
   },
   hero: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: '70vw',
-
     [theme.breakpoints.down('sm')]: {
-      height: 300,
-      fontSize: '3em',
+      width: '100%',
+      maxWidth: '100%',
     },
   },
   image: {
@@ -152,6 +159,8 @@ const BlogPostContainer = props => {
   const { onSEOChange, slug } = props;
   const classes = useStyles();
 
+  const isMobile = useCheckMobileScreen();
+
   const { loading, error, data } = useQuery(BLOG, {
     variables: { slug },
   });
@@ -177,8 +186,6 @@ const BlogPostContainer = props => {
         }
       : {};
 
-  console.log(formattedData.authorProfilePicture);
-
   if (formattedData.status === 'TEST' && !isDev) {
     return <NamedRedirect name="BlogHomePage" />;
   }
@@ -197,7 +204,7 @@ const BlogPostContainer = props => {
         </Box>
       ) : data ? (
         <>
-          <Typography variant="h2" className={classes.blogTitle}>
+          <Typography variant={isMobile ? 'h3' : 'h2'} className={classes.blogTitle}>
             {formattedData.title}
           </Typography>
           <Box className={classes.author}>
@@ -218,7 +225,11 @@ const BlogPostContainer = props => {
           <Box className={classes.authorContainer}>
             <Box className={classes.authorDisplay}>
               <Avatar src={formattedData.authorProfilePicture} className={classes.bottomAvatar} />
-              <Typography variant="h4" component="h4" className={classes.authorName}>
+              <Typography
+                variant={isMobile ? 'h5' : 'h4'}
+                component="h4"
+                className={classes.authorName}
+              >
                 {formattedData.authorName}
               </Typography>
             </Box>
