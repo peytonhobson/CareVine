@@ -3,7 +3,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Box, Container, Avatar } from '@material-ui/core';
 import { useQuery } from 'graphql-hooks';
 import DOMPurify from 'dompurify';
-import { NamedRedirect, NamedLink, IconArrowHead, IconSpinner } from '../../components';
+import {
+  NamedRedirect,
+  NamedLink,
+  IconArrowHead,
+  IconSpinner,
+  IconSocialMediaFacebook,
+  IconSocialMediaPinterest,
+  IconSocialMediaTwitter,
+  IconEmail,
+} from '../../components';
 import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BlogPostPage.module.css';
@@ -18,7 +27,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(7),
+    paddingBottom: theme.spacing(3),
   },
   authorName: {
     fontWeight: 600,
@@ -107,6 +116,25 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     minHeight: '80vh',
   },
+  shareButtonContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    paddingBottom: theme.spacing(5),
+  },
+  socialMediaIconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '50%',
+    backgroundColor: 'var(--matterColor)',
+    marginInline: '0.75rem',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
 }));
 
 const BLOG = `
@@ -189,6 +217,23 @@ const BlogPostContainer = props => {
         }
       : {};
 
+  const handleShareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`;
+    window.open(url, '_blank');
+  };
+
+  const handleSharePinterest = () => {
+    const url = `https://pinterest.com/pin/create/button/?url=${window.location.href}&media=${
+      seo.shareImage.data ? seo.shareImage.data.attributes.url : formattedData.hero
+    }&description=${seo.metaDescription}`;
+    window.open(url, '_blank');
+  };
+
+  const handleShareTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?url=${window.location.href}&text=${seo.metaTitle}`;
+    window.open(url.replace('| CareVine', ''), '_blank');
+  };
+
   if (formattedData.status === 'TEST' && !isDev) {
     return <NamedRedirect name="BlogHomePage" />;
   }
@@ -215,6 +260,34 @@ const BlogPostContainer = props => {
               {formattedData.date} | By {formattedData.authorName}
             </Typography>
             <Avatar src={formattedData.authorProfilePicture} className={classes.avatar} />
+          </Box>
+          <Box className={classes.shareButtonContainer}>
+            <Box className={classes.socialMediaIconContainer} onClick={handleShareFacebook}>
+              <IconSocialMediaFacebook
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer} onClick={handleSharePinterest}>
+              <IconSocialMediaPinterest
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer} onClick={handleShareTwitter}>
+              <IconSocialMediaTwitter
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer}>
+              <a href={`mailto:?subject=${seo.metaTitle}&body=${window.location.href}`}>
+                <IconEmail className={css.socialMediaIcon} height="1.5rem" width="1.5rem" />
+              </a>
+            </Box>
           </Box>
           <Box className={classes.hero}>
             <img className={classes.image} src={formattedData.hero} alt="blog" />
