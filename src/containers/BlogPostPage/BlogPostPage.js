@@ -110,7 +110,9 @@ const BlogPostPageComponent = props => {
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
     </Page>
-  ) : null;
+  ) : (
+    <></>
+  );
 };
 
 const mapStateToProps = state => {
