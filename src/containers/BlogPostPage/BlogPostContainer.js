@@ -17,7 +17,7 @@ import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BlogPostPage.module.css';
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
