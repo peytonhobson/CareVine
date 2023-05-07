@@ -40,3 +40,12 @@
 .error {
   color: var(--failColor);
 }
+
+.socialMediaIcon {
+  fill: var(--matterColorLight);
+  z-index: 10;
+
+  &:hover {
+    fill: var(--matterColorLight);
+  }
+}
