@@ -17,6 +17,7 @@ import configureStore from './store';
 import routeConfiguration from './routeConfiguration';
 import Routes from './Routes';
 import config from './config';
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
 
 // Flex template application uses English translations as default translations.
 import defaultMessages from './translations/en.json';
@@ -91,6 +92,11 @@ const setupLocale = () => {
   moment.locale(config.locale);
 };
 
+const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
+const apolloClient = new GraphQLClient({
+  url: STRAPI_API_URL,
+});
+
 export const ClientApp = props => {
   const { store, hostedTranslations = {} } = props;
   setupLocale();
@@ -102,9 +108,11 @@ export const ClientApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider>
-          <BrowserRouter>
-            <Routes routes={routeConfiguration()} />
-          </BrowserRouter>
+          <ClientContext.Provider value={apolloClient}>
+            <BrowserRouter>
+              <Routes routes={routeConfiguration()} />
+            </BrowserRouter>
+          </ClientContext.Provider>
         </HelmetProvider>
       </Provider>
     </IntlProvider>

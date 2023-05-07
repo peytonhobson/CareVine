@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Box, Container, Avatar } from '@material-ui/core';
-import { useQuery } from 'graphql-hooks';
 import DOMPurify from 'dompurify';
 import {
   NamedRedirect,
@@ -137,70 +136,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const BLOG = `
-  query getBlog($slug: String) {
-    blogs(filters: { slug: { eq: $slug } }) {
-      data {
-        attributes {
-          slug
-          title
-          date
-          hero {
-            data {
-              attributes {
-                url
-              }
-            }
-          }
-          author {
-            data {
-              attributes {
-                name
-                bio
-                avatar {
-                  data {
-                    attributes {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-          body
-          status
-          seo {
-            metaTitle
-            metaDescription
-            shareImage {
-              data {
-                attributes {
-                  url
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 const BlogPostContainer = props => {
-  const { onSEOChange, slug } = props;
+  const { data, loading, error, seo } = props;
   const classes = useStyles();
 
   const isMobile = useCheckMobileScreen();
-
-  const { loading, error, data } = useQuery(BLOG, {
-    variables: { slug },
-  });
-
-  const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
-
-  useEffect(() => {
-    onSEOChange(seo);
-  }, [seo.metaTitle]);
 
   const formattedData =
     data?.blogs?.data?.length > 0
