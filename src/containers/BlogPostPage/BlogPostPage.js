@@ -44,6 +44,8 @@ const BlogPostPageComponent = props => {
         description: seo.metaDescription,
         name: seo.metaTitle,
         image: [seo.shareImage?.data?.attributes.url],
+        facebookImages: [seo.shareImage?.data?.attributes.url],
+        twitterImages: [seo.shareImage?.data?.attributes.url],
       }}
     >
       <LayoutSingleColumn>

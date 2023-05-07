@@ -231,7 +231,7 @@ const BlogPostContainer = props => {
 
   const handleShareTwitter = () => {
     const url = `https://twitter.com/intent/tweet?url=${window.location.href}&text=${seo.metaTitle}`;
-    window.open(url.replace('| CareVine', ''), '_blank');
+    window.open(url.replace('| CareVine', ''), 'twitter-share', 'width=626,height=436', '_blank');
   };
 
   if (formattedData.status === 'TEST' && !isDev) {
