@@ -107,7 +107,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   const customConnectSrc = connectSrc
     .concat('*.sentry.io')
     .concat('*.ingest.sentry.io')
-    .concat('*.carevine.us');
+    .concat('https://strapi.carevine.us/graphql');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc.concat('*.weglot.com');
 
