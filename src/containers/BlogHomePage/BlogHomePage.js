@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import CardGrid from './CardGrid';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { ClientContext } from 'graphql-hooks';
 
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
@@ -35,6 +36,12 @@ const BlogHomePageComponent = props => {
   const { scrollingDisabled } = props;
   const classes = useStyles();
 
+  const client = useContext(ClientContext);
+
+  if (!client) {
+    return <></>;
+  }
+
   // TODO: Update these for SEO
   const schemaTitle = 'Blog';
   const schemaDescription = 'Blog';
@@ -61,7 +68,7 @@ const BlogHomePageComponent = props => {
           <Box className={classes.hero}>
             <Box>Blog</Box>
           </Box>
-          <CardGrid />
+          {client ? <CardGrid /> : null}
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>

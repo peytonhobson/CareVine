@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import BlogPostContainer from './BlogPostContainer';
-import { useQuery } from 'graphql-hooks';
+import { useQuery, ClientContext } from 'graphql-hooks';
 
 import {
   Page,
@@ -69,8 +69,17 @@ const BLOG = `
 const BlogPostPageComponent = props => {
   const { scrollingDisabled, params } = props;
 
+  const client = useContext(ClientContext);
+
+  if (!client) {
+    return <></>;
+  }
+
+  console.log(client);
+
   const { loading, error, data } = useQuery(BLOG, {
-    variables: { slug: params.slug },
+    variables: { slug: params.slug || '' },
+    client,
   });
 
   const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
