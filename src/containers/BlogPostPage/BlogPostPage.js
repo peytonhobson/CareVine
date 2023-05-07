@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { GraphQLClient, ClientContext } from 'graphql-hooks';
 import BlogPostContainer from './BlogPostContainer';
+import { useQuery } from 'graphql-hooks';
 
 import {
   Page,
@@ -17,21 +17,65 @@ import { TopbarContainer } from '..';
 
 import css from './BlogPostPage.module.css';
 
-const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
-
-const client = new GraphQLClient({
-  url: STRAPI_API_URL,
-});
+const BLOG = `
+  query getBlog($slug: String) {
+    blogs(filters: { slug: { eq: $slug } }) {
+      data {
+        attributes {
+          slug
+          title
+          date
+          hero {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
+          author {
+            data {
+              attributes {
+                name
+                bio
+                avatar {
+                  data {
+                    attributes {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+          body
+          status
+          seo {
+            metaTitle
+            metaDescription
+            shareImage {
+              data {
+                attributes {
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 const BlogPostPageComponent = props => {
   const { scrollingDisabled, params } = props;
-  const [seo, setSeo] = useState({});
 
-  const handleSEOChange = val => {
-    setSeo(val);
-  };
+  const { loading, error, data } = useQuery(BLOG, {
+    variables: { slug: params.slug },
+  });
 
-  return (
+  const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
+
+  return data && seo ? (
     <Page
       className={css.root}
       scrollingDisabled={scrollingDisabled}
@@ -53,16 +97,20 @@ const BlogPostPageComponent = props => {
           <TopbarContainer currentPage="BlogPostPage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
-          <ClientContext.Provider value={client}>
-            <BlogPostContainer slug={params.slug} onSEOChange={handleSEOChange} />
-          </ClientContext.Provider>
+          <BlogPostContainer
+            slug={params.slug}
+            data={data}
+            loading={loading}
+            error={error}
+            seo={seo}
+          />
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
     </Page>
-  );
+  ) : null;
 };
 
 const mapStateToProps = state => {

@@ -5,14 +5,11 @@ import CardGrid from './CardGrid';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { GraphQLClient, ClientContext } from 'graphql-hooks';
 
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
 
 import css from './BlogHomePage.module.css';
-
-const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
 
 const useStyles = makeStyles(theme => ({
   hero: {
@@ -33,10 +30,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }));
-
-const client = new GraphQLClient({
-  url: STRAPI_API_URL,
-});
 
 const BlogHomePageComponent = props => {
   const { scrollingDisabled } = props;
@@ -68,9 +61,7 @@ const BlogHomePageComponent = props => {
           <Box className={classes.hero}>
             <Box>Blog</Box>
           </Box>
-          <ClientContext.Provider value={client}>
-            <CardGrid />
-          </ClientContext.Provider>
+          <CardGrid />
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>
