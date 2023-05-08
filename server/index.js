@@ -43,6 +43,7 @@ const { sitemapStructure } = require('./sitemap');
 const csp = require('./csp');
 const sdkUtils = require('./api-util/sdk');
 const queryEvents = require('./queryEvents');
+const cors = require('cors');
 
 const buildPath = path.resolve(__dirname, '..', 'build');
 const env = process.env.REACT_APP_ENV;
@@ -146,6 +147,12 @@ app.use(cookieParser());
 // We need to handle these endpoints separately so that they are accessible by Flex
 // even if you have enabled basic authentication e.g. in staging environment.
 app.use('/.well-known', wellKnownRouter);
+
+app.use(
+  cors({
+    origin: 'https://strapi.carevine.us',
+  })
+);
 
 // Use basic authentication when not in dev mode. This is
 // intentionally after the static middleware and /.well-known
