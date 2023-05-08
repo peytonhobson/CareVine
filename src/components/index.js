@@ -38,13 +38,15 @@ export {
     IconSearch,
     IconSocialMediaFacebook,
     IconSocialMediaInstagram,
+    IconSocialMediaPinterest,
     IconSocialMediaTwitter,
     IconSpinner,
     IconSuccess,
     IconVerticalDots,
     IconWallet,
     IconGift,
-    IconEnvelopes
+    IconEnvelopes,
+    IconEmail
 } from './Icons';
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';

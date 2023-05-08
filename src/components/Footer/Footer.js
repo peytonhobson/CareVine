@@ -21,7 +21,7 @@ import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import css from './Footer.module.css';
 
 const newListingStates = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT];
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const renderSocialMediaLinks = intl => {
   const { siteFacebookPage, siteInstagramPage, siteTwitterHandle } = config;

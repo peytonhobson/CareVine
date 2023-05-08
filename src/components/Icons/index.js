@@ -31,3 +31,5 @@ export { default as IconVerticalDots } from './IconVerticalDots/IconVerticalDots
 export { default as IconWallet } from './IconWallet/IconWallet';
 export { default as IconGift } from './IconGift/IconGift';
 export { default as IconEnvelopes } from './IconEnvelopes/IconEnvelopes';
+export { default as IconSocialMediaPinterest } from './IconSocialMediaPinterest/IconSocialMediaPinterest';
+export { default as IconEmail } from './IconEmail/IconEmail';

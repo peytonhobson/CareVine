@@ -63,7 +63,8 @@ const template = params => {
   const htmlAttributes = params.htmlAttributes;
   const tags = _.omit(params, ['htmlAttributes']);
   const templatedWithHtmlAttributes = templateWithHtmlAttributes({ htmlAttributes });
-  return templateTags(templatedWithHtmlAttributes)(tags);
+  const templateStuff = templateTags(templatedWithHtmlAttributes)(tags);
+  return templateStuff;
 };
 
 //
@@ -90,14 +91,14 @@ const replacer = (key = null, value) => {
   return types.replacer(key, cleanedValue);
 };
 
-exports.render = function(requestUrl, context, data, renderApp, webExtractor) {
+exports.render = async function(requestUrl, context, data, renderApp, webExtractor) {
   const { preloadedState, translations } = data;
 
   // Bind webExtractor as "this" for collectChunks call.
   const collectWebChunks = webExtractor.collectChunks.bind(webExtractor);
 
   // Render the app with given route, preloaded state, hosted translations.
-  const { head, body } = renderApp(
+  const { head, body, initialState } = await renderApp(
     requestUrl,
     context,
     preloadedState,
@@ -117,6 +118,11 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor) {
   // as a string.
   const preloadedStateScript = `
       <script>window.__PRELOADED_STATE__ = ${JSON.stringify(serializedState)};</script>
+  `;
+  const initialStateScript = `
+      <script type="text/javascript">
+            window.__INITIAL_STATE__=${JSON.stringify(initialState).replace(/</g, '\\u003c')};
+          </script>
   `;
 
   // We want to precisely control where the analytics script is
@@ -141,7 +147,7 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor) {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-      
+
         gtag('config', '${googleAnalyticsId}', {
           cookie_flags: 'SameSite=None;Secure',
         });
@@ -156,6 +162,7 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor) {
     meta: head.meta.toString(),
     script: head.script.toString(),
     preloadedStateScript,
+    initialStateScript,
     googleAnalyticsScript,
     ssrStyles: webExtractor.getStyleTags(),
     ssrLinks: webExtractor.getLinkTags(),

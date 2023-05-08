@@ -1,14 +1,22 @@
 import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Box, Container, Avatar } from '@material-ui/core';
-import { useQuery } from 'graphql-hooks';
 import DOMPurify from 'dompurify';
-import { NamedRedirect, NamedLink, IconArrowHead, IconSpinner } from '../../components';
-import { useCheckMobileScreen } from '../../util/hooks';
+import {
+  NamedRedirect,
+  NamedLink,
+  IconArrowHead,
+  IconSpinner,
+  IconSocialMediaFacebook,
+  IconSocialMediaPinterest,
+  IconSocialMediaTwitter,
+  IconEmail,
+} from '../../components';
+import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 
 import css from './BlogPostPage.module.css';
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -18,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(7),
+    paddingBottom: theme.spacing(3),
   },
   authorName: {
     fontWeight: 600,
@@ -107,72 +115,35 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     minHeight: '80vh',
   },
+  shareButtonContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    paddingBottom: theme.spacing(5),
+  },
+  socialMediaIconContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '50%',
+    backgroundColor: 'var(--matterColor)',
+    marginInline: '0.75rem',
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
 }));
 
-const BLOG = `
-  query getBlog($slug: String) {
-    blogs(filters: { slug: { eq: $slug } }) {
-      data {
-        attributes {
-          slug
-          title
-          date
-          hero {
-            data {
-              attributes {
-                url
-              }
-            }
-          }
-          author {
-            data {
-              attributes {
-                name
-                bio
-                avatar {
-                  data {
-                    attributes {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-          body
-          status
-          seo {
-            metaTitle
-            metaDescription
-            shareImage {
-              data {
-                attributes {
-                  url
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
 const BlogPostContainer = props => {
-  const { onSEOChange, slug } = props;
+  const { data, loading, error, seo } = props;
   const classes = useStyles();
 
   const isMobile = useCheckMobileScreen();
 
-  const { loading, error, data } = useQuery(BLOG, {
-    variables: { slug },
-  });
-
-  const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
-
-  useEffect(() => {
-    onSEOChange(seo);
-  }, [seo.metaTitle]);
+  const isSsr = useIsSsr();
+  if (isSsr) return null;
 
   const formattedData =
     data?.blogs?.data?.length > 0
@@ -188,6 +159,23 @@ const BlogPostContainer = props => {
           status: data.blogs.data[0].attributes.status,
         }
       : {};
+
+  const handleShareFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`;
+    window.open(url, '_blank');
+  };
+
+  const handleSharePinterest = () => {
+    const url = `https://pinterest.com/pin/create/button/?url=${window.location.href}&media=${
+      seo.shareImage.data ? seo.shareImage.data.attributes.url : formattedData.hero
+    }&description=${seo.metaDescription}`;
+    window.open(url, '_blank');
+  };
+
+  const handleShareTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?url=${window.location.href}&text=${seo.metaTitle}`;
+    window.open(url.replace('| CareVine', ''), 'twitter-share', 'width=626,height=436', '_blank');
+  };
 
   if (formattedData.status === 'TEST' && !isDev) {
     return <NamedRedirect name="BlogHomePage" />;
@@ -215,6 +203,34 @@ const BlogPostContainer = props => {
               {formattedData.date} | By {formattedData.authorName}
             </Typography>
             <Avatar src={formattedData.authorProfilePicture} className={classes.avatar} />
+          </Box>
+          <Box className={classes.shareButtonContainer}>
+            <Box className={classes.socialMediaIconContainer} onClick={handleShareFacebook}>
+              <IconSocialMediaFacebook
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer} onClick={handleSharePinterest}>
+              <IconSocialMediaPinterest
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer} onClick={handleShareTwitter}>
+              <IconSocialMediaTwitter
+                className={css.socialMediaIcon}
+                height="1.5rem"
+                width="1.5rem"
+              />
+            </Box>
+            <Box className={classes.socialMediaIconContainer}>
+              <a href={`mailto:?subject=${seo.metaTitle}&body=${window.location.href}`}>
+                <IconEmail className={css.socialMediaIcon} height="1.5rem" width="1.5rem" />
+              </a>
+            </Box>
           </Box>
           <Box className={classes.hero}>
             <img className={classes.image} src={formattedData.hero} alt="blog" />

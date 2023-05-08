@@ -17,6 +17,9 @@ import configureStore from './store';
 import routeConfiguration from './routeConfiguration';
 import Routes from './Routes';
 import config from './config';
+import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import memCache from 'graphql-hooks-memcache';
+import { getInitialState } from 'graphql-hooks-ssr';
 
 // Flex template application uses English translations as default translations.
 import defaultMessages from './translations/en.json';
@@ -91,6 +94,17 @@ const setupLocale = () => {
   moment.locale(config.locale);
 };
 
+const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
+const apolloSsrClient = new GraphQLClient({
+  url: STRAPI_API_URL,
+  cache: memCache(),
+  fetch,
+});
+
+const apolloClient = new GraphQLClient({
+  url: STRAPI_API_URL,
+});
+
 export const ClientApp = props => {
   const { store, hostedTranslations = {} } = props;
   setupLocale();
@@ -102,9 +116,11 @@ export const ClientApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider>
-          <BrowserRouter>
-            <Routes routes={routeConfiguration()} />
-          </BrowserRouter>
+          <ClientContext.Provider value={apolloClient}>
+            <BrowserRouter>
+              <Routes routes={routeConfiguration()} />
+            </BrowserRouter>
+          </ClientContext.Provider>
         </HelmetProvider>
       </Provider>
     </IntlProvider>
@@ -128,9 +144,11 @@ export const ServerApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider context={helmetContext}>
-          <StaticRouter location={url} context={context}>
-            <Routes routes={routeConfiguration()} />
-          </StaticRouter>
+          <ClientContext.Provider value={apolloSsrClient}>
+            <StaticRouter location={url} context={context}>
+              <Routes routes={routeConfiguration()} />
+            </StaticRouter>
+          </ClientContext.Provider>
         </HelmetProvider>
       </Provider>
     </IntlProvider>
@@ -149,7 +167,7 @@ ServerApp.propTypes = { url: string.isRequired, context: any.isRequired, store: 
  *  - {String} body: Rendered application body of the given route
  *  - {Object} head: Application head metadata from react-helmet
  */
-export const renderApp = (
+export const renderApp = async (
   url,
   serverContext,
   preloadedState,
@@ -175,7 +193,8 @@ export const renderApp = (
       hostedTranslations={hostedTranslations}
     />
   );
+  const initialState = await getInitialState({ App: WithChunks, client: apolloSsrClient });
   const body = ReactDOMServer.renderToString(WithChunks);
   const { helmet: head } = helmetContext;
-  return { head, body };
+  return { head, body, initialState };
 };

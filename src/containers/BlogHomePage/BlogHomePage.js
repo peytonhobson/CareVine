@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import CardGrid from './CardGrid';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import { useIsSsr } from '../../util/hooks';
 
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
 
 import css from './BlogHomePage.module.css';
-
-const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
 
 const useStyles = makeStyles(theme => ({
   hero: {
@@ -34,17 +32,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const client = new GraphQLClient({
-  url: STRAPI_API_URL,
-});
-
 const BlogHomePageComponent = props => {
   const { scrollingDisabled } = props;
   const classes = useStyles();
 
-  // TODO: Update these for SEO
-  const schemaTitle = 'Blog';
-  const schemaDescription = 'Blog';
+  const isSsr = useIsSsr();
+
+  const schemaTitle = 'CareVine Blog | Insights and Resources for Caregivers and Care Seekers';
+  const schemaDescription =
+    "Stay informed on caregiving trends & news. CareVine's blog offers tips & resources for caregivers & care seekers. Join our community today!";
+
+  //TODO: Create shareimage
 
   return (
     <Page
@@ -65,12 +63,14 @@ const BlogHomePageComponent = props => {
           <TopbarContainer currentPage="BlogHomePage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
-          <Box className={classes.hero}>
-            <Box>Blog</Box>
-          </Box>
-          <ClientContext.Provider value={client}>
-            <CardGrid />
-          </ClientContext.Provider>
+          {!isSsr && (
+            <>
+              <Box className={classes.hero}>
+                <Box>Blog</Box>
+              </Box>
+              <CardGrid />
+            </>
+          )}
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>
@@ -82,10 +82,6 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
   };
 };
-
-const mapDispatchToProps = dispatch => ({
-  onSendFeedbackEmail: feedback => dispatch(feedbackEmail(feedback)),
-});
 
 const BlogHomePage = compose(connect(mapStateToProps))(BlogHomePageComponent);
 

@@ -104,9 +104,12 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
   const { connectSrc = [self], imgSrc = [self], scriptSrc = [self] } = defaultDirectives;
-  const customConnectSrc = connectSrc.concat('*.sentry.io').concat('*.ingest.sentry.io');
+  const customConnectSrc = connectSrc
+    .concat('*.sentry.io')
+    .concat('*.ingest.sentry.io')
+    .concat('https://strapi.carevine.us/graphql');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
-  const customScriptSrc = scriptSrc.concat('*.weglot.com');
+  const customScriptSrc = scriptSrc.concat('*.googleadservices.com');
 
   const customDirectives = {
     connectSrc: customConnectSrc,

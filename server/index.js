@@ -43,6 +43,7 @@ const { sitemapStructure } = require('./sitemap');
 const csp = require('./csp');
 const sdkUtils = require('./api-util/sdk');
 const queryEvents = require('./queryEvents');
+const cors = require('cors');
 
 const buildPath = path.resolve(__dirname, '..', 'build');
 const env = process.env.REACT_APP_ENV;
@@ -147,6 +148,12 @@ app.use(cookieParser());
 // even if you have enabled basic authentication e.g. in staging environment.
 app.use('/.well-known', wellKnownRouter);
 
+app.use(
+  cors({
+    origin: 'https://strapi.carevine.us/graphql',
+  })
+);
+
 // Use basic authentication when not in dev mode. This is
 // intentionally after the static middleware and /.well-known
 // endpoints as those will bypass basic auth.
@@ -235,8 +242,8 @@ app.get('*', (req, res) => {
 
   dataLoader
     .loadData(req.url, sdk, appInfo)
-    .then(data => {
-      const html = renderer.render(req.url, context, data, renderApp, webExtractor);
+    .then(async data => {
+      const html = await renderer.render(req.url, context, data, renderApp, webExtractor);
 
       if (dev) {
         const debugData = {
