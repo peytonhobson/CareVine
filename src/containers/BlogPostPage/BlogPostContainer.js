@@ -12,7 +12,7 @@ import {
   IconSocialMediaTwitter,
   IconEmail,
 } from '../../components';
-import { useCheckMobileScreen } from '../../util/hooks';
+import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 
 import css from './BlogPostPage.module.css';
 
@@ -141,6 +141,9 @@ const BlogPostContainer = props => {
   const classes = useStyles();
 
   const isMobile = useCheckMobileScreen();
+
+  const isSsr = useIsSsr();
+  if (isSsr) return null;
 
   const formattedData =
     data?.blogs?.data?.length > 0

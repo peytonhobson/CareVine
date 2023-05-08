@@ -18,6 +18,8 @@ import routeConfiguration from './routeConfiguration';
 import Routes from './Routes';
 import config from './config';
 import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import memCache from 'graphql-hooks-memcache';
+import { getInitialState } from 'graphql-hooks-ssr';
 
 // Flex template application uses English translations as default translations.
 import defaultMessages from './translations/en.json';
@@ -95,6 +97,12 @@ const setupLocale = () => {
 const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
 const apolloClient = new GraphQLClient({
   url: STRAPI_API_URL,
+  cache: memCache(),
+  fetch,
+});
+
+const clientSideClient = new GraphQLClient({
+  url: STRAPI_API_URL,
 });
 
 export const ClientApp = props => {
@@ -108,7 +116,7 @@ export const ClientApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider>
-          <ClientContext.Provider value={apolloClient}>
+          <ClientContext.Provider value={clientSideClient}>
             <BrowserRouter>
               <Routes routes={routeConfiguration()} />
             </BrowserRouter>
@@ -136,9 +144,11 @@ export const ServerApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider context={helmetContext}>
-          <StaticRouter location={url} context={context}>
-            <Routes routes={routeConfiguration()} />
-          </StaticRouter>
+          <ClientContext.Provider value={apolloClient}>
+            <StaticRouter location={url} context={context}>
+              <Routes routes={routeConfiguration()} />
+            </StaticRouter>
+          </ClientContext.Provider>
         </HelmetProvider>
       </Provider>
     </IntlProvider>
@@ -157,7 +167,7 @@ ServerApp.propTypes = { url: string.isRequired, context: any.isRequired, store: 
  *  - {String} body: Rendered application body of the given route
  *  - {Object} head: Application head metadata from react-helmet
  */
-export const renderApp = (
+export const renderApp = async (
   url,
   serverContext,
   preloadedState,
@@ -183,7 +193,8 @@ export const renderApp = (
       hostedTranslations={hostedTranslations}
     />
   );
+  const initialState = await getInitialState({ App: WithChunks, client: apolloClient });
   const body = ReactDOMServer.renderToString(WithChunks);
   const { helmet: head } = helmetContext;
-  return { head, body };
+  return { head, body, initialState };
 };

@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import BlogPostContainer from './BlogPostContainer';
 import { useQuery, ClientContext } from 'graphql-hooks';
+import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 
 import {
   Page,
@@ -69,22 +70,13 @@ const BLOG = `
 const BlogPostPageComponent = props => {
   const { scrollingDisabled, params } = props;
 
-  const client = useContext(ClientContext);
-
-  if (!client) {
-    return <></>;
-  }
-
-  console.log(client);
-
   const { loading, error, data } = useQuery(BLOG, {
     variables: { slug: params.slug || '' },
-    client,
   });
 
   const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
 
-  return data && seo ? (
+  return (
     <Page
       className={css.root}
       scrollingDisabled={scrollingDisabled}
@@ -119,8 +111,6 @@ const BlogPostPageComponent = props => {
         </LayoutWrapperFooter>
       </LayoutSingleColumn>
     </Page>
-  ) : (
-    <></>
   );
 };
 
