@@ -38,10 +38,6 @@ const BlogHomePageComponent = props => {
 
   const client = useContext(ClientContext);
 
-  if (!client) {
-    return <></>;
-  }
-
   // TODO: Update these for SEO
   const schemaTitle = 'Blog';
   const schemaDescription = 'Blog';
@@ -68,7 +64,7 @@ const BlogHomePageComponent = props => {
           <Box className={classes.hero}>
             <Box>Blog</Box>
           </Box>
-          {client ? <CardGrid /> : null}
+          <CardGrid />
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>
@@ -80,10 +76,6 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
   };
 };
-
-const mapDispatchToProps = dispatch => ({
-  onSendFeedbackEmail: feedback => dispatch(feedbackEmail(feedback)),
-});
 
 const BlogHomePage = compose(connect(mapStateToProps))(BlogHomePageComponent);
 

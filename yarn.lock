@@ -8475,6 +8475,18 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
+graphql-hooks-memcache@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/graphql-hooks-memcache/-/graphql-hooks-memcache-3.1.2.tgz#b29265629d29b8ca72e3a9ce829f211040dbe7b5"
+  integrity sha512-G4XWHBilzzuG78zTol3c8O6RgkvSETI2GiPhRyuxF4yliVgAiDGQiCOa9a4KfDA4GHJ0yb1Y13djAdwCRruz2A==
+  dependencies:
+    tiny-lru "^10.0.1"
+
+graphql-hooks-ssr@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/graphql-hooks-ssr/-/graphql-hooks-ssr-3.0.1.tgz#f067f00af82675c529b72317b7680548ffda77fe"
+  integrity sha512-f1mztpNc7DjCkLpeDxxwBoEhRv0M3q2OjW/tncp5MMLYEKwoI2s6prMnpfvbgrtFrYlvzhPPIGMddZESp4ujPw==
+
 graphql-hooks@^6.2.3:
   version "6.2.3"
   resolved "https://registry.yarnpkg.com/graphql-hooks/-/graphql-hooks-6.2.3.tgz#12974bea98f55496c36cadfd6d9a89e078e02c9d"
@@ -13738,6 +13750,11 @@ tiny-invariant@^1.0.2:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.3.1.tgz#8560808c916ef02ecfd55e66090df23a4b7aa642"
   integrity sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==
+
+tiny-lru@^10.0.1:
+  version "10.4.1"
+  resolved "https://registry.yarnpkg.com/tiny-lru/-/tiny-lru-10.4.1.tgz#dec67a62115a4cb31d2065b8116d010daac362fe"
+  integrity sha512-buLIzw7ppqymuO3pt10jHk/6QMeZLbidihMQU+N6sogF6EnBzG0qtDWIHuhw1x3dyNgVL/KTGIZsTK81+yCzLg==
 
 tiny-warning@^1.0.0, tiny-warning@^1.0.2:
   version "1.0.3"

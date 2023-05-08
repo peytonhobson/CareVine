@@ -235,8 +235,8 @@ app.get('*', (req, res) => {
 
   dataLoader
     .loadData(req.url, sdk, appInfo)
-    .then(data => {
-      const html = renderer.render(req.url, context, data, renderApp, webExtractor);
+    .then(async data => {
+      const html = await renderer.render(req.url, context, data, renderApp, webExtractor);
 
       if (dev) {
         const debugData = {
