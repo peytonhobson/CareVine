@@ -5,27 +5,27 @@ const path = require('path');
 const filePath = path.join(__dirname);
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: `${filePath}/out/Oregon_Nursing_Contact_List_Remaining.csv`,
+  path: `${filePath}/out/Oregon_Social_Workers_Contact_List.csv`,
   header: [
     { id: 'email', title: 'email' },
     { id: 'firstName', title: 'first_name' },
     { id: 'lastName', title: 'last_name' },
-    { id: 'county', title: 'county' },
     { id: 'licenseType', title: 'license_type' },
   ],
-  append: true,
 });
 
 let contacts = [];
 
-const sentCounties = ['MULTNOMAH', 'WASHINGTON', 'LANE', 'CLACKAMAS'];
-
-fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List_Remaining.csv`)
+fs.createReadStream(`${filePath}/in/Oregon_Social_Workers_Mailing_List.csv`)
   .pipe(csv())
   .on('data', row => {
-    if (row['email'] !== 'N/A') {
+    if (row['Public Email Address'] !== 'N/A') {
+      const vals = Object.values(row);
       const contactOut = {
-        email: row['email'],
+        email: row['Public Email Address'],
+        firstName: vals[0],
+        lastName: row['Last Name'],
+        licenseType: row['License Type'],
       };
 
       contacts.push(contactOut);
@@ -33,8 +33,8 @@ fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List_Remaining.csv`)
   })
   .on('end', () => {
     console.log(contacts.length);
-    // csvWriter
-    //   .writeRecords(contacts)
-    //   .then(() => console.log('The CSV file was written successfully'));
+    csvWriter
+      .writeRecords(contacts)
+      .then(() => console.log('The CSV file was written successfully'));
     console.log('CSV file successfully processed');
   });
