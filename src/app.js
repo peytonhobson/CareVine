@@ -95,13 +95,13 @@ const setupLocale = () => {
 };
 
 const STRAPI_API_URL = `${process.env.REACT_APP_STRAPI_URL}/graphql`;
-const apolloClient = new GraphQLClient({
+const apolloSsrClient = new GraphQLClient({
   url: STRAPI_API_URL,
   cache: memCache(),
   fetch,
 });
 
-const clientSideClient = new GraphQLClient({
+const apolloClient = new GraphQLClient({
   url: STRAPI_API_URL,
 });
 
@@ -116,7 +116,7 @@ export const ClientApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider>
-          <ClientContext.Provider value={clientSideClient}>
+          <ClientContext.Provider value={apolloClient}>
             <BrowserRouter>
               <Routes routes={routeConfiguration()} />
             </BrowserRouter>
@@ -144,7 +144,7 @@ export const ServerApp = props => {
     >
       <Provider store={store}>
         <HelmetProvider context={helmetContext}>
-          <ClientContext.Provider value={apolloClient}>
+          <ClientContext.Provider value={apolloSsrClient}>
             <StaticRouter location={url} context={context}>
               <Routes routes={routeConfiguration()} />
             </StaticRouter>
@@ -193,7 +193,7 @@ export const renderApp = async (
       hostedTranslations={hostedTranslations}
     />
   );
-  const initialState = await getInitialState({ App: WithChunks, client: apolloClient });
+  const initialState = await getInitialState({ App: WithChunks, client: apolloSsrClient });
   const body = ReactDOMServer.renderToString(WithChunks);
   const { helmet: head } = helmetContext;
   return { head, body, initialState };

@@ -5,7 +5,7 @@ import CardGrid from './CardGrid';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { ClientContext } from 'graphql-hooks';
+import { useIsSsr } from '../../util/hooks';
 
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
@@ -36,11 +36,13 @@ const BlogHomePageComponent = props => {
   const { scrollingDisabled } = props;
   const classes = useStyles();
 
-  const client = useContext(ClientContext);
+  const isSsr = useIsSsr();
 
-  // TODO: Update these for SEO
-  const schemaTitle = 'Blog';
-  const schemaDescription = 'Blog';
+  const schemaTitle = 'CareVine Blog | Insights and Resources for Caregivers and Care Seekers';
+  const schemaDescription =
+    "Stay informed on caregiving trends & news. CareVine's blog offers tips & resources for caregivers & care seekers. Join our community today!";
+
+  //TODO: Create shareimage
 
   return (
     <Page
@@ -61,10 +63,14 @@ const BlogHomePageComponent = props => {
           <TopbarContainer currentPage="BlogHomePage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
-          <Box className={classes.hero}>
-            <Box>Blog</Box>
-          </Box>
-          <CardGrid />
+          {!isSsr && (
+            <>
+              <Box className={classes.hero}>
+                <Box>Blog</Box>
+              </Box>
+              <CardGrid />
+            </>
+          )}
         </LayoutWrapperMain>
       </LayoutSingleColumn>
     </Page>
