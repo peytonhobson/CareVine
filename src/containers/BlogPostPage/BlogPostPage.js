@@ -76,6 +76,8 @@ const BlogPostPageComponent = props => {
 
   const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
 
+  console.log(seo.shareImage?.data?.attributes.url);
+
   return (
     <Page
       className={css.root}
@@ -89,9 +91,9 @@ const BlogPostPageComponent = props => {
         description: seo.metaDescription,
         name: seo.metaTitle,
         image: [seo.shareImage?.data?.attributes.url],
-        facebookImages: [seo.shareImage?.data?.attributes.url],
-        twitterImages: [seo.shareImage?.data?.attributes.url],
       }}
+      facebookImages={[{ url: seo.shareImage?.data?.attributes.url, width: 1200, height: 630 }]}
+      twitterImages={[{ url: seo.shareImage?.data?.attributes.url, width: 600, height: 300 }]}
     >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
