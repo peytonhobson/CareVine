@@ -150,7 +150,7 @@ app.use('/.well-known', wellKnownRouter);
 
 app.use(
   cors({
-    origin: 'https://strapi.carevine.us',
+    origin: 'https://strapi.carevine.us/graphql',
   })
 );
 
