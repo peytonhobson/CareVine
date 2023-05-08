@@ -64,7 +64,6 @@ const template = params => {
   const tags = _.omit(params, ['htmlAttributes']);
   const templatedWithHtmlAttributes = templateWithHtmlAttributes({ htmlAttributes });
   const templateStuff = templateTags(templatedWithHtmlAttributes)(tags);
-  console.log(tags);
   return templateStuff;
 };
 
