@@ -76,8 +76,6 @@ const BlogPostPageComponent = props => {
 
   const seo = data?.blogs?.data?.length > 0 ? data.blogs.data[0].attributes.seo : {};
 
-  console.log(seo.shareImage?.data?.attributes.url);
-
   return (
     <Page
       className={css.root}
