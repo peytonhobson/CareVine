@@ -42,8 +42,6 @@ const BlogHomePageComponent = props => {
   const schemaDescription =
     "Stay informed on caregiving trends & news. CareVine's blog offers tips & resources for caregivers & care seekers. Join our community today!";
 
-  //TODO: Create shareimage
-
   return (
     <Page
       className={css.root}
@@ -56,6 +54,7 @@ const BlogHomePageComponent = props => {
         '@type': 'WebPage',
         description: schemaDescription,
         name: schemaTitle,
+        image: ['/static/images/Blog_Background.png'],
       }}
     >
       <LayoutSingleColumn>
