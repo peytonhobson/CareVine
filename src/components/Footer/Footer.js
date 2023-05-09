@@ -166,13 +166,11 @@ const Footer = props => {
                     <FormattedMessage id="Footer.toFeedbackPage" />
                   </NamedLink>
                 </li>
-                {isDev && (
-                  <li className={css.listItem}>
-                    <NamedLink name="BlogHomePage" className={css.link}>
-                      <FormattedMessage id="Footer.toBlog" />
-                    </NamedLink>
-                  </li>
-                )}
+                <li className={css.listItem}>
+                  <NamedLink name="BlogHomePage" className={css.link}>
+                    <FormattedMessage id="Footer.toBlog" />
+                  </NamedLink>
+                </li>
               </ul>
             </div>
             <div className={css.infoLinks}>
