@@ -6,42 +6,62 @@ const sgMail = require('@sendgrid/mail');
 
 const filePath = path.join(__dirname);
 
-let contacts = [
-  'peyton.hobson@carevine.us',
-  'janelle.leavell1@gmail.com',
-  'patrick.hobson@carevine.us',
-];
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: `${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`,
+  header: [
+    { id: 'email', title: 'email' },
+    { id: 'firstName', title: 'first_name' },
+    { id: 'lastName', title: 'last_name' },
+    { id: 'licenseType', title: 'license_type' },
+    { id: 'county', title: 'county' },
+  ],
+});
 
-fs.createReadStream(`${filePath}/out/Oregon_Nursing_Contact_List.csv`)
+let contacts = [];
+sgMail.setApiKey(process.env.SENDGRID_PROMO_KEY);
+
+fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
   .pipe(csv())
   .on('data', async row => {
-    if (row.email.includes('@')) {
-      contacts.push(row.email);
-    }
+    const contactOut = {
+      email: row['email'],
+      firstName: row.first_name,
+      lastName: row.last_name,
+      licenseType: row.license_type,
+      county: row.county,
+    };
+
+    contacts.push(contactOut);
   })
   .on('end', () => {
-    const splits = Math.ceil(contacts.length / 1000);
+    const toSend = contacts.slice(0, 70);
+    const remainingContacts = contacts.slice(70);
 
-    // const toSend = contacts.slice(i * 1000, (i + 1) * 1000);
-
-    // console.log(toSend.length);s
+    const contactEmails = toSend.map(c => ({
+      to: c.email,
+      dynamic_template_data: { firstName: c.firstName },
+    }));
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
-      to: 'asdfsdf5445a@gmail.com',
-      template_id: 'd-9c4c3363ed4d4771aafdd4e221e7c1eb',
-      category: 'Testing',
+      from: 'CareVine@carevine-mail.com',
+      template_id: 'd-030af6b376cf499da60b037b588c7833',
+      category: 'CNA Promo',
       asm: {
-        group_id: 22860,
+        group_id: 42912,
       },
+      personalizations: contactEmails,
     };
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log('Emails sent successfully');
-      })
-      .catch(error => {
-        console.log(error?.response?.body?.errors);
-      });
+
+    // sgMail
+    //   .sendMultiple(msg)
+    //   .then(() => {
+    //     csvWriter
+    //       .writeRecords(remainingContacts)
+    //       .then(() => console.log('The CSV file was written successfully'));
+    //     console.log('Emails sent successfully');
+    //   })
+    //   .catch(error => {
+    //     console.log(error?.response?.body?.errors);
+    //   });
   });
