@@ -14,7 +14,7 @@ import css from './BlogHomePage.module.css';
 
 const useStyles = makeStyles(theme => ({
   hero: {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1558981852-426c6c22a060?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80')`,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/Blog_Background.png')`,
     height: '31rem',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -42,8 +42,6 @@ const BlogHomePageComponent = props => {
   const schemaDescription =
     "Stay informed on caregiving trends & news. CareVine's blog offers tips & resources for caregivers & care seekers. Join our community today!";
 
-  //TODO: Create shareimage
-
   return (
     <Page
       className={css.root}
@@ -56,6 +54,7 @@ const BlogHomePageComponent = props => {
         '@type': 'WebPage',
         description: schemaDescription,
         name: schemaTitle,
+        image: ['/static/images/Blog_Background.png'],
       }}
     >
       <LayoutSingleColumn>
