@@ -150,12 +150,12 @@ const BlogPostContainer = props => {
       ? {
           title: data.blogs.data[0].attributes.title,
           date: data.blogs.data[0].attributes.date,
-          hero: data.blogs.data[0].attributes.hero.data.attributes.url,
+          hero: data.blogs.data[0].attributes.hero?.data.attributes.url,
           body: data.blogs.data[0].attributes.body,
           authorProfilePicture:
-            data.blogs.data[0].attributes.author.data.attributes.avatar.data.attributes.url,
-          authorName: data.blogs.data[0].attributes.author.data.attributes.name,
-          authorBio: data.blogs.data[0].attributes.author.data.attributes.bio,
+            data.blogs.data[0].attributes.author?.data.attributes.avatar.data.attributes.url,
+          authorName: data.blogs.data[0].attributes.author?.data.attributes.name,
+          authorBio: data.blogs.data[0].attributes.author?.data.attributes.bio,
           status: data.blogs.data[0].attributes.status,
         }
       : {};
