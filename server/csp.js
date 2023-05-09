@@ -109,7 +109,10 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.ingest.sentry.io')
     .concat('https://strapi.carevine.us/graphql');
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
-  const customScriptSrc = scriptSrc.concat('*.googleadservices.com').concat('*.facebook.net');
+  const customScriptSrc = scriptSrc
+    .concat('*.googleadservices.com')
+    .concat('*.facebook.net')
+    .concat('www.google.com');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
