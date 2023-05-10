@@ -8,7 +8,7 @@ const filePath = path.join(__dirname);
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: `${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`,
+  path: `${filePath}/out/Oregon_SW_Filtered_List.csv`,
   header: [
     { id: 'email', title: 'email' },
     { id: 'firstName', title: 'first_name' },
@@ -21,12 +21,13 @@ const csvWriter = createCsvWriter({
 let contacts = [];
 sgMail.setApiKey(process.env.SENDGRID_PROMO_KEY);
 
-fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
+fs.createReadStream(`${filePath}/in/Oregon_SW_Filtered_List.csv`)
   .pipe(csv())
   .on('data', async row => {
+    const vals = Object.values(row);
     const contactOut = {
-      email: row['email'],
-      firstName: row.first_name,
+      email: vals[0],
+      firstName: row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1),
       lastName: row.last_name,
       licenseType: row.license_type,
       county: row.county,
@@ -47,23 +48,25 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
 
     const msg = {
       from: 'CareVine@carevine-mail.com',
-      template_id: 'd-030af6b376cf499da60b037b588c7833',
-      category: 'CNA Promo',
+      template_id: 'd-37d0014938e1419696e36d8de11ce9f8',
+      category: 'SW Promo',
       asm: {
         group_id: 42912,
       },
       personalizations: contactEmails,
     };
 
-    sgMail
-      .sendMultiple(msg)
-      .then(() => {
-        csvWriter
-          .writeRecords(remainingContacts)
-          .then(() => console.log('The CSV file was written successfully'));
-        console.log('Emails sent successfully');
-      })
-      .catch(error => {
-        console.log(error?.response?.body?.errors);
-      });
+    console.log(toSend);
+
+    // sgMail
+    //   .sendMultiple(msg)
+    //   .then(() => {
+    //     csvWriter
+    //       .writeRecords(remainingContacts)
+    //       .then(() => console.log('The CSV file was written successfully'));
+    //     console.log('Emails sent successfully');
+    //   })
+    //   .catch(error => {
+    //     console.log(error?.response?.body?.errors);
+    //   });
   });
