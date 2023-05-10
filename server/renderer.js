@@ -121,7 +121,10 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   `;
   const initialStateScript = `
       <script type="text/javascript">
-            window.__INITIAL_STATE__=${JSON.stringify(initialState).replace(/</g, '\\u003c')};
+            window.__INITIAL_STATE__=Object.assign(
+              window.__INITIAL_STATE__ || {},
+              ${JSON.stringify(initialState).replace(/</g, '\\u003c')}
+            );
           </script>
   `;
 
