@@ -26,7 +26,8 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
   .on('data', async row => {
     const contactOut = {
       email: row['email'],
-      firstName: row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1),
+      firstName:
+        row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1).toLowerCase(),
       lastName: row.last_name,
       licenseType: row.license_type,
       county: row.county,
