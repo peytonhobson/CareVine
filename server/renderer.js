@@ -119,7 +119,7 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   const preloadedStateScript = `
       <script>window.__PRELOADED_STATE__=Object.assign(
               window.__PRELOADED_STATE__ || {},
-              ${JSON.stringify(serializedState)}
+              ${serializedState}
             );</script>
   `;
   const initialStateScript = `
