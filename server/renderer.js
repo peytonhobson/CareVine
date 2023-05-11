@@ -117,7 +117,10 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   // contents properly so the value can be injected in the script tag
   // as a string.
   const preloadedStateScript = `
-      <script>window.__PRELOADED_STATE__ = ${JSON.stringify(serializedState)};</script>
+      <script>window.__PRELOADED_STATE__=Object.assign(
+              window.__PRELOADED_STATE__ || {},
+              ${JSON.stringify(serializedState)}
+            );</script>
   `;
   const initialStateScript = `
       <script type="text/javascript">
