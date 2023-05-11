@@ -8,7 +8,7 @@ const filePath = path.join(__dirname);
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: `${filePath}/out/Oregon_SW_Filtered_List.csv`,
+  path: `${filePath}/in/Oregon_SW_Filtered_List.csv`,
   header: [
     { id: 'email', title: 'email' },
     { id: 'firstName', title: 'first_name' },
@@ -27,7 +27,8 @@ fs.createReadStream(`${filePath}/in/Oregon_SW_Filtered_List.csv`)
     const vals = Object.values(row);
     const contactOut = {
       email: vals[0],
-      firstName: row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1),
+      firstName:
+        row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1).toLowerCase(),
       lastName: row.last_name,
       licenseType: row.license_type,
       county: row.county,
@@ -56,17 +57,15 @@ fs.createReadStream(`${filePath}/in/Oregon_SW_Filtered_List.csv`)
       personalizations: contactEmails,
     };
 
-    console.log(toSend);
-
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     csvWriter
-    //       .writeRecords(remainingContacts)
-    //       .then(() => console.log('The CSV file was written successfully'));
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        csvWriter
+          .writeRecords(remainingContacts)
+          .then(() => console.log('The CSV file was written successfully'));
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   });
