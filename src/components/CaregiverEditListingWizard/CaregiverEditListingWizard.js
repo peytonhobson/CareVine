@@ -160,7 +160,7 @@ const scrollToTab = (tabPrefix, tabId) => {
 // Create return URL for the Stripe onboarding form
 const createReturnURL = (returnURLType, rootURL, routes, pathParams) => {
   if (returnURLType === 'success') {
-    const path = createResourceLocatorString('LandingPage', routes, pathParams);
+    const path = createResourceLocatorString('SignupPage', routes, {});
     const root = rootURL.replace(/\/$/, '');
     return `${root}${path}`;
   }
