@@ -44,7 +44,10 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
         to: c.email,
         dynamic_template_data: { firstName: c.firstName },
       }))
-      .concat({ to: 'peyton.hobson@carevine.us', dynamic_template_data: { firstName: 'Peyton' } });
+      .concat({ to: 'peyton.hobson@carevine.us', dynamic_template_data: { firstName: 'P' } });
+
+    console.log(contacts.length);
+    console.log(remainingContacts.length);
 
     const msg = {
       from: 'CareVine@carevine-mail.com',
@@ -56,15 +59,15 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
       personalizations: contactEmails,
     };
 
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     csvWriter
-    //       .writeRecords(remainingContacts)
-    //       .then(() => console.log('The CSV file was written successfully'));
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        csvWriter
+          .writeRecords(remainingContacts)
+          .then(() => console.log('The CSV file was written successfully'));
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   });
