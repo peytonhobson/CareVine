@@ -26,7 +26,8 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
   .on('data', async row => {
     const contactOut = {
       email: row['email'],
-      firstName: row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1),
+      firstName:
+        row.first_name.substring(0, 1).toUpperCase() + row.first_name.substring(1).toLowerCase(),
       lastName: row.last_name,
       licenseType: row.license_type,
       county: row.county,
@@ -43,7 +44,10 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
         to: c.email,
         dynamic_template_data: { firstName: c.firstName },
       }))
-      .concat({ to: 'peyton.hobson@carevine.us', dynamic_template_data: { firstName: 'Peyton' } });
+      .concat({ to: 'peyton.hobson@carevine.us', dynamic_template_data: { firstName: 'P' } });
+
+    console.log(contacts.length);
+    console.log(remainingContacts.length);
 
     const msg = {
       from: 'CareVine@carevine-mail.com',
@@ -55,15 +59,15 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
       personalizations: contactEmails,
     };
 
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     csvWriter
-    //       .writeRecords(remainingContacts)
-    //       .then(() => console.log('The CSV file was written successfully'));
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        csvWriter
+          .writeRecords(remainingContacts)
+          .then(() => console.log('The CSV file was written successfully'));
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   });
