@@ -112,7 +112,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   const customScriptSrc = scriptSrc
     .concat('*.googleadservices.com')
     .concat('*.facebook.net')
-    .concat('www.google.com');
+    .concat('www.google.com')
+    .concat('*.googlesyndication.com');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
