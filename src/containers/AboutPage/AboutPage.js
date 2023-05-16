@@ -19,7 +19,7 @@ const AboutPage = () => {
   const siteTwitterPage = twitterPageURL(siteTwitterHandle);
 
   const metaDescription =
-    'Discover CareVine, the peer-to-peer marketplace connecting caregivers and care seekers. Our mission is to provide personalized care solutions with safety and security. Join us today.';
+    'Explore CareVine, your trusted peer-to-peer marketplace connecting caregivers and care seekers. We empower users to effectively manage their care and costs by selecting the right caregiver. Join us today!';
 
   // prettier-ignore
   return (
