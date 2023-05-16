@@ -67,6 +67,7 @@ exports.sitemapStructure = () => {
       '/feedback': ['get'],
       '/about': ['get'],
       '/contact-us': ['get'],
+      '/blog': ['get'],
     },
     route: {
       '/': {
@@ -74,17 +75,7 @@ exports.sitemapStructure = () => {
         changefreq: 'always',
         priority: 1.0,
       },
-      '/signup': {
-        lastmod: now,
-        changefreq: 'always',
-        priority: 1.0,
-      },
-      '/login': {
-        lastmod: now,
-        changefreq: 'always',
-        priority: 1.0,
-      },
-      '/feedback': {
+      '/blog': {
         lastmod: now,
         changefreq: 'always',
         priority: 0.8,
@@ -94,10 +85,25 @@ exports.sitemapStructure = () => {
         changefreq: 'always',
         priority: 0.8,
       },
+      '/signup': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.7,
+      },
+      '/login': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.7,
+      },
+      '/feedback': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.7,
+      },
       '/contact-us': {
         lastmod: now,
         changefreq: 'always',
-        priority: 0.8,
+        priority: 0.7,
       },
       '/account': {
         disallow: true,
