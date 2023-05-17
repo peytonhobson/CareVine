@@ -113,10 +113,10 @@ const siteTitle = 'CareVine';
 const siteTwitterHandle = '@carevine_us';
 
 // Instagram page is used in SEO schema (http://schema.org/Organization)
-const siteInstagramPage = null;
+const siteInstagramPage = 'https://www.instagram.com/carevine_us/';
 
 // Facebook page is used in SEO schema (http://schema.org/Organization)
-const siteFacebookPage = 'https://www.facebook.com/Sharetribe/';
+const siteFacebookPage = 'https://www.facebook.com/carevine';
 
 // Social logins & SSO
 
