@@ -150,7 +150,7 @@ const SectionHero = props => {
                   [css.heroButtonFEDelay]: mounted,
                 })}
               >
-                <FormattedMessage id="SectionHero.getStartedButton" values={{ itemsToBrowse }} />
+                <FormattedMessage id="SectionHero.signUpButton" values={{ itemsToBrowse }} />
               </NamedLink>
               <Button
                 className={classNames(css.heroButtonUnAuth, {
