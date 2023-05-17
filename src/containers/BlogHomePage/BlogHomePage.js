@@ -65,7 +65,9 @@ const BlogHomePageComponent = props => {
           {!isSsr && (
             <>
               <Box className={classes.hero}>
-                <Box>Blog</Box>
+                <Box>
+                  <h1 className={css.header}>Blog</h1>
+                </Box>
               </Box>
               <CardGrid />
             </>
