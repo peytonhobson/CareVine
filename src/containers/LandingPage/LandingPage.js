@@ -25,7 +25,7 @@ import { EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 
-import backgroundImage from '../../assets/Logo_1200x630.png';
+import shareImage from '../../assets/Background_Share_Image.png';
 import css from './LandingPage.module.css';
 
 export const LandingPageComponent = props => {
@@ -60,7 +60,7 @@ export const LandingPageComponent = props => {
   const siteTitle = config.siteTitle;
   const schemaTitle = intl.formatMessage({ id: 'LandingPage.schemaTitle' }, { siteTitle });
   const schemaDescription = intl.formatMessage({ id: 'LandingPage.schemaDescription' });
-  const schemaImage = `${config.canonicalRootURL}${backgroundImage}`;
+  const schemaImage = `${config.canonicalRootURL}${shareImage}`;
 
   const userType = currentUser?.attributes.profile.metadata.userType;
 

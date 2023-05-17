@@ -11,6 +11,7 @@ import { canonicalRoutePath } from '../../util/routes';
 import { CookieConsent } from '../../components';
 
 import logoImage from '../../assets/Logo_1200x630.png';
+import shareImage from '../../assets/Background_Share_Image.png';
 import css from './Page.module.css';
 
 const preventDefault = e => {
@@ -110,7 +111,7 @@ class PageComponent extends Component {
     const facebookImgs = facebookImages || [
       {
         name: 'facebook',
-        url: `${canonicalRootURL}${logoImage}`,
+        url: `${canonicalRootURL}${shareImage}`,
         width: 1200,
         height: 630,
       },
@@ -118,7 +119,7 @@ class PageComponent extends Component {
     const twitterImgs = twitterImages || [
       {
         name: 'twitter',
-        url: `${canonicalRootURL}${logoImage}`,
+        url: `${canonicalRootURL}${shareImage}`,
         width: 600,
         height: 314,
       },
