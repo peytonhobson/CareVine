@@ -8,3 +8,8 @@
 .error {
   color: var(--failColor);
 }
+
+.header {
+  font-size: 5rem;
+  font-weight: 500;
+}
