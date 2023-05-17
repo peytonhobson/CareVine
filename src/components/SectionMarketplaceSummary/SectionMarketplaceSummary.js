@@ -60,7 +60,11 @@ const SectionMarketplaceSummary = props => {
             </div>
           </div>
           <div className={css.graphic}>
-            <img className={css.graphicImage} src={employerListingsImage} />
+            <img
+              className={css.graphicImage}
+              src={employerListingsImage}
+              alt="Employment listings for caregiver jobs"
+            />
           </div>
         </div>
       ) : (
@@ -80,7 +84,11 @@ const SectionMarketplaceSummary = props => {
             </div>
           </div>
           <div className={css.graphic}>
-            <img className={css.graphicImage} src={caregiverListingImage} />
+            <img
+              className={css.graphicImage}
+              src={caregiverListingImage}
+              alt="Listing for caregiver"
+            />
           </div>
         </div>
       )}
