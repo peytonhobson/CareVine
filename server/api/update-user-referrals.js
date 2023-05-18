@@ -1,7 +1,7 @@
 const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 const sgMail = require('@sendgrid/mail');
-const REFERRAL_CLAIMED_EMAIL_ID = 'd-91417a3cbcc9433ca89633ce6507b704';
+const REFERRAL_CLAIMED_EMAIL_ID = 'd-5a1a6a891ba8471bb44a8e4b4b87a576';
 
 module.exports = async (req, res) => {
   const { email, referralCode } = req.body;
