@@ -13,6 +13,8 @@ module.exports = (req, res) => {
     html,
   };
 
+  console.log(msg);
+
   return sgMail
     .send(msg)
     .then(apiResponse => {
@@ -28,5 +30,6 @@ module.exports = (req, res) => {
     })
     .catch(e => {
       log.error(e, 'sendgrid-email-failed', e);
+      handleError(res, e);
     });
 };

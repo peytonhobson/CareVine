@@ -65,7 +65,7 @@ export const sendContactEmail = (email, message) => (dispatch, getState, sdk) =>
   dispatch(sendContactEmailRequest());
 
   return sendgridStandardEmail({
-    fromEmail: 'admin-notification@@carevine-mail.us',
+    fromEmail: 'admin-notification@carevine-mail.us',
     receiverEmail: 'peyton.hobson@carevine.us',
     subject: 'User "Contact Us" Submission',
     html: `User Email: ${email} <br><br> Message: ${message}`,
