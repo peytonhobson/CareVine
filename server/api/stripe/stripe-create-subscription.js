@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { handleStripeError, serialize } = require('../../api-util/sdk');
 const log = require('../../log');
 
-export const CAREVINE_GOLD_PRICE_ID =
+const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
     ? 'price_1N1q9EJsU2TVwfKBaFF1g5Fr'
     : 'price_1N1q8PJsU2TVwfKBgE80ln2P';
