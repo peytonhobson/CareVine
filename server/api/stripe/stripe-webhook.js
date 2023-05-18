@@ -456,7 +456,7 @@ module.exports = (request, response) => {
     case 'charge.dispute.created':
       const disputeCreated = event.data.object;
       sendgridStandardEmail(
-        'admin-notification@carevine.us',
+        'admin-notification@carevine-mail.us',
         'peyton.hobson@carevine.us',
         'Dispute Created',
         JSON.stringify(disputeCreated)

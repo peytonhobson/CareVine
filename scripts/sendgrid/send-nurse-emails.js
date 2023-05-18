@@ -19,7 +19,7 @@ const csvWriter = createCsvWriter({
 });
 
 let contacts = [];
-sgMail.setApiKey(process.env.SENDGRID_PROMO_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
   .pipe(csv())
@@ -36,15 +36,13 @@ fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
     contacts.push(contactOut);
   })
   .on('end', () => {
-    const toSend = contacts.slice(0, 99);
-    const remainingContacts = contacts.slice(99);
+    const toSend = contacts.slice(0, 200);
+    const remainingContacts = contacts.slice(200);
 
-    const contactEmails = toSend
-      .map(c => ({
-        to: c.email,
-        dynamic_template_data: { firstName: c.firstName },
-      }))
-      .concat({ to: 'peyton.hobson@carevine.us', dynamic_template_data: { firstName: 'P' } });
+    const contactEmails = toSend.map(c => ({
+      to: c.email,
+      dynamic_template_data: { firstName: c.firstName },
+    }));
 
     console.log(contacts.length);
     console.log(remainingContacts.length);

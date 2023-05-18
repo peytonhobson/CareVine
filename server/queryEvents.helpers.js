@@ -416,7 +416,7 @@ const sendQuizFailedEmail = async userId => {
     await axios.post(
       `${apiBaseUrl()}/api/sendgrid-standard-email`,
       {
-        fromEmail: 'admin-notification@carevine.us',
+        fromEmail: 'admin-notification@carevine-mail.us',
         receiverEmail: 'peyton.hobson@carevine.us',
         subject: 'Identity Quiz Failed',
         html: `<html><span>User ID: ${userId}</span></html>`,

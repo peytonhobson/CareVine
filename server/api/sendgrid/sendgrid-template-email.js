@@ -3,20 +3,18 @@ const { integrationSdk, handleError, serialize } = require('../../api-util/sdk')
 const log = require('../../log');
 
 const SENDGRID_TEMPLATE_IDS = {
-  'new-message': 'd-99a691ae1af04a42abe2669208474925',
-  'listing-approved': 'd-8d1336cd49d3418e99a94f4df6a4cfa3',
-  'listing-closed': 'd-ffec855f57624725ba0c3ecb884f88a1',
-  'background-check-approved': 'd-fc9ca12f344d4f26b744b6397d51fc41',
-  'background-check-rejected': 'd-1af0298cc6424aaf86d2647848b1571d',
-  'subscription-confirmed': 'd-65eb5714fbf24441973a7dd4e9517b5d',
-  'subscription-canceled': 'd-282d6dff340b4f8ba3c7cc3f40583725',
-  'payment-expiring': 'd-77d689cbc3054d52ade077336ed14ac5',
-  'payment-failed': 'd-f3f7c126303b4118a2b776be029d15e2',
-  'subscription-schedule-confirmed': 'd-05fec989fca84d4f870e1786a9377ce1',
-  'subscription-schedule-canceled': 'd-408b5788c9c8429ea66f077a2910669c',
-  'subscription-reactivated': 'd-000a9e879d4c47668276e57eb0a44ec6',
-  'subscription-upgraded': 'd-2779c5dca2a5486196bd6cb10fb8d279',
-  'payment-received': 'd-9c4c3363ed4d4771aafdd4e221e7c1eb',
+  'listing-approved': 'd-8b99728fb8784ec3a28e16708abfcffc',
+  'listing-closed': 'd-023abb2594c24fc4a2f10f48a4a2e904',
+  'background-check-approved': 'd-03e273474de74c448fd2c2fbb903a317',
+  'background-check-rejected': 'd-5bed9a37fa574a0d822832887d62b4ea',
+  'subscription-confirmed': 'd-86a4b53a6f61498a99caef79c3a17c7a',
+  'subscription-canceled': 'd-2d9c30381681481baeb101fd53e89bdf',
+  'payment-failed': 'd-9ad97a905d484aecb18b2a4e7886bc10',
+  'subscription-schedule-confirmed': 'd-f353ec706a8f4a24b5247475a51561d7',
+  'subscription-schedule-canceled': 'd-73b663e822104c119174c3e02fff53e1',
+  'subscription-reactivated': 'd-60700574227d45a9b96a1088d3fff48a',
+  'subscription-upgraded': 'd-15926983dea741ae847bddcfa7ec05ca',
+  'payment-received': 'd-8c3d87977c67483f91fe270b9267f9d2',
 };
 
 module.exports = (req, res) => {
