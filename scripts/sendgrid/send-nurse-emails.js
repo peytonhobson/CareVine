@@ -19,7 +19,7 @@ const csvWriter = createCsvWriter({
 });
 
 let contacts = [];
-sgMail.setApiKey(process.env.SENDGRID_PROMO_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 fs.createReadStream(`${filePath}/out/Oregon_CNA_Contact_List_Remaining.csv`)
   .pipe(csv())
