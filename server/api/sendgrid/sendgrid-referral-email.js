@@ -2,7 +2,7 @@ const sgMail = require('@sendgrid/mail');
 const { integrationSdk, handleError, serialize } = require('../../api-util/sdk');
 const log = require('../../log');
 
-const SENDGRID_TEMPLATE_ID = 'd-f4e098e3ecc24d13afb508e764926520';
+const SENDGRID_TEMPLATE_ID = 'd-1cb90abfce57425fad96b3cefcef270e';
 const marketplaceUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 
 module.exports = async (req, res) => {
