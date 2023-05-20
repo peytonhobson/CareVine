@@ -131,8 +131,8 @@ const SectionHero = props => {
           </div>
         ) : (
           <div className={css.unAuthContainer}>
-            <h1>Your Care, In Your Hands</h1>
-            <h2>Find the Perfect Caregiver for You</h2>
+            <h1 className={css.yourCare}>Your Care, In Your Hands</h1>
+            <h2 className={css.perfectCaregiver}>Find the Perfect Caregiver for You</h2>
             <TopbarSearchForm
               className={css.topbarSearchForm}
               rootClassName={css.topbarSearchFormRoot}

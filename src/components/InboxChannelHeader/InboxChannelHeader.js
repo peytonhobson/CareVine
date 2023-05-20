@@ -29,7 +29,7 @@ const InboxChannelHeader = props => {
   const [isRequestPaymentModalOpen, setIsRequestPaymentModalOpen] = useState(false);
 
   const listingId = listing?.id?.uuid;
-  const slug = listing && createSlug(listing);
+  const slug = listing && createSlug(listing.attributes.title);
 
   const otherUserName = userDisplayNameAsString(otherUser);
   const currentUserType = currentUser.attributes.profile.metadata?.userType;

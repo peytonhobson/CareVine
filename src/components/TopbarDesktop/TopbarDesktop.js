@@ -289,6 +289,19 @@ const TopbarDesktop = props => {
       </NamedLink>
     );
 
+  // TODO: Change this to ForCaregiversPage
+  const forCaregivers = !isAuthenticated ? (
+    <NamedLink name="LandingPage" className={css.caregiverButtonLink}>
+      For Caregivers
+    </NamedLink>
+  ) : null;
+
+  const postListing = !isAuthenticated ? (
+    <NamedLink name="SignupPage" className={css.postButtonLink}>
+      + Post a Job
+    </NamedLink>
+  ) : null;
+
   return (
     <nav className={classes}>
       <NamedLink className={css.logoLink} name="LandingPage">
@@ -299,12 +312,14 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
-        {feedbackLink}
+        {/* {feedbackLink} */}
       </div>
 
       <div className={css.unauthenticatedContainer}>
         {notificationsLink}
         {profileMenu}
+        {postListing}
+        {forCaregivers}
         {signupLink}
         {loginLink}
       </div>

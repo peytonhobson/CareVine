@@ -393,6 +393,8 @@ export class ListingPageComponent extends Component {
       </div>
     ) : null;
 
+    const currentUserOrigin = currentUserListing?.attributes?.geolocation;
+
     const clostListingErrorText = closeListingError ? (
       <p className={css.errorText}>
         <FormattedMessage id="ListingPage.closeListingFailed" />
@@ -446,7 +448,7 @@ export class ListingPageComponent extends Component {
                       onOpenListing={onOpenListing}
                       isFromSearchPage={isFromSearchPage}
                       onGoBackToSearchResults={this.goBackToSearchResults}
-                      origin={origin}
+                      origin={origin || currentUserOrigin}
                     />
                     <ListingTabs
                       currentUser={currentUser}

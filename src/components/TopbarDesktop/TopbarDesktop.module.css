@@ -423,3 +423,38 @@
 .unreadNotificationBadge {
   left: 1.2rem;
 }
+
+.caregiverButtonLink {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+
+  padding: 0.5rem 1rem;
+
+  display: flex;
+  min-height: 0;
+  max-height: 4rem;
+  margin-right: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-block: auto;
+  white-space: nowrap;
+}
+
+.postButtonLink {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+
+  padding: 0.5rem 1rem;
+
+  display: flex;
+  min-height: 0;
+  max-height: 4rem;
+  margin-right: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-block: auto;
+
+  background-color: var(--secondaryMarketplaceColor);
+
+  &:hover {
+    background-color: #395244;
+  }
+}

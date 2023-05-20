@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import moment from 'moment';
 
-const SessionTimeout = ({ intervalFunction, intervalTime, maxInactiveTime }) => {
+const SessionTimeout = ({ intervalFunction, intervalTime, maxInactiveTime, isAuthenticated }) => {
   const [events, setEvents] = useState(['click', 'load', 'scroll']);
 
   let inactiveInterval = useRef();
@@ -12,6 +12,11 @@ const SessionTimeout = ({ intervalFunction, intervalTime, maxInactiveTime }) => 
 
     if (!inactiveInterval.current) {
       inactiveInterval.current = setInterval(() => {
+        if (!isAuthenticated) {
+          inactiveInterval.current = null;
+          return;
+        }
+
         intervalFunction();
 
         const diff = moment.duration(moment().diff(moment(timeStamp)));
