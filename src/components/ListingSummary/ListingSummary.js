@@ -31,6 +31,7 @@ const ListingSummaryComponent = props => {
     onOpenListing,
     isFromSearchPage,
     onGoBackToSearchResults,
+    origin,
   } = props;
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -67,9 +68,7 @@ const ListingSummaryComponent = props => {
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
   const distanceFromLocation =
-    geolocation && currentUserGeolocation
-      ? calculateDistanceBetweenOrigins(currentUserGeolocation, geolocation)
-      : null;
+    geolocation && origin ? calculateDistanceBetweenOrigins(origin, geolocation) : '0.00';
 
   // const handleBook = () => {
   //   const initialValues = {

@@ -14,12 +14,14 @@ import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
 import { updateUserNotifications } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
+import { parse } from '../../util/urlHelpers';
 
 const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
 
 export const SET_INITIAL_VALUES = 'app/ListingPage/SET_INITIAL_VALUES';
+export const SET_ORIGIN = 'app/ListingPage/SET_ORIGIN';
 
 export const SHOW_LISTING_REQUEST = 'app/ListingPage/SHOW_LISTING_REQUEST';
 export const SHOW_LISTING_ERROR = 'app/ListingPage/SHOW_LISTING_ERROR';
@@ -63,6 +65,7 @@ const initialState = {
   closeListingError: null,
   openListingInProgress: false,
   openListingError: null,
+  origin: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -70,6 +73,8 @@ const listingPageReducer = (state = initialState, action = {}) => {
   switch (type) {
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
+    case SET_ORIGIN:
+      return { ...state, origin: payload };
 
     case SHOW_LISTING_REQUEST:
       return { ...state, id: payload.id, showListingError: null };
@@ -135,6 +140,11 @@ export default listingPageReducer;
 export const setInitialValues = initialValues => ({
   type: SET_INITIAL_VALUES,
   payload: pick(initialValues, Object.keys(initialState)),
+});
+
+export const setOrigin = origin => ({
+  type: SET_ORIGIN,
+  payload: origin,
 });
 
 export const showListingRequest = id => ({
@@ -365,16 +375,25 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
-export const loadData = (params, search) => dispatch => {
+export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const listingId = new UUID(params.id);
+
+  const queryParams = parse(search, {
+    latlng: ['origin'],
+  });
+
+  const { origin, ...rest } = queryParams;
 
   const ownListingVariants = [LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT];
   if (ownListingVariants.includes(params.variant)) {
     return dispatch(showListing(listingId, true));
   }
 
+  const currentUser = getState().user.currentUser;
+
   return Promise.all([
     dispatch(showListing(listingId)),
-    dispatch(fetchExistingConversation(listingId)),
+    currentUser?.id && dispatch(fetchExistingConversation(listingId)),
+    dispatch(setOrigin(origin)),
   ]);
 };
