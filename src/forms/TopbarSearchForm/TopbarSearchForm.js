@@ -73,24 +73,21 @@ class TopbarSearchFormComponent extends Component {
                       className={isMobile ? css.mobileInputRoot : desktopInputRootClass}
                       iconClassName={isMobile ? css.mobileIcon : css.desktopIcon}
                       inputClassName={isMobile ? css.mobileInput : css.desktopInput}
+                      rootClassName={isMobile ? css.mobileRoot : css.desktopRoot}
                       predictionsClassName={
                         isMobile ? css.mobilePredictions : css.desktopPredictions
                       }
                       predictionsAttributionClassName={
                         isMobile ? css.mobilePredictionsAttribution : null
                       }
-                      placeholder={intl.formatMessage(
-                        currentUserType === EMPLOYER
-                          ? { id: 'TopbarSearchForm.employerPlaceholder' }
-                          : { id: 'TopbarSearchForm.caregiverPlaceholder' }
-                      )}
+                      placeholder="Where are you located?"
                       closeOnBlur={!isMobile}
                       inputRef={node => {
                         this.searchInput = node;
                       }}
-                      searchType={['place']}
                       input={searchInput}
                       meta={meta}
+                      searchType={['place', 'address']}
                     />
                   );
                 }}
