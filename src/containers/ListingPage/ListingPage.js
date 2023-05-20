@@ -242,6 +242,7 @@ export class ListingPageComponent extends Component {
       openListingInProgress,
       openListingError,
       onOpenListing,
+      origin,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -445,6 +446,7 @@ export class ListingPageComponent extends Component {
                       onOpenListing={onOpenListing}
                       isFromSearchPage={isFromSearchPage}
                       onGoBackToSearchResults={this.goBackToSearchResults}
+                      origin={origin}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -578,6 +580,7 @@ const mapStateToProps = state => {
     openListingInProgress,
     openListingError,
     listingOpened,
+    origin,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -612,6 +615,7 @@ const mapStateToProps = state => {
     closeListingError,
     openListingInProgress,
     openListingError,
+    origin,
   };
 };
 

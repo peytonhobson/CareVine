@@ -160,6 +160,7 @@ export const CaregiverListingCardComponent = props => {
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: isMobile ? '100%' : '30rem',
+    maxWidth: isMobile && '30rem',
     // height: '28rem',
     marginBottom: '3rem',
     marginInline: isMobile ? 0 : '1.5rem',
@@ -178,6 +179,8 @@ export const CaregiverListingCardComponent = props => {
   };
   const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
 
+  const originString = `${origin.lat}%2C${origin.lng}`;
+
   const Wrapper = ({ children }) => {
     return isMobile ? (
       <div className={classes}>{children}</div>
@@ -185,7 +188,7 @@ export const CaregiverListingCardComponent = props => {
       <NamedLink
         className={classes}
         name="ListingPage"
-        params={{ id, slug }}
+        params={{ id, slug, search: `?origin=${originString}` }}
         style={{ pointerEvents: disableProfileLink && 'none' }}
         to={{ state: { from: 'SearchPage' } }}
       >

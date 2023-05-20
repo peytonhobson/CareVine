@@ -136,6 +136,7 @@ export const EmployerListingCardMobileComponent = props => {
 
   const Card = styled(props => <MuiCard {...props} />)(({ theme }) => ({
     width: '100%',
+    maxWidth: '30rem',
     height: 'auto',
     marginBottom: '1.5rem',
     '&.MuiPaper-rounded': {
