@@ -423,6 +423,7 @@ class MainPanel extends Component {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
+              urlQueryParams={urlQueryParams}
             />
           </div>
         )}

@@ -48,6 +48,11 @@ export const validURLParamForExtendedData = (queryParamName, paramValueRaw, filt
       return paramValue.length > 0 ? { [queryParamName]: paramValue } : {};
     }
   }
+
+  if (queryParamName === 'origin' && paramValueRaw) {
+    return { origin: paramValueRaw };
+  }
+
   return {};
 };
 
@@ -107,7 +112,7 @@ export const validURLParamsForExtendedData = (params, filters) => {
 export const pickSearchParamsOnly = (params, filters, sortConfig) => {
   const { address, origin, bounds, listingType, ...rest } = params || {};
   const boundsMaybe = bounds ? { bounds } : {};
-  const originMaybe = config.sortSearchByDistance && origin ? { origin } : {};
+  const originMaybe = origin ? { origin } : {};
   const filterParams = validFilterParams(rest, filters);
   const sort = rest[sortConfig.queryParamName];
   const sortMaybe = sort ? { sort } : {};
