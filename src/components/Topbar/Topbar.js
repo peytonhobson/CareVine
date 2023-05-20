@@ -277,11 +277,12 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-        {currentUser && (
+        {isAuthenticated && (
           <SessionTimeout
             intervalFunction={this.pollUser}
             intervalTime="10000"
             maxInactiveTime="1"
+            isAuthenticated={isAuthenticated}
           />
         )}
         <GenericError
