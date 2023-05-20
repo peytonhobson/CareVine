@@ -84,7 +84,10 @@ export const validFilterParams = (params, filters) => {
  * @param {Object} filters Filters configuration
  */
 export const validURLParamsForExtendedData = (params, filters) => {
-  const filterParamNames = filters.map(f => f.queryParamNames).reduce(flatten, []);
+  const filterParamNames = filters
+    .map(f => f.queryParamNames)
+    .reduce(flatten, [])
+    .concat('origin');
   const paramEntries = Object.entries(params);
 
   return paramEntries.reduce((validParams, entry) => {
