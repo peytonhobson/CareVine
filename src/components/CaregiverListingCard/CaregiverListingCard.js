@@ -47,6 +47,7 @@ export const CaregiverListingCardComponent = props => {
     currentUserListing,
     disableProfileLink,
     isMobile,
+    origin,
   } = props;
 
   const currentListing = ensureListing(listing);
@@ -79,9 +80,7 @@ export const CaregiverListingCardComponent = props => {
   const geolocation = currentUserListing?.attributes?.geolocation;
 
   const distanceFromLocation =
-    geolocation && otherGeolocation
-      ? calculateDistanceBetweenOrigins(geolocation, otherGeolocation)
-      : null;
+    origin && otherGeolocation ? calculateDistanceBetweenOrigins(origin, otherGeolocation) : null;
 
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 

@@ -6,17 +6,23 @@ import config from '../../config';
 
 import SortByPlain from './SortByPlain';
 import SortByPopup from './SortByPopup';
-import { CAREGIVER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 
 const caregiverSortBy = ['relevant', 'createdAt', '-createdAt', '-pub_minPrice', 'pub_maxPrice'];
 const employersSortBy = ['relevant', 'createdAt', '-createdAt', '-pub_maxPrice', 'pub_minPrice'];
+const unAuthSortBy = ['createdAt', '-createdAt', '-pub_maxPrice', 'pub_minPrice'];
 
 const SortBy = props => {
   const { sort, showAsPopup, isConflictingFilterActive, intl, currentUserType, ...rest } = props;
 
   const { relevanceKey, queryParamName } = config.custom.sortConfig;
 
-  const sortArray = currentUserType === CAREGIVER ? caregiverSortBy : employersSortBy;
+  const sortArray =
+    currentUserType === CAREGIVER
+      ? caregiverSortBy
+      : currentUserType === EMPLOYER
+      ? employersSortBy
+      : unAuthSortBy;
 
   const options = config.custom.sortConfig.options
     .filter(option => sortArray.includes(option.key))

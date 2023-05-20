@@ -27,6 +27,7 @@ const SearchResultsPanel = props => {
     onContactUser,
     currentUserListing,
     onManageDisableScrolling,
+    urlQueryParams,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -52,11 +53,13 @@ const SearchResultsPanel = props => {
     `${panelLargeWidth / 3}vw`,
   ].join(', ');
 
+  const { listingType, origin, location } = urlQueryParams;
+
   return (
     <div className={classes}>
       <div className={css.listingCards}>
         {listings.map(l =>
-          currentUserType === EMPLOYER ? (
+          listingType === CAREGIVER ? (
             <CaregiverListingCard
               className={css.listingCard}
               key={l.id.uuid}
@@ -67,6 +70,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               isMobile={isMobile}
+              origin={location?.origin || origin}
             />
           ) : isMobile ? (
             <EmployerListingCardMobile
@@ -79,6 +83,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
+              origin={location?.origin || origin}
             />
           ) : (
             <EmployerListingCard
@@ -91,6 +96,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
+              origin={location?.origin || origin}
             />
           )
         )}

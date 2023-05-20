@@ -74,6 +74,7 @@ export const EmployerListingCardComponent = props => {
     currentUserListing,
     onManageDisableScrolling,
     disableProfileLink,
+    origin,
   } = props;
 
   const [isOneTimeScheduleModalOpen, setIsOneTimeScheduleModalOpen] = useState(false);
@@ -98,9 +99,7 @@ export const EmployerListingCardComponent = props => {
   const geolocation = currentUserListing?.attributes?.geolocation;
 
   const distanceFromLocation =
-    geolocation && otherGeolocation
-      ? calculateDistanceBetweenOrigins(geolocation, otherGeolocation)
-      : null;
+    origin && otherGeolocation ? calculateDistanceBetweenOrigins(origin, otherGeolocation) : null;
 
   const { formattedMinPrice, formattedMaxPrice, priceTitle } = priceData(
     [minPrice, maxPrice],
