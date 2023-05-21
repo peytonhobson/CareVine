@@ -47,7 +47,25 @@
   border-radius: 4%;
 }
 
+.employerImage {
+  width: 35rem;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-radius: 2rem;
+}
+
 .sectionTwo {
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+
+.sectionThree {
+  background-color: #d3dfd9;
+
   @media (--viewportMedium) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
 
