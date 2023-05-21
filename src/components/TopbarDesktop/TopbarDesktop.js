@@ -291,7 +291,7 @@ const TopbarDesktop = props => {
 
   // TODO: Change this to ForCaregiversPage
   const forCaregivers = !isAuthenticated ? (
-    <NamedLink name="LandingPage" className={css.caregiverButtonLink}>
+    <NamedLink name="ForCaregiversPage" className={css.caregiverButtonLink}>
       For Caregivers
     </NamedLink>
   ) : null;
@@ -318,8 +318,9 @@ const TopbarDesktop = props => {
       <div className={css.unauthenticatedContainer}>
         {notificationsLink}
         {profileMenu}
-        {postListing}
         {forCaregivers}
+        {postListing}
+
         {signupLink}
         {loginLink}
       </div>

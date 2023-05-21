@@ -1,0 +1,70 @@
+@import '../../styles/customMediaQueries.css';
+
+.sectionOne {
+  background-color: #cfdfe6;
+
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+
+.descriptionContainer {
+  margin: auto;
+  padding: 0 0 0 6rem;
+}
+
+.description {
+  margin: 2rem 0;
+}
+
+.getStartedButton {
+  composes: button buttonFont buttonText buttonBorders buttonColorsPrimary from global;
+
+  width: 15rem;
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0 5rem 2rem 10rem;
+}
+
+.imageCard {
+  width: 35rem;
+  height: 35rem;
+}
+
+.image {
+  width: 35rem;
+  height: 35rem;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-radius: 4%;
+}
+
+.sectionTwo {
+  @media (--viewportMedium) {
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+
+.descriptionContainerRight {
+  margin: auto;
+  padding: 0 6rem 0 0;
+}
+
+.imageContainerRight {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0 10rem 2rem 5rem;
+}

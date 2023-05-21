@@ -20,6 +20,7 @@ const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage"
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
 const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
+const ForCaregiversPage = loadable(() => import(/* webpackChunkName: "ForCaregiversPage" */ './containers/ForCaregiversPage/ForCaregiversPage'));
 const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPage/InboxPage'))
 const LandingPage = loadable(() => import(/* webpackChunkName: "LandingPage" */ './containers/LandingPage/LandingPage'));
 const ListingPage = loadable(() => import(/* webpackChunkName: "ListingPage" */ /* webpackPrefetch: true */ './containers/ListingPage/ListingPage'));
@@ -105,6 +106,11 @@ const routeConfiguration = () => {
       path: '/feedback',
       name: 'FeedbackPage',
       component: FeedbackPage,
+    },
+    {
+      path: '/for-caregivers',
+      name: 'ForCaregiversPage',
+      component: ForCaregiversPage,
     },
     {
       path: '/s',
