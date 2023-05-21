@@ -12,14 +12,14 @@ import employerListingsImage from '../../assets/employer-listings.png';
 import css from './SectionMarketplaceSummary.module.css';
 
 const buttonGroupOptions = [
-  { key: CAREGIVER, label: 'Become a Caregiver' },
   { key: EMPLOYER, label: 'Hire a Caregiver' },
+  { key: CAREGIVER, label: 'Become a Caregiver' },
 ];
 
 const SectionMarketplaceSummary = props => {
   const { rootClassName, className, onScrollIntoView } = props;
 
-  const [userType, setUserType] = useState(CAREGIVER);
+  const [userType, setUserType] = useState(EMPLOYER);
 
   const handleUserTypeChange = userType => {
     setUserType(userType);
@@ -35,7 +35,7 @@ const SectionMarketplaceSummary = props => {
       <div className={css.userButtons} onClick={onScrollIntoView}>
         <ButtonGroup
           className={css.buttonGroup}
-          initialSelect={CAREGIVER}
+          initialSelect={EMPLOYER}
           onChange={handleUserTypeChange}
           options={buttonGroupOptions}
           rootClassName={css.buttonGroupRoot}

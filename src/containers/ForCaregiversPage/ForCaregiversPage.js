@@ -21,6 +21,7 @@ import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 
 import shareImage from '../../assets/Background_Share_Image.png';
+import employerListingsImage from '../../assets/employer-listings.png';
 import css from './ForCaregiversPage.module.css';
 
 export const ForCaregiversPageComponent = props => {
@@ -105,6 +106,19 @@ export const ForCaregiversPageComponent = props => {
             </div>
           </div>
           <div className={css.sectionTwo}>
+            <div className={css.descriptionContainer}>
+              <h1 className={css.title}>Freedom of Choice</h1>
+              <p className={css.description}>
+                Pick the jobs you want. Set your own rates. Choose your own hours. CareVine gives
+                you the freedom to work on your own terms. We believe that you should be in control
+                of your career, and we're here to support you every step of the way.
+              </p>
+            </div>
+            <div className={css.imageContainer}>
+              <img src={employerListingsImage} className={css.employerImage} />
+            </div>
+          </div>
+          <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
               <img src={shareImage} className={css.image} />
             </div>
@@ -119,7 +133,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
           </div>
-          <div className={css.sectionTwo}>
+          <div className={css.sectionThree}>
             <div className={css.descriptionContainer}>
               <h1 className={css.title}>Direct Payout</h1>
               <p className={css.description}>
