@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
-import { TopbarSearchForm } from '../../forms';
+import { HeroSearchForm } from '../../forms';
 import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
@@ -133,12 +133,14 @@ const SectionHero = props => {
           <div className={css.unAuthContainer}>
             <h1 className={css.yourCare}>Find Your Perfect Caregiver</h1>
             <h2 className={css.perfectCaregiver}>
-              <div>Private, independent, and experienced caregivers.</div>
-              <div>Find yours.</div>
+              <div className={css.subPerfectCaregiver}>
+                Private, independent, and experienced caregivers.{' '}
+              </div>
+              <div className={css.subPerfectCaregiver}>Find yours.</div>
             </h2>
-            <TopbarSearchForm
-              className={css.topbarSearchForm}
-              rootClassName={css.topbarSearchFormRoot}
+            <HeroSearchForm
+              className={css.HeroSearchForm}
+              rootClassName={css.HeroSearchFormRoot}
               desktopInputRoot={css.desktopInputRoot}
               onSubmit={handleSearchSubmit}
               isMobile={isMobile}
