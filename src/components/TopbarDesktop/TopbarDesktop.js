@@ -289,7 +289,6 @@ const TopbarDesktop = props => {
       </NamedLink>
     );
 
-  // TODO: Change this to ForCaregiversPage
   const forCaregivers = !isAuthenticated ? (
     <NamedLink name="ForCaregiversPage" className={css.caregiverButtonLink}>
       For Caregivers

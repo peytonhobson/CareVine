@@ -34,14 +34,20 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  position: relative;
 
+  @media (--viewportMedium) {
+    position: relative;
+  }
   /* Text positioning is done with paddings */
 }
 
 .middleHero {
-  justify-content: center !important;
   align-items: center !important;
+  justify-content: flex-end;
+
+  @media (--viewportMedium) {
+    justify-content: center !important;
+  }
 }
 
 .heroContent {
@@ -180,23 +186,58 @@
 }
 
 .unAuthContainer {
-  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   color: white;
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  padding: 0 0 5rem 0;
+
+  @media (--viewportMedium) {
+    margin: auto;
+    position: static;
+    padding: 0;
+  }
 }
 
 .yourCare {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   line-height: 3rem;
-  letter-spacing: -1px;
+  letter-spacing: -0.7px;
+  font-weight: bold;
+
+  @media (--viewportMedium) {
+    font-size: 3.5rem;
+    line-height: 3rem;
+    letter-spacing: -1px;
+  }
+  text-align: center;
 }
 
 .perfectCaregiver {
-  font-size: 1.5rem;
-  line-height: 2.5rem;
-  letter-spacing: -1px;
-  max-width: 40vw;
+  font-weight: var(--fontWeightMedium);
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  letter-spacing: -0.7px;
   text-align: center;
+  margin-top: 0;
+  padding-inline: 2rem;
+
+  @media (--viewportMedium) {
+    max-width: 40vw;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+    letter-spacing: -1px;
+    margin-top: 1rem;
+  }
+}
+
+.subPerfectCaregiver {
+  display: inline;
+
+  @media (--viewportMedium) {
+    display: block;
+  }
 }

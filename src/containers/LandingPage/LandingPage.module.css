@@ -9,14 +9,12 @@
 .heroContainer {
   display: flex;
   flex-direction: column;
-  height: 67.5vh;
+  align-items: center;
+  height: calc(100vh - var(--topbarHeight));
+  width: 100%;
   padding: 0;
 
   @media (--viewportMedium) {
-    height: 70vh;
-  }
-
-  @media (--viewportLarge) {
     height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
@@ -24,7 +22,7 @@
 .hero {
   flex-grow: 1;
   justify-content: flex-end;
-  padding-bottom: 32px;
+  padding-bottom: 5rem;
 
   @media (--viewportLarge) {
     justify-content: center;

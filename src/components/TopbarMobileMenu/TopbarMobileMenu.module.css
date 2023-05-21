@@ -93,6 +93,12 @@
   margin-bottom: 13px;
 }
 
+.forCaregivers {
+  composes: h1 from global;
+  color: var(--marketplaceColor);
+  margin: 0.5rem 0;
+}
+
 .navigationLink {
   /* Font */
   composes: h2 from global;
@@ -151,11 +157,16 @@
   text-decoration: none;
   white-space: nowrap;
   color: var(--marketplaceColor);
+  composes: h1 from global;
+  margin: 0.5rem 0;
 }
 .loginLink {
   text-decoration: none;
   white-space: nowrap;
   color: var(--marketplaceColor);
+  composes: h1 from global;
+  margin-top: 10rem;
+  margin-bottom: 0.5rem;
 }
 
 .currentPage {
