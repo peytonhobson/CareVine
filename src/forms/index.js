@@ -47,5 +47,5 @@ export { default as SignupForm } from './SignupForm/SignupForm';
 export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/StripeConnectAccountForm';
 export { default as StripePaymentForm } from './StripePaymentForm/StripePaymentForm';
 export { default as TimelineForm } from './TimelineForm/TimelineForm';
-export { default as TopbarSearchForm } from './TopbarSearchForm/TopbarSearchForm';
+export { default as HeroSearchForm } from './HeroSearchForm/HeroSearchForm';
 export { default as RequestPaymentForm} from './RequestPaymentForm/RequestPaymentForm'

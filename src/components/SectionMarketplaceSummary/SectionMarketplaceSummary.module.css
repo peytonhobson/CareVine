@@ -4,6 +4,11 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  padding-top: 1rem;
+
+  @media (--viewportMedium) {
+    padding-top: 4rem;
+  }
 }
 
 .summaryContainer {

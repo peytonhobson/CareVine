@@ -4,13 +4,12 @@ import { Form as FinalForm, Field } from 'react-final-form';
 import classNames from 'classnames';
 import { intlShape, injectIntl } from '../../util/reactIntl';
 import { Form, LocationAutocompleteInput } from '../../components';
-import { EMPLOYER } from '../../util/constants';
 
-import css from './TopbarSearchForm.module.css';
+import css from './HeroSearchForm.module.css';
 
 const identity = v => v;
 
-class TopbarSearchFormComponent extends Component {
+class HeroSearchFormComponent extends Component {
   constructor(props) {
     super(props);
     this.onChange = this.onChange.bind(this);
@@ -73,24 +72,21 @@ class TopbarSearchFormComponent extends Component {
                       className={isMobile ? css.mobileInputRoot : desktopInputRootClass}
                       iconClassName={isMobile ? css.mobileIcon : css.desktopIcon}
                       inputClassName={isMobile ? css.mobileInput : css.desktopInput}
+                      rootClassName={isMobile ? css.mobileRoot : css.desktopRoot}
                       predictionsClassName={
                         isMobile ? css.mobilePredictions : css.desktopPredictions
                       }
                       predictionsAttributionClassName={
                         isMobile ? css.mobilePredictionsAttribution : null
                       }
-                      placeholder={intl.formatMessage(
-                        currentUserType === EMPLOYER
-                          ? { id: 'TopbarSearchForm.employerPlaceholder' }
-                          : { id: 'TopbarSearchForm.caregiverPlaceholder' }
-                      )}
-                      closeOnBlur={!isMobile}
+                      placeholder="Where are you located?"
+                      closeOnBlur
                       inputRef={node => {
                         this.searchInput = node;
                       }}
-                      searchType={['place']}
                       input={searchInput}
                       meta={meta}
+                      searchType={['place', 'address']}
                     />
                   );
                 }}
@@ -105,14 +101,14 @@ class TopbarSearchFormComponent extends Component {
 
 const { func, string, bool } = PropTypes;
 
-TopbarSearchFormComponent.defaultProps = {
+HeroSearchFormComponent.defaultProps = {
   rootClassName: null,
   className: null,
   desktopInputRoot: null,
   isMobile: false,
 };
 
-TopbarSearchFormComponent.propTypes = {
+HeroSearchFormComponent.propTypes = {
   rootClassName: string,
   className: string,
   currentUserType: string,
@@ -124,6 +120,6 @@ TopbarSearchFormComponent.propTypes = {
   intl: intlShape.isRequired,
 };
 
-const TopbarSearchForm = injectIntl(TopbarSearchFormComponent);
+const HeroSearchForm = injectIntl(HeroSearchFormComponent);
 
-export default TopbarSearchForm;
+export default HeroSearchForm;

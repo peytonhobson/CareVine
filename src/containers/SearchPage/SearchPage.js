@@ -126,17 +126,8 @@ export class SearchPageComponent extends Component {
       latlngBounds: ['bounds'],
     });
 
-    const { listingType } = searchParams;
-
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
     const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
-
-    const oppositeUserType =
-      userType === CAREGIVER ? EMPLOYER : userType === EMPLOYER ? CAREGIVER : null;
-
-    if (oppositeUserType && oppositeUserType !== listingType) {
-      return <NamedRedirect name="LandingPage" />;
-    }
 
     // urlQueryParams doesn't contain page specific url params
     // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)
@@ -269,12 +260,14 @@ const mapStateToProps = state => {
 
   const calculatedOrigin = location?.origin ?? origin;
 
-  const pageListings = getListingsById(state, currentPageResultIds).filter(listing =>
-    calculatedOrigin && listing?.attributes?.geolocation
+  const currentListings = getListingsById(state, currentPageResultIds);
+
+  const pageListings = getListingsById(state, currentPageResultIds).filter(listing => {
+    return calculatedOrigin && listing?.attributes?.geolocation
       ? calculateDistanceBetweenOrigins(calculatedOrigin, listing?.attributes?.geolocation) <
-        distance
-      : false
-  );
+          distance
+      : false;
+  });
 
   const sortByRelevant = searchParams?.sort === RELEVANT;
   const userType = currentUser?.attributes?.profile?.metadata?.userType;
@@ -290,9 +283,7 @@ const mapStateToProps = state => {
             (a, b) =>
               sortEmployerMatch(b, currentUserListing) - sortEmployerMatch(a, currentUserListing)
           )
-      : currentUserType
-      ? pageListings
-      : [];
+      : pageListings;
 
   return {
     currentUserTransactions: transactions,
