@@ -819,12 +819,12 @@ textarea {
 
 /* Button colors: primary */
 .buttonColorsPrimary {
-  background-color: var(--successColor);
+  background-color: var(--secondaryMarketplaceColor);
   color: var(--matterColorLight);
 }
 .buttonColorsPrimary:hover,
 .buttonColorsPrimary:focus {
-  background-color: var(--successColorDark);
+  background-color: var(--secondaryMarketplaceColorDark);
   color: var(--matterColorLight);
 }
 .buttonColorsPrimary:disabled {
