@@ -5,6 +5,7 @@ import { FormattedMessage } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { NamedLink, ButtonGroup } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import caregiverListingImage from '../../assets/caregiver-listing-card.png';
 import employerListingsImage from '../../assets/employer-listings.png';
@@ -60,7 +61,7 @@ const SectionMarketplaceSummary = props => {
             </div>
           </div>
           <div className={css.graphic}>
-            <img
+            <LazyLoadImage
               className={css.graphicImage}
               src={employerListingsImage}
               alt="Employment listings for caregiver jobs"
@@ -84,7 +85,7 @@ const SectionMarketplaceSummary = props => {
             </div>
           </div>
           <div className={css.graphic}>
-            <img
+            <LazyLoadImage
               className={css.graphicImage}
               src={caregiverListingImage}
               alt="Listing for caregiver"
