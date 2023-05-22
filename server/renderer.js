@@ -110,7 +110,7 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   // For security reasons we ensure that preloaded state is considered as a string
   // by replacing '<' character with its unicode equivalent.
   // http://redux.js.org/docs/recipes/ServerRendering.html#security-considerations
-  const serializedState = JSON.stringify(preloadedState, replacer).replace(/</g, '\\u003c');
+  const serializedState = JSON.stringify(preloadedState, replacer)?.replace(/</g, '\\u003c');
 
   // At this point the serializedState is a string, the second
   // JSON.stringify wraps it within double quotes and escapes the
@@ -121,7 +121,7 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   `;
   const initialStateScript = `
       <script type="text/javascript">
-            window.__INITIAL_STATE__=${JSON.stringify(initialState).replace(/</g, '\\u003c')};
+            window.__INITIAL_STATE__=${JSON.stringify(initialState)?.replace(/</g, '\\u003c')};
           </script>
   `;
 
