@@ -17,7 +17,6 @@ import {
   NamedLink,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
@@ -111,12 +110,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img
-                src={yourJourneyImage}
-                alt="People holding signs."
-                className={css.firstImage}
-                ref={firstImageRef}
-              />
+              <img alt="People holding signs." className={css.firstImage} ref={firstImageRef} />
             </div>
           </div>
           <div className={css.sectionTwo}>
