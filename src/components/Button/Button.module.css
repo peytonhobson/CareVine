@@ -46,7 +46,7 @@
 }
 
 .primaryButton.inProgress:disabled {
-  background-color: var(--successColor);
+  background-color: var(--secondaryMarketplaceColor);
 }
 
 .secondaryButton.inProgress:disabled {
@@ -62,7 +62,7 @@
 }
 
 .primaryButton.ready:disabled {
-  background-color: var(--successColor);
+  background-color: var(--secondaryMarketplaceColor);
 }
 
 .secondaryButton.ready:disabled {
