@@ -11,6 +11,11 @@
 .root {
   composes: marketplaceModalRootStyles from global;
   composes: defaultBackgroundImageForDesktop from global;
+  padding: 1rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
 }
 
 .content {

@@ -226,7 +226,6 @@
   padding-inline: 2rem;
 
   @media (--viewportMedium) {
-    max-width: 40vw;
     font-size: 1.5rem;
     line-height: 2.5rem;
     letter-spacing: -1px;
