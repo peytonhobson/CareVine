@@ -38,15 +38,15 @@ const defaultLocations = [
     id: 'default-new-york',
     predictionPlace: {
       address: 'New York City, New York',
+      origin: {
+        _sdkType: 'LatLng',
+        lat: 40.73061111,
+        lng: -73.98661111,
+      },
       bounds: new LatLngBounds(
         new LatLng(40.917576401307, -73.7008392055224),
         new LatLng(40.477399, -74.2590879797556)
       ),
-      origin: {
-        _sdkType: 'LatLng',
-        lat: 40.7306,
-        lng: -73.9866,
-      },
     },
   },
   {
