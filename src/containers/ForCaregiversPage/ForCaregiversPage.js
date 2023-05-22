@@ -100,11 +100,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <LazyLoadImage
-                src={yourJourneyImage}
-                alt="People holding signs."
-                className={css.firstImage}
-              />
+              <img src={yourJourneyImage} alt="People holding signs." className={css.firstImage} />
             </div>
           </div>
           <div className={css.sectionTwo}>
