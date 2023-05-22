@@ -22,6 +22,7 @@ import queryString from 'query-string';
 
 import stripeLogo from '../../assets/stripe-logo-large.png';
 import shareImage from '../../assets/Background_Share_Image.png';
+import magnifyingGlass from '../../assets/Magnify-BG.png';
 import employerListingsImage from '../../assets/employer-listings.png';
 import css from './ForCaregiversPage.module.css';
 
@@ -115,7 +116,7 @@ export const ForCaregiversPageComponent = props => {
           </div>
           <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
-              <img src={shareImage} className={css.image} />
+              <img src={magnifyingGlass} className={css.image} />
             </div>
             <div className={css.descriptionContainerRight}>
               <h1 className={css.title}>Instant Background Checks</h1>
