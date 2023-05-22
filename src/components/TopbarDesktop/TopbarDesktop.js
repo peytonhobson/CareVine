@@ -289,17 +289,17 @@ const TopbarDesktop = props => {
       </NamedLink>
     );
 
-  const forCaregivers = !isAuthenticated ? (
+  const forCaregivers = isAuthenticatedOrJustHydrated ? null : (
     <NamedLink name="ForCaregiversPage" className={css.caregiverButtonLink}>
       For Caregivers
     </NamedLink>
-  ) : null;
+  );
 
-  const postListing = !isAuthenticated ? (
+  const postListing = isAuthenticatedOrJustHydrated ? null : (
     <NamedLink name="SignupPage" className={css.postButtonLink}>
       + Post a Job
     </NamedLink>
-  ) : null;
+  );
 
   return (
     <nav className={classes}>

@@ -19,8 +19,12 @@ import {
 import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+import yourJourneyImage from '../../assets/Your-Journey.png';
+import stripeLogo from '../../assets/stripe-logo-large.png';
 import shareImage from '../../assets/Background_Share_Image.png';
+import magnifyingGlass from '../../assets/Magnify-BG.png';
 import employerListingsImage from '../../assets/employer-listings.png';
 import css from './ForCaregiversPage.module.css';
 
@@ -53,17 +57,11 @@ export const ForCaregiversPageComponent = props => {
   // We are using JSON-LD format
   const siteTitle = config.siteTitle;
   const schemaTitle = intl.formatMessage({ id: 'ForCaregiversPage.schemaTitle' }, { siteTitle });
-  const schemaDescription = intl.formatMessage({ id: 'ForCaregiversPage.schemaDescription' });
+  const schemaDescription = intl.formatMessage(
+    { id: 'ForCaregiversPage.schemaDescription' },
+    { siteTitle }
+  );
   const schemaImage = `${config.canonicalRootURL}${shareImage}`;
-
-  const contentRef = useRef(null);
-
-  const scrollToContent = () => {
-    if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 40;
-      window.scrollTo({ top: elementHeight, behavior: 'smooth' });
-    }
-  };
 
   return (
     <Page
@@ -102,7 +100,11 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={shareImage} className={css.firstImage} />
+              <LazyLoadImage
+                src={yourJourneyImage}
+                alt="People holding signs."
+                className={css.firstImage}
+              />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -115,12 +117,18 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <img src={employerListingsImage} className={css.employerImage} />
+              <div className={css.imageCard}>
+                <LazyLoadImage
+                  src={employerListingsImage}
+                  alt="Employer Listing Cards."
+                  className={css.employerImage}
+                />
+              </div>
             </div>
           </div>
           <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
-              <img src={shareImage} className={css.image} />
+              <LazyLoadImage src={magnifyingGlass} alt="Magnifying glass." className={css.image} />
             </div>
             <div className={css.descriptionContainerRight}>
               <h1 className={css.title}>Instant Background Checks</h1>
@@ -146,7 +154,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <img src={shareImage} className={css.image} />
+              <LazyLoadImage src={stripeLogo} alt="Stripe Logo" className={css.imageFour} />
             </div>
           </div>
         </LayoutWrapperMain>

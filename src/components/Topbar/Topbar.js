@@ -223,16 +223,22 @@ class TopbarComponent extends Component {
             >
               <Logo format="mobile" />
             </NamedLink>
-            <Button
-              rootClassName={css.searchMenu}
-              onClick={() => {}}
-              title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
-            >
-              <div>
-                <SearchIcon className={css.searchMenuIcon} />
-                <span className={css.caregivers}>Caregivers</span>
-              </div>
-            </Button>
+            {!isAuthenticated ? (
+              <NamedLink className={css.signUp} name="SignupPage" title="Sign up">
+                Sign up
+              </NamedLink>
+            ) : (
+              <Button
+                rootClassName={css.searchMenu}
+                onClick={() => {}}
+                title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
+              >
+                <div>
+                  <SearchIcon className={css.searchMenuIcon} />
+                  <span className={css.caregivers}>Caregivers</span>
+                </div>
+              </Button>
+            )}
           </div>
         ) : (
           <div className={css.desktop}>

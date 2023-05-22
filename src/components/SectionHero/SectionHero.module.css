@@ -51,10 +51,16 @@
 }
 
 .heroContent {
-  margin: 0 24px 0 24px;
+  margin: 0 1rem;
+  position: absolute;
+  bottom: 0;
+  width: 90%;
+  padding: 0 0 5rem 0;
 
   @media (--viewportMedium) {
     margin: 0 7.5vw 0 7.5vw;
+    position: static;
+    padding: 0;
   }
 
   /* Special viewport for adjusting the heroContent's placement */
@@ -207,6 +213,8 @@
   line-height: 3rem;
   letter-spacing: -0.7px;
   font-weight: bold;
+  composes: animation;
+  composes: heroMainTitleFEDelay;
 
   @media (--viewportMedium) {
     font-size: 3.5rem;
@@ -225,8 +233,10 @@
   margin-top: 0;
   padding-inline: 2rem;
 
+  composes: animation;
+  composes: heroSubTitleFEDelay;
+
   @media (--viewportMedium) {
-    max-width: 40vw;
     font-size: 1.5rem;
     line-height: 2.5rem;
     letter-spacing: -1px;
@@ -240,4 +250,9 @@
   @media (--viewportMedium) {
     display: block;
   }
+}
+
+.heroSearchForm {
+  composes: animation;
+  composes: heroButtonFEDelay;
 }
