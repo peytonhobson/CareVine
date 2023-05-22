@@ -41,12 +41,12 @@ export const ForCaregiversPageComponent = props => {
     const img = new Image();
 
     img.onload = () => {
-      if (x.current) {
-        x.current.src = img.src;
+      if (x) {
+        x.src = img.src;
       } else {
         const interval = setInterval(() => {
-          if (x.current) {
-            x.current.src = img.src;
+          if (x) {
+            x.src = img.src;
             clearInterval(interval);
           }
         }, 20);
