@@ -77,8 +77,6 @@ export const CaregiverListingCardComponent = props => {
 
   const classes = classNames(rootClassName || css.root, className);
 
-  const geolocation = currentUserListing?.attributes?.geolocation;
-
   const distanceFromLocation =
     origin && otherGeolocation ? calculateDistanceBetweenOrigins(origin, otherGeolocation) : null;
 
@@ -344,7 +342,7 @@ export const CaregiverListingCardComponent = props => {
         <NamedLink
           className={css.messageButton}
           name="ListingPage"
-          params={{ id, slug }}
+          params={{ id, slug, search: `?origin=${originString}` }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
           to={{ state: { from: 'SearchPage' } }}
         >

@@ -578,6 +578,8 @@
   "Footer.toFeedbackPage": "Feedback",
   "Footer.toHelpPage": "Help",
   "Footer.toNewListingPage": "Grow your vines",
+  "ForCaregiversPage.schemaTitle": "Join Our Community: Empower Seniors While Growing Your Caregiving Career | {siteTitle}",
+  "ForCaregiversPage.schemaDescription": "Discover how {siteTitle} connects you to seniors in need of care. Enjoy the benefits of direct payments, autonomous security measures, and a supportive community. Sign up today to elevate your caregiving journey while making a positive difference.",
   "IdentityProofForm.7YearHistoryFailed": "Failed to get criminal history. Please try again. If issue persists, please contact support.",
   "IdentityProofForm.attemptsRemainingMessage": "Attempts remaining: {attemptsRemaining}.",
   "IdentityProofForm.generateCriminalBackgroundFailed": "Failed to generate criminal background check. Please try again. If issue persists, please contact support.",
