@@ -1,8 +1,13 @@
 @import '../../styles/customMediaQueries.css';
 
 .mobileInputRoot {
-  width: 100%;
+  width: 95%;
   background-color: var(--matterColorLight);
+  margin: auto;
+  height: var(--topbarHeightDesktop);
+  display: flex;
+  position: relative;
+  margin: 2rem auto 0;
 }
 
 .desktopInputRoot {
@@ -16,7 +21,6 @@
 }
 
 .mobileIcon {
-  margin-left: 24px;
   padding: 11px 0 17px 0;
 
   /* Borders */
@@ -31,17 +35,20 @@
 .mobileInput {
   flex-grow: 1;
 
+  font-weight: normal;
+  font-size: 16px;
+
   /* Font */
   composes: h1 from global;
+  height: 100%;
 
   /* Layout */
-  margin: 0 24px 0 0;
+  margin: auto 0;
   padding: 4px 13px 10px 13px;
-  height: var(--TopbarSearchForm_inputHeight);
   line-height: unset;
 
   /* Borders */
-  border-bottom-width: var(--borderRadiusMobileSearch);
+  border-bottom: none;
 
   /* Safari bugfix: without this Safari will print placeholder to a wrong place */
   &::-webkit-input-placeholder {
@@ -110,28 +117,31 @@
 }
 
 .desktopRoot {
+  padding: 0 1rem;
+  border-radius: 3px;
+}
+
+.mobileRoot {
   padding: 0 1.5rem;
   border-radius: 3px;
 }
 
 .mobilePredictions {
   position: absolute;
-  top: calc(var(--TopbarSearchForm_inputHeight) - var(--TopbarSearchForm_bottomBorder));
+  top: var(--topbarHeightDesktop);
   left: 0;
-  min-height: calc(
-    100vh -
-      calc(
-        var(--TopbarSearchForm_topbarMargin) + var(--TopbarSearchForm_inputHeight) -
-          var(--TopbarSearchForm_bottomBorder)
-      )
-  );
   width: 100%;
+  padding: 1rem 0;
   padding-bottom: var(--locationAutocompleteBottomPadding);
   background-color: var(--marketplaceColor);
   border-bottom-left-radius: var(--borderRadius);
   border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
+
+  & > ul > li {
+    padding: 0.25rem 1rem;
+  }
 }
 
 .mobilePredictionsAttribution {
