@@ -55,6 +55,8 @@ const SearchResultsPanel = props => {
 
   const { listingType, origin, location } = urlQueryParams;
 
+  const parsedLocation = location ? JSON.parse(location) : null;
+
   return (
     <div className={classes}>
       <div className={css.listingCards}>
@@ -70,7 +72,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               isMobile={isMobile}
-              origin={location?.origin || origin}
+              origin={parsedLocation?.origin || origin}
             />
           ) : isMobile ? (
             <EmployerListingCardMobile
@@ -83,7 +85,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
-              origin={location?.origin || origin}
+              origin={parsedLocation?.origin || origin}
             />
           ) : (
             <EmployerListingCard
@@ -96,7 +98,7 @@ const SearchResultsPanel = props => {
               onContactUser={onContactUser}
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
-              origin={location?.origin || origin}
+              origin={parsedLocation?.origin || origin}
             />
           )
         )}
