@@ -98,6 +98,8 @@
 }
 
 .sectionTwo {
+  background-color: #eef4f7;
+
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -149,7 +151,7 @@
 }
 
 .sectionFour {
-  background-color: #d3dfd9;
+  background-color: #f0f4f2;
 
   display: flex;
   justify-content: flex-end;
