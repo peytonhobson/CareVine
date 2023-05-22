@@ -102,7 +102,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={shareImage} className={css.image} />
+              <img src={shareImage} className={css.firstImage} />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -133,7 +133,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
           </div>
-          <div className={css.sectionThree}>
+          <div className={css.sectionFour}>
             <div className={css.descriptionContainer}>
               <h1 className={css.title}>Direct Payout</h1>
               <p className={css.description}>
