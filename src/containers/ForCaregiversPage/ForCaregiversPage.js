@@ -23,28 +23,38 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import yourJourneyImage from '../../assets/Your-Journey.png';
 import stripeLogo from '../../assets/stripe-logo-large.png';
-import shareImage from '../../assets/Background_Share_Image.png';
 import magnifyingGlass from '../../assets/Magnify-BG.png';
 import employerListingsImage from '../../assets/employer-listings.png';
+
 import css from './ForCaregiversPage.module.css';
 
 export const ForCaregiversPageComponent = props => {
-  const {
-    history,
-    intl,
-    location,
-    scrollingDisabled,
-    currentUserListing,
-    currentUserListingFetched,
-    currentUser,
-    currentUserFetched,
-    onManageDisableScrolling,
-  } = props;
-
-  const isMobile = useCheckMobileScreen();
+  const { intl, location, scrollingDisabled } = props;
 
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
+
+  const firstImageRef = useRef(null);
+
+  useEffect(() => {
+    const x = firstImageRef.current;
+    const img = new Image();
+
+    img.onload = () => {
+      if (x.current) {
+        x.current.src = img.src;
+      } else {
+        const interval = setInterval(() => {
+          if (x.current) {
+            x.current.src = img.src;
+            clearInterval(interval);
+          }
+        }, 20);
+      }
+    };
+
+    img.src = yourJourneyImage;
+  }, []);
 
   useEffect(() => {
     if (externalPromo) {
@@ -100,7 +110,12 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={yourJourneyImage} alt="People holding signs." className={css.firstImage} />
+              <img
+                src={yourJourneyImage}
+                alt="People holding signs."
+                className={css.firstImage}
+                ref={firstImageRef}
+              />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -118,6 +133,7 @@ export const ForCaregiversPageComponent = props => {
                   src={employerListingsImage}
                   alt="Employer Listing Cards."
                   className={css.employerImage}
+                  placeholder={<div className={css.imagePlaceholder} />}
                 />
               </div>
             </div>
