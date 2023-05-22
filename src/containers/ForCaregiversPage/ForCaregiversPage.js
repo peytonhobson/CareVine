@@ -20,6 +20,7 @@ import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 
+import stripeLogo from '../../assets/stripe-logo-large.png';
 import shareImage from '../../assets/Background_Share_Image.png';
 import employerListingsImage from '../../assets/employer-listings.png';
 import css from './ForCaregiversPage.module.css';
@@ -140,7 +141,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <img src={shareImage} className={css.image} />
+              <img src={stripeLogo} className={css.imageFour} />
             </div>
           </div>
         </LayoutWrapperMain>

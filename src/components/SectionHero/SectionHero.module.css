@@ -50,23 +50,6 @@
   }
 }
 
-.unAuthContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-  position: absolute;
-  bottom: 0;
-  width: 90%;
-  padding: 0 0 5rem 0;
-
-  @media (--viewportMedium) {
-    margin: auto;
-    position: static;
-    padding: 0;
-  }
-}
-
 .heroContent {
   margin: 0 1rem;
   position: absolute;
@@ -230,6 +213,8 @@
   line-height: 3rem;
   letter-spacing: -0.7px;
   font-weight: bold;
+  composes: animation;
+  composes: heroMainTitleFEDelay;
 
   @media (--viewportMedium) {
     font-size: 3.5rem;
@@ -248,6 +233,9 @@
   margin-top: 0;
   padding-inline: 2rem;
 
+  composes: animation;
+  composes: heroSubTitleFEDelay;
+
   @media (--viewportMedium) {
     font-size: 1.5rem;
     line-height: 2.5rem;
@@ -262,4 +250,9 @@
   @media (--viewportMedium) {
     display: block;
   }
+}
+
+.heroSearchForm {
+  composes: animation;
+  composes: heroButtonFEDelay;
 }

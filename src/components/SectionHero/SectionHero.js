@@ -139,9 +139,7 @@ const SectionHero = props => {
               <div className={css.subPerfectCaregiver}>Find yours.</div>
             </h2>
             <HeroSearchForm
-              className={css.HeroSearchForm}
-              rootClassName={css.HeroSearchFormRoot}
-              desktopInputRoot={css.desktopInputRoot}
+              className={css.heroSearchForm}
               onSubmit={handleSearchSubmit}
               isMobile={isMobile}
             />
