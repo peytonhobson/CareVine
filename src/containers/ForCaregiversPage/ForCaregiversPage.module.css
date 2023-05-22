@@ -206,6 +206,7 @@
 }
 
 .imageFour {
+  background-color: var(--matterColorLight);
   height: auto;
   max-width: 100%;
   width: 80vw;
