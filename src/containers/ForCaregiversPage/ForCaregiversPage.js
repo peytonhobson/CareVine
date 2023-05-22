@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -34,6 +34,7 @@ export const ForCaregiversPageComponent = props => {
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
 
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
   const firstImageRef = useRef(null);
 
   useEffect(() => {
@@ -44,11 +45,13 @@ export const ForCaregiversPageComponent = props => {
       if (x) {
         x.src = img.src;
         x.alt = img.alt;
+        setFirstImageLoaded(true);
       } else {
         const interval = setInterval(() => {
           if (x) {
             x.src = img.src;
             x.alt = img.alt;
+            setFirstImageLoaded(true);
             clearInterval(interval);
           }
         }, 20);
@@ -113,9 +116,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              {firstImageRef?.src && firstImageRef?.src !== '' && (
-                <img className={css.firstImage} ref={firstImageRef} />
-              )}
+              {firstImageLoaded && <img className={css.firstImage} ref={firstImageRef} />}
             </div>
           </div>
           <div className={css.sectionTwo}>
