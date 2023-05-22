@@ -68,7 +68,7 @@ export const LandingPageComponent = props => {
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 40;
+      const elementHeight = contentRef.current.offsetTop - 20;
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };

@@ -53,17 +53,11 @@ export const ForCaregiversPageComponent = props => {
   // We are using JSON-LD format
   const siteTitle = config.siteTitle;
   const schemaTitle = intl.formatMessage({ id: 'ForCaregiversPage.schemaTitle' }, { siteTitle });
-  const schemaDescription = intl.formatMessage({ id: 'ForCaregiversPage.schemaDescription' });
+  const schemaDescription = intl.formatMessage(
+    { id: 'ForCaregiversPage.schemaDescription' },
+    { siteTitle }
+  );
   const schemaImage = `${config.canonicalRootURL}${shareImage}`;
-
-  const contentRef = useRef(null);
-
-  const scrollToContent = () => {
-    if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 40;
-      window.scrollTo({ top: elementHeight, behavior: 'smooth' });
-    }
-  };
 
   return (
     <Page
