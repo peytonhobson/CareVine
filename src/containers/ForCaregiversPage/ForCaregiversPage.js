@@ -19,6 +19,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import yourJourneyImage from '../../assets/Your-Journey.png';
 import stripeLogo from '../../assets/stripe-logo-large.png';
@@ -99,7 +100,11 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={yourJourneyImage} className={css.firstImage} />
+              <LazyLoadImage
+                src={yourJourneyImage}
+                alt="People holding signs."
+                className={css.firstImage}
+              />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -113,13 +118,17 @@ export const ForCaregiversPageComponent = props => {
             </div>
             <div className={css.imageContainer}>
               <div className={css.imageCard}>
-                <img src={employerListingsImage} className={css.employerImage} />
+                <LazyLoadImage
+                  src={employerListingsImage}
+                  alt="Employer Listing Cards."
+                  className={css.employerImage}
+                />
               </div>
             </div>
           </div>
           <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
-              <img src={magnifyingGlass} className={css.image} />
+              <LazyLoadImage src={magnifyingGlass} alt="Magnifying glass." className={css.image} />
             </div>
             <div className={css.descriptionContainerRight}>
               <h1 className={css.title}>Instant Background Checks</h1>
@@ -145,7 +154,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <img src={stripeLogo} className={css.imageFour} />
+              <LazyLoadImage src={stripeLogo} alt="Stripe Logo" className={css.imageFour} />
             </div>
           </div>
         </LayoutWrapperMain>
