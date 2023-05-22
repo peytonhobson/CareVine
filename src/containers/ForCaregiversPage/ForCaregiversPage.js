@@ -20,6 +20,7 @@ import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 
+import yourJourneyImage from '../../assets/Your-Journey.png';
 import stripeLogo from '../../assets/stripe-logo-large.png';
 import shareImage from '../../assets/Background_Share_Image.png';
 import magnifyingGlass from '../../assets/Magnify-BG.png';
@@ -98,7 +99,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={shareImage} className={css.firstImage} />
+              <img src={yourJourneyImage} className={css.firstImage} />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -111,7 +112,9 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <img src={employerListingsImage} className={css.employerImage} />
+              <div className={css.imageCard}>
+                <img src={employerListingsImage} className={css.employerImage} />
+              </div>
             </div>
           </div>
           <div className={css.sectionThree}>
