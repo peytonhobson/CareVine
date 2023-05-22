@@ -100,12 +100,8 @@
 
 .topbarDesktopLabel {
   display: inline-block;
-  margin: 1.75rem 0;
+  margin: 1.75rem 0 1.5rem 0;
   text-decoration: inherit;
-
-  @media (--viewportMedium) {
-    margin: 1.75rem 0;
-  }
 }
 
 .unauthenticatedContainer {
@@ -128,7 +124,7 @@
 
 /* Inbox */
 .regularLink {
-  border-bottom: 0px solid;
+  border-bottom: 0.25rem solid transparent;
   transition: var(--transitionStyleButton);
 
   font-weight: var(--fontWeightMedium);
@@ -165,7 +161,7 @@
 
 .bell {
   display: inline-block;
-  margin: 1.375rem 0;
+  margin: 1.375rem 0 1.125rem 0;
   text-decoration: inherit;
   position: relative;
 }
@@ -252,7 +248,7 @@
 }
 
 .avatar {
-  margin: 16px 0;
+  margin: 1rem 0 0.75rem 0;
 }
 
 .profileMenuContent {
@@ -262,12 +258,12 @@
 
 /* Authentication */
 .signupLink {
-  border-bottom: 0px solid;
+  border-bottom: 0.25rem solid transparent;
   transition: var(--transitionStyleButton);
 
   display: inline-flex;
   flex-shrink: 0;
-  height: 100%;
+  height: calc(100% - 0.25rem);
   padding: 0 0.75rem 0 0.75rem;
 
   color: var(--matterColor);
@@ -281,7 +277,7 @@
 }
 
 .loginLink {
-  border-bottom: 0px solid;
+  border-bottom: 0.25rem solid transparent;
   transition: var(--transitionStyleButton);
 
   display: inline-flex;
@@ -304,12 +300,8 @@
   composes: h5 from global;
 
   display: inline-block;
-  margin: 1.75rem 0;
+  margin: 1.75rem 0 1.5rem 0;
   text-decoration: inherit;
-
-  @media (--viewportMedium) {
-    margin: 1.75rem 0;
-  }
 }
 
 /* left animated "border" like hover element */
