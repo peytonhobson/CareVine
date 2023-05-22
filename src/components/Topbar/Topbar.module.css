@@ -212,3 +212,7 @@
 .caregivers {
   composes: marketplaceTinyFontStyles from global;
 }
+
+.signUp {
+  padding: 0 1rem;
+}
