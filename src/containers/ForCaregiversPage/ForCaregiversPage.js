@@ -113,7 +113,9 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              {firstImageRef?.src !== '' && <img className={css.firstImage} ref={firstImageRef} />}
+              {firstImageRef?.src && firstImageRef?.src !== '' && (
+                <img className={css.firstImage} ref={firstImageRef} />
+              )}
             </div>
           </div>
           <div className={css.sectionTwo}>
