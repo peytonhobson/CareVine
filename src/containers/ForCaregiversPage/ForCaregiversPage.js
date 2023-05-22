@@ -43,10 +43,12 @@ export const ForCaregiversPageComponent = props => {
     img.onload = () => {
       if (x) {
         x.src = img.src;
+        x.alt = img.alt;
       } else {
         const interval = setInterval(() => {
           if (x) {
             x.src = img.src;
+            x.alt = img.alt;
             clearInterval(interval);
           }
         }, 20);
@@ -54,6 +56,7 @@ export const ForCaregiversPageComponent = props => {
     };
 
     img.src = yourJourneyImage;
+    img.alt = 'People holding signs.';
   }, []);
 
   useEffect(() => {
@@ -110,12 +113,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img
-                alt="People holding signs."
-                className={css.firstImage}
-                ref={firstImageRef}
-                decoding="async"
-              />
+              {firstImageRef?.src !== '' && <img className={css.firstImage} ref={firstImageRef} />}
             </div>
           </div>
           <div className={css.sectionTwo}>
