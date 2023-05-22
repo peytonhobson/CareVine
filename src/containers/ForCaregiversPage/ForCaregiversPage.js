@@ -110,7 +110,12 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img alt="People holding signs." className={css.firstImage} ref={firstImageRef} />
+              <img
+                alt="People holding signs."
+                className={css.firstImage}
+                ref={firstImageRef}
+                decoding="async"
+              />
             </div>
           </div>
           <div className={css.sectionTwo}>
