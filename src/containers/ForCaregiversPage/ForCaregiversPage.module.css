@@ -60,14 +60,32 @@
 .image {
   width: 80vw;
   margin-top: 5rem;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 
   @media (--viewportMedium) {
     width: 35rem;
     height: 35rem;
-    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-      0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-    border-radius: 4%;
     margin-top: 0;
+    border-radius: 2rem;
+  }
+}
+
+.imageCard {
+  width: 90vw;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-radius: 2rem;
+  background-color: #fcfcfc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  margin-top: 5rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    width: 35rem;
   }
 }
 
@@ -79,22 +97,13 @@
     height: 35rem;
     box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
       0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-    border-radius: 4%;
+    border-radius: 2rem;
     margin-top: 0;
   }
 }
 
 .employerImage {
-  margin-top: 5rem;
-  width: 90vw;
-
-  @media (--viewportMedium) {
-    width: 35rem;
-    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-      0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-    border-radius: 2rem;
-    margin-top: 0;
-  }
+  max-width: 100%;
 }
 
 .sectionTwo {
@@ -193,5 +202,20 @@
 
   @media (--viewportMedium) {
     padding: 0 10rem 2rem 5rem;
+  }
+}
+
+.imageFour {
+  height: auto;
+  max-width: 100%;
+  width: 80vw;
+  margin-top: 5rem;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-radius: 2rem;
+
+  @media (--viewportMedium) {
+    width: 35rem;
+    margin-top: 0;
   }
 }
