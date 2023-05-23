@@ -45,8 +45,8 @@ export const ForCaregiversPageComponent = props => {
       const img = new Image();
 
       img.onload = () => {
-        firstImageRef.current.src = img.src;
-        firstImageRef.current.alt = img.alt;
+        firstImageRef.current?.src = img.src;
+        firstImageRef.current?.alt = img.alt;
         setFirstImageLoaded(true);
       };
 
