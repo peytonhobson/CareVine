@@ -38,29 +38,19 @@ export const ForCaregiversPageComponent = props => {
   const firstImageRef = useRef(null);
 
   useEffect(() => {
-    const x = firstImageRef.current;
-    const img = new Image();
+    if (firstImageRef.current && !firstImageLoaded) {
+      const img = new Image();
 
-    img.onload = () => {
-      if (x) {
-        x.src = img.src;
-        x.alt = img.alt;
+      img.onload = () => {
+        firstImageRef.current.src = img.src;
+        firstImageRef.current.alt = img.alt;
         setFirstImageLoaded(true);
-      } else {
-        const interval = setInterval(() => {
-          if (x) {
-            x.src = img.src;
-            x.alt = img.alt;
-            setFirstImageLoaded(true);
-            clearInterval(interval);
-          }
-        }, 20);
-      }
-    };
+      };
 
-    img.src = yourJourneyImage;
-    img.alt = 'People holding signs.';
-  }, []);
+      img.src = yourJourneyImage;
+      img.alt = 'People holding signs.';
+    }
+  }, [firstImageRef.current]);
 
   useEffect(() => {
     if (externalPromo) {
@@ -116,7 +106,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              {firstImageLoaded && <img className={css.firstImage} ref={firstImageRef} />}
+              <img className={firstImageLoaded && css.firstImage} ref={firstImageRef} />
             </div>
           </div>
           <div className={css.sectionTwo}>
