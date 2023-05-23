@@ -41,19 +41,19 @@ export const ForCaregiversPageComponent = props => {
   const firstImageRef = useRef(null);
 
   useEffect(() => {
-    if (firstImageRef.current && !firstImageLoaded) {
+    if (firstImageRef?.current && !firstImageLoaded) {
       const img = new Image();
 
       img.onload = () => {
-        firstImageRef.current?.src = img.src;
-        firstImageRef.current?.alt = img.alt;
+        firstImageRef.current.src = img.src;
+        firstImageRef.current.alt = img.alt;
         setFirstImageLoaded(true);
       };
 
       img.src = yourJourneyImage;
       img.alt = 'People holding signs.';
     }
-  }, [firstImageRef.current]);
+  }, [firstImageRef?.current]);
 
   useEffect(() => {
     if (externalPromo) {
