@@ -363,14 +363,6 @@ export class ListingPageComponent extends Component {
       }
     };
 
-    const showListingPreview = () => {
-      this.setState({ showListingPreview: true });
-    };
-
-    const showFullProfile = () => {
-      this.setState({ showListingPreview: false });
-    };
-
     const siteTitle = config.siteTitle;
     const schemaTitle = intl.formatMessage(
       { id: 'ListingPage.schemaTitle' },
@@ -437,7 +429,7 @@ export class ListingPageComponent extends Component {
                       isOwnListing={isOwnListing}
                       onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
                       onBookNow={handleBookingSubmit}
-                      onShowListingPreview={showListingPreview}
+                      onShowListingPreview={() => this.setState({ showListingPreview: true })}
                       isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
                       closeListingInProgress={closeListingInProgress}
@@ -462,7 +454,7 @@ export class ListingPageComponent extends Component {
                   <ListingPreview
                     currentUser={currentUser}
                     currentUserListing={currentUserListing}
-                    onShowFullProfile={showFullProfile}
+                    onShowFullProfile={() => this.setState({ showListingPreview: false })}
                     onManageDisableScrolling={onManageDisableScrolling}
                     isMobile={isMobile}
                   />

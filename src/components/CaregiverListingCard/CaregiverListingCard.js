@@ -177,7 +177,7 @@ export const CaregiverListingCardComponent = props => {
   };
   const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
 
-  const originString = `${origin.lat}%2C${origin.lng}`;
+  const originString = `${origin?.lat}%2C${origin?.lng}`;
 
   const Wrapper = ({ children }) => {
     return isMobile ? (
@@ -186,7 +186,7 @@ export const CaregiverListingCardComponent = props => {
       <NamedLink
         className={classes}
         name="ListingPage"
-        params={{ id, slug, search: `?origin=${originString}` }}
+        params={{ id, slug, search: origin ? `?origin=${originString}` : '' }}
         style={{ pointerEvents: disableProfileLink && 'none' }}
         to={{ state: { from: 'SearchPage' } }}
       >
