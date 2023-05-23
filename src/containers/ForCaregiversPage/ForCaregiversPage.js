@@ -35,6 +35,9 @@ export const ForCaregiversPageComponent = props => {
   const { externalPromo } = parsedSearchParams;
 
   const [firstImageLoaded, setFirstImageLoaded] = useState(false);
+  const [secondImageLoaded, setSecondImageLoaded] = useState(false);
+  const [thirdImageLoaded, setThirdImageLoaded] = useState(false);
+  const [fourthImageLoaded, setFourthImageLoaded] = useState(false);
   const firstImageRef = useRef(null);
 
   useEffect(() => {
@@ -106,7 +109,10 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img className={firstImageLoaded && css.firstImage} ref={firstImageRef} />
+              <img
+                className={firstImageLoaded ? css.firstImage : css.noFirstImage}
+                ref={firstImageRef}
+              />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -119,19 +125,28 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <div className={css.imageCard}>
+              <div className={css.imageCard} styles={{ display: !secondImageLoaded && 'hidden' }}>
                 <LazyLoadImage
                   src={employerListingsImage}
                   alt="Employer Listing Cards."
                   className={css.employerImage}
-                  placeholder={<div className={css.imagePlaceholder} />}
+                  placeholder={<div className={css.employerImage} />}
+                  afterLoad={() => setSecondImageLoaded(true)}
                 />
               </div>
             </div>
           </div>
           <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
-              <LazyLoadImage src={magnifyingGlass} alt="Magnifying glass." className={css.image} />
+              <div styles={{ display: !thirdImageLoaded && 'hidden' }}>
+                <LazyLoadImage
+                  src={magnifyingGlass}
+                  alt="Magnifying glass."
+                  className={css.image}
+                  placeholder={<div className={css.image} />}
+                  afterLoad={() => setThirdImageLoaded(true)}
+                />
+              </div>
             </div>
             <div className={css.descriptionContainerRight}>
               <h1 className={css.title}>Instant Background Checks</h1>
@@ -157,7 +172,15 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <LazyLoadImage src={stripeLogo} alt="Stripe Logo" className={css.imageFour} />
+              <div styles={{ display: !fourthImageLoaded && 'hidden' }}>
+                <LazyLoadImage
+                  src={stripeLogo}
+                  alt="Stripe Logo"
+                  className={css.imageFour}
+                  placeholder={<div className={css.imageFour} />}
+                  afterLoad={() => setFourthImageLoaded(true)}
+                />
+              </div>
             </div>
           </div>
         </LayoutWrapperMain>
