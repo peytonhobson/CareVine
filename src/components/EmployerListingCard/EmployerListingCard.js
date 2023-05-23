@@ -156,13 +156,15 @@ export const EmployerListingCardComponent = props => {
   const availableDays = availabilityPlan?.availableDays;
   const isLiveIn = availabilityPlan?.liveIn;
 
+  const originString = `${origin?.lat}%2C${origin?.lng}`;
+
   return (
     <>
       <Card>
         <NamedLink
           className={classes}
           name="ListingPage"
-          params={{ id, slug }}
+          params={{ id, slug, search: origin ? `?origin=${originString}` : '' }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
           to={{ state: { from: 'SearchPage' } }}
         >

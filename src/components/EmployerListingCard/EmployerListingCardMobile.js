@@ -152,6 +152,8 @@ export const EmployerListingCardMobileComponent = props => {
   const availableDays = availabilityPlan?.availableDays;
   const isLiveIn = availabilityPlan?.liveIn;
 
+  const originString = `${origin?.lat}%2C${origin?.lng}`;
+
   return (
     <>
       <Card>
@@ -220,7 +222,7 @@ export const EmployerListingCardMobileComponent = props => {
         <NamedLink
           className={css.buttonContainer}
           name="ListingPage"
-          params={{ id, slug }}
+          params={{ id, slug, search: origin ? `?origin=${originString}` : '' }}
           style={{ pointerEvents: disableProfileLink && 'none' }}
           to={{ state: { from: 'SearchPage' } }}
         >
