@@ -125,7 +125,10 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <div className={css.imageCard} styles={{ display: !secondImageLoaded && 'hidden' }}>
+              <div
+                className={css.imageCard}
+                styles={{ visibility: !secondImageLoaded && 'hidden' }}
+              >
                 <LazyLoadImage
                   src={employerListingsImage}
                   alt="Employer Listing Cards."
@@ -138,7 +141,7 @@ export const ForCaregiversPageComponent = props => {
           </div>
           <div className={css.sectionThree}>
             <div className={css.imageContainerRight}>
-              <div styles={{ display: !thirdImageLoaded && 'hidden' }}>
+              <div styles={{ visibility: !thirdImageLoaded && 'hidden' }}>
                 <LazyLoadImage
                   src={magnifyingGlass}
                   alt="Magnifying glass."
@@ -172,7 +175,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
-              <div styles={{ display: !fourthImageLoaded && 'hidden' }}>
+              <div styles={{ visibility: !fourthImageLoaded && 'hidden' }}>
                 <LazyLoadImage
                   src={stripeLogo}
                   alt="Stripe Logo"
