@@ -91,6 +91,7 @@
 
 .noFirstImage {
   width: 100%;
+  visibility: hidden;
 
   @media (--viewportMedium) {
     width: 35rem;
