@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -17,34 +17,40 @@ import {
   NamedLink,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { useCheckMobileScreen } from '../../util/hooks';
 import queryString from 'query-string';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+import shareImage from '../../assets/Background_Share_Image.png';
 import yourJourneyImage from '../../assets/Your-Journey.png';
 import stripeLogo from '../../assets/stripe-logo-large.png';
-import shareImage from '../../assets/Background_Share_Image.png';
 import magnifyingGlass from '../../assets/Magnify-BG.png';
 import employerListingsImage from '../../assets/employer-listings.png';
+
 import css from './ForCaregiversPage.module.css';
 
 export const ForCaregiversPageComponent = props => {
-  const {
-    history,
-    intl,
-    location,
-    scrollingDisabled,
-    currentUserListing,
-    currentUserListingFetched,
-    currentUser,
-    currentUserFetched,
-    onManageDisableScrolling,
-  } = props;
-
-  const isMobile = useCheckMobileScreen();
+  const { intl, location, scrollingDisabled } = props;
 
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
+
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
+  const firstImageRef = useRef(null);
+
+  useEffect(() => {
+    if (firstImageRef.current && !firstImageLoaded) {
+      const img = new Image();
+
+      img.onload = () => {
+        firstImageRef.current.src = img.src;
+        firstImageRef.current.alt = img.alt;
+        setFirstImageLoaded(true);
+      };
+
+      img.src = yourJourneyImage;
+      img.alt = 'People holding signs.';
+    }
+  }, [firstImageRef.current]);
 
   useEffect(() => {
     if (externalPromo) {
@@ -100,7 +106,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img src={yourJourneyImage} alt="People holding signs." className={css.firstImage} />
+              <img className={firstImageLoaded && css.firstImage} ref={firstImageRef} />
             </div>
           </div>
           <div className={css.sectionTwo}>
@@ -118,6 +124,7 @@ export const ForCaregiversPageComponent = props => {
                   src={employerListingsImage}
                   alt="Employer Listing Cards."
                   className={css.employerImage}
+                  placeholder={<div className={css.imagePlaceholder} />}
                 />
               </div>
             </div>
