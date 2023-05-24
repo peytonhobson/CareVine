@@ -25,7 +25,7 @@ exports.setup = () => {
       beforeSend(event, hint) {
         const error = hint.originalException;
         console.log(hint.originalException);
-        if (error && error.message && error.message.match(/@context/i)) {
+        if (error?.message?.match(/@context/i)) {
           return null;
         }
         return event;
