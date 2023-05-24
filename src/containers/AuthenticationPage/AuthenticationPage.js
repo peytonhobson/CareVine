@@ -46,7 +46,7 @@ import { manageDisableScrolling } from '../../ducks/UI.duck';
 
 import css from './AuthenticationPage.module.css';
 import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
-import backgroundImage from '../../assets/login-background.png';
+import backgroundImage from '../../assets/login-background.jpg';
 
 const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
 

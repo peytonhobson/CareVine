@@ -9,7 +9,7 @@ import { HeroSearchForm } from '../../forms';
 import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
-import backgroundImage from '../../assets/landing-background.png';
+import backgroundImage from '../../assets/landing-background.jpg';
 
 import css from './SectionHero.module.css';
 
