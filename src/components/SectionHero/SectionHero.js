@@ -9,13 +9,18 @@ import { HeroSearchForm } from '../../forms';
 import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
+import defaultBackgroundImage from '../../assets/elderly-vineyards_1440x922.jpg';
+
 import css from './SectionHero.module.css';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(true);
+  const [BackgroundImageSet, setBackgroundImageSet] = useState(false);
 
   const isMobile = useCheckMobileScreen();
+
+  const heroRef = useRef(null);
 
   const {
     rootClassName,
@@ -43,6 +48,20 @@ const SectionHero = props => {
 
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    if (heroRef?.current) {
+      const image = new Image();
+
+      image.onload = () => {
+        heroRef.current.style.background = `linear-gradient(-45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+          url('${image.src}')`;
+      };
+
+      image.src = defaultBackgroundImage;
+      setBackgroundImageSet(true);
+    }
+  }, [heroRef?.current]);
 
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;
@@ -83,7 +102,7 @@ const SectionHero = props => {
     userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
 
   return (
-    <div className={classes}>
+    <div className={classes} ref={heroRef}>
       {currentUserFetched ? (
         currentUser ? (
           <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>
