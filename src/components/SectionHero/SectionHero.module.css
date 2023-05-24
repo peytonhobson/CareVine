@@ -49,7 +49,6 @@
 }
 
 .root {
-  composes: defaultBackgroundImage from global;
   -webkit-animation: myfirst 1s; /* Chrome, Safari, Opera */
   animation: myfirst 1s;
 
