@@ -28,30 +28,7 @@
   position: relative;
 }
 
-/* Chrome, Safari, Opera */
-@-webkit-keyframes myfirst {
-  from {
-    opacity: 0.2;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Standard syntax */
-@keyframes myfirst {
-  from {
-    opacity: 0.2;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .root {
-  -webkit-animation: myfirst 1s; /* Chrome, Safari, Opera */
-  animation: myfirst 1s;
-
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -61,6 +38,16 @@
     position: relative;
   }
   /* Text positioning is done with paddings */
+}
+
+.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.show {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
 }
 
 .middleHero {
