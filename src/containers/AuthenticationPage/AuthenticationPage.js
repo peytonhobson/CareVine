@@ -81,16 +81,14 @@ export class AuthenticationPageComponent extends Component {
       sessionStorage.setItem('signupReferralCode', referralCode);
     }
 
-    console.log(this.heroRef);
-
     if (this.heroRef?.current) {
       const image = new Image();
 
       image.onload = () => {
-        this.heroRef.current?.style.background = `url('${backgroundImage}')`;
-        this.heroRef.current?.style.backgroundColor = 'var(--matterColor)';
-        this.heroRef.current?.style.backgroundPosition = 'center center';
-        this.heroRef.current?.style.backgroundSize = 'cover';
+        this.heroRef.current.style.background = `url('${backgroundImage}')`;
+        this.heroRef.current.style.backgroundColor = 'var(--matterColor)';
+        this.heroRef.current.style.backgroundPosition = 'center center';
+        this.heroRef.current.style.backgroundSize = 'cover';
         this.setState({ heroLoaded: true });
       };
 
