@@ -78,7 +78,8 @@ const SectionHero = props => {
   const classes = classNames(
     rootClassName || css.root,
     className,
-    isMobile && !currentUser && css.middleHero
+    isMobile && !currentUser && css.middleHero,
+    heroLoaded ? css.show : css.hidden
   );
 
   const itemsToBrowse = userType === CAREGIVER ? 'Jobs' : 'Caregivers';
@@ -106,88 +107,76 @@ const SectionHero = props => {
 
   return (
     <div className={classes} ref={heroRef}>
-      {heroLoaded ? (
-        <>
-          {currentUserFetched ? (
-            currentUser ? (
-              <div
-                className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}
-              >
-                <h1
-                  className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}
-                >
-                  <FormattedMessage id={title} />
-                </h1>
-                {userType === CAREGIVER ? (
-                  <h3
-                    className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
-                  >
-                    <FormattedMessage id="SectionHero.subTitleCaregiver" />
-                  </h3>
-                ) : (
-                  <h3
-                    className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
-                  >
-                    <FormattedMessage id="SectionHero.subTitleEmployer" />
-                  </h3>
-                )}
-                {location ? (
-                  <NamedLink
-                    name="SearchPage"
-                    to={{
-                      search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-                        `&listingType=${oppositeUserType}`}`,
-                    }}
-                    className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-                  >
-                    <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
-                  </NamedLink>
-                ) : userType ? (
-                  currentUserListing ? (
-                    <OwnListingLink
-                      listing={currentUserListing}
-                      listingFetched={!!currentUserListing}
-                      className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-                    >
-                      <FormattedMessage id="SectionHero.finishYourProfileButton" />
-                    </OwnListingLink>
-                  ) : (
-                    <NamedLink
-                      className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-                      name="NewListingPage"
-                    >
-                      <FormattedMessage id="SectionHero.addYourProfileButton" />
-                    </NamedLink>
-                  )
-                ) : null}
-              </div>
+      {currentUserFetched ? (
+        currentUser ? (
+          <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>
+            <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
+              <FormattedMessage id={title} />
+            </h1>
+            {userType === CAREGIVER ? (
+              <h3 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
+                <FormattedMessage id="SectionHero.subTitleCaregiver" />
+              </h3>
             ) : (
-              <div className={css.unAuthContainer}>
-                <h1 className={css.yourCare}>Find Your Perfect Caregiver</h1>
-                <h2 className={css.perfectCaregiver}>
-                  <div className={css.subPerfectCaregiver}>
-                    Private, independent, and experienced caregivers.{' '}
-                  </div>
-                  <div className={css.subPerfectCaregiver}>Find yours.</div>
-                </h2>
-                <HeroSearchForm
-                  className={css.heroSearchForm}
-                  onSubmit={handleSearchSubmit}
-                  isMobile={isMobile}
-                />
+              <h3 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
+                <FormattedMessage id="SectionHero.subTitleEmployer" />
+              </h3>
+            )}
+            {location ? (
+              <NamedLink
+                name="SearchPage"
+                to={{
+                  search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+                    `&listingType=${oppositeUserType}`}`,
+                }}
+                className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+              >
+                <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
+              </NamedLink>
+            ) : userType ? (
+              currentUserListing ? (
+                <OwnListingLink
+                  listing={currentUserListing}
+                  listingFetched={!!currentUserListing}
+                  className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                >
+                  <FormattedMessage id="SectionHero.finishYourProfileButton" />
+                </OwnListingLink>
+              ) : (
+                <NamedLink
+                  className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                  name="NewListingPage"
+                >
+                  <FormattedMessage id="SectionHero.addYourProfileButton" />
+                </NamedLink>
+              )
+            ) : null}
+          </div>
+        ) : (
+          <div className={css.unAuthContainer}>
+            <h1 className={css.yourCare}>Find Your Perfect Caregiver</h1>
+            <h2 className={css.perfectCaregiver}>
+              <div className={css.subPerfectCaregiver}>
+                Private, independent, and experienced caregivers.{' '}
               </div>
-            )
-          ) : null}
-
-          {!isMobile && showLearnMore && (
-            <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
-              <InlineTextButton className={css.learnMoreButton}>
-                Learn More <IconArrowHead direction="down" className={css.arrowHead} />
-              </InlineTextButton>
-            </div>
-          )}
-        </>
+              <div className={css.subPerfectCaregiver}>Find yours.</div>
+            </h2>
+            <HeroSearchForm
+              className={css.heroSearchForm}
+              onSubmit={handleSearchSubmit}
+              isMobile={isMobile}
+            />
+          </div>
+        )
       ) : null}
+
+      {!isMobile && showLearnMore && (
+        <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+          <InlineTextButton className={css.learnMoreButton}>
+            Learn More <IconArrowHead direction="down" className={css.arrowHead} />
+          </InlineTextButton>
+        </div>
+      )}
     </div>
   );
 };
