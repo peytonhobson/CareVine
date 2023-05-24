@@ -16,7 +16,6 @@ import css from './SectionHero.module.css';
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(true);
-  const [BackgroundImageSet, setBackgroundImageSet] = useState(false);
 
   const isMobile = useCheckMobileScreen();
 
@@ -59,7 +58,6 @@ const SectionHero = props => {
       };
 
       image.src = defaultBackgroundImage;
-      setBackgroundImageSet(true);
     }
   }, [heroRef?.current]);
 
