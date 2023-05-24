@@ -59,6 +59,7 @@ exports.sitemapStructure = () => {
     sitemapSubmission: '/static/sitemap.xml',
     map: {
       '/': ['get'],
+      '/for-caregivers': ['get'],
       '/signup': ['get'],
       '/login': ['get'],
       '/account': ['get'],
@@ -74,6 +75,11 @@ exports.sitemapStructure = () => {
         lastmod: now,
         changefreq: 'always',
         priority: 1.0,
+      },
+      '/for-caregivers': {
+        lastmod: now,
+        changefreq: 'always',
+        priority: 0.9,
       },
       '/blog': {
         lastmod: now,
