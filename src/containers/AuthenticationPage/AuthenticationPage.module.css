@@ -25,9 +25,15 @@
   @media (--viewportMedium) {
     padding: 0;
   }
+}
 
-  -webkit-animation: myfirst 1s; /* Chrome, Safari, Opera */
-  animation: myfirst 1s;
+.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.show {
+  opacity: 1;
 }
 
 .content {

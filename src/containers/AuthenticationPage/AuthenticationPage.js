@@ -454,12 +454,11 @@ export class AuthenticationPageComponent extends Component {
             <TopbarContainer className={topbarClasses} />
           </LayoutWrapperTopbar>
           <LayoutWrapperMain className={css.layoutWrapperMain}>
-            <div className={css.root} ref={this.heroRef}>
-              {this.state.heroLoaded
-                ? showEmailVerification
-                  ? emailVerificationContent
-                  : formContent
-                : null}
+            <div
+              className={classNames(css.root, this.state.heroLoaded ? css.show : css.hidden)}
+              ref={this.heroRef}
+            >
+              {showEmailVerification ? emailVerificationContent : formContent}
             </div>
             <Modal
               id="AuthenticationPage.tos"
