@@ -21,6 +21,7 @@ const SectionMarketplaceSummary = props => {
   const { rootClassName, className, onScrollIntoView } = props;
 
   const [userType, setUserType] = useState(EMPLOYER);
+  const [caregiverImageLoaded, setCaregiverImageLoaded] = useState(false);
 
   const handleUserTypeChange = userType => {
     setUserType(userType);
@@ -84,11 +85,15 @@ const SectionMarketplaceSummary = props => {
               </p>
             </div>
           </div>
-          <div className={css.graphic}>
+          <div
+            className={css.graphic}
+            style={{ visibility: !caregiverImageLoaded ? 'hidden' : 'visible' }}
+          >
             <LazyLoadImage
               className={css.graphicImage}
               src={caregiverListingImage}
               alt="Listing for caregiver"
+              afterLoad={() => setCaregiverImageLoaded(true)}
             />
           </div>
         </div>
