@@ -48,10 +48,10 @@ const SectionMarketplaceSummary = props => {
       {userType === CAREGIVER ? (
         <div className={css.summaryContainer}>
           <div className={css.summary}>
-            <h1 className={css.summaryTitle}>
+            <p className={css.summaryTitle}>
               <div>Caregiving Freedom:</div>
               <div>Your Journey, Your Way</div>
-            </h1>
+            </p>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
                 Set your rates, choose your hours, and handpick your clients in your preferred
@@ -72,10 +72,10 @@ const SectionMarketplaceSummary = props => {
       ) : (
         <div className={css.summaryContainer}>
           <div className={css.summary}>
-            <h1 className={css.summaryTitle}>
+            <p className={css.summaryTitle}>
               <div>Your Care, In Your Hands:</div>
               <div>Find the Perfect Caregiver for You</div>
-            </h1>
+            </p>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
                 Discover the seamless solution to finding the perfect caregiver. Tailor your care
