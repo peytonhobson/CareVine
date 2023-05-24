@@ -566,7 +566,6 @@ textarea {
 
 .defaultBackgroundImageForDesktop {
   /* Gradient direction and overlaying the black color on top of the image for better readability */
-  background: url('../assets/login-background.png');
 
   /* Add loading color for the div */
   background-color: var(--matterColor);
