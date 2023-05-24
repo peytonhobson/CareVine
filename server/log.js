@@ -22,8 +22,12 @@ exports.setup = () => {
     Sentry.init({
       dsn: SENTRY_DSN,
       environment: ENV,
-      beforeSend(event) {
-        console.log(event);
+      beforeSend(event, hint) {
+        const error = hint.originalException;
+        console.log(hint.originalException);
+        if (error && error.message && error.message.match(/@context/i)) {
+          return null;
+        }
         return event;
       },
     });
@@ -79,8 +83,6 @@ const responseApiErrorInfo = err =>
  * @param {Object} data Additional data to be sent to Sentry
  */
 exports.error = (e, code, data) => {
-  console.log('e', e);
-  console.log('data', data);
   if (SENTRY_DSN) {
     const extra = { ...data, apiErrorData: responseApiErrorInfo(e) };
 
