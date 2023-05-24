@@ -41,7 +41,7 @@ export const ForCaregiversPageComponent = props => {
   const firstImageRef = useRef(null);
 
   useEffect(() => {
-    if (firstImageRef.current && !firstImageLoaded) {
+    if (firstImageRef?.current && !firstImageLoaded) {
       const img = new Image();
 
       img.onload = () => {
@@ -53,7 +53,7 @@ export const ForCaregiversPageComponent = props => {
       img.src = yourJourneyImage;
       img.alt = 'People holding signs.';
     }
-  }, [firstImageRef.current]);
+  }, [firstImageRef?.current]);
 
   useEffect(() => {
     if (externalPromo) {
