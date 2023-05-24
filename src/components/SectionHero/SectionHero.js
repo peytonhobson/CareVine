@@ -9,7 +9,7 @@ import { HeroSearchForm } from '../../forms';
 import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
-import defaultBackgroundImage from '../../assets/elderly-vineyards_1440x922.jpg';
+import backgroundImage from '../../assets/landing-background.png';
 
 import css from './SectionHero.module.css';
 
@@ -54,15 +54,14 @@ const SectionHero = props => {
       const image = new Image();
 
       image.onload = () => {
-        heroRef.current.style.background = `linear-gradient(-45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
-          url('${image.src}')`;
+        heroRef.current.style.background = `url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
         heroRef.current.style.backgroundPosition = '50%';
         heroRef.current.style.backgroundSize = 'cover';
         setHeroLoaded(true);
       };
 
-      image.src = defaultBackgroundImage;
+      image.src = backgroundImage;
     }
   }, [heroRef?.current]);
 
