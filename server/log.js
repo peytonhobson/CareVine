@@ -72,6 +72,8 @@ const responseApiErrorInfo = err =>
  * @param {Object} data Additional data to be sent to Sentry
  */
 exports.error = (e, code, data) => {
+  console.log('e', e);
+  console.log('data', data);
   if (SENTRY_DSN) {
     const extra = { ...data, apiErrorData: responseApiErrorInfo(e) };
 
