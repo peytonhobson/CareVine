@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -46,6 +46,7 @@ import { manageDisableScrolling } from '../../ducks/UI.duck';
 
 import css from './AuthenticationPage.module.css';
 import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
+import backgroundImage from '../../assets/login-background.png';
 
 const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -60,7 +61,10 @@ export class AuthenticationPageComponent extends Component {
       authInfo: Cookies.get('st-authinfo')
         ? JSON.parse(Cookies.get('st-authinfo').replace('j:', ''))
         : null,
+      heroLoaded: false,
     };
+
+    this.heroRef = createRef(null);
   }
 
   componentDidMount() {
@@ -75,6 +79,22 @@ export class AuthenticationPageComponent extends Component {
 
     if (referralCode) {
       sessionStorage.setItem('signupReferralCode', referralCode);
+    }
+
+    console.log(this.heroRef);
+
+    if (this.heroRef?.current) {
+      const image = new Image();
+
+      image.onload = () => {
+        this.heroRef.current.style.background = `url('${backgroundImage}')`;
+        this.heroRef.current.style.backgroundColor = 'var(--matterColor)';
+        this.heroRef.current.style.backgroundPosition = 'center center';
+        this.heroRef.current.style.backgroundSize = 'cover';
+        this.setState({ heroLoaded: true });
+      };
+
+      image.src = backgroundImage;
     }
   }
 
@@ -434,8 +454,12 @@ export class AuthenticationPageComponent extends Component {
             <TopbarContainer className={topbarClasses} />
           </LayoutWrapperTopbar>
           <LayoutWrapperMain className={css.layoutWrapperMain}>
-            <div className={css.root}>
-              {showEmailVerification ? emailVerificationContent : formContent}
+            <div className={css.root} ref={this.heroRef}>
+              {this.state.heroLoaded
+                ? showEmailVerification
+                  ? emailVerificationContent
+                  : formContent
+                : null}
             </div>
             <Modal
               id="AuthenticationPage.tos"
