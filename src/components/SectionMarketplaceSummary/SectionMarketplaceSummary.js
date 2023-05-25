@@ -7,8 +7,8 @@ import { NamedLink, ButtonGroup } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
-import caregiverListingImage from '../../assets/caregiver-listing-card.png';
-import employerListingsImage from '../../assets/employer-listings.png';
+import caregiverListingImage from '../../assets/caregiver-listing-card.jpg';
+import employerListingsImage from '../../assets/employer-listings.jpg';
 
 import css from './SectionMarketplaceSummary.module.css';
 

@@ -21,10 +21,10 @@ import queryString from 'query-string';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import shareImage from '../../assets/Background_Share_Image.png';
-import yourJourneyImage from '../../assets/Your-Journey.png';
+import yourJourneyImage from '../../assets/Your-Journey.jpg';
 import stripeLogo from '../../assets/stripe-logo-large.png';
 import magnifyingGlass from '../../assets/Magnify-BG.png';
-import employerListingsImage from '../../assets/employer-listings.png';
+import employerListingsImage from '../../assets/employer-listings.jpg';
 
 import css from './ForCaregiversPage.module.css';
 
