@@ -8,14 +8,33 @@
   }
 }
 
+/* Standard syntax */
+@keyframes myfirst {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .root {
   composes: marketplaceModalRootStyles from global;
-  composes: defaultBackgroundImageForDesktop from global;
   padding: 1rem;
 
   @media (--viewportMedium) {
     padding: 0;
   }
+}
+
+.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.show {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
 }
 
 .content {

@@ -553,8 +553,6 @@ textarea {
 /* Full screen Background image located in root-folder/src/assets */
 .defaultBackgroundImage {
   /* Gradient direction and overlaying the black color on top of the image for better readability */
-  background: linear-gradient(-45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
-    url('../assets/elderly-vineyards_1440x922.jpg');
 
   /* Add loading color for the div */
   background-color: var(--matterColor);
@@ -568,7 +566,6 @@ textarea {
 
 .defaultBackgroundImageForDesktop {
   /* Gradient direction and overlaying the black color on top of the image for better readability */
-  background: url('../assets/login-background.png');
 
   /* Add loading color for the div */
   background-color: var(--matterColor);

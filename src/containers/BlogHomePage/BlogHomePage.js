@@ -10,11 +10,13 @@ import { useIsSsr } from '../../util/hooks';
 import { Page, LayoutSingleColumn, LayoutWrapperTopbar, LayoutWrapperMain } from '../../components';
 import { TopbarContainer } from '..';
 
+import blogBackground from '../../assets/blog-background.jpg';
+
 import css from './BlogHomePage.module.css';
 
 const useStyles = makeStyles(theme => ({
   hero: {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/Blog_Background.png')`,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${blogBackground}')`,
     height: '31rem',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

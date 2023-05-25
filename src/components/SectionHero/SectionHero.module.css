@@ -29,7 +29,6 @@
 }
 
 .root {
-  composes: defaultBackgroundImage from global;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -39,6 +38,16 @@
     position: relative;
   }
   /* Text positioning is done with paddings */
+}
+
+.hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.show {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
 }
 
 .middleHero {

@@ -3,22 +3,17 @@ import { bool, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
-import { NamedLink, ButtonGroup } from '../../components';
-import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { NamedLink } from '../../components';
+import { CAREGIVER } from '../../util/constants';
 
-import createProfileImage from '../../assets/profile-preview.png';
-import employerListingImage from '../../assets/employer-listing-card.png';
-import caregiverInquiryMessage from '../../assets/caregiver-inquiry-message.png';
-import employerCareTypes from '../../assets/employer-care-types.png';
-import caregiverListingImage from '../../assets/caregiver-listing-card.png';
-import employerInquiryMessage from '../../assets/employer-inquiry-message.png';
+import createProfileImage from '../../assets/profile-preview.jpg';
+import employerListingImage from '../../assets/employer-listing-card.jpg';
+import caregiverInquiryMessage from '../../assets/caregiver-inquiry-message.jpg';
+import employerCareTypes from '../../assets/employer-care-types.jpg';
+import caregiverListingImage from '../../assets/caregiver-listing-card.jpg';
+import employerInquiryMessage from '../../assets/employer-inquiry-message.jpg';
 
 import css from './SectionHowItWorks.module.css';
-
-const buttonGroupOptions = [
-  { key: CAREGIVER, label: 'Become a Caregiver' },
-  { key: EMPLOYER, label: 'Hire a Caregiver' },
-];
 
 const SectionHowItWorks = props => {
   const { rootClassName, className, currentUser } = props;

@@ -21,10 +21,10 @@ import queryString from 'query-string';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import shareImage from '../../assets/Background_Share_Image.png';
-import yourJourneyImage from '../../assets/Your-Journey.png';
+import yourJourneyImage from '../../assets/Your-Journey.jpg';
 import stripeLogo from '../../assets/stripe-logo-large.png';
 import magnifyingGlass from '../../assets/Magnify-BG.png';
-import employerListingsImage from '../../assets/employer-listings.png';
+import employerListingsImage from '../../assets/employer-listings.jpg';
 
 import css from './ForCaregiversPage.module.css';
 
@@ -117,7 +117,7 @@ export const ForCaregiversPageComponent = props => {
           </div>
           <div className={css.sectionTwo}>
             <div className={css.descriptionContainer}>
-              <h1 className={css.title}>Freedom of Choice</h1>
+              <p className={css.title}>Freedom of Choice</p>
               <p className={css.description}>
                 Pick the jobs you want. Set your own rates. Choose your own hours. CareVine gives
                 you the freedom to work on your own terms. We believe that you should be in control
@@ -152,7 +152,7 @@ export const ForCaregiversPageComponent = props => {
               </div>
             </div>
             <div className={css.descriptionContainerRight}>
-              <h1 className={css.title}>Instant Background Checks</h1>
+              <p className={css.title}>Instant Background Checks</p>
               <p className={css.description}>
                 We prioritize safety on our platform for everyone. To ensure this, we conduct
                 instant background checks on all caregivers through a third party provider as part
@@ -164,7 +164,7 @@ export const ForCaregiversPageComponent = props => {
           </div>
           <div className={css.sectionFour}>
             <div className={css.descriptionContainer}>
-              <h1 className={css.title}>Direct Payout</h1>
+              <p className={css.title}>Direct Payouts</p>
               <p className={css.description}>
                 As a caregiver on our platform, you have the convenience of direct payments through{' '}
                 <a to="https://stripe.com/">Stripe</a>. By linking your bank account, you enable

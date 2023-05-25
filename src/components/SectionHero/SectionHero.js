@@ -9,13 +9,18 @@ import { HeroSearchForm } from '../../forms';
 import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
+import backgroundImage from '../../assets/landing-background.jpg';
+
 import css from './SectionHero.module.css';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(true);
+  const [heroLoaded, setHeroLoaded] = useState(false);
 
   const isMobile = useCheckMobileScreen();
+
+  const heroRef = useRef(null);
 
   const {
     rootClassName,
@@ -44,6 +49,22 @@ const SectionHero = props => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (heroRef?.current) {
+      const image = new Image();
+
+      image.onload = () => {
+        heroRef.current.style.background = `url('${image.src}')`;
+        heroRef.current.style.backgroundColor = 'var(--matterColor)';
+        heroRef.current.style.backgroundPosition = '50%';
+        heroRef.current.style.backgroundSize = 'cover';
+        setHeroLoaded(true);
+      };
+
+      image.src = backgroundImage;
+    }
+  }, [heroRef?.current]);
+
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;
     const origin = `${Number.parseFloat(valOrigin.lat).toFixed(5)}%2C${Number.parseFloat(
@@ -56,7 +77,8 @@ const SectionHero = props => {
   const classes = classNames(
     rootClassName || css.root,
     className,
-    isMobile && !currentUser && css.middleHero
+    isMobile && !currentUser && css.middleHero,
+    heroLoaded ? css.show : css.hidden
   );
 
   const itemsToBrowse = userType === CAREGIVER ? 'Jobs' : 'Caregivers';
@@ -83,7 +105,7 @@ const SectionHero = props => {
     userType === EMPLOYER ? CAREGIVER : userType === CAREGIVER ? EMPLOYER : null;
 
   return (
-    <div className={classes}>
+    <div className={classes} ref={heroRef}>
       {currentUserFetched ? (
         currentUser ? (
           <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>

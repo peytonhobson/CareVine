@@ -7,8 +7,8 @@ import { NamedLink, ButtonGroup } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
-import caregiverListingImage from '../../assets/caregiver-listing-card.png';
-import employerListingsImage from '../../assets/employer-listings.png';
+import caregiverListingImage from '../../assets/caregiver-listing-card.jpg';
+import employerListingsImage from '../../assets/employer-listings.jpg';
 
 import css from './SectionMarketplaceSummary.module.css';
 
@@ -21,6 +21,7 @@ const SectionMarketplaceSummary = props => {
   const { rootClassName, className, onScrollIntoView } = props;
 
   const [userType, setUserType] = useState(EMPLOYER);
+  const [caregiverImageLoaded, setCaregiverImageLoaded] = useState(false);
 
   const handleUserTypeChange = userType => {
     setUserType(userType);
@@ -47,10 +48,10 @@ const SectionMarketplaceSummary = props => {
       {userType === CAREGIVER ? (
         <div className={css.summaryContainer}>
           <div className={css.summary}>
-            <h1 className={css.summaryTitle}>
+            <p className={css.summaryTitle}>
               <div>Caregiving Freedom:</div>
               <div>Your Journey, Your Way</div>
-            </h1>
+            </p>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
                 Set your rates, choose your hours, and handpick your clients in your preferred
@@ -71,10 +72,10 @@ const SectionMarketplaceSummary = props => {
       ) : (
         <div className={css.summaryContainer}>
           <div className={css.summary}>
-            <h1 className={css.summaryTitle}>
+            <p className={css.summaryTitle}>
               <div>Your Care, In Your Hands:</div>
               <div>Find the Perfect Caregiver for You</div>
-            </h1>
+            </p>
             <div className={css.summaryContent}>
               <p className={css.summaryText}>
                 Discover the seamless solution to finding the perfect caregiver. Tailor your care
@@ -84,11 +85,15 @@ const SectionMarketplaceSummary = props => {
               </p>
             </div>
           </div>
-          <div className={css.graphic}>
+          <div
+            className={css.graphic}
+            style={{ visibility: !caregiverImageLoaded ? 'hidden' : 'visible' }}
+          >
             <LazyLoadImage
               className={css.graphicImage}
               src={caregiverListingImage}
               alt="Listing for caregiver"
+              afterLoad={() => setCaregiverImageLoaded(true)}
             />
           </div>
         </div>

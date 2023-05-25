@@ -19,7 +19,17 @@ exports.setup = () => {
     // exceptions from starting the server etc. but does not catch the
     // ones thrown from Express.js middleware functions. For those
     // an error handler has to be added to the Express app.
-    Sentry.init({ dsn: SENTRY_DSN, environment: ENV });
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      environment: ENV,
+      beforeSend(event, hint) {
+        const error = hint.originalException;
+        if (error?.message?.match(/@context/i)) {
+          return null;
+        }
+        return event;
+      },
+    });
   }
 };
 
