@@ -237,6 +237,7 @@ const EditListingBackgroundCheckPanel = props => {
   const isFreeForever =
     subscription?.discount?.coupon?.percent_off === 100 &&
     subscription?.discount?.coupon?.duration === 'forever';
+  const isFreeTrial = subscription?.status === 'trialing';
 
   // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
@@ -300,8 +301,6 @@ const EditListingBackgroundCheckPanel = props => {
     if (subscription?.latest_invoice?.payment_intent?.client_secret) {
       setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
     }
-
-    // if(subscription?.discount?.coupon?.percent_off === 100 && subscription?.discount?.coupon?.percent_off === 100)
   }, [subscription]);
 
   // Set setup intent secret for when user is using promo code
@@ -319,7 +318,7 @@ const EditListingBackgroundCheckPanel = props => {
         {
           default_payment_method: createdPaymentMethod,
           trial_end: moment()
-            .add(1, 'month')
+            .add(setupIntent?.metadata?.monthsFree ?? 1, 'month')
             .unix(),
         }
       );
