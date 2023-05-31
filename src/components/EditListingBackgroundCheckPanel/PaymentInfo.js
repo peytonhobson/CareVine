@@ -46,10 +46,10 @@ const PaymentInfo = props => {
       return;
     }
 
-    if (promotionCode?.type === BASIC) {
+    if (promotionCode?.meta === 'initial_free') {
       onCreateSetupIntent(stripeCustomerId, {
         payment_method_types: ['card'],
-        metadata: { backgroundCheckType },
+        metadata: { backgroundCheckType, monthsFree: promotionCode?.monthsFree },
       });
     } else {
       onCreateSubscription(
@@ -94,7 +94,7 @@ const PaymentInfo = props => {
         {amountDue !== planAmount ? (
           <h3>
             <span className={css.greyedtext}>${planAmount / 100}</span>
-            <span className={css.newDiscount}>${amountDue / 100}</span>
+            <span className={css.newDiscount}>${setupIntent ? 0 : amountDue / 100}</span>
           </h3>
         ) : (
           <h3>${amountDue / 100}</h3>
@@ -111,7 +111,7 @@ const PaymentInfo = props => {
         {amountDue !== planAmount ? (
           <h3>
             <span className={css.greyedtext}>${planAmount / 100} </span>
-            <span className={css.newDiscount}>${amountDue / 100}</span>
+            <span className={css.newDiscount}>${setupIntent ? 0 : amountDue / 100}</span>
           </h3>
         ) : (
           <h3>${total / 100}</h3>
@@ -165,7 +165,7 @@ const PaymentInfo = props => {
         <FormattedMessage
           id="EditListingBackgroundCheckPanel.submitFormText"
           values={{
-            paymentAmount: amountDue / 100,
+            paymentAmount: setupIntent ? 0 : amountDue / 100,
           }}
         />
       </p>
