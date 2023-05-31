@@ -18,7 +18,7 @@ export const PROMO_CODES = [
   { key: 'YOUAREGOLDEN', type: 'gold' },
   { key: 'CAREMORE', type: 'basic', meta: 'initial_free' },
   { key: 'GOLD4FREE', value: 'X8HkwekC', type: 'gold' },
-  { key: 'FREE3MONTHS', value: 'tpsg6EBI', type: 'gold', meta: 'initial_free', monthsFree: 3 },
+  { key: 'FREE3MONTHS', type: 'gold', meta: 'initial_free', monthsFree: 3 },
 ];
 export const CAREVINE_GOLD_HALF_OFF_COUPON =
   process.env.REACT_APP_ENV === 'development' ? 'dr9TuFdf' : 'egjIPKza';
