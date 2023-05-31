@@ -17,6 +17,7 @@ export const HOURLY_RATE_PRICE_ID =
 export const PROMO_CODES = [
   { key: 'YOUAREGOLDEN', type: 'gold' },
   { key: 'CAREMORE', type: 'basic' },
+  { key: 'GOLD4FREE', value: 'X8HkwekC', type: 'gold' },
 ];
 export const CAREVINE_GOLD_HALF_OFF_COUPON =
   process.env.REACT_APP_ENV === 'development' ? 'dr9TuFdf' : 'egjIPKza';

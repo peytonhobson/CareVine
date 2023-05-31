@@ -234,6 +234,9 @@ const EditListingBackgroundCheckPanel = props => {
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
   const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
   const signupReferralCode = metadata?.signupReferralCode;
+  const isFreeForever =
+    subscription?.discount?.coupon?.percent_off === 100 &&
+    subscription?.discount?.coupon?.duration === 'forever';
 
   // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
@@ -253,7 +256,10 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(SUBMIT_CONSENT);
     } else if (SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)) {
       setStage(CREATE_USER);
-    } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
+    } else if (
+      (createPaymentSuccess || subscription?.trial_end || isFreeForever) &&
+      stage === PAYMENT
+    ) {
       setStage(CONFIRM_PAYMENT);
       setTimeout(() => {
         setStage(CREATE_USER);
@@ -294,6 +300,8 @@ const EditListingBackgroundCheckPanel = props => {
     if (subscription?.latest_invoice?.payment_intent?.client_secret) {
       setClientSecret(subscription?.latest_invoice?.payment_intent?.client_secret);
     }
+
+    // if(subscription?.discount?.coupon?.percent_off === 100 && subscription?.discount?.coupon?.percent_off === 100)
   }, [subscription]);
 
   // Set setup intent secret for when user is using promo code
