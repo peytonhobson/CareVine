@@ -234,6 +234,10 @@ const EditListingBackgroundCheckPanel = props => {
   const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
   const identityProofQuiz = identityProofQuizData || privateData?.identityProofQuiz;
   const signupReferralCode = metadata?.signupReferralCode;
+  const isFreeForever =
+    subscription?.discount?.coupon?.percent_off === 100 &&
+    subscription?.discount?.coupon?.duration === 'forever';
+  const isFreeTrial = subscription?.status === 'trialing';
 
   // This checks what step of the process the user should be in based on the data we have
   useEffect(() => {
@@ -253,7 +257,10 @@ const EditListingBackgroundCheckPanel = props => {
       setStage(SUBMIT_CONSENT);
     } else if (SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)) {
       setStage(CREATE_USER);
-    } else if ((createPaymentSuccess || subscription?.trial_end) && stage === PAYMENT) {
+    } else if (
+      (createPaymentSuccess || subscription?.trial_end || isFreeForever) &&
+      stage === PAYMENT
+    ) {
       setStage(CONFIRM_PAYMENT);
       setTimeout(() => {
         setStage(CREATE_USER);
@@ -311,7 +318,7 @@ const EditListingBackgroundCheckPanel = props => {
         {
           default_payment_method: createdPaymentMethod,
           trial_end: moment()
-            .add(1, 'month')
+            .add(setupIntent?.metadata?.monthsFree ?? 1, 'month')
             .unix(),
         }
       );

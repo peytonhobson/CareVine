@@ -38,19 +38,18 @@ const PaymentInfo = props => {
   const handleApplyPromoCode = async () => {
     setPromoError(false);
 
-    const promotionCode = null;
-    // PROMO_CODES.find(
-    //       code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
-    //     );
+    const promotionCode = PROMO_CODES.find(
+      code => code.key === promoCode.toLocaleUpperCase() && code.type === backgroundCheckType
+    );
     if (!promotionCode) {
       setPromoError(true);
       return;
     }
 
-    if (promotionCode && promotionCode.type === BASIC) {
+    if (promotionCode?.meta === 'initial_free') {
       onCreateSetupIntent(stripeCustomerId, {
         payment_method_types: ['card'],
-        metadata: { backgroundCheckType },
+        metadata: { backgroundCheckType, monthsFree: promotionCode?.monthsFree },
       });
     } else {
       onCreateSubscription(
@@ -58,7 +57,7 @@ const PaymentInfo = props => {
         backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
         currentUser.id?.uuid,
         {
-          coupon: CAREVINE_GOLD_HALF_OFF_COUPON,
+          coupon: promotionCode.value,
           proration_behavior: 'none',
         }
       );
@@ -95,7 +94,7 @@ const PaymentInfo = props => {
         {amountDue !== planAmount ? (
           <h3>
             <span className={css.greyedtext}>${planAmount / 100}</span>
-            <span className={css.newDiscount}>${amountDue / 100}</span>
+            <span className={css.newDiscount}>${setupIntent ? 0 : amountDue / 100}</span>
           </h3>
         ) : (
           <h3>${amountDue / 100}</h3>
@@ -112,7 +111,7 @@ const PaymentInfo = props => {
         {amountDue !== planAmount ? (
           <h3>
             <span className={css.greyedtext}>${planAmount / 100} </span>
-            <span className={css.newDiscount}>${amountDue / 100}</span>
+            <span className={css.newDiscount}>${setupIntent ? 0 : amountDue / 100}</span>
           </h3>
         ) : (
           <h3>${total / 100}</h3>
@@ -129,7 +128,7 @@ const PaymentInfo = props => {
               setPromoError(false);
               setPromoCode(e?.target?.value);
             }}
-            disabled={promoApplied}
+            // disabled={promoApplied}
           />
         </div>
         <Button
@@ -137,7 +136,7 @@ const PaymentInfo = props => {
           onClick={handleApplyPromoCode}
           // inProgress={createSetupIntentInProgress || createSubscriptionInProgress}
           // ready={promoApplied}
-          disabled={promoCode === '' || promoApplied}
+          disabled={promoCode === ''}
         >
           Apply
         </Button>
@@ -166,7 +165,7 @@ const PaymentInfo = props => {
         <FormattedMessage
           id="EditListingBackgroundCheckPanel.submitFormText"
           values={{
-            paymentAmount: amountDue / 100,
+            paymentAmount: setupIntent ? 0 : amountDue / 100,
           }}
         />
       </p>
