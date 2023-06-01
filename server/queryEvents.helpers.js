@@ -192,7 +192,7 @@ const closeListing = async userId => {
     try {
       await integrationSdk.listings.close(
         {
-          id: listing.id.uuid,
+          id: listing.id?.uuid,
         },
         {
           expand: true,
@@ -221,7 +221,7 @@ const updateListingApproveListing = async event => {
           user?.attributes?.emailVerified
         : user?.attributes?.emailVerified;
     if (openListing) {
-      const listingId = event.attributes.resource.id.uuid;
+      const listingId = event.attributes.resource.id?.uuid;
 
       await integrationSdk.listings.approve({
         id: listingId,
@@ -241,7 +241,7 @@ const updateUserListingApproved = async event => {
       authorId: userId,
     });
 
-    const userListingId = res.data.data[0].id.uuid;
+    const userListingId = res.data.data[0].id?.uuid;
     listingState = res.data.data[0].attributes.state;
 
     if (listingState === 'pendingApproval') {
@@ -274,7 +274,7 @@ const enrollUserTCM = async (event, userAccessCode) => {
       }
     );
 
-    const userId = event?.attributes?.resource?.id?.uuid;
+    const userId = event.attributes.resource.id?.uuid;
     await integrationSdk.users.updateProfile({
       id: userId,
       privateData: {
@@ -300,7 +300,7 @@ const deEnrollUserTCM = async (event, userAccessCode) => {
       }
     );
 
-    const userId = event.attributes.resource.id.uuid;
+    const userId = event.attributes.resource.id?.uuid;
     await integrationSdk.users.updateProfile({
       id: userId,
       privateData: {
@@ -389,8 +389,8 @@ const addUnreadMessageCount = async (txId, senderId) => {
 
     const { customer, provider } = transaction.relationships;
 
-    const customerUserId = customer.data.id.uuid;
-    const providerUserId = provider.data.id.uuid;
+    const customerUserId = customer.data.id?.uuid;
+    const providerUserId = provider.data.id?.uuid;
     const recipientUserId = senderId === customerUserId ? providerUserId : customerUserId;
 
     const unreadMessageCount = transaction.attributes.metadata.unreadMessageCount ?? {

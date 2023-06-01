@@ -47,10 +47,10 @@ const EmailReminder = props => {
         <FormattedMessage id="ModalMissingInformation.verifyEmailTitle" />
       </p>
       <p className={css.modalMessage}>
-        <FormattedMessage id="ModalMissingInformation.verifyEmailText" />
+        <FormattedMessage id="ModalMissingInformation.verifyEmailText" values={{ email }} />
       </p>
       <p className={css.modalMessage}>
-        <FormattedMessage id="ModalMissingInformation.checkInbox" values={{ email }} />
+        <FormattedMessage id="ModalMissingInformation.checkInbox" />
       </p>
       {resendErrorMessage}
 
