@@ -168,7 +168,7 @@ class CaregiverEditListingWizard extends Component {
 
     this.state = {
       draftId: null,
-      showPayoutDetails: true,
+      showPayoutDetails: false,
       portalRoot: null,
     };
     this.handleCreateFlowTabScrolling = this.handleCreateFlowTabScrolling.bind(this);
