@@ -411,6 +411,9 @@ export class AuthenticationPageComponent extends Component {
         <p className={css.modalMessage}>
           <FormattedMessage id="AuthenticationPage.verifyEmailText" values={{ email }} />
         </p>
+        <p>
+          <FormattedMessage id="AuthenticationPage.verifyEmailText2" />
+        </p>
         {resendErrorMessage}
 
         <div className={css.bottomWrapper}>
