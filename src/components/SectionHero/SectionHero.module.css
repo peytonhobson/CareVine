@@ -31,6 +31,7 @@
 .root {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
 
@@ -63,10 +64,13 @@
   margin: 0 1rem;
   position: absolute;
   bottom: 0;
-  width: 90%;
-  padding: 0 0 5rem 0;
+  top: 35%;
 
   @media (--viewportMedium) {
+    top: 25%;
+  }
+
+  @media (--viewportLarge) {
     margin: 0 7.5vw 0 7.5vw;
     position: static;
     padding: 0;
@@ -94,11 +98,13 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: brightness(1.25);
+  filter: brightness(1.5);
+  text-align: center;
 
-  @media (--viewportMedium) {
+  @media (--viewportLarge) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     padding-bottom: 0;
+    text-align: left;
   }
 }
 .heroMainTitleFEDelay {
@@ -110,10 +116,12 @@
   margin: 0 0 2rem 0;
   composes: animation;
   font-weight: normal;
+  text-align: center;
 
-  @media (--viewportMedium) {
+  @media (--viewportLarge) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     margin: 0 0 2rem 0;
+    text-align: left;
   }
 }
 
@@ -138,8 +146,14 @@
   composes: animation;
 
   @media (--viewportMedium) {
+    max-width: 25rem;
+    margin: auto;
+  }
+
+  @media (--viewportLarge) {
     display: block;
     width: 16.25rem;
+    margin: 0;
   }
 }
 
