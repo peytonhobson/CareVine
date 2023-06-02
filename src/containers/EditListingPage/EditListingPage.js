@@ -28,12 +28,8 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
-import { createResourceLocatorString } from '../../util/routes';
-import routeConfiguration from '../../routeConfiguration';
 
 import {
-  requestAddAvailabilityException,
-  requestDeleteAvailabilityException,
   requestCreateListingDraft,
   requestPublishListingDraft,
   requestUpdateListing,
@@ -387,11 +383,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  onAddAvailabilityException: requestAddAvailabilityException,
   onChange: clearUpdatedTab,
   onChangeMissingInfoModal: changeModalValue,
   onCreateListingDraft: requestCreateListingDraft,
-  onDeleteAvailabilityException: requestDeleteAvailabilityException,
   onFetchCurrentUserHasListings: fetchCurrentUserHasListings,
   onManageDisableScrolling: manageDisableScrolling,
   onProfileImageUpload: uploadImage,

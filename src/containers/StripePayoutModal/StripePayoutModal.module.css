@@ -1,0 +1,60 @@
+@import '../../styles/customMediaQueries.css';
+
+.modalPayoutDetailsWrapper {
+  @media (--viewportMedium) {
+    width: 604px;
+    padding-top: 11px;
+  }
+}
+
+.modalTitleContainer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    flex-wrap: nowrap;
+  }
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+.stripeContainer {
+  margin: auto;
+  margin-top: 1.5rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.stripeLogo {
+  max-height: 5rem;
+}
+
+.poweredBy {
+  composes: marketplaceTinyFontStyles from global;
+
+  margin: 0;
+  margin-left: 1.2rem;
+}
+
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.close {
+  composes: marketplaceModalCloseStyles from global;
+}
+
+.closeText {
+  composes: marketplaceModalCloseText from global;
+}
+
+.closeIcon {
+  composes: marketplaceModalCloseIcon from global;
+}
