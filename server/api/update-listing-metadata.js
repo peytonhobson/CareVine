@@ -23,6 +23,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      log.error(e, 'Error updating listing metadata', { listingId, metadata });
       handleError(res, e);
     });
 };
