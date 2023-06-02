@@ -308,20 +308,29 @@ export function requestCreateListingDraft(data) {
   };
 }
 
-export const requestPublishListingDraft = listingId => (dispatch, getState, sdk) => {
+export const requestPublishListingDraft = listingId => async (dispatch, getState, sdk) => {
   dispatch(publishListing(listingId));
 
-  return sdk.ownListings
-    .publishDraft({ id: listingId })
-    .then(response => {
-      // Add the created listing to the marketplace data
-      dispatch(addMarketplaceEntities(response));
-      dispatch(publishListingSuccess(response));
-      return response;
-    })
-    .catch(e => {
-      dispatch(publishListingError(storableError(e)));
+  try {
+    const response = await sdk.ownListings.publishDraft({ id: listingId });
+
+    await updateListingMetadata({
+      listingId,
+      metadata: {
+        userPublishedAt: Number(Number.parseFloat(new Date().getTime() / 1000).toFixed(0)),
+        finishProfileReminderReceived: false,
+        verifyEmailReminderReceived: false,
+      },
     });
+
+    // Add the created listing to the marketplace data
+    dispatch(addMarketplaceEntities(response));
+    dispatch(publishListingSuccess(response));
+    return response;
+  } catch (e) {
+    log.error(e, 'publish-listing-draft-failed', { listingId });
+    dispatch(publishListingError(storableError(e)));
+  }
 };
 
 // Images return imageId which we need to map with previously generated temporary id
