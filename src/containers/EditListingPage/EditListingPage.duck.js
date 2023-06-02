@@ -433,7 +433,6 @@ export const loadData = params => (dispatch, getState, sdk) => {
           start,
           end,
         };
-        dispatch(requestFetchAvailabilityExceptions(params));
       }
 
       return response;
