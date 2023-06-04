@@ -31,18 +31,19 @@ const EditListingBioPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const { description } = currentListing.attributes;
+  const hasDescription = description && description !== '';
 
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
   useEffect(() => {
-    if (currentListing.id && (!description || description === '')) {
+    if (currentListing.id?.uuid && !hasDescription) {
       onGenerateBio(currentListing).then(() => {
         setIsExplanationModalOpen(true);
       });
     }
   }, [description]);
 
-  const initialValues = { description: generatedBio || description };
+  const initialValues = { description: hasDescription ? description : generatedBio };
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
