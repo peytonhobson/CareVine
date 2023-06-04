@@ -23,11 +23,10 @@
 .screeningRoot {
   display: flex;
   flex-shrink: 1;
-  flex-wrap: wrap-reverse;
+  flex-wrap: wrap;
   justify-content: center;
 
   @media (--viewportMedium) {
-    flex-wrap: wrap;
     justify-content: space-between;
   }
 }
