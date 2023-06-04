@@ -145,6 +145,7 @@ export const filters = [
         { key: 'transportation', label: 'Transportation/Shopping' },
         { key: 'specializedCare', label: 'Specialized Care' },
         { key: 'memoryCare', label: 'Memory Care' },
+        { key: 'hospiceCare', label: 'Hospice Care' },
       ],
     },
   },

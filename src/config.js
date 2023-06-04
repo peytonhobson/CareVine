@@ -98,10 +98,11 @@ const sentryDsn = process.env.REACT_APP_SENTRY_DSN;
 const usingSSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 
 // Address information is used in SEO schema for Organization (http://schema.org/PostalAddress)
-const addressCountry = 'FI';
-const addressRegion = 'Helsinki';
-const postalCode = '00100';
-const streetAddress = 'Bulevardi 14';
+const addressCountry = 'US';
+const addressRegion = 'Wyoming';
+const postalCode = '82801';
+const streetAddress = '1309 Coffeen Avenue, STE 1200';
+const addressLocality = 'Sheridan';
 
 // Canonical root url is needed in social media sharing and SEO optimization purposes.
 const canonicalRootURL = process.env.REACT_APP_CANONICAL_ROOT_URL;
@@ -234,10 +235,12 @@ const config = {
   },
   canonicalRootURL,
   address: {
+    '@type': 'PostalAddress',
     addressCountry,
     addressRegion,
     postalCode,
     streetAddress,
+    addressLocality,
   },
   siteTitle,
   siteFacebookPage,

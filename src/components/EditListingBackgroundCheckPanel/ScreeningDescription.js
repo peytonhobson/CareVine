@@ -108,6 +108,40 @@ const ScreeningDescription = props => {
         </p>
       </div>
       <div className={css.screeningRoot}>
+        <Card className={css.goldCard}>
+          <CardHeader title="CareVine Gold" className={goldClasses.root} />
+          <CardContent>
+            <div className={css.screeningTitleContainer}>
+              <h2 className={css.screeningTitle}>Find jobs faster</h2>
+              <div>
+                <p className={css.amountPerYear}>$1.99 for 3 months</p>
+                <span className={css.smallText}>$9.99/month after</span>
+              </div>
+            </div>
+            <div className={css.benefitsListContainer}>
+              <h3 style={{ width: '100%', marginBottom: '0' }}>Benefits</h3>
+              <ul className={css.benefitsList}>
+                <li>
+                  <p>Message families and apply to jobs</p>
+                </li>
+                <li>
+                  <p>Premium background check</p>
+                </li>
+                <li>
+                  <p>CareVine Gold badge to make your profile stand out</p>
+                </li>
+                <li>
+                  <p>Boosted listing to rank higher on the search board </p>
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardActions>
+            <Button className={goldButtonClasses.root} onClick={() => onPayForBC(GOLD)}>
+              Get CareVine Gold
+            </Button>
+          </CardActions>
+        </Card>
         <Card className={css.basicCard}>
           <CardHeader title="CareVine Basic" className={greyClasses.root} />
           <CardContent>
@@ -139,40 +173,6 @@ const ScreeningDescription = props => {
           <CardActions>
             <Button className={greyButtonClasses.root} onClick={() => onPayForBC(BASIC)}>
               Get CareVine Basic
-            </Button>
-          </CardActions>
-        </Card>
-        <Card className={css.vineCheckCard}>
-          <CardHeader title="CareVine Gold" className={goldClasses.root} />
-          <CardContent>
-            <div className={css.screeningTitleContainer}>
-              <h2 className={css.screeningTitle}>Find jobs faster</h2>
-              <div>
-                <p className={css.amountPerYear}>$1.99 for 3 months</p>
-                <span className={css.smallText}>$9.99/month after</span>
-              </div>
-            </div>
-            <div className={css.benefitsListContainer}>
-              <h3 style={{ width: '100%', marginBottom: '0' }}>Benefits</h3>
-              <ul className={css.benefitsList}>
-                <li>
-                  <p>Message families and apply to jobs</p>
-                </li>
-                <li>
-                  <p>Premium background check</p>
-                </li>
-                <li>
-                  <p>CareVine Gold badge to make your profile stand out</p>
-                </li>
-                <li>
-                  <p>Boosted listing to rank higher on the search board </p>
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-          <CardActions>
-            <Button className={goldButtonClasses.root} onClick={() => onPayForBC(GOLD)}>
-              Get CareVine Gold
             </Button>
           </CardActions>
         </Card>

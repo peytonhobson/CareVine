@@ -581,8 +581,8 @@ textarea {
 
 .marketplaceHeroTitleFontStyles {
   font-weight: var(--fontWeightBold);
-  font-size: 2.25rem;
-  line-height: 3rem;
+  font-size: 3rem;
+  line-height: 3.5rem;
   letter-spacing: -0.044rem;
   /* margin-top + n * line-height + margin-bottom => x * 6px */
   margin-top: 1.563rem;
