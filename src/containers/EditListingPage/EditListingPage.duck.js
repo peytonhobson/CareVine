@@ -291,7 +291,10 @@ export function requestCreateListingDraft(data) {
         const userId = response.data.data.relationships.author.data.id.uuid;
 
         if (listingType) {
-          updateListingMetadata({ listingId, metadata: { listingType, userId } });
+          updateListingMetadata({
+            listingId,
+            metadata: { listingType, userId, finishProfileReminderReceived: false },
+          });
         }
 
         // Add the created listing to the marketplace data
@@ -318,7 +321,6 @@ export const requestPublishListingDraft = listingId => async (dispatch, getState
       listingId,
       metadata: {
         userPublishedAt: Number(Number.parseFloat(new Date().getTime() / 1000).toFixed(0)),
-        finishProfileReminderReceived: false,
         verifyEmailReminderReceived: false,
       },
     });
