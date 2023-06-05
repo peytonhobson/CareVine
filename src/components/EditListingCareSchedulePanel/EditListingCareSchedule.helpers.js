@@ -18,7 +18,7 @@ export const createEntriesFromSubmitValues = values =>
             dayOfWeek,
             seats: 1,
             startTime,
-            endTime: endTime === '24:00' ? '00:00' : endTime,
+            endTime,
           }
         : null;
     });

@@ -85,8 +85,8 @@ const ListingTabs = props => {
     'Caregiver Preferences': caregiverPreferencesRef,
   };
 
-  const { publicData } = listing.attributes;
-  const { availabilityPlan, careSchedule } = publicData;
+  const { publicData, availabilityPlan } = listing.attributes;
+  const { careSchedule } = publicData;
 
   const onClick = tab => {
     if (refMap[tab].current) {
