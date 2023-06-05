@@ -2,9 +2,6 @@ require('dotenv').config();
 const { ConstructionOutlined } = require('@mui/icons-material');
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 
-// Read dry run from arguments
-const dryRun = process.argv[2];
-
 const integrationSdk = flexIntegrationSdk.createInstance({
   // These two env vars need to be set in the `.env` file.
   clientId: process.env.FLEX_INTEGRATION_CLIENT_ID,
@@ -16,12 +13,16 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const converttimeFrom12to24 = endTime => {
+const convertTimeFrom12to24 = fullTime => {
   // Current time looks like 7:00am
   // We want to convert it to 07:00
-  const [time, ampm] = endTime.split(/(am|pm)/i);
+  const [time, ampm] = fullTime.split(/(am|pm)/i);
 
   const [hours, minutes] = time.split(':');
+
+  if (hours === '12' && ampm === 'am') {
+    return '00:00';
+  }
 
   if (ampm === 'pm') {
     return `${parseInt(hours) + 12}:${minutes}`;
@@ -34,8 +35,8 @@ const convertPublicPlanToBuiltIn = publicPlan => {
 
   const convertedEntries = entries.map(entry => ({
     dayOfWeek: entry.dayOfWeek,
-    startTime: converttimeFrom12to24(entry.startTime),
-    endTime: converttimeFrom12to24(entry.endTime),
+    startTime: convertTimeFrom12to24(entry.startTime),
+    endTime: convertTimeFrom12to24(entry.endTime),
     seats: 1,
   }));
 
@@ -55,8 +56,6 @@ const main = async () => {
     const hasPublicPlan = listings.filter(
       listing => listing.attributes.publicData.availabilityPlan
     );
-
-    console.log(listings[0].attributes.availabilityPlan);
 
     await Promise.all(
       hasPublicPlan.map(async listing => {

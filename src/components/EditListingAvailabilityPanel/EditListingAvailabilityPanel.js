@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { arrayOf, bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureOwnListing } from '../../util/data';
+import { ensureOwnListing, convertTimeFrom12to24 } from '../../util/data';
 import { getDefaultTimeZoneOnBrowser, timestampToDate } from '../../util/dates';
 import { LISTING_STATE_DRAFT, DATE_TYPE_DATETIME, propTypes } from '../../util/types';
 import {
@@ -24,6 +24,7 @@ import {
   createCareSchedule,
   createInitialValues,
 } from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
+import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import css from './EditListingAvailabilityPanel.module.css';
 
@@ -31,6 +32,37 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'America/New_York';
+
+const createEntriesFromSubmitValues = values =>
+  WEEKDAYS.reduce((allEntries, dayOfWeek) => {
+    const dayValues = values[dayOfWeek] || [];
+    const dayEntries = dayValues.map(dayValue => {
+      const { startTime, endTime } = dayValue;
+      // Note: This template doesn't support seats yet.
+      return startTime && endTime
+        ? {
+            dayOfWeek,
+            seats: 1,
+            startTime: convertTimeFrom12to24(startTime),
+            endTime: convertTimeFrom12to24(endTime),
+          }
+        : null;
+    });
+
+    return allEntries.concat(dayEntries.filter(e => !!e));
+  }, []);
+
+export const createAvailabilityPlan = (values, currentListing) => {
+  const timezone =
+    zipcodeToTimezone.lookup(currentListing.attributes.publicData.location?.zipcode) ||
+    defaultTimeZone();
+
+  return {
+    type: 'availability-plan/time',
+    timezone,
+    entries: createEntriesFromSubmitValues(values),
+  };
+};
 
 //////////////////////////////////
 // EditListingAvailabilityPanel //
@@ -99,7 +131,7 @@ const EditListingAvailabilityPanel = props => {
     setValuesFromLastSubmit(values);
     setShowNoEntriesError(false);
 
-    setAvailabilityPlan(createCareSchedule(values, currentListing));
+    setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
 
     setIsEditPlanModalOpen(false);
   };
@@ -116,11 +148,8 @@ const EditListingAvailabilityPanel = props => {
 
     // Final Form can wait for Promises to return.
     return onSubmit({
+      availabilityPlan,
       publicData: {
-        availabilityPlan: {
-          ...availabilityPlan,
-          availabilityExceptions,
-        },
         scheduleTypes: selectedAvailabilityTypes,
       },
     })
