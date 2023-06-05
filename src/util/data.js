@@ -536,6 +536,11 @@ export const convertTimeFrom12to24 = fullTime => {
   if (ampm === 'pm') {
     return `${parseInt(hours) + 12}:${minutes}`;
   }
+
+  if (hours < 10 && hours.includes('0')) {
+    return `${hours < 10 ? `${hours}` : hours}:${minutes}`;
+  }
+
   return `${hours < 10 ? `0${hours}` : hours}:${minutes}`;
 };
 
@@ -554,7 +559,7 @@ export const convertTimeFrom24to12 = fullTime => {
     return `${parseInt(hours) - 12}:${minutes}pm`;
   }
 
-  if (hours < 10) {
+  if (hours < 10 && hours.includes('0')) {
     return `${hours.replace('0', '')}:${minutes}am`;
   }
 

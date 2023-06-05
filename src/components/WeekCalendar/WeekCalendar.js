@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { useState } from 'react';
-import classNames from 'classnames';
 import { InfoTooltip } from '..';
 import { useCheckMobileScreen } from '../../util/hooks';
 
@@ -10,7 +8,7 @@ import css from './WeekCalendar.module.css';
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const WeekCalendar = props => {
-  const { entries, mappedTimesToDay } = props;
+  const { mappedTimesToDay } = props;
 
   const isMobile = useCheckMobileScreen();
 
@@ -57,9 +55,13 @@ const WeekCalendar = props => {
     return <div className={css.cells}>{days}</div>;
   };
 
+  const hasEntries = Object.values(mappedTimesToDay).some(day => day.length > 0);
+
   return (
     <>
-      {isMobile && <p className={css.mobileClickText}>Click each highlighted cell for times</p>}
+      {isMobile && hasEntries && (
+        <p className={css.mobileClickText}>Click each blue cell for times</p>
+      )}
       <div className={css.calendar}>
         {renderDays()}
         {renderCells()}

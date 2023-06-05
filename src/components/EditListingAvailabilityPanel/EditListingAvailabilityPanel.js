@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { arrayOf, bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureOwnListing, convertTimeFrom12to24 } from '../../util/data';
+import { ensureOwnListing, convertTimeFrom12to24, convertTimeFrom24to12 } from '../../util/data';
 import { getDefaultTimeZoneOnBrowser, timestampToDate } from '../../util/dates';
 import { LISTING_STATE_DRAFT, DATE_TYPE_DATETIME, propTypes } from '../../util/types';
 import {
@@ -15,7 +15,6 @@ import {
 } from '../../components';
 import { EditListingAvailabilityPlanForm } from '../../forms';
 import AvailabilityTypeForm from './AvailabilityTypeForm';
-import { createInitialValues } from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
 import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import css from './EditListingAvailabilityPanel.module.css';
@@ -24,6 +23,31 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'America/New_York';
+
+const createEntryDayGroups = (entries = {}) =>
+  entries.reduce((groupedEntries, entry) => {
+    const { startTime, endTime: endHour, dayOfWeek } = entry;
+    const dayGroup = groupedEntries[dayOfWeek] || [];
+    return {
+      ...groupedEntries,
+      [dayOfWeek]: [
+        ...dayGroup,
+        {
+          startTime: convertTimeFrom24to12(startTime),
+          endTime: convertTimeFrom24to12(endHour),
+        },
+      ],
+    };
+  }, {});
+
+const createInitialValues = availabilityPlan => {
+  const { timezone, entries } = availabilityPlan || {};
+  const tz = timezone || defaultTimeZone();
+  return {
+    timezone: tz,
+    ...createEntryDayGroups(entries),
+  };
+};
 
 const createEntriesFromSubmitValues = values =>
   WEEKDAYS.reduce((allEntries, dayOfWeek) => {
@@ -267,7 +291,6 @@ const EditListingAvailabilityPanel = props => {
           <EditListingAvailabilityPlanForm
             formId="EditListingAvailabilityPlanForm"
             listingTitle={currentListing.attributes.title}
-            availabilityPlan={availabilityPlan}
             weekdays={WEEKDAYS}
             onSubmit={handleAvailabilityPlanSubmit}
             initialValues={initialValues}
