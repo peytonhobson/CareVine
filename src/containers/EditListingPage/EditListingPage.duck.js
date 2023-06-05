@@ -426,7 +426,7 @@ export const loadData = params => (dispatch, getState, sdk) => {
         const availabilityPlan = listing.attributes.availabilityPlan;
 
         const tz = availabilityPlan
-          ? listing.attributes.availabilityPlan.timezone
+          ? availabilityPlan.timezone
           : typeof window !== 'undefined'
           ? getDefaultTimeZoneOnBrowser()
           : 'Etc/UTC';

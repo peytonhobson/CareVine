@@ -37,9 +37,9 @@ const buttonGroupOptions = [
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
 
-const init = availabilityPlan => {
+const init = careSchedule => {
   return {
-    selectedScheduleType: availabilityPlan?.type ?? ONE_TIME,
+    selectedScheduleType: careSchedule?.type ?? ONE_TIME,
     showErrors: false,
     savedOneTimePlan: null,
     savedRepeatPlan: null,
@@ -82,9 +82,9 @@ const EditListingCareSchedulePanel = props => {
 
   const classes = classNames(className, rootClassName || css.root);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
-  const availabilityPlanMaybe = currentListing.attributes.publicData.availabilityPlan;
+  const careScheduleMaybe = currentListing.attributes.publicData.careSchedule;
 
-  const [state, dispatch] = useReducer(reducer, availabilityPlanMaybe, init);
+  const [state, dispatch] = useReducer(reducer, careScheduleMaybe, init);
 
   useEffect(() => {
     dispatch({ type: SET_SHOW_ERRORS, payload: errors.updateListingError });
@@ -94,13 +94,13 @@ const EditListingCareSchedulePanel = props => {
     const currentZipcode = currentListing.attributes.publicData.location?.zipcode;
     const timezone = zipcodeToTimezone.lookup(currentZipcode);
 
-    const availabilityPlan = {
+    const careSchedule = {
       type: AVAILABILITY_PLAN_TYPE_24HOUR,
       timezone,
       ...values,
     };
 
-    return onSubmit({ publicData: { scheduleType: TWENTY_FOUR_HOUR, availabilityPlan } })
+    return onSubmit({ publicData: { scheduleType: TWENTY_FOUR_HOUR, careSchedule } })
       .then(() => {
         if (!isPublished) {
           onNextTab();
@@ -109,8 +109,8 @@ const EditListingCareSchedulePanel = props => {
       .catch(e => {});
   };
 
-  const handleSelectDatesSubmit = availabilityPlan => {
-    return onSubmit({ publicData: { scheduleType: ONE_TIME, availabilityPlan } })
+  const handleSelectDatesSubmit = careSchedule => {
+    return onSubmit({ publicData: { scheduleType: ONE_TIME, careSchedule } })
       .then(() => {
         if (!isPublished) {
           onNextTab();
@@ -125,16 +125,16 @@ const EditListingCareSchedulePanel = props => {
   };
 
   let mainContent = null;
-  let availabilityPlan = null;
-  let defaultAvailabilityPlan = null;
+  let careSchedule = null;
+  let defaultCareSchedule = null;
 
   switch (state.selectedScheduleType) {
     case ONE_TIME:
-      availabilityPlan = state.savedOneTimePlan ?? availabilityPlanMaybe;
+      careSchedule = state.savedOneTimePlan ?? careScheduleMaybe;
       mainContent = (
         <CareScheduleSelectDatesContainer
-          availabilityPlan={availabilityPlan}
-          userAvailabilityPlan={availabilityPlanMaybe}
+          careSchedule={careSchedule}
+          usercareSchedule={careScheduleMaybe}
           disabled={disabled}
           errors={errors}
           listing={currentListing}
@@ -150,20 +150,20 @@ const EditListingCareSchedulePanel = props => {
       );
       break;
     case REPEAT:
-      defaultAvailabilityPlan = {
+      defaultCareSchedule = {
         type: AVAILABILITY_PLAN_TYPE_REPEAT,
         timezone: defaultTimeZone(),
         entries: [],
       };
-      availabilityPlan = state.savedRepeatPlan
+      careSchedule = state.savedRepeatPlan
         ? state.savedRepeatPlan
-        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
-        ? availabilityPlanMaybe
-        : defaultAvailabilityPlan;
+        : careScheduleMaybe?.type === AVAILABILITY_PLAN_TYPE_REPEAT
+        ? careScheduleMaybe
+        : defaultCareSchedule;
       mainContent = (
         <CareScheduleRecurringTimesContainer
-          availabilityPlan={availabilityPlan}
-          userAvailabilityPlan={availabilityPlanMaybe}
+          careSchedule={careSchedule}
+          userCareSchedule={careScheduleMaybe}
           currentListing={currentListing}
           disabled={disabled}
           errors={errors}
@@ -181,21 +181,21 @@ const EditListingCareSchedulePanel = props => {
       );
       break;
     case TWENTY_FOUR_HOUR:
-      defaultAvailabilityPlan = {
+      defaultCareSchedule = {
         type: AVAILABILITY_PLAN_TYPE_24HOUR,
         availableDays: [],
         liveIn: false,
         timezone: defaultTimeZone(),
       };
-      availabilityPlan = state.saved24HourPlan
+      careSchedule = state.saved24HourPlan
         ? state.saved24HourPlan
-        : availabilityPlanMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
-        ? availabilityPlanMaybe
-        : defaultAvailabilityPlan;
+        : careScheduleMaybe?.type === AVAILABILITY_PLAN_TYPE_24HOUR
+        ? careScheduleMaybe
+        : defaultCareSchedule;
       mainContent = (
         <Care24HourForm
-          availabilityPlan={availabilityPlan}
-          userAvailabilityPlan={availabilityPlanMaybe}
+          careSchedule={careSchedule}
+          userCareSchedule={careScheduleMaybe}
           currentListing={currentListing}
           disabled={disabled}
           fetchErrors={errors}
@@ -249,7 +249,7 @@ const EditListingCareSchedulePanel = props => {
       ) : null}
       <ButtonGroup
         className={css.buttonGroup}
-        initialSelect={availabilityPlanMaybe?.type || ONE_TIME}
+        initialSelect={careScheduleMaybe?.type || ONE_TIME}
         onChange={handleScheduleTypeChange}
         options={buttonGroupOptions}
         rootClassName={css.buttonGroupRoot}

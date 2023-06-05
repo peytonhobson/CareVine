@@ -42,7 +42,7 @@ const CareScheduleExceptions = props => {
     availabilityExceptions,
     onDeleteAvailabilityException,
     onManageDisableScrolling,
-    availabilityPlan,
+    careSchedule,
     updateInProgress,
     errors,
     disabled,
@@ -55,7 +55,7 @@ const CareScheduleExceptions = props => {
 
   const [isEditExceptionsModalOpen, setIsEditExceptionsModalOpen] = useState(false);
 
-  const planType = availabilityPlan && availabilityPlan.type;
+  const planType = careSchedule?.type;
   const isRecurring = planType === AVAILABILITY_PLAN_TYPE_REPEAT;
 
   const sortedAvailabilityExceptions = filterExceptionsByType(
@@ -170,7 +170,7 @@ const CareScheduleExceptions = props => {
                       startDate={timestampToDate(start)}
                       endDate={timestampToDate(end)}
                       dateType={DATE_TYPE_DATETIME}
-                      timeZone={availabilityPlan.timezone}
+                      timeZone={careSchedule.timezone}
                     />
                   ) : (
                     <TimeRange
@@ -178,7 +178,7 @@ const CareScheduleExceptions = props => {
                       startDate={timestampToDate(start)}
                       endDate={timestampToDate(end)}
                       dateType={DATE_TYPE_DATE}
-                      timeZone={availabilityPlan.timezone}
+                      timeZone={careSchedule.timezone}
                     />
                   )}
                 </div>
@@ -210,7 +210,7 @@ const CareScheduleExceptions = props => {
           <EditListingAvailabilityExceptionForm
             formId="EditListingAvailabilityExceptionForm"
             onSubmit={saveException}
-            timeZone={availabilityPlan?.timezone}
+            timeZone={careSchedule?.timezone}
             availabilityExceptions={sortedAvailabilityExceptions}
             updateInProgress={updateInProgress}
             fetchErrors={errors}

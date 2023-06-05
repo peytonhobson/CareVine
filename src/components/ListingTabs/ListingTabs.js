@@ -86,7 +86,7 @@ const ListingTabs = props => {
   };
 
   const { publicData } = listing.attributes;
-  const { availabilityPlan } = publicData;
+  const { availabilityPlan, careSchedule } = publicData;
 
   const onClick = tab => {
     if (refMap[tab].current) {
@@ -165,7 +165,7 @@ const ListingTabs = props => {
         return (
           <CareScheduleSection
             key={key}
-            availabilityPlan={availabilityPlan}
+            careSchedule={careSchedule}
             filterConfig={config.custom.filters}
             ref={careScheduleRef}
             isMobile={isMobile}

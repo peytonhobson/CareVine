@@ -13,7 +13,7 @@ import {
   WeekPanel,
 } from '../..';
 import Weekday from '../Weekday';
-import { createAvailabilityPlan, createInitialValues } from '../EditListingCareSchedule.helpers';
+import { createCareSchedule, createInitialValues } from '../EditListingCareSchedule.helpers';
 import { EditListingAvailabilityPlanForm, TimelineForm } from '../../../forms';
 import { timestampToDate } from '../../../util/dates';
 
@@ -33,10 +33,10 @@ const SET_END_DATE = 'SET_END_DATE';
 const init = initialState => {
   return {
     ...initialState,
-    availabilityPlan: initialState.savedAvailabilityPlan,
+    careSchedule: initialState.savedCareSchedule,
     startDate: initialState.savedStartDate,
     endDate: initialState.savedEndDate,
-    availabilityExceptions: initialState.savedAvailabilityPlan?.availabilityExceptions || [],
+    availabilityExceptions: initialState.savedCareSchedule?.availabilityExceptions || [],
   };
 };
 
@@ -45,7 +45,7 @@ const reducer = (state, action) => {
     case SET_IS_EDIT_PLAN_MODAL_OPEN:
       return { ...state, isEditPlanModalOpen: action.payload };
     case SET_AVAILABILITY_PLAN:
-      return { ...state, availabilityPlan: action.payload };
+      return { ...state, careSchedule: action.payload };
     case ADD_AVAILABILITY_EXCEPTION:
       return {
         ...state,
@@ -71,8 +71,8 @@ const reducer = (state, action) => {
 
 const CareScheduleRecurringTimesContainerComponent = props => {
   const {
-    availabilityPlan: savedAvailabilityPlan,
-    userAvailabilityPlan,
+    careSchedule: savedCareSchedule,
+    userCareSchedule,
     currentListing,
     disabled,
     errors,
@@ -90,13 +90,13 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     onChange,
   } = props;
 
-  const savedStartDate = savedAvailabilityPlan?.startDate;
-  const savedEndDate = savedAvailabilityPlan?.endDate;
+  const savedStartDate = savedCareSchedule?.startDate;
+  const savedEndDate = savedCareSchedule?.endDate;
 
   const initialState = {
     savedStartDate,
     savedEndDate,
-    savedAvailabilityPlan,
+    savedCareSchedule,
     isEditPlanModalOpen: false,
   };
 
@@ -104,17 +104,17 @@ const CareScheduleRecurringTimesContainerComponent = props => {
 
   useEffect(() => {
     onChange({
-      ...state.availabilityPlan,
+      ...state.careSchedule,
       availabilityExceptions: state.availabilityExceptions,
       startDate: state.startDate,
       endDate: state.endDate,
     });
   }, [state]);
 
-  const handleAvailabilityPlanSubmit = values => {
-    const newAvailabilityPlan = createAvailabilityPlan(values, currentListing);
+  const handleCareScheduleSubmit = values => {
+    const newCareSchedule = createCareSchedule(values, currentListing);
 
-    dispatch({ type: SET_AVAILABILITY_PLAN, payload: newAvailabilityPlan });
+    dispatch({ type: SET_AVAILABILITY_PLAN, payload: newCareSchedule });
     dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: false });
   };
 
@@ -123,7 +123,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
 
     if (isBooking) {
       return onSubmit({
-        ...state.availabilityPlan,
+        ...state.careSchedule,
         availabilityExceptions: state.availabilityExceptions,
         startDate: state.startDate,
         endDate: state.endDate,
@@ -133,8 +133,8 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     return onSubmit({
       publicData: {
         scheduleType: REPEAT,
-        availabilityPlan: {
-          ...state.availabilityPlan,
+        careSchedule: {
+          ...state.careSchedule,
           availabilityExceptions: state.availabilityExceptions,
           startDate: state.startDate,
           endDate: state.endDate,
@@ -151,13 +151,13 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       });
   };
 
-  const initialValues = createInitialValues(state.availabilityPlan);
+  const initialValues = createInitialValues(state.careSchedule);
 
   const submitDisabled =
-    (state.startDate === userAvailabilityPlan?.startDate &&
-      state.endDate === userAvailabilityPlan?.startDate &&
-      state.availabilityExceptions === userAvailabilityPlan?.availabilityExceptions) ||
-    state.availabilityPlan?.entries?.length === 0;
+    (state.startDate === userCareSchedule?.startDate &&
+      state.endDate === userCareSchedule?.startDate &&
+      state.availabilityExceptions === userCareSchedule?.availabilityExceptions) ||
+    state.careSchedule?.entries?.length === 0;
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -218,7 +218,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           </InlineTextButton>
         </header>
         <WeekPanel
-          availabilityPlan={state.availabilityPlan}
+          careSchedule={state.careSchedule}
           openEditModal={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
         />
       </section>
@@ -227,7 +227,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
         <CareScheduleExceptions
           availabilityExceptions={state.availabilityExceptions}
           onManageDisableScrolling={onManageDisableScrolling}
-          availabilityPlan={state.availabilityPlan}
+          careSchedule={state.careSchedule}
           updateInProgress={updateInProgress}
           errors={errors}
           disabled={disabled}
@@ -248,7 +248,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       </Button>
       {onManageDisableScrolling ? (
         <Modal
-          id="EditAvailabilityPlan"
+          id="EditCareSchedule"
           isOpen={state.isEditPlanModalOpen}
           onClose={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: false })}
           onManageDisableScrolling={onManageDisableScrolling}
@@ -256,11 +256,11 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           usePortal
         >
           <EditListingAvailabilityPlanForm
-            formId="EditListingAvailabilityPlanForm"
+            formId="EditListingCareScheduleForm"
             listingTitle={currentListing.attributes.title}
-            availabilityPlan={state.availabilityPlan}
+            availabilityPlan={state.careSchedule}
             weekdays={WEEKDAYS}
-            onSubmit={handleAvailabilityPlanSubmit}
+            onSubmit={handleCareScheduleSubmit}
             initialValues={initialValues}
             inProgress={updateInProgress}
             fetchErrors={errors}
