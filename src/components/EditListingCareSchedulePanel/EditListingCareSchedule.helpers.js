@@ -26,8 +26,8 @@ export const createEntriesFromSubmitValues = values =>
     return allEntries.concat(dayEntries.filter(e => !!e));
   }, []);
 
-// Create availabilityPlan from submit values
-export const createAvailabilityPlan = (values, currentListing) => {
+// Create careSchedule from submit values
+export const createCareSchedule = (values, currentListing) => {
   const timezone =
     zipcodeToTimezone.lookup(currentListing?.attributes?.publicData?.location?.zipcode) ||
     'America/Denver';
@@ -57,8 +57,8 @@ export const createEntryDayGroups = (entries = {}) =>
   }, {});
 
 // Create initial values
-export const createInitialValues = availabilityPlan => {
-  const { timezone, entries } = availabilityPlan || {};
+export const createInitialValues = careSchedule => {
+  const { timezone, entries } = careSchedule || {};
   const tz = timezone || defaultTimeZone();
   return {
     timezone: tz,

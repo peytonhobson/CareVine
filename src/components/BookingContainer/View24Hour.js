@@ -17,7 +17,7 @@ const defaultTimeZone = () =>
 
 const View24Hour = props => {
   const {
-    availabilityPlan,
+    careSchedule,
     currentUserListing,
     onManageDisableScrolling,
     onChange,
@@ -27,21 +27,19 @@ const View24Hour = props => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const availableDays = availabilityPlan?.availableDays;
-  const endDate = availabilityPlan?.endDate;
-  const startDate = availabilityPlan?.startDate;
-  const availabilityExceptions = availabilityPlan?.availabilityExceptions;
+  const availableDays = careSchedule?.availableDays;
+  const endDate = careSchedule?.endDate;
+  const startDate = careSchedule?.startDate;
+  const availabilityExceptions = careSchedule?.availabilityExceptions;
 
-  const defaultAvailabilityPlan = {
+  const defaultcareSchedule = {
     type: AVAILABILITY_PLAN_24_HOUR,
     availableDays: [],
     liveIn: false,
     timezone: defaultTimeZone(),
   };
-  const formAvailabilityPlan =
-    availabilityPlan?.type === AVAILABILITY_PLAN_24_HOUR
-      ? availabilityPlan
-      : defaultAvailabilityPlan;
+  const formcareSchedule =
+    careSchedule?.type === AVAILABILITY_PLAN_24_HOUR ? careSchedule : defaultcareSchedule;
 
   const handleSubmit = values => {
     setIsEditMode(false);
@@ -70,7 +68,7 @@ const View24Hour = props => {
           availabilityExceptions={availabilityExceptions}
           planType={AVAILABILITY_PLAN_24_HOUR}
           onClick={() => setIsEditMode(true)}
-          hoursPerDay={availabilityPlan?.hoursPerDay}
+          hoursPerDay={careSchedule?.hoursPerDay}
         />
       ) : (
         <div className={css.twentyFourListView}>
@@ -80,8 +78,8 @@ const View24Hour = props => {
               <p>
                 <span className={css.bold}>Start Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan?.startDate
-                    ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
+                  {careSchedule?.startDate
+                    ? timestampToDate(careSchedule.startDate).toLocaleDateString()
                     : 'NA'}
                 </span>
               </p>
@@ -90,8 +88,8 @@ const View24Hour = props => {
               <p>
                 <span className={css.bold}>End Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan?.endDate
-                    ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
+                  {careSchedule?.endDate
+                    ? timestampToDate(careSchedule.endDate).toLocaleDateString()
                     : 'NA'}
                 </span>
               </p>
@@ -110,7 +108,7 @@ const View24Hour = props => {
       usePortal
     >
       <Care24HourForm
-        availabilityPlan={formAvailabilityPlan}
+        careSchedule={formcareSchedule}
         currentListing={currentUserListing}
         onManageDisableScrolling={onManageDisableScrolling}
         onSubmit={handleSubmit}

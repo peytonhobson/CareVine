@@ -21,7 +21,7 @@ import Weekday from '../EditListingCareSchedulePanel/Weekday';
 import { EditListingAvailabilityPlanForm } from '../../forms';
 import AvailabilityTypeForm from './AvailabilityTypeForm';
 import {
-  createAvailabilityPlan,
+  createCareSchedule,
   createInitialValues,
 } from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
 
@@ -60,8 +60,8 @@ const EditListingAvailabilityPanel = props => {
     timezone: defaultTimeZone(),
     entries: [],
   };
-  const publicData = currentListing?.attributes?.publicData;
-  const savedAvailabilityPlan = publicData?.availabilityPlan;
+  const publicData = currentListing.attributes.publicData;
+  const savedAvailabilityPlan = currentListing.attributes.availabilityPlan;
 
   const savedAvailabilityExceptions = savedAvailabilityPlan?.availabilityExceptions;
   const savedSelectedAvailabilityTypes = publicData?.scheduleTypes;
@@ -99,7 +99,7 @@ const EditListingAvailabilityPanel = props => {
     setValuesFromLastSubmit(values);
     setShowNoEntriesError(false);
 
-    setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
+    setAvailabilityPlan(createCareSchedule(values, currentListing));
 
     setIsEditPlanModalOpen(false);
   };

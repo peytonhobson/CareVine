@@ -23,9 +23,9 @@ const TWENTY_FOUR_HOUR = '24 Hour Care';
 
 const generateTitle = (currentListing, filterConfig) => {
   let careScheduleType = null;
-  const availabilityPlan = currentListing.attributes.publicData.availabilityPlan;
+  const careSchedule = currentListing.attributes.publicData.careSchedule;
 
-  switch (availabilityPlan?.type) {
+  switch (careSchedule?.type) {
     case AVAILABILITY_PLAN_TYPE_SELECT_DATES:
       careScheduleType = SELECT_DATES;
       break;
