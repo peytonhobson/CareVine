@@ -235,3 +235,7 @@
 .noTopMargin {
   margin-top: 0;
 }
+
+.isProfileClosed {
+  color: var(--marketplaceColor);
+}

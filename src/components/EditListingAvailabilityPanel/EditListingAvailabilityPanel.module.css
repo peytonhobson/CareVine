@@ -16,7 +16,11 @@
 }
 
 .title {
-  margin-bottom: 18px;
+  margin-bottom: 2.5rem;
+}
+
+.section {
+  margin-top: 1.5rem;
 }
 
 .sectionTitle {
@@ -174,7 +178,7 @@
 }
 
 .goToNextTabButton {
-  margin-top: auto;
+  margin-top: 2rem;
   margin-bottom: 2rem;
   flex-shrink: 0;
 }
@@ -202,7 +206,7 @@
   display: flex;
   width: 100%;
   justify-content: center;
-  margin-top: 0;
+  margin-top: 1rem;
   flex-wrap: wrap;
 }
 
