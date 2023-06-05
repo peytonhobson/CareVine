@@ -31,7 +31,10 @@ import EditListingWizardTab, {
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
-import { savePayoutDetails } from '../../containers/EditListingPage/EditListingPage.duck';
+import {
+  requestAddAvailabilityException,
+  requestDeleteAvailabilityException,
+} from '../../containers/EditListingPage/EditListingPage.duck';
 import { generateBio } from '../../ducks/chatGPT.duck';
 
 import css from './CaregiverEditListingWizard.module.css';
@@ -468,10 +471,12 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onGenerateBio: listing => dispatch(generateBio(listing)),
-});
+const mapDispatchToProps = {
+  fetchStripeCustomer: stripeCustomer,
+  onGenerateBio: generateBio,
+  onAddAvailabilityException: requestAddAvailabilityException,
+  onDeleteAvailabilityException: requestDeleteAvailabilityException,
+};
 
 export default compose(
   withViewport,

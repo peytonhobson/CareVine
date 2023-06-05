@@ -75,16 +75,14 @@ const pathParamsToNextTab = (params, tab, marketplaceTabs) => {
 
 const EditListingWizardTab = props => {
   const {
-    authenticate,
+    fetchExceptionsError,
+    fetchExceptionsInProgress,
     availabilityExceptions,
-    createPaymentError,
-    createPaymentInProgress,
-    createPaymentSuccess,
-    createSubscriptionError,
-    createSubscriptionInProgress,
+    addExceptionInProgress,
+    onAddAvailabilityException,
+    onDeleteAvailabilityException,
     currentUser,
     errors,
-    fetchExceptionsInProgress,
     fetchInProgress,
     handleCreateFlowTabScrolling,
     handlePublishListing,
@@ -94,10 +92,8 @@ const EditListingWizardTab = props => {
     listing: currentListing,
     marketplaceTabs,
     newListingPublished,
-    onAddAvailabilityException,
     onChange,
     onCreateListingDraft,
-    onDeleteAvailabilityException,
     onImageUpload,
     onManageDisableScrolling,
     onProfileImageUpload,
@@ -105,17 +101,12 @@ const EditListingWizardTab = props => {
     onUpdateImageOrder,
     onUpdateListing,
     onUpdateProfile,
-    onUpdateSubscription,
-    onVerifyIdentityProofQuiz,
     pageName,
     params,
     profileImage,
-    subscription,
     tab,
     updatedTab,
     updateInProgress,
-    updateSubscriptionError,
-    updateSubscriptionInProgress,
     uploadInProgress,
     onGenerateBio,
     generateBioInProgress,
@@ -125,9 +116,6 @@ const EditListingWizardTab = props => {
     generateJobDescriptionError,
     generatedJobDescription,
     onGenerateJobDescription,
-    setupIntent,
-    createSetupIntentInProgress,
-    createSetupIntentError,
   } = props;
 
   const { type } = params;
@@ -340,11 +328,7 @@ const EditListingWizardTab = props => {
       return (
         <EditListingCareSchedulePanel
           {...panelProps(CARE_SCHEDULE)}
-          fetchExceptionsInProgress={fetchExceptionsInProgress}
-          availabilityExceptions={availabilityExceptions}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
           onSubmit={values => {
             // We want to return the Promise to the form,
             // so that it doesn't close its modal if an error is thrown.
@@ -363,11 +347,13 @@ const EditListingWizardTab = props => {
       return (
         <EditListingAvailabilityPanel
           {...panelProps(AVAILABILITY)}
+          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           fetchExceptionsInProgress={fetchExceptionsInProgress}
           availabilityExceptions={availabilityExceptions}
-          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
+          addExceptionInProgress={addExceptionInProgress}
           onAddAvailabilityException={onAddAvailabilityException}
           onDeleteAvailabilityException={onDeleteAvailabilityException}
+          fetchExceptionsError={fetchExceptionsError}
           onSubmit={values => {
             // We want to return the Promise to the form,
             // so that it doesn't close its modal if an error is thrown.
