@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { IconSpinner, IconClose, InlineTextButton, TimeRange, Modal, InfoTooltip } from '../';
-import { EditListingAvailabilityExceptionForm } from '../../forms';
+import { EditListingCareScheduleExceptionForm } from '../../forms';
 import {
   LISTING_STATE_DRAFT,
   DATE_TYPE_DATETIME,
@@ -207,7 +207,7 @@ const CareScheduleExceptions = props => {
           containerClassName={css.modalContainer}
           usePortal
         >
-          <EditListingAvailabilityExceptionForm
+          <EditListingCareScheduleExceptionForm
             formId="EditListingAvailabilityExceptionForm"
             onSubmit={saveException}
             timeZone={careSchedule?.timezone}

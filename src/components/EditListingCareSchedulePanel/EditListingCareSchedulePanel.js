@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import { FormattedMessage } from '../../util/reactIntl';
-import { ensureOwnListing } from '../../util/data';
 import { getDefaultTimeZoneOnBrowser } from '../../util/dates';
 import { LISTING_STATE_DRAFT, propTypes } from '../../util/types';
 import { ButtonGroup } from '..';

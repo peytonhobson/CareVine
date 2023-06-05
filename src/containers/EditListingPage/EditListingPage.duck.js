@@ -46,6 +46,18 @@ export const UPLOAD_IMAGE_REQUEST = 'app/EditListingPage/UPLOAD_IMAGE_REQUEST';
 export const UPLOAD_IMAGE_SUCCESS = 'app/EditListingPage/UPLOAD_IMAGE_SUCCESS';
 export const UPLOAD_IMAGE_ERROR = 'app/EditListingPage/UPLOAD_IMAGE_ERROR';
 
+export const FETCH_EXCEPTIONS_REQUEST = 'app/EditListingPage/FETCH_AVAILABILITY_EXCEPTIONS_REQUEST';
+export const FETCH_EXCEPTIONS_SUCCESS = 'app/EditListingPage/FETCH_AVAILABILITY_EXCEPTIONS_SUCCESS';
+export const FETCH_EXCEPTIONS_ERROR = 'app/EditListingPage/FETCH_AVAILABILITY_EXCEPTIONS_ERROR';
+
+export const ADD_EXCEPTION_REQUEST = 'app/EditListingPage/ADD_AVAILABILITY_EXCEPTION_REQUEST';
+export const ADD_EXCEPTION_SUCCESS = 'app/EditListingPage/ADD_AVAILABILITY_EXCEPTION_SUCCESS';
+export const ADD_EXCEPTION_ERROR = 'app/EditListingPage/ADD_AVAILABILITY_EXCEPTION_ERROR';
+
+export const DELETE_EXCEPTION_REQUEST = 'app/EditListingPage/DELETE_AVAILABILITY_EXCEPTION_REQUEST';
+export const DELETE_EXCEPTION_SUCCESS = 'app/EditListingPage/DELETE_AVAILABILITY_EXCEPTION_SUCCESS';
+export const DELETE_EXCEPTION_ERROR = 'app/EditListingPage/DELETE_AVAILABILITY_EXCEPTION_ERROR';
+
 export const UPDATE_IMAGE_ORDER = 'app/EditListingPage/UPDATE_IMAGE_ORDER';
 
 export const REMOVE_LISTING_IMAGE = 'app/EditListingPage/REMOVE_LISTING_IMAGE';
@@ -70,6 +82,13 @@ const initialState = {
   listingDraft: null,
   updatedTab: null,
   updateInProgress: false,
+  fetchExceptionsError: null,
+  fetchExceptionsInProgress: false,
+  availabilityExceptions: [],
+  addExceptionError: null,
+  addExceptionInProgress: false,
+  deleteExceptionError: null,
+  deleteExceptionInProgress: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -198,6 +217,70 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, images, imageOrder, removedImageIds };
     }
 
+    case FETCH_EXCEPTIONS_REQUEST:
+      return {
+        ...state,
+        availabilityExceptions: [],
+        fetchExceptionsError: null,
+        fetchExceptionsInProgress: true,
+      };
+    case FETCH_EXCEPTIONS_SUCCESS:
+      return {
+        ...state,
+        availabilityExceptions: payload,
+        fetchExceptionsError: null,
+        fetchExceptionsInProgress: false,
+      };
+    case FETCH_EXCEPTIONS_ERROR:
+      return {
+        ...state,
+        fetchExceptionsError: payload.error,
+        fetchExceptionsInProgress: false,
+      };
+
+    case ADD_EXCEPTION_REQUEST:
+      return {
+        ...state,
+        addExceptionError: null,
+        addExceptionInProgress: true,
+      };
+    case ADD_EXCEPTION_SUCCESS:
+      return {
+        ...state,
+        availabilityExceptions: [...state.availabilityExceptions, payload],
+        addExceptionInProgress: false,
+      };
+    case ADD_EXCEPTION_ERROR:
+      return {
+        ...state,
+        addExceptionError: payload.error,
+        addExceptionInProgress: false,
+      };
+
+    case DELETE_EXCEPTION_REQUEST:
+      return {
+        ...state,
+        deleteExceptionError: null,
+        deleteExceptionInProgress: true,
+      };
+    case DELETE_EXCEPTION_SUCCESS: {
+      const deletedExceptionId = payload.id;
+      const availabilityExceptions = state.availabilityExceptions.filter(
+        e => e.id.uuid !== deletedExceptionId.uuid
+      );
+      return {
+        ...state,
+        availabilityExceptions,
+        deleteExceptionInProgress: false,
+      };
+    }
+    case DELETE_EXCEPTION_ERROR:
+      return {
+        ...state,
+        deleteExceptionError: payload.error,
+        deleteExceptionInProgress: false,
+      };
+
     default:
       return state;
   }
@@ -254,6 +337,21 @@ export const showListingsError = errorAction(SHOW_LISTINGS_ERROR);
 export const uploadImage = requestAction(UPLOAD_IMAGE_REQUEST);
 export const uploadImageSuccess = successAction(UPLOAD_IMAGE_SUCCESS);
 export const uploadImageError = errorAction(UPLOAD_IMAGE_ERROR);
+
+// SDK method: availabilityExceptions.query
+export const fetchAvailabilityExceptionsRequest = requestAction(FETCH_EXCEPTIONS_REQUEST);
+export const fetchAvailabilityExceptionsSuccess = successAction(FETCH_EXCEPTIONS_SUCCESS);
+export const fetchAvailabilityExceptionsError = errorAction(FETCH_EXCEPTIONS_ERROR);
+
+// SDK method: availabilityExceptions.create
+export const addAvailabilityExceptionRequest = requestAction(ADD_EXCEPTION_REQUEST);
+export const addAvailabilityExceptionSuccess = successAction(ADD_EXCEPTION_SUCCESS);
+export const addAvailabilityExceptionError = errorAction(ADD_EXCEPTION_ERROR);
+
+// SDK method: availabilityExceptions.delete
+export const deleteAvailabilityExceptionRequest = requestAction(DELETE_EXCEPTION_REQUEST);
+export const deleteAvailabilityExceptionSuccess = successAction(DELETE_EXCEPTION_SUCCESS);
+export const deleteAvailabilityExceptionError = errorAction(DELETE_EXCEPTION_ERROR);
 
 // ================ Thunk ================ //
 
@@ -379,6 +477,50 @@ export function requestUpdateListing(tab, data) {
   };
 }
 
+export const requestAddAvailabilityException = params => (dispatch, getState, sdk) => {
+  dispatch(addAvailabilityExceptionRequest(params));
+
+  return sdk.availabilityExceptions
+    .create(params, { expand: true })
+    .then(response => {
+      const availabilityException = response.data.data;
+      return dispatch(addAvailabilityExceptionSuccess({ data: availabilityException }));
+    })
+    .catch(e => {
+      dispatch(addAvailabilityExceptionError({ error: storableError(e) }));
+      throw e;
+    });
+};
+
+export const requestDeleteAvailabilityException = params => (dispatch, getState, sdk) => {
+  dispatch(deleteAvailabilityExceptionRequest(params));
+
+  return sdk.availabilityExceptions
+    .delete(params, { expand: true })
+    .then(response => {
+      const availabilityException = response.data.data;
+      return dispatch(deleteAvailabilityExceptionSuccess({ data: availabilityException }));
+    })
+    .catch(e => {
+      dispatch(deleteAvailabilityExceptionError({ error: storableError(e) }));
+      throw e;
+    });
+};
+
+export const requestFetchAvailabilityExceptions = fetchParams => (dispatch, getState, sdk) => {
+  dispatch(fetchAvailabilityExceptionsRequest(fetchParams));
+
+  return sdk.availabilityExceptions
+    .query(fetchParams, { expand: true })
+    .then(response => {
+      const availabilityExceptions = denormalisedResponseEntities(response);
+      return dispatch(fetchAvailabilityExceptionsSuccess({ data: availabilityExceptions }));
+    })
+    .catch(e => {
+      return dispatch(fetchAvailabilityExceptionsError({ error: storableError(e) }));
+    });
+};
+
 // loadData is run for each tab of the wizard. When editing an
 // existing listing, the listing must be fetched first.
 export const loadData = params => (dispatch, getState, sdk) => {
@@ -444,6 +586,8 @@ export const loadData = params => (dispatch, getState, sdk) => {
           start,
           end,
         };
+
+        return dispatch(requestFetchAvailabilityExceptions(params));
       }
 
       return response;

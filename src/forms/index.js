@@ -11,6 +11,7 @@ export { default as ContactUsForm } from './ContactUsForm/ContactUsForm';
 export { default as EditListingAddCareRecipientForm } from './EditListingAddCareRecipientForm/EditListingAddCareRecipientForm';
 export { default as EditListingAdditionalDetailsForm } from './EditListingAdditionalDetailsForm/EditListingAdditionalDetailsForm';
 export { default as EditListingAvailabilityExceptionForm } from './EditListingAvailabilityExceptionForm/EditListingAvailabilityExceptionForm';
+export { default as EditListingCareScheduleExceptionForm } from './EditListingCareScheduleExceptionForm/EditListingCareScheduleExceptionForm';
 export { default as EditListingAvailabilityPlanForm } from './EditListingAvailabilityPlanForm/EditListingAvailabilityPlanForm';
 export { default as EditListingBackgroundCheckForm } from './EditListingBackgroundCheckForm/EditListingBackgroundCheckForm';
 export { default as EditListingBioForm } from './EditListingBioForm/EditListingBioForm';

@@ -7,23 +7,15 @@ import { getDefaultTimeZoneOnBrowser, timestampToDate } from '../../util/dates';
 import { LISTING_STATE_DRAFT, DATE_TYPE_DATETIME, propTypes } from '../../util/types';
 import {
   Button,
-  IconClose,
   IconEdit,
-  IconSpinner,
   InlineTextButton,
-  ListingLink,
   Modal,
-  TimeRange,
-  CareScheduleExceptions,
+  AvailabilityPlanExceptions,
   WeekPanel,
 } from '../../components';
-import Weekday from '../EditListingCareSchedulePanel/Weekday';
 import { EditListingAvailabilityPlanForm } from '../../forms';
 import AvailabilityTypeForm from './AvailabilityTypeForm';
-import {
-  createCareSchedule,
-  createInitialValues,
-} from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
+import { createInitialValues } from '../EditListingCareSchedulePanel/EditListingCareSchedule.helpers';
 import zipcodeToTimezone from 'zipcode-to-timezone';
 
 import css from './EditListingAvailabilityPanel.module.css';
@@ -72,9 +64,6 @@ const EditListingAvailabilityPanel = props => {
     className,
     rootClassName,
     listing,
-    fetchExceptionsInProgress,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
     disabled,
     ready,
     onSubmit,
@@ -84,6 +73,12 @@ const EditListingAvailabilityPanel = props => {
     updateInProgress,
     errors,
     panelUpdated,
+    fetchExceptionsInProgress,
+    availabilityExceptions,
+    addExceptionError,
+    addExceptionInProgress,
+    onAddAvailabilityException,
+    onDeleteAvailabilityException,
   } = props;
 
   const currentListing = ensureOwnListing(listing);
@@ -95,7 +90,6 @@ const EditListingAvailabilityPanel = props => {
   const publicData = currentListing.attributes.publicData;
   const savedAvailabilityPlan = currentListing.attributes.availabilityPlan;
 
-  const savedAvailabilityExceptions = savedAvailabilityPlan?.availabilityExceptions;
   const savedSelectedAvailabilityTypes = publicData?.scheduleTypes;
 
   // Hooks
@@ -107,9 +101,6 @@ const EditListingAvailabilityPanel = props => {
   const [availabilityPlan, setAvailabilityPlan] = useState(
     savedAvailabilityPlan || defaultAvailabilityPlan
   );
-  const [availabilityExceptions, setAvailabilityExceptions] = useState(
-    savedAvailabilityExceptions || []
-  );
   const [showNoEntriesError, setShowNoEntriesError] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
@@ -117,9 +108,7 @@ const EditListingAvailabilityPanel = props => {
 
   const submitDisabled =
     selectedAvailabilityTypes.length === 0 ||
-    (!valuesFromLastSubmit &&
-      selectedAvailabilityTypes === savedSelectedAvailabilityTypes &&
-      availabilityExceptions === savedAvailabilityExceptions);
+    (!valuesFromLastSubmit && selectedAvailabilityTypes === savedSelectedAvailabilityTypes);
   const submitInProgress = updateInProgress;
   const submitReady = ready || panelUpdated;
 
@@ -166,16 +155,6 @@ const EditListingAvailabilityPanel = props => {
   const handleAvailabilityTypeChange = values => {
     // sessionStorage.setItem(, 'value');
     setSelectedAvailabilityTypes(values.scheduleTypes);
-  };
-
-  const handleSaveAvailabilityException = exception => {
-    setAvailabilityExceptions(prevExceptions => [...prevExceptions, exception]);
-  };
-
-  const handleDeleteException = start => {
-    setAvailabilityExceptions(prevExceptions =>
-      prevExceptions.filter(exception => exception.attributes.start !== start)
-    );
   };
 
   const availabilityTypeFormInitialValues = { scheduleTypes: savedSelectedAvailabilityTypes };
@@ -234,19 +213,20 @@ const EditListingAvailabilityPanel = props => {
       </section>
       <div className={css.exceptionsContainer}>
         <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
-        <CareScheduleExceptions
+        <AvailabilityPlanExceptions
           fetchExceptionsInProgress={fetchExceptionsInProgress}
           availabilityExceptions={availabilityExceptions}
+          onDeleteAvailabilityException={onDeleteAvailabilityException}
+          onAddAvailabilityException={onAddAvailabilityException}
           onManageDisableScrolling={onManageDisableScrolling}
+          disabled={disabled}
+          ready={ready}
           availabilityPlan={availabilityPlan}
           updateInProgress={updateInProgress}
           errors={errors}
-          disabled={disabled}
-          ready={ready}
-          listing={currentListing}
-          onSave={handleSaveAvailabilityException}
-          onDelete={handleDeleteException}
-          isCaregiver
+          listing={listing}
+          addExceptionError={addExceptionError}
+          addExceptionInProgress={addExceptionInProgress}
         />
       </div>
 
