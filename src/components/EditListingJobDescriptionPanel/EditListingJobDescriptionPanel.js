@@ -120,18 +120,20 @@ const EditListingJobDescriptionPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
   const { description, title } = currentListing.attributes;
+  const hasDescription = description && description !== '';
 
   const [isExplanationModalOpen, setIsExplanationModalOpen] = useState(false);
 
   useEffect(() => {
-    if (currentListing.id && (!description || description === '')) {
+    if (currentListing.id?.uuid && !hasDescription) {
       onGenerateJobDescription(currentListing).then(() => {
         setIsExplanationModalOpen(true);
       });
     }
   }, [description]);
 
-  const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
+  const isPublished =
+    currentListing.id?.uuid && currentListing.attributes.state !== LISTING_STATE_DRAFT;
   const panelTitle = isPublished ? (
     <FormattedMessage
       id="EditListingJobDescriptionPanel.title"
@@ -159,7 +161,7 @@ const EditListingJobDescriptionPanel = props => {
   const initialTitle = title !== 'Title' ? title : generateTitle(currentListing, filterConfig);
   const initialValues = {
     title: initialTitle,
-    description: generatedJobDescription || description,
+    description: hasDescription ? description : generatedJobDescription,
   };
 
   const formProps = {
