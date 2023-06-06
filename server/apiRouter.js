@@ -60,6 +60,7 @@ const updateUserNotifications = require('./api/update-user-notifications');
 const updateTransactionMetadata = require('./api/update-transaction-metadata');
 const sendgridReferralEmail = require('./api/sendgrid/sendgrid-referral-email');
 const updateUserReferrals = require('./api/update-user-referrals');
+const stripeRetrieveUpcomingInvoice = require('./api/stripe/stripe-retrieve-upcoming-invoice');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -139,6 +140,7 @@ router.post('/update-customer-credit-balance', updateCustomerCreditBalance);
 router.post('/fetch-stripe-customer', fetchStripeCustomer);
 router.post('/update-user-referrals', updateUserReferrals);
 router.post('/stripe-fetch-subscription', fetchStripeSubscription);
+router.post('/stripe-retrieve-upcoming-invoice', stripeRetrieveUpcomingInvoice);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

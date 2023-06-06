@@ -118,7 +118,6 @@ const updateBackgroundCheckSubscription = async subscription => {
           subscriptionItemId: subscription?.items?.data[0]?.id,
           type,
           currentPeriodEnd: subscription?.current_period_end,
-          amount: subscription?.plan?.amount,
           cancelAtPeriodEnd: subscription?.cancel_at_period_end,
         },
       },
@@ -206,7 +205,6 @@ const updateBackgroundCheckSubscriptionSchedule = async schedule => {
           status: schedule?.status,
           startDate,
           type,
-          amount: schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 499 : 1499,
         },
       },
     });

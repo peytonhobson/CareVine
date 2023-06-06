@@ -304,3 +304,7 @@ export const updateUserReferrals = body => {
 export const fetchStripeSubscription = body => {
   return post('/api/stripe-fetch-subscription', body);
 };
+
+export const stripeRetrieveUpcomingInvoice = body => {
+  return post('/api/stripe-retrieve-upcoming-invoice', body);
+};

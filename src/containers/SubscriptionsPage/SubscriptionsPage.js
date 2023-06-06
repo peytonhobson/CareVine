@@ -22,13 +22,14 @@ import {
   IconSpinner,
   Modal,
   NamedRedirect,
+  GenericError,
 } from '../../components';
 import ReactivateSubscriptionPaymentModal from './Modals/ReactivateSubscriptionPaymentModal';
 import ReactivateSubscriptionModal from './Modals/ReactivateSubscriptionModal';
 import CancelSubscriptionModal from './Modals/CancelSubscriptionModal';
 import { TopbarContainer } from '../../containers';
 import { SaveCreditCardForm } from '../../forms';
-import { updateSubscriptionItem } from './SubscriptionsPage.duck';
+import { retrieveUpcomingInvoice, updateSubscriptionItem } from './SubscriptionsPage.duck';
 import { fetchCustomerCreditBalance } from '../ReferralPage/ReferralPage.duck';
 import {
   cancelSubscription,
@@ -110,6 +111,9 @@ const SubscriptionsPageComponent = props => {
     currentUserListing,
     onFetchCustomerCreditBalance,
     customerCreditBalance,
+    upcomingInvoice,
+    upcomingInvoiceError,
+    onFetchUpcomingInvoice,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -227,6 +231,7 @@ const SubscriptionsPageComponent = props => {
     setFetchingUserInterval(
       setInterval(() => {
         onFetchCurrentUser();
+        onFetchUpcomingInvoice(stripeCustomerId);
       }, 300)
     );
 
@@ -348,6 +353,7 @@ const SubscriptionsPageComponent = props => {
         );
 
         createFetchUserInterval();
+        onFetchUpcomingInvoice(stripeCustomerId);
         setIsReactivateSubscriptionPaymentModalOpen(false);
       } catch (e) {
         console.log(e);
@@ -358,9 +364,7 @@ const SubscriptionsPageComponent = props => {
   const renewalDate =
     backgroundCheckSubscription?.currentPeriodEnd &&
     new Date(backgroundCheckSubscription.currentPeriodEnd * 1000);
-  const subscriptionsMinusBalance =
-    backgroundCheckSubscription?.amount / 100 + customerCreditBalance;
-  const amount = subscriptionsMinusBalance > 0 ? subscriptionsMinusBalance : '0.00';
+  const amount = upcomingInvoice?.amount_due / 100;
 
   const currentSubscriptionButton = !backgroundCheckSubscriptionSchedule ? (
     SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
@@ -414,7 +418,7 @@ const SubscriptionsPageComponent = props => {
   ) : backgroundCheckSubscription && bcStatusText ? (
     <SubscriptionCard title={backgroundCheckTitle} headerButton={currentSubscriptionButton}>
       <div className={css.subscriptionContentContainer}>
-        {SUBSCRIPTION_ACTIVE_TYPES.includes(bcStatus) && !cancelAtPeriodEnd ? (
+        {upcomingInvoice?.amount_due && !backgroundCheckSubscriptionSchedule ? (
           <div className={css.chargesContainer}>
             <h3>Upcoming Charges</h3>
             <p className={css.dateText}>{renewalDate && renewalDate.toLocaleDateString()}</p>
@@ -450,10 +454,7 @@ const SubscriptionsPageComponent = props => {
     id: 'SubscriptionsPage.futureSubscriptionsTitle',
   });
 
-  const futureSubscriptionAmountDue =
-    backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance > 0
-      ? backgroundCheckSubscriptionSchedule?.amount / 100 + customerCreditBalance
-      : '0.00';
+  const futureSubscriptionAmountDue = upcomingInvoice?.amount_due / 100;
   const futureSubscriptionsContent = fetchingUserInterval ? null : backgroundCheckSubscriptionSchedule &&
     backgroundCheckSubscriptionSchedule?.startDate > todayTimestamp / 1000 ? (
     <div className={css.futureSubscriptions}>
@@ -636,6 +637,10 @@ const SubscriptionsPageComponent = props => {
           customerCreditBalance={customerCreditBalance}
         />
       ) : null}
+      <GenericError
+        show={upcomingInvoiceError}
+        errorText="Failed to retrieve upcoming invoice amount."
+      />
     </>
   );
 };
@@ -648,7 +653,6 @@ const mapStateToProps = state => {
     cancelSubscriptionError,
     createSubscriptionError,
     createSubscriptionInProgress,
-    subscription,
     updateSubscriptionError,
     updateSubscriptionInProgress,
   } = state.stripe;
@@ -664,7 +668,7 @@ const mapStateToProps = state => {
     fetchDefaultPaymentInProgress,
   } = state.paymentMethods;
 
-  const { stripeCustomerFetched } = state.SubscriptionsPage;
+  const { stripeCustomerFetched, upcomingInvoice, upcomingInvoiceError } = state.SubscriptionsPage;
   const { customerCreditBalance } = state.ReferralPage;
 
   return {
@@ -681,13 +685,14 @@ const mapStateToProps = state => {
     defaultPaymentMethods,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
-    newSubscription: subscription,
     scrollingDisabled: isScrollingDisabled(state),
     stripeCustomerFetched,
     updateSubscriptionError,
     updateSubscriptionInProgress,
     currentUserListing,
     customerCreditBalance,
+    upcomingInvoice,
+    upcomingInvoiceError,
   };
 };
 
@@ -703,6 +708,7 @@ const mapDispatchToProps = {
   onCancelFutureSubscription: cancelFutureSubscription,
   onUpdateSubscriptionItem: updateSubscriptionItem,
   onFetchCustomerCreditBalance: fetchCustomerCreditBalance,
+  onFetchUpcomingInvoice: retrieveUpcomingInvoice,
 };
 
 const SubscriptionsPage = compose(

@@ -8,6 +8,7 @@ module.exports = (req, res) => {
   stripe.subscriptions
     .retrieve(subscriptionId)
     .then(apiResponse => {
+      console.log(apiResponse);
       res
         .status(200)
         .set('Content-Type', 'application/transit+json')
