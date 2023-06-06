@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Calendar } from 'react-calendar';
 import { InfoTooltip } from '..';
@@ -388,7 +388,6 @@ export const ViewCalendar = props => {
             onClick
           )
         }
-        //   onChange={this.onChange}
         value={new Date()}
       />
     </div>
