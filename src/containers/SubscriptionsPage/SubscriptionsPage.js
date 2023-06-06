@@ -317,7 +317,6 @@ const SubscriptionsPageComponent = props => {
             proration_behavior: 'none',
           };
 
-          // TODO: DO we need to set cancel at period end to false here?
           onUpdateSubscription(subscriptionId, params).then(() => {
             createFetchUserInterval();
             setIsReactivateSubscriptionPaymentModalOpen(false);

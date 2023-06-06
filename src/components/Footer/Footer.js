@@ -37,16 +37,16 @@ const renderSocialMediaLinks = intl => {
     </ExternalLink>
   ) : null;
 
-  const twitterLink = siteTwitterPage ? (
-    <ExternalLink
-      key="linkToTwitter"
-      href={siteTwitterPage}
-      className={css.icon}
-      title={goToTwitter}
-    >
-      <IconSocialMediaTwitter />
-    </ExternalLink>
-  ) : null;
+  // const twitterLink = siteTwitterPage ? (
+  //   <ExternalLink
+  //     key="linkToTwitter"
+  //     href={siteTwitterPage}
+  //     className={css.icon}
+  //     title={goToTwitter}
+  //   >
+  //     <IconSocialMediaTwitter />
+  //   </ExternalLink>
+  // ) : null;
 
   const instagramLink = siteInstagramPage ? (
     <ExternalLink
@@ -58,7 +58,7 @@ const renderSocialMediaLinks = intl => {
       <IconSocialMediaInstagram />
     </ExternalLink>
   ) : null;
-  return [fbLink, twitterLink, instagramLink].filter(v => v != null);
+  return [fbLink, instagramLink].filter(v => v != null);
 };
 
 const Footer = props => {
@@ -106,7 +106,7 @@ const Footer = props => {
     <div className={classes}>
       <div className={css.topBorderWrapper}>
         <div className={css.content}>
-          {/* <div className={css.someLiksMobile}>{socialMediaLinks}</div> */}
+          <div className={css.someLinksMobile}>{socialMediaLinks}</div>
           <div className={css.links}>
             <div className={css.organization} id="organization">
               <NamedLink name="LandingPage" className={css.logoLink}>
@@ -188,7 +188,7 @@ const Footer = props => {
               </ul>
             </div>
             <div className={css.extraLinks}>
-              {/* <div className={css.someLinks}>{socialMediaLinks}</div> */}
+              <div className={css.someLinks}>{socialMediaLinks}</div>
               <div className={css.legalMatters}>
                 <ul className={css.tosAndPrivacy}>
                   <li>
