@@ -1168,6 +1168,7 @@
   "SentReferral.remind": "Remind",
   "SignupForm.caregiverSelectLabel": "Become a Caregiver",
   "SignupForm.caregiverSelectValue": "caregiver",
+  "SignupForm.forCaregiversLink": "Are you a caregiver? Click here.",
   "SignupForm.emailInvalid": "A valid email address is required",
   "SignupForm.emailLabel": "Email",
   "SignupForm.emailPlaceholder": "john.doe@example.com",
