@@ -59,10 +59,6 @@ const main = async () => {
 
     await Promise.all(
       hasPublicPlan.map(async listing => {
-        if (listing.id.uuid === '63de6118-d981-4bbd-a6aa-074ceee7d5fd') {
-          console.log('listing', listing.attributes.availabilityPlan);
-        }
-
         const convertedPlan = convertPublicPlanToBuiltIn(
           listing.attributes.publicData.availabilityPlan
         );

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { InfoTooltip } from '..';
 import { useCheckMobileScreen } from '../../util/hooks';
+import { convertTimeFrom24to12 } from '../../util/data';
 
 import css from './WeekCalendar.module.css';
 
@@ -23,7 +24,7 @@ const WeekCalendar = props => {
         <InfoTooltip
           title={mappedTimesToDay[day.toLocaleLowerCase()].map(d => (
             <span className={css.time}>
-              {d.startTime}-{d.endTime}
+              {convertTimeFrom24to12(d.startTime)}-{convertTimeFrom24to12(d.endTime)}
             </span>
           ))}
           icon={
@@ -44,7 +45,7 @@ const WeekCalendar = props => {
           <div className={mappedTimesToDay[day.toLocaleLowerCase()]?.length > 0 ? css.entry : null}>
             {mappedTimesToDay[day.toLocaleLowerCase()].map(d => (
               <span className={css.time}>
-                {d.startTime}-{d.endTime}
+                {convertTimeFrom24to12(d.startTime)}-{convertTimeFrom24to12(d.endTime)}
               </span>
             ))}
           </div>

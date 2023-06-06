@@ -50,9 +50,27 @@
 }
 
 .time {
-  composes: marketplaceTinyFontStyles from global;
+  font-family: var(--fontFamily);
+  font-weight: var(--fontWeightRegular);
+  line-height: 1.125em;
+  /* margin-top + n * line-height + margin-bottom => x * 6px */
+  margin-top: 0.594em;
+  margin-bottom: 0.531em;
+  -webkit-font-smoothing: subpixel-antialiased;
   color: var(--matterColorLight);
-  display: flex;
-  flex-direction: column;
-  line-height: 1rem;
+
+  @media (--viewportMedium) {
+    font-size: 1.25vw;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 0.656em;
+    margin-bottom: 0.844em;
+  }
+
+  @media (--viewportLarge) {
+    line-height: 1.125em;
+    font-size: 0.75vw;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 0.656em;
+    margin-bottom: 0.844em;
+  }
 }

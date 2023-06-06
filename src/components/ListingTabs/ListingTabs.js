@@ -98,7 +98,7 @@ const ListingTabs = props => {
 
   const tabs = getTabs(listingType, onClick, selectedTab);
 
-  const entries = availabilityPlan?.entries || publicAvailabilityPlan.entries;
+  const entries = availabilityPlan?.entries || publicAvailabilityPlan?.entries;
   const isProfileClosed = listing?.attributes?.state === 'closed';
 
   const renderSection = (section, key) => {
