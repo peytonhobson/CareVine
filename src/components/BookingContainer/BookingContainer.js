@@ -112,7 +112,7 @@ const BookingContainer = props => {
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
-  const availabilityPlan = currentUserListing?.attributes?.publicData?.availabilityPlan;
+  const availabilityPlan = currentUserListing?.attributes?.availabilityPlan;
   const planType = availabilityPlan?.type;
 
   const [oneTimePlan, setOneTimePlan] = useState(

@@ -23,8 +23,8 @@ const sortSessionsByStartTime = (a, b) => {
 
 const CareScheduleSelectDatesContainer = props => {
   const {
-    availabilityPlan,
-    userAvailabilityPlan,
+    careSchedule,
+    userCareSchedule,
     disabled,
     errors,
     listing,
@@ -43,9 +43,7 @@ const CareScheduleSelectDatesContainer = props => {
   // Hooks
   const [isAddCareSessionModalOpen, setIsAddCareSessionModalOpen] = useState(false);
   const [selectedSessions, setSelectedSessions] = useState(
-    availabilityPlan?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME
-      ? availabilityPlan.selectedSessions
-      : []
+    careSchedule?.type === AVAILABILITY_PLAN_TYPE_ONE_TIME ? careSchedule.selectedSessions : []
   );
 
   const timeZone = zipcodeToTimezone.lookup(listing.attributes.publicData.location?.zipcode);
@@ -74,23 +72,22 @@ const CareScheduleSelectDatesContainer = props => {
   };
 
   const handleSubmit = () => {
-    const availabilityPlan = {
+    const careSchedule = {
       type: AVAILABILITY_PLAN_TYPE_ONE_TIME,
       selectedSessions,
       timezone: timeZone,
     };
 
-    onSubmit(availabilityPlan);
+    onSubmit(careSchedule);
   };
 
   const submitInProgress = updateInProgress;
   const submitDisabled =
     disabled ||
     selectedSessions.length === 0 ||
-    userAvailabilityPlan?.selectedSessions === selectedSessions ||
+    userCareSchedule?.selectedSessions === selectedSessions ||
     submitInProgress;
-  const submitReady =
-    (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_ONE_TIME;
+  const submitReady = (updated || ready) && careSchedule.type === AVAILABILITY_PLAN_TYPE_ONE_TIME;
 
   const exceptionsClasses = classNames(css.exceptions, exceptionsClassName);
 

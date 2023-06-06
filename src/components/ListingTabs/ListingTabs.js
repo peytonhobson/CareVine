@@ -19,7 +19,7 @@ import {
 import css from './ListingTabs.module.css';
 
 const ListingTabs = props => {
-  const { listing, onManageDisableScrolling, currentUserListing, isMobile } = props;
+  const { listing, currentUserListing, isMobile } = props;
 
   const caregiverTabs = [
     'Availability',
@@ -85,8 +85,8 @@ const ListingTabs = props => {
     'Caregiver Preferences': caregiverPreferencesRef,
   };
 
-  const { publicData } = listing.attributes;
-  const { availabilityPlan } = publicData;
+  const { publicData, availabilityPlan } = listing.attributes;
+  const { careSchedule, availabilityPlan: publicAvailabilityPlan } = publicData;
 
   const onClick = tab => {
     if (refMap[tab].current) {
@@ -98,12 +98,20 @@ const ListingTabs = props => {
 
   const tabs = getTabs(listingType, onClick, selectedTab);
 
-  const entries = availabilityPlan?.entries;
+  const entries = availabilityPlan?.entries || publicAvailabilityPlan?.entries;
+  const isProfileClosed = listing?.attributes?.state === 'closed';
 
   const renderSection = (section, key) => {
     switch (section) {
       case 'Availability':
-        return <AvailabilitySection key={key} entries={entries} ref={availabilityRef} />;
+        return (
+          <AvailabilitySection
+            key={key}
+            entries={entries}
+            isProfileClosed={isProfileClosed}
+            ref={availabilityRef}
+          />
+        );
       case 'Bio':
         return <BioSection key={key} listing={listing} ref={bioRef} />;
       case 'Services':
@@ -165,7 +173,7 @@ const ListingTabs = props => {
         return (
           <CareScheduleSection
             key={key}
-            availabilityPlan={availabilityPlan}
+            careSchedule={careSchedule}
             filterConfig={config.custom.filters}
             ref={careScheduleRef}
             isMobile={isMobile}

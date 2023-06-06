@@ -58,7 +58,7 @@
   justify-content: space-between;
 
   width: 100%;
-  padding: 0;
+  padding: 0 2rem;
   margin-top: 30px;
 
   @media (--viewportMedium) {
@@ -72,7 +72,7 @@
   display: flex;
   align-items: flex-end;
   position: relative;
-  width: calc(50% - 12px);
+  width: calc(50% - 1rem);
 
   &:nth-child(2n) {
     margin-top: 12px;
@@ -97,7 +97,7 @@
 
   & :global(.SingleDatePickerInput) {
     width: calc(100% - 24px);
-    margin: 0 0 0 24px;
+    margin: 0 0 0 0;
 
     @media (--viewportMedium) {
       width: 100%;
@@ -197,4 +197,7 @@
   @media (--viewportMedium) {
     padding-bottom: 0;
   }
+}
+.error {
+  color: var(--failColor);
 }

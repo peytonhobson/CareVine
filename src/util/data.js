@@ -523,3 +523,53 @@ export const truncateString = function(fullStr, strLen) {
   var backChars = Math.floor(charsToShow / 2);
   return fullStr.substr(0, frontChars) + separator + fullStr.substr(fullStr.length - backChars);
 };
+
+export const convertTimeFrom12to24 = fullTime => {
+  if (!fullTime || fullTime.length === 5) {
+    return fullTime;
+  }
+
+  const [time, ampm] = fullTime.split(/(am|pm)/i);
+
+  const [hours, minutes] = time.split(':');
+
+  if (hours === '12' && ampm === 'am') {
+    return '00:00';
+  }
+
+  if (ampm === 'pm') {
+    return `${parseInt(hours) + 12}:${minutes}`;
+  }
+
+  if (hours < 10 && hours.includes('0')) {
+    return `${hours < 10 ? `${hours}` : hours}:${minutes}`;
+  }
+
+  return `${hours < 10 ? `0${hours}` : hours}:${minutes}`;
+};
+
+export const convertTimeFrom24to12 = fullTime => {
+  if (!fullTime || fullTime.length !== 5) {
+    return fullTime;
+  }
+
+  const [hours, minutes] = fullTime.split(':');
+
+  if (hours === '00') {
+    return `12:${minutes}am`;
+  }
+
+  if (hours === '12') {
+    return `12:${minutes}pm`;
+  }
+
+  if (hours > 12) {
+    return `${parseInt(hours) - 12}:${minutes}pm`;
+  }
+
+  if (hours < 10 && hours.includes('0')) {
+    return `${hours.replace('0', '')}:${minutes}am`;
+  }
+
+  return `${hours}:${minutes}am`;
+};

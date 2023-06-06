@@ -2,9 +2,9 @@ import React from 'react';
 
 import { InfoTooltip } from '..';
 import classNames from 'classnames';
+import { convertTimeFrom24to12 } from '../../util/data';
 
 import css from './AvailabilityPreview.module.css';
-import { useCheckMobileScreen } from '../../util/hooks';
 
 const weekdayAbbreviations = [
   { key: 'sun', label: 'Su' },
@@ -27,21 +27,31 @@ const weekdayTooltipTitle = entries => {
     sat: [],
   };
 
-  entries.forEach(entry => {
-    titles[entry.dayOfWeek].push(
-      <p>
-        {entry.startTime} - {entry.endTime}
-      </p>
-    );
-  });
+  const is24Hour = entries.length > 0 ? entries[0].startTime.length === 5 : false;
+
+  if (is24Hour) {
+    entries.forEach(entry => {
+      titles[entry.dayOfWeek].push(
+        <p>
+          {convertTimeFrom24to12(entry.startTime)} - {convertTimeFrom24to12(entry.endTime)}
+        </p>
+      );
+    });
+  } else {
+    entries.forEach(entry => {
+      titles[entry.dayOfWeek].push(
+        <p>
+          {entry.startTime} - {entry.endTime}
+        </p>
+      );
+    });
+  }
 
   return titles;
 };
 
 const AvailabilityPreview = props => {
   const { className, entries, availableDays } = props;
-
-  const isMobile = useCheckMobileScreen();
 
   const weekdayTooltipTitles = entries && weekdayTooltipTitle(entries);
 
@@ -56,7 +66,7 @@ const AvailabilityPreview = props => {
       {weekdayAbbreviations.map(day => {
         const dayInSchedule = daysInSchedule.find(dayInSchedule => dayInSchedule.key === day.key);
         const dayClasses = classNames(css.dayBox, dayInSchedule && css.active, className);
-        const title = weekdayTooltipTitles && weekdayTooltipTitles[day.key];
+        const title = weekdayTooltipTitles ? weekdayTooltipTitles[day.key] : null;
         const styles = {
           fontSize: '1rem',
           fontFamily: 'var(--fontFamily)',
