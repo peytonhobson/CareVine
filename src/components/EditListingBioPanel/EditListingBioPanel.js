@@ -37,11 +37,15 @@ const EditListingBioPanel = props => {
 
   useEffect(() => {
     if (currentListing.id?.uuid && !hasDescription) {
-      onGenerateBio(currentListing).then(() => {
-        setIsExplanationModalOpen(true);
-      });
+      onGenerateBio(currentListing);
     }
   }, [description]);
+
+  useEffect(() => {
+    if (generatedBio) {
+      setIsExplanationModalOpen(true);
+    }
+  }, [generatedBio]);
 
   const initialValues = { description: hasDescription ? description : generatedBio };
 
@@ -93,6 +97,7 @@ const EditListingBioPanel = props => {
         updateInProgress={updateInProgress}
         fetchErrors={errors}
         generateBioInProgress={generateBioInProgress}
+        generateBioError={generateBioError}
         onManageDisableScrolling={onManageDisableScrolling}
         {...rest}
       />

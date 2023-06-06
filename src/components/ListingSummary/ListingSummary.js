@@ -36,7 +36,7 @@ const ListingSummaryComponent = props => {
 
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
-  const { minPrice, maxPrice, availabilityPlan, location } = publicData;
+  const { minPrice, maxPrice, location } = publicData;
   const authorMetadata = author?.attributes?.profile?.metadata;
 
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;

@@ -7,6 +7,7 @@ import {
   AVAILABILITY_PLAN_24_HOUR,
   AVAILABILITY_PLAN_REPEAT,
 } from '../util/constants';
+import * as log from '../util/log';
 
 const generateBioPrompt = listing => {
   const { publicData } = listing.attributes;
@@ -42,7 +43,7 @@ const generateJobDescriptionPrompt = listing => {
     careTypes,
     residenceType,
     scheduleType,
-    availabilityPlan,
+    careSchedule,
     careRecipients,
     detailedCareNeeds,
     languagesSpoken,
@@ -52,11 +53,11 @@ const generateJobDescriptionPrompt = listing => {
   let scheduleTimes = null;
 
   if (scheduleType === AVAILABILITY_PLAN_24_HOUR) {
-    scheduleTimes = `Days of Care: ${JSON.stringify(availabilityPlan.availableDays)}
-    Working hours per day: ${availabilityPlan.hoursPerDay}`;
+    scheduleTimes = `Days of Care: ${JSON.stringify(careSchedule.availableDays)}
+    Working hours per day: ${careSchedule.hoursPerDay}`;
   }
   if (scheduleType === AVAILABILITY_PLAN_REPEAT) {
-    scheduleTimes = `Days and times of Care: ${JSON.stringify(availabilityPlan.entries)}`;
+    scheduleTimes = `Days and times of Care: ${JSON.stringify(careSchedule.entries)}`;
   }
 
   const prompt = `I want to hire a caregiver. Generate a first-person job description with less than 800 characters (including spaces) with the following traits.

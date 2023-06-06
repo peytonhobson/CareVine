@@ -31,7 +31,10 @@ import EditListingWizardTab, {
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
-import { savePayoutDetails } from '../../containers/EditListingPage/EditListingPage.duck';
+import {
+  requestAddAvailabilityException,
+  requestDeleteAvailabilityException,
+} from '../../containers/EditListingPage/EditListingPage.duck';
 import { generateBio } from '../../ducks/chatGPT.duck';
 
 import css from './CaregiverEditListingWizard.module.css';
@@ -91,7 +94,7 @@ const tabLabel = (intl, tab) => {
  * @return true if tab / step is completed.
  */
 const tabCompleted = (tab, listing, user) => {
-  const { description, geolocation, publicData } = listing.attributes;
+  const { description, geolocation, publicData, availabilityPlan } = listing.attributes;
   const images = listing.images;
 
   const backgroundCheckApproved = user.attributes.profile.metadata.backgroundCheckApproved;
@@ -110,7 +113,7 @@ const tabCompleted = (tab, listing, user) => {
     case PRICING:
       return !!(publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
-      return !!publicData.availabilityPlan;
+      return !!availabilityPlan;
     case BACKGROUND_CHECK:
       return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
@@ -468,10 +471,12 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onGenerateBio: listing => dispatch(generateBio(listing)),
-});
+const mapDispatchToProps = {
+  fetchStripeCustomer: stripeCustomer,
+  onGenerateBio: generateBio,
+  onAddAvailabilityException: requestAddAvailabilityException,
+  onDeleteAvailabilityException: requestDeleteAvailabilityException,
+};
 
 export default compose(
   withViewport,

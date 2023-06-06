@@ -90,7 +90,7 @@ const tabCompleted = (tab, listing) => {
     case LOCATION:
       return !!(geolocation && publicData && publicData.location);
     case CARE_SCHEDULE:
-      return !!(publicData && publicData.availabilityPlan);
+      return !!(publicData && publicData.careSchedule);
     case PRICING:
       return !!(publicData && publicData.minPrice && publicData.maxPrice);
     case CARE_RECIPIENT:

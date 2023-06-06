@@ -20,6 +20,13 @@ const InfoTooltip = props => {
     ...styles,
   });
 
+  const handleClick = () => {
+    setShowTooltip(!showTooltip);
+    setTimeout(() => {
+      setShowTooltip(false);
+    }, 2000);
+  };
+
   return (
     <Tooltip
       title={title}
@@ -30,7 +37,7 @@ const InfoTooltip = props => {
       placement="top"
       enterTouchDelay={isMobile ? 0 : 700}
     >
-      <IconButton onClick={isMobile ? () => setShowTooltip(!showTooltip) : onClick}>
+      <IconButton onClick={isMobile ? () => handleClick() : onClick}>
         {icon || <InfoIcon />}
       </IconButton>
     </Tooltip>

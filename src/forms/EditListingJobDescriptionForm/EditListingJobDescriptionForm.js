@@ -46,6 +46,7 @@ const EditListingJobDescriptionFormComponent = props => (
         generateJobDescriptionInProgress,
         values,
         filterConfig,
+        generateJobDescriptionError,
       } = formRenderProps;
 
       const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
@@ -167,6 +168,11 @@ const EditListingJobDescriptionFormComponent = props => (
               </>
             )}
 
+            {generateJobDescriptionError && (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingJobDescriptionForm.failedToGenerateJobDescription" />
+              </p>
+            )}
             {errorMessageUpdateListing}
 
             <Button

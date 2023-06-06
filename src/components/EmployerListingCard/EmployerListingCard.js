@@ -87,7 +87,7 @@ export const EmployerListingCardComponent = props => {
   const {
     location = {},
     careTypes,
-    availabilityPlan,
+    careSchedule,
     minPrice = 0,
     maxPrice = 0,
     scheduleType,
@@ -151,10 +151,10 @@ export const EmployerListingCardComponent = props => {
     },
   }));
 
-  const selectedSessions = availabilityPlan?.selectedSessions;
-  const entries = availabilityPlan?.entries;
-  const availableDays = availabilityPlan?.availableDays;
-  const isLiveIn = availabilityPlan?.liveIn;
+  const selectedSessions = careSchedule?.selectedSessions;
+  const entries = careSchedule?.entries;
+  const availableDays = careSchedule?.availableDays;
+  const isLiveIn = careSchedule?.liveIn;
 
   const originString = `${origin?.lat}%2C${origin?.lng}`;
 

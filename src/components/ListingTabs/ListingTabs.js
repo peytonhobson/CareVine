@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { CAREGIVER } from '../../util/constants';
 import { BookingPanel } from '..';
 import config from '../../config';
@@ -19,7 +19,7 @@ import {
 import css from './ListingTabs.module.css';
 
 const ListingTabs = props => {
-  const { listing, onManageDisableScrolling, currentUserListing, isMobile } = props;
+  const { listing, currentUserListing, isMobile } = props;
 
   const caregiverTabs = [
     'Availability',
@@ -85,8 +85,8 @@ const ListingTabs = props => {
     'Caregiver Preferences': caregiverPreferencesRef,
   };
 
-  const { publicData } = listing.attributes;
-  const { availabilityPlan } = publicData;
+  const { publicData, availabilityPlan } = listing.attributes;
+  const { careSchedule, availabilityPlan: publicAvailabilityPlan } = publicData;
 
   const onClick = tab => {
     if (refMap[tab].current) {
@@ -96,107 +96,131 @@ const ListingTabs = props => {
     setSelectedTab(tab);
   };
 
-  const tabs = getTabs(listingType, onClick, selectedTab);
+  const tabs = useMemo(() => {
+    return getTabs(listingType, onClick, selectedTab);
+  }, [listingType, selectedTab]);
 
-  const entries = availabilityPlan?.entries;
+  const entries = availabilityPlan?.entries || publicAvailabilityPlan?.entries;
+  const isProfileClosed = listing.attributes.state === 'closed';
 
-  const renderSection = (section, key) => {
-    switch (section) {
-      case 'Availability':
-        return <AvailabilitySection key={key} entries={entries} ref={availabilityRef} />;
-      case 'Bio':
-        return <BioSection key={key} listing={listing} ref={bioRef} />;
-      case 'Services':
-        return (
-          <ServicesSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={servicesRef}
-          />
-        );
-      case 'Training':
-        return (
-          <CertificationsSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={certificationsAndTrainingRef}
-          />
-        );
-      case 'Certifications/Training':
-        return (
-          <CertificationsSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={certificationsAndTrainingRef}
-          />
-        );
-      case 'Additional':
-        return (
-          <AdditionalInfoSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={additionalInfoRef}
-          />
-        );
-      case 'Job Description':
-        return (
-          <JobDescriptionSection
-            listing={listing}
-            key={key}
-            ref={jobDescriptionRef}
-            currentUserListing={currentUserListing}
-            findLabel={findLabel}
-            filterConfig={config.custom.filters}
-          />
-        );
-      case 'Care Schedule':
-        return (
-          <CareScheduleSection
-            key={key}
-            availabilityPlan={availabilityPlan}
-            filterConfig={config.custom.filters}
-            ref={careScheduleRef}
-            isMobile={isMobile}
-          />
-        );
-      case 'Care Recipients(s)':
-        return (
-          <CareRecipientsSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={careRecipientsRef}
-          />
-        );
-      case 'Caregiver Preferences':
-        return (
-          <CaregiverPreferencesSection
-            key={key}
-            listing={listing}
-            currentUserListing={currentUserListing}
-            filterConfig={config.custom.filters}
-            findLabel={findLabel}
-            ref={caregiverPreferencesRef}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  const renderSection = useCallback(
+    (section, key) => {
+      switch (section) {
+        case 'Availability':
+          return (
+            <AvailabilitySection
+              key={key}
+              entries={entries}
+              isProfileClosed={isProfileClosed}
+              ref={availabilityRef}
+            />
+          );
+        case 'Bio':
+          return <BioSection key={key} listing={listing} ref={bioRef} />;
+        case 'Services':
+          return (
+            <ServicesSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={servicesRef}
+            />
+          );
+        case 'Training':
+          return (
+            <CertificationsSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={certificationsAndTrainingRef}
+            />
+          );
+        case 'Certifications/Training':
+          return (
+            <CertificationsSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={certificationsAndTrainingRef}
+            />
+          );
+        case 'Additional':
+          return (
+            <AdditionalInfoSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={additionalInfoRef}
+            />
+          );
+        case 'Job Description':
+          return (
+            <JobDescriptionSection
+              listing={listing}
+              key={key}
+              ref={jobDescriptionRef}
+              currentUserListing={currentUserListing}
+              findLabel={findLabel}
+              filterConfig={config.custom.filters}
+            />
+          );
+        case 'Care Schedule':
+          return (
+            <CareScheduleSection
+              key={key}
+              careSchedule={careSchedule}
+              filterConfig={config.custom.filters}
+              ref={careScheduleRef}
+              isMobile={isMobile}
+            />
+          );
+        case 'Care Recipients(s)':
+          return (
+            <CareRecipientsSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={careRecipientsRef}
+            />
+          );
+        case 'Caregiver Preferences':
+          return (
+            <CaregiverPreferencesSection
+              key={key}
+              listing={listing}
+              currentUserListing={currentUserListing}
+              filterConfig={config.custom.filters}
+              findLabel={findLabel}
+              ref={caregiverPreferencesRef}
+            />
+          );
+        default:
+          return null;
+      }
+    },
+    [
+      JSON.stringify(listing),
+      JSON.stringify(currentUserListing),
+      JSON.stringify(entries),
+      isProfileClosed,
+    ]
+  );
+
+  const mappedTabs = useMemo(() => {
+    return tabs.map((tab, index) => {
+      return renderSection(tab.text, tab.text);
+    });
+  }, [JSON.stringify(tabs), renderSection]);
 
   return (
     <>
@@ -207,9 +231,7 @@ const ListingTabs = props => {
         tabContentClass={css.tabContent}
         tabClassName={css.tab}
       />
-      {tabs.map((tab, index) => {
-        return renderSection(tab.text, index);
-      })}
+      {mappedTabs}
     </>
   );
 };

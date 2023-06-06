@@ -41,10 +41,10 @@ const SET_END_DATE = 'SET_END_DATE';
 
 const init = initialState => {
   return {
-    availableDays: initialState.availabilityPlan?.availableDays || [],
-    availabilityExceptions: initialState.availabilityPlan?.availabilityExceptions || [],
-    liveIn: initialState.availabilityPlan?.liveIn,
-    hoursPerDay: initialState.availabilityPlan?.hoursPerDay || 8,
+    availableDays: initialState.careSchedule?.availableDays || [],
+    availabilityExceptions: initialState.careSchedule?.availabilityExceptions || [],
+    liveIn: initialState.careSchedule?.liveIn,
+    hoursPerDay: initialState.careSchedule?.hoursPerDay || 8,
     startDate: initialState.savedStartDate,
     endDate: initialState.savedEndDate,
   };
@@ -103,8 +103,8 @@ const reducer = (state, action) => {
 
 const Care24HourFormComponent = props => {
   const {
-    availabilityPlan,
-    userAvailabilityPlan,
+    careSchedule,
+    userCareSchedule,
     currentListing,
     disabled,
     fetchErrors,
@@ -125,9 +125,9 @@ const Care24HourFormComponent = props => {
 
   const isMobile = useCheckMobileScreen();
 
-  const savedStartDate = availabilityPlan?.startDate;
-  const savedEndDate = availabilityPlan?.endDate;
-  const initialState = { savedEndDate, savedStartDate, availabilityPlan };
+  const savedStartDate = careSchedule?.startDate;
+  const savedEndDate = careSchedule?.endDate;
+  const initialState = { savedEndDate, savedStartDate, careSchedule };
   const [state, dispatch] = useReducer(reducer, initialState, init);
 
   const timezone = zipcodeToTimezone.lookup(
@@ -145,14 +145,14 @@ const Care24HourFormComponent = props => {
   const liveInCheckboxLabel = intl.formatMessage({ id: 'Care24HourForm.liveInCheckboxLabel' });
 
   const submitInProgress = updateInProgress;
-  const submitReady = (updated || ready) && availabilityPlan.type === AVAILABILITY_PLAN_TYPE_24HOUR;
+  const submitReady = (updated || ready) && careSchedule.type === AVAILABILITY_PLAN_TYPE_24HOUR;
   const submitDisabled =
-    (state.availableDays === userAvailabilityPlan?.availableDays &&
-      state.startDate === userAvailabilityPlan?.startDate &&
-      state.endDate === userAvailabilityPlan?.endDate &&
-      state.liveIn === userAvailabilityPlan?.liveIn &&
-      state.availabilityExceptions === userAvailabilityPlan?.availabilityExceptions &&
-      state.hoursPerDay === userAvailabilityPlan?.hoursPerDay) ||
+    (state.availableDays === userCareSchedule?.availableDays &&
+      state.startDate === userCareSchedule?.startDate &&
+      state.endDate === userCareSchedule?.endDate &&
+      state.liveIn === userCareSchedule?.liveIn &&
+      state.availabilityExceptions === userCareSchedule?.availabilityExceptions &&
+      state.hoursPerDay === userCareSchedule?.hoursPerDay) ||
     state.availableDays?.length === 0;
 
   const timelineInitialValues = {
@@ -310,7 +310,7 @@ const Care24HourFormComponent = props => {
           onDeleteAvailabilityException={onDeleteAvailabilityException}
           onAddAvailabilityException={onAddAvailabilityException}
           onManageDisableScrolling={onManageDisableScrolling}
-          availabilityPlan={availabilityPlan}
+          careSchedule={careSchedule}
           updateInProgress={updateInProgress}
           errors={fetchErrors}
           disabled={disabled}
