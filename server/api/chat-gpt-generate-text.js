@@ -6,29 +6,37 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
   const { prompt, maxTokens = 250, temperature = 1, n = 1 } = req.body;
 
   const openai = new OpenAIApi(configuration);
 
-  try {
-    const response = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt,
-      temperature,
-      max_tokens: maxTokens,
+  openai
+    .createCompletion(
+      {
+        model: 'text-davinci-003',
+        prompt,
+        temperature,
+        max_tokens: maxTokens,
+      },
+      {
+        timeout: 10000,
+      }
+    )
+    .then(response => {
+      res
+        .set('Content-Type', 'application/transit+json')
+        .send(
+          serialize({
+            data: response.data.choices[0].text.trim(),
+          })
+        )
+        .end();
+    })
+    .catch(error => {
+      res
+        .status(500)
+        .json({ error })
+        .end();
     });
-
-    res
-      .set('Content-Type', 'application/transit+json')
-      .send(
-        serialize({
-          data: response.data.choices[0].text.trim(),
-        })
-      )
-      .end();
-  } catch (error) {
-    log.error(error?.response?.data, 'chatgpt-generate-text-failed');
-    next(error);
-  }
 };

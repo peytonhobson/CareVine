@@ -38,6 +38,7 @@ const EditListingBioFormComponent = props => (
         fetchErrors,
         onManageDisableScrolling,
         generateBioInProgress,
+        generateBioError,
       } = formRenderProps;
 
       const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
@@ -120,6 +121,11 @@ const EditListingBioFormComponent = props => (
               />
             )}
 
+            {generateBioError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingBioForm.generateBioFailed" />
+              </p>
+            ) : null}
             {errorMessageUpdateListing}
 
             <Button

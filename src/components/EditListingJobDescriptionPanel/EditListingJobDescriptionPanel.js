@@ -126,11 +126,15 @@ const EditListingJobDescriptionPanel = props => {
 
   useEffect(() => {
     if (currentListing.id?.uuid && !hasDescription) {
-      onGenerateJobDescription(currentListing).then(() => {
-        setIsExplanationModalOpen(true);
-      });
+      onGenerateJobDescription(currentListing);
     }
   }, [description]);
+
+  useEffect(() => {
+    if (generatedJobDescription) {
+      setIsExplanationModalOpen(true);
+    }
+  }, [generatedJobDescription]);
 
   const isPublished =
     currentListing.id?.uuid && currentListing.attributes.state !== LISTING_STATE_DRAFT;
@@ -197,6 +201,7 @@ const EditListingJobDescriptionPanel = props => {
           onSubmit(updatedValues);
         }}
         generateJobDescriptionInProgress={generateJobDescriptionInProgress}
+        generateJobDescriptionError={generateJobDescriptionError}
       />
       <Modal
         id="JDGenerationExplanation"
