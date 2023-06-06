@@ -525,6 +525,10 @@ export const truncateString = function(fullStr, strLen) {
 };
 
 export const convertTimeFrom12to24 = fullTime => {
+  if (!fullTime || fullTime.length === 5) {
+    return fullTime;
+  }
+
   const [time, ampm] = fullTime.split(/(am|pm)/i);
 
   const [hours, minutes] = time.split(':');
@@ -545,6 +549,10 @@ export const convertTimeFrom12to24 = fullTime => {
 };
 
 export const convertTimeFrom24to12 = fullTime => {
+  if (!fullTime || fullTime.length !== 5) {
+    return fullTime;
+  }
+
   const [hours, minutes] = fullTime.split(':');
 
   if (hours === '00') {
