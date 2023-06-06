@@ -7,6 +7,7 @@ import {
   AVAILABILITY_PLAN_24_HOUR,
   AVAILABILITY_PLAN_REPEAT,
 } from '../util/constants';
+import * as log from '../util/log';
 
 const generateBioPrompt = listing => {
   const { publicData } = listing.attributes;
