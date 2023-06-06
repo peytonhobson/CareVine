@@ -1,12 +1,28 @@
 const sgMail = require('@sendgrid/mail');
 const { integrationSdk, handleError, serialize } = require('../../api-util/sdk');
 const log = require('../../log');
+const isDev = process.env.NODE_ENV === 'development';
 
 const SENDGRID_TEMPLATE_ID = 'd-1cb90abfce57425fad96b3cefcef270e';
 const marketplaceUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
 
 module.exports = async (req, res) => {
   const { email, senderName, referralCode } = req.body;
+
+  if (isDev) {
+    res
+      .status(200)
+      .set('Content-Type', 'application/transit+json')
+      .send(
+        serialize({
+          data: {
+            message: 'Emails are not sent in development mode',
+          },
+        })
+      )
+      .end();
+    return;
+  }
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
