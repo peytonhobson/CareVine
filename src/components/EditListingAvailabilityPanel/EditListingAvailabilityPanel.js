@@ -163,6 +163,7 @@ const EditListingAvailabilityPanel = props => {
     return onSubmit({
       availabilityPlan,
       publicData: {
+        availabilityPlan,
         scheduleTypes: selectedAvailabilityTypes,
       },
     })
