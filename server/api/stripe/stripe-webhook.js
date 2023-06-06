@@ -118,6 +118,7 @@ const updateBackgroundCheckSubscription = async subscription => {
           subscriptionItemId: subscription?.items?.data[0]?.id,
           type,
           currentPeriodEnd: subscription?.current_period_end,
+          amount: subscription?.plan?.amount,
           cancelAtPeriodEnd: subscription?.cancel_at_period_end,
         },
       },
@@ -197,7 +198,7 @@ const updateBackgroundCheckSubscriptionSchedule = async schedule => {
   const startDate = schedule?.phases[0]?.start_date;
 
   try {
-    await integrationSdk.users.updateProfile({
+    const userUpdated = await integrationSdk.users.updateProfile({
       id: userId,
       privateData: {
         backgroundCheckSubscriptionSchedule: {
@@ -205,6 +206,7 @@ const updateBackgroundCheckSubscriptionSchedule = async schedule => {
           status: schedule?.status,
           startDate,
           type,
+          amount: schedule?.phases[0]?.items[0]?.price === CAREVINE_GOLD_PRICE_ID ? 499 : 1499,
         },
       },
     });
