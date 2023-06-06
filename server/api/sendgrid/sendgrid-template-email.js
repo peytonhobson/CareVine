@@ -1,6 +1,7 @@
 const sgMail = require('@sendgrid/mail');
 const { integrationSdk, handleError, serialize } = require('../../api-util/sdk');
 const log = require('../../log');
+const isDev = process.env.NODE_ENV === 'development';
 
 const SENDGRID_TEMPLATE_IDS = {
   'listing-approved': 'd-8b99728fb8784ec3a28e16708abfcffc',
@@ -19,6 +20,21 @@ const SENDGRID_TEMPLATE_IDS = {
 
 module.exports = (req, res) => {
   const { receiverId, templateData, templateName } = req.body;
+
+  if (isDev) {
+    res
+      .status(200)
+      .set('Content-Type', 'application/transit+json')
+      .send(
+        serialize({
+          data: {
+            message: 'Emails are not sent in development mode',
+          },
+        })
+      )
+      .end();
+    return;
+  }
 
   integrationSdk.users
     .show({ id: receiverId })
