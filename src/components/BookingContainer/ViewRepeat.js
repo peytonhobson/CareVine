@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Modal, ViewCalendar, InlineTextButton, WeekPanel } from '..';
-import { EditListingAvailabilityPlanForm } from '../../forms';
 import CareScheduleRecurringTimesContainer from '../EditListingCareSchedulePanel/containers/CareScheduleRecurringTimesContainer';
 import { timestampToDate } from '../../util/dates';
 import { getDefaultTimeZoneOnBrowser } from '../../util/dates';
@@ -18,7 +17,7 @@ const defaultTimeZone = () =>
 
 const ViewRepeat = props => {
   const {
-    availabilityPlan,
+    careSchedule,
     currentUserListing,
     onManageDisableScrolling,
     onChange,
@@ -28,20 +27,18 @@ const ViewRepeat = props => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const entries = availabilityPlan?.entries;
-  const endDate = availabilityPlan?.endDate;
-  const startDate = availabilityPlan?.startDate;
-  const availabilityExceptions = availabilityPlan?.availabilityExceptions;
+  const entries = careSchedule?.entries;
+  const endDate = careSchedule?.endDate;
+  const startDate = careSchedule?.startDate;
+  const availabilityExceptions = careSchedule?.availabilityExceptions;
 
-  const defaultAvailabilityPlan = {
+  const defaultcareSchedule = {
     type: AVAILABILITY_PLAN_REPEAT,
     timezone: defaultTimeZone(),
     entries: [],
   };
-  const formAvailabilityPlan =
-    availabilityPlan?.type === AVAILABILITY_PLAN_REPEAT
-      ? availabilityPlan
-      : defaultAvailabilityPlan;
+  const formCareSchedule =
+    careSchedule?.type === AVAILABILITY_PLAN_REPEAT ? careSchedule : defaultcareSchedule;
 
   const handleSubmit = values => {
     setIsEditMode(false);
@@ -74,17 +71,14 @@ const ViewRepeat = props => {
       ) : (
         <>
           <div className={css.weeklySchedule}>Weekly Schedule</div>
-          <WeekPanel
-            availabilityPlan={availabilityPlan}
-            openEditModal={() => setIsEditMode(true)}
-          />
+          <WeekPanel careSchedule={careSchedule} openEditModal={() => setIsEditMode(true)} />
           <div className={css.datesContainer}>
             <span className={css.dateContainer}>
               <p>
                 <span className={css.bold}>Start Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan?.startDate
-                    ? timestampToDate(availabilityPlan.startDate).toLocaleDateString()
+                  {careSchedule?.startDate
+                    ? timestampToDate(careSchedule.startDate).toLocaleDateString()
                     : 'NA'}
                 </span>
               </p>
@@ -93,8 +87,8 @@ const ViewRepeat = props => {
               <p>
                 <span className={css.bold}>End Date: </span>
                 <span className={css.item}>
-                  {availabilityPlan?.endDate
-                    ? timestampToDate(availabilityPlan.endDate).toLocaleDateString()
+                  {careSchedule?.endDate
+                    ? timestampToDate(careSchedule.endDate).toLocaleDateString()
                     : 'NA'}
                 </span>
               </p>
@@ -105,7 +99,7 @@ const ViewRepeat = props => {
     </>
   ) : (
     <Modal
-      id="EditAvailabilityPlanRepeatModal"
+      id="EditCareScheduleRepeatModal"
       isOpen={isEditMode}
       onClose={() => setIsEditMode(false)}
       onManageDisableScrolling={onManageDisableScrolling}
@@ -113,7 +107,7 @@ const ViewRepeat = props => {
       usePortal
     >
       <CareScheduleRecurringTimesContainer
-        availabilityPlan={formAvailabilityPlan}
+        careSchedule={formCareSchedule}
         currentListing={currentUserListing}
         errors={{}}
         isPublished

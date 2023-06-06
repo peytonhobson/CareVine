@@ -18,7 +18,7 @@ const defaultTimeZone = () =>
 
 const ViewOneTime = props => {
   const {
-    availabilityPlan,
+    careSchedule,
     currentUserListing,
     onManageDisableScrolling,
     onChange,
@@ -28,7 +28,7 @@ const ViewOneTime = props => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const selectedSessions = availabilityPlan?.selectedSessions;
+  const selectedSessions = careSchedule?.selectedSessions;
 
   const timeZone = zipcodeToTimezone.lookup(
     currentUserListing?.attributes?.publicData?.location?.zipcode
@@ -86,7 +86,7 @@ const ViewOneTime = props => {
     </>
   ) : (
     <Modal
-      id="EditAvailabilityPlanOneTimeModal"
+      id="EditcareScheduleOneTimeModal"
       isOpen={isEditMode}
       onClose={() => setIsEditMode(false)}
       onManageDisableScrolling={onManageDisableScrolling}
@@ -94,7 +94,7 @@ const ViewOneTime = props => {
       usePortal
     >
       <CareScheduleSelectDatesContainer
-        availabilityPlan={availabilityPlan}
+        careSchedule={careSchedule}
         listing={currentUserListing}
         onManageDisableScrolling={onManageDisableScrolling}
         onSubmit={handleSubmit}

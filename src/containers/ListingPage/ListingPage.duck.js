@@ -15,6 +15,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { updateUserNotifications } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
+import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
+import { denormalisedResponseEntities } from '../../util/data';
 
 const { UUID } = sdkTypes;
 
@@ -49,6 +51,10 @@ export const OPEN_LISTING_REQUEST = 'app/ListingPage/OPEN_LISTING_REQUEST';
 export const OPEN_LISTING_SUCCESS = 'app/ListingPage/OPEN_LISTING_SUCCESS';
 export const OPEN_LISTING_ERROR = 'app/ListingPage/OPEN_LISTING_ERROR';
 
+export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUEST';
+export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
+export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -66,6 +72,14 @@ const initialState = {
   openListingInProgress: false,
   openListingError: null,
   origin: null,
+  timeSlots: null,
+  monthlyTimeSlots: {
+    // '2019-12': {
+    //   timeSlots: [],
+    //   fetchTimeSlotsError: null,
+    //   fetchTimeSlotsInProgress: null,
+    // },
+  },
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -128,6 +142,42 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case OPEN_LISTING_ERROR:
       return { ...state, openListingInProgress: false, openListingError: payload };
 
+    case FETCH_TIME_SLOTS_REQUEST: {
+      const monthlyTimeSlots = {
+        ...state.monthlyTimeSlots,
+        [payload]: {
+          ...state.monthlyTimeSlots[payload],
+          fetchTimeSlotsError: null,
+          fetchTimeSlotsInProgress: true,
+        },
+      };
+      return { ...state, monthlyTimeSlots };
+    }
+    case FETCH_TIME_SLOTS_SUCCESS: {
+      const monthId = payload.monthId;
+      const monthlyTimeSlots = {
+        ...state.monthlyTimeSlots,
+        [monthId]: {
+          ...state.monthlyTimeSlots[monthId],
+          fetchTimeSlotsInProgress: false,
+          timeSlots: payload.timeSlots,
+        },
+      };
+      return { ...state, monthlyTimeSlots };
+    }
+    case FETCH_TIME_SLOTS_ERROR: {
+      const monthId = payload.monthId;
+      const monthlyTimeSlots = {
+        ...state.monthlyTimeSlots,
+        [monthId]: {
+          ...state.monthlyTimeSlots[monthId],
+          fetchTimeSlotsInProgress: false,
+          fetchTimeSlotsError: payload.error,
+        },
+      };
+      return { ...state, monthlyTimeSlots };
+    }
+
     default:
       return state;
   }
@@ -187,6 +237,20 @@ export const openListingRequest = () => ({ type: OPEN_LISTING_REQUEST });
 export const openListingSuccess = () => ({ type: OPEN_LISTING_SUCCESS });
 export const openListingError = e => ({ type: OPEN_LISTING_ERROR, error: true, payload: e });
 
+export const fetchTimeSlotsRequest = monthId => ({
+  type: FETCH_TIME_SLOTS_REQUEST,
+  payload: monthId,
+});
+export const fetchTimeSlotsSuccess = (monthId, timeSlots) => ({
+  type: FETCH_TIME_SLOTS_SUCCESS,
+  payload: { timeSlots, monthId },
+});
+export const fetchTimeSlotsError = (monthId, error) => ({
+  type: FETCH_TIME_SLOTS_ERROR,
+  error: true,
+  payload: { monthId, error },
+});
+
 // ================ Thunks ================ //
 
 export const showListing = (listingId, isOwn = false) => (dispatch, getState, sdk) => {
@@ -194,24 +258,8 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
   dispatch(fetchCurrentUser());
   const params = {
     id: listingId,
-    include: ['author', 'author.email', 'author.profileImage', 'author.metadata', 'images'],
+    include: ['author', 'author.profileImage'],
     'fields.image': [
-      // Listing page
-      'variants.landscape-crop',
-      'variants.landscape-crop2x',
-      'variants.landscape-crop4x',
-      'variants.landscape-crop6x',
-
-      // Social media
-      'variants.facebook',
-      'variants.twitter',
-
-      // Image carousel
-      'variants.scaled-small',
-      'variants.scaled-medium',
-      'variants.scaled-large',
-      'variants.scaled-xlarge',
-
       // Avatars
       'variants.square-small',
       'variants.square-small2x',
@@ -221,9 +269,9 @@ export const showListing = (listingId, isOwn = false) => (dispatch, getState, sd
   const show = isOwn ? sdk.ownListings.show(params) : sdk.listings.show(params);
 
   return show
-    .then(data => {
-      dispatch(addMarketplaceEntities(data));
-      return data;
+    .then(response => {
+      dispatch(addMarketplaceEntities(response));
+      return response;
     })
     .catch(e => {
       dispatch(showListingError(storableError(e)));
@@ -375,6 +423,57 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
+const timeSlotsRequest = params => (dispatch, getState, sdk) => {
+  return sdk.timeslots.query(params).then(response => {
+    return denormalisedResponseEntities(response);
+  });
+};
+
+export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, getState, sdk) => {
+  const monthId = monthIdStringInTimeZone(start, timeZone);
+
+  dispatch(fetchTimeSlotsRequest(monthId));
+
+  // The maximum pagination page size for timeSlots is 500
+  const extraParams = {
+    per_page: 500,
+    page: 1,
+  };
+
+  return dispatch(timeSlotsRequest({ listingId, start, end, ...extraParams }))
+    .then(timeSlots => {
+      dispatch(fetchTimeSlotsSuccess(monthId, timeSlots));
+    })
+    .catch(e => {
+      dispatch(fetchTimeSlotsError(monthId, storableError(e)));
+    });
+};
+
+const fetchMonthlyTimeSlots = (dispatch, listing) => {
+  const hasWindow = typeof window !== 'undefined';
+  const attributes = listing.attributes;
+  // Listing could be ownListing entity too, so we just check if attributes key exists
+  const hasTimeZone =
+    attributes && attributes.availabilityPlan && attributes.availabilityPlan.timezone;
+
+  // Fetch time-zones on client side only.
+  if (hasWindow && listing.id && hasTimeZone) {
+    const tz = listing.attributes.availabilityPlan.timezone;
+    const nextBoundary = findNextBoundary(tz, new Date());
+
+    const nextMonth = nextMonthFn(nextBoundary, tz);
+    const nextAfterNextMonth = nextMonthFn(nextMonth, tz);
+
+    return Promise.all([
+      dispatch(fetchTimeSlots(listing.id, nextBoundary, nextMonth, tz)),
+      dispatch(fetchTimeSlots(listing.id, nextMonth, nextAfterNextMonth, tz)),
+    ]);
+  }
+
+  // By default return an empty array
+  return Promise.all([]);
+};
+
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const listingId = new UUID(params.id);
 
@@ -395,5 +494,15 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     dispatch(showListing(listingId)),
     currentUser?.id && dispatch(fetchExistingConversation(listingId)),
     dispatch(setOrigin(origin)),
-  ]);
+  ]).then(responses => {
+    if (responses[0] && responses[0].data && responses[0].data.data) {
+      const listing = responses[0].data.data;
+
+      // Fetch timeSlots.
+      // This can happen parallel to loadData.
+      // We are not interested to return them from loadData call.
+      fetchMonthlyTimeSlots(dispatch, listing);
+    }
+    return responses;
+  });
 };

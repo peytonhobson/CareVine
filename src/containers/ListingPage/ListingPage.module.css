@@ -22,7 +22,7 @@
   max-width: 100%;
 
   @media (--viewportLarge) {
-    width: 60%;
+    padding-inline: 15%;
   }
 }
 
