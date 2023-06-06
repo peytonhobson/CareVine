@@ -218,7 +218,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           </InlineTextButton>
         </header>
         <WeekPanel
-          careSchedule={state.careSchedule}
+          availabilityPlan={state.careSchedule}
           openEditModal={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
         />
       </section>
