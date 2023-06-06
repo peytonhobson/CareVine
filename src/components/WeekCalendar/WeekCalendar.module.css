@@ -60,6 +60,7 @@
   color: var(--matterColorLight);
 
   @media (--viewportMedium) {
+    font-size: 0.75rem;
     font-size: 1.25vw;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 0.656em;

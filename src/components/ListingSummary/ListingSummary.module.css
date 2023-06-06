@@ -85,6 +85,7 @@
   min-height: 0;
   padding: 0.75rem 2rem;
   max-width: 13rem;
+  margin-inline: 0.5rem;
 }
 
 .avatar {
