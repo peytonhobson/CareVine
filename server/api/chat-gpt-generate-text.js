@@ -20,7 +20,7 @@ module.exports = (req, res) => {
         max_tokens: maxTokens,
       },
       {
-        timeout: 10000,
+        timeout: 60000,
       }
     )
     .then(response => {
@@ -34,6 +34,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(error => {
+      log.error(error?.response?.error?.data, 'openai-generate-text-failed', { prompt });
       res
         .status(500)
         .json({ error })

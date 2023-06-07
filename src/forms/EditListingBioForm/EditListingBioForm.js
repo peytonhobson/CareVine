@@ -99,6 +99,7 @@ const EditListingBioFormComponent = props => (
                 <div style={{ textAlign: 'center' }}>
                   <IconSpinner className={css.spinner} />
                   <h3 className={css.generatingBioText}>Generating bio...</h3>
+                  <p className={css.generatingBioText}>This may take up to a minute</p>
                 </div>
               </div>
             ) : (

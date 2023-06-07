@@ -133,6 +133,7 @@ const EditListingJobDescriptionFormComponent = props => (
                 <div style={{ textAlign: 'center' }}>
                   <IconSpinner className={css.spinner} />
                   <h3 className={css.generatingDescriptionText}>Generating job description...</h3>
+                  <p className={css.generatingDescriptionText}>This may take up to a minute</p>
                 </div>
               </div>
             ) : (
