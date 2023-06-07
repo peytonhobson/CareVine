@@ -180,7 +180,6 @@ export const generateBio = listing => async (dispatch, getState, sdk) => {
 
     dispatch(generateBioSuccess(response.data));
   } catch (e) {
-    log.error(e, 'generate-bio-failed', { listingId: listing.id.uuid });
     dispatch(generateBioError(storableError(e)));
   }
 };
@@ -200,7 +199,6 @@ export const generateJobDescription = listing => async (dispatch, getState, sdk)
 
     dispatch(generateJobDescriptionSuccess(response.data));
   } catch (e) {
-    log.error(e, 'generate-job-description-failed', { listingId: listing.id.uuid });
     dispatch(generateJobDescriptionError(storableError(e)));
   }
 };
