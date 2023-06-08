@@ -1,0 +1,45 @@
+.fieldContainer {
+  margin-block: 2rem;
+}
+
+.fieldLabel {
+  width: 100%;
+  text-align: center;
+}
+
+.priceRange {
+  padding: 0 2rem;
+}
+
+.track {
+  background-color: var(--marketplaceColor);
+}
+
+.availableRatesContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0rem 2.5rem;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.bookingType {
+  composes: button buttonFont buttonText buttonBordersSecondary buttonColorsSecondary from global;
+
+  min-height: 0;
+  border: 2px solid var(--marketplaceColor);
+
+  height: 3rem;
+  color: var(--marketplaceColor);
+
+  &:hover {
+    color: var(--matterColorLight);
+  }
+}
+
+.selectedBookingType {
+  min-height: 0;
+  height: 3rem;
+}

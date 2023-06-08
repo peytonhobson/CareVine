@@ -195,13 +195,13 @@ const ListingSummaryComponent = props => {
       {!isOwnListing ? (
         <div className={css.buttonContainer}>
           {/* TODO: Add booking functionality back in when complete */}
-          {/* {userType === CAREGIVER && (
-            <Button className={css.button} onClick={onOpenBookingModal}>
+          {userType === CAREGIVER && (
+            <Button className={css.previewButton} onClick={onOpenBookingModal}>
               <FormattedMessage id="ListingSummary.bookNow" />
             </Button>
-          )} */}
+          )}
           <Button
-            className={css.secondaryButton}
+            className={css.previewButton}
             onClick={onContactUser}
             disabled={fetchExistingConversationInProgress}
           >
@@ -209,7 +209,7 @@ const ListingSummaryComponent = props => {
           </Button>
         </div>
       ) : (
-        <div className={css.ownListingButtonContainer}>
+        <div className={css.buttonContainer}>
           {!isListingClosed ? (
             <Button
               className={css.previewButton}

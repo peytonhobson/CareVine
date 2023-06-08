@@ -42,8 +42,10 @@ import {
   ListingTabs,
   ListingPreview,
   GenericError,
+  BookingPanel,
+  Avatar,
 } from '../../components';
-import { EnquiryForm } from '../../forms';
+import { EnquiryForm, InitialBookingForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { BACKGROUND_CHECK_APPROVED, CAREGIVER } from '../../util/constants';
 import ActionBarMaybe from './ActionBarMaybe';
@@ -58,6 +60,8 @@ import {
   sendMessage,
   closeListing,
   openListing,
+  fetchTimeSlots,
+  fetchTransactionLineItems,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
@@ -243,6 +247,12 @@ export class ListingPageComponent extends Component {
       openListingError,
       onOpenListing,
       origin,
+      onFetchTimeSlots,
+      monthlyTimeSlots,
+      onFetchTransactionLineItems,
+      lineItems,
+      fetchLineItemsInProgress,
+      fetchLineItemsError,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -479,7 +489,7 @@ export class ListingPageComponent extends Component {
                 />
               </Modal>
             )}
-            {/* {this.state.bookingModalOpen && (
+            {this.state.bookingModalOpen && (
               <Modal
                 id="BookingPanel"
                 isOpen={isAuthenticated && !!this.state.bookingModalOpen}
@@ -488,16 +498,18 @@ export class ListingPageComponent extends Component {
                 containerClassName={css.bookingModalContainer}
                 usePortal
               >
-                <BookingContainer
+                <div className={css.modalHeader}>
+                  <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
+                  <Avatar className={css.modalAvatar} user={currentAuthor} disableProfileLink />
+                </div>
+                <InitialBookingForm
+                  className={css.bookingForm}
                   listing={currentListing}
-                  currentUserListing={currentUserListing}
-                  currentUser={currentUser}
-                  intl={intl}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                  onBookNow={handleBookingSubmit}
+                  onSubmit={handleBookingSubmit}
+                  // inProgress={bookingInProgress}
                 />
               </Modal>
-            )} */}
+            )}
           </LayoutWrapperMain>
           <LayoutWrapperFooter>
             <Footer />
@@ -570,11 +582,10 @@ const mapStateToProps = state => {
     existingConversation,
     closeListingInProgress,
     closeListingError,
-    listingClosed,
     openListingInProgress,
     openListingError,
-    listingOpened,
     origin,
+    monthlyTimeSlots,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -610,6 +621,7 @@ const mapStateToProps = state => {
     openListingInProgress,
     openListingError,
     origin,
+    monthlyTimeSlots,
   };
 };
 
@@ -622,6 +634,8 @@ const mapDispatchToProps = {
   onSendMessage: sendMessage,
   onCloseListing: closeListing,
   onOpenListing: openListing,
+  onFetchTimeSlots: fetchTimeSlots,
+  onFetchTransactionLineItems: fetchTransactionLineItems,
 };
 
 // Note: it is important that the withRouter HOC is **outside** the

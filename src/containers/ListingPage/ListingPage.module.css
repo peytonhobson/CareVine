@@ -715,3 +715,17 @@
     margin-bottom: 0;
   }
 }
+
+.modalHeader {
+  display: flex;
+  justify-content: center;
+}
+
+.modalAvatar {
+  margin-left: 1rem;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  text-align: center;
+}
