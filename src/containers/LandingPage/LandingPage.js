@@ -68,7 +68,7 @@ export const LandingPageComponent = props => {
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - 20;
+      const elementHeight = contentRef.current.offsetTop - (isMobile ? 20 : 60);
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };
