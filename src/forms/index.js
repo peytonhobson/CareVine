@@ -29,6 +29,7 @@ export { default as EnquiryForm } from './EnquiryForm/EnquiryForm';
 export { default as FeedbackForm } from './FeedbackForm/FeedbackForm';
 export { default as FilterForm } from './FilterForm/FilterForm';
 export { default as IdentityProofForm } from './IdentityProofForm/IdentityProofForm';
+export { default as InitialBookingForm } from './InitialBookingForm/InitialBookingForm';
 export { default as LocationSearchForm } from './LocationSearchForm/LocationSearchForm';
 export { default as LoginForm } from './LoginForm/LoginForm';
 export { default as PasswordChangeForm } from './PasswordChangeForm/PasswordChangeForm';

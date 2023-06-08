@@ -12,7 +12,7 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import { updateUserNotifications } from '../../util/api';
+import { updateUserNotifications, transactionLineItems } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
@@ -55,6 +55,10 @@ export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUES
 export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
 export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
 
+export const FETCH_LINE_ITEMS_REQUEST = 'app/ListingPage/FETCH_LINE_ITEMS_REQUEST';
+export const FETCH_LINE_ITEMS_SUCCESS = 'app/ListingPage/FETCH_LINE_ITEMS_SUCCESS';
+export const FETCH_LINE_ITEMS_ERROR = 'app/ListingPage/FETCH_LINE_ITEMS_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -80,6 +84,9 @@ const initialState = {
     //   fetchTimeSlotsInProgress: null,
     // },
   },
+  lineItems: null,
+  fetchLineItemsInProgress: false,
+  fetchLineItemsError: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -178,6 +185,13 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, monthlyTimeSlots };
     }
 
+    case FETCH_LINE_ITEMS_REQUEST:
+      return { ...state, fetchLineItemsInProgress: true, fetchLineItemsError: null };
+    case FETCH_LINE_ITEMS_SUCCESS:
+      return { ...state, fetchLineItemsInProgress: false, lineItems: payload };
+    case FETCH_LINE_ITEMS_ERROR:
+      return { ...state, fetchLineItemsInProgress: false, fetchLineItemsError: payload };
+
     default:
       return state;
   }
@@ -250,6 +264,33 @@ export const fetchTimeSlotsError = (monthId, error) => ({
   error: true,
   payload: { monthId, error },
 });
+
+export const fetchLineItemsRequest = () => ({ type: FETCH_LINE_ITEMS_REQUEST });
+export const fetchLineItemsSuccess = lineItems => ({
+  type: FETCH_LINE_ITEMS_SUCCESS,
+  payload: lineItems,
+});
+export const fetchLineItemsError = error => ({
+  type: FETCH_LINE_ITEMS_ERROR,
+  error: true,
+  payload: error,
+});
+
+export const fetchTransactionLineItems = ({ bookingData, listingId, isOwnListing }) => dispatch => {
+  dispatch(fetchLineItemsRequest());
+  transactionLineItems({ bookingData, listingId, isOwnListing })
+    .then(response => {
+      const lineItems = response.data;
+      dispatch(fetchLineItemsSuccess(lineItems));
+    })
+    .catch(e => {
+      dispatch(fetchLineItemsError(storableError(e)));
+      log.error(e, 'fetching-line-items-failed', {
+        listingId: listingId.uuid,
+        bookingData: bookingData,
+      });
+    });
+};
 
 // ================ Thunks ================ //
 

@@ -42,20 +42,6 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  @media (--viewportMedium) {
-    width: auto;
-    margin-top: 0;
-  }
-}
-
-.ownListingButtonContainer {
-  margin-top: 2rem;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
 
