@@ -16,18 +16,6 @@ import css from './ChangeLocationFilter.module.css';
 
 const identity = v => v;
 
-const getQueryParamName = queryParamNames => {
-  return Array.isArray(queryParamNames) ? queryParamNames[0] : queryParamNames;
-};
-
-// Format URI component's query param: { pub_key: 'has_all:a,b,c' }
-const format = (selectedOptions, queryParamName, searchMode) => {
-  const hasOptionsSelected = selectedOptions && selectedOptions.length > 0;
-  const mode = searchMode ? `${searchMode}:` : '';
-  const value = hasOptionsSelected ? `${mode}${selectedOptions.join(',')}` : null;
-  return { [queryParamName]: value };
-};
-
 class ChangeLocationFilter extends Component {
   constructor(props) {
     super(props);
@@ -165,7 +153,7 @@ class ChangeLocationFilter extends Component {
             autocompleteSearchRequired(addressRequiredMessage),
             autocompletePlaceSelected(addressNotRecognizedMessage)
           )}
-          searchType={['address']}
+          searchType={['address', 'place']}
           usePostalCode={true}
           required
         />
