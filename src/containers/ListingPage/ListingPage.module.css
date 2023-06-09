@@ -12,13 +12,13 @@
   min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));
 
   @media (--viewportMedium) {
-    min-height: calc(100vh - var(--topbarHeightDesktop) - var(--userNavHeight));
+    min-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
 
 .subContainer {
   max-width: 100%;
-  max-height: calc(100vh - var(--topbarHeightDesktop) - var(--userNavHeight));
+  max-height: calc(100vh - var(--topbarHeightDesktop));
   overflow: scroll;
   padding: 0 3rem;
 
@@ -735,10 +735,11 @@
 .bookingContainer {
   /* Make box shadow for card */
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  padding: 5rem;
+  padding: 0 5rem 3rem 5rem;
   /* position: fixed; */
   right: 2rem;
   display: flex;
   flex-grow: 1;
   justify-content: center;
+  max-width: 35vw;
 }

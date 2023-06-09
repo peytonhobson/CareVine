@@ -43,3 +43,7 @@
   min-height: 0;
   height: 3rem;
 }
+
+.submitButton {
+  margin-top: 2rem;
+}
