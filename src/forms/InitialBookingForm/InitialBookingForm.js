@@ -96,52 +96,8 @@ const InitialBookingFormComponent = props => (
               noHandleLabels
             />
           </div>
-          <div className={css.fieldContainer}>
-            <h2 className={css.fieldLabel}>How often do you need this caregiver?</h2>
-            <FieldButtonGroup
-              className={css.bookingType}
-              selectedClassName={css.selectedBookingType}
-              id="bookingType"
-              name="bookingType"
-              options={[
-                {
-                  key: 'oneTime',
-                  label: 'One Time',
-                },
-                {
-                  key: 'recurring',
-                  label: 'Recurring',
-                },
-              ]}
-              initialSelect="oneTime"
-            />
-          </div>
           <div>
-            <h2 className={css.fieldLabel}>What dates do you need them?</h2>
-            <div>
-              <FieldDateInput
-                className={css.fieldDateInput}
-                name="exceptionStartDate"
-                id="startDate"
-                label={intl.formatMessage({
-                  id: 'EditListingAvailabilityExceptionForm.exceptionStartDateLabel',
-                })}
-                placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
-                format={formatFieldDateInput(timeZone)}
-                parse={parseFieldDateInput(timeZone)}
-                isDayBlocked={getAvailabileStartDates(endDay)}
-                onChange={value =>
-                  onExceptionStartDateChange(value, availableTimeRanges, formRenderProps)
-                }
-                onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
-                onNextMonthClick={() => handleMonthClick(nextMonthFn)}
-                navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
-                navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
-                useMobileMargins
-                showErrorMessage={false}
-                validate={bookingDateRequired('Required')}
-              />
-            </div>
+            <h2 className={css.fieldLabel}>Select your dates:</h2>
           </div>
 
           <Button
