@@ -18,13 +18,15 @@
 
 .subContainer {
   width: 100%;
-  max-height: calc(100vh - var(--topbarHeightDesktop));
-  overflow: scroll;
+
+  padding-bottom: 3rem;
 
   @media (--viewportLarge) {
     /* padding-inline: 15%; */
     border-right: 1px solid var(--matterColorNegative);
-    padding: 0 3rem;
+    padding: 0 3rem 3rem 3rem;
+    overflow: scroll;
+    max-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
 
@@ -742,4 +744,43 @@
   flex-grow: 1;
   justify-content: center;
   max-width: 35vw;
+}
+
+.fixedAvailability {
+  position: fixed;
+  bottom: 0;
+  z-index: var(--zIndexTopbar);
+  background-color: var(--matterColorLight);
+  display: flex;
+  width: 100vw;
+  padding: 1.25rem;
+
+  box-shadow: var(--boxShadowTop);
+}
+
+.startingRateContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  white-space: nowrap;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.availabilityButton {
+  padding: 1.5rem 2.5rem;
+
+  margin-left: 1rem;
+}
+
+.startingRateText {
+  composes: h3 from global;
+  margin-top: 0;
+}
+
+.startingRate {
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  color: var(--marketplaceColor);
+  margin: 0;
 }
