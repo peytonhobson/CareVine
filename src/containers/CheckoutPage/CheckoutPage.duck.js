@@ -36,7 +36,7 @@ export const STRIPE_CUSTOMER_ERROR = 'app/CheckoutPage/STRIPE_CUSTOMER_ERROR';
 
 const initialState = {
   listing: null,
-  bookingData: null,
+  bookingRate: null,
   bookingDates: null,
   speculateTransactionInProgress: false,
   speculateTransactionError: null,

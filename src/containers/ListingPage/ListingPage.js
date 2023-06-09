@@ -42,7 +42,6 @@ import {
   ListingTabs,
   ListingPreview,
   GenericError,
-  BookingPanel,
   Avatar,
 } from '../../components';
 import { EnquiryForm, InitialBookingForm } from '../../forms';
@@ -77,17 +76,16 @@ export class ListingPageComponent extends Component {
       pageClassNames: [],
       imageCarouselOpen: false,
       enquiryModalOpen: false,
-      bookingModalOpen: false,
       showListingPreview: false,
     };
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleBookingSubmit = this.handleBookingSubmit.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
     this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
     this.goBackToSearchResults = this.goBackToSearchResults.bind(this);
   }
 
-  handleSubmit(values) {
+  handleBookingSubmit(values) {
     const {
       history,
       getListing,
@@ -98,22 +96,17 @@ export class ListingPageComponent extends Component {
     const listingId = new UUID(params.id);
     const listing = getListing(listingId);
 
-    const { bookingStartTime, bookingEndTime, ...restOfValues } = values;
-    const bookingStart = timestampToDate(bookingStartTime);
-    const bookingEnd = timestampToDate(bookingEndTime);
+    const { bookingDates, rate: bookingRate } = values;
 
-    const bookingData = {
-      quantity: calculateQuantityFromHours(bookingStart, bookingEnd),
-      ...restOfValues,
-    };
+    const convertedBookingDates = bookingDates.map(date => ({
+      date: new Date(date),
+      _serializedType: 'SerializableDate',
+    }));
 
     const initialValues = {
       listing,
-      bookingData,
-      bookingDates: {
-        bookingStart,
-        bookingEnd,
-      },
+      bookingRate: bookingRate?.length > 0 ? bookingRate[0] : null,
+      bookingDates: convertedBookingDates,
       confirmPaymentError: null,
     };
 
@@ -121,9 +114,14 @@ export class ListingPageComponent extends Component {
 
     const routes = routeConfiguration();
     // Customize checkout page state with current listing and selected bookingDates
-    const { setInitialValues } = findRouteByRouteName('CheckoutPage', routes);
+    const { setInitialValues: checkoutSetInitialValues } = findRouteByRouteName(
+      'CheckoutPage',
+      routes
+    );
 
-    callSetInitialValues(setInitialValues, initialValues, saveToSessionStorage);
+    const CheckoutPage = findRouteByRouteName('CheckoutPage', routes);
+
+    callSetInitialValues(checkoutSetInitialValues, initialValues, saveToSessionStorage);
 
     // Clear previous Stripe errors from store if there is any
     onInitializeCardPaymentData();
@@ -366,15 +364,6 @@ export class ListingPageComponent extends Component {
     // banned or deleted display names for the function
     const authorDisplayName = userDisplayNameAsString(ensuredAuthor, '');
 
-    const handleBookingSubmit = values => {
-      const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
-      if (isOwnListing || isCurrentlyClosed) {
-        window.scrollTo(0, 0);
-      } else {
-        this.handleSubmit(values);
-      }
-    };
-
     const siteTitle = config.siteTitle;
     const schemaTitle = intl.formatMessage(
       { id: 'ListingPage.schemaTitle' },
@@ -439,8 +428,6 @@ export class ListingPageComponent extends Component {
                       currentUserListing={currentUserListing}
                       onContactUser={this.onContactUser}
                       isOwnListing={isOwnListing}
-                      onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
-                      onBookNow={handleBookingSubmit}
                       onShowListingPreview={() => this.setState({ showListingPreview: true })}
                       isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
@@ -474,7 +461,7 @@ export class ListingPageComponent extends Component {
               </div>
               <BookingContainer
                 listing={currentListing}
-                onSubmit={handleBookingSubmit}
+                onSubmit={this.handleBookingSubmit}
                 monthlyTimeSlots={monthlyTimeSlots}
                 onManageDisableScrolling={onManageDisableScrolling}
                 authorDisplayName={authorDisplayName}
@@ -634,18 +621,23 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = {
-  onManageDisableScrolling: manageDisableScrolling,
-  callSetInitialValues: setInitialValues,
-  onInitializeCardPaymentData: initializeCardPaymentData,
-  onChangeModalValue: changeModalValue,
-  onSendEnquiry: sendEnquiry,
-  onSendMessage: sendMessage,
-  onCloseListing: closeListing,
-  onOpenListing: openListing,
-  onFetchTimeSlots: fetchTimeSlots,
-  onFetchTransactionLineItems: fetchTransactionLineItems,
-};
+const mapDispatchToProps = dispatch => ({
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
+    dispatch(setInitialValues(values, saveToSessionStorage)),
+  onChangeModalValue: value => dispatch(changeModalValue(value)),
+  onSendEnquiry: (listing, message, history, routes) =>
+    dispatch(sendEnquiry(listing, message, history, routes)),
+  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
+  onCloseListing: listingId => dispatch(closeListing(listingId)),
+  onOpenListing: listingId => dispatch(openListing(listingId)),
+  onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
+  onFetchTimeSlots: (listingId, start, end, timeZone) =>
+    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
+    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
+});
 
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route

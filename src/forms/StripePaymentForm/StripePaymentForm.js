@@ -130,7 +130,7 @@ const PaymentMethodSelector = props => {
     paymentMethod,
     intl,
   } = props;
-  const last4 = defaultPaymentMethod.card.last4;
+  const last4 = defaultPaymentMethod.card?.last4;
   const labelText = intl.formatMessage(
     { id: 'StripePaymentForm.replaceAfterOnetimePayment' },
     { last4 }

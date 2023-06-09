@@ -82,15 +82,19 @@ export const FieldDatePickerComponent = props => {
     const isDaySelected = selectedDays.find(entry => entry === dayTime);
 
     if (isDaySelected) {
-      const newSelectedDays = selectedDays.filter(entry => entry !== dayTime);
-      setSelectedDays(newSelectedDays);
+      setSelectedDays(prevSelectedDays => {
+        const newSelectedDays = prevSelectedDays.filter(entry => entry !== dayTime);
 
-      input.onChange(selectedDays);
+        input.onChange(newSelectedDays);
+        return newSelectedDays;
+      });
     } else {
-      const newSelectedDays = [...selectedDays, dayTime];
-      setSelectedDays(newSelectedDays);
+      setSelectedDays(prevSelectedDays => {
+        const newSelectedDays = [...prevSelectedDays, dayTime];
 
-      input.onChange(newSelectedDays);
+        input.onChange(newSelectedDays);
+        return newSelectedDays;
+      });
     }
   };
 
@@ -102,7 +106,6 @@ export const FieldDatePickerComponent = props => {
           formatDay(locale, date, selectedDays, monthlyTimeSlots, handleSelectDay)
         }
         value={new Date()}
-        onChange={v => console.log(v)}
       />
     </div>
   );
