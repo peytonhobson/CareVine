@@ -63,6 +63,7 @@ import {
   fetchTimeSlots,
   fetchTransactionLineItems,
 } from './ListingPage.duck';
+import BookingContainer from './BookingContainer';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -257,6 +258,7 @@ export class ListingPageComponent extends Component {
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const isLarge = typeof window !== 'undefined' && window.innerWidth > 1024;
 
     const listingId = new UUID(rawParams.id);
     const isPendingApprovalVariant = rawParams.variant === LISTING_PAGE_PENDING_APPROVAL_VARIANT;
@@ -470,15 +472,11 @@ export class ListingPageComponent extends Component {
                   />
                 )}
               </div>
-              <div className={css.bookingContainer}>
-                <InitialBookingForm
-                  className={css.bookingForm}
-                  listing={currentListing}
-                  onSubmit={handleBookingSubmit}
-                  monthlyTimeSlots={monthlyTimeSlots}
-                  // inProgress={bookingInProgress}
-                />
-              </div>
+              <BookingContainer
+                listing={currentListing}
+                onSubmit={handleBookingSubmit}
+                monthlyTimeSlots={monthlyTimeSlots}
+              />
             </div>
             {this.state.enquiryModalOpen && (
               <Modal

@@ -96,7 +96,7 @@ const InitialBookingFormComponent = props => (
             inProgress={submitInProgress}
             ready={submitReady}
           >
-            Continue to Book
+            Continue to Booking
           </Button>
         </Form>
       );
