@@ -78,8 +78,13 @@
 
   @media (--viewportMedium) {
     font-size: 1rem;
+    font-size: 2vw;
     line-height: 1.5rem;
     padding-bottom: 1rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1.2vw;
   }
 }
 

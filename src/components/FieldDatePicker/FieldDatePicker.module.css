@@ -31,8 +31,12 @@
   & :global(.react-calendar__navigation button) {
     min-width: 44px;
     background: none;
-    font-size: 16px;
+    font-size: 1rem;
     margin-top: 8px;
+  }
+
+  & :global(.react-calendar__navigation__arrow) {
+    font-size: 2rem !important;
   }
 
   & :global(.react-calendar--doubleView) {
@@ -61,7 +65,6 @@
   & :global(.react-calendar__navigation) {
     display: flex;
     height: 44px;
-    margin-bottom: 1em;
     & :hover {
       cursor: pointer;
     }
@@ -178,5 +181,17 @@
   }
   & :global(.react-calendar--selectRange .react-calendar__tile--hover) {
     background-color: #e6e6e6;
+  }
+
+  & :global(.react-calendar__navigation__next2-button) {
+    display: none;
+  }
+
+  & :global(.react-calendar__navigation__prev2-button) {
+    display: none;
+  }
+
+  & :global(.react-calendar__navigation__next-button) {
+    font-size: 1.5rem;
   }
 }

@@ -17,14 +17,14 @@
 }
 
 .subContainer {
-  max-width: 100%;
+  width: 100%;
   max-height: calc(100vh - var(--topbarHeightDesktop));
   overflow: scroll;
-  padding: 0 3rem;
 
   @media (--viewportLarge) {
     /* padding-inline: 15%; */
     border-right: 1px solid var(--matterColorNegative);
+    padding: 0 3rem;
   }
 }
 

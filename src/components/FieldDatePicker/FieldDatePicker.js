@@ -17,8 +17,16 @@ const isDayDisabled = (monthlyTimeSlots, selectedDays, date) => {
     entry => entry.attributes.start.getDate() === date.getDate() && entry.attributes.seats === 0
   );
 
+  const beforeToday = date.getTime() < new Date().getTime();
+  const afterThreeMonths =
+    date.getTime() >
+    moment()
+      .add(3, 'months')
+      .toDate()
+      .getTime();
+
   if (selectedDays.length == 0) {
-    return booked;
+    return booked || beforeToday || afterThreeMonths;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -37,7 +45,9 @@ const isDayDisabled = (monthlyTimeSlots, selectedDays, date) => {
   const isBeforeFirstSelectedDay = date.getTime() >= twoWeeksAfterFirstSelectedDay.getTime();
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
-  return booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay;
+  return (
+    booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeToday || afterThreeMonths
+  );
 };
 
 const formatDay = (locale, date, selectedDays, monthlyTimeSlots, onClick) => {
