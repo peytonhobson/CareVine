@@ -48,13 +48,10 @@ const InitialBookingFormComponent = props => (
       } = formRenderProps;
 
       const { minPrice, maxPrice, availabilityPlan } = listing.attributes.publicData;
-      const middleRate = Number.parseFloat((minPrice + maxPrice) / 2).toFixed(0) / 100;
-
-      const timeZone = availabilityPlan.timezone;
-      const [currentMonth, setCurrentMonth] = useState(getMonthStartInTimeZone(TODAY, timeZone));
+      const middleRate = Number.parseFloat((minPrice + maxPrice) / 200).toFixed(0);
 
       const submitInProgress = updateInProgress;
-      const submitReady = (updated || ready) && careSchedule.type === AVAILABILITY_PLAN_TYPE_24HOUR;
+      const submitReady = updated || ready;
       const submitDisabled = false;
 
       return (
@@ -98,8 +95,7 @@ const InitialBookingFormComponent = props => (
           <Button
             className={css.submitButton}
             disabled={submitDisabled}
-            // type={submitButtonType || 'submit'}
-            // onClick={submitButtonType === 'button' ? handleSubmit : null}
+            type="submit"
             inProgress={submitInProgress}
             ready={submitReady}
           >

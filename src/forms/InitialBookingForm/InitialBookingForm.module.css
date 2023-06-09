@@ -3,8 +3,8 @@
 .fieldContainer {
   margin-bottom: 3rem;
 
-  @media (--medium-viewport) {
-    margin-bottom: 2rem;
+  @media (--viewportLarge) {
+    margin-bottom: 1rem;
   }
 }
 
