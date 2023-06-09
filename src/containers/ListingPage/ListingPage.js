@@ -475,6 +475,7 @@ export class ListingPageComponent extends Component {
                   className={css.bookingForm}
                   listing={currentListing}
                   onSubmit={handleBookingSubmit}
+                  monthlyTimeSlots={monthlyTimeSlots}
                   // inProgress={bookingInProgress}
                 />
               </div>

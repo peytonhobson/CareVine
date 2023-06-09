@@ -3,7 +3,14 @@ import React, { useState } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 
-import { Button, Form, FieldRangeSlider, FieldButtonGroup, FieldDateInput } from '../../components';
+import {
+  Button,
+  Form,
+  FieldRangeSlider,
+  FieldButtonGroup,
+  FieldDateInput,
+  FieldDatePicker,
+} from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import {
   resetToStartOfDay,
@@ -21,31 +28,6 @@ import css from './InitialBookingForm.module.css';
 
 const TODAY = new Date();
 
-const defaultTimeZone = () =>
-  typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';
-
-// Format form's value for the react-dates input: convert timeOfDay to the local time
-const formatFieldDateInput = timeZone => v =>
-  v && v.date ? { date: timeOfDayFromTimeZoneToLocal(v.date, timeZone) } : { date: v };
-
-// Parse react-dates input's value: convert timeOfDay to the given time zone
-const parseFieldDateInput = timeZone => v =>
-  v && v.date ? { date: timeOfDayFromLocalToTimeZone(v.date, timeZone) } : v;
-
-const getAvailabileEndDates = startDate => day => {
-  if (day >= startDate) {
-    return false;
-  }
-  return true;
-};
-
-const getAvailabileStartDates = endDate => day => {
-  if (!endDate || day <= endDate) {
-    return false;
-  }
-  return true;
-};
-
 const InitialBookingFormComponent = props => (
   <FinalForm
     {...props}
@@ -61,6 +43,7 @@ const InitialBookingFormComponent = props => (
         updated,
         updateInProgress,
         values,
+        monthlyTimeSlots,
       } = formRenderProps;
 
       const { minPrice, maxPrice, availabilityPlan } = listing.attributes.publicData;
@@ -75,7 +58,7 @@ const InitialBookingFormComponent = props => (
 
       return (
         <Form className={css.root} onSubmit={handleSubmit}>
-          <div>
+          <div className={css.fieldContainer}>
             <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
             <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
               ${values.rate}
@@ -96,8 +79,13 @@ const InitialBookingFormComponent = props => (
               noHandleLabels
             />
           </div>
-          <div>
+          <div className={css.fieldContainer}>
             <h2 className={css.fieldLabel}>Select your dates:</h2>
+            <FieldDatePicker
+              monthlyTimeSlots={monthlyTimeSlots}
+              name="bookingDates"
+              id="bookingDates"
+            />
           </div>
 
           <Button
