@@ -5,11 +5,9 @@
 
 .mainContainer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+
   width: 100%;
-  margin: 0 auto;
-  padding: 3rem 0;
+  /* margin: 0 2rem; */
 
   min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));
 
@@ -20,9 +18,13 @@
 
 .subContainer {
   max-width: 100%;
+  max-height: calc(100vh - var(--topbarHeightDesktop) - var(--userNavHeight));
+  overflow: scroll;
+  padding: 0 3rem;
 
   @media (--viewportLarge) {
-    padding-inline: 15%;
+    /* padding-inline: 15%; */
+    border-right: 1px solid var(--matterColorNegative);
   }
 }
 
@@ -728,4 +730,15 @@
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
   text-align: center;
+}
+
+.bookingContainer {
+  /* Make box shadow for card */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  padding: 5rem;
+  /* position: fixed; */
+  right: 2rem;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
 }

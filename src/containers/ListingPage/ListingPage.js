@@ -470,6 +470,14 @@ export class ListingPageComponent extends Component {
                   />
                 )}
               </div>
+              <div className={css.bookingContainer}>
+                <InitialBookingForm
+                  className={css.bookingForm}
+                  listing={currentListing}
+                  onSubmit={handleBookingSubmit}
+                  // inProgress={bookingInProgress}
+                />
+              </div>
             </div>
             {this.state.enquiryModalOpen && (
               <Modal

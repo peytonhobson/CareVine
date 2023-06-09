@@ -194,12 +194,6 @@ const ListingSummaryComponent = props => {
       </div>
       {!isOwnListing ? (
         <div className={css.buttonContainer}>
-          {/* TODO: Add booking functionality back in when complete */}
-          {userType === CAREGIVER && (
-            <Button className={css.previewButton} onClick={onOpenBookingModal}>
-              <FormattedMessage id="ListingSummary.bookNow" />
-            </Button>
-          )}
           <Button
             className={css.previewButton}
             onClick={onContactUser}
