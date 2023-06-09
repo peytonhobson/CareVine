@@ -476,6 +476,8 @@ export class ListingPageComponent extends Component {
                 listing={currentListing}
                 onSubmit={handleBookingSubmit}
                 monthlyTimeSlots={monthlyTimeSlots}
+                onManageDisableScrolling={onManageDisableScrolling}
+                authorDisplayName={authorDisplayName}
               />
             </div>
             {this.state.enquiryModalOpen && (

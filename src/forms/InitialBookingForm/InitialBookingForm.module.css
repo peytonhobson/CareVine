@@ -1,5 +1,11 @@
+@import '../../styles/customMediaQueries.css';
+
 .fieldContainer {
-  margin-block: 2rem;
+  margin-bottom: 3rem;
+
+  @media (--medium-viewport) {
+    margin-bottom: 2rem;
+  }
 }
 
 .fieldLabel {
@@ -46,4 +52,10 @@
 
 .submitButton {
   margin-top: 2rem;
+}
+
+.selectDatesContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

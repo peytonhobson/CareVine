@@ -784,3 +784,16 @@
   color: var(--marketplaceColor);
   margin: 0;
 }
+
+.bookingModalHeader {
+  padding-block: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookingAvatar {
+  margin-left: 2rem;
+  width: 5rem;
+  height: 5rem;
+}

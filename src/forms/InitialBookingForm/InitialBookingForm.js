@@ -10,6 +10,7 @@ import {
   FieldButtonGroup,
   FieldDateInput,
   FieldDatePicker,
+  InfoTooltip,
 } from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import {
@@ -80,7 +81,13 @@ const InitialBookingFormComponent = props => (
             />
           </div>
           <div className={css.fieldContainer}>
-            <h2 className={css.fieldLabel}>Select your dates:</h2>
+            <div className={css.selectDatesContainer}>
+              <h2>Select your dates:</h2>
+              <InfoTooltip
+                className={css.infoTooltip}
+                title="You can book up to two weeks at a time."
+              />
+            </div>
             <FieldDatePicker
               monthlyTimeSlots={monthlyTimeSlots}
               name="bookingDates"
