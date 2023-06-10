@@ -17,6 +17,7 @@ import {
   ensureBooking,
   ensureStripeCustomer,
   ensurePaymentMethodCard,
+  convertTimeFrom12to24,
 } from '../../util/data';
 import { minutesBetween } from '../../util/dates';
 import { createSlug } from '../../util/urlHelpers';
@@ -93,6 +94,16 @@ const checkIsPaymentExpired = existingTransaction => {
     ? minutesBetween(existingTransaction.attributes.lastTransitionedAt, new Date()) >= 15
     : false;
 };
+
+const calculateTimeBetween = (bookingStart, bookingEnd) => {
+  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
+  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
+
+  return end - start;
+};
+
+const calculateCost = (bookingStart, bookingEnd, price) =>
+  calculateTimeBetween(bookingStart, bookingEnd) * price;
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -839,18 +850,25 @@ export class CheckoutPageComponent extends Component {
             <div className={css.detailsHeadings}>
               <h2 className={css.detailsTitle}>Booking Summary</h2>
             </div>
-            <div>
+            <div className={css.bookingTimes}>
               {this.state.selectedBookingTimes.map((bookingTime, index) => {
                 const date = bookingTime.date;
                 const startTime = bookingTime.startTime;
                 const endTime = bookingTime.endTime;
 
                 return startTime && endTime ? (
-                  <div>
-                    <h3 className={css.summaryDate}>{date}</h3>
-                    <span>
-                      {startTime} - {endTime}
-                    </span>
+                  <div className={css.bookingTime}>
+                    <h3 className={css.summaryDate}>
+                      {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
+                    </h3>
+                    <div className={css.summaryTimeContainer}>
+                      <span className={css.summaryTimes}>
+                        {startTime} - {endTime}
+                      </span>
+                      <p className={css.dateCostText}>
+                        ({calculateTimeBetween(startTime, endTime)} hours)
+                      </p>
+                    </div>
                   </div>
                 ) : null;
               })}
