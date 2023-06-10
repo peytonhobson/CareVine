@@ -119,8 +119,6 @@ export class ListingPageComponent extends Component {
       routes
     );
 
-    const CheckoutPage = findRouteByRouteName('CheckoutPage', routes);
-
     callSetInitialValues(checkoutSetInitialValues, initialValues, saveToSessionStorage);
 
     // Clear previous Stripe errors from store if there is any

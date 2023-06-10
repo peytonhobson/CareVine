@@ -67,7 +67,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
-    padding: 0 48px;
+    padding: 0 409px 0 3rem;
   }
 }
 
@@ -79,7 +79,7 @@
   @media (--viewportLarge) {
     flex-grow: 0;
     flex-basis: 519px;
-    margin-top: 121px;
+    margin-top: 4rem;
     margin-right: 132px;
   }
 }
@@ -122,6 +122,28 @@
   @media (--viewportLarge) {
     margin-left: 48px;
   }
+}
+
+.bookAuthor {
+  composes: h1 from global;
+}
+
+.cardAvatarWrapper {
+  padding: 2rem;
+
+  display: grid;
+
+  grid-template-columns: auto auto;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.cardAvatar {
+  display: block;
+  width: 8rem;
+  height: 8rem;
+  margin-right: 2rem;
 }
 
 .avatarMobile {
@@ -259,11 +281,11 @@
     flex-shrink: 0;
     display: block;
     /* Dimensions */
-    width: 409px;
+    position: fixed;
     padding-bottom: 55px;
 
-    /* Position */
-    margin: 120px 0 24px 0;
+    top: 9rem;
+    right: 3rem;
 
     /* Coloring */
     background-color: var(--matterColorLight);

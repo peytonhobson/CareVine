@@ -13,17 +13,6 @@ import {
   InfoTooltip,
 } from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
-import {
-  resetToStartOfDay,
-  timeOfDayFromLocalToTimeZone,
-  timeOfDayFromTimeZoneToLocal,
-  dateIsAfter,
-  monthIdStringInTimeZone,
-  getMonthStartInTimeZone,
-  nextMonthFn,
-  prevMonthFn,
-} from '../../util/dates';
-import { bookingDateRequired } from '../../util/validators';
 
 import css from './InitialBookingForm.module.css';
 
@@ -52,7 +41,8 @@ const InitialBookingFormComponent = props => (
 
       const submitInProgress = updateInProgress;
       const submitReady = updated || ready;
-      const submitDisabled = false;
+      const submitDisabled =
+        invalid || disabled || !values.bookingDates || values.bookingDates?.length === 0;
 
       return (
         <Form className={css.root} onSubmit={handleSubmit}>
@@ -89,7 +79,9 @@ const InitialBookingFormComponent = props => (
               monthlyTimeSlots={monthlyTimeSlots}
               name="bookingDates"
               id="bookingDates"
-            />
+            >
+              <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+            </FieldDatePicker>
           </div>
 
           <Button
