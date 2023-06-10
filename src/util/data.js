@@ -537,7 +537,7 @@ export const convertTimeFrom12to24 = fullTime => {
     return '00:00';
   }
 
-  if (ampm === 'pm') {
+  if (ampm === 'pm' && hours !== '12') {
     return `${parseInt(hours) + 12}:${minutes}`;
   }
 

@@ -3,6 +3,7 @@
   background-color: var(--matterColorNegative);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  margin-top: 1.5rem;
 }
 
 .dateContainer {
@@ -63,4 +64,26 @@
   padding-left: 6px;
   padding-right: 6px;
   padding-bottom: 8px;
+}
+
+.changeDatesButton {
+  min-height: 0;
+
+  width: auto;
+  display: inline;
+  padding: 0.5rem 1rem;
+  margin-left: 2rem;
+}
+
+.bookingTimeText {
+  width: 100%;
+  text-align: center;
+}
+
+.datePicker {
+  margin-bottom: 2rem;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
 }

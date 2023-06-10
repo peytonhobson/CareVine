@@ -98,15 +98,10 @@ export class ListingPageComponent extends Component {
 
     const { bookingDates, rate: bookingRate } = values;
 
-    const convertedBookingDates = bookingDates.map(date => ({
-      date: new Date(date),
-      _serializedType: 'SerializableDate',
-    }));
-
     const initialValues = {
       listing,
       bookingRate: bookingRate?.length > 0 ? bookingRate[0] : null,
-      bookingDates: convertedBookingDates,
+      bookingDates,
       confirmPaymentError: null,
     };
 

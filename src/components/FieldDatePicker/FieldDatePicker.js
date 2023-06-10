@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Calendar } from 'react-calendar';
 import { timestampToDate } from '../../util/dates';
@@ -74,41 +74,36 @@ const formatDay = (locale, date, selectedDays, monthlyTimeSlots, onClick) => {
 };
 
 export const FieldDatePickerComponent = props => {
-  const { monthlyTimeSlots, input, children } = props;
-
-  const [selectedDays, setSelectedDays] = useState([]);
+  const { monthlyTimeSlots, input, children, className } = props;
 
   const handleSelectDay = date => {
     const dayTime = date.getTime();
-    const isDaySelected = selectedDays.find(entry => entry === dayTime);
+    const isDaySelected = Array.isArray(input.value)
+      ? input.value?.find(entry => entry === dayTime)
+      : false;
 
     if (isDaySelected) {
-      setSelectedDays(prevSelectedDays => {
-        const newSelectedDays = prevSelectedDays.filter(entry => entry !== dayTime);
+      const newSelectedDays = input.value.filter(entry => entry !== dayTime);
 
-        input.onChange(newSelectedDays);
-        return newSelectedDays;
-      });
+      input.onChange(newSelectedDays);
     } else {
-      setSelectedDays(prevSelectedDays => {
-        const newSelectedDays = [...prevSelectedDays, dayTime];
+      const newSelectedDays = [...input.value, dayTime];
 
-        input.onChange(newSelectedDays);
-        return newSelectedDays;
-      });
+      input.onChange(newSelectedDays);
     }
   };
 
   const handleClearDates = () => {
-    setSelectedDays([]);
     input.onChange([]);
   };
 
+  const classes = classNames(css.root, className);
+
   return (
-    <div className={css.root}>
+    <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, selectedDays, monthlyTimeSlots, handleSelectDay)
+          formatDay(locale, date, input.value, monthlyTimeSlots, handleSelectDay)
         }
         value={new Date()}
       />

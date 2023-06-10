@@ -36,14 +36,13 @@ import {
   AvatarLarge,
   AvatarMedium,
   BookingBreakdown,
-  Logo,
   NamedLink,
   NamedRedirect,
   Page,
-  ResponsiveImage,
+  InlineTextButton,
 } from '../../components';
 import { EditBookingForm, StripePaymentForm } from '../../forms';
-import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { confirmCardPayment, retrievePaymentIntent } from '../../ducks/stripe.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
 
@@ -102,8 +101,26 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
+const calculateTotalHours = bookingTimes =>
+  bookingTimes.reduce(
+    (acc, curr) =>
+      acc +
+      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
+    0
+  );
+
 const calculateCost = (bookingStart, bookingEnd, price) =>
   calculateTimeBetween(bookingStart, bookingEnd) * price;
+
+const calculateTotalCost = (bookingTimes, bookingRate) =>
+  bookingTimes.reduce(
+    (acc, curr) =>
+      acc +
+      (curr.startTime && curr.endTime
+        ? calculateCost(curr.startTime, curr.endTime, bookingRate)
+        : 0),
+    0
+  );
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -129,6 +146,19 @@ export class CheckoutPageComponent extends Component {
       this.loadInitialData();
     }
   }
+
+  componentDidUpdate(prevProps) {
+    const { bookingDates: prevBookingDates, bookingRate: prevBookingRate } = prevProps;
+    const { bookingDates, bookingRate } = this.props;
+
+    if (bookingDates !== prevBookingDates || bookingRate !== prevBookingRate) {
+      this.setState(prevState => {
+        return { pageData: { ...prevState.pageData, bookingDates, bookingRate } };
+      });
+    }
+  }
+
+  props;
 
   /**
    * Load initial data for the page
@@ -190,24 +220,6 @@ export class CheckoutPageComponent extends Component {
       pageData.bookingRate &&
       pageData.bookingDates &&
       !isBookingCreated;
-
-    if (shouldFetchSpeculatedTransaction) {
-      const listingId = pageData.listing.id;
-      const transactionId = tx ? tx.id : null;
-      // const { bookingStart, bookingEnd } = pageData.bookingDates;
-
-      // Fetch speculated transaction for showing price in booking breakdown
-      // NOTE: if unit type is line-item/units, quantity needs to be added.
-      // The way to pass it to checkout page is through pageData.bookingData
-      // fetchSpeculatedTransaction(
-      //   {
-      //     listingId,
-      //     bookingStart,
-      //     bookingEnd,
-      //   },
-      //   transactionId
-      // );
-    }
 
     this.setState({ pageData: pageData || {}, dataLoaded: true });
   }
@@ -533,6 +545,9 @@ export class CheckoutPageComponent extends Component {
       paymentIntent,
       retrievePaymentIntentError,
       stripeCustomerFetched,
+      monthlyTimeSlots,
+      onManageDisableScrolling,
+      onSetInitialValues,
     } = this.props;
 
     // Since the listing data is already given from the ListingPage
@@ -737,7 +752,6 @@ export class CheckoutPageComponent extends Component {
       ? 'CheckoutPage.perDay'
       : 'CheckoutPage.perUnit';
 
-    const price = currentListing.attributes.price;
     const formattedPrice = `$${bookingRate / 100}`;
     const detailsSubTitle = `${formattedPrice} ${intl.formatMessage({ id: unitTranslationKey })}`;
 
@@ -762,11 +776,13 @@ export class CheckoutPageComponent extends Component {
     const initalValuesForStripePayment = { name: userName };
 
     const monthYearBookingDates = bookingDates.map(bookingDate => {
-      const month = bookingDate.date.getMonth() + 1;
-      const day = bookingDate.date.getDate();
+      const month = new Date(bookingDate).getMonth() + 1;
+      const day = new Date(bookingDate).getDate();
 
       return `${month}/${day}`;
     });
+
+    const totalHours = calculateTotalHours(this.state.selectedBookingTimes);
 
     return (
       <Page {...pageProps}>
@@ -784,13 +800,16 @@ export class CheckoutPageComponent extends Component {
             </div>
 
             <section className={css.editBookingContainer}>
-              <h2>Pick your Times</h2>
               <EditBookingForm
                 className={css.editBookingForm}
                 listing={currentListing}
                 onSubmit={() => {}}
                 onChange={this.handleEditBookingFormChange}
                 monthYearBookingDates={monthYearBookingDates}
+                monthlyTimeSlots={monthlyTimeSlots}
+                onManageDisableScrolling={onManageDisableScrolling}
+                bookingDates={bookingDates}
+                onSetInitialValues={onSetInitialValues}
               />
             </section>
 
@@ -873,6 +892,14 @@ export class CheckoutPageComponent extends Component {
                 ) : null;
               })}
             </div>
+            <div className={css.totalContainer}>
+              {totalHours ? (
+                <h3>
+                  {totalHours} hours X ${bookingRate}
+                </h3>
+              ) : null}
+              <h3>Total: ${calculateTotalCost(this.state.selectedBookingTimes, bookingRate)}</h3>
+            </div>
           </div>
         </div>
       </Page>
@@ -938,6 +965,7 @@ CheckoutPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => {
+  const { monthlyTimeSlots } = state.ListingPage;
   const {
     listing,
     bookingRate,
@@ -968,11 +996,11 @@ const mapStateToProps = state => {
     confirmPaymentError,
     paymentIntent,
     retrievePaymentIntentError,
+    monthlyTimeSlots,
   };
 };
 
 const mapDispatchToProps = dispatch => ({
-  dispatch,
   fetchSpeculatedTransaction: (params, transactionId) =>
     dispatch(speculateTransaction(params, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
@@ -983,6 +1011,10 @@ const mapDispatchToProps = dispatch => ({
   onSendMessage: params => dispatch(sendMessage(params)),
   onSavePaymentMethod: (stripeCustomer, stripePaymentMethodId) =>
     dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onSetInitialValues: (initialValues, saveToSessionStorage = false) =>
+    dispatch(setInitialValues(initialValues, saveToSessionStorage)),
 });
 
 const CheckoutPage = compose(
