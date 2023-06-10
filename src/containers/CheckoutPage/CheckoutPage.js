@@ -32,6 +32,7 @@ import {
 import { formatMoney } from '../../util/currency';
 import { TRANSITION_ENQUIRE, txIsPaymentPending, txIsPaymentExpired } from '../../util/transaction';
 import {
+  AvatarLarge,
   AvatarMedium,
   BookingBreakdown,
   Logo,
@@ -40,7 +41,7 @@ import {
   Page,
   ResponsiveImage,
 } from '../../components';
-import { StripePaymentForm } from '../../forms';
+import { EditBookingForm, StripePaymentForm } from '../../forms';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { confirmCardPayment, retrievePaymentIntent } from '../../ducks/stripe.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
@@ -101,6 +102,7 @@ export class CheckoutPageComponent extends Component {
       pageData: {},
       dataLoaded: false,
       submitting: false,
+      selectedBookingTimes: [],
     };
     this.stripe = null;
 
@@ -108,6 +110,7 @@ export class CheckoutPageComponent extends Component {
     this.loadInitialData = this.loadInitialData.bind(this);
     this.handlePaymentIntent = this.handlePaymentIntent.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleEditBookingFormChange = this.handleEditBookingFormChange.bind(this);
   }
 
   componentDidMount() {
@@ -483,6 +486,27 @@ export class CheckoutPageComponent extends Component {
     }
   }
 
+  handleEditBookingFormChange = e => {
+    const { dateTimes = {} } = e.values;
+
+    const dateTimeKeys = Object.keys(dateTimes) ?? [];
+
+    const formattedBookingTimes = dateTimeKeys.map(key => {
+      const startTime = dateTimes[key].startTime;
+      const endTime = dateTimes[key].endTime;
+
+      return {
+        startTime,
+        endTime,
+        date: key,
+      };
+    });
+
+    this.setState({
+      selectedBookingTimes: formattedBookingTimes,
+    });
+  };
+
   render() {
     const {
       scrollingDisabled,
@@ -525,16 +549,7 @@ export class CheckoutPageComponent extends Component {
     const topbar = (
       <div className={css.topbar}>
         <NamedLink className={css.home} name="LandingPage">
-          <Logo
-            className={css.logoMobile}
-            title={intl.formatMessage({ id: 'CheckoutPage.goToLandingPage' })}
-            format="mobile"
-          />
-          <Logo
-            className={css.logoDesktop}
-            alt={intl.formatMessage({ id: 'CheckoutPage.goToLandingPage' })}
-            format="desktop"
-          />
+          Home
         </NamedLink>
       </div>
     );
@@ -543,12 +558,7 @@ export class CheckoutPageComponent extends Component {
       return <Page {...pageProps}>{topbar}</Page>;
     }
 
-    const isOwnListing =
-      currentUser &&
-      currentUser.id &&
-      currentAuthor &&
-      currentAuthor.id &&
-      currentAuthor.id.uuid === currentUser.id.uuid;
+    const isOwnListing = currentAuthor?.id?.uuid === currentUser?.id?.uuid;
 
     const hasListingAndAuthor = !!(currentListing.id && currentAuthor.id);
     const hasRequiredData = hasListingAndAuthor && bookingDates?.length > 0;
@@ -740,30 +750,38 @@ export class CheckoutPageComponent extends Component {
 
     const initalValuesForStripePayment = { name: userName };
 
+    const monthYearBookingDates = bookingDates.map(bookingDate => {
+      const month = bookingDate.date.getMonth() + 1;
+      const day = bookingDate.date.getDate();
+
+      return `${month}/${day}`;
+    });
+
     return (
       <Page {...pageProps}>
         {topbar}
         <div className={css.contentContainer}>
           <div className={css.aspectWrapper}>
-            <ResponsiveImage
-              rootClassName={css.rootForImage}
-              alt={listingTitle}
-              image={firstImage}
-              variants={['landscape-crop', 'landscape-crop2x']}
-            />
+            <AvatarMedium user={currentAuthor} disableProfileLink />
           </div>
           <div className={classNames(css.avatarWrapper, css.avatarMobile)}>
-            <AvatarMedium user={currentAuthor} disableProfileLink />
+            {/* <AvatarMedium user={currentAuthor} disableProfileLink /> */}
           </div>
           <div className={css.bookListingContainer}>
             <div className={css.heading}>
-              <h1 className={css.title}>{title}</h1>
+              <h1 className={css.title}>Book {currentAuthor.attributes.profile.displayName}</h1>
             </div>
 
-            <div className={css.priceBreakdownContainer}>
-              {speculateTransactionErrorMessage}
-              {breakdown}
-            </div>
+            <section className={css.editBookingContainer}>
+              <h2>Pick your Times</h2>
+              <EditBookingForm
+                className={css.editBookingForm}
+                listing={currentListing}
+                onSubmit={() => {}}
+                onChange={this.handleEditBookingFormChange}
+                monthYearBookingDates={monthYearBookingDates}
+              />
+            </section>
 
             <section className={css.paymentContainer}>
               {initiateOrderErrorMessage}
@@ -809,23 +827,34 @@ export class CheckoutPageComponent extends Component {
           </div>
 
           <div className={css.detailsContainerDesktop}>
-            <div className={css.detailsAspectWrapper}>
-              <ResponsiveImage
-                rootClassName={css.rootForImage}
-                alt={listingTitle}
-                image={firstImage}
-                variants={['landscape-crop', 'landscape-crop2x']}
-              />
-            </div>
-            <div className={css.avatarWrapper}>
-              <AvatarMedium user={currentAuthor} disableProfileLink />
+            <div className={css.cardAvatarWrapper}>
+              <AvatarLarge user={currentAuthor} disableProfileLink className={css.cardAvatar} />
+              <span className={css.bookAuthor}>
+                Book{' '}
+                <span style={{ whiteSpace: 'nowrap' }}>
+                  {currentAuthor.attributes.profile.displayName}
+                </span>
+              </span>
             </div>
             <div className={css.detailsHeadings}>
-              <h2 className={css.detailsTitle}>{listingTitle}</h2>
-              <p className={css.detailsSubtitle}>{detailsSubTitle}</p>
+              <h2 className={css.detailsTitle}>Booking Summary</h2>
             </div>
-            {speculateTransactionErrorMessage}
-            {breakdown}
+            <div>
+              {this.state.selectedBookingTimes.map((bookingTime, index) => {
+                const date = bookingTime.date;
+                const startTime = bookingTime.startTime;
+                const endTime = bookingTime.endTime;
+
+                return startTime && endTime ? (
+                  <div>
+                    <h3 className={css.summaryDate}>{date}</h3>
+                    <span>
+                      {startTime} - {endTime}
+                    </span>
+                  </div>
+                ) : null;
+              })}
+            </div>
           </div>
         </div>
       </Page>

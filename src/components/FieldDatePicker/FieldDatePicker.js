@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 
 import css from './FieldDatePicker.module.css';
+import { InlineTextButton } from '../Button/Button';
 
 const isDayHighlighted = (selectedDays, date) => selectedDays.includes(date.getTime());
 
@@ -73,7 +74,7 @@ const formatDay = (locale, date, selectedDays, monthlyTimeSlots, onClick) => {
 };
 
 export const FieldDatePickerComponent = props => {
-  const { monthlyTimeSlots, input } = props;
+  const { monthlyTimeSlots, input, children } = props;
 
   const [selectedDays, setSelectedDays] = useState([]);
 
@@ -98,15 +99,23 @@ export const FieldDatePickerComponent = props => {
     }
   };
 
+  const handleClearDates = () => {
+    setSelectedDays([]);
+    input.onChange([]);
+  };
+
   return (
     <div className={css.root}>
       <Calendar
-        className={css.root}
         formatDay={(locale, date) =>
           formatDay(locale, date, selectedDays, monthlyTimeSlots, handleSelectDay)
         }
         value={new Date()}
       />
+      <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
+        Clear Dates
+      </InlineTextButton>
+      {children}
     </div>
   );
 };

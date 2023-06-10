@@ -8,6 +8,7 @@ export { default as ConfirmSignupForm } from './ConfirmSignupForm/ConfirmSignupF
 export { default as ConsentModalForm } from './ConsentModalForm/ConsentModalForm';
 export { default as ContactDetailsForm } from './ContactDetailsForm/ContactDetailsForm';
 export { default as ContactUsForm } from './ContactUsForm/ContactUsForm';
+export { default as EditBookingForm} from './EditBookingForm/EditBookingForm';
 export { default as EditListingAddCareRecipientForm } from './EditListingAddCareRecipientForm/EditListingAddCareRecipientForm';
 export { default as EditListingAdditionalDetailsForm } from './EditListingAdditionalDetailsForm/EditListingAdditionalDetailsForm';
 export { default as EditListingAvailabilityExceptionForm } from './EditListingAvailabilityExceptionForm/EditListingAvailabilityExceptionForm';

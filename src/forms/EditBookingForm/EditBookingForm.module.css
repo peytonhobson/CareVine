@@ -1,0 +1,66 @@
+.datesContainer {
+  padding: 2rem;
+  background-color: var(--matterColorNegative);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.dateContainer {
+  box-shadow: var(--boxShadow);
+  width: 12rem;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: var(--matterColorLight);
+}
+
+.formRow {
+  /* This container uses flexbox layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* parent aka fieldWrapper is flexbox, this container takes all available space */
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+
+  z-index: 1;
+}
+
+.date {
+  text-align: center;
+  margin-top: 0;
+}
+
+.timeSelect {
+  composes: marketplaceTabNavHorizontalFontStyles from global;
+
+  background: none;
+  padding-right: 0 !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 4.5rem;
+
+  &:select {
+    margin-right: 0;
+  }
+
+  & > option {
+    color: var(--matterColor);
+  }
+  & > option:disabled {
+    color: var(--matterColorAnti);
+  }
+
+  &:disabled {
+    border-bottom-color: var(--matterColorNegative);
+    color: var(--matterColorNegative);
+    cursor: default;
+  }
+}
+
+.dashBetweenTimes {
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 8px;
+}

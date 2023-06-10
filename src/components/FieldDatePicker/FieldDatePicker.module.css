@@ -8,7 +8,18 @@
   color: var(--matterColor) !important;
 }
 
+.clearDatesButton {
+  composes: marketplaceTinyFontStyles from global;
+  margin-top: 0.5rem;
+}
+
 .root {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+
   & :global(.selected-date) {
     margin: 0 auto;
   }
@@ -23,7 +34,6 @@
 
   & :global(.react-calendar) {
     max-width: 100%;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.125em;
   }
@@ -89,6 +99,11 @@
   }
   & :global(.react-calendar__month-view__weekdays__weekday) {
     padding: 0.5em;
+
+    & abbr[title] {
+      border-bottom: none;
+      text-decoration: none;
+    }
   }
   & :global(.react-calendar__month-view__weekNumbers .react-calendar__tile) {
     display: flex;
@@ -144,7 +159,8 @@
     }
 
     & .blocked {
-      background-color: var(--matterColorNegative);
+      text-decoration: line-through;
+      color: var(--matterColorAnti) !important;
 
       cursor: not-allowed;
 
