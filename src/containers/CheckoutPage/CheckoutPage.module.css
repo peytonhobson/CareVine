@@ -304,18 +304,14 @@
   display: none;
 
   @media (--viewportLarge) {
-    display: block;
+    display: flex;
     margin: 0 3rem;
+    align-items: center;
   }
 }
 
-.detailsTitle {
-  margin-bottom: 10px;
-
-  @media (--viewportLarge) {
-    margin-top: 17px;
-    margin-bottom: 9px;
-  }
+.changeRateButton {
+  composes: marketplaceTinyFontStyles from global;
 }
 
 .detailsSubtitle {
@@ -359,6 +355,8 @@
 
 .bookingTimes {
   margin: 0 3rem;
+  overflow-y: scroll;
+  max-height: 15rem;
 }
 
 .summaryDate {
@@ -380,4 +378,9 @@
 .dateCostText {
   composes: marketplaceTinyFontStyles from global;
   margin: 0;
+}
+
+.totalContainer {
+  border-top: 1px solid var(--matterColorNegative);
+  margin: 0 3rem;
 }

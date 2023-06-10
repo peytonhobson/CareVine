@@ -42,7 +42,7 @@ export const isValidListing = listing => {
   const props = {
     id: id => id instanceof UUID,
     attributes: v => {
-      return typeof v === 'object' && v.price instanceof Money;
+      return typeof v === 'object';
     },
   };
   return validateProperties(listing, props);

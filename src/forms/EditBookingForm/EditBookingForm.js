@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
-import { Form, Button, FieldSelect } from '../../components';
+import { Form, Button, FieldSelect, Modal, FieldDatePicker } from '../../components';
 import { convertTimeFrom12to24 } from '../../util/data';
 
 import css from './EditBookingForm.module.css';
@@ -28,7 +28,27 @@ const EditBookingFormComponent = props => (
         monthYearBookingDates,
         onChange,
         values,
+        monthlyTimeSlots,
+        form,
+        onManageDisableScrolling,
+        bookingDates,
+        onSetInitialValues,
       } = formRenderProps;
+
+      const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
+
+      useEffect(() => {
+        form.change('bookingDates', bookingDates);
+      }, [JSON.stringify(bookingDates)]);
+
+      const handleCloseEditBookingDatesModal = () => {
+        setIsEditBookingDatesModalOpen(false);
+      };
+
+      const handleSaveBookingDates = () => {
+        onSetInitialValues({ bookingDates: values.bookingDates }, true);
+        setIsEditBookingDatesModalOpen(false);
+      };
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
@@ -38,6 +58,13 @@ const EditBookingFormComponent = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FormSpy onChange={onChange} />
+          <h2 style={{ display: 'inline' }}>Pick your Times</h2>
+          <Button
+            className={css.changeDatesButton}
+            onClick={() => setIsEditBookingDatesModalOpen(true)}
+          >
+            Change Dates
+          </Button>
           <div className={css.datesContainer}>
             {monthYearBookingDates.map(monthYearBookingDate => {
               const startTimeValue = values.dateTimes?.[monthYearBookingDate]?.startTime;
@@ -108,6 +135,30 @@ const EditBookingFormComponent = props => (
               );
             })}
           </div>
+          <Modal
+            id="EditBookingDatesModal"
+            isOpen={isEditBookingDatesModalOpen}
+            onClose={handleCloseEditBookingDatesModal}
+            onManageDisableScrolling={onManageDisableScrolling}
+            containerClassName={css.modalContainer}
+            className={css.modalContent}
+          >
+            <FieldDatePicker
+              className={css.datePicker}
+              monthlyTimeSlots={monthlyTimeSlots}
+              name="bookingDates"
+              id="bookingDates"
+            >
+              <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+            </FieldDatePicker>
+            <Button
+              onClick={handleSaveBookingDates}
+              type="button"
+              disabled={!values.bookingDates || values.bookingDates?.length === 0}
+            >
+              Save Dates
+            </Button>
+          </Modal>
         </Form>
       );
     }}
