@@ -53,10 +53,12 @@ import {
   stripeCustomer,
   confirmPayment,
   sendMessage,
+  setInitialValues,
 } from './CheckoutPage.duck';
 import BookingSummaryCard from './BookingSummaryCard';
 import { storeData, storedData, clearData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
+import PaymentSection from './PaymentSection';
 
 const STORAGE_KEY = 'CheckoutPage';
 
@@ -529,16 +531,6 @@ export class CheckoutPageComponent extends Component {
       onSetState,
     } = this.props;
 
-    // Since the listing data is already given from the ListingPage
-    // and stored to handle refreshes, it might not have the possible
-    // deleted or closed information in it. If the transaction
-    // initiate or the speculative initiate fail due to the listing
-    // being deleted or closec, we should dig the information from the
-    // errors and not the listing data.
-    const listingNotFound =
-      isTransactionInitiateListingNotFoundError(speculateTransactionError) ||
-      isTransactionInitiateListingNotFoundError(initiateOrderError);
-
     const isLoading = !this.state.dataLoaded || speculateTransactionInProgress;
 
     const { listing, bookingDates, transaction, bookingRate } = this.state.pageData;
@@ -589,137 +581,12 @@ export class CheckoutPageComponent extends Component {
     const timeZone = currentListing.attributes.availabilityPlan
       ? currentListing.attributes.availabilityPlan.timezone
       : 'Etc/UTC';
-    const breakdown =
-      tx.id && txBooking.id ? (
-        <BookingBreakdown
-          className={css.bookingBreakdown}
-          userRole="customer"
-          unitType={config.bookingUnitType}
-          transaction={tx}
-          booking={txBooking}
-          dateType={DATE_TYPE_DATETIME}
-          timeZone={timeZone}
-        />
-      ) : null;
 
-    const isPaymentExpired = checkIsPaymentExpired(existingTransaction);
     const hasDefaultPaymentMethod = !!(
       stripeCustomerFetched &&
       ensureStripeCustomer(currentUser.stripeCustomer).attributes.stripeCustomerId &&
       ensurePaymentMethodCard(currentUser.stripeCustomer.defaultPaymentMethod).id
     );
-
-    // Allow showing page when currentUser is still being downloaded,
-    // but show payment form only when user info is loaded.
-    const showPaymentForm = !!(
-      currentUser &&
-      hasRequiredData &&
-      !listingNotFound &&
-      !initiateOrderError &&
-      !speculateTransactionError &&
-      !retrievePaymentIntentError &&
-      !isPaymentExpired
-    );
-
-    const firstImage =
-      currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
-
-    const listingLink = (
-      <NamedLink
-        name="ListingPage"
-        params={{ id: currentListing.id.uuid, slug: createSlug(listingTitle) }}
-      >
-        <FormattedMessage id="CheckoutPage.errorlistingLinkText" />
-      </NamedLink>
-    );
-
-    const isAmountTooLowError = isTransactionInitiateAmountTooLowError(initiateOrderError);
-    const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
-    const isBookingTimeNotAvailableError = isTransactionInitiateBookingTimeNotAvailableError(
-      initiateOrderError
-    );
-    const stripeErrors = transactionInitiateOrderStripeErrors(initiateOrderError);
-
-    let initiateOrderErrorMessage = null;
-    let listingNotFoundErrorMessage = null;
-
-    if (listingNotFound) {
-      listingNotFoundErrorMessage = (
-        <p className={css.notFoundError}>
-          <FormattedMessage id="CheckoutPage.listingNotFoundError" />
-        </p>
-      );
-    } else if (isAmountTooLowError) {
-      initiateOrderErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.initiateOrderAmountTooLow" />
-        </p>
-      );
-    } else if (isBookingTimeNotAvailableError) {
-      initiateOrderErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />
-        </p>
-      );
-    } else if (isChargeDisabledError) {
-      initiateOrderErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.chargeDisabledMessage" />
-        </p>
-      );
-    } else if (stripeErrors && stripeErrors.length > 0) {
-      // NOTE: Error messages from Stripes are not part of translations.
-      // By default they are in English.
-      const stripeErrorsAsString = stripeErrors.join(', ');
-      initiateOrderErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage
-            id="CheckoutPage.initiateOrderStripeError"
-            values={{ stripeErrors: stripeErrorsAsString }}
-          />
-        </p>
-      );
-    } else if (initiateOrderError) {
-      // Generic initiate order error
-      initiateOrderErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.initiateOrderError" values={{ listingLink }} />
-        </p>
-      );
-    }
-
-    const speculateTransactionErrorMessage = speculateTransactionError ? (
-      <p className={css.speculateError}>
-        <FormattedMessage id="CheckoutPage.speculateTransactionError" />
-      </p>
-    ) : null;
-    let speculateErrorMessage = null;
-
-    if (isTransactionInitiateMissingStripeAccountError(speculateTransactionError)) {
-      speculateErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.providerStripeAccountMissingError" />
-        </p>
-      );
-    } else if (isTransactionInitiateBookingTimeNotAvailableError(speculateTransactionError)) {
-      speculateErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />
-        </p>
-      );
-    } else if (isTransactionZeroPaymentError(speculateTransactionError)) {
-      speculateErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.initiateOrderAmountTooLow" />
-        </p>
-      );
-    } else if (speculateTransactionError) {
-      speculateErrorMessage = (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.speculateFailedMessage" />
-        </p>
-      );
-    }
 
     const unitType = config.bookingUnitType;
     const isNightly = unitType === LINE_ITEM_NIGHT;
@@ -792,47 +659,15 @@ export class CheckoutPageComponent extends Component {
               />
             </section>
 
-            <section className={css.paymentContainer}>
-              {initiateOrderErrorMessage}
-              {listingNotFoundErrorMessage}
-              {speculateErrorMessage}
-              {retrievePaymentIntentError ? (
-                <p className={css.orderError}>
-                  <FormattedMessage
-                    id="CheckoutPage.retrievingStripePaymentIntentFailed"
-                    values={{ listingLink }}
-                  />
-                </p>
-              ) : null}
-              {showPaymentForm ? (
-                <StripePaymentForm
-                  className={css.paymentForm}
-                  onSubmit={this.handleSubmit}
-                  inProgress={this.state.submitting}
-                  formId="CheckoutPagePaymentForm"
-                  paymentInfo={intl.formatMessage({ id: 'CheckoutPage.paymentInfo' })}
-                  authorDisplayName={currentAuthor.attributes.profile.displayName}
-                  showInitialMessageInput={showInitialMessageInput}
-                  initialValues={initalValuesForStripePayment}
-                  initiateOrderError={initiateOrderError}
-                  confirmCardPaymentError={confirmCardPaymentError}
-                  confirmPaymentError={confirmPaymentError}
-                  hasHandledCardPayment={hasPaymentIntentUserActionsDone}
-                  loadingData={!stripeCustomerFetched}
-                  defaultPaymentMethod={null}
-                  paymentIntent={paymentIntent}
-                  onStripeInitialized={this.onStripeInitialized}
-                />
-              ) : null}
-              {isPaymentExpired ? (
-                <p className={css.orderError}>
-                  <FormattedMessage
-                    id="CheckoutPage.paymentExpiredMessage"
-                    values={{ listingLink }}
-                  />
-                </p>
-              ) : null}
-            </section>
+            <PaymentSection
+              currentUser={currentUser}
+              initiateOrderError={initiateOrderError}
+              hasRequiredData={hasRequiredData}
+              retrievePaymentIntentError={retrievePaymentIntentError}
+              existingTransaction={existingTransaction}
+              currentListing={currentListing}
+              listingTitle={listingTitle}
+            />
           </div>
           <BookingSummaryCard
             authorDisplayName={authorDisplayName}
