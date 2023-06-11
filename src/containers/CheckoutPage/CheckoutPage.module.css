@@ -357,6 +357,8 @@
   margin: 0 3rem;
   overflow-y: scroll;
   max-height: 15rem;
+  position: relative;
+  scroll-behavior: smooth;
 }
 
 .summaryDate {
@@ -383,4 +385,22 @@
 .totalContainer {
   border-top: 1px solid var(--matterColorNegative);
   margin: 0 3rem;
+}
+
+.arrowHeadUp {
+  position: absolute;
+  top: 14rem;
+  right: 0;
+  cursor: pointer;
+}
+
+.arrowHeadContainer {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.arrowHeadDown {
+  position: fixed;
+  cursor: pointer;
 }

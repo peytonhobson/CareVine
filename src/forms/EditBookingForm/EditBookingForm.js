@@ -77,7 +77,7 @@ const EditBookingFormComponent = props => (
                 : 0;
 
               return (
-                <div className={css.dateContainer}>
+                <div className={css.dateContainer} key={monthYearBookingDate}>
                   <h3 className={css.date}>{monthYearBookingDate}</h3>
                   <div className={css.formRow}>
                     <div className={css.field}>
