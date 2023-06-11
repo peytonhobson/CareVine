@@ -54,6 +54,7 @@ import {
   confirmPayment,
   sendMessage,
 } from './CheckoutPage.duck';
+import BookingSummaryCard from './BookingSummaryCard';
 import { storeData, storedData, clearData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 
@@ -94,34 +95,6 @@ const checkIsPaymentExpired = existingTransaction => {
     : false;
 };
 
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
-
-  return end - start;
-};
-
-const calculateTotalHours = bookingTimes =>
-  bookingTimes.reduce(
-    (acc, curr) =>
-      acc +
-      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
-    0
-  );
-
-const calculateCost = (bookingStart, bookingEnd, price) =>
-  calculateTimeBetween(bookingStart, bookingEnd) * price;
-
-const calculateTotalCost = (bookingTimes, bookingRate) =>
-  bookingTimes.reduce(
-    (acc, curr) =>
-      acc +
-      (curr.startTime && curr.endTime
-        ? calculateCost(curr.startTime, curr.endTime, bookingRate)
-        : 0),
-    0
-  );
-
 export class CheckoutPageComponent extends Component {
   constructor(props) {
     super(props);
@@ -151,9 +124,15 @@ export class CheckoutPageComponent extends Component {
     const { bookingDates: prevBookingDates, bookingRate: prevBookingRate } = prevProps;
     const { bookingDates, bookingRate } = this.props;
 
-    if (bookingDates !== prevBookingDates || bookingRate !== prevBookingRate) {
+    if (bookingDates !== prevBookingDates) {
       this.setState(prevState => {
-        return { pageData: { ...prevState.pageData, bookingDates, bookingRate } };
+        return { pageData: { ...prevState.pageData, bookingDates } };
+      });
+    }
+
+    if (bookingRate !== prevBookingRate) {
+      this.setState(prevState => {
+        return { pageData: { ...prevState.pageData, bookingRate } };
       });
     }
   }
@@ -782,7 +761,7 @@ export class CheckoutPageComponent extends Component {
       return `${month}/${day}`;
     });
 
-    const totalHours = calculateTotalHours(this.state.selectedBookingTimes);
+    const authorDisplayName = currentAuthor.attributes.profile.displayName;
 
     return (
       <Page {...pageProps}>
@@ -855,52 +834,13 @@ export class CheckoutPageComponent extends Component {
               ) : null}
             </section>
           </div>
-
-          <div className={css.detailsContainerDesktop}>
-            <div className={css.cardAvatarWrapper}>
-              <AvatarLarge user={currentAuthor} disableProfileLink className={css.cardAvatar} />
-              <span className={css.bookAuthor}>
-                Book{' '}
-                <span style={{ whiteSpace: 'nowrap' }}>
-                  {currentAuthor.attributes.profile.displayName}
-                </span>
-              </span>
-            </div>
-            <div className={css.detailsHeadings}>
-              <h2 className={css.detailsTitle}>Booking Summary</h2>
-            </div>
-            <div className={css.bookingTimes}>
-              {this.state.selectedBookingTimes.map((bookingTime, index) => {
-                const date = bookingTime.date;
-                const startTime = bookingTime.startTime;
-                const endTime = bookingTime.endTime;
-
-                return startTime && endTime ? (
-                  <div className={css.bookingTime}>
-                    <h3 className={css.summaryDate}>
-                      {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
-                    </h3>
-                    <div className={css.summaryTimeContainer}>
-                      <span className={css.summaryTimes}>
-                        {startTime} - {endTime}
-                      </span>
-                      <p className={css.dateCostText}>
-                        ({calculateTimeBetween(startTime, endTime)} hours)
-                      </p>
-                    </div>
-                  </div>
-                ) : null;
-              })}
-            </div>
-            <div className={css.totalContainer}>
-              {totalHours ? (
-                <h3>
-                  {totalHours} hours X ${bookingRate}
-                </h3>
-              ) : null}
-              <h3>Total: ${calculateTotalCost(this.state.selectedBookingTimes, bookingRate)}</h3>
-            </div>
-          </div>
+          <BookingSummaryCard
+            authorDisplayName={authorDisplayName}
+            currentAuthor={currentAuthor}
+            selectedBookingTimes={this.state.selectedBookingTimes}
+            bookingRate={bookingRate}
+            bookingDates={bookingDates}
+          />
         </div>
       </Page>
     );
