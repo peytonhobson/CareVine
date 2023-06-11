@@ -32,7 +32,7 @@ const EditBookingFormComponent = props => (
         form,
         onManageDisableScrolling,
         bookingDates,
-        onSetInitialValues,
+        onSetState,
       } = formRenderProps;
 
       const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
@@ -46,7 +46,7 @@ const EditBookingFormComponent = props => (
       };
 
       const handleSaveBookingDates = () => {
-        onSetInitialValues({ bookingDates: values.bookingDates }, true);
+        onSetState({ bookingDates: values.bookingDates });
         setIsEditBookingDatesModalOpen(false);
       };
 

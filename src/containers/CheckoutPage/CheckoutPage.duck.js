@@ -16,6 +16,8 @@ import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/
 
 export const SET_INITIAL_VALUES = 'app/CheckoutPage/SET_INITIAL_VALUES';
 
+export const SET_STATE_VALUES = 'app/CheckoutPage/SET_STATE_VALUES';
+
 export const INITIATE_ORDER_REQUEST = 'app/CheckoutPage/INITIATE_ORDER_REQUEST';
 export const INITIATE_ORDER_SUCCESS = 'app/CheckoutPage/INITIATE_ORDER_SUCCESS';
 export const INITIATE_ORDER_ERROR = 'app/CheckoutPage/INITIATE_ORDER_ERROR';
@@ -52,6 +54,9 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
   switch (type) {
     case SET_INITIAL_VALUES:
       return { ...initialState, ...payload };
+
+    case SET_STATE_VALUES:
+      return { ...state, ...payload };
 
     case SPECULATE_TRANSACTION_REQUEST:
       return {
@@ -110,6 +115,11 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
 export const setInitialValues = initialValues => ({
   type: SET_INITIAL_VALUES,
   payload: pick(initialValues, Object.keys(initialState)),
+});
+
+export const setStateValues = stateValues => ({
+  type: SET_STATE_VALUES,
+  payload: pick(stateValues, Object.keys(initialState)),
 });
 
 const initiateOrderRequest = () => ({ type: INITIATE_ORDER_REQUEST });
