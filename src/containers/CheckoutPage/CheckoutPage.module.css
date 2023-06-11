@@ -282,7 +282,7 @@
     display: block;
     /* Dimensions */
     position: fixed;
-    padding-bottom: 55px;
+    padding-bottom: 2rem;
 
     top: 9rem;
     right: 3rem;
@@ -312,6 +312,7 @@
 
 .changeRateButton {
   composes: marketplaceTinyFontStyles from global;
+  margin-left: 1rem;
 }
 
 .detailsSubtitle {
@@ -356,7 +357,7 @@
 .bookingTimes {
   margin: 0 3rem;
   overflow-y: scroll;
-  max-height: 15rem;
+  max-height: 12rem;
   position: relative;
   scroll-behavior: smooth;
 }
@@ -384,12 +385,13 @@
 
 .totalContainer {
   border-top: 1px solid var(--matterColorNegative);
-  margin: 0 3rem;
+  margin: 0 4rem;
+  padding: 2rem 0 0 0;
 }
 
 .arrowHeadUp {
   position: absolute;
-  top: 14rem;
+  top: 11rem;
   right: 0;
   cursor: pointer;
 }
@@ -403,4 +405,46 @@
 .arrowHeadDown {
   position: fixed;
   cursor: pointer;
+}
+
+.total {
+  margin-top: 0.5rem;
+}
+
+.totalCalc {
+  border-bottom: 1px solid var(--matterColor);
+  margin-bottom: 0;
+  display: inline;
+  padding-block: 0.5rem;
+}
+
+.fieldLabel {
+  width: 100%;
+  text-align: center;
+}
+
+.priceRange {
+  padding: 0 2rem;
+}
+
+.track {
+  background-color: var(--marketplaceColor);
+}
+
+.availableRatesContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0rem 2.5rem;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.submitRateButton {
+  margin-top: 4rem;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
 }

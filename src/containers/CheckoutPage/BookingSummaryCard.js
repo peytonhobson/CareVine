@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
-import { AvatarLarge, IconArrowHead } from '../../components';
+import { Form as FinalForm } from 'react-final-form';
+import {
+  AvatarLarge,
+  IconArrowHead,
+  InlineTextButton,
+  Modal,
+  Form,
+  FieldRangeSlider,
+  Button,
+} from '../../components';
 import { convertTimeFrom12to24 } from '../../util/data';
 import { useIsScrollable } from '../../util/hooks';
 
@@ -41,10 +50,16 @@ const BookingSummaryCard = props => {
     selectedBookingTimes,
     bookingRate,
     bookingDates,
+    listing,
+    onManageDisableScrolling,
+    onSetState,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
 
-  const [bookingTimesScrolled, setBookingTimesScrolled] = React.useState(0);
+  const [bookingTimesScrolled, setBookingTimesScrolled] = useState(0);
+  const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
+
+  const bookingTimesRef = useRef(null);
 
   const scrollToBottom = () => {
     if (bookingTimesRef.current) {
@@ -57,8 +72,6 @@ const BookingSummaryCard = props => {
       bookingTimesRef.current.scrollTop = 0;
     }
   };
-
-  const bookingTimesRef = React.useRef(null);
 
   const isScrollable = useIsScrollable(bookingTimesRef);
   const isAtBottom =
@@ -116,12 +129,74 @@ const BookingSummaryCard = props => {
       </div>
       <div className={css.totalContainer}>
         {totalHours ? (
-          <h3>
-            {totalHours} hours x ${bookingRate}
-          </h3>
+          <>
+            <h3 className={css.totalCalc}>
+              {totalHours} hours x ${bookingRate}
+            </h3>
+            <InlineTextButton
+              className={css.changeRateButton}
+              onClick={() => setIsChangeRatesModalOpen(true)}
+            >
+              Change Hourly Rate
+            </InlineTextButton>
+          </>
         ) : null}
-        <h3>Total: ${calculateTotalCost(selectedBookingTimes, bookingRate)}</h3>
+        <h3 className={css.total}>
+          Total: ${calculateTotalCost(selectedBookingTimes, bookingRate)}
+        </h3>
       </div>
+      <Modal
+        id="changeRatesModal"
+        isOpen={isChangeRatesModalOpen}
+        onClose={() => setIsChangeRatesModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+        containerClassName={css.modalContainer}
+      >
+        <FinalForm
+          className={css.changeRatesForm}
+          onSubmit={values => {
+            onSetState({ bookingRate: values.bookingRate[0] });
+            setIsChangeRatesModalOpen(false);
+          }}
+          initialValues={{ bookingRate: [bookingRate] }}
+          render={fieldRenderProps => {
+            const { handleSubmit, pristine, invalid, values } = fieldRenderProps;
+            const { minPrice, maxPrice } = listing.attributes.publicData;
+
+            return (
+              <Form onSubmit={handleSubmit}>
+                <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
+                <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
+                  ${values.bookingRate}
+                </h1>
+                <div className={css.availableRatesContainer}>
+                  <p>${minPrice / 100}</p>
+                  <p>$50</p>
+                </div>
+                <FieldRangeSlider
+                  id="bookingRate"
+                  name="bookingRate"
+                  className={css.priceRange}
+                  trackClass={css.track}
+                  min={minPrice / 100}
+                  max={50}
+                  step={1}
+                  handles={values.bookingRate}
+                  noHandleLabels
+                />
+                <Button
+                  type="submit"
+                  disabled={pristine || invalid}
+                  className={css.submitRateButton}
+                >
+                  Save Rate
+                </Button>
+              </Form>
+            );
+          }}
+        />
+      </Modal>
     </div>
   );
 };

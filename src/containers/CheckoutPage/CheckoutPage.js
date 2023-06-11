@@ -48,7 +48,7 @@ import { createCreditCard } from '../../ducks/paymentMethods.duck';
 
 import {
   initiateOrder,
-  setInitialValues,
+  setStateValues,
   speculateTransaction,
   stripeCustomer,
   confirmPayment,
@@ -526,7 +526,7 @@ export class CheckoutPageComponent extends Component {
       stripeCustomerFetched,
       monthlyTimeSlots,
       onManageDisableScrolling,
-      onSetInitialValues,
+      onSetState,
     } = this.props;
 
     // Since the listing data is already given from the ListingPage
@@ -788,7 +788,7 @@ export class CheckoutPageComponent extends Component {
                 monthlyTimeSlots={monthlyTimeSlots}
                 onManageDisableScrolling={onManageDisableScrolling}
                 bookingDates={bookingDates}
-                onSetInitialValues={onSetInitialValues}
+                onSetState={onSetState}
               />
             </section>
 
@@ -840,6 +840,9 @@ export class CheckoutPageComponent extends Component {
             selectedBookingTimes={this.state.selectedBookingTimes}
             bookingRate={bookingRate}
             bookingDates={bookingDates}
+            listing={currentListing}
+            onManageDisableScrolling={onManageDisableScrolling}
+            onSetState={onSetState}
           />
         </div>
       </Page>
@@ -953,8 +956,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSetInitialValues: (initialValues, saveToSessionStorage = false) =>
-    dispatch(setInitialValues(initialValues, saveToSessionStorage)),
+  onSetState: values => dispatch(setStateValues(values)),
 });
 
 const CheckoutPage = compose(
