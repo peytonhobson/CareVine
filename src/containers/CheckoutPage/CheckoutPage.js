@@ -334,6 +334,7 @@ export class CheckoutPageComponent extends Component {
                 onManageDisableScrolling={onManageDisableScrolling}
                 onSetState={onSetState}
                 displayOnMobile
+                selectedPaymentMethod={this.state.selectedPaymentMethod}
               />
             </EditBookingForm>
           </div>
@@ -346,6 +347,7 @@ export class CheckoutPageComponent extends Component {
             listing={currentListing}
             onManageDisableScrolling={onManageDisableScrolling}
             onSetState={onSetState}
+            selectedPaymentMethod={this.state.selectedPaymentMethod}
           />
         </div>
       </Page>
