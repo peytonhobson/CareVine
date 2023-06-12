@@ -7,6 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { ensureCurrentUser, ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
+import classNames from 'classnames';
 import {
   deletePaymentMethod,
   createBankAccount,
@@ -50,6 +51,9 @@ const SavePaymentMethodsContainerComponent = props => {
     onDeletePaymentMethod,
     onFetchDefaultPayment,
     onManageDisableScrolling,
+    onChangeSelectedTab,
+    rootClassName,
+    className,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -124,6 +128,10 @@ const SavePaymentMethodsContainerComponent = props => {
   const initalValuesForStripePayment = { name: userName };
 
   const handleSelectedTab = e => {
+    if (onChangeSelectedTab) {
+      onChangeSelectedTab(e.target.textContent);
+    }
+
     setSelectedTab(e.target.textContent);
   };
 
@@ -226,6 +234,8 @@ const SavePaymentMethodsContainerComponent = props => {
       tabContentPanel = null;
       break;
   }
+
+  const classes = classNames(rootClassName || css.root, className);
 
   return (
     <div className={css.root}>

@@ -11,7 +11,7 @@ import {
   Button,
 } from '../../components';
 import { convertTimeFrom12to24 } from '../../util/data';
-import { useIsScrollable } from '../../util/hooks';
+import { useCheckMobileScreen, useIsScrollable } from '../../util/hooks';
 
 import css from './CheckoutPage.module.css';
 
@@ -33,7 +33,10 @@ const calculateTotalHours = bookingTimes =>
 const calculateCost = (bookingStart, bookingEnd, price) =>
   calculateTimeBetween(bookingStart, bookingEnd) * price;
 
-const calculateTotalCost = (bookingTimes, bookingRate) =>
+const calculateTransactionFee = (subTotal, transactionFee = 0.05) =>
+  Number(Number.parseFloat(subTotal * transactionFee).toFixed(2));
+
+const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes.reduce(
     (acc, curr) =>
       acc +
@@ -42,6 +45,9 @@ const calculateTotalCost = (bookingTimes, bookingRate) =>
         : 0),
     0
   );
+
+const calculateTotalCost = (subTotal, transactionFee) =>
+  Number.parseFloat(subTotal + transactionFee).toFixed(2);
 
 const BookingSummaryCard = props => {
   const {
@@ -53,8 +59,10 @@ const BookingSummaryCard = props => {
     listing,
     onManageDisableScrolling,
     onSetState,
+    displayOnMobile,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
+  const isMobile = useCheckMobileScreen();
 
   const [bookingTimesScrolled, setBookingTimesScrolled] = useState(0);
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
@@ -78,8 +86,11 @@ const BookingSummaryCard = props => {
     bookingTimesScrolled >=
     bookingTimesRef.current?.scrollHeight - bookingTimesRef.current?.clientHeight;
 
-  return (
-    <div className={css.detailsContainerDesktop}>
+  const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
+  const transactionFee = calculateTransactionFee(subTotal);
+
+  return (isMobile && displayOnMobile) || (!isMobile && !displayOnMobile) ? (
+    <div className={isMobile ? css.detailsContainerMobile : css.detailsContainerDesktop}>
       <div className={css.cardAvatarWrapper}>
         <AvatarLarge user={currentAuthor} disableProfileLink className={css.cardAvatar} />
         <span className={css.bookAuthor}>
@@ -100,8 +111,8 @@ const BookingSummaryCard = props => {
           )}
         </div>
         {bookingDates.map((bookingDate, index) => {
-          const month = new Date(bookingDate).getMonth() + 1;
-          const day = new Date(bookingDate).getDate();
+          const month = bookingDate.getMonth() + 1;
+          const day = bookingDate.getDate();
           const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};
           const date = bookingTime.date;
           const startTime = bookingTime.startTime;
@@ -129,21 +140,20 @@ const BookingSummaryCard = props => {
       </div>
       <div className={css.totalContainer}>
         {totalHours ? (
-          <>
-            <h3 className={css.totalCalc}>
-              {totalHours} hours x ${bookingRate}
-            </h3>
-            <InlineTextButton
-              className={css.changeRateButton}
-              onClick={() => setIsChangeRatesModalOpen(true)}
-            >
-              Change Hourly Rate
-            </InlineTextButton>
-          </>
+          <div className={css.totalCalc}>
+            <h4 className={css.paymentCalc}>
+              {totalHours} hours x ${bookingRate} - ${subTotal}
+              <InlineTextButton
+                className={css.changeRateButton}
+                onClick={() => setIsChangeRatesModalOpen(true)}
+              >
+                Change Hourly Rate
+              </InlineTextButton>
+            </h4>
+            <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
+          </div>
         ) : null}
-        <h3 className={css.total}>
-          Total: ${calculateTotalCost(selectedBookingTimes, bookingRate)}
-        </h3>
+        <h3 className={css.total}>Total: ${calculateTotalCost(subTotal, transactionFee)}</h3>
       </div>
       <Modal
         id="changeRatesModal"
@@ -198,7 +208,7 @@ const BookingSummaryCard = props => {
         />
       </Modal>
     </div>
-  );
+  ) : null;
 };
 
 export default BookingSummaryCard;

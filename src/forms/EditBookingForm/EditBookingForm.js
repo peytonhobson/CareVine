@@ -17,7 +17,10 @@ import { required } from '../../util/validators';
 
 import css from './EditBookingForm.module.css';
 
-const checkBookingTimes = (bookingTimes, bookingDates) => {
+const BANK_ACCOUNT = 'Bank Account';
+const CREDIT_CARD = 'Payment Card';
+
+const checkValidBookingTimes = (bookingTimes, bookingDates) => {
   if (!bookingTimes || !bookingDates) return false;
 
   const sameLength = Object.keys(bookingTimes).length === bookingDates.length;
@@ -26,6 +29,20 @@ const checkBookingTimes = (bookingTimes, bookingDates) => {
   );
 
   return sameLength && hasStartAndEndTimes;
+};
+
+const checkValidPaymentMethod = (paymentMethod, defaultPaymentMethods) => {
+  if (!paymentMethod || !defaultPaymentMethods) return false;
+
+  if (paymentMethod === BANK_ACCOUNT) {
+    return !!defaultPaymentMethods.bankAccount?.id;
+  }
+
+  if (paymentMethod === CREDIT_CARD) {
+    return !!defaultPaymentMethods.card?.id;
+  }
+
+  return false;
 };
 
 const EditBookingFormComponent = props => (
@@ -54,7 +71,8 @@ const EditBookingFormComponent = props => (
         onSetState,
         children,
         authorDisplayName,
-        hasDefaultPaymentMethod,
+        defaultPaymentMethods,
+        selectedPaymentMethod,
       } = formRenderProps;
 
       const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
@@ -69,6 +87,20 @@ const EditBookingFormComponent = props => (
 
       const handleSaveBookingDates = () => {
         onSetState({ bookingDates: values.bookingDates });
+        const newMonthYearBookingDates = values.bookingDates.map(
+          bookingDate => `${bookingDate.getMonth() + 1}/${bookingDate.getDate()}`
+        );
+
+        const newDateTimes = values.dateTimes
+          ? Object.keys(values.dateTimes)?.reduce((acc, monthYear) => {
+              if (newMonthYearBookingDates.includes(monthYear)) {
+                acc[monthYear] = values.dateTimes[monthYear];
+              }
+              return acc;
+            }, {})
+          : {};
+
+        form.change('dateTimes', newDateTimes);
         setIsEditBookingDatesModalOpen(false);
       };
 
@@ -76,7 +108,10 @@ const EditBookingFormComponent = props => (
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
       const submitDisabled =
-        invalid || disabled || !checkBookingTimes(values.dateTimes, bookingDates);
+        invalid ||
+        disabled ||
+        !checkValidBookingTimes(values.dateTimes, bookingDates) ||
+        !checkValidPaymentMethod(selectedPaymentMethod, defaultPaymentMethods);
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>

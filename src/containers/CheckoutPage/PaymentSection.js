@@ -1,38 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import { ButtonTabNavHorizontal, NamedLink } from '../../components';
+import { NamedLink } from '../../components';
 import { FormattedMessage } from 'react-intl';
 import {
   isTransactionInitiateAmountTooLowError,
   isTransactionInitiateListingNotFoundError,
-  isTransactionInitiateMissingStripeAccountError,
   isTransactionInitiateBookingTimeNotAvailableError,
   isTransactionChargeDisabledError,
-  isTransactionZeroPaymentError,
   transactionInitiateOrderStripeErrors,
 } from '../../util/errors';
 import { createSlug } from '../../util/urlHelpers';
-import { TRANSITION_ENQUIRE, txIsPaymentPending, txIsPaymentExpired } from '../../util/transaction';
-import { minutesBetween } from '../../util/dates';
 import SavePaymentMethodsContainer from '../SavePaymentMethodsContainer/SavePaymentMethodsContainer';
 
 import css from './CheckoutPage.module.css';
-
-const checkIsPaymentExpired = existingTransaction => {
-  return txIsPaymentExpired(existingTransaction)
-    ? true
-    : txIsPaymentPending(existingTransaction)
-    ? minutesBetween(existingTransaction.attributes.lastTransitionedAt, new Date()) >= 15
-    : false;
-};
 
 const PaymentSection = props => {
   const {
     currentUser,
     initiateOrderError,
     hasRequiredData,
-    retrievePaymentIntentError,
-    existingTransaction,
     currentListing,
     listingTitle,
     defaultPaymentFetched,
@@ -40,6 +26,7 @@ const PaymentSection = props => {
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
     stripeCustomerFetched,
+    onChangePaymentMethod,
   } = props;
 
   // Since the listing data is already given from the ListingPage
@@ -49,7 +36,6 @@ const PaymentSection = props => {
   // being deleted or closec, we should dig the information from the
   // errors and not the listing data.
   const listingNotFound = isTransactionInitiateListingNotFoundError(initiateOrderError);
-  const isPaymentExpired = checkIsPaymentExpired(existingTransaction);
   const isAmountTooLowError = isTransactionInitiateAmountTooLowError(initiateOrderError);
   const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
   const isBookingTimeNotAvailableError = isTransactionInitiateBookingTimeNotAvailableError(
@@ -72,9 +58,7 @@ const PaymentSection = props => {
     currentUser &&
     hasRequiredData &&
     !listingNotFound &&
-    !initiateOrderError &&
-    !retrievePaymentIntentError &&
-    !isPaymentExpired
+    !initiateOrderError
   );
 
   let initiateOrderErrorMessage = null;
@@ -130,14 +114,6 @@ const PaymentSection = props => {
       <h2>Payment</h2>
       {initiateOrderErrorMessage}
       {listingNotFoundErrorMessage}
-      {retrievePaymentIntentError ? (
-        <p className={css.orderError}>
-          <FormattedMessage
-            id="CheckoutPage.retrievingStripePaymentIntentFailed"
-            values={{ listingLink }}
-          />
-        </p>
-      ) : null}
       <p className={css.tinyNoMargin}>
         *A 3% fee will be added to transactions that use payment cards.
       </p>
@@ -148,12 +124,9 @@ const PaymentSection = props => {
           fetchDefaultPaymentError={fetchDefaultPaymentError}
           fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
           stripeCustomerFetched={stripeCustomerFetched}
+          onChangeSelectedTab={onChangePaymentMethod}
+          className={css.paymentMethods}
         />
-      ) : null}
-      {isPaymentExpired ? (
-        <p className={css.orderError}>
-          <FormattedMessage id="CheckoutPage.paymentExpiredMessage" values={{ listingLink }} />
-        </p>
       ) : null}
     </section>
   );
