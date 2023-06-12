@@ -4,10 +4,29 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
-import { Form, Button, FieldSelect, Modal, FieldDatePicker } from '../../components';
+import {
+  Form,
+  Button,
+  FieldSelect,
+  Modal,
+  FieldDatePicker,
+  FieldTextInput,
+} from '../../components';
 import { convertTimeFrom12to24 } from '../../util/data';
+import { required } from '../../util/validators';
 
 import css from './EditBookingForm.module.css';
+
+const checkBookingTimes = (bookingTimes, bookingDates) => {
+  if (!bookingTimes || !bookingDates) return false;
+
+  const sameLength = Object.keys(bookingTimes).length === bookingDates.length;
+  const hasStartAndEndTimes = Object.keys(bookingTimes).every(
+    bookingTime => bookingTimes[bookingTime].startTime && bookingTimes[bookingTime].endTime
+  );
+
+  return sameLength && hasStartAndEndTimes;
+};
 
 const EditBookingFormComponent = props => (
   <FinalForm
@@ -33,6 +52,9 @@ const EditBookingFormComponent = props => (
         onManageDisableScrolling,
         bookingDates,
         onSetState,
+        children,
+        authorDisplayName,
+        hasDefaultPaymentMethod,
       } = formRenderProps;
 
       const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
@@ -53,7 +75,8 @@ const EditBookingFormComponent = props => (
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
-      const submitDisabled = invalid || disabled || submitInProgress;
+      const submitDisabled =
+        invalid || disabled || !checkBookingTimes(values.dateTimes, bookingDates);
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -87,9 +110,7 @@ const EditBookingFormComponent = props => (
                         selectClassName={css.timeSelect}
                         initialValueSelected={monthYearBookingDate.startTime}
                       >
-                        <option disabled value="">
-                          8:00am
-                        </option>
+                        <option disabled>8:00am</option>
                         {Array.from(
                           { length: integerEndTimeVal ? integerEndTimeVal : 24 },
                           (v, i) => i
@@ -112,9 +133,7 @@ const EditBookingFormComponent = props => (
                         name={`dateTimes.${monthYearBookingDate}.endTime`}
                         selectClassName={css.timeSelect}
                       >
-                        <option disabled value="">
-                          5:00pm
-                        </option>
+                        <option disabled>5:00pm</option>
                         {Array.from({ length: 24 - integerStartTimeVal }, (v, i) => i).map(i => {
                           const hour = (i + integerStartTimeVal + 1) % 12 || 12;
                           const ampm =
@@ -135,6 +154,22 @@ const EditBookingFormComponent = props => (
               );
             })}
           </div>
+          {children}
+          <h2>Send a Message (Optional)</h2>
+          <FieldTextInput
+            id="message"
+            name="message"
+            type="textarea"
+            label="Message"
+            placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
+            className={css.message}
+          />
+          <p className={css.paymentInfo}>
+            You will not be charged until the caregiver accepts the booking
+          </p>
+          <Button className={css.submitButton} disabled={submitDisabled}>
+            Request to Book
+          </Button>
           <Modal
             id="EditBookingDatesModal"
             isOpen={isEditBookingDatesModalOpen}

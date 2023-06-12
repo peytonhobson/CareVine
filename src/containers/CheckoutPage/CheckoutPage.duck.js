@@ -11,6 +11,10 @@ import {
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
+import {
+  setInitialValues as setInitialValuesForPaymentMethods,
+  fetchDefaultPayment,
+} from '../../ducks/paymentMethods.duck';
 
 // ================ Action types ================ //
 
@@ -402,4 +406,15 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     .catch(e => {
       dispatch(stripeCustomerError(storableError(e)));
     });
+};
+
+export const loadData = () => (dispatch, getState, sdk) => {
+  dispatch(setInitialValuesForPaymentMethods());
+
+  return dispatch(stripeCustomer()).then(() => {
+    const stripeCustomer = getState().user.currentUser.stripeCustomer;
+    if (stripeCustomer) {
+      return dispatch(fetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId));
+    }
+  });
 };

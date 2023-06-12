@@ -116,7 +116,7 @@ const BookingSummaryCard = props => {
                 <span className={css.summaryTimes}>
                   {startTime} - {endTime}
                 </span>
-                <p className={css.dateCostText}>
+                <p className={css.tinyNoMargin}>
                   ({calculateTimeBetween(startTime, endTime)} hours)
                 </p>
               </div>
