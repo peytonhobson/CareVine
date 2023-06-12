@@ -190,21 +190,25 @@ const EditBookingFormComponent = props => (
             })}
           </div>
           {children}
-          <h2>Send a Message (Optional)</h2>
-          <FieldTextInput
-            id="message"
-            name="message"
-            type="textarea"
-            label="Message"
-            placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
-            className={css.message}
-          />
-          <p className={css.paymentInfo}>
-            You will not be charged until the caregiver accepts the booking
-          </p>
-          <Button className={css.submitButton} disabled={submitDisabled}>
-            Request to Book
-          </Button>
+          <div className={css.sendAMessage}>
+            <h2>Send a Message (Optional)</h2>
+            <FieldTextInput
+              id="message"
+              name="message"
+              type="textarea"
+              label="Message"
+              placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
+              className={css.message}
+            />
+          </div>
+          <div>
+            <p className={css.paymentInfo}>
+              You will not be charged until the caregiver accepts the booking
+            </p>
+            <Button className={css.submitButton} disabled={submitDisabled}>
+              Request to Book
+            </Button>
+          </div>
           <Modal
             id="EditBookingDatesModal"
             isOpen={isEditBookingDatesModalOpen}
