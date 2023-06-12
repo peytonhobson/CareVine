@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .datesContainer {
   padding: 2rem;
   background-color: var(--matterColorNegative);
@@ -86,4 +88,22 @@
 
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
+}
+
+.submitButton {
+  margin: 1rem 0 4rem 0;
+}
+
+.paymentInfo {
+  composes: h5 from global;
+
+  color: var(--matterColorAnti);
+  text-align: center;
+  padding: 0 2.5rem;
+  margin: 3rem 0 0 0;
+
+  @media (--viewportLarge) {
+    /* TODO this is ugly overwrite to fix unconsistent font styles */
+    padding: 0;
+  }
 }

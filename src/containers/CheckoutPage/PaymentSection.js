@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 
-import {
-  ButtonTabNavHorizontal,
-  NamedLink,
-  SavedBankDetails,
-  SavedCardDetails,
-} from '../../components';
+import { ButtonTabNavHorizontal, NamedLink } from '../../components';
 import { FormattedMessage } from 'react-intl';
 import {
   isTransactionInitiateAmountTooLowError,
@@ -19,11 +14,9 @@ import {
 import { createSlug } from '../../util/urlHelpers';
 import { TRANSITION_ENQUIRE, txIsPaymentPending, txIsPaymentExpired } from '../../util/transaction';
 import { minutesBetween } from '../../util/dates';
+import SavePaymentMethodsContainer from '../SavePaymentMethodsContainer/SavePaymentMethodsContainer';
 
 import css from './CheckoutPage.module.css';
-
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
 
 const checkIsPaymentExpired = existingTransaction => {
   return txIsPaymentExpired(existingTransaction)
@@ -34,8 +27,6 @@ const checkIsPaymentExpired = existingTransaction => {
 };
 
 const PaymentSection = props => {
-  const [selectedTab, setSelectedTab] = useState(BANK_ACCOUNT);
-
   const {
     currentUser,
     initiateOrderError,
@@ -44,6 +35,11 @@ const PaymentSection = props => {
     existingTransaction,
     currentListing,
     listingTitle,
+    defaultPaymentFetched,
+    defaultPaymentMethods,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+    stripeCustomerFetched,
   } = props;
 
   // Since the listing data is already given from the ListingPage
@@ -69,19 +65,6 @@ const PaymentSection = props => {
       <FormattedMessage id="CheckoutPage.errorlistingLinkText" />
     </NamedLink>
   );
-
-  const tabs = [
-    {
-      text: BANK_ACCOUNT,
-      selected: selectedTab === BANK_ACCOUNT,
-      onClick: e => setSelectedTab(e.target.textContent),
-    },
-    {
-      text: CREDIT_CARD,
-      selected: selectedTab === CREDIT_CARD,
-      onClick: e => setSelectedTab(e.target.textContent),
-    },
-  ];
 
   // Allow showing page when currentUser is still being downloaded,
   // but show payment form only when user info is loaded.
@@ -142,82 +125,6 @@ const PaymentSection = props => {
     );
   }
 
-  let tabContentPanel = null;
-
-  switch (selectedTab) {
-    case BANK_ACCOUNT:
-      tabContentPanel = (
-        <>
-          {!!bankAccount ? (
-            <SavedBankDetails
-              bank={bankAccount}
-              deletePaymentMethodError={deletePaymentMethodError}
-              deletePaymentMethodInProgress={deletePaymentMethodInProgress}
-              deletePaymentMethodSuccess={deletePaymentMethodSuccess}
-              onDeleteAccount={handleRemovePaymentMethod}
-              onFetchDefaultPayment={onFetchDefaultPayment}
-              onManageDisableScrolling={onManageDisableScrolling}
-              stripeCustomer={stripeCustomer}
-            />
-          ) : !!fetchDefaultPaymentError ? (
-            fetchDefaultPaymentErrorMessage
-          ) : null}
-          {showBankForm ? (
-            <Elements stripe={stripePromise}>
-              <SaveBankAccountForm
-                createBankAccountError={createBankAccountError}
-                createBankAccountInProgress={createBankAccountInProgress}
-                createBankAccountSuccess={createBankAccountSuccess}
-                currentUser={currentUser}
-                fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-                onFetchDefaultPayment={onFetchDefaultPayment}
-                onSubmit={handleBankAccountSubmit}
-              />
-            </Elements>
-          ) : null}
-        </>
-      );
-      break;
-    case CREDIT_CARD:
-      tabContentPanel = (
-        <>
-          {!!card ? (
-            <SavedCardDetails
-              card={ensurePaymentMethodCard(card)}
-              deletePaymentMethodInProgress={deletePaymentMethodInProgress}
-              deletePaymentMethodSuccess={deletePaymentMethodSuccess}
-              onDeleteCard={handleRemovePaymentMethod}
-              onFetchDefaultPayment={onFetchDefaultPayment}
-              onManageDisableScrolling={onManageDisableScrolling}
-              stripeCustomer={stripeCustomer}
-            />
-          ) : fetchDefaultPaymentError ? (
-            fetchDefaultPaymentErrorMessage
-          ) : null}
-          {showCardForm ? (
-            <SaveCreditCardForm
-              className={css.paymentForm}
-              createCreditCardError={createCreditCardError}
-              createCreditCardInProgress={createCreditCardInProgress}
-              createCreditCardSuccess={createCreditCardSuccess}
-              createStripeCustomerError={createStripeCustomerError}
-              deletePaymentMethodError={deletePaymentMethodError}
-              formId="PaymentMethodsForm"
-              handleCardSetupError={handleCardSetupError}
-              handleRemovePaymentMethod={handleRemovePaymentMethod}
-              initialValues={initalValuesForStripePayment}
-              inProgress={isSubmitting}
-              onSubmit={handleCardSubmit}
-            />
-          ) : null}
-        </>
-      );
-      break;
-    default:
-      tabContentPanel = null;
-      break;
-  }
-
   return (
     <section className={css.paymentContainer}>
       <h2>Payment</h2>
@@ -231,14 +138,18 @@ const PaymentSection = props => {
           />
         </p>
       ) : null}
-      <ButtonTabNavHorizontal
-        rootClassName={css.nav}
-        tabClassName={css.tab}
-        tabContentClass={css.tabContent}
-        tabRootClassName={css.tabRoot}
-        tabs={tabs}
-      />
-      {showPaymentForm ? { tabContentPanel } : null}
+      <p className={css.tinyNoMargin}>
+        *A 3% fee will be added to transactions that use payment cards.
+      </p>
+      {showPaymentForm ? (
+        <SavePaymentMethodsContainer
+          defaultPaymentFetched={defaultPaymentFetched}
+          defaultPaymentMethods={defaultPaymentMethods}
+          fetchDefaultPaymentError={fetchDefaultPaymentError}
+          fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+          stripeCustomerFetched={stripeCustomerFetched}
+        />
+      ) : null}
       {isPaymentExpired ? (
         <p className={css.orderError}>
           <FormattedMessage id="CheckoutPage.paymentExpiredMessage" values={{ listingLink }} />

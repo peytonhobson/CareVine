@@ -168,11 +168,6 @@ export class CheckoutPageComponent extends Component {
       history,
     } = this.props;
 
-    // Fetch currentUser with stripeCustomer entity
-    // Note: since there's need for data loading in "componentWillMount" function,
-    //       this is added here instead of loadData static function.
-    fetchStripeCustomer();
-
     // Browser's back navigation should not rewrite data in session store.
     // Action is 'POP' on both history.back() and page refresh cases.
     // Action is 'PUSH' when user has directed through a link
@@ -529,6 +524,10 @@ export class CheckoutPageComponent extends Component {
       monthlyTimeSlots,
       onManageDisableScrolling,
       onSetState,
+      defaultPaymentFetched,
+      defaultPaymentMethods,
+      fetchDefaultPaymentError,
+      fetchDefaultPaymentInProgress,
     } = this.props;
 
     const isLoading = !this.state.dataLoaded || speculateTransactionInProgress;
@@ -656,18 +655,24 @@ export class CheckoutPageComponent extends Component {
                 onManageDisableScrolling={onManageDisableScrolling}
                 bookingDates={bookingDates}
                 onSetState={onSetState}
-              />
+                authorDisplayName={authorDisplayName}
+              >
+                <PaymentSection
+                  currentUser={currentUser}
+                  initiateOrderError={initiateOrderError}
+                  hasRequiredData={hasRequiredData}
+                  retrievePaymentIntentError={retrievePaymentIntentError}
+                  existingTransaction={existingTransaction}
+                  currentListing={currentListing}
+                  listingTitle={listingTitle}
+                  defaultPaymentFetched={stripeCustomerFetched}
+                  defaultPaymentMethods={defaultPaymentMethods}
+                  fetchDefaultPaymentError={fetchDefaultPaymentError}
+                  fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+                  stripeCustomerFetched={stripeCustomerFetched}
+                />
+              </EditBookingForm>
             </section>
-
-            <PaymentSection
-              currentUser={currentUser}
-              initiateOrderError={initiateOrderError}
-              hasRequiredData={hasRequiredData}
-              retrievePaymentIntentError={retrievePaymentIntentError}
-              existingTransaction={existingTransaction}
-              currentListing={currentListing}
-              listingTitle={listingTitle}
-            />
           </div>
           <BookingSummaryCard
             authorDisplayName={authorDisplayName}
@@ -758,6 +763,13 @@ const mapStateToProps = state => {
   } = state.CheckoutPage;
   const { currentUser } = state.user;
   const { confirmCardPaymentError, paymentIntent, retrievePaymentIntentError } = state.stripe;
+  const {
+    defaultPaymentFetched,
+    defaultPaymentMethods,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
+  } = state.paymentMethods;
+
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
@@ -775,6 +787,10 @@ const mapStateToProps = state => {
     paymentIntent,
     retrievePaymentIntentError,
     monthlyTimeSlots,
+    defaultPaymentFetched,
+    defaultPaymentMethods,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
   };
 };
 

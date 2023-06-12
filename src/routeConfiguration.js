@@ -101,6 +101,7 @@ const routeConfiguration = () => {
       auth: true,
       component: CheckoutPage,
       setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
+      loadData: pageDataLoadingAPI.CheckoutPage.loadData,
     },
     {
       path: '/feedback',

@@ -367,20 +367,19 @@
   display: inline;
 }
 
-.summaryTimes {
-  composes: marketplaceTinyFontStyles from global;
-  margin: 0;
-  width: 100%;
-}
-
 .summaryTimeContainer {
   display: flex;
   flex-wrap: wrap;
 }
 
-.dateCostText {
+.tinyNoMargin {
   composes: marketplaceTinyFontStyles from global;
   margin: 0;
+}
+
+.summaryTimes {
+  composes: tinyNoMargin;
+  width: 100%;
 }
 
 .totalContainer {
