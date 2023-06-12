@@ -80,8 +80,6 @@ export class CheckoutPageComponent extends Component {
     }
   }
 
-  props;
-
   /**
    * Load initial data for the page
    *
@@ -130,54 +128,6 @@ export class CheckoutPageComponent extends Component {
       return;
     }
     this.setState({ submitting: true });
-
-    const { history, speculatedTransaction, currentUser, paymentIntent, dispatch } = this.props;
-    const { card, message, paymentMethod, formValues } = values;
-    const {
-      name,
-      addressLine1,
-      addressLine2,
-      postal,
-      city,
-      state,
-      country,
-      saveAfterOnetimePayment,
-    } = formValues;
-
-    // Billing address is recommended.
-    // However, let's not assume that <StripePaymentAddress> data is among formValues.
-    // Read more about this from Stripe's docs
-    // https://stripe.com/docs/stripe-js/reference#stripe-handle-card-payment-no-element
-    const addressMaybe =
-      addressLine1 && postal
-        ? {
-            address: {
-              city: city,
-              country: country,
-              line1: addressLine1,
-              line2: addressLine2,
-              postal_code: postal,
-              state: state,
-            },
-          }
-        : {};
-    const billingDetails = {
-      name,
-      email: ensureCurrentUser(currentUser).attributes.email,
-      ...addressMaybe,
-    };
-
-    const requestPaymentParams = {
-      pageData: this.state.pageData,
-      speculatedTransaction,
-      stripe: this.stripe,
-      card,
-      billingDetails,
-      message,
-      paymentIntent,
-      selectedPaymentMethod: paymentMethod,
-      saveAfterOnetimePayment: !!saveAfterOnetimePayment,
-    };
 
     this.handlePaymentIntent(requestPaymentParams)
       .then(res => {

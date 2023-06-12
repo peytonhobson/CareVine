@@ -116,7 +116,7 @@ const EditBookingFormComponent = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FormSpy onChange={onChange} />
-          <h2 style={{ display: 'inline' }}>Pick your Times</h2>
+          <h2 className={css.pickYourTimes}>Pick your Times</h2>
           <Button
             className={css.changeDatesButton}
             onClick={() => setIsEditBookingDatesModalOpen(true)}
