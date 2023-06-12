@@ -15,6 +15,10 @@ import { useCheckMobileScreen, useIsScrollable } from '../../util/hooks';
 
 import css from './CheckoutPage.module.css';
 
+const CREDIT_CARD = 'Payment Card';
+const TRANSACTION_FEE = 0.05;
+const CARD_FEE = 0.03;
+
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
   const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
@@ -33,8 +37,10 @@ const calculateTotalHours = bookingTimes =>
 const calculateCost = (bookingStart, bookingEnd, price) =>
   calculateTimeBetween(bookingStart, bookingEnd) * price;
 
-const calculateTransactionFee = (subTotal, transactionFee = 0.05) =>
-  Number(Number.parseFloat(subTotal * transactionFee).toFixed(2));
+const calculateTransactionFee = subTotal =>
+  Number(Number.parseFloat(subTotal * TRANSACTION_FEE).toFixed(2));
+
+const calculateCardFee = subTotal => Number(Number.parseFloat(subTotal * CARD_FEE).toFixed(2));
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes.reduce(
@@ -46,8 +52,8 @@ const calculateSubTotal = (bookingTimes, bookingRate) =>
     0
   );
 
-const calculateTotalCost = (subTotal, transactionFee) =>
-  Number.parseFloat(subTotal + transactionFee).toFixed(2);
+const calculateTotalCost = (subTotal, transactionFee, cardFee) =>
+  Number.parseFloat(subTotal + transactionFee + cardFee).toFixed(2);
 
 const BookingSummaryCard = props => {
   const {
@@ -60,6 +66,7 @@ const BookingSummaryCard = props => {
     onManageDisableScrolling,
     onSetState,
     displayOnMobile,
+    selectedPaymentMethod,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
   const isMobile = useCheckMobileScreen();
@@ -88,72 +95,83 @@ const BookingSummaryCard = props => {
 
   const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
   const transactionFee = calculateTransactionFee(subTotal);
+  const cardFee = calculateCardFee(subTotal);
+  const total = calculateTotalCost(subTotal, transactionFee, cardFee);
 
   return (isMobile && displayOnMobile) || (!isMobile && !displayOnMobile) ? (
     <div className={isMobile ? css.detailsContainerMobile : css.detailsContainerDesktop}>
       <div className={css.cardAvatarWrapper}>
         <AvatarLarge user={currentAuthor} disableProfileLink className={css.cardAvatar} />
-        <span className={css.bookAuthor}>
-          Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
-        </span>
+        <div>
+          <span className={isMobile ? css.bookAuthorMobile : css.bookAuthor}>
+            Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
+          </span>
+        </div>
       </div>
-      <div className={css.detailsHeadings}>
-        <h2 className={css.detailsTitle}>Booking Summary</h2>
-      </div>
-      <div
-        className={css.bookingTimes}
-        ref={bookingTimesRef}
-        onScroll={() => setBookingTimesScrolled(bookingTimesRef.current.scrollTop)}
-      >
-        <div className={css.arrowHeadContainer}>
-          {isScrollable && isAtBottom && (
-            <IconArrowHead direction="up" className={css.arrowHeadDown} onClick={scrollToTop} />
+      <div className={css.summaryDetailsContainer}>
+        <div className={css.detailsHeadings}>
+          <h2 className={css.detailsTitle}>Booking Summary</h2>
+        </div>
+        <div
+          className={css.bookingTimes}
+          ref={bookingTimesRef}
+          onScroll={() => setBookingTimesScrolled(bookingTimesRef.current.scrollTop)}
+        >
+          <div className={css.arrowHeadContainer}>
+            {isScrollable && isAtBottom && (
+              <IconArrowHead direction="up" className={css.arrowHeadDown} onClick={scrollToTop} />
+            )}
+          </div>
+          {bookingDates.map((bookingDate, index) => {
+            const month = bookingDate.getMonth() + 1;
+            const day = bookingDate.getDate();
+            const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};
+            const date = bookingTime.date;
+            const startTime = bookingTime.startTime;
+            const endTime = bookingTime.endTime;
+
+            return startTime && endTime ? (
+              <div className={css.bookingTime} key={bookingTime.date}>
+                <h3 className={css.summaryDate}>
+                  {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
+                </h3>
+                <div className={css.summaryTimeContainer}>
+                  <span className={css.summaryTimes}>
+                    {startTime} - {endTime}
+                  </span>
+                  <p className={css.tinyNoMargin}>
+                    ({calculateTimeBetween(startTime, endTime)} hours)
+                  </p>
+                </div>
+              </div>
+            ) : null;
+          })}
+          {isScrollable && !bookingTimesScrolled && (
+            <IconArrowHead direction="down" className={css.arrowHeadUp} onClick={scrollToBottom} />
           )}
         </div>
-        {bookingDates.map((bookingDate, index) => {
-          const month = bookingDate.getMonth() + 1;
-          const day = bookingDate.getDate();
-          const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};
-          const date = bookingTime.date;
-          const startTime = bookingTime.startTime;
-          const endTime = bookingTime.endTime;
-
-          return startTime && endTime ? (
-            <div className={css.bookingTime} key={bookingTime.date}>
-              <h3 className={css.summaryDate}>
-                {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
-              </h3>
-              <div className={css.summaryTimeContainer}>
-                <span className={css.summaryTimes}>
-                  {startTime} - {endTime}
+        <div className={css.totalContainer}>
+          {totalHours ? (
+            <div className={css.totalCalc}>
+              <h4 className={css.paymentCalc}>
+                <span style={{ paddingRight: '1rem' }}>
+                  {totalHours} hours x ${bookingRate} - ${subTotal}
                 </span>
-                <p className={css.tinyNoMargin}>
-                  ({calculateTimeBetween(startTime, endTime)} hours)
-                </p>
-              </div>
+                <InlineTextButton
+                  className={css.changeRateButton}
+                  onClick={() => setIsChangeRatesModalOpen(true)}
+                >
+                  Change Hourly Rate
+                </InlineTextButton>
+              </h4>
+              <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
+              {selectedPaymentMethod === CREDIT_CARD ? (
+                <h4 className={css.paymentCalc}>+3% card fee - ${cardFee}</h4>
+              ) : null}
             </div>
-          ) : null;
-        })}
-        {isScrollable && !bookingTimesScrolled && (
-          <IconArrowHead direction="down" className={css.arrowHeadUp} onClick={scrollToBottom} />
-        )}
-      </div>
-      <div className={css.totalContainer}>
-        {totalHours ? (
-          <div className={css.totalCalc}>
-            <h4 className={css.paymentCalc}>
-              {totalHours} hours x ${bookingRate} - ${subTotal}
-              <InlineTextButton
-                className={css.changeRateButton}
-                onClick={() => setIsChangeRatesModalOpen(true)}
-              >
-                Change Hourly Rate
-              </InlineTextButton>
-            </h4>
-            <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
-          </div>
-        ) : null}
-        <h3 className={css.total}>Total: ${calculateTotalCost(subTotal, transactionFee)}</h3>
+          ) : null}
+          <h3 className={css.total}>Total: ${total}</h3>
+        </div>
       </div>
       <Modal
         id="changeRatesModal"
