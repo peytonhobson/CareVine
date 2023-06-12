@@ -9,7 +9,8 @@ import moment from 'moment';
 import css from './FieldDatePicker.module.css';
 import { InlineTextButton } from '../Button/Button';
 
-const isDayHighlighted = (selectedDays, date) => selectedDays.includes(date.getTime());
+const isDayHighlighted = (selectedDays, date) =>
+  selectedDays.map(d => d.getTime()).includes(date.getTime());
 
 const isDayDisabled = (monthlyTimeSlots, selectedDays, date) => {
   const month = moment(date).format('YYYY-MM');
@@ -77,17 +78,16 @@ export const FieldDatePickerComponent = props => {
   const { monthlyTimeSlots, input, children, className } = props;
 
   const handleSelectDay = date => {
-    const dayTime = date.getTime();
     const isDaySelected = Array.isArray(input.value)
-      ? input.value?.find(entry => entry === dayTime)
+      ? input.value?.find(entry => entry.getTime() === date.getTime())
       : false;
 
     if (isDaySelected) {
-      const newSelectedDays = input.value.filter(entry => entry !== dayTime);
+      const newSelectedDays = input.value.filter(entry => entry.getTime() !== date.getTime());
 
       input.onChange(newSelectedDays);
     } else {
-      const newSelectedDays = [...input.value, dayTime];
+      const newSelectedDays = [...input.value, date];
 
       input.onChange(newSelectedDays);
     }
@@ -98,12 +98,13 @@ export const FieldDatePickerComponent = props => {
   };
 
   const classes = classNames(css.root, className);
+  const selectedDays = Array.isArray(input.value) ? input.value : [];
 
   return (
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, input.value, monthlyTimeSlots, handleSelectDay)
+          formatDay(locale, date, selectedDays, monthlyTimeSlots, handleSelectDay)
         }
         value={new Date()}
       />

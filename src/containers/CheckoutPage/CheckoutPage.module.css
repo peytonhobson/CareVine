@@ -75,6 +75,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  padding: 2rem;
 
   @media (--viewportLarge) {
     flex-grow: 0;
@@ -232,7 +233,6 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 24px;
   margin-bottom: 35px;
 
   @media (--viewportMedium) {
@@ -273,7 +273,6 @@
   flex-grow: 1;
 }
 
-/* Details column is visible only on desktop */
 .detailsContainerDesktop {
   display: none;
 
@@ -294,6 +293,23 @@
   }
 }
 
+.detailsContainerMobile {
+  flex-shrink: 0;
+  display: block;
+  /* Dimensions */
+  padding-bottom: 2rem;
+
+  /* Coloring */
+  background-color: var(--matterColorLight);
+  border: 1px solid var(--matterColorNegative);
+  border-radius: 2px;
+  margin: 4rem 0 2rem 0;
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
 .detailsAspectWrapper {
   position: relative;
   padding-bottom: 66.6667%; /* 3:2 Aspect Ratio */
@@ -301,18 +317,14 @@
 }
 
 .detailsHeadings {
-  display: none;
-
-  @media (--viewportLarge) {
-    display: flex;
-    margin: 0 3rem;
-    align-items: center;
-  }
+  display: flex;
+  margin: 0 3rem;
+  align-items: center;
 }
 
 .changeRateButton {
   composes: marketplaceTinyFontStyles from global;
-  margin-left: 1rem;
+  margin: 0 1rem;
 }
 
 .detailsSubtitle {
@@ -385,7 +397,7 @@
 .totalContainer {
   border-top: 1px solid var(--matterColorNegative);
   margin: 0 3rem;
-  padding: 2rem 0 0 1rem;
+  padding: 2rem 0 0 0;
 }
 
 .arrowHeadUp {
@@ -413,8 +425,11 @@
 .totalCalc {
   border-bottom: 1px solid var(--matterColor);
   margin-bottom: 0;
-  display: inline;
   padding-block: 0.5rem;
+}
+
+.paymentCalc {
+  margin-block: 0.5rem;
 }
 
 .fieldLabel {
@@ -446,4 +461,11 @@
 
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.changeRatesForm {
+  margin: auto;
 }
