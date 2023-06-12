@@ -145,6 +145,14 @@
   margin-top: 3rem;
 
   @media (--viewportMedium) {
+    margin-top: 5rem;
+  }
+}
+
+.pickYourTimes {
+  display: inline;
+
+  @media (--viewportMedium) {
     margin-top: 0;
   }
 }
