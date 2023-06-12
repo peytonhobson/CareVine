@@ -140,3 +140,11 @@
     padding: 0;
   }
 }
+
+.sendAMessage {
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
