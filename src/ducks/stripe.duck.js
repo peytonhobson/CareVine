@@ -777,12 +777,19 @@ export const createPayment = params => (dispatch, getState, sdk) => {
   }
 };
 
-export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, metadata) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const createPaymentIntent = params => (dispatch, getState, sdk) => {
   dispatch(createPaymentIntentRequest());
+
+  const {
+    amount,
+    recipientId,
+    currentUser,
+    metadata,
+    description,
+    additionalParams,
+    applicationFee,
+    paymentMethods,
+  } = params;
 
   const handleSuccess = response => {
     dispatch(createPaymentIntentSuccess(response));
@@ -795,17 +802,19 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
     throw e;
   };
 
-  const stripeCustomerId = sender.stripeCustomer?.attributes.stripeCustomerId;
+  const stripeCustomerId = currentUser.stripeCustomer?.attributes.stripeCustomerId;
 
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({
       amount,
-      userId,
+      recipientId,
       stripeCustomerId,
-      isCard,
-      description: `Payment to ${caregiverName}`,
-      sender,
+      description,
+      sender: currentUser,
       metadata,
+      params: additionalParams,
+      applicationFee,
+      paymentMethods,
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
@@ -814,12 +823,14 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
       .then(res => {
         return stripeCreatePaymentIntent({
           amount,
-          userId,
+          recipientId,
           stripeCustomerId: res.id,
-          isCard,
-          description: `Payment to ${caregiverName}`,
-          sender,
+          description,
+          sender: currentUser,
           metadata,
+          params: additionalParams,
+          applicationFee,
+          paymentMethods,
         });
       })
       .then(res => {
