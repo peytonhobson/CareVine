@@ -124,11 +124,6 @@ export class CheckoutPageComponent extends Component {
   }
 
   handleSubmit(values) {
-    if (this.state.submitting) {
-      return;
-    }
-    this.setState({ submitting: true });
-
     this.handlePaymentIntent(requestPaymentParams)
       .then(res => {
         const { orderId, messageSuccess, paymentMethodSaved } = res;

@@ -37,6 +37,8 @@ import { useCheckMobileScreen } from '../../util/hooks';
 import css from './StripePaymentModal.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
+const BANK_APPLICATION_FEE = 0.03;
+const CARD_APPLICATION_FEE = 0.06;
 
 const StripePaymentModalComponent = props => {
   const {
@@ -131,14 +133,16 @@ const StripePaymentModalComponent = props => {
       recipientName,
     };
 
-    onCreatePaymentIntent(
-      amount?.amount,
-      provider?.id,
+    onCreatePaymentIntent({
+      amount: amount?.amount,
+      recipientId: provider?.id,
       currentUser,
-      isCard,
       recipientName,
-      intentMetadata
-    );
+      metadata: intentMetadata,
+      description: `Payment to ${recipientName}`,
+      applicationFee: isCard ? CARD_APPLICATION_FEE : BANK_APPLICATION_FEE,
+      paymentMethods: isCard ? ['card'] : ['us_bank_account'],
+    });
   };
 
   const onHandlePaymentSubmit = (
@@ -483,10 +487,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onCreatePaymentIntent: (amount, stripeAccountId, sender, isCard, caregiverName, conversationId) =>
-    dispatch(
-      createPaymentIntent(amount, stripeAccountId, sender, isCard, caregiverName, conversationId)
-    ),
+  onCreatePaymentIntent: params => dispatch(createPaymentIntent(params)),
   fetchHasStripeAccount: userId => dispatch(hasStripeAccount(userId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
   onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
