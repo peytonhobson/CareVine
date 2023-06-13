@@ -1,1 +1,1 @@
-Your booking request has expired
+{{transaction.customer.display-name}} has requested to book {{transaction.listing.title}}
