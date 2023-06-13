@@ -1,1 +1,1 @@
-{{transaction.provider.display-name}} declined your booking request
+{{transaction.customer.display-name}} has requested to book {{transaction.listing.title}}
