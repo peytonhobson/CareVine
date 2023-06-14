@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 
 import { Form as FinalForm } from 'react-final-form';
 import {
-  AvatarLarge,
+  Avatar,
   IconArrowHead,
   InlineTextButton,
   Modal,
@@ -101,7 +101,7 @@ const BookingSummaryCard = props => {
   return (isMobile && displayOnMobile) || (!isMobile && !displayOnMobile) ? (
     <div className={isMobile ? css.detailsContainerMobile : css.detailsContainerDesktop}>
       <div className={css.cardAvatarWrapper}>
-        <AvatarLarge user={currentAuthor} disableProfileLink className={css.cardAvatar} />
+        <Avatar user={currentAuthor} disableProfileLink className={css.cardAvatar} />
         <div>
           <span className={isMobile ? css.bookAuthorMobile : css.bookAuthor}>
             Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>

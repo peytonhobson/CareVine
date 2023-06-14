@@ -800,3 +800,10 @@
   width: 5rem;
   height: 5rem;
 }
+
+.noStripeAccountContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
