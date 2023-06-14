@@ -278,6 +278,8 @@ export class CheckoutPageComponent extends Component {
               initiateOrderInProgress={initiateOrderInProgress}
               initiateOrderError={initiateOrderError}
               transaction={transaction}
+              currentListing={currentListing}
+              listingTitle={listingTitle}
             >
               <PaymentSection
                 currentUser={currentUser}

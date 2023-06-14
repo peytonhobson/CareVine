@@ -11,9 +11,17 @@ import {
   Modal,
   FieldDatePicker,
   FieldTextInput,
+  NamedLink,
 } from '../../components';
+import {
+  isTransactionInitiateAmountTooLowError,
+  isTransactionInitiateListingNotFoundError,
+  isTransactionInitiateBookingTimeNotAvailableError,
+  isTransactionChargeDisabledError,
+  transactionInitiateOrderStripeErrors,
+} from '../../util/errors';
+import { createSlug } from '../../util/urlHelpers';
 import { convertTimeFrom12to24 } from '../../util/data';
-import { required } from '../../util/validators';
 
 import css from './EditBookingForm.module.css';
 
@@ -75,7 +83,68 @@ const EditBookingFormComponent = props => (
         initiateOrderInProgress,
         initiateOrderError,
         transaction,
+        currentListing,
+        listingTitle,
       } = formRenderProps;
+
+      const listingNotFound = isTransactionInitiateListingNotFoundError(initiateOrderError);
+      const isAmountTooLowError = isTransactionInitiateAmountTooLowError(initiateOrderError);
+      const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
+      const isBookingTimeNotAvailableError = isTransactionInitiateBookingTimeNotAvailableError(
+        initiateOrderError
+      );
+      const stripeErrors = transactionInitiateOrderStripeErrors(initiateOrderError);
+
+      const listingLink = (
+        <NamedLink
+          name="ListingPage"
+          params={{ id: currentListing.id.uuid, slug: createSlug(listingTitle) }}
+        >
+          <FormattedMessage id="CheckoutPage.errorlistingLinkText" />
+        </NamedLink>
+      );
+
+      let initiateOrderErrorMessage = null;
+      let listingNotFoundErrorMessage = null;
+
+      if (listingNotFound) {
+        listingNotFoundErrorMessage = (
+          <p className={css.notFoundError}>
+            <FormattedMessage id="CheckoutPage.listingNotFoundError" />
+          </p>
+        );
+      } else if (isBookingTimeNotAvailableError) {
+        initiateOrderErrorMessage = (
+          <p className={css.orderError}>
+            <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />
+          </p>
+        );
+      } else if (isChargeDisabledError) {
+        initiateOrderErrorMessage = (
+          <p className={css.orderError}>
+            <FormattedMessage id="CheckoutPage.chargeDisabledMessage" />
+          </p>
+        );
+      } else if (stripeErrors && stripeErrors.length > 0) {
+        // NOTE: Error messages from Stripes are not part of translations.
+        // By default they are in English.
+        const stripeErrorsAsString = stripeErrors.join(', ');
+        initiateOrderErrorMessage = (
+          <p className={css.orderError}>
+            <FormattedMessage
+              id="CheckoutPage.initiateOrderStripeError"
+              values={{ stripeErrors: stripeErrorsAsString }}
+            />
+          </p>
+        );
+      } else if (initiateOrderError) {
+        // Generic initiate order error
+        initiateOrderErrorMessage = (
+          <p className={css.orderError}>
+            <FormattedMessage id="CheckoutPage.initiateOrderError" values={{ listingLink }} />
+          </p>
+        );
+      }
 
       const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
 
@@ -204,6 +273,8 @@ const EditBookingFormComponent = props => (
             />
           </div>
           <div>
+            {listingNotFoundErrorMessage}
+            {initiateOrderErrorMessage}
             <p className={css.paymentInfo}>
               You will not be charged until the caregiver accepts the booking
             </p>

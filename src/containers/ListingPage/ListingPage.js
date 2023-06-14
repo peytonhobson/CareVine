@@ -241,10 +241,9 @@ export class ListingPageComponent extends Component {
       origin,
       onFetchTimeSlots,
       monthlyTimeSlots,
-      onFetchTransactionLineItems,
-      lineItems,
-      fetchLineItemsInProgress,
-      fetchLineItemsError,
+      hasStripeAccount,
+      hasStripeAccountInProgress,
+      hasStripeAccountError,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -458,6 +457,9 @@ export class ListingPageComponent extends Component {
                 monthlyTimeSlots={monthlyTimeSlots}
                 onManageDisableScrolling={onManageDisableScrolling}
                 authorDisplayName={authorDisplayName}
+                hasStripeAccount={hasStripeAccount}
+                hasStripeAccountInProgress={hasStripeAccountInProgress}
+                hasStripeAccountError={hasStripeAccountError}
               />
             </div>
             {this.state.enquiryModalOpen && (
@@ -475,27 +477,6 @@ export class ListingPageComponent extends Component {
                   onSubmit={this.onSubmitEnquiry}
                   inProgress={sendEnquiryInProgress || sendMessageInProgress}
                   author={currentAuthor}
-                />
-              </Modal>
-            )}
-            {this.state.bookingModalOpen && (
-              <Modal
-                id="BookingPanel"
-                isOpen={isAuthenticated && !!this.state.bookingModalOpen}
-                onClose={() => this.setState({ bookingModalOpen: false })}
-                onManageDisableScrolling={onManageDisableScrolling}
-                containerClassName={css.bookingModalContainer}
-                usePortal
-              >
-                <div className={css.modalHeader}>
-                  <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
-                  <Avatar className={css.modalAvatar} user={currentAuthor} disableProfileLink />
-                </div>
-                <InitialBookingForm
-                  className={css.bookingForm}
-                  listing={currentListing}
-                  onSubmit={handleBookingSubmit}
-                  // inProgress={bookingInProgress}
                 />
               </Modal>
             )}
@@ -577,6 +558,11 @@ const mapStateToProps = state => {
     monthlyTimeSlots,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
+  const {
+    hasStripeAccount,
+    hasStripeAccountInProgress,
+    hasStripeAccountError,
+  } = state.stripeConnectAccount;
 
   const getListing = id => {
     const ref = { id, type: 'listing' };
@@ -611,6 +597,9 @@ const mapStateToProps = state => {
     openListingError,
     origin,
     monthlyTimeSlots,
+    hasStripeAccount,
+    hasStripeAccountInProgress,
+    hasStripeAccountError,
   };
 };
 
