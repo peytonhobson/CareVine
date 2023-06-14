@@ -134,13 +134,21 @@ const SavedCardDetails = props => {
       {showExpired && expiredText}
 
       {onDeleteCard ? (
-        <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
+        <InlineTextButton
+          onClick={handleOpenDeleteModal}
+          className={css.savedPaymentMethodDelete}
+          type="button"
+        >
           <IconClose rootClassName={css.closeIcon} size="small" />
           {deletePaymentMethod}
         </InlineTextButton>
       ) : null}
       {onEditCard ? (
-        <InlineTextButton onClick={onEditCard} className={css.savedPaymentMethodDelete}>
+        <InlineTextButton
+          onClick={onEditCard}
+          className={css.savedPaymentMethodDelete}
+          type="button"
+        >
           <IconClose rootClassName={css.closeIcon} size="small" />
           {editPaymentMethod}
         </InlineTextButton>
@@ -165,10 +173,15 @@ const SavedCardDetails = props => {
                 onClick={() => setIsModalOpen(false)}
                 className={css.cancelCardDelete}
                 tabIndex="0"
+                type="button"
               >
                 {cancel}
               </div>
-              <Button onClick={handleDeleteCard} inProgress={deletePaymentMethodInProgress}>
+              <Button
+                onClick={handleDeleteCard}
+                inProgress={deletePaymentMethodInProgress}
+                type="button"
+              >
                 {removeCard}
               </Button>
             </div>

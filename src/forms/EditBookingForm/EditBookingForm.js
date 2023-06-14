@@ -159,7 +159,8 @@ const EditBookingFormComponent = props => (
       const handleSaveBookingDates = () => {
         onSetState({ bookingDates: values.bookingDates });
         const newMonthYearBookingDates = values.bookingDates.map(
-          bookingDate => `${bookingDate.getMonth() + 1}/${bookingDate.getDate()}`
+          bookingDate =>
+            `${new Date(bookingDate).getMonth() + 1}/${new Date(bookingDate).getDate()}`
         );
 
         const newDateTimes = values.dateTimes
@@ -184,13 +185,22 @@ const EditBookingFormComponent = props => (
         !checkValidBookingTimes(values.dateTimes, bookingDates) ||
         !checkValidPaymentMethod(selectedPaymentMethod, defaultPaymentMethods);
 
+      const onSubmit = e => {
+        e.preventDefault();
+        if (submitDisabled) {
+          return;
+        }
+        handleSubmit(e);
+      };
+
       return (
-        <Form className={classes} onSubmit={handleSubmit}>
+        <Form className={classes} onSubmit={onSubmit}>
           <FormSpy onChange={onChange} />
           <h2 className={css.pickYourTimes}>Pick your Times</h2>
           <Button
             className={css.changeDatesButton}
             onClick={() => setIsEditBookingDatesModalOpen(true)}
+            type="button"
           >
             Change Dates
           </Button>

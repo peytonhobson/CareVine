@@ -5,11 +5,14 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
 import * as log from '../../util/log';
+import { storeData } from './CheckoutPageSessionHelpers';
 import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
 import {
   setInitialValues as setInitialValuesForPaymentMethods,
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
+
+const STORAGE_KEY = 'CheckoutPage';
 
 // ================ Action types ================ //
 
@@ -104,7 +107,11 @@ export const stripeCustomerError = e => ({
 
 /* ================ Thunks ================ */
 
-export const initiateOrder = (orderParams, metadata) => async (dispatch, getState, sdk) => {
+export const initiateOrder = (orderParams, metadata, listing) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(initiateOrderRequest());
 
   const bodyParams = {
@@ -122,6 +129,12 @@ export const initiateOrder = (orderParams, metadata) => async (dispatch, getStat
     const order = entities[0];
     dispatch(initiateOrderSuccess(order));
     dispatch(fetchCurrentUserHasOrdersSuccess(true));
+
+    const bookingRate = order.attributes.metadata.bookingRate;
+    const bookingDates = order.attributes.metadata.bookingDates;
+
+    storeData(bookingRate, bookingDates, listing, order, STORAGE_KEY);
+
     return order;
   };
 
@@ -136,11 +149,9 @@ export const initiateOrder = (orderParams, metadata) => async (dispatch, getStat
   try {
     const response = await sdk.transactions.initiate(bodyParams, queryParams);
 
-    console.log(response.data.data);
+    const order = await updateTransactionMetadata({ txId: response.data.data.id.uuid, metadata });
 
-    await updateTransactionMetadata({ txId: response.data.data.id.uuid, metadata });
-
-    return handleSuccess(response);
+    return handleSuccess(order);
   } catch (e) {
     return handleError(e);
   }

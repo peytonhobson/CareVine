@@ -54,17 +54,14 @@ export const TX_TRANSITION_ACTORS = [
 ];
 
 const STATE_INITIAL = 'initial';
-const STATE_ENQUIRY = 'enquiry';
-const STATE_PAYMENT_PENDING = 'payment-pending';
-const STATE_PAYMENT_EXPIRED = 'payment-expired';
-const STATE_PREAUTHORIZED = 'preauthorized';
-const STATE_DECLINED = 'declined';
+const STATE_BOOKING_REQUESTED = 'booking-requested';
 const STATE_ACCEPTED = 'accepted';
+const STATE_DECLINED = 'declined';
 const STATE_CANCELED = 'canceled';
 const STATE_DELIVERED = 'delivered';
+const STATE_PAID_OUT = 'paid-out';
+const STATE_DISPUTE_REVIEW = 'dispute-review';
 const STATE_REVIEWED = 'reviewed';
-const STATE_REVIEWED_BY_CUSTOMER = 'reviewed-by-customer';
-const STATE_REVIEWED_BY_PROVIDER = 'reviewed-by-provider';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -110,7 +107,39 @@ const stateDescription = {
 
   // States
   states: {
-    [STATE_INITIAL]: {},
+    [STATE_INITIAL]: {
+      on: {
+        [TRANSITION_REQUEST_BOOKING]: STATE_BOOKING_REQUESTED,
+      },
+    },
+    [STATE_BOOKING_REQUESTED]: {
+      on: {
+        [TRANSITION_ACCEPT_BOOKING]: STATE_ACCEPTED,
+        [TRANSITION_DECLINE_BOOKING]: STATE_DECLINED,
+        [TRANSITION_EXPIRE_BOOKING]: STATE_DECLINED,
+        [TRANSITION_CANCEL_BOOKING_REQUEST]: STATE_CANCELED,
+      },
+    },
+    [STATE_ACCEPTED]: {
+      on: {
+        [TRANSITION_COMPLETE]: STATE_DELIVERED,
+        [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
+      },
+    },
+    [STATE_DELIVERED]: {
+      on: {
+        [TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION]: STATE_PAID_OUT,
+        [TRANSITION_DISPUTE]: STATE_DISPUTE_REVIEW,
+      },
+    },
+    [STATE_PAID_OUT]: {
+      on: {
+        [TRANSITION_REVIEW_BY_CUSTOMER]: STATE_REVIEWED,
+        [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
+      },
+    },
+    [STATE_DECLINED]: { type: 'final' },
     [STATE_REVIEWED]: { type: 'final' },
   },
 };
@@ -185,16 +214,8 @@ export const txIsCanceled = tx =>
 export const txIsDelivered = tx =>
   getTransitionsToState(STATE_DELIVERED).includes(txLastTransition(tx));
 
-const firstReviewTransitions = [
-  ...getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER),
-  ...getTransitionsToState(STATE_REVIEWED_BY_PROVIDER),
-];
+const firstReviewTransitions = [...getTransitionsToState(STATE_REVIEWED)];
 export const txIsInFirstReview = tx => firstReviewTransitions.includes(txLastTransition(tx));
-
-export const txIsInFirstReviewBy = (tx, isCustomer) =>
-  isCustomer
-    ? getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER).includes(txLastTransition(tx))
-    : getTransitionsToState(STATE_REVIEWED_BY_PROVIDER).includes(txLastTransition(tx));
 
 export const txIsReviewed = tx =>
   getTransitionsToState(STATE_REVIEWED).includes(txLastTransition(tx));
@@ -222,9 +243,7 @@ export const transitionIsReviewed = transition =>
   getTransitionsToState(STATE_REVIEWED).includes(transition);
 
 export const transitionIsFirstReviewedBy = (transition, isCustomer) =>
-  isCustomer
-    ? getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER).includes(transition)
-    : getTransitionsToState(STATE_REVIEWED_BY_PROVIDER).includes(transition);
+  isCustomer ? getTransitionsToState(STATE_REVIEWED).includes(transition) : null;
 
 export const getUserTxRole = (currentUserId, transaction) => {
   const tx = ensureTransaction(transaction);

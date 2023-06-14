@@ -5,7 +5,7 @@ import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
 import { findRouteByRouteName } from '../../util/routes';
 import { ensureListing, ensureUser } from '../../util/data';
-import { NamedLink, NamedRedirect, Page } from '../../components';
+import { NamedLink, NamedRedirect, Page, IconConfirm } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
@@ -43,6 +43,8 @@ export class CheckoutPageComponent extends Component {
       submitting: false,
       selectedBookingTimes: [],
       selectedPaymentMethod: BANK_ACCOUNT,
+      showConfirmation: false,
+      showBookingSummary: false,
     };
     this.stripe = null;
 
@@ -58,8 +60,12 @@ export class CheckoutPageComponent extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { bookingDates: prevBookingDates, bookingRate: prevBookingRate } = prevProps;
-    const { bookingDates, bookingRate } = this.props;
+    const {
+      bookingDates: prevBookingDates,
+      bookingRate: prevBookingRate,
+      transaction: prevTransaction,
+    } = prevProps;
+    const { bookingDates, bookingRate, transaction } = this.props;
 
     if (bookingDates !== prevBookingDates) {
       this.setState(prevState => {
@@ -71,6 +77,13 @@ export class CheckoutPageComponent extends Component {
       this.setState(prevState => {
         return { pageData: { ...prevState.pageData, bookingRate } };
       });
+    }
+
+    if (!prevTransaction && transaction) {
+      this.setState(prevState => {
+        return { pageData: { ...prevState.pageData, transaction } };
+      });
+      // setTimeout(() => this.setState({ showBookingSummary: true }), 3000);
     }
   }
 
@@ -139,11 +152,11 @@ export class CheckoutPageComponent extends Component {
     const bookingRate = bookingRateProps || bookingRateState;
     const bookingDates = bookingDatesProps || bookingDatesState;
 
-    const stripeCustomerId = currentUser.stripeCustomer.attributes.stripeCustomerId;
+    const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
     const paymentMethodId =
       this.state.selectedPaymentMethod === BANK_ACCOUNT
-        ? defaultPaymentMethods.bankAccount.id
-        : defaultPaymentMethods.card.id;
+        ? defaultPaymentMethods.bankAccount?.id
+        : defaultPaymentMethods.card?.id;
 
     const listingId = listing.id;
 
@@ -164,7 +177,7 @@ export class CheckoutPageComponent extends Component {
       message,
     };
 
-    onInitiateOrder(orderParams, metadata);
+    onInitiateOrder(orderParams, metadata, listing);
   }
 
   handleEditBookingFormChange = e => {
@@ -204,12 +217,11 @@ export class CheckoutPageComponent extends Component {
       defaultPaymentMethods,
       fetchDefaultPaymentError,
       fetchDefaultPaymentInProgress,
-      transaction,
     } = this.props;
 
     const isLoading = !this.state.dataLoaded;
 
-    const { listing, bookingDates, bookingRate } = this.state.pageData;
+    const { listing, bookingDates, bookingRate, transaction } = this.state.pageData;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
 
@@ -249,13 +261,48 @@ export class CheckoutPageComponent extends Component {
     }
 
     const monthYearBookingDates = bookingDates.map(bookingDate => {
-      const month = bookingDate.getMonth() + 1;
-      const day = bookingDate.getDate();
+      const month = new Date(bookingDate).getMonth() + 1;
+      const day = new Date(bookingDate).getDate();
 
       return `${month}/${day}`;
     });
 
     const authorDisplayName = currentAuthor.attributes.profile.displayName;
+
+    if (transaction) {
+      return (
+        <div className={css.confirmationContainer}>
+          <div className={css.confirmationSubContainer}>
+            {this.state.showBookingSummary ? (
+              <>
+                <BookingSummaryCard
+                  authorDisplayName={authorDisplayName}
+                  currentAuthor={currentAuthor}
+                  selectedBookingTimes={this.state.selectedBookingTimes}
+                  bookingRate={bookingRate}
+                  bookingDates={bookingDates}
+                  listing={currentListing}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                  onSetState={onSetState}
+                  selectedPaymentMethod={this.state.selectedPaymentMethod}
+                />
+                {/* TODO: Change to bookings page */}
+                <NamedLink name="LandingPage" className={css.toBookings}>
+                  View Booking
+                </NamedLink>
+              </>
+            ) : (
+              <>
+                <div className={css.iconContainer}>
+                  <IconConfirm className={css.iconConfirm} height="10em" width="10em" />
+                </div>
+                <div className={css.confirmationText}>Booking Confirmed</div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
 
     return (
       <Page {...pageProps}>
@@ -363,7 +410,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, metadata) => dispatch(initiateOrder(params, metadata)),
+  onInitiateOrder: (params, metadata, listing) =>
+    dispatch(initiateOrder(params, metadata, listing)),
   onSavePaymentMethod: (stripeCustomer, stripePaymentMethodId) =>
     dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
