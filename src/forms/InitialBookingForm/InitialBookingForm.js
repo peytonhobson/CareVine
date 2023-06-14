@@ -26,12 +26,12 @@ const InitialBookingFormComponent = props => (
         updated,
         updateInProgress,
         values,
-        monthlyTimeSlots,
         className,
       } = formRenderProps;
 
       const { minPrice, maxPrice, availabilityPlan } = listing.attributes.publicData;
       const middleRate = Number.parseFloat((minPrice + maxPrice) / 200).toFixed(0);
+      const bookedDates = listing.attributes.metadata.bookedDates ?? [];
       const classes = classNames(css.root, className);
 
       const submitInProgress = updateInProgress;
@@ -70,11 +70,7 @@ const InitialBookingFormComponent = props => (
                 title="You can book up to two weeks at a time."
               />
             </div>
-            <FieldDatePicker
-              monthlyTimeSlots={monthlyTimeSlots}
-              name="bookingDates"
-              id="bookingDates"
-            >
+            <FieldDatePicker bookedDates={bookedDates} name="bookingDates" id="bookingDates">
               <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
             </FieldDatePicker>
           </div>

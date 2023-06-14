@@ -5,7 +5,13 @@ import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
 import { findRouteByRouteName } from '../../util/routes';
 import { ensureListing, ensureUser } from '../../util/data';
-import { NamedLink, NamedRedirect, Page, IconConfirm } from '../../components';
+import {
+  NamedLink,
+  NamedRedirect,
+  Page,
+  IconConfirm,
+  BookingConfirmationCard,
+} from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
@@ -19,6 +25,7 @@ import {
 import BookingSummaryCard from './BookingSummaryCard';
 import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
+import { convertTimeFrom12to24 } from '../../util/data';
 import PaymentSection from './PaymentSection';
 
 const STORAGE_KEY = 'CheckoutPage';
@@ -32,6 +39,36 @@ const initializeOrderPage = (initialValues, routes, dispatch) => {
   // sending failed, we tell it to the OrderDetailsPage.
   dispatch(OrderPage.setInitialValues(initialValues));
 };
+
+const formatDateTimeValues = dateTimes =>
+  Object.keys(dateTimes).map(key => {
+    const startTime = dateTimes[key].startTime;
+    const endTime = dateTimes[key].endTime;
+
+    return {
+      startTime,
+      endTime,
+      date: key,
+    };
+  });
+
+const calculateTimeBetween = (bookingStart, bookingEnd) => {
+  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
+  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
+
+  return end - start;
+};
+
+const calculateTotalHours = bookingTimes =>
+  bookingTimes.reduce(
+    (acc, curr) =>
+      acc +
+      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
+    0
+  );
+
+const calculateCost = (bookingStart, bookingEnd, price) =>
+  calculateTimeBetween(bookingStart, bookingEnd) * price;
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -79,11 +116,15 @@ export class CheckoutPageComponent extends Component {
       });
     }
 
-    if (!prevTransaction && transaction) {
+    if (!prevTransaction && transaction && !this.state.showBookingSummary) {
       this.setState(prevState => {
         return { pageData: { ...prevState.pageData, transaction } };
       });
-      // setTimeout(() => this.setState({ showBookingSummary: true }), 3000);
+      setTimeout(() => this.setState({ showBookingSummary: true }), 3000);
+    }
+
+    if (this.state.pageData.transaction && !transaction && !this.state.showBookingSummary) {
+      this.setState({ showBookingSummary: true });
     }
   }
 
@@ -165,9 +206,28 @@ export class CheckoutPageComponent extends Component {
       seats: 1,
     };
 
+    const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
+      const { startTime, endTime, date } = booking;
+
+      const hours = calculateTimeBetween(startTime, endTime);
+      const amount = hours * bookingRate;
+      const isoDate = bookingDates
+        .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
+        ?.toISOString();
+
+      return {
+        code: 'line-item/booking',
+        startTime,
+        endTime,
+        seats: 1,
+        date: isoDate,
+        hours,
+        amount,
+      };
+    });
+
     const metadata = {
-      bookingDates: bookingDates.map(b => b.toISOString()),
-      bookingTimes,
+      lineItems,
       bookingRate,
       stripeCustomerId,
       paymentMethodId,
@@ -183,21 +243,8 @@ export class CheckoutPageComponent extends Component {
   handleEditBookingFormChange = e => {
     const { dateTimes = {} } = e.values;
 
-    const dateTimeKeys = Object.keys(dateTimes) ?? [];
-
-    const formattedBookingTimes = dateTimeKeys.map(key => {
-      const startTime = dateTimes[key].startTime;
-      const endTime = dateTimes[key].endTime;
-
-      return {
-        startTime,
-        endTime,
-        date: key,
-      };
-    });
-
     this.setState({
-      selectedBookingTimes: formattedBookingTimes,
+      selectedBookingTimes: formatDateTimeValues(dateTimes),
     });
   };
 
@@ -275,17 +322,10 @@ export class CheckoutPageComponent extends Component {
           <div className={css.confirmationSubContainer}>
             {this.state.showBookingSummary ? (
               <>
-                <BookingSummaryCard
+                {/* <BookingConfirmationCard
                   authorDisplayName={authorDisplayName}
-                  currentAuthor={currentAuthor}
-                  selectedBookingTimes={this.state.selectedBookingTimes}
-                  bookingRate={bookingRate}
-                  bookingDates={bookingDates}
-                  listing={currentListing}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                  onSetState={onSetState}
-                  selectedPaymentMethod={this.state.selectedPaymentMethod}
-                />
+                  transaction={transaction}
+                /> */}
                 {/* TODO: Change to bookings page */}
                 <NamedLink name="LandingPage" className={css.toBookings}>
                   View Booking
@@ -296,7 +336,7 @@ export class CheckoutPageComponent extends Component {
                 <div className={css.iconContainer}>
                   <IconConfirm className={css.iconConfirm} height="10em" width="10em" />
                 </div>
-                <div className={css.confirmationText}>Booking Confirmed</div>
+                <div className={css.confirmationText}>Booking Requested</div>
               </>
             )}
           </div>
@@ -317,7 +357,7 @@ export class CheckoutPageComponent extends Component {
               monthYearBookingDates={monthYearBookingDates}
               monthlyTimeSlots={monthlyTimeSlots}
               onManageDisableScrolling={onManageDisableScrolling}
-              bookingDates={bookingDates}
+              bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
               onSetState={onSetState}
               authorDisplayName={authorDisplayName}
               defaultPaymentMethods={defaultPaymentMethods}
@@ -345,7 +385,7 @@ export class CheckoutPageComponent extends Component {
                 currentAuthor={currentAuthor}
                 selectedBookingTimes={this.state.selectedBookingTimes}
                 bookingRate={bookingRate}
-                bookingDates={bookingDates}
+                bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
                 listing={currentListing}
                 onManageDisableScrolling={onManageDisableScrolling}
                 onSetState={onSetState}

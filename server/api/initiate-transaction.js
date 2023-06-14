@@ -1,0 +1,80 @@
+const { getSdk, integrationSdk, handleError, serialize } = require('../api-util/sdk');
+
+module.exports = (req, res) => {
+  const { bodyParams, queryParams, metadata } = req.body;
+
+  const listingId = bodyParams?.params ? bodyParams.params.listingId : null;
+
+  const sdk = getSdk(req, res);
+
+  let updateMetadataResponse = null;
+  let prevBookedDates = null;
+  const bookingDates = metadata.lineItems.map(l => l.date);
+
+  sdk.listings
+    .show({ id: listingId })
+    .then(listingResponse => {
+      const listing = listingResponse.data.data;
+
+      prevBookedDates = listing.attributes.metadata.bookedDates ?? [];
+      const bookedDatesUnixTimestamps = prevBookedDates.map(d => new Date(d).getTime()) ?? [];
+      const bookingDatesUnixTimestamps = bookingDates.map(d => new Date(d).getTime());
+
+      const isBooked =
+        bookingDatesUnixTimestamps.some(d => bookedDatesUnixTimestamps.includes(d)) ?? false;
+
+      if (isBooked) {
+        throw {
+          status: 400,
+          statusText: 'Bad Request',
+          data: {
+            errors: [
+              {
+                code: 'transaction-booking-time-not-available',
+              },
+            ],
+          },
+        };
+      }
+
+      return sdk.transactions.initiate(bodyParams, queryParams);
+    })
+    .then(response => {
+      return integrationSdk.transactions.updateMetadata(
+        {
+          id: response.data.data.id.uuid,
+          metadata,
+        },
+        {
+          expand: true,
+        }
+      );
+    })
+    .then(apiResponse => {
+      updateMetadataResponse = apiResponse;
+
+      return integrationSdk.listings.update({
+        id: listingId,
+        metadata: {
+          bookedDates: [...bookingDates, ...prevBookedDates],
+        },
+      });
+    })
+    .then(() => {
+      const { status, statusText, data } = updateMetadataResponse;
+      res
+        .status(status)
+        .set('Content-Type', 'application/transit+json')
+        .send(
+          serialize({
+            status,
+            statusText,
+            data,
+          })
+        )
+        .end();
+    })
+    .catch(e => {
+      handleError(res, e);
+    });
+};

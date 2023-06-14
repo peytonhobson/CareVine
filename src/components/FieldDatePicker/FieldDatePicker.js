@@ -12,11 +12,9 @@ import { InlineTextButton } from '../Button/Button';
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = (monthlyTimeSlots, selectedDays, date) => {
-  const month = moment(date).format('YYYY-MM');
-
-  const booked = monthlyTimeSlots[month]?.timeSlots?.find(
-    entry => entry.attributes.start.getDate() === date.getDate() && entry.attributes.seats === 0
+const isDayDisabled = (bookedDates, selectedDays, date) => {
+  const booked = bookedDates.some(
+    d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
   );
 
   const beforeToday = date.getTime() < new Date().getTime();
@@ -52,10 +50,10 @@ const isDayDisabled = (monthlyTimeSlots, selectedDays, date) => {
   );
 };
 
-const formatDay = (locale, date, selectedDays, monthlyTimeSlots, onClick) => {
+const formatDay = (locale, date, selectedDays, bookedDates, onClick) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled(monthlyTimeSlots, selectedDays, date);
+  const isDisabled = isDayDisabled(bookedDates, selectedDays, date);
 
   if (isHighlighted) {
     return (
@@ -75,7 +73,7 @@ const formatDay = (locale, date, selectedDays, monthlyTimeSlots, onClick) => {
 };
 
 export const FieldDatePickerComponent = props => {
-  const { monthlyTimeSlots, input, children, className } = props;
+  const { bookedDates = [], input, children, className } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -104,7 +102,7 @@ export const FieldDatePickerComponent = props => {
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, selectedDays, monthlyTimeSlots, handleSelectDay)
+          formatDay(locale, date, selectedDays, bookedDates, handleSelectDay)
         }
         value={new Date()}
       />

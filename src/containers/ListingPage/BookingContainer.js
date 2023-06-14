@@ -11,7 +11,6 @@ const BookingContainer = props => {
   const {
     listing,
     onSubmit,
-    monthlyTimeSlots,
     onManageDisableScrolling,
     authorDisplayName,
     hasStripeAccount,
@@ -33,7 +32,6 @@ const BookingContainer = props => {
           className={css.bookingForm}
           listing={listing}
           onSubmit={onSubmit}
-          monthlyTimeSlots={monthlyTimeSlots}
           // inProgress={bookingInProgress}
         />
       ) : (
@@ -101,12 +99,7 @@ const BookingContainer = props => {
           <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
           <Avatar className={css.bookingAvatar} user={listing.author} />
         </div>
-        <InitialBookingForm
-          className={css.bookingForm}
-          listing={listing}
-          onSubmit={onSubmit}
-          monthlyTimeSlots={monthlyTimeSlots}
-        />
+        <InitialBookingForm className={css.bookingForm} listing={listing} onSubmit={onSubmit} />
       </Modal>
     </>
   );
