@@ -783,7 +783,8 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
   const {
     amount,
     recipientId,
-    currentUser,
+    currentUser = {},
+    stripeCustomerId: stripeId,
     metadata,
     description,
     additionalParams,
@@ -802,7 +803,7 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
     throw e;
   };
 
-  const stripeCustomerId = currentUser.stripeCustomer?.attributes.stripeCustomerId;
+  const stripeCustomerId = currentUser.stripeCustomer?.attributes.stripeCustomerId || stripeId;
 
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({

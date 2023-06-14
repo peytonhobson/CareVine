@@ -27,8 +27,6 @@ module.exports = (req, res) => {
       const senderEmail = sender?.attributes?.email;
       const senderId = sender?.id?.uuid;
 
-      console.log(amount);
-
       return stripe.paymentIntents.create({
         amount: amount + amount * applicationFee,
         currency: 'usd',

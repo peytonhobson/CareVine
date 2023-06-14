@@ -7,7 +7,6 @@ import { Avatar, InlineTextButton, ReviewRating, UserDisplayName } from '../../c
 import Transition from './Transition';
 import { formatDate } from '../../util/dates';
 import { ensureTransaction, ensureUser, ensureListing } from '../../util/data';
-import { isRelevantPastTransition } from '../../util/transaction';
 import { propTypes } from '../../util/types';
 import { usePrevious } from '../../util/hooks';
 import isEqual from 'lodash/isEqual';
@@ -182,15 +181,15 @@ export const ActivityFeedComponent = props => {
   };
 
   const transitionListItem = transition => {
-    if (isRelevantPastTransition(transition.transition)) {
-      return (
-        <li key={transition.createdAt} className={css.transitionItem}>
-          {transitionComponent(transition)}
-        </li>
-      );
-    } else {
-      return null;
-    }
+    // if (isRelevantPastTransition(transition.transition)) {
+    //   return (
+    //     <li key={transition.createdAt} className={css.transitionItem}>
+    //       {transitionComponent(transition)}
+    //     </li>
+    //   );
+    // } else {
+    return null;
+    // }
   };
 
   const [showingOlderMessages, setShowingOlderMessages] = useState(false);

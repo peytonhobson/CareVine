@@ -58,7 +58,6 @@ const EditBookingFormComponent = props => (
         intl,
         invalid,
         pristine,
-        saveActionMsg,
         updated,
         updateInProgress,
         monthYearBookingDates,
@@ -73,6 +72,9 @@ const EditBookingFormComponent = props => (
         authorDisplayName,
         defaultPaymentMethods,
         selectedPaymentMethod,
+        initiateOrderInProgress,
+        initiateOrderError,
+        transaction,
       } = formRenderProps;
 
       const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
@@ -205,7 +207,13 @@ const EditBookingFormComponent = props => (
             <p className={css.paymentInfo}>
               You will not be charged until the caregiver accepts the booking
             </p>
-            <Button className={css.submitButton} disabled={submitDisabled}>
+            <Button
+              className={css.submitButton}
+              disabled={submitDisabled}
+              inProgress={initiateOrderInProgress}
+              ready={transaction}
+              type="submit"
+            >
               Request to Book
             </Button>
           </div>

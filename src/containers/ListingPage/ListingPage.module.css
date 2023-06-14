@@ -746,6 +746,7 @@
   max-width: 30vw;
   max-height: calc(100vh - var(--topbarHeightDesktop));
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .fixedAvailability {
