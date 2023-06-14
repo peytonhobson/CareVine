@@ -96,7 +96,6 @@
   width: auto;
   display: inline;
   padding: 0.5rem 1rem;
-  margin-left: 2rem;
 }
 
 .bookingTimeText {
@@ -154,6 +153,7 @@
 
 .pickYourTimes {
   display: inline;
+  margin-right: 2rem;
 
   @media (--viewportMedium) {
     margin-top: 0;

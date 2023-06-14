@@ -10,8 +10,9 @@ import {
   FieldRangeSlider,
   Button,
 } from '../../components';
+import { useMediaQuery } from '@mui/material';
 import { convertTimeFrom12to24 } from '../../util/data';
-import { useCheckMobileScreen, useIsScrollable } from '../../util/hooks';
+import { useIsScrollable } from '../../util/hooks';
 
 import css from './CheckoutPage.module.css';
 
@@ -69,7 +70,6 @@ const BookingSummaryCard = props => {
     selectedPaymentMethod,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
-  const isMobile = useCheckMobileScreen();
 
   const [bookingTimesScrolled, setBookingTimesScrolled] = useState(0);
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
@@ -97,13 +97,14 @@ const BookingSummaryCard = props => {
   const transactionFee = calculateTransactionFee(subTotal);
   const cardFee = calculateCardFee(subTotal);
   const total = calculateTotalCost(subTotal, transactionFee, cardFee);
+  const isLarge = useMediaQuery('(min-width:1024px)');
 
-  return (isMobile && displayOnMobile) || (!isMobile && !displayOnMobile) ? (
-    <div className={isMobile ? css.detailsContainerMobile : css.detailsContainerDesktop}>
+  return (!isLarge && displayOnMobile) || (isLarge && !displayOnMobile) ? (
+    <div className={!isLarge ? css.detailsContainerMobile : css.detailsContainerDesktop}>
       <div className={css.cardAvatarWrapper}>
         <Avatar user={currentAuthor} disableProfileLink className={css.cardAvatar} />
         <div>
-          <span className={isMobile ? css.bookAuthorMobile : css.bookAuthor}>
+          <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
             Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
           </span>
         </div>
@@ -117,14 +118,9 @@ const BookingSummaryCard = props => {
           ref={bookingTimesRef}
           onScroll={() => setBookingTimesScrolled(bookingTimesRef.current.scrollTop)}
         >
-          <div className={css.arrowHeadContainer}>
-            {isScrollable && isAtBottom && (
-              <IconArrowHead direction="up" className={css.arrowHeadDown} onClick={scrollToTop} />
-            )}
-          </div>
           {bookingDates.map((bookingDate, index) => {
-            const month = bookingDate.getMonth() + 1;
-            const day = bookingDate.getDate();
+            const month = new Date(bookingDate).getMonth() + 1;
+            const day = new Date(bookingDate).getDate();
             const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};
             const date = bookingTime.date;
             const startTime = bookingTime.startTime;
@@ -146,9 +142,16 @@ const BookingSummaryCard = props => {
               </div>
             ) : null;
           })}
-          {isScrollable && !bookingTimesScrolled && (
-            <IconArrowHead direction="down" className={css.arrowHeadUp} onClick={scrollToBottom} />
-          )}
+          <div className={css.arrowHeadContainerDown}>
+            {isScrollable && !bookingTimesScrolled && (
+              <IconArrowHead direction="down" className={css.arrowHead} onClick={scrollToBottom} />
+            )}
+          </div>
+          <div className={css.arrowHeadContainerUp}>
+            {isScrollable && isAtBottom && (
+              <IconArrowHead direction="up" className={css.arrowHead} onClick={scrollToTop} />
+            )}
+          </div>
         </div>
         <div className={css.totalContainer}>
           {totalHours ? (
@@ -160,6 +163,7 @@ const BookingSummaryCard = props => {
                 <InlineTextButton
                   className={css.changeRateButton}
                   onClick={() => setIsChangeRatesModalOpen(true)}
+                  type="button"
                 >
                   Change Hourly Rate
                 </InlineTextButton>

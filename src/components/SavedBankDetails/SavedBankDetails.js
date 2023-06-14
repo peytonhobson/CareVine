@@ -93,7 +93,11 @@ const SavedBankDetails = props => {
       </div>
 
       {onDeleteAccount ? (
-        <InlineTextButton onClick={handleOpenDeleteModal} className={css.savedPaymentMethodDelete}>
+        <InlineTextButton
+          onClick={handleOpenDeleteModal}
+          className={css.savedPaymentMethodDelete}
+          type="button"
+        >
           <IconClose rootClassName={css.closeIcon} size="small" />
           {removeBankAccount}
         </InlineTextButton>
@@ -124,10 +128,15 @@ const SavedBankDetails = props => {
                 }}
                 className={css.cancelAccountDelete}
                 tabIndex="0"
+                type="button"
               >
                 {cancel}
               </div>
-              <Button onClick={handleDeleteAccount} inProgress={deletePaymentMethodInProgress}>
+              <Button
+                onClick={handleDeleteAccount}
+                inProgress={deletePaymentMethodInProgress}
+                type="button"
+              >
                 {removeBankAccount}
               </Button>
             </div>

@@ -54,7 +54,7 @@ const Tab = props => {
   return (
     <div className={className}>
       {isButton ? (
-        <InlineTextButton rootClassName={buttonClasses} onClick={onClick}>
+        <InlineTextButton rootClassName={buttonClasses} onClick={onClick} type="button">
           {text}
         </InlineTextButton>
       ) : (
