@@ -162,7 +162,7 @@
   "ChangeLocationFilter.addressLabel": "Address",
   "ChangeLocationFilter.labelSelected": "Selected location",
   "ChangeLocationFilterPlainForm.labelSelected": "Selected location",
-  "CheckoutPage.bookingTimeNotAvailableMessage": "Unfortunately, the requested time is already booked.",
+  "CheckoutPage.bookingTimeNotAvailableMessage": "Unfortunately, the requested time is already booked. Go back to {listingLink} and try again.",
   "CheckoutPage.chargeDisabledMessage": "This provider's payout information is incomplete so the session cannot be booked. Please contact the marketplace administrators.",
   "CheckoutPage.errorlistingLinkText": "the profile page",
   "CheckoutPage.goToLandingPage": "Go to homepage",

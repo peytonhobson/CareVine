@@ -308,3 +308,7 @@ export const fetchStripeSubscription = body => {
 export const stripeRetrieveUpcomingInvoice = body => {
   return post('/api/stripe-retrieve-upcoming-invoice', body);
 };
+
+export const initiateTransaction = body => {
+  return post('/api/initiate-transaction', body);
+};

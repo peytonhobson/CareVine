@@ -1,6 +1,6 @@
 import pick from 'lodash/pick';
 import config from '../../config';
-import { updateTransactionMetadata } from '../../util/api';
+import { initiateTransaction } from '../../util/api';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
@@ -131,7 +131,7 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     dispatch(fetchCurrentUserHasOrdersSuccess(true));
 
     const bookingRate = order.attributes.metadata.bookingRate;
-    const bookingDates = order.attributes.metadata.bookingDates;
+    const bookingDates = order.attributes.metadata.lineItems.map(l => new Date(l.date));
 
     storeData(bookingRate, bookingDates, listing, order, STORAGE_KEY);
 
@@ -147,11 +147,9 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
   };
 
   try {
-    const response = await sdk.transactions.initiate(bodyParams, queryParams);
+    const response = await initiateTransaction({ bodyParams, queryParams, metadata });
 
-    const order = await updateTransactionMetadata({ txId: response.data.data.id.uuid, metadata });
-
-    return handleSuccess(order);
+    return handleSuccess(response);
   } catch (e) {
     return handleError(e);
   }

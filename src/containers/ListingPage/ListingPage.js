@@ -454,7 +454,6 @@ export class ListingPageComponent extends Component {
               <BookingContainer
                 listing={currentListing}
                 onSubmit={this.handleBookingSubmit}
-                monthlyTimeSlots={monthlyTimeSlots}
                 onManageDisableScrolling={onManageDisableScrolling}
                 authorDisplayName={authorDisplayName}
                 hasStripeAccount={hasStripeAccount}

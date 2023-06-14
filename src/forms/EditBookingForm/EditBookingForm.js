@@ -88,7 +88,6 @@ const EditBookingFormComponent = props => (
       } = formRenderProps;
 
       const listingNotFound = isTransactionInitiateListingNotFoundError(initiateOrderError);
-      const isAmountTooLowError = isTransactionInitiateAmountTooLowError(initiateOrderError);
       const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
       const isBookingTimeNotAvailableError = isTransactionInitiateBookingTimeNotAvailableError(
         initiateOrderError
@@ -109,19 +108,22 @@ const EditBookingFormComponent = props => (
 
       if (listingNotFound) {
         listingNotFoundErrorMessage = (
-          <p className={css.notFoundError}>
+          <p className={css.error}>
             <FormattedMessage id="CheckoutPage.listingNotFoundError" />
           </p>
         );
       } else if (isBookingTimeNotAvailableError) {
         initiateOrderErrorMessage = (
-          <p className={css.orderError}>
-            <FormattedMessage id="CheckoutPage.bookingTimeNotAvailableMessage" />
+          <p className={css.error}>
+            <FormattedMessage
+              id="CheckoutPage.bookingTimeNotAvailableMessage"
+              values={{ listingLink }}
+            />
           </p>
         );
       } else if (isChargeDisabledError) {
         initiateOrderErrorMessage = (
-          <p className={css.orderError}>
+          <p className={css.error}>
             <FormattedMessage id="CheckoutPage.chargeDisabledMessage" />
           </p>
         );
@@ -130,7 +132,7 @@ const EditBookingFormComponent = props => (
         // By default they are in English.
         const stripeErrorsAsString = stripeErrors.join(', ');
         initiateOrderErrorMessage = (
-          <p className={css.orderError}>
+          <p className={css.error}>
             <FormattedMessage
               id="CheckoutPage.initiateOrderStripeError"
               values={{ stripeErrors: stripeErrorsAsString }}
@@ -140,7 +142,7 @@ const EditBookingFormComponent = props => (
       } else if (initiateOrderError) {
         // Generic initiate order error
         initiateOrderErrorMessage = (
-          <p className={css.orderError}>
+          <p className={css.error}>
             <FormattedMessage id="CheckoutPage.initiateOrderError" values={{ listingLink }} />
           </p>
         );
@@ -175,6 +177,8 @@ const EditBookingFormComponent = props => (
         form.change('dateTimes', newDateTimes);
         setIsEditBookingDatesModalOpen(false);
       };
+
+      const bookedDates = currentListing.attributes.metadata.bookedDates;
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
@@ -308,7 +312,7 @@ const EditBookingFormComponent = props => (
           >
             <FieldDatePicker
               className={css.datePicker}
-              monthlyTimeSlots={monthlyTimeSlots}
+              bookedDates={bookedDates}
               name="bookingDates"
               id="bookingDates"
             >

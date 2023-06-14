@@ -159,3 +159,7 @@
     margin-top: 0;
   }
 }
+
+.error {
+  color: var(--failColor);
+}
