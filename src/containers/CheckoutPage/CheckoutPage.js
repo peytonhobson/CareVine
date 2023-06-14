@@ -3,27 +3,21 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
-import classNames from 'classnames';
-import routeConfiguration from '../../routeConfiguration';
-import { pathByRouteName, findRouteByRouteName } from '../../util/routes';
-import { ensureListing, ensureCurrentUser, ensureUser } from '../../util/data';
-import { AvatarMedium, NamedLink, NamedRedirect, Page } from '../../components';
+import { findRouteByRouteName } from '../../util/routes';
+import { ensureListing, ensureUser } from '../../util/data';
+import { NamedLink, NamedRedirect, Page } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
-import { confirmCardPayment, retrievePaymentIntent } from '../../ducks/stripe.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
 
 import {
   initiateOrder,
   setStateValues,
-  speculateTransaction,
   stripeCustomer,
-  confirmPayment,
-  sendMessage,
   setInitialValues,
 } from './CheckoutPage.duck';
 import BookingSummaryCard from './BookingSummaryCard';
-import { storeData, storedData, clearData } from './CheckoutPageSessionHelpers';
+import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 import PaymentSection from './PaymentSection';
 
@@ -124,27 +118,53 @@ export class CheckoutPageComponent extends Component {
   }
 
   handleSubmit(values) {
-    this.handlePaymentIntent(requestPaymentParams)
-      .then(res => {
-        const { orderId, messageSuccess, paymentMethodSaved } = res;
-        this.setState({ submitting: false });
+    const { dateTimes: bookingTimes, message } = values;
+    const {
+      bookingDates: bookingDatesProps,
+      bookingRate: bookingRateProps,
+      onInitiateOrder,
+      history,
+      currentUser,
+      defaultPaymentMethods,
+      listing: listingProps,
+    } = this.props;
 
-        const routes = routeConfiguration();
-        const initialMessageFailedToTransaction = messageSuccess ? null : orderId;
-        const orderDetailsPath = pathByRouteName('OrderDetailsPage', routes, { id: orderId.uuid });
-        const initialValues = {
-          initialMessageFailedToTransaction,
-          savePaymentMethodFailed: !paymentMethodSaved,
-        };
+    const {
+      listing: listingState,
+      bookingRate: bookingRateState,
+      bookingDates: bookingDatesState,
+    } = this.state.pageData;
 
-        initializeOrderPage(initialValues, routes, dispatch);
-        clearData(STORAGE_KEY);
-        history.push(orderDetailsPath);
-      })
-      .catch(err => {
-        console.error(err);
-        this.setState({ submitting: false });
-      });
+    const listing = listingProps || listingState;
+    const bookingRate = bookingRateProps || bookingRateState;
+    const bookingDates = bookingDatesProps || bookingDatesState;
+
+    const stripeCustomerId = currentUser.stripeCustomer.attributes.stripeCustomerId;
+    const paymentMethodId =
+      this.state.selectedPaymentMethod === BANK_ACCOUNT
+        ? defaultPaymentMethods.bankAccount.id
+        : defaultPaymentMethods.card.id;
+
+    const listingId = listing.id;
+
+    const orderParams = {
+      listingId,
+      seats: 1,
+    };
+
+    const metadata = {
+      bookingDates: bookingDates.map(b => b.toISOString()),
+      bookingTimes,
+      bookingRate,
+      stripeCustomerId,
+      paymentMethodId,
+      paymentMethodType:
+        this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
+      applicationFee: this.state.selectedPaymentMethod === BANK_ACCOUNT ? 0.05 : 0.08,
+      message,
+    };
+
+    onInitiateOrder(orderParams, metadata);
   }
 
   handleEditBookingFormChange = e => {
@@ -163,8 +183,6 @@ export class CheckoutPageComponent extends Component {
       };
     });
 
-    console.log(dateTimes);
-
     this.setState({
       selectedBookingTimes: formattedBookingTimes,
     });
@@ -174,6 +192,7 @@ export class CheckoutPageComponent extends Component {
     const {
       scrollingDisabled,
       initiateOrderError,
+      initiateOrderInProgress,
       intl,
       params,
       currentUser,
@@ -185,6 +204,7 @@ export class CheckoutPageComponent extends Component {
       defaultPaymentMethods,
       fetchDefaultPaymentError,
       fetchDefaultPaymentInProgress,
+      transaction,
     } = this.props;
 
     const isLoading = !this.state.dataLoaded;
@@ -245,7 +265,7 @@ export class CheckoutPageComponent extends Component {
             <EditBookingForm
               className={css.editBookingForm}
               listing={currentListing}
-              onSubmit={() => {}}
+              onSubmit={this.handleSubmit}
               onChange={this.handleEditBookingFormChange}
               monthYearBookingDates={monthYearBookingDates}
               monthlyTimeSlots={monthlyTimeSlots}
@@ -255,10 +275,12 @@ export class CheckoutPageComponent extends Component {
               authorDisplayName={authorDisplayName}
               defaultPaymentMethods={defaultPaymentMethods}
               selectedPaymentMethod={this.state.selectedPaymentMethod}
+              initiateOrderInProgress={initiateOrderInProgress}
+              initiateOrderError={initiateOrderError}
+              transaction={transaction}
             >
               <PaymentSection
                 currentUser={currentUser}
-                initiateOrderError={initiateOrderError}
                 hasRequiredData={hasRequiredData}
                 currentListing={currentListing}
                 listingTitle={listingTitle}
@@ -307,15 +329,11 @@ const mapStateToProps = state => {
     bookingRate,
     bookingDates,
     stripeCustomerFetched,
-    speculateTransactionInProgress,
-    speculateTransactionError,
-    speculatedTransaction,
     transaction,
     initiateOrderError,
-    confirmPaymentError,
+    initiateOrderInProgress,
   } = state.CheckoutPage;
   const { currentUser } = state.user;
-  const { confirmCardPaymentError, paymentIntent, retrievePaymentIntentError } = state.stripe;
   const {
     defaultPaymentFetched,
     defaultPaymentMethods,
@@ -329,16 +347,10 @@ const mapStateToProps = state => {
     stripeCustomerFetched,
     bookingRate,
     bookingDates,
-    speculateTransactionInProgress,
-    speculateTransactionError,
-    speculatedTransaction,
     transaction,
     listing,
     initiateOrderError,
-    confirmCardPaymentError,
-    confirmPaymentError,
-    paymentIntent,
-    retrievePaymentIntentError,
+    initiateOrderInProgress,
     monthlyTimeSlots,
     defaultPaymentFetched,
     defaultPaymentMethods,
@@ -348,14 +360,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  fetchSpeculatedTransaction: (params, transactionId) =>
-    dispatch(speculateTransaction(params, transactionId)),
   fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, transactionId) => dispatch(initiateOrder(params, transactionId)),
-  onRetrievePaymentIntent: params => dispatch(retrievePaymentIntent(params)),
-  onConfirmCardPayment: params => dispatch(confirmCardPayment(params)),
-  onConfirmPayment: params => dispatch(confirmPayment(params)),
-  onSendMessage: params => dispatch(sendMessage(params)),
+  onInitiateOrder: (params, metadata) => dispatch(initiateOrder(params, metadata)),
   onSavePaymentMethod: (stripeCustomer, stripePaymentMethodId) =>
     dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>

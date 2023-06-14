@@ -3,16 +3,9 @@ import React, { useState } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 
-import {
-  Button,
-  Form,
-  FieldRangeSlider,
-  FieldButtonGroup,
-  FieldDateInput,
-  FieldDatePicker,
-  InfoTooltip,
-} from '../../components';
+import { Button, Form, FieldRangeSlider, FieldDatePicker, InfoTooltip } from '../../components';
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
+import classNames from 'classnames';
 
 import css from './InitialBookingForm.module.css';
 
@@ -34,10 +27,12 @@ const InitialBookingFormComponent = props => (
         updateInProgress,
         values,
         monthlyTimeSlots,
+        className,
       } = formRenderProps;
 
       const { minPrice, maxPrice, availabilityPlan } = listing.attributes.publicData;
       const middleRate = Number.parseFloat((minPrice + maxPrice) / 200).toFixed(0);
+      const classes = classNames(css.root, className);
 
       const submitInProgress = updateInProgress;
       const submitReady = updated || ready;
@@ -45,7 +40,7 @@ const InitialBookingFormComponent = props => (
         invalid || disabled || !values.bookingDates || values.bookingDates?.length === 0;
 
       return (
-        <Form className={css.root} onSubmit={handleSubmit}>
+        <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.fieldContainer}>
             <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
             <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
