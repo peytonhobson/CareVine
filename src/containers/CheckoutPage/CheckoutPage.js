@@ -322,13 +322,16 @@ export class CheckoutPageComponent extends Component {
           <div className={css.confirmationSubContainer}>
             {this.state.showBookingSummary ? (
               <>
-                {/* <BookingConfirmationCard
+                <BookingConfirmationCard
                   authorDisplayName={authorDisplayName}
+                  currentAuthor={currentAuthor}
                   transaction={transaction}
-                /> */}
+                  listing={currentListing}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                />
                 {/* TODO: Change to bookings page */}
                 <NamedLink name="LandingPage" className={css.toBookings}>
-                  View Booking
+                  Back to Home
                 </NamedLink>
               </>
             ) : (

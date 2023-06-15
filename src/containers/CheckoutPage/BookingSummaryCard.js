@@ -68,6 +68,10 @@ const BookingSummaryCard = props => {
     onSetState,
     displayOnMobile,
     selectedPaymentMethod,
+    className,
+    hideAvatar,
+    subHeading,
+    hideRatesButton,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
 
@@ -100,18 +104,22 @@ const BookingSummaryCard = props => {
   const isLarge = useMediaQuery('(min-width:1024px)');
 
   return (!isLarge && displayOnMobile) || (isLarge && !displayOnMobile) ? (
-    <div className={!isLarge ? css.detailsContainerMobile : css.detailsContainerDesktop}>
-      <div className={css.cardAvatarWrapper}>
-        <Avatar user={currentAuthor} disableProfileLink className={css.cardAvatar} />
-        <div>
-          <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
-            Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
-          </span>
+    <div
+      className={className || (!isLarge ? css.detailsContainerMobile : css.detailsContainerDesktop)}
+    >
+      {!hideAvatar ? (
+        <div className={css.cardAvatarWrapper}>
+          <Avatar user={currentAuthor} disableProfileLink className={css.cardAvatar} />
+          <div>
+            <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
+              Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
+            </span>
+          </div>
         </div>
-      </div>
+      ) : null}
       <div className={css.summaryDetailsContainer}>
         <div className={css.detailsHeadings}>
-          <h2 className={css.detailsTitle}>Booking Summary</h2>
+          <h2 className={css.detailsTitle}>{subHeading || 'Booking Summary'}</h2>
         </div>
         <div
           className={css.bookingTimes}
@@ -142,16 +150,6 @@ const BookingSummaryCard = props => {
               </div>
             ) : null;
           })}
-          <div className={css.arrowHeadContainerDown}>
-            {isScrollable && !bookingTimesScrolled && (
-              <IconArrowHead direction="down" className={css.arrowHead} onClick={scrollToBottom} />
-            )}
-          </div>
-          <div className={css.arrowHeadContainerUp}>
-            {isScrollable && isAtBottom && (
-              <IconArrowHead direction="up" className={css.arrowHead} onClick={scrollToTop} />
-            )}
-          </div>
         </div>
         <div className={css.totalContainer}>
           {totalHours ? (
@@ -160,13 +158,15 @@ const BookingSummaryCard = props => {
                 <span style={{ paddingRight: '1rem' }}>
                   {totalHours} hours x ${bookingRate} - ${subTotal}
                 </span>
-                <InlineTextButton
-                  className={css.changeRateButton}
-                  onClick={() => setIsChangeRatesModalOpen(true)}
-                  type="button"
-                >
-                  Change Hourly Rate
-                </InlineTextButton>
+                {!hideRatesButton ? (
+                  <InlineTextButton
+                    className={css.changeRateButton}
+                    onClick={() => setIsChangeRatesModalOpen(true)}
+                    type="button"
+                  >
+                    Change Hourly Rate
+                  </InlineTextButton>
+                ) : null}
               </h4>
               <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
               {selectedPaymentMethod === CREDIT_CARD ? (
