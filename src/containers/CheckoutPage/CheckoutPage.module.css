@@ -282,6 +282,17 @@
 .detailsContainerDesktop {
   display: none;
 
+  & ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
   @media (--viewportLarge) {
     flex-shrink: 0;
     display: block;
@@ -315,6 +326,17 @@
   border-radius: 2px;
   margin: 6rem 0 2rem 0;
 
+  & ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
   @media (--viewportLarge) {
     display: none;
   }
@@ -331,8 +353,7 @@
 }
 
 .detailsHeadings {
-  display: flex;
-  align-items: center;
+  width: 100%;
 
   & h2 {
     margin-top: 0;
@@ -511,6 +532,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin: 0 2rem;
+
+  @media (--viewportMedium) {
+    margin: 0;
+  }
 }
 
 .iconContainer {
@@ -529,5 +555,15 @@
 .toBookings {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
 
-  margin-top: 3rem;
+  margin-top: 1rem;
+  min-height: 0;
+  height: 2.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
+  }
 }
