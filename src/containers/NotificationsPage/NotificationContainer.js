@@ -7,6 +7,7 @@ import {
   NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
   NOTIFICATION_TYPE_PAYMENT_RECEIVED,
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+  NOTIFICATION_TYPE_BOOKING_REQUESTED,
 } from '../../util/constants';
 import {
   NotificationPaymentRequested,
@@ -15,6 +16,7 @@ import {
   NotificationNewMessage,
   NotificationListingRemoved,
   NotificationListingOpened,
+  NotificationNewBookingRequest,
 } from './NotificationTemplates';
 
 import css from './NotificationsPage.module.css';
@@ -68,6 +70,10 @@ const NotificationContainer = props => {
           fetchSenderListingError={fetchSenderListingError}
         />
       );
+      break;
+    case NOTIFICATION_TYPE_BOOKING_REQUESTED:
+      console.log('here');
+      notificationTemplate = <NotificationNewBookingRequest notification={notification} />;
       break;
     default:
       notificationTemplate =

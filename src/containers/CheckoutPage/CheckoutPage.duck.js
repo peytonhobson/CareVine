@@ -11,6 +11,9 @@ import {
   setInitialValues as setInitialValuesForPaymentMethods,
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
+import { NOTIFICATION_TYPE_BOOKING_REQUESTED } from '../../util/constants';
+import { v4 as uuidv4 } from 'uuid';
+import { updateUserNotifications } from '../../util/api';
 
 const STORAGE_KEY = 'CheckoutPage';
 
@@ -117,7 +120,6 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
   const bodyParams = {
     processAlias: config.bookingProcessAlias,
     transition: TRANSITION_REQUEST_BOOKING,
-    params: orderParams,
   };
   const queryParams = {
     include: ['booking', 'provider'],
@@ -146,8 +148,28 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     throw e;
   };
 
+  const notificationId = uuidv4();
+  const newNotification = {
+    id: notificationId,
+    type: NOTIFICATION_TYPE_BOOKING_REQUESTED,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata,
+  };
+
   try {
-    const response = await initiateTransaction({ bodyParams, queryParams, metadata });
+    const response = await initiateTransaction({
+      bodyParams: {
+        ...bodyParams,
+        params: { ...orderParams, metadata: { notificationId, ...metadata } },
+      },
+      queryParams,
+    });
+
+    await updateUserNotifications({
+      userId: metadata.authorId,
+      newNotification,
+    });
 
     return handleSuccess(response);
   } catch (e) {

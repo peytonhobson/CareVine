@@ -1,13 +1,20 @@
-const { getSdk, integrationSdk, handleError, serialize } = require('../api-util/sdk');
+const {
+  getSdk,
+  getTrustedSdk,
+  integrationSdk,
+  handleError,
+  serialize,
+} = require('../api-util/sdk');
 
 module.exports = (req, res) => {
-  const { bodyParams, queryParams, metadata } = req.body;
+  const { bodyParams, queryParams } = req.body;
 
   const listingId = bodyParams?.params ? bodyParams.params.listingId : null;
+  const metadata = bodyParams.params.metadata;
 
   const sdk = getSdk(req, res);
 
-  let updateMetadataResponse = null;
+  let transactionResponse = null;
   let prevBookedDates = null;
   const bookingDates = metadata.lineItems.map(l => l.date);
 
@@ -37,21 +44,13 @@ module.exports = (req, res) => {
         };
       }
 
-      return sdk.transactions.initiate(bodyParams, queryParams);
+      return getTrustedSdk(req);
     })
-    .then(response => {
-      return integrationSdk.transactions.updateMetadata(
-        {
-          id: response.data.data.id.uuid,
-          metadata,
-        },
-        {
-          expand: true,
-        }
-      );
+    .then(trustedSdk => {
+      return trustedSdk.transactions.initiate(bodyParams, queryParams);
     })
     .then(apiResponse => {
-      updateMetadataResponse = apiResponse;
+      transactionResponse = apiResponse;
 
       return integrationSdk.listings.update({
         id: listingId,
@@ -61,7 +60,7 @@ module.exports = (req, res) => {
       });
     })
     .then(() => {
-      const { status, statusText, data } = updateMetadataResponse;
+      const { status, statusText, data } = transactionResponse;
       res
         .status(status)
         .set('Content-Type', 'application/transit+json')

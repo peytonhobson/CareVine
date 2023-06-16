@@ -32,14 +32,6 @@ const STORAGE_KEY = 'CheckoutPage';
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 
-const initializeOrderPage = (initialValues, routes, dispatch) => {
-  const OrderPage = findRouteByRouteName('OrderDetailsPage', routes);
-
-  // Transaction is already created, but if the initial message
-  // sending failed, we tell it to the OrderDetailsPage.
-  dispatch(OrderPage.setInitialValues(initialValues));
-};
-
 const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
     const startTime = dateTimes[key].startTime;
@@ -58,17 +50,6 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
 
   return end - start;
 };
-
-const calculateTotalHours = bookingTimes =>
-  bookingTimes.reduce(
-    (acc, curr) =>
-      acc +
-      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
-    0
-  );
-
-const calculateCost = (bookingStart, bookingEnd, price) =>
-  calculateTimeBetween(bookingStart, bookingEnd) * price;
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -235,6 +216,9 @@ export class CheckoutPageComponent extends Component {
         this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
       applicationFee: this.state.selectedPaymentMethod === BANK_ACCOUNT ? 0.05 : 0.08,
       message,
+      userId: currentUser.id.uuid,
+      authorId: listing.author.id.uuid,
+      senderName: currentUser.attributes.profile.displayName,
     };
 
     onInitiateOrder(orderParams, metadata, listing);

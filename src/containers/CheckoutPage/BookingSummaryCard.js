@@ -109,7 +109,12 @@ const BookingSummaryCard = props => {
     >
       {!hideAvatar ? (
         <div className={css.cardAvatarWrapper}>
-          <Avatar user={currentAuthor} disableProfileLink className={css.cardAvatar} />
+          <Avatar
+            user={currentAuthor}
+            disableProfileLink
+            className={css.cardAvatar}
+            initialsClassName={css.cardAvatarInitials}
+          />
           <div>
             <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
               Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>

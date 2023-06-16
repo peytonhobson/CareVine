@@ -1,8 +1,11 @@
 {:format :v3,
  :transitions
  [{:name :transition/request-booking,
+ :actions
+ [{:name :action/privileged-update-metadata}]
    :actor :actor.role/customer,
-   :to :state/booking-requested}
+   :to :state/booking-requested,
+   :privileged? true}
   {:name :transition/decline-booking,
    :actor :actor.role/provider,
    :actions
