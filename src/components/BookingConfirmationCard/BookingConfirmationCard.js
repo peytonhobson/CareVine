@@ -38,8 +38,8 @@ const BookingConfirmationCard = props => {
     <div className={css.root}>
       <h2 className={css.newBookingRequested}>New Booking Requested!</h2>
       <h3 style={{ textAlign: 'center', maxWidth: '100%' }}>
-        A notification has been sent to {authorDisplayName}. If they have not accepted 72 hours from
-        now or by the time the booking starts, it will expire.
+        A notification has been sent to {authorDisplayName}. They have 72 hours or until the start
+        of the booking to accept the request or it will expire.
       </h3>
       <BookingSummaryCard
         className={css.summaryCard}
