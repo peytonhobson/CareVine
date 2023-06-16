@@ -33,6 +33,7 @@ const NotificationContainer = props => {
     senderListing,
     fetchSenderListingInProgress,
     fetchSenderListingError,
+    onManageDisableScrolling,
   } = props;
 
   let notificationTemplate = null;
@@ -72,8 +73,13 @@ const NotificationContainer = props => {
       );
       break;
     case NOTIFICATION_TYPE_BOOKING_REQUESTED:
-      console.log('here');
-      notificationTemplate = <NotificationNewBookingRequest notification={notification} />;
+      notificationTemplate = (
+        <NotificationNewBookingRequest
+          notification={notification}
+          currentUser={currentUser}
+          onManageDisableScrolling={onManageDisableScrolling}
+        />
+      );
       break;
     default:
       notificationTemplate =

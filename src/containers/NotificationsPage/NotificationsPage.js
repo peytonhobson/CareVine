@@ -229,6 +229,7 @@ const NotificationsPageComponent = props => {
               senderListing={senderListing}
               fetchSenderListingInProgress={fetchSenderListingInProgress}
               fetchSenderListingError={fetchSenderListingError}
+              onManageDisableScrolling={onManageDisableScrolling}
             />
           ) : null}
         </LayoutWrapperMain>
@@ -254,6 +255,7 @@ const NotificationsPageComponent = props => {
           senderListing={senderListing}
           fetchSenderListingInProgress={fetchSenderListingInProgress}
           fetchSenderListingError={fetchSenderListingError}
+          onManageDisableScrolling={onManageDisableScrolling}
         />
       </Modal>
       <Modal

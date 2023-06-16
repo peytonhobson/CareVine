@@ -1,8 +1,19 @@
+@import '../../../styles/customMediaQueries.css';
+
 .root {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
+  @media (--viewportMedium) {
+    height: 100%;
+    padding: 0 3rem;
+  }
+
+  @media (--viewportLarge) {
+    padding: 0 15rem;
+  }
 }
 
 .title {
@@ -11,6 +22,11 @@
   line-height: 3.5rem;
   width: 100%;
   text-align: center;
+}
+
+.requestTitle {
+  composes: title;
+  margin-top: 0;
 }
 
 .message {
@@ -38,4 +54,158 @@
 
 .error {
   color: var(--failColor);
+}
+
+.bookingInfo {
+  @media (--viewportLarge) {
+    max-width: 30rem;
+  }
+}
+
+.bookingRequestRoot {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  @media (--viewportMedium) {
+    height: 100%;
+    padding: 0 3rem;
+  }
+}
+
+.declineButton {
+  color: var(--failColor);
+  border: 1px solid var(--matterColorAnti);
+
+  &:hover {
+    color: var(--matterColorLight);
+    background-color: var(--failColor);
+    border: 1px solid var(--failColor);
+  }
+
+  &:focus {
+    color: var(--matterColorLight);
+    background-color: var(--failColor);
+    border: 1px solid var(--failColor);
+  }
+}
+
+.bookingRequestSubContainer {
+  display: flex;
+  flex-direction: column;
+
+  @media (--viewportLarge) {
+    display: grid;
+    grid-auto-flow: column;
+  }
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportLarge) {
+    margin-right: 2rem;
+  }
+}
+
+.listingTitle {
+  margin: 0;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  /* Dimensions */
+  margin-top: 2rem;
+  padding: 2rem;
+  width: 100%;
+  box-shadow: var(--boxShadowCard);
+
+  & div {
+    width: 100%;
+  }
+
+  /* Coloring */
+  background-color: var(--matterColorLight);
+  border: 1px solid var(--matterColorNegative);
+  border-radius: 2px;
+
+  @media (--viewportLarge) {
+    width: 25rem;
+    margin-top: 0;
+  }
+}
+
+.acceptDeclineContainer {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin-block: 2rem;
+
+  & button {
+    margin: 0 2rem;
+  }
+}
+
+.messageContainer {
+  box-shadow: var(--boxShadowCard);
+  padding: 2rem;
+  background-color: var(--matterColorLight);
+  margin-top: 2rem;
+  height: 100%;
+}
+
+.requestMessage {
+  overflow-y: auto;
+  margin: 0;
+  border: 1px solid var(--matterColorNegative);
+  padding: 1rem;
+  max-height: 10rem;
+}
+
+.avatar {
+  width: 5rem;
+  height: 5rem;
+}
+
+.avatarInitials {
+  font-size: 2rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 2.5rem;
+  }
+}
+
+.listingContainer {
+  box-shadow: var(--boxShadowCard);
+  padding: 2rem;
+  background-color: var(--matterColorLight);
+}
+
+.userInfoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.senderName {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.25rem;
+}
+
+.userInfo {
+  margin-left: 1rem;
+}
+
+.listingLocation {
+  color: var(--marketplaceColor);
+  margin: 0;
 }
