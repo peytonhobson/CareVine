@@ -153,10 +153,13 @@ const SectionHero = props => {
           </div>
         ) : (
           <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>No Agency. No Problem.</h1>
+            <h1 className={css.yourCare}>
+              <span style={{ whiteSpace: 'nowrap' }}>No Agency.</span>{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>No Problem.</span>
+            </h1>
             <h2 className={css.perfectCaregiver}>
               <div className={css.subPerfectCaregiver}>
-                Private, independent, and experienced caregivers without the agency fees.
+                Private, independent, and experienced caregivers without the agency fees.{' '}
               </div>
               <div className={css.subPerfectCaregiver}>Find yours.</div>
             </h2>
