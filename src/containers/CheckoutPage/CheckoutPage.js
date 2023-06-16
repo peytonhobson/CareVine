@@ -162,6 +162,7 @@ export class CheckoutPageComponent extends Component {
       currentUser,
       defaultPaymentMethods,
       listing: listingProps,
+      currentUserListing,
     } = this.props;
 
     const {
@@ -207,6 +208,10 @@ export class CheckoutPageComponent extends Component {
       };
     });
 
+    const currentUserListingTitle = currentUserListing.attributes.title;
+    const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
+    const currentUserDefaultAvatar = currentUser.attributes.profile.publicData.defaultAvatar;
+
     const metadata = {
       lineItems,
       bookingRate,
@@ -219,6 +224,10 @@ export class CheckoutPageComponent extends Component {
       userId: currentUser.id.uuid,
       authorId: listing.author.id.uuid,
       senderName: currentUser.attributes.profile.displayName,
+      senderListingTitle: currentUserListingTitle,
+      senderCity: currentUserListingCity,
+      senderProfileImage: currentUser.profileImage,
+      senderDefaultAvatar: currentUserDefaultAvatar,
     };
 
     onInitiateOrder(orderParams, metadata, listing);
@@ -409,7 +418,7 @@ const mapStateToProps = state => {
     initiateOrderError,
     initiateOrderInProgress,
   } = state.CheckoutPage;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
   const {
     defaultPaymentFetched,
     defaultPaymentMethods,
@@ -432,6 +441,7 @@ const mapStateToProps = state => {
     defaultPaymentMethods,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
+    currentUserListing,
   };
 };
 

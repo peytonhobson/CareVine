@@ -72,6 +72,7 @@ const BookingSummaryCard = props => {
     hideAvatar,
     subHeading,
     hideRatesButton,
+    hideFees,
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
 
@@ -98,8 +99,8 @@ const BookingSummaryCard = props => {
     bookingTimesRef.current?.scrollHeight - bookingTimesRef.current?.clientHeight;
 
   const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
-  const transactionFee = calculateTransactionFee(subTotal);
-  const cardFee = calculateCardFee(subTotal);
+  const transactionFee = hideFees ? 0 : calculateTransactionFee(subTotal);
+  const cardFee = hideFees ? 0 : calculateCardFee(subTotal);
   const total = calculateTotalCost(subTotal, transactionFee, cardFee);
   const isLarge = useMediaQuery('(min-width:1024px)');
 
@@ -173,67 +174,73 @@ const BookingSummaryCard = props => {
                   </InlineTextButton>
                 ) : null}
               </h4>
-              <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
-              {selectedPaymentMethod === CREDIT_CARD ? (
-                <h4 className={css.paymentCalc}>+3% card fee - ${cardFee}</h4>
+              {!hideFees ? (
+                <>
+                  <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
+                  {selectedPaymentMethod === CREDIT_CARD ? (
+                    <h4 className={css.paymentCalc}>+3% card fee - ${cardFee}</h4>
+                  ) : null}
+                </>
               ) : null}
             </div>
           ) : null}
           <h3 className={css.total}>Total: ${total}</h3>
         </div>
       </div>
-      <Modal
-        id="changeRatesModal"
-        isOpen={isChangeRatesModalOpen}
-        onClose={() => setIsChangeRatesModalOpen(false)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-        containerClassName={css.modalContainer}
-      >
-        <FinalForm
-          className={css.changeRatesForm}
-          onSubmit={values => {
-            onSetState({ bookingRate: values.bookingRate[0] });
-            setIsChangeRatesModalOpen(false);
-          }}
-          initialValues={{ bookingRate: [bookingRate] }}
-          render={fieldRenderProps => {
-            const { handleSubmit, pristine, invalid, values } = fieldRenderProps;
-            const { minPrice, maxPrice } = listing.attributes.publicData;
+      {!hideRatesButton ? (
+        <Modal
+          id="changeRatesModal"
+          isOpen={isChangeRatesModalOpen}
+          onClose={() => setIsChangeRatesModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+          containerClassName={css.modalContainer}
+        >
+          <FinalForm
+            className={css.changeRatesForm}
+            onSubmit={values => {
+              onSetState({ bookingRate: values.bookingRate[0] });
+              setIsChangeRatesModalOpen(false);
+            }}
+            initialValues={{ bookingRate: [bookingRate] }}
+            render={fieldRenderProps => {
+              const { handleSubmit, pristine, invalid, values } = fieldRenderProps;
+              const { minPrice, maxPrice } = listing?.attributes.publicData;
 
-            return (
-              <Form onSubmit={handleSubmit}>
-                <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
-                <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
-                  ${values.bookingRate}
-                </h1>
-                <div className={css.availableRatesContainer}>
-                  <p>${minPrice / 100}</p>
-                  <p>$50</p>
-                </div>
-                <FieldRangeSlider
-                  id="bookingRate"
-                  name="bookingRate"
-                  className={css.priceRange}
-                  trackClass={css.track}
-                  min={minPrice / 100}
-                  max={50}
-                  step={1}
-                  handles={values.bookingRate}
-                  noHandleLabels
-                />
-                <Button
-                  type="submit"
-                  disabled={pristine || invalid}
-                  className={css.submitRateButton}
-                >
-                  Save Rate
-                </Button>
-              </Form>
-            );
-          }}
-        />
-      </Modal>
+              return (
+                <Form onSubmit={handleSubmit}>
+                  <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
+                  <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
+                    ${values.bookingRate}
+                  </h1>
+                  <div className={css.availableRatesContainer}>
+                    <p>${minPrice / 100}</p>
+                    <p>$50</p>
+                  </div>
+                  <FieldRangeSlider
+                    id="bookingRate"
+                    name="bookingRate"
+                    className={css.priceRange}
+                    trackClass={css.track}
+                    min={minPrice / 100}
+                    max={50}
+                    step={1}
+                    handles={values.bookingRate}
+                    noHandleLabels
+                  />
+                  <Button
+                    type="submit"
+                    disabled={pristine || invalid}
+                    className={css.submitRateButton}
+                  >
+                    Save Rate
+                  </Button>
+                </Form>
+              );
+            }}
+          />
+        </Modal>
+      ) : null}
     </div>
   ) : null;
 };
