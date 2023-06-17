@@ -1,1 +1,1 @@
-{{transaction.customer.display-name}} has requested to book {{transaction.listing.title}}
+{{transaction.provider.display-name}} is Not Available for your Booking

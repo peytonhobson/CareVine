@@ -312,3 +312,7 @@ export const stripeRetrieveUpcomingInvoice = body => {
 export const initiateTransaction = body => {
   return post('/api/initiate-transaction', body);
 };
+
+export const updateNotificationMetadata = body => {
+  return post('/api/update-notification-metadata', body);
+};

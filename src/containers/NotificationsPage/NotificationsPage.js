@@ -29,7 +29,7 @@ import SideNav from './SideNav';
 
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_NOTIFICATION_MODAL_OPEN = 'SET_NOTIFICATION_MODAL_OPEN';
-const SET_ACTIVE_NOTIFICATION = 'SET_ACTIVE_NOTIFICATION';
+const SET_ACTIVE_NOTIFICATION_ID = 'SET_ACTIVE_NOTIFICATION_ID';
 const SET_NOTIFICATION_READ = 'SET_NOTIFICATION_READ';
 const SET_NOTIFICATIONS = 'SET_NOTIFICATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
@@ -41,10 +41,10 @@ const reducer = (state, action) => {
       return { ...state, isDeleteModalOpen: action.payload };
     case SET_NOTIFICATION_MODAL_OPEN:
       return { ...state, isNotificationModalOpen: action.payload };
-    case SET_ACTIVE_NOTIFICATION:
+    case SET_ACTIVE_NOTIFICATION_ID:
       return {
         ...state,
-        activeNotification: state.notifications.find(n => n.id === action.payload),
+        activeNotificationId: action.payload,
       };
     case SET_NOTIFICATION_READ:
       return {
@@ -57,10 +57,10 @@ const reducer = (state, action) => {
       return {
         ...state,
         notifications: action.payload,
-        activeNotification: state.notifications.find(n => n.id === state.activeNotification.id)
-          ? state.activeNotification
+        activeNotificationId: state.activeNotificationId
+          ? state.activeNotificationId
           : action.payload.length > 0
-          ? action.payload[0]
+          ? action.payload[0].id
           : null,
       };
     case SET_CURRENT_USER_INITIAL_FETCHED:
@@ -68,7 +68,7 @@ const reducer = (state, action) => {
     case SET_INITIAL_NOTIFICATION:
       return {
         ...state,
-        activeNotification: action.payload,
+        activeNotificationId: action.payload.id,
         initialNotificationSet: true,
       };
     default:
@@ -104,17 +104,14 @@ const NotificationsPageComponent = props => {
   const notifications = currentUser?.attributes.profile.privateData.notifications || [];
 
   const sortedNotifications = useMemo(
-    () =>
-      notifications.sort((a, b) => {
-        return b.createdAt - a.createdAt;
-      }),
+    () => notifications.sort((a, b) => b.createdAt - a.createdAt),
     [notifications]
   );
 
   const initialState = {
     notifications: sortedNotifications,
     isDeleteModalOpen: false,
-    activeNotification: notifications.length > 0 ? notifications[0] : null,
+    activeNotificationId: notifications.length > 0 ? notifications[0].id : null,
     isNotificationModalOpen: false,
     initialNotificationSet: false,
   };
@@ -124,7 +121,7 @@ const NotificationsPageComponent = props => {
   useEffect(() => {
     if (sortedNotifications.length === 0) return;
     dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
-  }, [sortedNotifications.length]);
+  }, [JSON.stringify(sortedNotifications)]);
 
   useEffect(() => {
     const firstNotification = state.notifications.find(n => n.id === notificationId);
@@ -137,20 +134,21 @@ const NotificationsPageComponent = props => {
     }
   }, [notificationId, state.notifications?.length]);
 
-  const previousNotifications = usePrevious(state.notifications);
+  const activeNotification = useMemo(
+    () => state.notifications.find(n => n.id === state.activeNotificationId),
+    [state.activeNotificationId, JSON.stringify(state.notifications)]
+  );
 
   useEffect(() => {
-    if (previousNotifications && !isEqual(state.notifications, previousNotifications)) {
-      onUpdateNotifications(state.notifications);
+    if (activeNotification && !activeNotification.isRead) {
+      const newNotifications = state.notifications.map(n =>
+        n.id === state.activeNotificationId ? { ...n, isRead: true } : n
+      );
+
+      onUpdateNotifications(newNotifications);
       onFetchCurrentUser();
     }
-  }, [state.notifications]);
-
-  useEffect(() => {
-    if (state.activeNotification && !state.activeNotification.isRead) {
-      dispatch({ type: SET_NOTIFICATION_READ, payload: state.activeNotification.id });
-    }
-  }, [state.activeNotification?.id]);
+  }, [state.activeNotificationId]);
 
   const previousFetchCurrentUserInProgress = usePrevious(fetchCurrentUserInProgress);
 
@@ -175,7 +173,7 @@ const NotificationsPageComponent = props => {
   };
 
   const handlePreviewClick = id => {
-    dispatch({ type: SET_ACTIVE_NOTIFICATION, payload: id });
+    dispatch({ type: SET_ACTIVE_NOTIFICATION_ID, payload: id });
 
     if (isMobile) {
       dispatch({ type: SET_NOTIFICATION_MODAL_OPEN, payload: true });
@@ -206,7 +204,7 @@ const NotificationsPageComponent = props => {
             notifications={state.notifications}
             handleOpenDeleteNotificationModal={handleOpenDeleteNotificationModal}
             onPreviewClick={handlePreviewClick}
-            activeNotificationId={state.activeNotification ? state.activeNotification.id : null}
+            activeNotificationId={state.activeNotificationId}
             fetchCurrentUserInProgress={
               fetchCurrentUserInProgress && !state.currentUserInitialFetched
             }
@@ -218,7 +216,7 @@ const NotificationsPageComponent = props => {
           {!isMobile ? (
             <NotificationContainer
               notifications={state.notifications}
-              notification={state.activeNotification}
+              notification={activeNotification}
               listing={currentUserListing}
               currentUser={currentUser}
               fetchCurrentUserInProgress={
@@ -244,7 +242,7 @@ const NotificationsPageComponent = props => {
       >
         <NotificationContainer
           notifications={state.notifications}
-          notification={state.activeNotification}
+          notification={activeNotification}
           listing={currentUserListing}
           currentUser={currentUser}
           fetchCurrentUserInProgress={

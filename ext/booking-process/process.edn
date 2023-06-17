@@ -8,8 +8,6 @@
    :privileged? true}
   {:name :transition/decline-booking,
    :actor :actor.role/provider,
-   :actions
-   [{:name :action/decline-booking}],
    :from :state/booking-requested,
    :to :state/declined}
   {:name :transition/expire-booking,
@@ -17,32 +15,22 @@
    {:fn/plus
       [{:fn/timepoint [:time/first-entered-state :state/booking-requested]}
        {:fn/period ["P3D"]}]},
-   :actions
-   [{:name :action/decline-booking}],
    :from :state/booking-requested,
    :to :state/declined}
   {:name :transition/accept-booking,
    :actor :actor.role/provider,
-   :actions
-   [{:name :action/accept-booking}],
    :from :state/booking-requested,
    :to :state/accepted}
    {:name :transition/cancel-booking-request,
    :actor :actor.role/customer,
-   :actions
-   [{:name :action/cancel-booking}],
    :from :state/booking-requested,
    :to :state/canceled}
    {:name :transition/cancel-booking-customer,
    :actor :actor.role/customer,
-   :actions
-   [{:name :action/cancel-booking}],
    :from :state/accepted,
    :to :state/canceled}
    {:name :transition/cancel-booking-provider,
    :actor :actor.role/provider,
-   :actions
-   [{:name :action/cancel-booking}],
    :from :state/accepted,
    :to :state/canceled}
    {:name :transition/complete,

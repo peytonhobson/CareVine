@@ -1,8 +1,14 @@
 import { useMediaQuery } from '@material-ui/core';
 import React from 'react';
 
-import { Avatar, Button, SecondaryButton } from '../../../components';
+import { Avatar, Button, SecondaryButton, NamedLink } from '../../../components';
 import BookingSummaryCard from '../../CheckoutPage/BookingSummaryCard';
+import {
+  TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_DECLINE_BOOKING,
+  STATE_DECLINED,
+  STATE_ACCEPTED,
+} from '../../../util/transaction';
 
 import css from './NotificationTemplates.module.css';
 
@@ -10,24 +16,34 @@ const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 
 const NotificationNewBookingRequest = props => {
-  const { notification, currentUser, onManageDisableScrolling } = props;
+  const {
+    notification,
+    currentUser,
+    onManageDisableScrolling,
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+    onTransitionTransaction,
+  } = props;
 
   const {
     lineItems,
     bookingRate,
-    stripeCustomerId,
-    paymentMethodId,
     paymentMethodType,
-    applicationFee,
     message,
-    userId,
     authorId,
+    userId,
     senderName,
     senderListingTitle,
     senderCity,
     senderProfileImage,
     senderDefaultAvatar,
+    txId,
+    accepted,
+    declined,
   } = notification.metadata;
+
+  const notificationId = notification.id;
 
   const bookingTimes = lineItems.map(l => ({
     date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
@@ -91,10 +107,51 @@ const NotificationNewBookingRequest = props => {
             hideFees
             displayOnMobile={!isLarge}
           />
-          <div className={css.acceptDeclineContainer}>
-            <Button>Accept</Button>
-            <SecondaryButton className={css.declineButton}>Decline</SecondaryButton>
-          </div>
+          {transitionTransactionError && (
+            <p className={css.error}>
+              Something went wrong with accepting or declining the booking request. Please try
+              again.
+            </p>
+          )}
+          {!accepted && !declined ? (
+            <div className={css.acceptDeclineContainer}>
+              <Button
+                onClick={() =>
+                  onTransitionTransaction(txId, TRANSITION_ACCEPT_BOOKING, notificationId, authorId)
+                }
+                inProgress={transitionTransactionInProgress === TRANSITION_ACCEPT_BOOKING}
+              >
+                Accept
+              </Button>
+              <SecondaryButton
+                onClick={() =>
+                  onTransitionTransaction(
+                    txId,
+                    TRANSITION_DECLINE_BOOKING,
+                    notificationId,
+                    authorId
+                  )
+                }
+                className={css.declineButton}
+                inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+              >
+                Decline
+              </SecondaryButton>
+            </div>
+          ) : (
+            <div className={css.bookingDecisionContainer}>
+              {accepted && (
+                <>
+                  <h2 className={css.bookingAccepted}>Booking Accepted</h2>
+                  {/* TODO: Change to my booking page */}
+                  <NamedLink className={css.viewBookingLink} name="LandingPage">
+                    View Booking
+                  </NamedLink>
+                </>
+              )}
+              {declined && <h2 className={css.bookingDeclined}>Booking Declined</h2>}
+            </div>
+          )}
         </div>
       </div>
     </div>

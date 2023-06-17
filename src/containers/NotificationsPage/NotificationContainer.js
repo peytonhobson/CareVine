@@ -18,6 +18,9 @@ import {
   NotificationListingOpened,
   NotificationNewBookingRequest,
 } from './NotificationTemplates';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { transitionTransaction } from '../../ducks/transactions.duck';
 
 import css from './NotificationsPage.module.css';
 
@@ -34,6 +37,10 @@ const NotificationContainer = props => {
     fetchSenderListingInProgress,
     fetchSenderListingError,
     onManageDisableScrolling,
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+    onTransitionTransaction,
   } = props;
 
   let notificationTemplate = null;
@@ -78,6 +85,10 @@ const NotificationContainer = props => {
           notification={notification}
           currentUser={currentUser}
           onManageDisableScrolling={onManageDisableScrolling}
+          transitionTransactionInProgress={transitionTransactionInProgress}
+          transitionTransactionError={transitionTransactionError}
+          currentTransaction={currentTransaction}
+          onTransitionTransaction={onTransitionTransaction}
         />
       );
       break;
@@ -100,4 +111,22 @@ const NotificationContainer = props => {
   return <div className={css.notificationContainerRoot}>{notificationTemplate}</div>;
 };
 
-export default NotificationContainer;
+const mapStateToProps = state => {
+  const {
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+  } = state.transactions;
+
+  return {
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+  };
+};
+
+const mapDispatchToProps = {
+  onTransitionTransaction: transitionTransaction,
+};
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationContainer);
