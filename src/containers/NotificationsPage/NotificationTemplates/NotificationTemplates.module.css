@@ -52,10 +52,6 @@
   white-space: nowrap;
 }
 
-.error {
-  color: var(--failColor);
-}
-
 .bookingInfo {
   @media (--viewportLarge) {
     max-width: 30rem;
@@ -208,4 +204,28 @@
 .listingLocation {
   color: var(--marketplaceColor);
   margin: 0;
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.bookingAccepted {
+  width: 100%;
+  text-align: center;
+  color: var(--successColor);
+}
+
+.bookingDeclined {
+  width: 100%;
+  text-align: center;
+  color: var(--failColor);
+}
+
+.viewBookingLink {
+  composes: button buttonFont buttonColors buttonBorders from global;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

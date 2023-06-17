@@ -53,15 +53,15 @@ export const TX_TRANSITION_ACTORS = [
   TX_TRANSITION_ACTOR_OPERATOR,
 ];
 
-const STATE_INITIAL = 'initial';
-const STATE_BOOKING_REQUESTED = 'booking-requested';
-const STATE_ACCEPTED = 'accepted';
-const STATE_DECLINED = 'declined';
-const STATE_CANCELED = 'canceled';
-const STATE_DELIVERED = 'delivered';
-const STATE_PAID_OUT = 'paid-out';
-const STATE_DISPUTE_REVIEW = 'dispute-review';
-const STATE_REVIEWED = 'reviewed';
+export const STATE_INITIAL = 'initial';
+export const STATE_BOOKING_REQUESTED = 'booking-requested';
+export const STATE_ACCEPTED = 'accepted';
+export const STATE_DECLINED = 'declined';
+export const STATE_CANCELED = 'canceled';
+export const STATE_DELIVERED = 'delivered';
+export const STATE_PAID_OUT = 'paid-out';
+export const STATE_DISPUTE_REVIEW = 'dispute-review';
+export const STATE_REVIEWED = 'reviewed';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -141,6 +141,7 @@ const stateDescription = {
     },
     [STATE_DECLINED]: { type: 'final' },
     [STATE_REVIEWED]: { type: 'final' },
+    [STATE_CANCELED]: { type: 'final' },
   },
 };
 

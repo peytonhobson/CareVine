@@ -168,7 +168,13 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
 
     await updateUserNotifications({
       userId: metadata.authorId,
-      newNotification,
+      newNotification: {
+        ...newNotification,
+        metadata: {
+          ...newNotification.metadata,
+          txId: response.data.data.id.uuid,
+        },
+      },
     });
 
     return handleSuccess(response);
