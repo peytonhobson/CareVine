@@ -79,7 +79,7 @@ export { default as InfoTooltip } from './InfoTooltip/InfoTooltip';
 // First components that include only atomic components //
 //////////////////////////////////////////////////////////
 
-export { default as Button, PrimaryButton, SecondaryButton, InlineTextButton, SocialLoginButton, GradientButton } from './Button/Button';
+export { default as Button, PrimaryButton, SecondaryButton, InlineTextButton, SocialLoginButton, GradientButton, CancelButton } from './Button/Button';
 export { default as ButtonGroup } from './ButtonGroup/ButtonGroup';
 export { default as CookieConsent } from './CookieConsent/CookieConsent';
 export { default as ImageCarousel } from './ImageCarousel/ImageCarousel';
@@ -160,6 +160,7 @@ export { default as ChangeLocationFilter } from './ChangeLocationFilter/ChangeLo
 export { default as Discussion } from './Discussion/Discussion';
 export { default as DistanceFilter } from './DistanceFilter/DistanceFilter';
 export { default as EmployerListingCard } from './EmployerListingCard/EmployerListingCard';
+export { default as EmployerBookingCard} from './BookingCards/EmployerBookingCard';
 export { default as FilterPlain } from './FilterPlain/FilterPlain';
 export { default as FilterPopup } from './FilterPopup/FilterPopup';
 export { default as KeywordFilter } from './KeywordFilter/KeywordFilter';
