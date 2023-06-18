@@ -90,11 +90,6 @@
    :to :actor.role/customer,
    :template :booking-request-auto-declined}
 
-   {:name :notification/booking-request-expired,
-   :on :transition/expire-booking,
-   :to :actor.role/provider,
-   :template :booking-request-expired}
-
   {:name :notification/booking-request-canceled-confirmation,
     :on :transition/cancel-booking-request,
     :to :actor.role/customer,
