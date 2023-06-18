@@ -1,0 +1,46 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  margin: auto;
+  max-width: 45rem;
+  padding-bottom: 3rem;
+}
+
+.title {
+  color: var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    font-size: 3.5rem;
+    font-weight: var(--fontWeightSemiBold);
+    line-height: 4rem;
+    letter-spacing: -0.063rem;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.cardSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.cards {
+  max-height: 30rem;
+  max-width: 100%;
+  overflow-y: auto;
+  border: 1px solid var(--matterColorNegative);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  padding: 2rem;
+}
+
+.subHeading {
+  width: 100%;
+  font-size: 2rem;
+  line-height: 2rem;
+  margin-bottom: 0.5rem;
+}

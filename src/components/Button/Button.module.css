@@ -176,3 +176,23 @@
     color: var(--matterColorLight);
   }
 }
+
+.CancelButtonRoot {
+  composes: button buttonFont buttonText buttonBorders from global;
+
+  color: var(--failColor);
+  border: 1px solid var(--matterColorNegative);
+  padding: 0;
+
+  &:hover {
+    color: var(--matterColorLight);
+    background-color: var(--failColor);
+    border: 1px solid var(--failColor);
+  }
+
+  &:focus {
+    color: var(--matterColorLight);
+    background-color: var(--failColor);
+    border: 1px solid var(--failColor);
+  }
+}
