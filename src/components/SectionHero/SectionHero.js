@@ -67,9 +67,11 @@ const SectionHero = props => {
 
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;
-    const origin = `${Number.parseFloat(valOrigin.lat).toFixed(5)}%2C${Number.parseFloat(
-      valOrigin.lng
-    ).toFixed(5)}`;
+    // Need to parse float twice to ensure no trailing zeros
+    // If there are trailing zeros then urlHelpers parse will return null
+    const lat = parseFloat(parseFloat(valOrigin.lat).toFixed(5));
+    const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
+    const origin = `${lat}%2C${lng}`;
 
     history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
   };
