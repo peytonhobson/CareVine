@@ -587,7 +587,7 @@ export const loadData = params => (dispatch, getState, sdk) => {
           end,
         };
 
-        return dispatch(requestFetchAvailabilityExceptions(params));
+        // return dispatch(requestFetchAvailabilityExceptions(params));
       }
 
       return response;

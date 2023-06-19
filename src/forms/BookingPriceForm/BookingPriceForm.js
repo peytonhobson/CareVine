@@ -90,13 +90,6 @@ const BookingPriceForm = props => (
       const submitDisabled = invalid || disabled || submitInProgress;
       const submitReady = updated || ready;
 
-      const totalHours = availabilityPlan.attributes.availabilityPlan.entries.reduce(
-        (acc, entry) => {
-          return acc + entry.hours;
-        },
-        0
-      );
-
       return (
         <Form onSubmit={handleSubmit}>
           <h1 className={css.title}>

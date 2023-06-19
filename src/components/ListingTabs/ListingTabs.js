@@ -88,7 +88,7 @@ const ListingTabs = props => {
     'Caregiver Preferences': caregiverPreferencesRef,
   };
 
-  const { publicData, availabilityPlan } = listing.attributes;
+  const { publicData } = listing.attributes;
   const { careSchedule, availabilityPlan: publicAvailabilityPlan } = publicData;
 
   const onClick = tab => {
@@ -103,7 +103,7 @@ const ListingTabs = props => {
     return getTabs(listingType, onClick, selectedTab);
   }, [listingType, selectedTab]);
 
-  const entries = availabilityPlan?.entries || publicAvailabilityPlan?.entries;
+  const entries = publicAvailabilityPlan?.entries;
   const isProfileClosed = listing.attributes.state === 'closed';
 
   const renderSection = useCallback(

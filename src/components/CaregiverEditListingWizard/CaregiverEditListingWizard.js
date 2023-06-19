@@ -113,7 +113,7 @@ const tabCompleted = (tab, listing, user) => {
     case PRICING:
       return !!(publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
-      return !!availabilityPlan || !!publicData.availabilityPlan;
+      return !!publicData.availabilityPlan;
     case BACKGROUND_CHECK:
       return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:

@@ -103,7 +103,12 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   // Example: extend default img directive with custom domain
   // const { imgSrc = [self] } = defaultDirectives;
   // const exampleImgSrc = imgSrc.concat('my-custom-domain.example.com');
-  const { connectSrc = [self], imgSrc = [self], scriptSrc = [self] } = defaultDirectives;
+  const {
+    connectSrc = [self],
+    imgSrc = [self],
+    scriptSrc = [self],
+    frameSrc = [self],
+  } = defaultDirectives;
   const customConnectSrc = connectSrc
     .concat('*.sentry.io')
     .concat('*.ingest.sentry.io')
@@ -114,11 +119,13 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.facebook.net')
     .concat('www.google.com')
     .concat('*.googlesyndication.com');
+  const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
     imgSrc: customImgSrc,
     scriptSrc: customScriptSrc,
+    frameSrc: customFrameSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //

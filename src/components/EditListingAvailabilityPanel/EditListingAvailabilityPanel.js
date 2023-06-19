@@ -24,6 +24,24 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'America/New_York';
 
+const createOpenAvailabilityPlan = currentListing => {
+  const timezone =
+    zipcodeToTimezone.lookup(currentListing.attributes.publicData.location?.zipcode) ||
+    defaultTimeZone();
+  const entries = WEEKDAYS.map(dayOfWeek => ({
+    dayOfWeek,
+    startTime: '00:00',
+    endTime: '00:00',
+    seats: 1,
+  }));
+
+  return {
+    type: 'availability-plan/time',
+    timezone,
+    entries,
+  };
+};
+
 const createEntryDayGroups = (entries = {}) =>
   entries.reduce((groupedEntries, entry) => {
     const { startTime, endTime: endHour, dayOfWeek } = entry;
@@ -112,7 +130,7 @@ const EditListingAvailabilityPanel = props => {
     entries: [],
   };
   const publicData = currentListing.attributes.publicData;
-  const savedAvailabilityPlan = currentListing.attributes.availabilityPlan;
+  const savedAvailabilityPlan = publicData.availabilityPlan;
 
   const savedSelectedAvailabilityTypes = publicData?.scheduleTypes;
 
@@ -161,7 +179,7 @@ const EditListingAvailabilityPanel = props => {
 
     // Final Form can wait for Promises to return.
     return onSubmit({
-      availabilityPlan,
+      availabilityPlan: createOpenAvailabilityPlan(currentListing),
       publicData: {
         availabilityPlan,
         scheduleTypes: selectedAvailabilityTypes,
@@ -236,24 +254,6 @@ const EditListingAvailabilityPanel = props => {
           openEditModal={() => setIsEditPlanModalOpen(true)}
         />
       </section>
-      <div className={css.exceptionsContainer}>
-        <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
-        <AvailabilityPlanExceptions
-          fetchExceptionsInProgress={fetchExceptionsInProgress}
-          availabilityExceptions={availabilityExceptions}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onManageDisableScrolling={onManageDisableScrolling}
-          disabled={disabled}
-          ready={ready}
-          availabilityPlan={availabilityPlan}
-          updateInProgress={updateInProgress}
-          errors={errors}
-          listing={listing}
-          addExceptionError={addExceptionError}
-          addExceptionInProgress={addExceptionInProgress}
-        />
-      </div>
 
       {errors.showListingsError ? (
         <p className={css.error}>
