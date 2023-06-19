@@ -157,7 +157,7 @@
   @media (--viewportLarge) {
     display: inline-block;
     margin-bottom: 1.5rem;
-    margin-top: 0;
+    margin-top: 2rem;
   }
 }
 

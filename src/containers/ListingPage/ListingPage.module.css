@@ -19,7 +19,7 @@
 }
 
 .subContainer {
-  max-width: 100%;
+  width: 100%;
 
   @media (--viewportLarge) {
     padding-inline: 15%;

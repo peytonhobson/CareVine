@@ -4,8 +4,8 @@ const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 
 const integrationSdk = flexIntegrationSdk.createInstance({
   // These two env vars need to be set in the `.env` file.
-  clientId: process.env.FLEX_INTEGRATION_CLIENT_ID,
-  clientSecret: process.env.FLEX_INTEGRATION_CLIENT_SECRET,
+  clientId: '5358ca4c-fb73-40d8-bc3d-606a5a1bc566',
+  clientSecret: '3ec0f388a16b5c64237c555e9b5cfffbf28974b8',
 
   // Normally you can just skip setting the base URL and just use the
   // default that the `createInstance` uses. We explicitly set it here
@@ -31,12 +31,13 @@ const convertTimeFrom12to24 = fullTime => {
 };
 
 const convertPublicPlanToBuiltIn = publicPlan => {
-  const { entries, timezone } = publicPlan;
+  const { timezone } = publicPlan;
 
+  const entries = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const convertedEntries = entries.map(entry => ({
     dayOfWeek: entry.dayOfWeek,
-    startTime: convertTimeFrom12to24(entry.startTime),
-    endTime: convertTimeFrom12to24(entry.endTime),
+    startTime: '00:00',
+    endTime: '00:00',
     seats: 1,
   }));
 
@@ -67,9 +68,6 @@ const main = async () => {
           await integrationSdk.listings.update({
             id: listing.id.uuid,
             availabilityPlan: convertedPlan,
-            publicData: {
-              availabilityPlan: convertedPlan,
-            },
           });
         } catch (err) {
           //   console.log(err);
