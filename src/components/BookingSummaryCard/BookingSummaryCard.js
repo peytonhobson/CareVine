@@ -14,7 +14,7 @@ import { useMediaQuery } from '@mui/material';
 import { convertTimeFrom12to24 } from '../../util/data';
 import { useIsScrollable } from '../../util/hooks';
 
-import css from './CheckoutPage.module.css';
+import css from './BookingSummaryCard.module.css';
 
 const CREDIT_CARD = 'Payment Card';
 const TRANSACTION_FEE = 0.05;
@@ -76,27 +76,7 @@ const BookingSummaryCard = props => {
   } = props;
   const totalHours = calculateTotalHours(selectedBookingTimes);
 
-  const [bookingTimesScrolled, setBookingTimesScrolled] = useState(0);
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
-
-  const bookingTimesRef = useRef(null);
-
-  const scrollToBottom = () => {
-    if (bookingTimesRef.current) {
-      bookingTimesRef.current.scrollTop = bookingTimesRef.current.scrollHeight;
-    }
-  };
-
-  const scrollToTop = () => {
-    if (bookingTimesRef.current) {
-      bookingTimesRef.current.scrollTop = 0;
-    }
-  };
-
-  const isScrollable = useIsScrollable(bookingTimesRef);
-  const isAtBottom =
-    bookingTimesScrolled >=
-    bookingTimesRef.current?.scrollHeight - bookingTimesRef.current?.clientHeight;
 
   const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
   const transactionFee = hideFees ? 0 : calculateTransactionFee(subTotal);
@@ -127,11 +107,7 @@ const BookingSummaryCard = props => {
         <div className={css.detailsHeadings}>
           <h2 className={css.detailsTitle}>{subHeading || 'Booking Summary'}</h2>
         </div>
-        <div
-          className={css.bookingTimes}
-          ref={bookingTimesRef}
-          onScroll={() => setBookingTimesScrolled(bookingTimesRef.current.scrollTop)}
-        >
+        <div className={css.bookingTimes}>
           {bookingDates.map((bookingDate, index) => {
             const month = new Date(bookingDate).getMonth() + 1;
             const day = new Date(bookingDate).getDate();

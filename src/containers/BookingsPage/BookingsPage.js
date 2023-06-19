@@ -11,7 +11,7 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
 } from '../../util/transaction';
-import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import {
   Page,
   LayoutSingleColumn,
@@ -55,6 +55,7 @@ const BookingsPage = props => {
     fetchBookingsInProgress,
     currentUser: user,
     scrollingDisabled,
+    onManageDisableScrolling,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -118,7 +119,12 @@ const BookingsPage = props => {
                 <h2 className={css.subHeading}>Upcoming</h2>
                 <div className={css.cards}>
                   {upcomingBookings.map(b => (
-                    <CardComponent key={b.id} booking={b} currentUser={currentUser} />
+                    <CardComponent
+                      key={b.id}
+                      booking={b}
+                      currentUser={currentUser}
+                      onManageDisableScrolling={onManageDisableScrolling}
+                    />
                   ))}
                 </div>
               </section>
@@ -136,7 +142,12 @@ const BookingsPage = props => {
                 <h2 className={css.subHeading}>Requested</h2>
                 <div className={css.cards}>
                   {requestedBookings.map(b => (
-                    <CardComponent key={b.id} booking={b} currentUser={currentUser} />
+                    <CardComponent
+                      key={b.id}
+                      booking={b}
+                      currentUser={currentUser}
+                      onManageDisableScrolling={onManageDisableScrolling}
+                    />
                   ))}
                 </div>
               </section>
@@ -164,6 +175,8 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+};
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);
