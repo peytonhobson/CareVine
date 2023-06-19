@@ -1,3 +1,4 @@
+import { CAREGIVER } from '../../util/constants';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
@@ -9,6 +10,9 @@ import {
   TRANSITION_DISPUTE_RESOLVED,
   TRANSITION_REVIEW_BY_CUSTOMER,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
+  TRANSITION_CANCEL_BOOKING_PROVIDER,
+  TRANSITION_CANCEL_BOOKING_CUSTOMER,
+  TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../util/transaction';
 
 // ================ Action types ================ //
@@ -17,12 +21,18 @@ export const FETCH_BOOKINGS_REQUEST = 'app/BookingsPage/FETCH_BOOKINGS_REQUEST';
 export const FETCH_BOOKINGS_SUCCESS = 'app/BookingsPage/FETCH_BOOKINGS_SUCCESS';
 export const FETCH_BOOKINGS_ERROR = 'app/BookingsPage/FETCH_BOOKINGS_ERROR';
 
+export const CANCEL_BOOKING_REQUEST = 'app/BookingsPage/CANCEL_BOOKING_REQUEST';
+export const CANCEL_BOOKING_SUCCESS = 'app/BookingsPage/CANCEL_BOOKING_SUCCESS';
+export const CANCEL_BOOKING_ERROR = 'app/BookingsPage/CANCEL_BOOKING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
   fetchBookingsInProgress: false,
   fetchBookingsError: null,
   bookings: [],
+  cancelBookingInProgress: false,
+  cancelBookingError: null,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -34,6 +44,13 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, fetchBookingsInProgress: false, bookings: payload };
     case FETCH_BOOKINGS_ERROR:
       return { ...state, fetchBookingsInProgress: false, fetchBookingsError: payload };
+
+    case CANCEL_BOOKING_REQUEST:
+      return { ...state, cancelBookingInProgress: true, cancelBookingError: null };
+    case CANCEL_BOOKING_SUCCESS:
+      return { ...state, cancelBookingInProgress: false };
+    case CANCEL_BOOKING_ERROR:
+      return { ...state, cancelBookingInProgress: false, cancelBookingError: payload };
 
     default:
       return state;
@@ -51,6 +68,14 @@ export const fetchBookingsSuccess = bookings => ({
 });
 export const fetchBookingsError = e => ({
   type: FETCH_BOOKINGS_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const cancelBookingRequest = () => ({ type: CANCEL_BOOKING_REQUEST });
+export const cancelBookingSuccess = () => ({ type: CANCEL_BOOKING_SUCCESS });
+export const cancelBookingError = e => ({
+  type: CANCEL_BOOKING_ERROR,
   error: true,
   payload: e,
 });
@@ -101,6 +126,31 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     return bookings;
   } catch (e) {
     dispatch(fetchBookingsError(storableError(e)));
+  }
+};
+
+export const cancelBooking = booking => async (dispatch, getState, sdk) => {
+  dispatch(cancelBookingRequest());
+
+  const userType = getState().user.currentUser.attributes.profile.metadata.userType;
+  const isAccepted = booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const bookingId = booking.id.uuid;
+
+  const transition = isAccepted
+    ? userType === CAREGIVER
+      ? TRANSITION_CANCEL_BOOKING_PROVIDER
+      : TRANSITION_CANCEL_BOOKING_CUSTOMER
+    : TRANSITION_CANCEL_BOOKING_REQUEST;
+
+  try {
+    const response = await sdk.transactions.transition({ id: bookingId, transition });
+    const booking = denormalisedResponseEntities(response);
+
+    dispatch(cancelBookingSuccess());
+    dispatch(fetchBookings());
+    return booking;
+  } catch (e) {
+    dispatch(cancelBookingError(storableError(e)));
   }
 };
 
