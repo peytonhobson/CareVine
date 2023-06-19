@@ -31,12 +31,13 @@ const convertTimeFrom12to24 = fullTime => {
 };
 
 const convertPublicPlanToBuiltIn = publicPlan => {
-  const { entries, timezone } = publicPlan;
+  const { timezone } = publicPlan;
 
+  const entries = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   const convertedEntries = entries.map(entry => ({
     dayOfWeek: entry.dayOfWeek,
-    startTime: convertTimeFrom12to24(entry.startTime),
-    endTime: convertTimeFrom12to24(entry.endTime),
+    startTime: '00:00',
+    endTime: '00:00',
     seats: 1,
   }));
 
@@ -67,9 +68,6 @@ const main = async () => {
           await integrationSdk.listings.update({
             id: listing.id.uuid,
             availabilityPlan: convertedPlan,
-            publicData: {
-              availabilityPlan: convertedPlan,
-            },
           });
         } catch (err) {
           //   console.log(err);
