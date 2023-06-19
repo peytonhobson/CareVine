@@ -222,21 +222,6 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           openEditModal={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
         />
       </section>
-      <div className={css.scheduleExceptionsContainer}>
-        <h2 className={css.scheduleExceptionsTitle}>Are there any exceptions to this schedule?</h2>
-        <CareScheduleExceptions
-          availabilityExceptions={state.availabilityExceptions}
-          onManageDisableScrolling={onManageDisableScrolling}
-          careSchedule={state.careSchedule}
-          updateInProgress={updateInProgress}
-          errors={errors}
-          disabled={disabled}
-          ready={ready}
-          listing={currentListing}
-          onSave={handleSaveAvailabilityException}
-          onDelete={handleDeleteException}
-        />
-      </div>
       <Button
         className={css.goToNextTabButton}
         onClick={handleSubmit}
