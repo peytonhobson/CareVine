@@ -132,3 +132,7 @@
   justify-content: center;
   width: 100%;
 }
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+}

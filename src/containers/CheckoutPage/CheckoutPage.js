@@ -11,6 +11,7 @@ import {
   Page,
   IconConfirm,
   BookingConfirmationCard,
+  BookingSummaryCard,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
@@ -22,7 +23,6 @@ import {
   stripeCustomer,
   setInitialValues,
 } from './CheckoutPage.duck';
-import BookingSummaryCard from './BookingSummaryCard';
 import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 import { convertTimeFrom12to24 } from '../../util/data';

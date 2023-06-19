@@ -4,8 +4,7 @@ import classNames from 'classnames';
 import { useMediaQuery } from '@material-ui/core';
 import { useIsScrollable } from '../../util/hooks';
 import { convertTimeFrom12to24 } from '../../util/data';
-import BookingSummaryCard from '../../containers/CheckoutPage/BookingSummaryCard';
-import { Avatar } from '..';
+import { Avatar, BookingSummaryCard } from '..';
 
 import css from './BookingConfirmationCard.module.css';
 

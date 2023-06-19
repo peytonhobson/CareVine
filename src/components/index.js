@@ -153,6 +153,7 @@ export { default as BookingConfirmationCard } from './BookingConfirmationCard/Bo
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
 export { default as BookingDateRangeLengthFilter } from './BookingDateRangeLengthFilter/BookingDateRangeLengthFilter';
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
+export { default as BookingSummaryCard} from './BookingSummaryCard/BookingSummaryCard';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';
 export { default as CareScheduleExceptions } from './CareScheduleExceptions/CareScheduleExceptions';

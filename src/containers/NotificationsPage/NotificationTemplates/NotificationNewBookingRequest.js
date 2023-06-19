@@ -1,8 +1,13 @@
 import { useMediaQuery } from '@material-ui/core';
 import React from 'react';
 
-import { Avatar, Button, SecondaryButton, NamedLink } from '../../../components';
-import BookingSummaryCard from '../../CheckoutPage/BookingSummaryCard';
+import {
+  Avatar,
+  Button,
+  SecondaryButton,
+  NamedLink,
+  BookingSummaryCard,
+} from '../../../components';
 import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_DECLINE_BOOKING,

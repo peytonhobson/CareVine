@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 
-import { Avatar, Button, CancelButton, SecondaryButton } from '..';
+import { Avatar, Button, CancelButton, SecondaryButton, Modal, BookingSummaryCard } from '..';
 import { convertTimeFrom12to24 } from '../../util/data';
 import TablePagination from '@mui/material/TablePagination';
+import { useMediaQuery } from '@mui/material';
 
 import css from './BookingCards.module.css';
+
+const CREDIT_CARD = 'Payment Card';
+const BANK_ACCOUNT = 'Bank Account';
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -13,35 +17,33 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
-const calculateBookingDayCost = (bookingStart, bookingEnd, price) =>
-  calculateBookingDayHours(bookingStart, bookingEnd) * price;
-
 const EmployerBookingCard = props => {
   const [bookingTimesPage, setBookingTimesPage] = useState(0);
+  const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
 
-  const { booking, currentUser } = props;
+  const { booking, currentUser, onManageDisableScrolling } = props;
 
   const { provider } = booking;
 
   const bookingMetadata = booking.attributes.metadata;
-  const { bookingRate, lineItems } = bookingMetadata;
+  const { bookingRate, lineItems, paymentMethodType } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
   };
 
   const providerDisplayName = provider.attributes.profile.displayName;
+  const selectedPaymentMethod =
+    paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
-  const bookingTimes = lineItems?.map(l => ({
-    date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
-    startTime: l.startTime,
-    endTime: l.endTime,
-  }));
-  const totalHours = bookingTimes?.reduce(
-    (acc, curr) => acc + calculateBookingDayHours(curr.startTime, curr.endTime),
-    0
-  );
-  const totalPayment = lineItems?.reduce((acc, curr) => acc + curr.amount, 0);
+  const bookingTimes =
+    lineItems?.map(l => ({
+      date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
+      startTime: l.startTime,
+      endTime: l.endTime,
+    })) ?? [];
+
+  const isLarge = useMediaQuery('(min-width:1024px)');
 
   return (
     <div className={css.bookingCard}>
@@ -94,10 +96,35 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.viewContainer}>
-          <Button className={css.viewButton}>Full Payment Details</Button>
+          <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
+            Full Payment Details
+          </Button>
           <SecondaryButton className={css.viewButton}>View Calendar</SecondaryButton>
         </div>
       </div>
+      <Modal
+        title="Payment Details"
+        isOpen={isPaymentDetailsModalOpen}
+        onClose={() => setIsPaymentDetailsModalOpen(false)}
+        containerClassName={css.modalContainer}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <BookingSummaryCard
+          className={css.summaryCard}
+          authorDisplayName={providerDisplayName}
+          currentAuthor={provider}
+          selectedBookingTimes={bookingTimes}
+          bookingRate={bookingRate}
+          bookingDates={lineItems?.map(li => new Date(li.date)) ?? []}
+          onManageDisableScrolling={onManageDisableScrolling}
+          selectedPaymentMethod={selectedPaymentMethod}
+          displayOnMobile={!isLarge}
+          hideAvatar
+          subHeading={<span className={css.bookingWith}>Payment Details</span>}
+          hideRatesButton
+        />
+      </Modal>
     </div>
   );
 };
