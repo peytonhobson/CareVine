@@ -315,8 +315,7 @@
  */
 .withMobileMargins {
   & :global(.SingleDatePickerInput) {
-    width: calc(100vw - 3rem);
-    margin: 0 24px;
+    margin: 0;
 
     @media (--viewportMedium) {
       width: 100%;
