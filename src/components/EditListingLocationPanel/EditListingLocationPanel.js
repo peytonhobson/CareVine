@@ -135,7 +135,7 @@ class EditListingLocationPanel extends Component {
             const timezone = zipcodeToTimezone.lookup(parsedAddress.zip);
 
             const availabilityPlanMaybe =
-              currentListing.attributes.availabilityPlan ||
+              currentListing.attributes.publicData.availabilityPlan ||
               currentListing.attributes.publicData.careSchedule;
 
             if (availabilityPlanMaybe) {
