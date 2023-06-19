@@ -12,7 +12,7 @@ import {
 } from '../../components';
 import { useMediaQuery } from '@mui/material';
 import { convertTimeFrom12to24 } from '../../util/data';
-import { useIsScrollable } from '../../util/hooks';
+import { v4 as uuidv4 } from 'uuid';
 
 import css from './BookingSummaryCard.module.css';
 
@@ -117,7 +117,7 @@ const BookingSummaryCard = props => {
             const endTime = bookingTime.endTime;
 
             return startTime && endTime ? (
-              <div className={css.bookingTime} key={bookingTime.date}>
+              <div className={css.bookingTime} key={uuidv4()}>
                 <h3 className={css.summaryDate}>
                   {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
                 </h3>

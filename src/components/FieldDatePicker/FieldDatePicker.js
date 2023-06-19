@@ -12,12 +12,17 @@ import { InlineTextButton } from '../Button/Button';
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = (bookedDates, selectedDays, date) => {
+const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
   const booked = bookedDates.some(
     d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
   );
 
-  const beforeToday = date.getTime() < new Date().getTime();
+  const beforeBuffer =
+    date.getTime() <
+    moment()
+      .add(bufferDays ?? 0, 'days')
+      .toDate()
+      .getTime();
   const afterThreeMonths =
     date.getTime() >
     moment()
@@ -26,7 +31,7 @@ const isDayDisabled = (bookedDates, selectedDays, date) => {
       .getTime();
 
   if (selectedDays.length == 0) {
-    return booked || beforeToday || afterThreeMonths;
+    return booked || beforeBuffer || afterThreeMonths;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -46,14 +51,14 @@ const isDayDisabled = (bookedDates, selectedDays, date) => {
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
   return (
-    booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeToday || afterThreeMonths
+    booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer || afterThreeMonths
   );
 };
 
-const formatDay = (locale, date, selectedDays, bookedDates, onClick) => {
+const formatDay = (locale, date, selectedDays, bookedDates, onClick, bufferDays) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled(bookedDates, selectedDays, date);
+  const isDisabled = isDayDisabled(bookedDates, selectedDays, date, bufferDays);
 
   if (isHighlighted) {
     return (
@@ -73,7 +78,7 @@ const formatDay = (locale, date, selectedDays, bookedDates, onClick) => {
 };
 
 export const FieldDatePickerComponent = props => {
-  const { bookedDates = [], input, children, className } = props;
+  const { bookedDates = [], input, children, className, bufferDays = 3, onChange } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -84,27 +89,37 @@ export const FieldDatePickerComponent = props => {
       const newSelectedDays = input.value.filter(entry => entry.getTime() !== date.getTime());
 
       input.onChange(newSelectedDays);
+      if (onChange) {
+        onChange(newSelectedDays);
+      }
     } else {
       const newSelectedDays = [...input.value, date];
 
       input.onChange(newSelectedDays);
+      if (onChange) {
+        onChange(newSelectedDays);
+      }
     }
   };
 
   const handleClearDates = () => {
     input.onChange([]);
+    if (onChange) {
+      onChange([]);
+    }
   };
 
   const classes = classNames(css.root, className);
   const selectedDays = Array.isArray(input.value) ? input.value : [];
+  const initialDate = input.value?.[0] ?? new Date();
 
   return (
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, selectedDays, bookedDates, handleSelectDay)
+          formatDay(locale, date, selectedDays, bookedDates, handleSelectDay, bufferDays)
         }
-        value={new Date()}
+        value={initialDate}
       />
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates

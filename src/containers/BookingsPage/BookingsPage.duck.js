@@ -14,6 +14,8 @@ import {
   TRANSITION_CANCEL_BOOKING_CUSTOMER,
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../util/transaction';
+import * as log from '../../util/log';
+import { updateTransactionMetadata } from '../../util/api';
 
 // ================ Action types ================ //
 
@@ -111,10 +113,12 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
       'listing.author',
       'provider',
       'provider.profileImage',
+      'booking',
     ],
     'filter[customer]': currentUser.id,
-    'page[limit]': 100,
-    'page[offset]': 0,
+    // TODO: add pagination
+    perPage: 10,
+    page: 1,
   };
 
   try {
@@ -125,11 +129,12 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     dispatch(fetchBookingsSuccess(bookings));
     return bookings;
   } catch (e) {
+    log.error(e, 'fetch-bookings-failed', { params });
     dispatch(fetchBookingsError(storableError(e)));
   }
 };
 
-export const cancelBooking = booking => async (dispatch, getState, sdk) => {
+export const cancelBooking = (booking, refundAmount) => async (dispatch, getState, sdk) => {
   dispatch(cancelBookingRequest());
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
@@ -143,13 +148,19 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
     : TRANSITION_CANCEL_BOOKING_REQUEST;
 
   try {
-    const response = await sdk.transactions.transition({ id: bookingId, transition });
+    await updateTransactionMetadata({
+      txId: bookingId,
+      metadata: { refundAmount },
+    });
+    const response = await sdk.transactions.transition({ id: bookingId, transition, params: {} });
     const booking = denormalisedResponseEntities(response);
 
     dispatch(cancelBookingSuccess());
     dispatch(fetchBookings());
     return booking;
   } catch (e) {
+    console.log(e);
+    log.error(e, 'cancel-booking-failed', { transition, bookingId });
     dispatch(cancelBookingError(storableError(e)));
   }
 };

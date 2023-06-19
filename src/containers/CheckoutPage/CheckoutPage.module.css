@@ -277,47 +277,6 @@
   flex-grow: 1;
 }
 
-.detailsContainerDesktop {
-  display: none;
-
-  @media (--viewportLarge) {
-    flex-shrink: 0;
-    display: block;
-    /* Dimensions */
-    position: fixed;
-    padding-bottom: 2rem;
-
-    top: 9rem;
-    right: 3rem;
-
-    width: 33vw;
-    max-height: calc(100vh - 11rem);
-    overflow-y: auto;
-
-    /* Coloring */
-    background-color: var(--matterColorLight);
-    border: 1px solid var(--matterColorNegative);
-    border-radius: 2px;
-  }
-}
-
-.detailsContainerMobile {
-  flex-shrink: 0;
-  display: block;
-  /* Dimensions */
-  padding-bottom: 2rem;
-
-  /* Coloring */
-  background-color: var(--matterColorLight);
-  border: 1px solid var(--matterColorNegative);
-  border-radius: 2px;
-  margin: 6rem 0 2rem 0;
-
-  @media (--viewportLarge) {
-    display: none;
-  }
-}
-
 .detailsAspectWrapper {
   position: relative;
   padding-bottom: 66.6667%; /* 3:2 Aspect Ratio */

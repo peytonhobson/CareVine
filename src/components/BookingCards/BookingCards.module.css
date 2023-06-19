@@ -136,3 +136,55 @@
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
 }
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalError {
+  color: var(--failColor);
+  margin-top: 1rem;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 3rem;
+}
+
+.modalButton {
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.refundSummaryCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid var(--matterColor);
+  border-radius: 0.5rem;
+  flex-shrink: 1;
+  margin-top: 2rem;
+}
+
+.changeSummaryCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid var(--matterColor);
+  border-radius: 0.5rem;
+  flex-shrink: 1;
+  margin-block: 2rem;
+}

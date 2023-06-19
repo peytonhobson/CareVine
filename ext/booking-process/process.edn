@@ -2,11 +2,14 @@
  :transitions
  [{:name :transition/request-booking,
  :actions
- [{:name :action/privileged-update-metadata}]
+ [{:name :action/privileged-update-metadata},
+   {:name :action/create-proposed-booking :config {:type :time}}]
    :actor :actor.role/customer,
    :to :state/booking-requested,
    :privileged? true}
   {:name :transition/decline-booking,
+    :actions
+    [{:name :action/decline-booking}],
    :actor :actor.role/provider,
    :from :state/booking-requested,
    :to :state/declined}
@@ -19,6 +22,8 @@
    :to :state/declined}
   {:name :transition/accept-booking,
    :actor :actor.role/provider,
+   :actions
+   [{:name :action/accept-booking}],
    :from :state/booking-requested,
    :to :state/accepted}
    {:name :transition/cancel-booking-request,
@@ -26,10 +31,14 @@
    :from :state/booking-requested,
    :to :state/canceled}
    {:name :transition/cancel-booking-customer,
+   :actions
+   [{:name :action/cancel-booking}],
    :actor :actor.role/customer,
    :from :state/accepted,
    :to :state/canceled}
    {:name :transition/cancel-booking-provider,
+   :actions
+   [{:name :action/cancel-booking}],
    :actor :actor.role/provider,
    :from :state/accepted,
    :to :state/canceled}

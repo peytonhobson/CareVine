@@ -27,6 +27,7 @@ import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 import { convertTimeFrom12to24 } from '../../util/data';
 import PaymentSection from './PaymentSection';
+import moment from 'moment';
 
 const STORAGE_KEY = 'CheckoutPage';
 const BANK_ACCOUNT = 'Bank Account';
@@ -43,6 +44,32 @@ const formatDateTimeValues = dateTimes =>
       date: key,
     };
   });
+
+const findEndTimeFromBookingTimes = bookingTimes => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+
+  const dateBookingTimes = formatDateTimeValues(bookingTimes).map(bookingTime => {
+    const split = bookingTime.date.split('/');
+    const date = new Date(
+      split[0] - 1 < currentMonth ? currentYear + 1 : currentYear,
+      split[0] - 1,
+      split[1]
+    );
+    return { date, startTime: bookingTime.startTime, endTime: bookingTime.endTime };
+  });
+  const sortedBookingTimes = dateBookingTimes.sort((a, b) => {
+    return a.date - b.date;
+  });
+
+  const lastDay = sortedBookingTimes[sortedBookingTimes.length - 1];
+  const additionalTime = calculateTimeBetween('12:00am', lastDay.endTime);
+  const endTime = moment(sortedBookingTimes[sortedBookingTimes.length - 1].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return endTime;
+};
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -183,9 +210,14 @@ export class CheckoutPageComponent extends Component {
 
     const listingId = listing.id;
 
+    const endTime = findEndTimeFromBookingTimes(bookingTimes);
     const orderParams = {
       listingId,
       seats: 1,
+      bookingStart: moment(endTime)
+        .subtract(1, 'hours')
+        .toDate(),
+      bookingEnd: endTime,
     };
 
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
