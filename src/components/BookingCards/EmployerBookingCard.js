@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 
-import { Avatar, Button, CancelButton, SecondaryButton, Modal, BookingSummaryCard } from '..';
+import {
+  Avatar,
+  Button,
+  CancelButton,
+  SecondaryButton,
+  Modal,
+  BookingSummaryCard,
+  BookingCalendar,
+} from '..';
 import { convertTimeFrom12to24 } from '../../util/data';
 import TablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
@@ -20,6 +28,7 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
 const EmployerBookingCard = props => {
   const [bookingTimesPage, setBookingTimesPage] = useState(0);
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
+  const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
 
   const { booking, currentUser, onManageDisableScrolling } = props;
 
@@ -42,6 +51,7 @@ const EmployerBookingCard = props => {
       startTime: l.startTime,
       endTime: l.endTime,
     })) ?? [];
+  const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
 
   const isLarge = useMediaQuery('(min-width:1024px)');
 
@@ -99,7 +109,12 @@ const EmployerBookingCard = props => {
           <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
             Full Payment Details
           </Button>
-          <SecondaryButton className={css.viewButton}>View Calendar</SecondaryButton>
+          <SecondaryButton
+            className={css.viewButton}
+            onClick={() => setIsBookingCalendarModalOpen(true)}
+          >
+            View Calendar
+          </SecondaryButton>
         </div>
       </div>
       <Modal
@@ -116,7 +131,7 @@ const EmployerBookingCard = props => {
           currentAuthor={provider}
           selectedBookingTimes={bookingTimes}
           bookingRate={bookingRate}
-          bookingDates={lineItems?.map(li => new Date(li.date)) ?? []}
+          bookingDates={bookingDates}
           onManageDisableScrolling={onManageDisableScrolling}
           selectedPaymentMethod={selectedPaymentMethod}
           displayOnMobile={!isLarge}
@@ -124,6 +139,16 @@ const EmployerBookingCard = props => {
           subHeading={<span className={css.bookingWith}>Payment Details</span>}
           hideRatesButton
         />
+      </Modal>
+      <Modal
+        title="Booking Calendar"
+        isOpen={isBookingCalendarModalOpen}
+        onClose={() => setIsBookingCalendarModalOpen(false)}
+        containerClassName={css.modalContainer}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <BookingCalendar bookedDates={bookingDates} noDisabled />
       </Modal>
     </div>
   );
