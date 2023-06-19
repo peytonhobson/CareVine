@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -24,6 +24,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
+import { cancelBooking } from './BookingsPage.duck';
 
 import css from './BookingsPage.module.css';
 
@@ -56,33 +57,48 @@ const BookingsPage = props => {
     currentUser: user,
     scrollingDisabled,
     onManageDisableScrolling,
+    cancelBookingInProgress,
+    cancelBookingError,
+    onCancelBooking,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
 
-  const activeBookings = bookings.filter(booking => {
-    const { start, end } = findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems);
+  const activeBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      const { start, end } = findStartAndEndDateFromLineItems(
+        booking.attributes.metadata.lineItems
+      );
 
-    return (
-      booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING &&
-      end > new Date() &&
-      start < new Date()
+      return (
+        booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING &&
+        end > new Date() &&
+        start < new Date()
+      );
+    });
+  }, [bookings]);
+
+  const upcomingBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      const { start, end } = findStartAndEndDateFromLineItems(
+        booking.attributes.metadata.lineItems
+      );
+
+      return booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING && start > new Date();
+    });
+  }, [bookings]);
+
+  const pastBookings = useMemo(() => {
+    return bookings.filter(booking =>
+      pastBookingTransitions.includes(booking.attributes.lastTransition)
     );
-  });
+  }, [bookings]);
 
-  const upcomingBookings = bookings.filter(booking => {
-    const { start, end } = findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems);
-
-    return booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING && start > new Date();
-  });
-
-  const pastBookings = bookings.filter(booking =>
-    pastBookingTransitions.includes(booking.attributes.lastTransition)
-  );
-
-  const requestedBookings = bookings.filter(
-    booking => booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING
-  );
+  const requestedBookings = useMemo(() => {
+    return bookings.filter(
+      booking => booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING
+    );
+  }, [bookings]);
 
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : null;
@@ -96,6 +112,7 @@ const BookingsPage = props => {
         '@context': 'http://schema.org',
         '@type': 'WebPage',
       }}
+      title="Bookings"
     >
       <LayoutSingleColumn>
         <LayoutWrapperTopbar>
@@ -109,9 +126,17 @@ const BookingsPage = props => {
             {activeBookings.length > 0 ? (
               <section className={css.cardSection}>
                 <h2 className={css.subHeading}>Active</h2>
-                {activeBookings.map(b => {
-                  return <div>Active booking</div>;
-                })}
+                {activeBookings.map(b => (
+                  <CardComponent
+                    key={b.id.uuid}
+                    booking={b}
+                    currentUser={currentUser}
+                    onManageDisableScrolling={onManageDisableScrolling}
+                    cancelBookingInProgress={cancelBookingInProgress}
+                    cancelBookingError={cancelBookingError}
+                    onCancelBooking={onCancelBooking}
+                  />
+                ))}
               </section>
             ) : null}
             {upcomingBookings.length > 0 ? (
@@ -120,10 +145,13 @@ const BookingsPage = props => {
                 <div className={css.cards}>
                   {upcomingBookings.map(b => (
                     <CardComponent
-                      key={b.id}
+                      key={b.id.uuid}
                       booking={b}
                       currentUser={currentUser}
                       onManageDisableScrolling={onManageDisableScrolling}
+                      cancelBookingInProgress={cancelBookingInProgress}
+                      cancelBookingError={cancelBookingError}
+                      onCancelBooking={onCancelBooking}
                     />
                   ))}
                 </div>
@@ -143,10 +171,13 @@ const BookingsPage = props => {
                 <div className={css.cards}>
                   {requestedBookings.map(b => (
                     <CardComponent
-                      key={b.id}
+                      key={b.id.uuid}
                       booking={b}
                       currentUser={currentUser}
                       onManageDisableScrolling={onManageDisableScrolling}
+                      cancelBookingInProgress={cancelBookingInProgress}
+                      cancelBookingError={cancelBookingError}
+                      onCancelBooking={onCancelBooking}
                     />
                   ))}
                 </div>
@@ -163,7 +194,13 @@ const BookingsPage = props => {
 };
 
 const mapStateToProps = state => {
-  const { fetchBookingsInProgress, fetchBookingsError, bookings } = state.BookingsPage;
+  const {
+    fetchBookingsInProgress,
+    fetchBookingsError,
+    bookings,
+    cancelBookingInProgress,
+    cancelBookingError,
+  } = state.BookingsPage;
   const { currentUser } = state.user;
 
   return {
@@ -172,11 +209,14 @@ const mapStateToProps = state => {
     bookings,
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
+    cancelBookingInProgress,
+    cancelBookingError,
   };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
+  onCancelBooking: cancelBooking,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

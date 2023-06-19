@@ -118,7 +118,10 @@ const NotificationNewBookingRequest = props => {
               again.
             </p>
           )}
-          {!accepted && !declined ? (
+
+          {isExpired ? (
+            <></>
+          ) : !accepted && !declined ? (
             <div className={css.acceptDeclineContainer}>
               <Button
                 onClick={() =>

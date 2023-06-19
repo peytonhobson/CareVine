@@ -127,7 +127,6 @@ export class SearchPageComponent extends Component {
     });
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
 
     // urlQueryParams doesn't contain page specific url params
     // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)
@@ -136,8 +135,6 @@ export class SearchPageComponent extends Component {
     const searchParamsAreInSync = true;
 
     const validQueryParams = validURLParamsForExtendedData(searchInURL, filterConfig);
-
-    const isWindowDefined = typeof window !== 'undefined';
 
     const onMapIconClick = () => {
       this.useLocationSearchBounds = true;
