@@ -316,3 +316,7 @@ export const initiateTransaction = body => {
 export const updateNotificationMetadata = body => {
   return post('/api/update-notification-metadata', body);
 };
+
+export const stripeCreateRefund = body => {
+  return post('/api/stripe-create-refund', body);
+};

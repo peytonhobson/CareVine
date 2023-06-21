@@ -5,6 +5,7 @@ import {
   SecondaryButton,
   Modal,
   BookingSummaryCard,
+  RefundBookingSummaryCard,
   BookingCalendar,
   CancelButton,
   Button,
@@ -14,7 +15,6 @@ import TablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import ModifyBookingModal from './ModifyBookingModal';
 
 import css from './BookingCards.module.css';
 
@@ -29,19 +29,23 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
 };
 
 const calculateRefundAmount = (lineItems, bookingRate, transactionFee) => {
-  const refundedBookings = lineItems
-    ?.map(l => ({
-      date: new Date(l.date),
-      amount: l.amount,
-    }))
-    .filter(l => l.date > moment().add(1, 'days'));
+  const fiftyPercentRefunds = lineItems
+    .filter(l => {
+      const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
+      const differenceInHours = moment(l.date).add(startTimeHours, 'hours') - moment();
+      return differenceInHours < 72 && differenceInHours > 0;
+    })
+    .reduce((acc, curr) => acc + curr.amount / 2, 0);
 
-  const refundedAmount = refundedBookings.reduce(
-    (acc, curr) => acc + (curr.amount ? curr.amount : 0),
-    0
-  );
+  const fullRefunds = lineItems
+    .filter(l => {
+      const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
+      const differenceInHours = moment(l.date).add(startTimeHours, 'hours') - moment();
+      return differenceInHours < 72 && differenceInHours > 0;
+    })
+    .reduce((acc, curr) => acc + curr.amount / 2, 0);
 
-  return Number.parseFloat(refundedAmount - refundedAmount * transactionFee).toFixed(2);
+  return parseFloat(fiftyPercentRefunds + fullRefunds).toFixed(2) * 100;
 };
 
 const EmployerBookingCard = props => {
@@ -50,8 +54,6 @@ const EmployerBookingCard = props => {
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isBookingCanceled, setIsBookingCanceled] = useState(false);
-  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-
   const {
     booking,
     currentUser,
@@ -64,14 +66,14 @@ const EmployerBookingCard = props => {
   const { provider } = booking;
 
   const bookingMetadata = booking.attributes.metadata;
-  const { bookingRate, lineItems, paymentMethodType, transactionFee } = bookingMetadata;
+  const { bookingRate, lineItems, paymentMethodType } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
   };
 
   const handleCancelBooking = () => {
-    const refundAmount = calculateRefundAmount(lineItems, bookingRate, transactionFee);
+    const refundAmount = calculateRefundAmount(lineItems);
     onCancelBooking(booking, refundAmount);
     setIsBookingCanceled(true);
 
@@ -91,7 +93,6 @@ const EmployerBookingCard = props => {
       endTime: l.endTime,
     })) ?? [];
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
-  const refundBookingDates = bookingDates.filter(d => d > moment().add(1, 'days'));
   const listing = booking.listing;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
@@ -107,9 +108,6 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
-          <Button className={css.changeButton} onClick={() => setIsModifyModalOpen(true)}>
-            Modify
-          </Button>
           <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
             Cancel
           </CancelButton>
@@ -200,31 +198,25 @@ const EmployerBookingCard = props => {
         onClose={() => setIsCancelModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
-        containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
-        <p className={css.modalMessage}>
-          When you cancel, any future booking days will be canceled. You will be refunded for any
-          unused time where the start of the day is more than 24 hours away.
+        <p className={css.modalMessageRefund}>
+          You will be refunded for any days that are canceled as follows:
         </p>
+        <ul className={css.refundList}>
+          <li className={css.refundListItem}>
+            100% refund for booked times canceled more than 72 hours in advance
+          </li>
+          <li className={css.refundListItem}>
+            50% refund for booked times canceled less than 72 hours in advance
+          </li>
+        </ul>
         <div>
-          <BookingSummaryCard
-            className={css.refundSummaryCard}
-            authorDisplayName={providerDisplayName}
-            currentAuthor={provider}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={refundBookingDates}
-            onManageDisableScrolling={onManageDisableScrolling}
-            displayOnMobile={!isLarge}
-            hideAvatar
-            subHeading={<span className={css.bookingWith}>Refund Summary</span>}
-            hideRatesButton
-          />
+          <RefundBookingSummaryCard className={css.refundSummaryCard} lineItems={lineItems} />
         </div>
         {cancelBookingError ? (
           <p className={css.modalError}>
-            There was an error cancelling your booking. Please try again.
+            There was an error canceling your booking. Please try again.
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>
@@ -241,18 +233,6 @@ const EmployerBookingCard = props => {
           </CancelButton>
         </div>
       </Modal>
-      <ModifyBookingModal
-        isOpen={isModifyModalOpen}
-        onClose={() => setIsModifyModalOpen(false)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        bookingDates={bookingDates}
-        provider={provider}
-        providerDisplayName={providerDisplayName}
-        listing={listing}
-        bookingRate={bookingRate}
-        bookingTimes={bookingTimes}
-        isLarge={isLarge}
-      />
     </div>
   );
 };

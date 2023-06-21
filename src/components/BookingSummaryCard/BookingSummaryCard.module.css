@@ -120,6 +120,7 @@
 .summaryDate {
   margin-bottom: 0;
   display: inline;
+  white-space: nowrap;
 }
 
 .summaryTimeContainer {

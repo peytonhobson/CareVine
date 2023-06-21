@@ -40,6 +40,7 @@ const stripeUpdateSubscriptionItem = require('./api/stripe/stripe-update-subscri
 const updateCustomerCreditBalance = require('./api/stripe/update-customer-credit-balance');
 const fetchStripeCustomer = require('./api/stripe/fetch-customer');
 const fetchStripeSubscription = require('./api/stripe/fetch-subscription');
+const stripeCreateRefund = require('./api/stripe/stripe-create-refund');
 
 const userEmail = require('./api/user-email');
 const authenticateCreateUser = require('./api/authenticate-create-user');
@@ -145,6 +146,7 @@ router.post('/stripe-fetch-subscription', fetchStripeSubscription);
 router.post('/stripe-retrieve-upcoming-invoice', stripeRetrieveUpcomingInvoice);
 router.post('/initiate-transaction', initiateTransaction);
 router.post('/update-notification-metadata', updateNotificationMetadata);
+router.post('/stripe-create-refund', stripeCreateRefund);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
