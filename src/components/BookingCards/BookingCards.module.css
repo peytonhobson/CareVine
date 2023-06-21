@@ -168,14 +168,14 @@
 }
 
 .refundSummaryCard {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 1rem;
   border: 1px solid var(--matterColor);
   border-radius: 0.5rem;
-  flex-shrink: 1;
   margin-top: 2rem;
+
+  & div {
+    margin: 0;
+  }
 }
 
 .changeSummaryCard {
@@ -187,4 +187,22 @@
   border-radius: 0.5rem;
   flex-shrink: 1;
   margin-block: 2rem;
+}
+
+.refundList {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+}
+
+.refundListItem {
+  composes: marketplaceTinyFontStyles from global;
+  display: list-item;
+  list-style-type: disc;
+  margin: 0;
+}
+
+.modalMessageRefund {
+  composes: modalMessage from global;
+  composes: marketplaceTinyFontStyles from global;
 }

@@ -15,7 +15,7 @@ import {
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../util/transaction';
 import * as log from '../../util/log';
-import { updateTransactionMetadata } from '../../util/api';
+import { stripeCreateRefund, updateTransactionMetadata } from '../../util/api';
 
 // ================ Action types ================ //
 
@@ -140,6 +140,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
   const isAccepted = booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
   const bookingId = booking.id.uuid;
+  const { paymentIntentId } = booking.attributes.metadata;
 
   const transition = isAccepted
     ? userType === CAREGIVER
@@ -152,6 +153,13 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       txId: bookingId,
       metadata: { refundAmount },
     });
+
+    await stripeCreateRefund({
+      paymentIntentId,
+      amount: refundAmount,
+      reason: 'requested_by_customer',
+    });
+
     const response = await sdk.transactions.transition({ id: bookingId, transition, params: {} });
     const booking = denormalisedResponseEntities(response);
 
