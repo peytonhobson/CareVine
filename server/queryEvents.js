@@ -70,7 +70,7 @@ module.exports = queryEvents = () => {
         'user/updated, listing/updated, user/deleted',
         'user/created',
         'message/created',
-        'transaction/updated',
+        'transaction/transitioned',
       ],
     };
     return integrationSdk.events
@@ -264,7 +264,7 @@ module.exports = queryEvents = () => {
       }
     }
 
-    if (eventType === 'transaction/updated') {
+    if (eventType === 'transaction/transitioned') {
       console.log('previousValues ', event.attributes.previousValues);
       console.log('currentAttributes ', event.attributes.resource.attributes);
     }
