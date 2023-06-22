@@ -32,7 +32,7 @@ MenuItem.defaultProps = {
 const { node, string } = PropTypes;
 
 MenuItem.propTypes = {
-  children: node.isRequired,
+  children: node,
   className: string,
   rootClassName: string,
 };

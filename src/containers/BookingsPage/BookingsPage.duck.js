@@ -15,7 +15,11 @@ import {
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../util/transaction';
 import * as log from '../../util/log';
-import { stripeCreateRefund, updateTransactionMetadata } from '../../util/api';
+import {
+  stripeCreateRefund,
+  updateTransactionMetadata,
+  sendgridStandardEmail,
+} from '../../util/api';
 
 // ================ Action types ================ //
 
@@ -27,6 +31,10 @@ export const CANCEL_BOOKING_REQUEST = 'app/BookingsPage/CANCEL_BOOKING_REQUEST';
 export const CANCEL_BOOKING_SUCCESS = 'app/BookingsPage/CANCEL_BOOKING_SUCCESS';
 export const CANCEL_BOOKING_ERROR = 'app/BookingsPage/CANCEL_BOOKING_ERROR';
 
+export const DISPUTE_BOOKING_REQUEST = 'app/BookingsPage/DISPUTE_BOOKING_REQUEST';
+export const DISPUTE_BOOKING_SUCCESS = 'app/BookingsPage/DISPUTE_BOOKING_SUCCESS';
+export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -35,6 +43,9 @@ const initialState = {
   bookings: [],
   cancelBookingInProgress: false,
   cancelBookingError: null,
+  disputeBookingInProgress: false,
+  disputeBookingError: null,
+  disputeBookingSuccess: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -53,6 +64,18 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, cancelBookingInProgress: false };
     case CANCEL_BOOKING_ERROR:
       return { ...state, cancelBookingInProgress: false, cancelBookingError: payload };
+
+    case DISPUTE_BOOKING_REQUEST:
+      return {
+        ...state,
+        disputeBookingInProgress: true,
+        disputeBookingError: null,
+        disputeBookingSuccess: false,
+      };
+    case DISPUTE_BOOKING_SUCCESS:
+      return { ...state, disputeBookingInProgress: false, disputeBookingSuccess: true };
+    case DISPUTE_BOOKING_ERROR:
+      return { ...state, disputeBookingInProgress: false, disputeBookingError: payload };
 
     default:
       return state;
@@ -78,6 +101,14 @@ export const cancelBookingRequest = () => ({ type: CANCEL_BOOKING_REQUEST });
 export const cancelBookingSuccess = () => ({ type: CANCEL_BOOKING_SUCCESS });
 export const cancelBookingError = e => ({
   type: CANCEL_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const disputeBookingRequest = () => ({ type: DISPUTE_BOOKING_REQUEST });
+export const disputeBookingSuccess = () => ({ type: DISPUTE_BOOKING_SUCCESS });
+export const disputeBookingError = e => ({
+  type: DISPUTE_BOOKING_ERROR,
   error: true,
   payload: e,
 });
@@ -168,6 +199,39 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     console.log(e);
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
     dispatch(cancelBookingError(storableError(e)));
+  }
+};
+
+export const disputeBooking = (booking, disputeReason) => async (dispatch, getState, sdk) => {
+  dispatch(disputeBookingRequest());
+
+  const bookingId = booking.id.uuid;
+
+  try {
+    await updateTransactionMetadata({
+      txId: bookingId,
+      metadata: { disputeReason },
+    });
+
+    await sendgridStandardEmail({
+      fromEmail: 'admin-notification@carevine-mail.us',
+      receiverEmail: 'peyton.hobson@carevine.us',
+      subject: 'Booking Dispute',
+      html: JSON.stringify(disputeReason).replace('"', ''),
+    });
+
+    await sdk.transactions.transition({
+      id: bookingId,
+      transition: TRANSITION_DISPUTE,
+      params: {},
+    });
+
+    dispatch(disputeBookingSuccess());
+    dispatch(fetchBookings());
+    return booking;
+  } catch (e) {
+    log.error(e, 'dispute-booking-failed', { bookingId });
+    dispatch(disputeBookingError(storableError(e)));
   }
 };
 

@@ -2,12 +2,8 @@
   <head>
     <style type="text/css">
       @media only screen and (max-width: 768px) {
-        .body1 {
+        .body {
           padding: 32px 32px 32px 32px !important;
-        }
-
-        .body2 {
-          padding: 0 32px 32px 32px !important;
         }
 
         .content {
@@ -35,30 +31,25 @@
           class="title"
           style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 28px;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
         >
-          Booking Complete
+          Booking Payment Failed
         </p>
         <p
-          class="body1"
-          style="padding: 32px 56px 32px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+          class="body"
+          style="padding: 32px 56px 48px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
-          Your booking with {{transaction.provider.display-name}} has been completed. You have 48
-          hours to submit any disputes before funds are transferred to the caregiver.
+          Your booking with {{transaction.provider.display-name}} has been canceled because we were
+          unable to charge your selected payment method. Click the button below to try the booking
+          again and/or change your payment method.
         </p>
-        <p
-          class="body2"
-          style="padding: 0 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-          Click the button below to navigate to your bookings page and view your booking summary or
-          submit a dispute.
-        </p>
+
         <div
           class="button-container"
           style="width: 100%;padding-left: auto;padding-right: auto;text-align: center;"
         >
           <a
-            href="{{marketplace.url}}/bookings"
+            href="{{marketplace.url}}"
             style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 48px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
-            >Go to Booking</a
+            >Go to CareVine</a
           >
         </div>
       </div>

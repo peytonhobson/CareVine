@@ -24,7 +24,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
-import { cancelBooking } from './BookingsPage.duck';
+import { cancelBooking, disputeBooking } from './BookingsPage.duck';
 
 import css from './BookingsPage.module.css';
 
@@ -60,6 +60,10 @@ const BookingsPage = props => {
     cancelBookingInProgress,
     cancelBookingError,
     onCancelBooking,
+    disputeBookingInProgress,
+    disputeBookingError,
+    disputeBookingSuccess,
+    onDisputeBooking,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -103,6 +107,18 @@ const BookingsPage = props => {
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : null;
 
+  const cardProps = {
+    currentUser,
+    onManageDisableScrolling,
+    cancelBookingInProgress,
+    cancelBookingError,
+    onCancelBooking,
+    disputeBookingInProgress,
+    disputeBookingError,
+    disputeBookingSuccess,
+    onDisputeBooking,
+  };
+
   return (
     // TODO: Update schema
     <Page
@@ -127,15 +143,7 @@ const BookingsPage = props => {
               <section className={css.cardSection}>
                 <h2 className={css.subHeading}>Active</h2>
                 {activeBookings.map(b => (
-                  <CardComponent
-                    key={b.id.uuid}
-                    booking={b}
-                    currentUser={currentUser}
-                    onManageDisableScrolling={onManageDisableScrolling}
-                    cancelBookingInProgress={cancelBookingInProgress}
-                    cancelBookingError={cancelBookingError}
-                    onCancelBooking={onCancelBooking}
-                  />
+                  <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
                 ))}
               </section>
             ) : null}
@@ -144,15 +152,7 @@ const BookingsPage = props => {
                 <h2 className={css.subHeading}>Upcoming</h2>
                 <div className={css.cards}>
                   {upcomingBookings.map(b => (
-                    <CardComponent
-                      key={b.id.uuid}
-                      booking={b}
-                      currentUser={currentUser}
-                      onManageDisableScrolling={onManageDisableScrolling}
-                      cancelBookingInProgress={cancelBookingInProgress}
-                      cancelBookingError={cancelBookingError}
-                      onCancelBooking={onCancelBooking}
-                    />
+                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
                   ))}
                 </div>
               </section>
@@ -160,9 +160,11 @@ const BookingsPage = props => {
             {pastBookings.length > 0 ? (
               <section className={css.cardSection}>
                 <h2 className={css.subHeading}>Past</h2>
-                {pastBookings.map(b => {
-                  return <div>Past booking</div>;
-                })}
+                <div className={css.cards}>
+                  {pastBookings.map(b => (
+                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+                  ))}
+                </div>
               </section>
             ) : null}
             {requestedBookings.length > 0 ? (
@@ -170,15 +172,7 @@ const BookingsPage = props => {
                 <h2 className={css.subHeading}>Requested</h2>
                 <div className={css.cards}>
                   {requestedBookings.map(b => (
-                    <CardComponent
-                      key={b.id.uuid}
-                      booking={b}
-                      currentUser={currentUser}
-                      onManageDisableScrolling={onManageDisableScrolling}
-                      cancelBookingInProgress={cancelBookingInProgress}
-                      cancelBookingError={cancelBookingError}
-                      onCancelBooking={onCancelBooking}
-                    />
+                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
                   ))}
                 </div>
               </section>
@@ -200,6 +194,9 @@ const mapStateToProps = state => {
     bookings,
     cancelBookingInProgress,
     cancelBookingError,
+    disputeBookingInProgress,
+    disputeBookingError,
+    disputeBookingSuccess,
   } = state.BookingsPage;
   const { currentUser } = state.user;
 
@@ -211,12 +208,16 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
     cancelBookingInProgress,
     cancelBookingError,
+    disputeBookingInProgress,
+    disputeBookingError,
+    disputeBookingSuccess,
   };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onCancelBooking: cancelBooking,
+  onDisputeBooking: disputeBooking,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

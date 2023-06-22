@@ -1,0 +1,45 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  overflow-x: none;
+
+  @media (--viewportMedium) {
+    min-width: 32rem;
+  }
+}
+
+.field {
+  margin: 1.5rem 0;
+  width: 100%;
+  display: block;
+}
+
+.error {
+  color: var(--failColor);
+  margin-top: 0;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.submitButtonWrapper {
+  padding: 2rem 0;
+  width: 100%;
+  display: block;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    margin-top: 2rem;
+  }
+}
+
+.submitButton {
+  min-width: 100%;
+}

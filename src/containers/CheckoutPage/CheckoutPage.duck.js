@@ -117,6 +117,8 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
 ) => {
   dispatch(initiateOrderRequest());
 
+  const currentUserDisplayName = getState().user.currentUser.attributes.profile.displayName;
+
   const bodyParams = {
     processAlias: config.bookingProcessAlias,
     transition: TRANSITION_REQUEST_BOOKING,
@@ -154,7 +156,6 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     type: NOTIFICATION_TYPE_BOOKING_REQUESTED,
     createdAt: new Date().getTime(),
     isRead: false,
-    metadata,
   };
 
   try {
@@ -167,12 +168,12 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     });
 
     await updateUserNotifications({
-      userId: metadata.authorId,
+      userId: listing.author.id.uuid,
       newNotification: {
         ...newNotification,
         metadata: {
-          ...newNotification.metadata,
           txId: response.data.data.id.uuid,
+          senderName: currentUserDisplayName,
         },
       },
     });

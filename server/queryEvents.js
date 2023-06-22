@@ -24,6 +24,7 @@ module.exports = queryEvents = () => {
     sendQuizFailedEmail,
     approveListingNotification,
     closeListingNotification,
+    createBookingPayment,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -265,8 +266,15 @@ module.exports = queryEvents = () => {
     }
 
     if (eventType === 'transaction/transitioned') {
-      console.log('previousValues ', event.attributes.previousValues);
-      console.log('currentAttributes ', event.attributes.resource.attributes);
+      const transaction = event.attributes.resource;
+      const lastTransition = transaction.attributes.lastTransition;
+
+      if (lastTransition === 'transition/accept-booking') {
+        createBookingPayment(transaction);
+      }
+
+      if (lastTransition === 'transition/pay-caregiver-after-completion') {
+      }
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);
