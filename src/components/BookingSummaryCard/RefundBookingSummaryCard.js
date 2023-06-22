@@ -30,7 +30,7 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
 
 const filterFiftyPercentRefund = lineItems =>
   lineItems
-    .filter(l => {
+    ?.filter(l => {
       const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
       const differenceInHours = moment(l.date).add(startTimeHours, 'hours') - moment();
       return differenceInHours < 72 && differenceInHours > 0;
@@ -38,7 +38,7 @@ const filterFiftyPercentRefund = lineItems =>
     .map(l => ({ ...l, amount: l.amount / 2 }));
 
 const filterFullRefund = lineItems =>
-  lineItems.filter(l => {
+  lineItems?.filter(l => {
     const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
     return moment(l.date).add(startTimeHours, 'hours') - moment() > 72;
   });
@@ -48,8 +48,8 @@ const RefundBookingSummaryCard = props => {
 
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const fiftyPercentRefund = filterFiftyPercentRefund(lineItems);
-  const fullRefund = filterFullRefund(lineItems);
+  const fiftyPercentRefund = filterFiftyPercentRefund(lineItems) ?? [];
+  const fullRefund = filterFullRefund(lineItems) ?? [];
   const subTotal =
     fiftyPercentRefund.reduce((acc, curr) => acc + curr.amount, 0) +
     fullRefund.reduce((acc, curr) => acc + curr.amount, 0);

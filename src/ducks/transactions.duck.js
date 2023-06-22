@@ -3,8 +3,9 @@ import { storableError } from '../util/errors';
 import * as log from '../util/log';
 import { types as sdkTypes } from '../util/sdkLoader';
 import { TRANSITION_ACCEPT_BOOKING, TRANSITION_DECLINE_BOOKING } from '../util/transaction';
-import { updateNotificationMetadata } from '../util/api';
+import { updateListingMetadata, updateNotificationMetadata } from '../util/api';
 import { fetchCurrentUser } from './user.duck';
+import { denormalisedResponseEntities } from '../util/data';
 const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
@@ -187,9 +188,10 @@ export const fetchTransaction = txId => (dispatch, getState, sdk) => {
   return sdk.transactions
     .show({
       id: new UUID(txId),
+      include: ['booking', 'customer', 'provider', 'listing'],
     })
     .then(response => {
-      const transaction = response.data.data;
+      const transaction = denormalisedResponseEntities(response)[0];
       dispatch(fetchTransactionSuccess(transaction));
       return transaction;
     })
@@ -199,37 +201,45 @@ export const fetchTransaction = txId => (dispatch, getState, sdk) => {
     });
 };
 
-export const transitionTransaction = (txId, transition, notificationId, authorId) => async (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const transitionTransaction = params => async (dispatch, getState, sdk) => {
+  const { transaction, transition, bookingStart, bookingEnd, include } = params;
+
+  const txId = transaction.id.uuid;
+  const listing = transaction.listing;
+  const listingId = listing.id.uuid;
+  const lineItems = transaction.attributes.metadata.lineItems;
+  const prevBookedDates = listing.attributes.metadata.bookedDates ?? [];
+  const bookingDates = lineItems.reduce((acc, lineItem) => {
+    return [...acc, lineItem.date];
+  }, []);
+
   dispatch(transitionTransactionRequest(transition));
 
   try {
-    const transitionResponse = await sdk.transactions.transition({
-      id: txId,
-      transition,
-      params: {},
-    });
-
-    const updatedTransaction = transitionResponse.data.data;
-
-    if (notificationId && authorId) {
-      let notificationMetadata = {};
-
-      if (transition === TRANSITION_ACCEPT_BOOKING) {
-        notificationMetadata.accepted = true;
-      } else if (transition === TRANSITION_DECLINE_BOOKING) {
-        notificationMetadata.declined = true;
+    const transitionResponse = await sdk.transactions.transition(
+      {
+        id: txId,
+        transition,
+        params: {
+          bookingStart,
+          bookingEnd,
+        },
+      },
+      {
+        expand: true,
+        include,
       }
+    );
 
-      await updateNotificationMetadata({
-        userId: authorId,
-        notificationId,
-        metadata: notificationMetadata,
+    const updatedTransaction = denormalisedResponseEntities(transitionResponse)[0];
+
+    if (transition === TRANSITION_ACCEPT_BOOKING) {
+      await updateListingMetadata({
+        listingId,
+        metadata: {
+          bookedDates: [...bookingDates, ...prevBookedDates],
+        },
       });
-      dispatch(fetchCurrentUser());
     }
 
     dispatch(transitionTransactionSuccess(updatedTransaction));

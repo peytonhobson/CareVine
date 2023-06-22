@@ -28,7 +28,7 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
 };
 
 const calculateTotalHours = bookingTimes =>
-  bookingTimes.reduce(
+  bookingTimes?.reduce(
     (acc, curr) =>
       acc +
       (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
@@ -44,7 +44,7 @@ const calculateTransactionFee = subTotal =>
 const calculateCardFee = subTotal => Number(Number.parseFloat(subTotal * CARD_FEE).toFixed(2));
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
-  bookingTimes.reduce(
+  bookingTimes?.reduce(
     (acc, curr) =>
       acc +
       (curr.startTime && curr.endTime
@@ -108,7 +108,7 @@ const BookingSummaryCard = props => {
           <h2 className={css.detailsTitle}>{subHeading || 'Booking Summary'}</h2>
         </div>
         <div className={css.bookingTimes}>
-          {bookingDates.map((bookingDate, index) => {
+          {bookingDates?.map((bookingDate, index) => {
             const month = new Date(bookingDate).getMonth() + 1;
             const day = new Date(bookingDate).getDate();
             const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};

@@ -229,3 +229,17 @@
   justify-content: center;
   align-items: center;
 }
+
+.bookingRequestSpinner {
+  height: 4rem;
+  width: 4rem;
+  stroke-width: 0.25rem;
+}
+
+.fullContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
