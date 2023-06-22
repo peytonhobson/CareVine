@@ -230,7 +230,9 @@ const EditBookingFormComponent = props => (
                         selectClassName={css.timeSelect}
                         initialValueSelected={monthYearBookingDate.startTime}
                       >
-                        <option disabled>8:00am</option>
+                        <option disabled value="">
+                          8:00am
+                        </option>
                         {Array.from(
                           { length: integerEndTimeVal ? integerEndTimeVal : 24 },
                           (v, i) => i
@@ -253,7 +255,9 @@ const EditBookingFormComponent = props => (
                         name={`dateTimes.${monthYearBookingDate}.endTime`}
                         selectClassName={css.timeSelect}
                       >
-                        <option disabled>5:00pm</option>
+                        <option disabled value="">
+                          5:00pm
+                        </option>
                         {Array.from({ length: 24 - integerStartTimeVal }, (v, i) => i).map(i => {
                           const hour = (i + integerStartTimeVal + 1) % 12 || 12;
                           const ampm =
