@@ -20,7 +20,7 @@ import {
 } from './NotificationTemplates';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { transitionTransaction } from '../../ducks/transactions.duck';
+import { transitionTransaction, fetchTransaction } from '../../ducks/transactions.duck';
 
 import css from './NotificationsPage.module.css';
 
@@ -41,6 +41,9 @@ const NotificationContainer = props => {
     transitionTransactionError,
     currentTransaction,
     onTransitionTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+    onFetchTransaction,
   } = props;
 
   let notificationTemplate = null;
@@ -89,6 +92,9 @@ const NotificationContainer = props => {
           transitionTransactionError={transitionTransactionError}
           currentTransaction={currentTransaction}
           onTransitionTransaction={onTransitionTransaction}
+          fetchTransactionError={fetchTransactionError}
+          fetchTransactionInProgress={fetchTransactionInProgress}
+          onFetchTransaction={onFetchTransaction}
         />
       );
       break;
@@ -116,17 +122,22 @@ const mapStateToProps = state => {
     transitionTransactionInProgress,
     transitionTransactionError,
     currentTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
   } = state.transactions;
 
   return {
     transitionTransactionInProgress,
     transitionTransactionError,
     currentTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
   };
 };
 
 const mapDispatchToProps = {
   onTransitionTransaction: transitionTransaction,
+  onFetchTransaction: fetchTransaction,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationContainer);

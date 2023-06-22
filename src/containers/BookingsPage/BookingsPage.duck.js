@@ -117,8 +117,6 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     ],
     'filter[customer]': currentUser.id,
     // TODO: add pagination
-    perPage: 10,
-    page: 1,
   };
 
   try {

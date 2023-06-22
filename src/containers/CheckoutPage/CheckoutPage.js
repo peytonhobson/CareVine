@@ -45,7 +45,7 @@ const formatDateTimeValues = dateTimes =>
     };
   });
 
-const findEndTimeFromBookingTimes = bookingTimes => {
+const findStartTimeFromBookingTimes = bookingTimes => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
 
@@ -62,13 +62,13 @@ const findEndTimeFromBookingTimes = bookingTimes => {
     return a.date - b.date;
   });
 
-  const lastDay = sortedBookingTimes[sortedBookingTimes.length - 1];
-  const additionalTime = calculateTimeBetween('12:00am', lastDay.endTime);
-  const endTime = moment(sortedBookingTimes[sortedBookingTimes.length - 1].date)
+  const firstDay = sortedBookingTimes[0];
+  const additionalTime = parseInt(convertTimeFrom12to24(firstDay.startTime).split(':')[0], 10);
+  const startTime = moment(sortedBookingTimes[0].date)
     .add(additionalTime, 'hours')
     .toDate();
 
-  return endTime;
+  return startTime;
 };
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
@@ -210,14 +210,15 @@ export class CheckoutPageComponent extends Component {
 
     const listingId = listing.id;
 
-    const endTime = findEndTimeFromBookingTimes(bookingTimes);
+    const bookingStart = findStartTimeFromBookingTimes(bookingTimes);
+    const bookingEnd = moment(bookingStart)
+      .add(1, 'hours')
+      .toDate();
     const orderParams = {
       listingId,
       seats: 1,
-      bookingStart: moment(endTime)
-        .subtract(1, 'hours')
-        .toDate(),
-      bookingEnd: endTime,
+      bookingStart,
+      bookingEnd,
     };
 
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {

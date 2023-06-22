@@ -21,6 +21,7 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
     date.getTime() <
     moment()
       .add(bufferDays ?? 0, 'days')
+      .startOf('day')
       .toDate()
       .getTime();
   const afterThreeMonths =
@@ -78,7 +79,7 @@ const formatDay = (locale, date, selectedDays, bookedDates, onClick, bufferDays)
 };
 
 export const FieldDatePickerComponent = props => {
-  const { bookedDates = [], input, children, className, bufferDays = 3, onChange } = props;
+  const { bookedDates = [], input, children, className, bufferDays, onChange } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)

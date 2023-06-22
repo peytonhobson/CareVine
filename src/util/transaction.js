@@ -26,6 +26,7 @@ export const TRANSITION_ACCEPT_BOOKING = 'transition/accept-booking';
 export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-booking-request';
 export const TRANSITION_CANCEL_BOOKING_CUSTOMER = 'transition/cancel-booking-customer';
 export const TRANSITION_CANCEL_BOOKING_PROVIDER = 'transition/cancel-booking-provider';
+export const TRANSITION_CANCEL_BOOKING_OPERATOR = 'transition/cancel-booking-operator';
 export const TRANSITION_COMPLETE = 'transition/complete';
 export const TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION =
   'transition/pay-caregiver-after-completion';
@@ -125,6 +126,7 @@ const stateDescription = {
         [TRANSITION_COMPLETE]: STATE_DELIVERED,
         [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
       },
     },
     [STATE_DELIVERED]: {

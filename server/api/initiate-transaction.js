@@ -50,17 +50,7 @@ module.exports = (req, res) => {
       return trustedSdk.transactions.initiate(bodyParams, queryParams);
     })
     .then(apiResponse => {
-      transactionResponse = apiResponse;
-
-      return integrationSdk.listings.update({
-        id: listingId,
-        metadata: {
-          bookedDates: [...bookingDates, ...prevBookedDates],
-        },
-      });
-    })
-    .then(() => {
-      const { status, statusText, data } = transactionResponse;
+      const { status, statusText, data } = apiResponse;
       res
         .status(status)
         .set('Content-Type', 'application/transit+json')

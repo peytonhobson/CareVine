@@ -70,6 +70,7 @@ module.exports = queryEvents = () => {
         'user/updated, listing/updated, user/deleted',
         'user/created',
         'message/created',
+        'transaction/updated',
       ],
     };
     return integrationSdk.events
@@ -261,6 +262,11 @@ module.exports = queryEvents = () => {
       if (tcmEnrolled && userAccessCode && !isDev) {
         deEnrollUserTCM(event, userAccessCode);
       }
+    }
+
+    if (eventType === 'transaction/updated') {
+      console.log('previousValues ', event.attributes.previousValues);
+      console.log('currentAttributes ', event.attributes.resource.attributes);
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);
