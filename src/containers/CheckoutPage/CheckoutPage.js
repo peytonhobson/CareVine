@@ -185,11 +185,10 @@ export class CheckoutPageComponent extends Component {
       bookingDates: bookingDatesProps,
       bookingRate: bookingRateProps,
       onInitiateOrder,
-      history,
-      currentUser,
       defaultPaymentMethods,
       listing: listingProps,
       currentUserListing,
+      currentUser,
     } = this.props;
 
     const {
@@ -202,7 +201,6 @@ export class CheckoutPageComponent extends Component {
     const bookingRate = bookingRateProps || bookingRateState;
     const bookingDates = bookingDatesProps || bookingDatesState;
 
-    const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
     const paymentMethodId =
       this.state.selectedPaymentMethod === BANK_ACCOUNT
         ? defaultPaymentMethods.bankAccount?.id
@@ -243,27 +241,25 @@ export class CheckoutPageComponent extends Component {
 
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
-    const currentUserDefaultAvatar = currentUser.attributes.profile.publicData.defaultAvatar;
+
+    console.log('stripeAccountId ', listing.attributes.metadata);
 
     const metadata = {
       lineItems,
       bookingRate,
-      stripeCustomerId,
       paymentMethodId,
       paymentMethodType:
         this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
       applicationFee: this.state.selectedPaymentMethod === BANK_ACCOUNT ? 0.05 : 0.08,
       message,
-      userId: currentUser.id.uuid,
-      authorId: listing.author.id.uuid,
-      senderName: currentUser.attributes.profile.displayName,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,
-      senderProfileImage: currentUser.profileImage,
-      senderDefaultAvatar: currentUserDefaultAvatar,
+      stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
+      clientEmail: currentUser.attributes.email,
+      stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
     };
 
-    onInitiateOrder(orderParams, metadata, listing);
+    onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
   }
 
   handleEditBookingFormChange = e => {

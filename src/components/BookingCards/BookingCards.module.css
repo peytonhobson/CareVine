@@ -206,3 +206,7 @@
   composes: modalMessage from global;
   composes: marketplaceTinyFontStyles from global;
 }
+
+.error {
+  color: var(--failColor);
+}

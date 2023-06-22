@@ -34,6 +34,7 @@ export const TRANSITION_DISPUTE = 'transition/dispute';
 export const TRANSITION_DISPUTE_RESOLVED = 'transition/dispute-resolved';
 export const TRANSITION_REVIEW_BY_CUSTOMER = 'transition/review-by-customer';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
+export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
 
 /**
  * Actors
@@ -63,6 +64,7 @@ export const STATE_DELIVERED = 'delivered';
 export const STATE_PAID_OUT = 'paid-out';
 export const STATE_DISPUTE_REVIEW = 'dispute-review';
 export const STATE_REVIEWED = 'reviewed';
+export const STATE_PAYMENT_FAILED = 'payment-failed';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -127,6 +129,7 @@ const stateDescription = {
         [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
       },
     },
     [STATE_DELIVERED]: {
@@ -144,6 +147,7 @@ const stateDescription = {
     [STATE_DECLINED]: { type: 'final' },
     [STATE_REVIEWED]: { type: 'final' },
     [STATE_CANCELED]: { type: 'final' },
+    [STATE_PAYMENT_FAILED]: { type: 'final' },
   },
 };
 

@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const createSlug = str => {
   let text = str
@@ -432,6 +433,57 @@ const sendQuizFailedEmail = async userId => {
   }
 };
 
+const createBookingPayment = async transaction => {
+  const {
+    lineItems,
+    paymentMethodId,
+    applicationFee,
+    stripeCustomerId,
+    clientEmail,
+    stripeAccountId,
+  } = transaction.attributes.metadata;
+
+  const { customer } = transaction.relationships;
+  const userId = customer.data.id?.uuid;
+
+  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: parseInt(amount + amount * applicationFee),
+      currency: 'usd',
+      payment_method_types: ['card', 'us_bank_account'],
+      transfer_data: {
+        destination: stripeAccountId,
+      },
+      application_fee_amount: parseInt(amount * applicationFee),
+      customer: stripeCustomerId,
+      receipt_email: clientEmail,
+      description: 'Carevine Booking',
+      metadata: { userId },
+    });
+
+    const paymentIntentId = paymentIntent.id;
+
+    console.log(paymentIntent);
+    console.log('paymentMethodId', paymentMethodId);
+
+    await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+  } catch (e) {
+    try {
+      integrationSdk.transactions.transition({
+        id: transaction.id.uuid,
+        transition: 'transition/decline-payment',
+        params: {},
+      });
+    } catch (e) {
+      log.error(e, 'transition-decline-payment-failed', {});
+    }
+
+    log.error(e, 'create-booking-payment-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -445,4 +497,5 @@ module.exports = {
   addUnreadMessageCount,
   sendQuizFailedEmail,
   closeListingNotification,
+  createBookingPayment,
 };

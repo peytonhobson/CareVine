@@ -10,6 +10,7 @@ import {
   CancelButton,
   Button,
 } from '..';
+import { TRANSITION_COMPLETE, TRANSITION_DISPUTE } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import TablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
@@ -17,6 +18,7 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
 import css from './BookingCards.module.css';
+import { DisputeForm } from '../../forms';
 
 const CREDIT_CARD = 'Payment Card';
 const BANK_ACCOUNT = 'Bank Account';
@@ -54,6 +56,8 @@ const EmployerBookingCard = props => {
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isBookingCanceled, setIsBookingCanceled] = useState(false);
+  const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+
   const {
     booking,
     currentUser,
@@ -61,6 +65,10 @@ const EmployerBookingCard = props => {
     cancelBookingInProgress,
     cancelBookingError,
     onCancelBooking,
+    disputeBookingInProgress,
+    disputeBookingError,
+    disputeBookingSuccess,
+    onDisputeBooking,
   } = props;
 
   const { provider } = booking;
@@ -82,6 +90,11 @@ const EmployerBookingCard = props => {
     }, 2000);
   };
 
+  const handleDisputeBooking = values => {
+    const { disputeReason } = values;
+    onDisputeBooking(booking, disputeReason);
+  };
+
   const providerDisplayName = provider.attributes.profile.displayName;
   const selectedPaymentMethod =
     paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
@@ -94,6 +107,8 @@ const EmployerBookingCard = props => {
     })) ?? [];
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const listing = booking.listing;
+  const isComplete = booking.attributes.lastTransition === TRANSITION_COMPLETE;
+  const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
 
@@ -108,9 +123,17 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
-          <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
-            Cancel
-          </CancelButton>
+          {isComplete ? (
+            <Button className={css.changeButton} onClick={() => setIsDisputeModalOpen(true)}>
+              Dispute
+            </Button>
+          ) : disputeInReview ? (
+            <h3 className={css.error}>Dispute In Review</h3>
+          ) : (
+            <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
+              Cancel
+            </CancelButton>
+          )}
         </div>
       </div>
       <div className={css.body}>
@@ -162,6 +185,7 @@ const EmployerBookingCard = props => {
       </div>
       <Modal
         title="Payment Details"
+        id="PaymentDetailsModal"
         isOpen={isPaymentDetailsModalOpen}
         onClose={() => setIsPaymentDetailsModalOpen(false)}
         containerClassName={css.modalContainer}
@@ -184,6 +208,7 @@ const EmployerBookingCard = props => {
       </Modal>
       <Modal
         title="Booking Calendar"
+        id="BookingCalendarModal"
         isOpen={isBookingCalendarModalOpen}
         onClose={() => setIsBookingCalendarModalOpen(false)}
         containerClassName={css.modalContainer}
@@ -194,6 +219,7 @@ const EmployerBookingCard = props => {
       </Modal>
       <Modal
         title="Cancel Booking"
+        id="CancelBookingModal"
         isOpen={isCancelModalOpen}
         onClose={() => setIsCancelModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
@@ -232,6 +258,26 @@ const EmployerBookingCard = props => {
             Cancel
           </CancelButton>
         </div>
+      </Modal>
+      <Modal
+        title="Dispute Booking"
+        id="DisputeBookingModal"
+        isOpen={isDisputeModalOpen}
+        onClose={() => setIsDisputeModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+      >
+        <p className={css.modalTitle}>Submit Dispute</p>
+        <p className={css.modalMessage}>
+          Any dispute submitted will be reviewed by CareVine. You will be notified of the outcome
+          within 72 hours.
+        </p>
+        <DisputeForm
+          onSubmit={handleDisputeBooking}
+          inProgress={disputeBookingInProgress}
+          disputeBookingError={disputeBookingError}
+          disputeBookingSuccess={disputeBookingSuccess}
+        />
       </Modal>
     </div>
   );

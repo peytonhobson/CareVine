@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV === 'development';
 module.exports = (req, res) => {
   const { fromEmail, receiverEmail, subject, html } = req.body;
 
-  if (isDev) {
+  if (!isDev) {
     res
       .status(200)
       .set('Content-Type', 'application/transit+json')

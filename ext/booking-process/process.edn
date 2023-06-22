@@ -28,6 +28,13 @@
    {:name :action/accept-booking}],
    :from :state/booking-requested,
    :to :state/accepted}
+   {:name :transition/decline-payment,
+   :actor :actor.role/operator,
+   :actions
+    [
+    {:name :action/cancel-booking}],
+   :from :state/accepted,
+   :to :state/payment-failed}
    {:name :transition/cancel-booking-request,
    :actor :actor.role/customer,
    :from :state/booking-requested,
@@ -176,4 +183,14 @@
     :on :transition/expire-review-period,
     :to :actor.role/customer
     :template :review-period-expired}
+
+    {:name :notification/payment-failed-customer,
+   :on :transition/decline-payment,
+   :to :actor.role/customer,
+   :template :payment-failed-customer}
+
+   {:name :notification/payment-failed-provider
+   :on :transition/decline-payment,
+   :to :actor.role/provider,
+   :template :payment-failed-provider}
 ]}
