@@ -444,6 +444,7 @@ const createBookingPayment = async transaction => {
   } = transaction.attributes.metadata;
 
   const { customer } = transaction.relationships;
+  const txId = transaction.id.uuid;
   const userId = customer.data.id?.uuid;
 
   const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
@@ -465,8 +466,12 @@ const createBookingPayment = async transaction => {
 
     const paymentIntentId = paymentIntent.id;
 
-    console.log(paymentIntent);
-    console.log('paymentMethodId', paymentMethodId);
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        paymentIntentId,
+      },
+    });
 
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
   } catch (e) {
@@ -484,6 +489,26 @@ const createBookingPayment = async transaction => {
   }
 };
 
+const createCaregiverPayout = async transaction => {
+  const { stripeAccountId, lineItems } = transaction.attributes.metadata;
+
+  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+
+  try {
+    await stripe.payouts.create(
+      {
+        amount,
+        currency: 'usd',
+      },
+      {
+        stripeAccount: stripeAccountId,
+      }
+    );
+  } catch (e) {
+    log.error(e, 'create-booking-payment-failed', { stripeAccountId });
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -498,4 +523,5 @@ module.exports = {
   sendQuizFailedEmail,
   closeListingNotification,
   createBookingPayment,
+  createCaregiverPayout,
 };

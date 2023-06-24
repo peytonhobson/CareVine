@@ -14,6 +14,7 @@ import { types as sdkTypes } from '../util/sdkLoader';
 const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
 import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constants';
+import moment from 'moment';
 
 /**
  * Combine the given relationships objects

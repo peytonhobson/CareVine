@@ -11,6 +11,7 @@ module.exports = (req, res) => {
       amount,
       refund_application_fee: true,
       reason,
+      reverse_transfer: true,
     })
     .then(apiResponse => {
       res

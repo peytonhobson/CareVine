@@ -22,9 +22,11 @@ import {
   EmployerBookingCard,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { ensureCurrentUser } from '../../util/data';
+import { convertTimeFrom12to24, ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
 import { cancelBooking, disputeBooking } from './BookingsPage.duck';
+import moment from 'moment';
+import { addTimeToStartOfDay } from '../../util/dates';
 
 import css from './BookingsPage.module.css';
 
@@ -38,13 +40,23 @@ const pastBookingTransitions = [
 ];
 
 const findStartAndEndDateFromLineItems = lineItems => {
-  const start = lineItems?.reduce((min, li) => {
-    return new Date(li.date) < min ? new Date(li.date) : min;
-  }, new Date(lineItems[0].date));
+  if (!lineItems) return null;
 
-  const end = lineItems?.reduce((max, li) => {
-    return new Date(li.date) > max ? new Date(li.date) : max;
-  }, new Date(lineItems[0].date));
+  const startItem = lineItems?.reduce((min, li) => {
+    return new Date(li.date) < min.date ? li : min;
+  }, lineItems[0]);
+
+  const endItem = lineItems?.reduce((max, li) => {
+    return new Date(li.date) > max.date ? li : max;
+  }, lineItems[0]);
+
+  const start = addTimeToStartOfDay(startItem.date, startItem.startTime);
+  const end =
+    endItem.endTime === '12:00am'
+      ? moment()
+          .add(24, 'hours')
+          .toDate()
+      : addTimeToStartOfDay(endItem.date, endItem.endTime);
 
   return { start, end };
 };
@@ -70,9 +82,8 @@ const BookingsPage = props => {
 
   const activeBookings = useMemo(() => {
     return bookings.filter(booking => {
-      const { start, end } = findStartAndEndDateFromLineItems(
-        booking.attributes.metadata.lineItems
-      );
+      const { start, end } =
+        findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems) ?? {};
 
       return (
         booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING &&
@@ -84,9 +95,8 @@ const BookingsPage = props => {
 
   const upcomingBookings = useMemo(() => {
     return bookings.filter(booking => {
-      const { start, end } = findStartAndEndDateFromLineItems(
-        booking.attributes.metadata.lineItems
-      );
+      const { start, end } =
+        findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems) ?? {};
 
       return booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING && start > new Date();
     });

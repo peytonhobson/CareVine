@@ -10,11 +10,17 @@ import {
   CancelButton,
   Button,
 } from '..';
-import { TRANSITION_COMPLETE, TRANSITION_DISPUTE } from '../../util/transaction';
+import {
+  TRANSITION_COMPLETE,
+  TRANSITION_DISPUTE,
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_ACCEPT_BOOKING,
+} from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import TablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import moment from 'moment';
+import { addTimeToStartOfDay } from '../../util/dates';
 import { v4 as uuidv4 } from 'uuid';
 
 import css from './BookingCards.module.css';
@@ -22,6 +28,7 @@ import { DisputeForm } from '../../forms';
 
 const CREDIT_CARD = 'Payment Card';
 const BANK_ACCOUNT = 'Bank Account';
+const TRANSACTION_FEE = 0.05;
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -30,24 +37,26 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
-const calculateRefundAmount = (lineItems, bookingRate, transactionFee) => {
+const calculateRefundAmount = lineItems => {
   const fiftyPercentRefunds = lineItems
-    .filter(l => {
-      const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
-      const differenceInHours = moment(l.date).add(startTimeHours, 'hours') - moment();
-      return differenceInHours < 72 && differenceInHours > 0;
+    ?.filter(l => {
+      const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+      return differenceInHours < 72 * 36e5 && differenceInHours > 0;
     })
     .reduce((acc, curr) => acc + curr.amount / 2, 0);
 
   const fullRefunds = lineItems
-    .filter(l => {
-      const startTimeHours = parseInt(convertTimeFrom12to24(l.startTime).split(':')[0], 10);
-      const differenceInHours = moment(l.date).add(startTimeHours, 'hours') - moment();
-      return differenceInHours < 72 && differenceInHours > 0;
+    ?.filter(l => {
+      const startTime = addTimeToStartOfDay(l.date, l.startTime);
+      return startTime - moment().toDate() > 72 * 36e5;
     })
-    .reduce((acc, curr) => acc + curr.amount / 2, 0);
+    .reduce((acc, curr) => acc + curr.amount, 0);
 
-  return parseFloat(fiftyPercentRefunds + fullRefunds).toFixed(2) * 100;
+  const transactionFeeRefund = parseFloat(
+    (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
+  ).toFixed(2);
+
+  return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
 };
 
 const EmployerBookingCard = props => {
@@ -55,7 +64,6 @@ const EmployerBookingCard = props => {
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [isBookingCanceled, setIsBookingCanceled] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
 
   const {
@@ -83,11 +91,6 @@ const EmployerBookingCard = props => {
   const handleCancelBooking = () => {
     const refundAmount = calculateRefundAmount(lineItems);
     onCancelBooking(booking, refundAmount);
-    setIsBookingCanceled(true);
-
-    setTimeout(() => {
-      setIsCancelModalOpen(false);
-    }, 2000);
   };
 
   const handleDisputeBooking = values => {
@@ -106,9 +109,12 @@ const EmployerBookingCard = props => {
       endTime: l.endTime,
     })) ?? [];
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
-  const listing = booking.listing;
-  const isComplete = booking.attributes.lastTransition === TRANSITION_COMPLETE;
+  const listing = booking?.listing;
+  const isComplete = booking?.attributes.lastTransition === TRANSITION_COMPLETE;
   const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
+  const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const showCancel = isRequest || isActive;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
 
@@ -123,13 +129,13 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
-          {isComplete ? (
+          {isComplete && (
             <Button className={css.changeButton} onClick={() => setIsDisputeModalOpen(true)}>
               Dispute
             </Button>
-          ) : disputeInReview ? (
-            <h3 className={css.error}>Dispute In Review</h3>
-          ) : (
+          )}
+          {disputeInReview && <h3 className={css.error}>Dispute In Review</h3>}
+          {showCancel && (
             <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
               Cancel
             </CancelButton>
@@ -226,20 +232,24 @@ const EmployerBookingCard = props => {
         usePortal
       >
         <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
-        <p className={css.modalMessageRefund}>
-          You will be refunded for any days that are canceled as follows:
-        </p>
-        <ul className={css.refundList}>
-          <li className={css.refundListItem}>
-            100% refund for booked times canceled more than 72 hours in advance
-          </li>
-          <li className={css.refundListItem}>
-            50% refund for booked times canceled less than 72 hours in advance
-          </li>
-        </ul>
-        <div>
-          <RefundBookingSummaryCard className={css.refundSummaryCard} lineItems={lineItems} />
-        </div>
+        {!isRequest ? (
+          <>
+            <p className={css.modalMessageRefund}>
+              You will be refunded for any days that are canceled as follows:
+            </p>
+            <ul className={css.refundList}>
+              <li className={css.refundListItem}>
+                100% refund for booked times canceled more than 72 hours in advance
+              </li>
+              <li className={css.refundListItem}>
+                50% refund for booked times canceled less than 72 hours in advance
+              </li>
+            </ul>
+            <div>
+              <RefundBookingSummaryCard className={css.refundSummaryCard} lineItems={lineItems} />
+            </div>
+          </>
+        ) : null}
         {cancelBookingError ? (
           <p className={css.modalError}>
             There was an error canceling your booking. Please try again.
@@ -253,7 +263,6 @@ const EmployerBookingCard = props => {
             inProgress={cancelBookingInProgress}
             onClick={handleCancelBooking}
             className={css.modalButton}
-            ready={isBookingCanceled}
           >
             Cancel
           </CancelButton>
