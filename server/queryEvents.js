@@ -25,6 +25,7 @@ module.exports = queryEvents = () => {
     approveListingNotification,
     closeListingNotification,
     createBookingPayment,
+    createCaregiverPayout,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -273,7 +274,15 @@ module.exports = queryEvents = () => {
         createBookingPayment(transaction);
       }
 
-      if (lastTransition === 'transition/pay-caregiver-after-completion') {
+      // If transition is dispute-resolved we need to first check if the dispute was resolved in favor of the caregiver
+      // If it was, we need to pay the caregiver the full amount,
+      // otherwise we need to use a script to refund the client X amount and then update the transaction by removing any refunded line items
+      // Line items are used to calculate caregiver payout
+      if (
+        lastTransition === 'transition/pay-caregiver-after-completion' ||
+        lastTransition === 'transition/dispute-resolved'
+      ) {
+        createCaregiverPayout(transaction);
       }
     }
 

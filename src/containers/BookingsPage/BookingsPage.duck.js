@@ -183,11 +183,13 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       metadata: { refundAmount },
     });
 
-    await stripeCreateRefund({
-      paymentIntentId,
-      amount: refundAmount,
-      reason: 'requested_by_customer',
-    });
+    if (isAccepted && paymentIntentId && refundAmount > 0) {
+      await stripeCreateRefund({
+        paymentIntentId,
+        amount: refundAmount,
+        reason: 'requested_by_customer',
+      });
+    }
 
     const response = await sdk.transactions.transition({ id: bookingId, transition, params: {} });
     const booking = denormalisedResponseEntities(response);
@@ -196,7 +198,6 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     dispatch(fetchBookings());
     return booking;
   } catch (e) {
-    console.log(e);
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
     dispatch(cancelBookingError(storableError(e)));
   }

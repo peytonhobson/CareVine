@@ -242,8 +242,6 @@ export class CheckoutPageComponent extends Component {
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
 
-    console.log('stripeAccountId ', listing.attributes.metadata);
-
     const metadata = {
       lineItems,
       bookingRate,
