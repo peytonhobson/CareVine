@@ -20,19 +20,21 @@ export const TRANSITION_PROVIDER_DELETE_CONVERSATION = 'transition/provider-dele
 
 // Booking Process Transitions
 export const TRANSITION_REQUEST_BOOKING = 'transition/request-booking';
-export const TRANSITION_DECLINE_BOOKING = 'transition/decline-booking';
-export const TRANSITION_EXPIRE_BOOKING = 'transition/expire-booking';
-export const TRANSITION_ACCEPT_BOOKING = 'transition/accept-booking';
-export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-booking-request';
+export const TRANSITION_DECLINE_BOOKING = 'transition/decline';
+export const TRANSITION_EXPIRE_BOOKING = 'transition/expire';
+export const TRANSITION_ACCEPT_BOOKING = 'transition/accept';
+export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-request';
 export const TRANSITION_CANCEL_BOOKING_CUSTOMER = 'transition/cancel-booking-customer';
 export const TRANSITION_CANCEL_BOOKING_PROVIDER = 'transition/cancel-booking-provider';
 export const TRANSITION_CANCEL_BOOKING_OPERATOR = 'transition/cancel-booking-operator';
+export const TRANSITION_CANCEL_ACTIVE_PROVIDER = 'transition/cancel-active-provider';
+export const TRANSITION_CANCEL_ACTIVE_OPERATOR = 'transition/cancel-active-operator';
+export const TRANSITION_COMPLETE_CANCELED = 'transition/complete-canceled';
 export const TRANSITION_COMPLETE = 'transition/complete';
-export const TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION =
-  'transition/pay-caregiver-after-completion';
+export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
 export const TRANSITION_DISPUTE = 'transition/dispute';
-export const TRANSITION_DISPUTE_RESOLVED = 'transition/dispute-resolved';
-export const TRANSITION_REVIEW_BY_CUSTOMER = 'transition/review-by-customer';
+export const TRANSITION_RESOLVE_DISPUTE = 'transition/resolve-dispute';
+export const TRANSITION_REVIEW = 'transition/review';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
 
@@ -65,6 +67,7 @@ export const STATE_PAID_OUT = 'paid-out';
 export const STATE_DISPUTE_REVIEW = 'dispute-review';
 export const STATE_REVIEWED = 'reviewed';
 export const STATE_PAYMENT_FAILED = 'payment-failed';
+export const STATE_ACTIVE_CANCELED = 'active-canceled';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -129,18 +132,30 @@ const stateDescription = {
         [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_PROVIDER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_OPERATOR]: STATE_ACTIVE_CANCELED,
         [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
+      },
+    },
+    [STATE_ACTIVE_CANCELED]: {
+      on: {
+        [TRANSITION_COMPLETE_CANCELED]: STATE_DELIVERED,
       },
     },
     [STATE_DELIVERED]: {
       on: {
-        [TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION]: STATE_PAID_OUT,
+        [TRANSITION_PAY_CAREGIVER]: STATE_PAID_OUT,
         [TRANSITION_DISPUTE]: STATE_DISPUTE_REVIEW,
+      },
+    },
+    [STATE_DISPUTE_REVIEW]: {
+      on: {
+        [TRANSITION_RESOLVE_DISPUTE]: STATE_PAID_OUT,
       },
     },
     [STATE_PAID_OUT]: {
       on: {
-        [TRANSITION_REVIEW_BY_CUSTOMER]: STATE_REVIEWED,
+        [TRANSITION_REVIEW]: STATE_REVIEWED,
         [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
       },
     },
