@@ -1,9 +1,10 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
-  margin: auto;
-  max-width: 45rem;
+  margin-inline: auto;
+  width: 45rem;
   padding-bottom: 3rem;
+  min-height: calc(100vh - var(--topbarHeightDesktop));
 }
 
 .title {
@@ -24,23 +25,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
+  margin-top: 2rem;
   margin-bottom: 3rem;
-}
-
-.cards {
-  max-height: 30rem;
-  max-width: 100%;
-  overflow-y: auto;
-  border: 1px solid var(--matterColorNegative);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3rem;
-  padding: 2rem;
-}
-
-.subHeading {
-  width: 100%;
-  font-size: 2rem;
-  line-height: 2rem;
-  margin-bottom: 0.5rem;
 }

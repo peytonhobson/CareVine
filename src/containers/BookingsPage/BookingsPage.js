@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
   TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION,
+  TRANSITION_PAY_CAREGIVER,
   TRANSITION_DISPUTE,
-  TRANSITION_DISPUTE_RESOLVED,
-  TRANSITION_REVIEW_BY_CUSTOMER,
+  TRANSITION_RESOLVE_DISPUTE,
+  TRANSITION_REVIEW,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
@@ -20,6 +20,7 @@ import {
   LayoutWrapperFooter,
   Footer,
   EmployerBookingCard,
+  ButtonTabNavHorizontal,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { convertTimeFrom12to24, ensureCurrentUser } from '../../util/data';
@@ -32,10 +33,10 @@ import css from './BookingsPage.module.css';
 
 const pastBookingTransitions = [
   TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION,
+  TRANSITION_PAY_CAREGIVER,
   TRANSITION_DISPUTE,
-  TRANSITION_DISPUTE_RESOLVED,
-  TRANSITION_REVIEW_BY_CUSTOMER,
+  TRANSITION_RESOLVE_DISPUTE,
+  TRANSITION_REVIEW,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
 ];
 
@@ -62,6 +63,8 @@ const findStartAndEndDateFromLineItems = lineItems => {
 };
 
 const BookingsPage = props => {
+  const [selectedTab, setSelectedTab] = useState('Requests');
+
   const {
     bookings,
     fetchBookingsError,
@@ -79,41 +82,6 @@ const BookingsPage = props => {
   } = props;
 
   const currentUser = ensureCurrentUser(user);
-
-  const activeBookings = useMemo(() => {
-    return bookings.filter(booking => {
-      const { start, end } =
-        findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems) ?? {};
-
-      return (
-        booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING &&
-        end > new Date() &&
-        start < new Date()
-      );
-    });
-  }, [bookings]);
-
-  const upcomingBookings = useMemo(() => {
-    return bookings.filter(booking => {
-      const { start, end } =
-        findStartAndEndDateFromLineItems(booking.attributes.metadata.lineItems) ?? {};
-
-      return booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING && start > new Date();
-    });
-  }, [bookings]);
-
-  const pastBookings = useMemo(() => {
-    return bookings.filter(booking =>
-      pastBookingTransitions.includes(booking.attributes.lastTransition)
-    );
-  }, [bookings]);
-
-  const requestedBookings = useMemo(() => {
-    return bookings.filter(
-      booking => booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING
-    );
-  }, [bookings]);
-
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : null;
 
@@ -128,6 +96,29 @@ const BookingsPage = props => {
     disputeBookingSuccess,
     onDisputeBooking,
   };
+
+  const tabs = [
+    {
+      text: 'Requests',
+      selected: 'Requests' === selectedTab,
+      onClick: () => setSelectedTab('Requests'),
+    },
+    {
+      text: 'Upcoming',
+      selected: 'Upcoming' === selectedTab,
+      onClick: () => setSelectedTab('Upcoming'),
+    },
+    {
+      text: 'Active',
+      selected: 'Active' === selectedTab,
+      onClick: () => setSelectedTab('Active'),
+    },
+    {
+      text: 'Past',
+      selected: 'Past' === selectedTab,
+      onClick: () => setSelectedTab('Past'),
+    },
+  ];
 
   return (
     // TODO: Update schema
@@ -149,44 +140,23 @@ const BookingsPage = props => {
             <div className={css.container}>
               <h1 className={css.title}>Bookings</h1>
             </div>
-            {activeBookings.length > 0 ? (
+            <ButtonTabNavHorizontal
+              tabs={tabs}
+              rootClassName={css.nav}
+              tabRootClassName={css.tab}
+              tabContentClass={css.tabContent}
+              tabClassName={css.tab}
+            />
+
+            {bookings[selectedTab.toLowerCase()].length > 0 ? (
               <section className={css.cardSection}>
-                <h2 className={css.subHeading}>Active</h2>
-                {activeBookings.map(b => (
+                {bookings[selectedTab.toLowerCase()].map(b => (
                   <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
                 ))}
               </section>
-            ) : null}
-            {upcomingBookings.length > 0 ? (
-              <section className={css.cardSection}>
-                <h2 className={css.subHeading}>Upcoming</h2>
-                <div className={css.cards}>
-                  {upcomingBookings.map(b => (
-                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-            {pastBookings.length > 0 ? (
-              <section className={css.cardSection}>
-                <h2 className={css.subHeading}>Past</h2>
-                <div className={css.cards}>
-                  {pastBookings.map(b => (
-                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-            {requestedBookings.length > 0 ? (
-              <section className={css.cardSection}>
-                <h2 className={css.subHeading}>Requested</h2>
-                <div className={css.cards}>
-                  {requestedBookings.map(b => (
-                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
+            ) : (
+              <h2>No {selectedTab.replace('Requests', 'Requested')} Bookings</h2>
+            )}
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
