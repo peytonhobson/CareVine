@@ -5,13 +5,15 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION,
+  TRANSITION_PAY_CAREGIVER,
   TRANSITION_DISPUTE,
-  TRANSITION_DISPUTE_RESOLVED,
-  TRANSITION_REVIEW_BY_CUSTOMER,
+  TRANSITION_RESOLVE_DISPUTE,
+  TRANSITION_REVIEW,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_CANCEL_BOOKING_PROVIDER,
   TRANSITION_CANCEL_BOOKING_CUSTOMER,
+  TRANSITION_CANCEL_BOOKING_OPERATOR,
+  TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../util/transaction';
 import * as log from '../../util/log';
@@ -20,6 +22,35 @@ import {
   updateTransactionMetadata,
   sendgridStandardEmail,
 } from '../../util/api';
+import { addTimeToStartOfDay } from '../../util/dates';
+
+const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
+
+const activeOrUpcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING];
+
+const pastBookingTransitions = [
+  TRANSITION_COMPLETE,
+  TRANSITION_COMPLETE_CANCELED,
+  TRANSITION_DISPUTE,
+  TRANSITION_RESOLVE_DISPUTE,
+  TRANSITION_PAY_CAREGIVER,
+  TRANSITION_EXPIRE_REVIEW_PERIOD,
+  TRANSITION_REVIEW,
+];
+
+const filterActiveOrUpcomingBookings = bookings => {
+  const active = bookings.filter(b => {
+    const { lineItems } = b.attributes.metdata;
+    const startTimeAsDate = lineItems.sort(
+      (a, b) => addTimeToStartOfDay(a.date, a.startTime) - addTimeToStartOfDay(b.date, b.startTime)
+    );
+    return startTimeAsDate < new Date();
+  });
+
+  const upcoming = bookings.filter(b => !active.find(ab => ab.id.uuid === b.id.uuid));
+
+  return { active, upcoming };
+};
 
 // ================ Action types ================ //
 
@@ -40,7 +71,12 @@ export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
 const initialState = {
   fetchBookingsInProgress: false,
   fetchBookingsError: null,
-  bookings: [],
+  bookings: {
+    requests: [],
+    upcoming: [],
+    active: [],
+    past: [],
+  },
   cancelBookingInProgress: false,
   cancelBookingError: null,
   disputeBookingInProgress: false,
@@ -120,43 +156,47 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
   let currentUser = getState().user.currentUser;
 
   while (!currentUser) {
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 50));
     currentUser = getState().user.currentUser;
   }
 
+  const include = [
+    'author',
+    'customer',
+    'customer.profileImage',
+    'listing',
+    'listing.author',
+    'provider',
+    'provider.profileImage',
+    'booking',
+  ];
+
   const params = {
     userId: currentUser.id.uuid,
-    lastTransitions: [
-      TRANSITION_REQUEST_BOOKING,
-      TRANSITION_ACCEPT_BOOKING,
-      TRANSITION_COMPLETE,
-      TRANSITION_PAY_CAREGIVER_AFTER_COMPLETION,
-      TRANSITION_DISPUTE,
-      TRANSITION_DISPUTE_RESOLVED,
-      TRANSITION_REVIEW_BY_CUSTOMER,
-      TRANSITION_EXPIRE_REVIEW_PERIOD,
-    ],
-    include: [
-      'author',
-      'customer',
-      'customer.profileImage',
-      'listing',
-      'listing.author',
-      'provider',
-      'provider.profileImage',
-      'booking',
-    ],
-    'filter[customer]': currentUser.id,
-    // TODO: add pagination
+    include,
   };
 
+  const queryFunc = await sdk.transactions.query;
+
   try {
-    const response = await sdk.transactions.query(params);
+    const response = await Promise.all([
+      queryFunc({ ...params, lastTransitions: requestBookingTransitions }),
+      queryFunc({ ...params, lastTransitions: activeOrUpcomingBookingTransitions }),
+      queryFunc({ ...params, lastTransitions: pastBookingTransitions }),
+    ]);
 
-    const bookings = denormalisedResponseEntities(response);
+    const denormalizedBookings = response.map(b => {
+      return denormalisedResponseEntities(b);
+    });
 
-    dispatch(fetchBookingsSuccess(bookings));
-    return bookings;
+    const sortedBookings = {
+      requests: denormalizedBookings[0],
+      ...filterActiveOrUpcomingBookings(denormalizedBookings[1]),
+      past: denormalizedBookings[2],
+    };
+
+    dispatch(fetchBookingsSuccess(sortedBookings));
+    return sortedBookings;
   } catch (e) {
     log.error(e, 'fetch-bookings-failed', { params });
     dispatch(fetchBookingsError(storableError(e)));
