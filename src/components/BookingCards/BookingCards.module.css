@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .bookingCard {
   box-shadow: var(--boxShadowCard);
   background-color: var(--matterColorLight);
@@ -5,6 +7,7 @@
   flex-grow: 1;
   flex-wrap: wrap;
   padding: 1rem;
+  max-width: calc(100vw - 2rem);
 }
 
 .avatar {
@@ -38,7 +41,11 @@
 .changeButtonsContainer {
   display: flex;
   gap: 1.5rem;
-  padding-right: 1.5rem;
+  padding-inline: 0.5rem;
+
+  @media (--viewportMedium) {
+    padding-right: 1.5rem;
+  }
 }
 
 .changeButton {
@@ -129,12 +136,17 @@
 
 .tablePagination {
   display: flex;
-  justify-content: center;
   width: 100%;
+
+  @media (--viewportMedium) {
+    justify-content: center;
+  }
 }
 
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
+
+  justify-content: center;
 }
 
 /* Title of the modal */
@@ -209,4 +221,8 @@
 
 .error {
   color: var(--failColor);
+}
+
+.userDisplayName {
+  white-space: nowrap;
 }

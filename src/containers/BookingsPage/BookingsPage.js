@@ -26,8 +26,6 @@ import { TopbarContainer } from '../../containers';
 import { convertTimeFrom12to24, ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
 import { cancelBooking, disputeBooking } from './BookingsPage.duck';
-import moment from 'moment';
-import { addTimeToStartOfDay } from '../../util/dates';
 
 import css from './BookingsPage.module.css';
 
