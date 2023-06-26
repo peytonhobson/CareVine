@@ -492,9 +492,9 @@ const createBookingPayment = async transaction => {
 const createCaregiverPayout = async transaction => {
   const { stripeAccountId, lineItems } = transaction.attributes.metadata;
 
-  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+  const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
-  if (amount === 0) return;
+  if (!amount || amount === 0) return;
 
   try {
     await stripe.payouts.create(

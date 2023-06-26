@@ -24,10 +24,11 @@
 
   @media (--viewportLarge) {
     /* padding-inline: 15%; */
-    border-right: 1px solid var(--matterColorNegative);
     padding: 0 3rem 3rem 3rem;
     overflow: scroll;
     max-height: calc(100vh - var(--topbarHeightDesktop));
+    max-width: 70vw;
+    margin: auto;
   }
 }
 
@@ -748,6 +749,7 @@
   max-height: calc(100vh - var(--topbarHeightDesktop));
   overflow-y: scroll;
   overflow-x: hidden;
+  border-left: 1px solid var(--matterColorNegative);
 }
 
 .fixedAvailability {
