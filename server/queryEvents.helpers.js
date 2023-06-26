@@ -461,7 +461,7 @@ const createBookingPayment = async transaction => {
       customer: stripeCustomerId,
       receipt_email: clientEmail,
       description: 'Carevine Booking',
-      metadata: { userId },
+      metadata: { userId, txId },
     });
 
     const paymentIntentId = paymentIntent.id;

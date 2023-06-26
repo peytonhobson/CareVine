@@ -71,7 +71,8 @@ const mapLineItemsForCancellation = lineItems => {
   return lineItems
     .map(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      const isWithin72Hours = startTime - moment().toDate() < 72 * 36e5;
+      const isWithin72Hours =
+        startTime - moment().toDate() < 72 * 36e5 && startTime > moment().toDate();
       if (isWithin72Hours) {
         return {
           ...lineItem,
@@ -87,11 +88,22 @@ const mapLineItemsForCancellation = lineItems => {
     });
 };
 
-const filterFutureLineItems = lineItems => {
-  return lineItems.filter(lineItem => {
-    const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-    return startOfLineItem > new Date();
-  });
+const roundDateToNearest5Minutes = date => {
+  const currentTimestamp = Math.floor(date.getTime() / 1000);
+
+  // Convert the current timestamp to the number of minutes
+  const currentMinutes = Math.floor(currentTimestamp / 60);
+
+  // Calculate the remainder when dividing the current minutes by 5
+  const remainder = currentMinutes % 5;
+
+  // Determine the number of minutes to add to the current timestamp to round it up to the nearest 5 minutes
+  const minutesToAdd = remainder !== 0 ? 5 - remainder : 0;
+
+  // Add the minutes to the current timestamp
+  const roundedTimestamp = (currentMinutes + minutesToAdd) * 60;
+
+  return roundedTimestamp * 1000;
 };
 
 // ================ Action types ================ //
@@ -297,9 +309,9 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     let newBookingEnd = null;
     let newBookingStart = null;
     if (isBookingActive) {
-      // Add 15 minutes to booking end to give time for backend to process transition to delivered
-      newBookingEnd = moment()
-        .add(15, 'minutes')
+      // Add 10 minutes to booking end to give time for backend to process transition to delivered
+      newBookingEnd = moment(roundDateToNearest5Minutes(new Date()))
+        .add(10, 'minutes')
         .toDate();
       newBookingStart = moment(newBookingEnd)
         .subtract(1, 'hours')
@@ -321,7 +333,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
         const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
         const newBookedDates = bookedDates.filter(
-          date => !bookingDates.includes(date) && new Date(date) > new Date()
+          date => !bookingDates.includes(date) || new Date(date) < new Date()
         );
         await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
       } catch (e) {

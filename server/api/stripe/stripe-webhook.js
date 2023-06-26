@@ -277,9 +277,9 @@ const removeBackgroundCheckSubscriptionSchedule = async data => {
 const sendChargeFailedEmail = data => {
   const failureMessage = data?.failure_message;
   const type = data?.payment_method_details?.type;
-  const { recipientName, conversationId, userId } = data?.metadata;
+  const { recipientName, conversationId, userId, txId } = data?.metadata;
 
-  if (type !== 'card') {
+  if (type !== 'card' && !txId) {
     sendgridEmail(
       userId,
       'payment-failed',
@@ -291,6 +291,24 @@ const sendChargeFailedEmail = data => {
       },
       'send-payment-failed-email-failed'
     );
+  }
+};
+
+const transitionTransactionToPaymentFailed = async data => {
+  const txId = data?.metadata?.txId;
+
+  console.log('metadata', data?.metadata);
+
+  if (!txId) return;
+
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/decline-payment',
+      params: {},
+    });
+  } catch (e) {
+    log.error(e, 'transition-transaction-to-payment-failed-failed');
   }
 };
 
@@ -427,7 +445,12 @@ module.exports = (request, response) => {
       break;
     case 'charge.failed':
       const chargeFailed = event.data.object;
-      sendChargeFailedEmail(chargeFailed);
+      console.log(chargeFailed);
+      if (chargeFailed.metadata.txId) {
+        transitionTransactionToPaymentFailed(chargeFailed);
+      } else {
+        sendChargeFailedEmail(chargeFailed);
+      }
       break;
     case 'charge.succeeded':
       const chargeSucceeded = event.data.object;

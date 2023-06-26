@@ -9,6 +9,7 @@ import {
   BookingCalendar,
   CancelButton,
   Button,
+  UserDisplayName,
 } from '..';
 import {
   TRANSITION_COMPLETE,
@@ -16,15 +17,19 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
 } from '../../util/transaction';
-import { convertTimeFrom12to24 } from '../../util/data';
-import TablePagination from '@mui/material/TablePagination';
+import { convertTimeFrom12to24, userDisplayName } from '../../util/data';
+import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
 import { v4 as uuidv4 } from 'uuid';
+import { DisputeForm } from '../../forms';
+import { useCheckMobileScreen } from '../../util/hooks';
+import { styled } from '@mui/material/styles';
+import { compose } from 'redux';
+import { injectIntl } from 'react-intl';
 
 import css from './BookingCards.module.css';
-import { DisputeForm } from '../../forms';
 
 const CREDIT_CARD = 'Payment Card';
 const BANK_ACCOUNT = 'Bank Account';
@@ -77,6 +82,7 @@ const EmployerBookingCard = props => {
     disputeBookingError,
     disputeBookingSuccess,
     onDisputeBooking,
+    intl,
   } = props;
 
   const { provider } = booking;
@@ -98,7 +104,9 @@ const EmployerBookingCard = props => {
     onDisputeBooking(booking, disputeReason);
   };
 
-  const providerDisplayName = provider.attributes.profile.displayName;
+  const providerDisplayName = (
+    <UserDisplayName user={provider} intl={intl} className={css.userDisplayName} />
+  );
   const selectedPaymentMethod =
     paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
@@ -117,6 +125,21 @@ const EmployerBookingCard = props => {
   const showCancel = isRequest || isActive;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
+  const isMobile = useCheckMobileScreen();
+
+  const timesToDisplay = isMobile ? 1 : isLarge ? 3 : 2;
+
+  const TablePagination = styled(MuiTablePagination)`
+    ${isMobile
+      ? `& .MuiTablePagination-toolbar {
+      padding-left: 1rem;
+    }
+
+    & .MuiTablePagination-actions {
+      margin-left: 0;
+    }`
+      : ''}
+  `;
 
   return (
     <div className={css.bookingCard}>
@@ -147,7 +170,10 @@ const EmployerBookingCard = props => {
           <h2 className={css.datesAndTimes}>Dates & Times</h2>
           <div className={css.dateTimes}>
             {bookingTimes
-              ?.slice(bookingTimesPage * 3, bookingTimesPage * 3 + 3)
+              ?.slice(
+                bookingTimesPage * timesToDisplay,
+                bookingTimesPage * timesToDisplay + timesToDisplay
+              )
               .map(({ date, startTime, endTime }) => {
                 return (
                   <div className={css.bookingTime} key={uuidv4()}>
@@ -163,14 +189,16 @@ const EmployerBookingCard = props => {
               })}
           </div>
           <div className={css.tablePagination}>
-            {bookingTimes?.length > 3 ? (
+            {bookingTimes?.length > timesToDisplay ? (
               <TablePagination
                 component="div"
                 count={bookingTimes?.length}
                 page={bookingTimesPage}
                 onPageChange={handleChangeTimesPage}
-                rowsPerPage={3}
-                labelDisplayedRows={({ from, to, count }) => `${from}-${to} of ${count}`}
+                rowsPerPage={timesToDisplay}
+                labelDisplayedRows={({ from, to, count }) =>
+                  `${from}${isMobile ? '' : `-${to}`} of ${count}`
+                }
                 labelRowsPerPage=""
                 rowsPerPageOptions={[]}
               />
@@ -198,7 +226,9 @@ const EmployerBookingCard = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
+        <p className={css.modalTitle}>Payment Summary</p>
         <BookingSummaryCard
+          className={css.refundSummaryCard}
           authorDisplayName={providerDisplayName}
           currentAuthor={provider}
           selectedBookingTimes={bookingTimes}
@@ -221,6 +251,9 @@ const EmployerBookingCard = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >
+        <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
+          Booking Calendar
+        </p>
         <BookingCalendar bookedDates={bookingDates} noDisabled />
       </Modal>
       <Modal
@@ -230,6 +263,7 @@ const EmployerBookingCard = props => {
         onClose={() => setIsCancelModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
+        containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
         {!isRequest ? (
@@ -292,4 +326,4 @@ const EmployerBookingCard = props => {
   );
 };
 
-export default EmployerBookingCard;
+export default compose(injectIntl)(EmployerBookingCard);

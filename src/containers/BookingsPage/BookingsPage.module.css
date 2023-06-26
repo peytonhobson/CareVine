@@ -2,9 +2,15 @@
 
 .root {
   margin-inline: auto;
-  width: 45rem;
   padding-bottom: 3rem;
-  min-height: calc(100vh - var(--topbarHeightDesktop));
+  padding: 3rem 1rem;
+  width: 100%;
+  min-height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    width: 45rem;
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+  }
 }
 
 .title {
