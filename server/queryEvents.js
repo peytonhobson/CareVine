@@ -270,7 +270,7 @@ module.exports = queryEvents = () => {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
 
-      if (lastTransition === 'transition/accept-booking') {
+      if (lastTransition === 'transition/accept') {
         createBookingPayment(transaction);
       }
 
@@ -279,8 +279,10 @@ module.exports = queryEvents = () => {
       // otherwise we need to use a script to refund the client X amount and then update the transaction by removing any refunded line items
       // Line items are used to calculate caregiver payout
       if (
+        lastTransition === 'transition/pay-caregiver' ||
+        lastTransition === 'transition/resolve-dispute' ||
         lastTransition === 'transition/pay-caregiver-after-completion' ||
-        lastTransition === 'transition/dispute-resolved'
+        lastTransition === 'transition/cancel-pay-caregiver'
       ) {
         createCaregiverPayout(transaction);
       }

@@ -31,37 +31,6 @@ import { addTimeToStartOfDay } from '../../util/dates';
 
 import css from './BookingsPage.module.css';
 
-const pastBookingTransitions = [
-  TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_REVIEW,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
-];
-
-const findStartAndEndDateFromLineItems = lineItems => {
-  if (!lineItems) return null;
-
-  const startItem = lineItems?.reduce((min, li) => {
-    return new Date(li.date) < min.date ? li : min;
-  }, lineItems[0]);
-
-  const endItem = lineItems?.reduce((max, li) => {
-    return new Date(li.date) > max.date ? li : max;
-  }, lineItems[0]);
-
-  const start = addTimeToStartOfDay(startItem.date, startItem.startTime);
-  const end =
-    endItem.endTime === '12:00am'
-      ? moment()
-          .add(24, 'hours')
-          .toDate()
-      : addTimeToStartOfDay(endItem.date, endItem.endTime);
-
-  return { start, end };
-};
-
 const BookingsPage = props => {
   const [selectedTab, setSelectedTab] = useState('Requests');
 

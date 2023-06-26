@@ -28,7 +28,7 @@ export const TRANSITION_CANCEL_BOOKING_CUSTOMER = 'transition/cancel-booking-cus
 export const TRANSITION_CANCEL_BOOKING_PROVIDER = 'transition/cancel-booking-provider';
 export const TRANSITION_CANCEL_BOOKING_OPERATOR = 'transition/cancel-booking-operator';
 export const TRANSITION_CANCEL_ACTIVE_PROVIDER = 'transition/cancel-active-provider';
-export const TRANSITION_CANCEL_ACTIVE_OPERATOR = 'transition/cancel-active-operator';
+export const TRANSITION_CANCEL_ACTIVE_CUSTOMER = 'transition/cancel-active-customer';
 export const TRANSITION_COMPLETE_CANCELED = 'transition/complete-canceled';
 export const TRANSITION_COMPLETE = 'transition/complete';
 export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
@@ -37,6 +37,7 @@ export const TRANSITION_RESOLVE_DISPUTE = 'transition/resolve-dispute';
 export const TRANSITION_REVIEW = 'transition/review';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
+export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver';
 
 /**
  * Actors
@@ -68,6 +69,7 @@ export const STATE_DISPUTE_REVIEW = 'dispute-review';
 export const STATE_REVIEWED = 'reviewed';
 export const STATE_PAYMENT_FAILED = 'payment-failed';
 export const STATE_ACTIVE_CANCELED = 'active-canceled';
+export const STATE_CANCELED_PAID_OUT = 'canceled-paid-out';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -133,8 +135,13 @@ const stateDescription = {
         [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
         [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
         [TRANSITION_CANCEL_ACTIVE_PROVIDER]: STATE_ACTIVE_CANCELED,
-        [TRANSITION_CANCEL_ACTIVE_OPERATOR]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_CUSTOMER]: STATE_ACTIVE_CANCELED,
         [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
+      },
+    },
+    [STATE_CANCELED]: {
+      on: {
+        [TRANSITION_CANCEL_PAY_CAREGIVER]: STATE_CANCELED_PAID_OUT,
       },
     },
     [STATE_ACTIVE_CANCELED]: {
@@ -161,8 +168,8 @@ const stateDescription = {
     },
     [STATE_DECLINED]: { type: 'final' },
     [STATE_REVIEWED]: { type: 'final' },
-    [STATE_CANCELED]: { type: 'final' },
     [STATE_PAYMENT_FAILED]: { type: 'final' },
+    [STATE_CANCELED_PAID_OUT]: { type: 'final' },
   },
 };
 

@@ -15,12 +15,15 @@ import {
   TRANSITION_CANCEL_BOOKING_OPERATOR,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
+  TRANSITION_CANCEL_ACTIVE_PROVIDER,
+  TRANSITION_CANCEL_ACTIVE_CUSTOMER,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
   stripeCreateRefund,
   updateTransactionMetadata,
   sendgridStandardEmail,
+  updateListingMetadata,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 
@@ -38,18 +41,56 @@ const pastBookingTransitions = [
   TRANSITION_REVIEW,
 ];
 
-const filterActiveOrUpcomingBookings = bookings => {
-  const active = bookings.filter(b => {
-    const { lineItems } = b.attributes.metdata;
-    const startTimeAsDate = lineItems.sort(
-      (a, b) => addTimeToStartOfDay(a.date, a.startTime) - addTimeToStartOfDay(b.date, b.startTime)
-    );
-    return startTimeAsDate < new Date();
-  });
+// TODO: Check if this is correct. It may be end of array instead of start of array.
+const isActive = booking => {
+  const { lineItems } = booking.attributes.metadata;
+  const sortedLineItemsByDate = lineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const startTimeAsDate = addTimeToStartOfDay(
+    sortedLineItemsByDate[0].date,
+    sortedLineItemsByDate[0].startTime
+  );
+  const endTimeAsDate = addTimeToStartOfDay(
+    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].date,
+    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].endTime
+  );
+  return startTimeAsDate < new Date() && endTimeAsDate > new Date();
+};
 
+const filterActiveOrUpcomingBookings = bookings => {
+  const active = bookings.filter(booking => isActive(booking));
   const upcoming = bookings.filter(b => !active.find(ab => ab.id.uuid === b.id.uuid));
 
   return { active, upcoming };
+};
+
+const mapLineItemsForCancellation = lineItems => {
+  // Half the amount of the line item if it is within 72 hours of the start time.
+  // Remove line items that are more than 72 hours away.
+  // This is to create the correct amount for caregiver payout
+  return lineItems
+    .map(lineItem => {
+      const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      const isWithin72Hours = startOfLineItem < new Date() + 72e35;
+      if (isWithin72Hours) {
+        return {
+          ...lineItem,
+          amount: lineItem.amount / 2,
+        };
+      }
+
+      return lineItem;
+    })
+    .filter(lineItem => {
+      const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      return startOfLineItem < new Date() + 72e35;
+    });
+};
+
+const filterFutureLineItems = lineItems => {
+  return lineItems.filter(lineItem => {
+    const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+    return startOfLineItem > new Date();
+  });
 };
 
 // ================ Action types ================ //
@@ -189,9 +230,12 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
       return denormalisedResponseEntities(b);
     });
 
+    const { active, upcoming } = filterActiveOrUpcomingBookings(denormalizedBookings[1]);
+
     const sortedBookings = {
       requests: denormalizedBookings[0],
-      ...filterActiveOrUpcomingBookings(denormalizedBookings[1]),
+      active,
+      upcoming,
       past: denormalizedBookings[2],
     };
 
@@ -209,11 +253,18 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
   const isAccepted = booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
   const bookingId = booking.id.uuid;
-  const { paymentIntentId } = booking.attributes.metadata;
+  const { paymentIntentId, lineItems } = booking.attributes.metadata;
+  const listingId = booking.listing.id.uuid;
+
+  const isBookingActive = isActive(booking);
 
   const transition = isAccepted
     ? userType === CAREGIVER
-      ? TRANSITION_CANCEL_BOOKING_PROVIDER
+      ? isBookingActive
+        ? TRANSITION_CANCEL_ACTIVE_PROVIDER
+        : TRANSITION_CANCEL_BOOKING_PROVIDER
+      : isBookingActive
+      ? TRANSITION_CANCEL_ACTIVE_CUSTOMER
       : TRANSITION_CANCEL_BOOKING_CUSTOMER
     : TRANSITION_CANCEL_BOOKING_REQUEST;
 
@@ -229,9 +280,51 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         amount: refundAmount,
         reason: 'requested_by_customer',
       });
+
+      // Update line items so caregiver is paid out correct amount after refund
+      await updateTransactionMetadata({
+        txId: bookingId,
+        metadata: { lineItems: mapLineItemsForCancellation(lineItems) },
+      });
     }
 
-    const response = await sdk.transactions.transition({ id: bookingId, transition, params: {} });
+    if (isAccepted && !paymentIntentId) {
+      throw new Error('Missing payment intent id');
+    }
+
+    // Create new booking end so cancel-active goes to delivered after transitioning
+    let newBookingEnd = null;
+    let newBookingStart = null;
+    if (isBookingActive) {
+      // Add 15 minutes to booking end to give time for backend to process transition to delivered
+      newBookingEnd = moment()
+        .add(15, 'minutes')
+        .toDate();
+      newBookingStart = moment(newBookingEnd)
+        .subtract(1, 'hours')
+        .toDate();
+    }
+
+    const response = await sdk.transactions.transition({
+      id: bookingId,
+      transition,
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+      },
+    });
+
+    // Update listing metadata to remove cancelled booking dates
+    if (isAccepted) {
+      try {
+        const bookedDates = booking.listing.attributes.metadata.bookedDates;
+        const newBookedDates = bookedDates.filter(date => !moment(date).isAfter(moment()));
+        await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
+      } catch (e) {
+        log.error(e, 'update-caregiver-booking-dates-failed', {});
+      }
+    }
+
     const booking = denormalisedResponseEntities(response);
 
     dispatch(cancelBookingSuccess());

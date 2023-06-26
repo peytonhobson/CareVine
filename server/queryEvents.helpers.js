@@ -494,6 +494,8 @@ const createCaregiverPayout = async transaction => {
 
   const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
 
+  if (amount === 0) return;
+
   try {
     await stripe.payouts.create(
       {
