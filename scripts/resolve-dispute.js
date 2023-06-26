@@ -16,7 +16,6 @@ const main = async () => {
     }
 
     const { lineItems, paymentIntentId } = tx.data.data.attributes.metadata;
-    console.log(tx.data.data.attributes.metadata);
 
     const additionalLineItem = { amount: -1 * refundAmount, code: 'refund' };
 
@@ -40,7 +39,7 @@ const main = async () => {
 
       await integrationSdk.transactions.transition({
         id: txId,
-        transition: 'transition/dispute-resolved',
+        transition: 'transition/resolve-dispute',
         params: {},
       });
 

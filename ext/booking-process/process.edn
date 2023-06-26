@@ -67,6 +67,13 @@
    :from :state/accepted,
    :to :state/canceled}
 
+   {:name :transition/cancel-pay-caregiver,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/canceled]} {:fn/period ["P2D"]}]},
+   :from :state/canceled,
+   :to :state/canceled-paid-out}
+
    {:name :transition/cancel-active-customer,
    :actions
    [{:name :action/update-booking :config {:type :time}}],
@@ -246,6 +253,12 @@
     :template :customer-can-review}
     {:name :notification/caregiver-paid,
     :on :transition/pay-caregiver,
+    :to :actor.role/provider,
+    :template :caregiver-paid}
+
+    ; Caregiver paid out after cancellation
+    {:name :notification/cancel-caregiver-paid,
+    :on :transition/cancel-pay-caregiver,
     :to :actor.role/provider,
     :template :caregiver-paid}
 
