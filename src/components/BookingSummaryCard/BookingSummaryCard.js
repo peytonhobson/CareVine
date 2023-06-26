@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import css from './BookingSummaryCard.module.css';
 
 const CREDIT_CARD = 'Payment Card';
+const BANK_ACCOUNT = 'Bank Account';
 const TRANSACTION_FEE = 0.05;
 const CARD_FEE = 0.03;
 
@@ -80,7 +81,8 @@ const BookingSummaryCard = props => {
 
   const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
   const transactionFee = hideFees ? 0 : calculateTransactionFee(subTotal);
-  const cardFee = hideFees ? 0 : calculateCardFee(subTotal);
+  const cardFee =
+    hideFees || selectedPaymentMethod === BANK_ACCOUNT ? 0 : calculateCardFee(subTotal);
   const total = calculateTotalCost(subTotal, transactionFee, cardFee);
   const isLarge = useMediaQuery('(min-width:1024px)');
 

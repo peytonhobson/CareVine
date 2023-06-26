@@ -26,6 +26,7 @@ import {
   updateListingMetadata,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
+import moment from 'moment';
 
 const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
 
@@ -69,8 +70,8 @@ const mapLineItemsForCancellation = lineItems => {
   // This is to create the correct amount for caregiver payout
   return lineItems
     .map(lineItem => {
-      const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      const isWithin72Hours = startOfLineItem < new Date() + 72e35;
+      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      const isWithin72Hours = startTime - moment().toDate() < 72 * 36e5;
       if (isWithin72Hours) {
         return {
           ...lineItem,
@@ -81,8 +82,8 @@ const mapLineItemsForCancellation = lineItems => {
       return lineItem;
     })
     .filter(lineItem => {
-      const startOfLineItem = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return startOfLineItem < new Date() + 72e35;
+      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      return startTime - moment().toDate() < 72 * 36e5;
     });
 };
 
@@ -317,19 +318,22 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     // Update listing metadata to remove cancelled booking dates
     if (isAccepted) {
       try {
-        const bookedDates = booking.listing.attributes.metadata.bookedDates;
-        const newBookedDates = bookedDates.filter(date => !moment(date).isAfter(moment()));
+        const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
+        const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
+        const newBookedDates = bookedDates.filter(
+          date => !bookingDates.includes(date) && new Date(date) > new Date()
+        );
         await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
       } catch (e) {
         log.error(e, 'update-caregiver-booking-dates-failed', {});
       }
     }
 
-    const booking = denormalisedResponseEntities(response);
+    const bookingResponse = denormalisedResponseEntities(response);
 
     dispatch(cancelBookingSuccess());
     dispatch(fetchBookings());
-    return booking;
+    return bookingResponse;
   } catch (e) {
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
     dispatch(cancelBookingError(storableError(e)));

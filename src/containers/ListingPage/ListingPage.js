@@ -392,6 +392,8 @@ export class ListingPageComponent extends Component {
       </p>
     ) : null;
 
+    const listingUserType = currentListing.attributes.metadata.listingType;
+
     return (
       <Page
         title={schemaTitle}
@@ -451,15 +453,17 @@ export class ListingPageComponent extends Component {
                   />
                 )}
               </div>
-              <BookingContainer
-                listing={currentListing}
-                onSubmit={this.handleBookingSubmit}
-                onManageDisableScrolling={onManageDisableScrolling}
-                authorDisplayName={authorDisplayName}
-                hasStripeAccount={hasStripeAccount}
-                hasStripeAccountInProgress={hasStripeAccountInProgress}
-                hasStripeAccountError={hasStripeAccountError}
-              />
+              {listingUserType === CAREGIVER && !isOwnListing ? (
+                <BookingContainer
+                  listing={currentListing}
+                  onSubmit={this.handleBookingSubmit}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                  authorDisplayName={authorDisplayName}
+                  hasStripeAccount={hasStripeAccount}
+                  hasStripeAccountInProgress={hasStripeAccountInProgress}
+                  hasStripeAccountError={hasStripeAccountError}
+                />
+              ) : null}
             </div>
             {this.state.enquiryModalOpen && (
               <Modal
