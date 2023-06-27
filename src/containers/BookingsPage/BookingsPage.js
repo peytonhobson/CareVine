@@ -20,6 +20,7 @@ import {
   LayoutWrapperFooter,
   Footer,
   EmployerBookingCard,
+  CaregiverBookingCard,
   ButtonTabNavHorizontal,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
@@ -50,7 +51,7 @@ const BookingsPage = props => {
 
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
-  const CardComponent = userType === EMPLOYER ? EmployerBookingCard : null;
+  const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
 
   const cardProps = {
     currentUser,

@@ -132,6 +132,7 @@
   min-height: 0;
   width: 9rem;
   height: 3rem;
+  padding: 0 0.5rem;
 }
 
 .tablePagination {
