@@ -134,7 +134,7 @@ const EmployerBookingCard = props => {
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
 
-  const timesToDisplay = isMobile ? 1 : isLarge ? 3 : 2;
+  const timesToDisplay = isMobile ? 1 : 3;
 
   const TablePagination = styled(MuiTablePagination)`
     ${isMobile
