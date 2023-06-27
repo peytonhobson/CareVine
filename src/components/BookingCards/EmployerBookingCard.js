@@ -36,6 +36,8 @@ const BANK_ACCOUNT = 'Bank Account';
 const TRANSACTION_FEE = 0.05;
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
+  if (!bookingStart || !bookingEnd) return 0;
+
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
   const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
 
@@ -111,11 +113,16 @@ const EmployerBookingCard = props => {
     paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
   const bookingTimes =
-    lineItems?.map(l => ({
-      date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
-      startTime: l.startTime,
-      endTime: l.endTime,
-    })) ?? [];
+    lineItems
+      ?.filter(l => l.code === 'line-item/booking')
+      .map(l => ({
+        date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
+        startTime: l.startTime,
+        endTime: l.endTime,
+      })) ?? [];
+  const refundAmount = lineItems
+    ?.filter(l => l.code === 'refund')
+    .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const listing = booking?.listing;
   const isComplete = booking?.attributes.lastTransition === TRANSITION_COMPLETE;
@@ -239,6 +246,7 @@ const EmployerBookingCard = props => {
           displayOnMobile={!isLarge}
           hideAvatar
           subHeading={<span className={css.bookingWith}>Payment Details</span>}
+          refundAmount={refundAmount}
           hideRatesButton
         />
       </Modal>

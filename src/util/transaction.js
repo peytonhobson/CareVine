@@ -70,6 +70,7 @@ export const STATE_REVIEWED = 'reviewed';
 export const STATE_PAYMENT_FAILED = 'payment-failed';
 export const STATE_ACTIVE_CANCELED = 'active-canceled';
 export const STATE_CANCELED_PAID_OUT = 'canceled-paid-out';
+export const STATE_REQUEST_CANCELED = 'request-canceled';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -125,7 +126,7 @@ const stateDescription = {
         [TRANSITION_ACCEPT_BOOKING]: STATE_ACCEPTED,
         [TRANSITION_DECLINE_BOOKING]: STATE_DECLINED,
         [TRANSITION_EXPIRE_BOOKING]: STATE_DECLINED,
-        [TRANSITION_CANCEL_BOOKING_REQUEST]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BOOKING_REQUEST]: STATE_REQUEST_CANCELED,
       },
     },
     [STATE_ACCEPTED]: {
@@ -170,6 +171,7 @@ const stateDescription = {
     [STATE_REVIEWED]: { type: 'final' },
     [STATE_PAYMENT_FAILED]: { type: 'final' },
     [STATE_CANCELED_PAID_OUT]: { type: 'final' },
+    [STATE_REQUEST_CANCELED]: { type: 'final' },
   },
 };
 
