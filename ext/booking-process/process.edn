@@ -44,7 +44,7 @@
    {:name :transition/cancel-request,
    :actor :actor.role/customer,
    :from :state/booking-requested,
-   :to :state/canceled}
+   :to :state/request-canceled}
 
    {:name :transition/cancel-booking-customer,
    :actions

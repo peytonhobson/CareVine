@@ -490,24 +490,56 @@ const createBookingPayment = async transaction => {
 };
 
 const createCaregiverPayout = async transaction => {
-  const { stripeAccountId, lineItems } = transaction.attributes.metadata;
+  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
-  if (!amount || amount === 0) return;
+  console.log('amount ', amount);
+
+  if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
-    await stripe.payouts.create(
-      {
-        amount,
-        currency: 'usd',
-      },
-      {
-        stripeAccount: stripeAccountId,
-      }
-    );
+    const balance = await stripe.balance.retrieve({
+      stripeAccount: stripeAccountId,
+    });
+
+    const availableBalance = balance.available?.[0]?.amount;
+
+    console.log('availableBalance ', availableBalance);
+
+    if (availableBalance > amount) {
+      await stripe.payouts.create(
+        {
+          amount,
+          currency: 'usd',
+        },
+        {
+          stripeAccount: stripeAccountId,
+        }
+      );
+    } else {
+      const providerId = transaction.relationships.provider.data.id.uuid;
+
+      const providerResponse = await integrationSdk.users.show({
+        id: providerId,
+      });
+      const provider = providerResponse.data.data;
+
+      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
+
+      await integrationSdk.users.updateProfile({
+        id: providerId,
+        privateData: {
+          hasPendingPayout: true,
+          pendingPayouts: [
+            ...pendingPayouts,
+            { amount, paymentIntentId, date: new Date().toISOString() },
+          ],
+        },
+      });
+    }
   } catch (e) {
-    log.error(e, 'create-booking-payment-failed', { stripeAccountId });
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
   }
 };
 

@@ -100,6 +100,12 @@ const TopbarMobileMenu = props => {
       </NamedLink>
     ) : null;
 
+  const bookingsLink = isAuthenticated ? (
+    <NamedLink className={css.navigationLink} name="BookingsPage">
+      My Bookings
+    </NamedLink>
+  ) : null;
+
   const feedbackLink = isDev ? (
     <NamedLink className={css.navigationLink} name="FeedbackPage">
       <span className={css.feedbackText}>
@@ -208,6 +214,7 @@ const TopbarMobileMenu = props => {
         >
           <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
         </NamedLink>
+        {bookingsLink}
         {referralLink}
         {feedbackLink}
       </div>

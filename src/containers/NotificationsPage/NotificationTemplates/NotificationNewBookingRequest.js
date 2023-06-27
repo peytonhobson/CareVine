@@ -31,7 +31,7 @@ const findEndTimeFromLineItems = lineItems => {
     return new Date(a.date) - new Date(b.date);
   });
 
-  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? {};
+  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
   const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)

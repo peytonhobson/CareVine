@@ -4,7 +4,7 @@ const { integrationSdk } = require('../server/api-util/sdk');
 
 const refundAmount = process.argv[2];
 const txId = process.argv[3];
-const dryRun = process.argv[4] === 'dry-run';
+const dryRun = process.argv[4] === '--dry';
 
 const main = async () => {
   try {
@@ -25,8 +25,8 @@ const main = async () => {
       await stripe.refunds.create({
         payment_intent: paymentIntentId,
         amount: refundAmount,
-        refund_application_fee: true,
-        reason: 'Dispute',
+        // refund_application_fee: true,
+        reason: 'requested_by_customer',
         reverse_transfer: true,
       });
 

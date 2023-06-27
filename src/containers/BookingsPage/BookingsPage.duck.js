@@ -367,7 +367,8 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       fromEmail: 'admin-notification@carevine-mail.us',
       receiverEmail: 'peyton.hobson@carevine.us',
       subject: 'Booking Dispute',
-      html: JSON.stringify(disputeReason).replace('"', ''),
+      html: `${JSON.stringify(disputeReason).replace('"', '')}<br><br>
+      txId: ${bookingId}<br>`,
     });
 
     await sdk.transactions.transition({
