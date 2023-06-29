@@ -4,96 +4,54 @@ import { intlShape, injectIntl } from '../../util/reactIntl';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { IconReviewStar, ValidationError } from '../../components';
+import { styled } from '@mui/material/styles';
 
 import css from './FieldReviewRating.module.css';
+import { Rating } from '@mui/material';
 
-class FieldReviewRatingComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
+const FieldReviewRatingComponent = props => {
+  /* eslint-disable no-unused-vars */
+  const { rootClassName, className, customErrorText, label, input, meta } = props;
+  /* eslint-enable no-unused-vars */
 
-  handleChange(event) {
-    this.props.input.onChange(event.target.value);
-  }
+  const { touched, error } = meta;
+  const errorText = customErrorText || error;
+  const fieldMeta = { touched, error: errorText };
 
-  render() {
-    /* eslint-disable no-unused-vars */
-    const {
-      rootClassName,
-      className,
-      inputRootClass,
-      customErrorText,
-      id,
-      intl,
-      label,
-      input,
-      meta,
-      ...rest
-    } = this.props;
-    /* eslint-enable no-unused-vars */
+  const { value } = input;
+  const classes = classNames(rootClassName || css.root, className);
 
-    const { touched, error } = meta;
-    const errorText = customErrorText || error;
-    const fieldMeta = { touched, error: errorText };
+  const StyledRating = styled(Rating)({
+    '& .MuiRating-iconFilled': {
+      color: 'var(--marketplaceColor)',
+    },
+    '& .MuiRating-iconHover': {
+      color: 'var(--marketplaceColor)',
+    },
+    '& label': {
+      margin: 0,
+    },
+  });
 
-    const { value, ...restInputProps } = input;
-    const inputProps = { ...restInputProps, type: 'radio', name: 'rating', ...rest };
-
-    const classes = classNames(rootClassName || css.root, className);
-
-    const createStarRating = starCount => {
-      let inputsAndLabels = [];
-
-      // Star inpu order: reverse order expected (5 -> 1) and also input before label
-      // This is due to CSS selectors.
-      // Sibling combinator (~) selects following siblings, but we want to select previous siblings
-      for (let i = starCount; i > 0; i--) {
-        const inputValue = `${i}`;
-        const starId = `star${i}`;
-        const inputId = `${id}.${starId}`;
-
-        inputsAndLabels.push(
-          <input
-            key={inputId}
-            id={inputId}
-            className={css.rateInput}
-            value={inputValue}
-            checked={value === inputValue}
-            {...inputProps}
+  return (
+    <div className={classes}>
+      <fieldset className={css.ratingFieldSet}>
+        {label ? <legend>{label}</legend> : null}
+        <div className={css.rating}>
+          <StyledRating
+            name="half-rating"
+            size="large"
+            onChange={(event, newValue) => {
+              input.onChange(newValue);
+            }}
+            value={value}
           />
-        );
-
-        inputsAndLabels.push(
-          <label
-            key={`label.${inputId}`}
-            className={css.label}
-            htmlFor={inputId}
-            title={intl.formatMessage({ id: `FieldReviewRating.${starId}` })}
-          >
-            <IconReviewStar rootClassName={css.star} />
-          </label>
-        );
-      }
-      return inputsAndLabels;
-    };
-
-    return (
-      <div className={classes}>
-        <fieldset
-          className={css.ratingFieldSet}
-          ref={c => {
-            this.ratingFieldSet = c;
-          }}
-        >
-          {label ? <legend>{label}</legend> : null}
-          <div className={css.rating}>{createStarRating(5)}</div>
-        </fieldset>
-        <ValidationError fieldMeta={fieldMeta} />
-      </div>
-    );
-  }
-}
+        </div>
+      </fieldset>
+      <ValidationError fieldMeta={fieldMeta} />
+    </div>
+  );
+};
 
 FieldReviewRatingComponent.defaultProps = {
   rootClassName: null,

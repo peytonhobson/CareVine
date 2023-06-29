@@ -19,11 +19,11 @@ import { EMPLOYER } from '../../util/constants';
 import {
   acceptBooking,
   cancelBooking,
-  cancelBookingSuccess,
   declineBooking,
   disputeBooking,
   fetchBookings,
   setInitialState,
+  submitReview,
 } from './BookingsPage.duck';
 
 import css from './BookingsPage.module.css';
@@ -33,6 +33,7 @@ const BookingsPage = props => {
 
   const {
     bookings,
+    // TODO: Still need to implement these
     fetchBookingsError,
     fetchBookingsInProgress,
     currentUser: user,
@@ -56,11 +57,17 @@ const BookingsPage = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
+    currentUserListing,
+    onSubmitReview,
+    submitReviewInProgress,
+    submitReviewError,
+    reviewSubmitted,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
+  const bookedDates = currentUserListing?.attributes.metadata.bookedDates;
 
   const cardProps = {
     currentUser,
@@ -83,6 +90,11 @@ const BookingsPage = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
+    bookedDates,
+    onSubmitReview,
+    submitReviewInProgress,
+    submitReviewError,
+    reviewSubmitted,
   };
 
   const tabs = [
@@ -172,8 +184,11 @@ const mapStateToProps = state => {
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
+    submitReviewInProgress,
+    submitReviewError,
+    reviewSubmitted,
   } = state.BookingsPage;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
 
   return {
     fetchBookingsInProgress,
@@ -193,6 +208,10 @@ const mapStateToProps = state => {
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
+    currentUserListing,
+    submitReviewInProgress,
+    submitReviewError,
+    reviewSubmitted,
   };
 };
 
@@ -204,6 +223,7 @@ const mapDispatchToProps = {
   onDeclineBooking: declineBooking,
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
+  onSubmitReview: submitReview,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

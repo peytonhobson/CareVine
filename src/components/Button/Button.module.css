@@ -197,6 +197,14 @@
   }
 
   &:disabled {
+    background-color: var(--matterColorNegative);
+    color: var(--matterColorLight);
+    border: none;
+  }
+
+  & .ready:disabled,
+  .inProgress:disabled {
     background-color: var(--failColor);
+    color: var(--matterColorLight);
   }
 }

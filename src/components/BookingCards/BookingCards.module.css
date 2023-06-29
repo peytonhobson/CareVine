@@ -233,3 +233,9 @@
   margin-top: 2rem;
   gap: 1.5rem;
 }
+
+.bookingDeclined {
+  width: 100%;
+  text-align: center;
+  color: var(--failColor);
+}
