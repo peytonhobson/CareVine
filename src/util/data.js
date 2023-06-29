@@ -531,22 +531,16 @@ export const convertTimeFrom12to24 = fullTime => {
   }
 
   const [time, ampm] = fullTime.split(/(am|pm)/i);
-
   const [hours, minutes] = time.split(':');
+  let convertedHours = parseInt(hours);
 
-  if (hours === '12' && ampm === 'am') {
-    return '00:00';
+  if (ampm.toLowerCase() === 'am' && hours === '12') {
+    convertedHours = 0;
+  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
+    convertedHours += 12;
   }
 
-  if (ampm === 'pm' && hours !== '12') {
-    return `${parseInt(hours) + 12}:${minutes}`;
-  }
-
-  if (hours < 10 && hours.includes('0')) {
-    return `${hours < 10 ? `${hours}` : hours}:${minutes}`;
-  }
-
-  return `${hours < 10 ? `0${hours}` : hours}:${minutes}`;
+  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
 };
 
 export const convertTimeFrom24to12 = fullTime => {
@@ -573,4 +567,20 @@ export const convertTimeFrom24to12 = fullTime => {
   }
 
   return `${hours}:${minutes}am`;
+};
+
+export const findEndTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  const additionalTime =
+    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
+  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return endTime;
 };

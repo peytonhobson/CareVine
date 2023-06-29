@@ -227,3 +227,9 @@
 .userDisplayName {
   white-space: nowrap;
 }
+
+.acceptDeclineButtons {
+  display: flex;
+  margin-top: 2rem;
+  gap: 1.5rem;
+}

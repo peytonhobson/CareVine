@@ -18,28 +18,12 @@ import {
   TRANSITION_DECLINE_PAYMENT,
   TRANSITION_DISPUTE,
 } from '../../../util/transaction';
-import { convertTimeFrom12to24, userDisplayNameAsString } from '../../../util/data';
+import { userDisplayNameAsString, findEndTimeFromLineItems } from '../../../util/data';
 
 import css from './NotificationTemplates.module.css';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
-
-const findEndTimeFromLineItems = lineItems => {
-  if (!lineItems || lineItems.length === 0) return null;
-  const sortedLineItems = lineItems.sort((a, b) => {
-    return new Date(a.date) - new Date(b.date);
-  });
-
-  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
-  const additionalTime =
-    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
-  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
-    .add(additionalTime, 'hours')
-    .toDate();
-
-  return endTime;
-};
 
 const NotificationNewBookingRequest = props => {
   const {
