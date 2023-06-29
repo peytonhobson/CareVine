@@ -79,12 +79,15 @@ const EmployerBookingCard = props => {
     onManageDisableScrolling,
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     onCancelBooking,
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
     onDisputeBooking,
     intl,
+    onFetchBookings,
+    onResetInitialState,
   } = props;
 
   const { provider } = booking;
@@ -104,6 +107,12 @@ const EmployerBookingCard = props => {
   const handleDisputeBooking = values => {
     const { disputeReason } = values;
     onDisputeBooking(booking, disputeReason);
+  };
+
+  const handleModalClose = modalCloseFunc => {
+    modalCloseFunc(false);
+    onResetInitialState();
+    onFetchBookings();
   };
 
   const providerDisplayName = (
@@ -268,7 +277,7 @@ const EmployerBookingCard = props => {
         title="Cancel Booking"
         id="CancelBookingModal"
         isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
+        onClose={() => handleModalClose(setIsCancelModalOpen)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
         containerClassName={css.modalContainer}
@@ -298,13 +307,17 @@ const EmployerBookingCard = props => {
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>
-          <Button onClick={() => setIsCancelModalOpen(false)} className={css.modalButton}>
+          <Button
+            onClick={() => handleModalClose(setIsCancelModalOpen)}
+            className={css.modalButton}
+          >
             Back
           </Button>
           <CancelButton
             inProgress={cancelBookingInProgress}
             onClick={handleCancelBooking}
             className={css.modalButton}
+            ready={cancelBookingSuccess}
           >
             Cancel
           </CancelButton>
@@ -314,7 +327,7 @@ const EmployerBookingCard = props => {
         title="Dispute Booking"
         id="DisputeBookingModal"
         isOpen={isDisputeModalOpen}
-        onClose={() => setIsDisputeModalOpen(false)}
+        onClose={() => handleModalClose(setIsDisputeModalOpen)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
       >

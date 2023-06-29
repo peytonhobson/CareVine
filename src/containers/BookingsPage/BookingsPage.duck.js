@@ -1,9 +1,10 @@
 import { CAREGIVER } from '../../util/constants';
-import { denormalisedResponseEntities } from '../../util/data';
+import { denormalisedResponseEntities, findEndTimeFromLineItems } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_DECLINE_BOOKING,
   TRANSITION_COMPLETE,
   TRANSITION_PAY_CAREGIVER,
   TRANSITION_DISPUTE,
@@ -12,7 +13,6 @@ import {
   TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_CANCEL_BOOKING_PROVIDER,
   TRANSITION_CANCEL_BOOKING_CUSTOMER,
-  TRANSITION_CANCEL_BOOKING_OPERATOR,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_CANCEL_ACTIVE_PROVIDER,
@@ -27,6 +27,7 @@ import {
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
+import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 
 const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
 
@@ -108,6 +109,8 @@ const roundDateToNearest5Minutes = date => {
 
 // ================ Action types ================ //
 
+export const SET_INTIIAL_STATE = 'app/BookingsPage/SET_INTIIAL_STATE';
+
 export const FETCH_BOOKINGS_REQUEST = 'app/BookingsPage/FETCH_BOOKINGS_REQUEST';
 export const FETCH_BOOKINGS_SUCCESS = 'app/BookingsPage/FETCH_BOOKINGS_SUCCESS';
 export const FETCH_BOOKINGS_ERROR = 'app/BookingsPage/FETCH_BOOKINGS_ERROR';
@@ -119,6 +122,14 @@ export const CANCEL_BOOKING_ERROR = 'app/BookingsPage/CANCEL_BOOKING_ERROR';
 export const DISPUTE_BOOKING_REQUEST = 'app/BookingsPage/DISPUTE_BOOKING_REQUEST';
 export const DISPUTE_BOOKING_SUCCESS = 'app/BookingsPage/DISPUTE_BOOKING_SUCCESS';
 export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
+
+export const ACCEPT_BOOKING_REQUEST = 'app/BookingsPage/ACCEPT_BOOKING_REQUEST';
+export const ACCEPT_BOOKING_SUCCESS = 'app/BookingsPage/ACCEPT_BOOKING_SUCCESS';
+export const ACCEPT_BOOKING_ERROR = 'app/BookingsPage/ACCEPT_BOOKING_ERROR';
+
+export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST';
+export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
+export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
 // ================ Reducer ================ //
 
@@ -133,14 +144,24 @@ const initialState = {
   },
   cancelBookingInProgress: false,
   cancelBookingError: null,
+  cancelBookingSuccess: false,
   disputeBookingInProgress: false,
   disputeBookingError: null,
   disputeBookingSuccess: false,
+  acceptBookingError: null,
+  acceptBookingInProgress: false,
+  acceptBookingSuccess: false,
+  declineBookingError: null,
+  declineBookingInProgress: false,
+  declineBookingSuccess: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
+    case SET_INITIAL_STATE:
+      return { ...initialState, bookings: state.bookings };
+
     case FETCH_BOOKINGS_REQUEST:
       return { ...state, fetchBookingsInProgress: true, fetchBookingsError: null };
     case FETCH_BOOKINGS_SUCCESS:
@@ -149,9 +170,14 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, fetchBookingsInProgress: false, fetchBookingsError: payload };
 
     case CANCEL_BOOKING_REQUEST:
-      return { ...state, cancelBookingInProgress: true, cancelBookingError: null };
+      return {
+        ...state,
+        cancelBookingInProgress: true,
+        cancelBookingError: null,
+        cancelBookingSuccess: false,
+      };
     case CANCEL_BOOKING_SUCCESS:
-      return { ...state, cancelBookingInProgress: false };
+      return { ...state, cancelBookingInProgress: false, cancelBookingSuccess: true };
     case CANCEL_BOOKING_ERROR:
       return { ...state, cancelBookingInProgress: false, cancelBookingError: payload };
 
@@ -167,6 +193,30 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
     case DISPUTE_BOOKING_ERROR:
       return { ...state, disputeBookingInProgress: false, disputeBookingError: payload };
 
+    case ACCEPT_BOOKING_REQUEST:
+      return {
+        ...state,
+        acceptBookingInProgress: true,
+        acceptBookingError: null,
+        acceptBookingSuccess: false,
+      };
+    case ACCEPT_BOOKING_SUCCESS:
+      return { ...state, acceptBookingInProgress: false, acceptBookingSuccess: true };
+    case ACCEPT_BOOKING_ERROR:
+      return { ...state, acceptBookingInProgress: false, acceptBookingError: payload };
+
+    case DECLINE_BOOKING_REQUEST:
+      return {
+        ...state,
+        declineBookingInProgress: true,
+        declineBookingError: null,
+        declineBookingSuccess: false,
+      };
+    case DECLINE_BOOKING_SUCCESS:
+      return { ...state, declineBookingInProgress: false, declineBookingSuccess: true };
+    case DECLINE_BOOKING_ERROR:
+      return { ...state, declineBookingInProgress: false, declineBookingError: payload };
+
     default:
       return state;
   }
@@ -175,6 +225,8 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
 // ================ Selectors ================ //
 
 // ================ Action creators ================ //
+
+export const setInitialState = () => ({ type: SET_INITIAL_STATE });
 
 export const fetchBookingsRequest = () => ({ type: FETCH_BOOKINGS_REQUEST });
 export const fetchBookingsSuccess = bookings => ({
@@ -199,6 +251,22 @@ export const disputeBookingRequest = () => ({ type: DISPUTE_BOOKING_REQUEST });
 export const disputeBookingSuccess = () => ({ type: DISPUTE_BOOKING_SUCCESS });
 export const disputeBookingError = e => ({
   type: DISPUTE_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const acceptBookingRequest = () => ({ type: ACCEPT_BOOKING_REQUEST });
+export const acceptBookingSuccess = () => ({ type: ACCEPT_BOOKING_SUCCESS });
+export const acceptBookingError = e => ({
+  type: ACCEPT_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const declineBookingRequest = () => ({ type: DECLINE_BOOKING_REQUEST });
+export const declineBookingSuccess = () => ({ type: DECLINE_BOOKING_SUCCESS });
+export const declineBookingError = e => ({
+  type: DECLINE_BOOKING_ERROR,
   error: true,
   payload: e,
 });
@@ -344,7 +412,6 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     const bookingResponse = denormalisedResponseEntities(response);
 
     dispatch(cancelBookingSuccess());
-    dispatch(fetchBookings());
     return bookingResponse;
   } catch (e) {
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
@@ -378,11 +445,59 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
     });
 
     dispatch(disputeBookingSuccess());
-    dispatch(fetchBookings());
     return booking;
   } catch (e) {
     log.error(e, 'dispute-booking-failed', { bookingId });
     dispatch(disputeBookingError(storableError(e)));
+  }
+};
+
+export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
+  dispatch(acceptBookingRequest());
+
+  const txId = transaction.id.uuid;
+  const { lineItems } = transaction.attributes.metadata;
+  const newBookingEnd = findEndTimeFromLineItems(lineItems);
+  const newBookingStart = moment(newBookingEnd)
+    .subtract(1, 'hours')
+    .toDate();
+
+  try {
+    await sdk.transactions.transition({
+      id: txId,
+      transition: TRANSITION_ACCEPT_BOOKING,
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+      },
+    });
+
+    dispatch(acceptBookingSuccess());
+    return;
+  } catch (e) {
+    log.error(e, 'accept-booking-failed', { txId });
+    dispatch(acceptBookingError(storableError(e)));
+  }
+};
+
+export const declineBooking = transaction => async (dispatch, getState, sdk) => {
+  dispatch(declineBookingRequest());
+
+  const txId = transaction.id.uuid;
+
+  try {
+    await sdk.transactions.transition({
+      id: txId,
+      transition: TRANSITION_DECLINE_BOOKING,
+      params: {},
+    });
+
+    dispatch(declineBookingSuccess());
+    dispatch(fetchBookings());
+    return;
+  } catch (e) {
+    log.error(e, 'decline-booking-failed', { txId });
+    dispatch(declineBookingError(storableError(e)));
   }
 };
 

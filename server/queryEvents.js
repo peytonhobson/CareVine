@@ -281,7 +281,6 @@ module.exports = queryEvents = () => {
       if (
         lastTransition === 'transition/pay-caregiver' ||
         lastTransition === 'transition/resolve-dispute' ||
-        lastTransition === 'transition/pay-caregiver-after-completion' ||
         lastTransition === 'transition/cancel-pay-caregiver'
       ) {
         createCaregiverPayout(transaction);

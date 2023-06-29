@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import {
-  TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_REVIEW,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
-  TRANSITION_REQUEST_BOOKING,
-  TRANSITION_ACCEPT_BOOKING,
-} from '../../util/transaction';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import {
   Page,
@@ -24,9 +14,17 @@ import {
   ButtonTabNavHorizontal,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { convertTimeFrom12to24, ensureCurrentUser } from '../../util/data';
+import { ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
-import { cancelBooking, disputeBooking } from './BookingsPage.duck';
+import {
+  acceptBooking,
+  cancelBooking,
+  cancelBookingSuccess,
+  declineBooking,
+  disputeBooking,
+  fetchBookings,
+  setInitialState,
+} from './BookingsPage.duck';
 
 import css from './BookingsPage.module.css';
 
@@ -42,11 +40,22 @@ const BookingsPage = props => {
     onManageDisableScrolling,
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     onCancelBooking,
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
     onDisputeBooking,
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+    onAcceptBooking,
+    onDeclineBooking,
+    onFetchBookings,
+    onResetInitialState,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -58,11 +67,22 @@ const BookingsPage = props => {
     onManageDisableScrolling,
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     onCancelBooking,
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
     onDisputeBooking,
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+    onAcceptBooking,
+    onDeclineBooking,
+    onFetchBookings,
+    onResetInitialState,
   };
 
   const tabs = [
@@ -142,9 +162,16 @@ const mapStateToProps = state => {
     bookings,
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
   } = state.BookingsPage;
   const { currentUser } = state.user;
 
@@ -156,9 +183,16 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
   };
 };
 
@@ -166,6 +200,10 @@ const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onCancelBooking: cancelBooking,
   onDisputeBooking: disputeBooking,
+  onAcceptBooking: acceptBooking,
+  onDeclineBooking: declineBooking,
+  onFetchBookings: fetchBookings,
+  onResetInitialState: setInitialState,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

@@ -9,6 +9,7 @@ import {
   CancelButton,
   Button,
   UserDisplayName,
+  PrimaryButton,
 } from '..';
 import {
   TRANSITION_DISPUTE,
@@ -43,6 +44,7 @@ const CaregiverBookingCard = props => {
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
 
   const {
     booking,
@@ -51,6 +53,16 @@ const CaregiverBookingCard = props => {
     cancelBookingError,
     onCancelBooking,
     intl,
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+    onAcceptBooking,
+    onDeclineBooking,
+    onFetchBookings,
+    onResetInitialState,
   } = props;
 
   const { customer } = booking;
@@ -65,6 +77,12 @@ const CaregiverBookingCard = props => {
   const handleCancelBooking = () => {
     const refundAmount = calculateRefundAmount(lineItems);
     onCancelBooking(booking, refundAmount);
+  };
+
+  const handleModalClose = modalCloseFunc => {
+    modalCloseFunc(false);
+    onResetInitialState();
+    onFetchBookings();
   };
 
   const customerDisplayName = (
@@ -88,7 +106,6 @@ const CaregiverBookingCard = props => {
   const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
   const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
   const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
-  const showCancel = isRequest || isActive;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -117,8 +134,13 @@ const CaregiverBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
+          {isRequest && (
+            <Button className={css.changeButton} onClick={() => setIsRespondModalOpen(true)}>
+              Respond
+            </Button>
+          )}
           {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
-          {showCancel && (
+          {isActive && (
             <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
               Cancel
             </CancelButton>
@@ -222,7 +244,7 @@ const CaregiverBookingCard = props => {
         title="Cancel Booking"
         id="CancelBookingModal"
         isOpen={isCancelModalOpen}
-        onClose={() => setIsCancelModalOpen(false)}
+        onClose={() => handleModalClose(setIsCancelModalOpen)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
         containerClassName={css.modalContainer}
@@ -243,6 +265,61 @@ const CaregiverBookingCard = props => {
             className={css.modalButton}
           >
             Cancel
+          </CancelButton>
+        </div>
+      </Modal>
+      <Modal
+        title="Respond to Booking"
+        id="RespondModal"
+        isOpen={isRespondModalOpen}
+        onClose={() => handleModalClose(setIsRespondModalOpen)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        usePortal
+        containerClassName={css.modalContainer}
+      >
+        <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
+        <BookingSummaryCard
+          className={css.refundSummaryCard}
+          authorDisplayName={customerDisplayName}
+          currentAuthor={customer}
+          selectedBookingTimes={bookingTimes}
+          bookingRate={bookingRate}
+          bookingDates={bookingDates}
+          onManageDisableScrolling={onManageDisableScrolling}
+          selectedPaymentMethod={selectedPaymentMethod}
+          displayOnMobile={!isLarge}
+          hideAvatar
+          subHeading={<span className={css.bookingWith}>Payment Details</span>}
+          refundAmount={refundAmount}
+          hideRatesButton
+          hideFees
+        />
+        {acceptBookingError ? (
+          <p className={css.error}>
+            There was an issue accepting the booking request. Please try again.
+          </p>
+        ) : null}
+        {declineBookingError ? (
+          <p className={css.error}>
+            There was an issue declining the booking request. Please try again.
+          </p>
+        ) : null}
+        <div className={css.acceptDeclineButtons}>
+          <PrimaryButton
+            inProgress={acceptBookingInProgress}
+            ready={acceptBookingSuccess}
+            onClick={() => onAcceptBooking(booking)}
+          >
+            Accept
+          </PrimaryButton>
+          <CancelButton
+            inProgress={declineBookingInProgress}
+            ready={declineBookingSuccess}
+            className={css.declineButton}
+            // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+            onClick={() => onDeclineBooking(booking)}
+          >
+            Decline
           </CancelButton>
         </div>
       </Modal>
