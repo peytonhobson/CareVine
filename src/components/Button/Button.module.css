@@ -195,4 +195,8 @@
     background-color: var(--failColor);
     border: 1px solid var(--failColor);
   }
+
+  &:disabled {
+    background-color: var(--failColor);
+  }
 }

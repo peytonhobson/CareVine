@@ -15,6 +15,7 @@ const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
 import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constants';
 import moment from 'moment';
+import { addTimeToStartOfDay } from './dates';
 
 /**
  * Combine the given relationships objects
@@ -583,4 +584,28 @@ export const findEndTimeFromLineItems = lineItems => {
     .toDate();
 
   return endTime;
+};
+
+const TRANSACTION_FEE = 0.05;
+
+export const calculateRefundAmount = lineItems => {
+  const fiftyPercentRefunds = lineItems
+    ?.filter(l => {
+      const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+      return differenceInHours < 72 * 36e5 && differenceInHours > 0;
+    })
+    .reduce((acc, curr) => acc + curr.amount / 2, 0);
+
+  const fullRefunds = lineItems
+    ?.filter(l => {
+      const startTime = addTimeToStartOfDay(l.date, l.startTime);
+      return startTime - moment().toDate() > 72 * 36e5;
+    })
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const transactionFeeRefund = parseFloat(
+    (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
+  ).toFixed(2);
+
+  return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
 };
