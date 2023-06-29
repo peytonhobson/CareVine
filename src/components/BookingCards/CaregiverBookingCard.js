@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import {
   Avatar,
@@ -64,6 +64,7 @@ const CaregiverBookingCard = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
+    bookedDates,
   } = props;
 
   const { customer } = booking;
@@ -107,6 +108,13 @@ const CaregiverBookingCard = props => {
   const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
   const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
   const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const hasSameDayBooking = useMemo(
+    () =>
+      bookedDates?.some(date =>
+        lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
+      ),
+    [bookedDates, lineItems]
+  );
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -131,7 +139,11 @@ const CaregiverBookingCard = props => {
         <div className={css.bookingTitle}>
           <Avatar user={customer} disableProfileLink className={css.avatar} />
           <div>
-            <h2 style={{ margin: 0 }}>{senderListingTitle}</h2>
+            {isMobile ? (
+              <h3 style={{ margin: 0 }}>{senderListingTitle}</h3>
+            ) : (
+              <h2 style={{ margin: 0 }}>{senderListingTitle}</h2>
+            )}
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
@@ -310,36 +322,59 @@ const CaregiverBookingCard = props => {
             There was an issue declining the booking request. Please try again.
           </p>
         ) : null}
-        <div className={css.acceptDeclineButtons}>
-          <PrimaryButton
-            inProgress={acceptBookingInProgress}
-            ready={acceptBookingSuccess}
-            onClick={() => onAcceptBooking(booking)}
-            disabled={
-              declineBookingSuccess ||
-              declineBookingInProgress ||
-              acceptBookingSuccess ||
-              acceptBookingInProgress
-            }
-          >
-            Accept
-          </PrimaryButton>
-          <CancelButton
-            inProgress={declineBookingInProgress}
-            ready={declineBookingSuccess}
-            className={css.declineButton}
-            // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
-            onClick={() => onDeclineBooking(booking)}
-            disabled={
-              acceptBookingSuccess ||
-              acceptBookingInProgress ||
-              declineBookingSuccess ||
-              declineBookingInProgress
-            }
-          >
-            Decline
-          </CancelButton>
-        </div>
+        {hasSameDayBooking ? (
+          <div className={css.bookingDecisionContainer}>
+            <h3 className={css.bookingDeclined}>
+              You have a booking on the same day. Please decline this booking request.
+            </h3>
+            <CancelButton
+              inProgress={declineBookingInProgress}
+              ready={declineBookingSuccess}
+              className={css.declineButton}
+              // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+              onClick={() => onDeclineBooking(booking)}
+              disabled={
+                acceptBookingSuccess ||
+                acceptBookingInProgress ||
+                declineBookingSuccess ||
+                declineBookingInProgress
+              }
+            >
+              Decline
+            </CancelButton>
+          </div>
+        ) : (
+          <div className={css.acceptDeclineButtons}>
+            <PrimaryButton
+              inProgress={acceptBookingInProgress}
+              ready={acceptBookingSuccess}
+              onClick={() => onAcceptBooking(booking)}
+              disabled={
+                declineBookingSuccess ||
+                declineBookingInProgress ||
+                acceptBookingSuccess ||
+                acceptBookingInProgress
+              }
+            >
+              Accept
+            </PrimaryButton>
+            <CancelButton
+              inProgress={declineBookingInProgress}
+              ready={declineBookingSuccess}
+              className={css.declineButton}
+              // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+              onClick={() => onDeclineBooking(booking)}
+              disabled={
+                acceptBookingSuccess ||
+                acceptBookingInProgress ||
+                declineBookingSuccess ||
+                declineBookingInProgress
+              }
+            >
+              Decline
+            </CancelButton>
+          </div>
+        )}
       </Modal>
     </div>
   );

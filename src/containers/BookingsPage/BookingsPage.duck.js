@@ -28,6 +28,7 @@ import {
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
+import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
 
@@ -131,6 +132,10 @@ export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
+export const SUBMIT_REVIEW_REQUEST = 'app/BookingsPage/SUBMIT_REVIEW_REQUEST';
+export const SUBMIT_REVIEW_SUCCESS = 'app/BookingsPage/SUBMIT_REVIEW_SUCCESS';
+export const SUBMIT_REVIEW_ERROR = 'app/BookingsPage/SUBMIT_REVIEW_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -154,6 +159,9 @@ const initialState = {
   declineBookingError: null,
   declineBookingInProgress: false,
   declineBookingSuccess: false,
+  submitReviewInProgress: false,
+  submitReviewError: null,
+  reviewSubmitted: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -217,6 +225,18 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
     case DECLINE_BOOKING_ERROR:
       return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
+    case SUBMIT_REVIEW_REQUEST:
+      return {
+        ...state,
+        submitReviewInProgress: true,
+        submitReviewError: null,
+        reviewSubmitted: false,
+      };
+    case SUBMIT_REVIEW_SUCCESS:
+      return { ...state, submitReviewInProgress: false, reviewSubmitted: true };
+    case SUBMIT_REVIEW_ERROR:
+      return { ...state, submitReviewInProgress: false, submitReviewError: payload };
+
     default:
       return state;
   }
@@ -267,6 +287,14 @@ export const declineBookingRequest = () => ({ type: DECLINE_BOOKING_REQUEST });
 export const declineBookingSuccess = () => ({ type: DECLINE_BOOKING_SUCCESS });
 export const declineBookingError = e => ({
   type: DECLINE_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const submitReviewRequest = () => ({ type: SUBMIT_REVIEW_REQUEST });
+export const submitReviewSuccess = () => ({ type: SUBMIT_REVIEW_SUCCESS });
+export const submitReviewError = e => ({
+  type: SUBMIT_REVIEW_ERROR,
   error: true,
   payload: e,
 });
@@ -472,6 +500,7 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
       },
     });
 
+    dispatch(fetchCurrentUserHasListings());
     dispatch(acceptBookingSuccess());
     return;
   } catch (e) {
@@ -497,6 +526,26 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });
     dispatch(declineBookingError(storableError(e)));
+  }
+};
+
+export const submitReview = (tx, reviewRating, reviewContent) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
+  dispatch(submitReviewRequest());
+
+  const txId = tx.id.uuid;
+  const params = { reviewRating, reviewContent };
+
+  try {
+    await sdk.transactions.transition({ id: txId, transition: TRANSITION_REVIEW, params });
+
+    dispatch(submitReviewSuccess());
+  } catch (e) {
+    log.error(e, 'review-submission-failed', { txId });
+    dispatch(submitReviewError(storableError(e)));
   }
 };
 

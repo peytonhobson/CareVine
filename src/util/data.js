@@ -607,5 +607,13 @@ export const calculateRefundAmount = lineItems => {
     (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
   ).toFixed(2);
 
+  console.log('transactionFeeRefund ', transactionFeeRefund);
+  console.log('full refunds ', fullRefunds);
+
+  console.log(
+    'total refund ',
+    parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100)
+  );
+
   return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
 };

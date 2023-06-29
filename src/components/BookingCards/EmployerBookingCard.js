@@ -10,14 +10,17 @@ import {
   CancelButton,
   Button,
   UserDisplayName,
+  ReviewModal,
 } from '..';
 import {
   TRANSITION_COMPLETE,
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_PAY_CAREGIVER,
+  TRANSITION_RESOLVE_DISPUTE,
 } from '../../util/transaction';
-import { convertTimeFrom12to24, userDisplayName, calculateRefundAmount } from '../../util/data';
+import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -48,10 +51,10 @@ const EmployerBookingCard = props => {
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const {
     booking,
-    currentUser,
     onManageDisableScrolling,
     cancelBookingInProgress,
     cancelBookingError,
@@ -64,6 +67,10 @@ const EmployerBookingCard = props => {
     intl,
     onFetchBookings,
     onResetInitialState,
+    onSubmitReview,
+    submitReviewInProgress,
+    submitReviewError,
+    reviewSubmitted,
   } = props;
 
   const { provider } = booking;
@@ -115,6 +122,9 @@ const EmployerBookingCard = props => {
   const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
   const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
   const showCancel = isRequest || isActive;
+  const isReviewable =
+    booking?.attributes.lastTransition === TRANSITION_PAY_CAREGIVER ||
+    booking?.attributes.lastTransition === TRANSITION_RESOLVE_DISPUTE;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -154,6 +164,11 @@ const EmployerBookingCard = props => {
             <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
               Cancel
             </CancelButton>
+          )}
+          {isReviewable && (
+            <Button className={css.changeButton} onClick={() => setIsReviewModalOpen(true)}>
+              Review
+            </Button>
           )}
         </div>
       </div>
@@ -319,6 +334,17 @@ const EmployerBookingCard = props => {
           disputeBookingSuccess={disputeBookingSuccess}
         />
       </Modal>
+      <ReviewModal
+        id={`ReviewOrderModal.${booking.id.uuid}`}
+        isOpen={isReviewModalOpen}
+        onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onSubmitReview={onSubmitReview}
+        revieweeName={providerDisplayName}
+        reviewSent={reviewSubmitted}
+        sendReviewInProgress={submitReviewInProgress}
+        sendReviewError={submitReviewError}
+      />
     </div>
   );
 };

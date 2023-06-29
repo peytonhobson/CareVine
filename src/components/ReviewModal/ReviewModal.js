@@ -51,6 +51,7 @@ const ReviewModal = props => {
         reviewSent={reviewSent}
         sendReviewInProgress={sendReviewInProgress}
         sendReviewError={sendReviewError}
+        initialValues={{ reviewRating: 5 }}
       />
     </Modal>
   );
