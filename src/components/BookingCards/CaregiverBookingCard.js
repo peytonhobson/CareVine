@@ -16,7 +16,7 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
 } from '../../util/transaction';
-import { convertTimeFrom12to24 } from '../../util/data';
+import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -51,6 +51,7 @@ const CaregiverBookingCard = props => {
     onManageDisableScrolling,
     cancelBookingInProgress,
     cancelBookingError,
+    cancelBookingSuccess,
     onCancelBooking,
     intl,
     acceptBookingError,
@@ -256,13 +257,18 @@ const CaregiverBookingCard = props => {
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>
-          <Button onClick={() => setIsCancelModalOpen(false)} className={css.modalButton}>
+          <Button
+            onClick={() => handleModalClose(setIsCancelModalOpen)}
+            className={css.modalButton}
+          >
             Back
           </Button>
           <CancelButton
             inProgress={cancelBookingInProgress}
             onClick={handleCancelBooking}
             className={css.modalButton}
+            ready={cancelBookingSuccess}
+            disabled={cancelBookingSuccess || cancelBookingInProgress}
           >
             Cancel
           </CancelButton>
@@ -309,6 +315,12 @@ const CaregiverBookingCard = props => {
             inProgress={acceptBookingInProgress}
             ready={acceptBookingSuccess}
             onClick={() => onAcceptBooking(booking)}
+            disabled={
+              declineBookingSuccess ||
+              declineBookingInProgress ||
+              acceptBookingSuccess ||
+              acceptBookingInProgress
+            }
           >
             Accept
           </PrimaryButton>
@@ -318,6 +330,12 @@ const CaregiverBookingCard = props => {
             className={css.declineButton}
             // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
             onClick={() => onDeclineBooking(booking)}
+            disabled={
+              acceptBookingSuccess ||
+              acceptBookingInProgress ||
+              declineBookingSuccess ||
+              declineBookingInProgress
+            }
           >
             Decline
           </CancelButton>

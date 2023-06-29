@@ -493,7 +493,6 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
     });
 
     dispatch(declineBookingSuccess());
-    dispatch(fetchBookings());
     return;
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });

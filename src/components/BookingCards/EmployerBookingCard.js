@@ -17,11 +17,9 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
 } from '../../util/transaction';
-import { convertTimeFrom12to24, userDisplayName } from '../../util/data';
+import { convertTimeFrom12to24, userDisplayName, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
-import moment from 'moment';
-import { addTimeToStartOfDay } from '../../util/dates';
 import { v4 as uuidv4 } from 'uuid';
 import { DisputeForm } from '../../forms';
 import { useCheckMobileScreen } from '../../util/hooks';
@@ -42,28 +40,6 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
 
   return end - start;
-};
-
-const calculateRefundAmount = lineItems => {
-  const fiftyPercentRefunds = lineItems
-    ?.filter(l => {
-      const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
-      return differenceInHours < 72 * 36e5 && differenceInHours > 0;
-    })
-    .reduce((acc, curr) => acc + curr.amount / 2, 0);
-
-  const fullRefunds = lineItems
-    ?.filter(l => {
-      const startTime = addTimeToStartOfDay(l.date, l.startTime);
-      return startTime - moment().toDate() > 72 * 36e5;
-    })
-    .reduce((acc, curr) => acc + curr.amount, 0);
-
-  const transactionFeeRefund = parseFloat(
-    (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
-  ).toFixed(2);
-
-  return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
 };
 
 const EmployerBookingCard = props => {
