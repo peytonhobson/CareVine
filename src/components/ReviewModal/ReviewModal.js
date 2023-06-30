@@ -37,7 +37,6 @@ const ReviewModal = props => {
       onClose={onCloseModal}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      closeButtonMessage={closeButtonMessage}
     >
       <IconReviewUser className={css.modalIcon} />
       <p className={css.modalTitle}>
@@ -51,7 +50,7 @@ const ReviewModal = props => {
         reviewSent={reviewSent}
         sendReviewInProgress={sendReviewInProgress}
         sendReviewError={sendReviewError}
-        initialValues={{ reviewRating: 5 }}
+        initialValues={{ reviewRating: 0 }}
       />
     </Modal>
   );

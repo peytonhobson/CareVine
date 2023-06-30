@@ -11,7 +11,7 @@ import { Rating } from '@mui/material';
 
 const FieldReviewRatingComponent = props => {
   /* eslint-disable no-unused-vars */
-  const { rootClassName, className, customErrorText, label, input, meta } = props;
+  const { rootClassName, className, customErrorText, label, input, meta, disabled } = props;
   /* eslint-enable no-unused-vars */
 
   const { touched, error } = meta;
@@ -45,6 +45,7 @@ const FieldReviewRatingComponent = props => {
               input.onChange(newValue);
             }}
             value={value}
+            disabled={disabled}
           />
         </div>
       </fieldset>
