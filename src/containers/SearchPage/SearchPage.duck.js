@@ -43,6 +43,10 @@ export const FETCH_CHANNEL_REQUEST = 'app/SearchPage/FETCH_CHANNEL_REQUEST';
 export const FETCH_CHANNEL_SUCCESS = 'app/SearchPage/FETCH_CHANNEL_SUCCESS';
 export const FETCH_CHANNEL_ERROR = 'app/SearchPage/FETCH_CHANNEL_ERROR';
 
+export const FETCH_REVIEWS_REQUEST = 'app/SearchPage/FETCH_REVIEWS_REQUEST';
+export const FETCH_REVIEWS_SUCCESS = 'app/SearchPage/FETCH_REVIEWS_SUCCESS';
+export const FETCH_REVIEWS_ERROR = 'app/SearchPage/FETCH_REVIEWS_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -57,6 +61,9 @@ const initialState = {
   fetchTransactionInProgress: false,
   fetchTransactionsError: false,
   searchListingsSuccess: false,
+  fetchReviewsInProgress: false,
+  fetchReviewsError: null,
+  reviews: {},
 };
 
 const resultIds = data => data.data.map(l => l.id);
@@ -129,6 +136,20 @@ const listingPageReducer = (state = initialState, action = {}) => {
         fetchTransactionsError: true,
       };
 
+    case FETCH_REVIEWS_REQUEST:
+      return { ...state, fetchReviewsInProgress: true, fetchReviewsError: null };
+    case FETCH_REVIEWS_SUCCESS:
+      return {
+        ...state,
+        fetchReviewsInProgress: false,
+        reviews: payload.reduce((acc, review) => {
+          acc[review.data.included?.[0].id.uuid] = review.data.data;
+          return acc;
+        }, {}),
+      };
+    case FETCH_REVIEWS_ERROR:
+      return { ...state, fetchReviewsInProgress: false, fetchReviewsError: payload };
+
     default:
       return state;
   }
@@ -174,6 +195,17 @@ export const fetchTransactionsSuccess = response => ({
 });
 export const fetchTransactionsError = e => ({
   type: FETCH_TRANSACTIONS_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
+export const fetchReviewsSuccess = response => ({
+  type: FETCH_REVIEWS_SUCCESS,
+  payload: response,
+});
+export const fetchReviewsError = e => ({
+  type: FETCH_REVIEWS_ERROR,
   error: true,
   payload: e,
 });
@@ -244,6 +276,12 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     .then(response => {
       dispatch(addMarketplaceEntities(response));
       dispatch(searchListingsSuccess(response));
+
+      if (listingType === CAREGIVER) {
+        const listingIds = response.data.data.map(l => l.id.uuid);
+        dispatch(fetchReviews(listingIds));
+      }
+
       return response;
     })
     .catch(e => {
@@ -256,6 +294,30 @@ export const setActiveListing = listingId => ({
   type: SEARCH_MAP_SET_ACTIVE_LISTING,
   payload: listingId,
 });
+
+export const fetchReviews = listingIds => async (dispatch, getState, sdk) => {
+  dispatch(fetchReviewsRequest());
+
+  const reviewsQuery = {
+    include: ['listing'],
+    'fields.review': ['id', 'rating'],
+    'fields.listing': ['id'],
+  };
+  const reviewsPromise = listingIds.map(async listingId => {
+    const query = { ...reviewsQuery, listingId };
+    const review = await sdk.reviews.query(query);
+    return review;
+  });
+
+  try {
+    const reviews = await Promise.all(reviewsPromise);
+
+    dispatch(fetchReviewsSuccess(reviews));
+  } catch (e) {
+    dispatch(fetchReviewsError(storableError(e)));
+    throw e;
+  }
+};
 
 export const loadData = (params, search) => {
   const queryParams = parse(search, {

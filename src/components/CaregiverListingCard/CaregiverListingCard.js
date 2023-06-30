@@ -27,10 +27,11 @@ import {
   AvailabilityPreview,
   IconCareVineGold,
   Button,
+  ReviewRating,
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
-import { formatPrice } from '../../util/data';
+import { formatPrice, calculateAverageRating } from '../../util/data';
 import { SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './CaregiverListingCard.module.css';
@@ -105,11 +106,6 @@ export const CaregiverListingCardComponent = props => {
     />
   );
 
-  const premiumIconTitle = (
-    <p>
-      <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
-    </p>
-  );
   const additionalServices = providedServices
     .filter((service, index) => index > 1)
     .map(service => servicesMap.get(service));
@@ -195,6 +191,10 @@ export const CaregiverListingCardComponent = props => {
     );
   };
 
+  const reviews = currentListing?.reviews;
+  const reviewsCount = reviews?.length ?? 0;
+  const averageRating = calculateAverageRating(reviews);
+
   return (
     <Card className={cardClasses?.root}>
       <Wrapper>
@@ -226,86 +226,103 @@ export const CaregiverListingCardComponent = props => {
                 />
               </h3>
             </div>
-            {!isMobile && <AvailabilityPreview entries={availabilityPlan?.entries} />}
+            {!isMobile && (
+              <div className={css.ratingsContainer}>
+                <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
+                <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
+              </div>
+            )}
           </div>
         </div>
         <div className={css.mainInfo}>
-          {isMobile && <AvailabilityPreview entries={availabilityPlan?.entries} />}
-          <div className={css.badges}>
-            {hasPremiumSubscription && (
-              <div className={css.goldBadge}>
-                <InfoTooltip
-                  title={backgroundCheckTitle}
-                  icon={
-                    <IconCareVineGold
-                      height={isMobile ? '1.3em' : '1.6em'}
-                      width={isMobile ? '1.3em' : '1.8em'}
-                    />
-                  }
-                  styles={{ paddingInline: '0' }}
-                />
-              </div>
-            )}
-            {certificationsAndTraining && (
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={certificationsAndTrainingTitle}
-                  icon={
-                    <IconCertification
-                      height={isMobile ? '15' : null}
-                      width={isMobile ? '16' : null}
-                    />
-                  }
-                  styles={{ paddingInline: '0' }}
-                />
-              </div>
-            )}
-            {additionalInfo && additionalInfo.includes('hasCar') && (
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={hasCarTitle}
-                  icon={<IconCar height={isMobile ? '15' : null} width={isMobile ? '16' : null} />}
-                  styles={{ paddingInline: '0' }}
-                />
-              </div>
-            )}
-            {experienceLevel !== '0' && (
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={experienceLevelTitle}
-                  icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
-                  styles={{ paddingInline: '0' }}
-                />
-              </div>
-            )}
-            {scheduleTypes && scheduleTypes.includes('liveIn') && (
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={
-                    <p>
-                      <FormattedMessage id="CaregiverListingCard.liveInCare" />
-                    </p>
-                  }
-                  icon={
-                    <IconHouse height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
-                  }
-                  styles={{ paddingInline: '0' }}
-                />
-              </div>
-            )}
-            {scheduleTypes && scheduleTypes.includes('oneTime') && (
-              <div className={css.badge}>
-                <InfoTooltip
-                  title={
-                    <p>
-                      <FormattedMessage id="CaregiverListingCard.oneTimeCare" />
-                    </p>
-                  }
-                  icon={
-                    <IconCalendar height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
-                  }
-                  styles={{ paddingInline: '0' }}
-                />
+          <div className={css.mobileMidContainer}>
+            <div className={css.badges}>
+              {hasPremiumSubscription && (
+                <div className={css.goldBadge}>
+                  <InfoTooltip
+                    title={backgroundCheckTitle}
+                    icon={
+                      <IconCareVineGold
+                        height={isMobile ? '1.3em' : '1.6em'}
+                        width={isMobile ? '1.3em' : '1.8em'}
+                      />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+              {certificationsAndTraining && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={certificationsAndTrainingTitle}
+                    icon={
+                      <IconCertification
+                        height={isMobile ? '15' : null}
+                        width={isMobile ? '16' : null}
+                      />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+              {additionalInfo && additionalInfo.includes('hasCar') && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={hasCarTitle}
+                    icon={
+                      <IconCar height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+              {experienceLevel !== '0' && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={experienceLevelTitle}
+                    icon={<div className={css.yearsExperience}>{experienceLevel}</div>}
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+              {scheduleTypes && scheduleTypes.includes('liveIn') && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={
+                      <p>
+                        <FormattedMessage id="CaregiverListingCard.liveInCare" />
+                      </p>
+                    }
+                    icon={
+                      <IconHouse height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+              {scheduleTypes && scheduleTypes.includes('oneTime') && (
+                <div className={css.badge}>
+                  <InfoTooltip
+                    title={
+                      <p>
+                        <FormattedMessage id="CaregiverListingCard.oneTimeCare" />
+                      </p>
+                    }
+                    icon={
+                      <IconCalendar
+                        height={isMobile ? '15' : null}
+                        width={isMobile ? '16' : null}
+                      />
+                    }
+                    styles={{ paddingInline: '0' }}
+                  />
+                </div>
+              )}
+            </div>
+            {isMobile && (
+              <div className={css.ratingsContainer}>
+                <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
+                <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
               </div>
             )}
           </div>

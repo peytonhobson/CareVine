@@ -119,6 +119,7 @@ export class SearchPageComponent extends Component {
       searchParams,
       params,
       sortConfig,
+      reviews,
     } = this.props;
     // eslint-disable-next-line no-unused-vars
     const { mapSearch, page, ...searchInURL } = parse(location.search, {
@@ -186,6 +187,7 @@ export class SearchPageComponent extends Component {
             searchParamsForPagination={parse(location.search)}
             showAsModalMaxWidth={MODAL_BREAKPOINT}
             urlQueryParams={validQueryParams}
+            reviews={reviews}
           />
         </div>
       </Page>
@@ -246,6 +248,7 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     searchListingsSuccess,
+    reviews,
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
   const currentUserListing = state.user.currentUserListing;
@@ -301,6 +304,7 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     searchListingsSuccess,
+    reviews,
   };
 };
 

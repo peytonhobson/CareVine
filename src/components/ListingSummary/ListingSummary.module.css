@@ -14,8 +14,9 @@
   align-items: center;
 
   @media (--viewportMedium) {
-    display: grid;
-    grid-template-columns: auto auto;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
     width: 100%;
   }
 }
@@ -24,10 +25,6 @@
   max-width: 85%;
   display: grid;
   grid-template-columns: auto auto;
-
-  @media (--viewportMedium) {
-    max-width: 70%;
-  }
 }
 
 .userDisplay {
@@ -91,6 +88,11 @@
   margin: auto;
 
   @media (--viewportMedium) {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  @media (--viewportLarge) {
     width: 10rem;
     height: 10rem;
   }
@@ -101,6 +103,10 @@
   font-weight: var(--fontWeightSemiBold);
 
   @media (--viewportMedium) {
+    font-size: 3.5rem;
+  }
+
+  @media (--viewportLarge) {
     font-size: 5rem;
   }
 }

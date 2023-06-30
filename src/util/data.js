@@ -617,3 +617,9 @@ export const calculateRefundAmount = lineItems => {
 
   return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
 };
+
+export const calculateAverageRating = reviews => {
+  if (!reviews || reviews.length === 0) return 0;
+  const sum = reviews.reduce((acc, curr) => acc + curr.attributes.rating, 0);
+  return sum / reviews.length;
+};
