@@ -378,11 +378,6 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     : TRANSITION_CANCEL_BOOKING_REQUEST;
 
   try {
-    await updateTransactionMetadata({
-      txId: bookingId,
-      metadata: { refundAmount },
-    });
-
     if (isAccepted && paymentIntentId && refundAmount > 0) {
       await stripeCreateRefund({
         paymentIntentId,
@@ -390,10 +385,13 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         reason: 'requested_by_customer',
       });
 
+      const newLineItems = mapLineItemsForCancellation(lineItems);
+      const payout = newLineItems.reduce((acc, item) => acc + item.amount, 0);
+
       // Update line items so caregiver is paid out correct amount after refund
       await updateTransactionMetadata({
         txId: bookingId,
-        metadata: { lineItems: mapLineItemsForCancellation(lineItems) },
+        metadata: { lineItems: newLineItems, refundAmount, payout },
       });
     }
 

@@ -1,1 +1,1 @@
-Booking Complete
+Booking with {{transaction.provider.display-name}} Complete

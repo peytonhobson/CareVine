@@ -2,8 +2,12 @@
   <head>
     <style type="text/css">
       @media only screen and (max-width: 768px) {
-        .body {
-          padding: 32px 32px 44px 32px !important;
+        .body1 {
+          padding: 32px 32px 32px 32px !important;
+        }
+
+        .body2 {
+          padding: 0 32px 16px 32px !important;
         }
 
         .content {
@@ -34,11 +38,28 @@
           Booking Canceled
         </p>
         <p
-          class="body"
-          style="padding: 32px 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+          class="body1"
+          style="padding: 32px 56px 32px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
-          {{transaction.customer.display-name}} has canceled your booking. You will be paid for any
-          time already completed.
+          {{transaction.customer.display-name}} has canceled your booking and all future booking
+          times will no longer occur.
+          {{#if transaction.metadata.payout}}
+            You will be paid out ${{transaction.metadata.payout}} for all prior time worked.
+          {{else}}
+            You did not complete any booking times and will not receive a payout.
+          {{/if}}
+        </p>
+        <p
+          class="body2"
+          style="padding: 0 56px 16px 32px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+        >
+          If you have any questions or concerns regarding the booking or your payout amount, please
+          contact us at
+          <a
+            href="mailto:support@carevine.us"
+            style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+            >support@carevine.us</a
+          >.
         </p>
       </div>
       <div class="footer" style="text-align: center;">

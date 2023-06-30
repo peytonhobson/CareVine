@@ -205,10 +205,6 @@
     :on :transition/cancel-request,
     :to :actor.role/customer,
     :template :booking-request-canceled-confirmation}
-    {:name :notification/booking-request-canceled,
-    :on :transition/cancel-request,
-    :to :actor.role/provider,
-    :template :booking-request-canceled}
 
     ; Customer Payment was declined
     {:name :notification/payment-failed-customer,
@@ -251,26 +247,10 @@
     :on :transition/pay-caregiver,
     :to :actor.role/customer,
     :template :customer-can-review}
-    {:name :notification/caregiver-paid,
-    :on :transition/pay-caregiver,
-    :to :actor.role/provider,
-    :template :caregiver-paid}
-
-    ; Caregiver paid out after cancellation
-    {:name :notification/cancel-caregiver-paid,
-    :on :transition/cancel-pay-caregiver,
-    :to :actor.role/provider,
-    :template :caregiver-paid}
 
     ; Customer reviewed caregiver
     {:name :notification/customer-reviewed,
     :on :transition/review,
     :to :actor.role/provider,
     :template :customer-reviewed}
-
-    ; Review period expired
-    {:name :notification/review-period-expired,
-    :on :transition/expire-review-period,
-    :to :actor.role/customer
-    :template :review-period-expired}
 ]}

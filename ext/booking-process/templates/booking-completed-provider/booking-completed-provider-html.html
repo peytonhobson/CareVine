@@ -2,7 +2,11 @@
   <head>
     <style type="text/css">
       @media only screen and (max-width: 768px) {
-        .body {
+        .body1 {
+          padding: 32px 32px 0 32px !important;
+        }
+
+        .body2 {
           padding: 32px 32px 32px 32px !important;
         }
 
@@ -34,11 +38,17 @@
           Booking Complete
         </p>
         <p
-          class="body"
-          style="padding: 32px 56px 48px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+          class="body1"
+          style="padding: 32px 56px 0 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
           Your booking with {{transaction.customer.display-name}} has been completed. If no disputes
-          are submitted by the client, you will receive payment in 48 hours. Click the button below
+          are submitted by the client, you will receive payment in the next 3-7 days. If you don't receive payment within 10 days, please contact support at <a style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;" href="mailto:support@carevine.us">support@carevine.us</a>.
+          </p>
+          <p
+          class="body2"
+          style="padding: 32px 56px 48px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+        >
+          Click the button below
           to view the booking summary.
         </p>
         <div
