@@ -28,6 +28,7 @@ const SearchResultsPanel = props => {
     currentUserListing,
     onManageDisableScrolling,
     urlQueryParams,
+    reviews,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -57,10 +58,15 @@ const SearchResultsPanel = props => {
 
   const parsedLocation = location ? JSON.parse(location) : null;
 
+  const listingsWithReviews = listings.map(listing => {
+    const listingReviews = reviews[listing.id.uuid] || [];
+    return { ...listing, reviews: listingReviews };
+  });
+
   return (
     <div className={classes}>
       <div className={css.listingCards}>
-        {listings.map(l =>
+        {listingsWithReviews.map(l =>
           listingType === CAREGIVER ? (
             <CaregiverListingCard
               className={css.listingCard}

@@ -219,6 +219,7 @@ class MainPanel extends Component {
       showAsModalMaxWidth,
       sortConfig,
       urlQueryParams,
+      reviews,
     } = this.props;
 
     const primaryFilters = filterConfig.filter(f => f.group === 'primary');
@@ -424,6 +425,7 @@ class MainPanel extends Component {
               currentUserListing={currentUserListing}
               onManageDisableScrolling={onManageDisableScrolling}
               urlQueryParams={urlQueryParams}
+              reviews={reviews}
             />
           </div>
         )}
