@@ -60,7 +60,7 @@ import {
   closeListing,
   openListing,
   fetchTimeSlots,
-  fetchTransactionLineItems,
+  fetchReviews,
 } from './ListingPage.duck';
 import BookingContainer from './BookingContainer';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -244,6 +244,9 @@ export class ListingPageComponent extends Component {
       hasStripeAccount,
       hasStripeAccountInProgress,
       hasStripeAccountError,
+      fetchReviewsError,
+      fetchReviewsInProgress,
+      reviews,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -434,6 +437,9 @@ export class ListingPageComponent extends Component {
                       isFromSearchPage={isFromSearchPage}
                       onGoBackToSearchResults={this.goBackToSearchResults}
                       origin={origin || currentUserOrigin}
+                      reviews={reviews}
+                      fetchReviewsError={fetchReviewsError}
+                      onManageDisableScrolling={onManageDisableScrolling}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -559,6 +565,9 @@ const mapStateToProps = state => {
     openListingError,
     origin,
     monthlyTimeSlots,
+    fetchReviewsError,
+    fetchReviewsInProgress,
+    reviews,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -603,6 +612,9 @@ const mapStateToProps = state => {
     hasStripeAccount,
     hasStripeAccountInProgress,
     hasStripeAccountError,
+    fetchReviewsError,
+    fetchReviewsInProgress,
+    reviews,
   };
 };
 
@@ -620,8 +632,6 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
-  onFetchTransactionLineItems: (bookingData, listingId, isOwnListing) =>
-    dispatch(fetchTransactionLineItems(bookingData, listingId, isOwnListing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

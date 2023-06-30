@@ -92,6 +92,11 @@ const EmployerBookingCard = props => {
     onDisputeBooking(booking, disputeReason);
   };
 
+  const handleReviewSubmit = values => {
+    const { reviewRating, reviewContent } = values;
+    onSubmitReview(booking, reviewRating, reviewContent);
+  };
+
   const handleModalClose = modalCloseFunc => {
     modalCloseFunc(false);
     onResetInitialState();
@@ -339,7 +344,7 @@ const EmployerBookingCard = props => {
         isOpen={isReviewModalOpen}
         onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
         onManageDisableScrolling={onManageDisableScrolling}
-        onSubmitReview={onSubmitReview}
+        onSubmitReview={handleReviewSubmit}
         revieweeName={providerDisplayName}
         reviewSent={reviewSubmitted}
         sendReviewInProgress={submitReviewInProgress}

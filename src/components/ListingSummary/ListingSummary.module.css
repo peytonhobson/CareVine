@@ -8,6 +8,18 @@
   width: 100%;
 }
 
+.topRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 100%;
+  }
+}
+
 .user {
   max-width: 85%;
   display: grid;
@@ -46,30 +58,29 @@
   align-items: center;
 
   @media (--viewportMedium) {
-    width: auto;
-    margin-top: 0;
-
-    flex-direction: column;
+    margin-top: 3rem;
   }
 }
 
 .button {
-  min-height: 0;
-  padding: 0.75rem 2rem;
+  white-space: nowrap;
   min-width: 0;
+
+  margin-inline: 1rem;
+
   border: 2px solid var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    margin-inline: 5rem;
+  }
 }
 
 .secondaryButton {
-  min-height: 0;
-  padding: 0.75rem 2rem;
   min-width: 0;
   max-width: 10rem;
 }
 
 .previewButton {
-  min-height: 0;
-  padding: 0.75rem 2rem;
   max-width: 13rem;
   margin-inline: 0.5rem;
 }
@@ -148,6 +159,7 @@
   color: var(--matterColor);
   position: relative;
   width: 100%;
+  white-space: nowrap;
 
   /* Remove default margins from font */
   margin: 0;

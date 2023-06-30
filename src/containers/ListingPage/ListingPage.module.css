@@ -535,6 +535,7 @@
 
   @media (--viewportMedium) {
     padding: 0;
+    width: 20rem;
   }
   @media (--viewportLarge) {
     margin-bottom: 3px;
@@ -544,15 +545,9 @@
 .reviewsHeading {
   composes: h3 from global;
   color: var(--matterColorAnti);
-
-  margin: 52px 0 20px 0;
-
-  @media (--viewportMedium) {
-    margin: 53px 0 27px 0;
-  }
-  @media (--viewportLarge) {
-    margin: 50px 0 26px 0;
-  }
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: 3rem;
 }
 
 .sectionHost {
@@ -809,4 +804,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.seeMoreButton {
+  composes: marketplaceTinyFontStyles from global;
+  margin-left: 1rem;
+}
+
+.allReviews {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 2rem;
 }

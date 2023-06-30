@@ -60,9 +60,9 @@ export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUES
 export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
 export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
 
-export const FETCH_LINE_ITEMS_REQUEST = 'app/ListingPage/FETCH_LINE_ITEMS_REQUEST';
-export const FETCH_LINE_ITEMS_SUCCESS = 'app/ListingPage/FETCH_LINE_ITEMS_SUCCESS';
-export const FETCH_LINE_ITEMS_ERROR = 'app/ListingPage/FETCH_LINE_ITEMS_ERROR';
+export const FETCH_REVIEWS_REQUEST = 'app/ListingPage/FETCH_REVIEWS_REQUEST';
+export const FETCH_REVIEWS_SUCCESS = 'app/ListingPage/FETCH_REVIEWS_SUCCESS';
+export const FETCH_REVIEWS_ERROR = 'app/ListingPage/FETCH_REVIEWS_ERROR';
 
 // ================ Reducer ================ //
 
@@ -89,9 +89,9 @@ const initialState = {
     //   fetchTimeSlotsInProgress: null,
     // },
   },
-  lineItems: null,
-  fetchLineItemsInProgress: false,
-  fetchLineItemsError: null,
+  fetchReviewsError: null,
+  fetchReviewsInProgress: false,
+  reviews: [],
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -190,12 +190,12 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, monthlyTimeSlots };
     }
 
-    case FETCH_LINE_ITEMS_REQUEST:
-      return { ...state, fetchLineItemsInProgress: true, fetchLineItemsError: null };
-    case FETCH_LINE_ITEMS_SUCCESS:
-      return { ...state, fetchLineItemsInProgress: false, lineItems: payload };
-    case FETCH_LINE_ITEMS_ERROR:
-      return { ...state, fetchLineItemsInProgress: false, fetchLineItemsError: payload };
+    case FETCH_REVIEWS_REQUEST:
+      return { ...state, fetchReviewsInProgress: true, fetchReviewsError: null };
+    case FETCH_REVIEWS_SUCCESS:
+      return { ...state, fetchReviewsInProgress: false, reviews: payload };
+    case FETCH_REVIEWS_ERROR:
+      return { ...state, fetchReviewsInProgress: false, fetchReviewsError: payload };
 
     default:
       return state;
@@ -270,32 +270,12 @@ export const fetchTimeSlotsError = (monthId, error) => ({
   payload: { monthId, error },
 });
 
-export const fetchLineItemsRequest = () => ({ type: FETCH_LINE_ITEMS_REQUEST });
-export const fetchLineItemsSuccess = lineItems => ({
-  type: FETCH_LINE_ITEMS_SUCCESS,
-  payload: lineItems,
+export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
+export const fetchReviewsSuccess = reviews => ({
+  type: FETCH_REVIEWS_SUCCESS,
+  payload: reviews,
 });
-export const fetchLineItemsError = error => ({
-  type: FETCH_LINE_ITEMS_ERROR,
-  error: true,
-  payload: error,
-});
-
-export const fetchTransactionLineItems = ({ bookingData, listingId, isOwnListing }) => dispatch => {
-  dispatch(fetchLineItemsRequest());
-  transactionLineItems({ bookingData, listingId, isOwnListing })
-    .then(response => {
-      const lineItems = response.data;
-      dispatch(fetchLineItemsSuccess(lineItems));
-    })
-    .catch(e => {
-      dispatch(fetchLineItemsError(storableError(e)));
-      log.error(e, 'fetching-line-items-failed', {
-        listingId: listingId.uuid,
-        bookingData: bookingData,
-      });
-    });
-};
+export const fetchReviewsError = e => ({ type: FETCH_REVIEWS_ERROR, error: true, payload: e });
 
 // ================ Thunks ================ //
 
@@ -520,6 +500,24 @@ const fetchMonthlyTimeSlots = (dispatch, listing) => {
   return Promise.all([]);
 };
 
+export const fetchReviews = listingId => (dispatch, getState, sdk) => {
+  dispatch(fetchReviewsRequest());
+  return sdk.reviews
+    .query({
+      listing_id: listingId,
+      state: 'public',
+      include: ['author', 'author.profileImage'],
+      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+    })
+    .then(response => {
+      const reviews = denormalisedResponseEntities(response);
+      dispatch(fetchReviewsSuccess(reviews));
+    })
+    .catch(e => {
+      dispatch(fetchReviewsError(storableError(e)));
+    });
+};
+
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const listingId = new UUID(params.id);
 
@@ -540,6 +538,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     dispatch(showListing(listingId)),
     currentUser?.id && dispatch(fetchExistingConversation(listingId)),
     dispatch(setOrigin(origin)),
+    dispatch(fetchReviews(listingId)),
   ]).then(responses => {
     if (responses[0] && responses[0].data && responses[0].data.data) {
       const listing = responses[0].data.data;

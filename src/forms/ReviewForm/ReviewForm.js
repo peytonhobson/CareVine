@@ -58,7 +58,7 @@ const ReviewFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = sendReviewInProgress;
-      const submitDisabled = invalid || disabled || submitInProgress;
+      const submitDisabled = invalid || disabled || submitInProgress || reviewSent;
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -68,6 +68,7 @@ const ReviewFormComponent = props => (
             name="reviewRating"
             label={reviewRating}
             validate={required(reviewRatingRequiredMessage)}
+            disabled={reviewSent}
           />
 
           <FieldTextInput
@@ -78,6 +79,7 @@ const ReviewFormComponent = props => (
             label={reviewContent}
             placeholder={reviewContentPlaceholderMessage}
             validate={required(reviewContentRequiredMessage)}
+            disabled={reviewSent}
           />
 
           {errorArea}
