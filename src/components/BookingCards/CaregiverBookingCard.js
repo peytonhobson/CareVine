@@ -77,7 +77,7 @@ const CaregiverBookingCard = props => {
   };
 
   const handleCancelBooking = () => {
-    const refundAmount = calculateRefundAmount(lineItems);
+    const refundAmount = calculateRefundAmount(lineItems, true);
     onCancelBooking(booking, refundAmount);
   };
 

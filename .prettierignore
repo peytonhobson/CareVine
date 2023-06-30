@@ -7,3 +7,4 @@ src/containers/index.js
 src/forms/index.js
 src/routeConfiguration.js
 src/components/ImageCarousel/image-gallery.css
+ext/

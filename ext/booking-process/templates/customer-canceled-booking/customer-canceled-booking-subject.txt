@@ -1,1 +1,1 @@
-Booking Canceled
+{{transaction.customer.display-name}} has Canceled Your Booking

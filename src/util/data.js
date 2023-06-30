@@ -588,34 +588,42 @@ export const findEndTimeFromLineItems = lineItems => {
 
 const TRANSACTION_FEE = 0.05;
 
-export const calculateRefundAmount = lineItems => {
-  const fiftyPercentRefunds = lineItems
-    ?.filter(l => {
-      const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
-      return differenceInHours < 72 * 36e5 && differenceInHours > 0;
-    })
-    .reduce((acc, curr) => acc + curr.amount / 2, 0);
+export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
+  // If caregiver canceled then we need to refund the full amount
+  // Otherwise, all line items that are within 72 hours of the start time
+  // will be refunded at 50% of the amount
+  if (caregiverCanceled) {
+    const fullRefunds = lineItems
+      ?.filter(l => {
+        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+        return differenceInHours > 0;
+      })
+      .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const fullRefunds = lineItems
-    ?.filter(l => {
-      const startTime = addTimeToStartOfDay(l.date, l.startTime);
-      return startTime - moment().toDate() > 72 * 36e5;
-    })
-    .reduce((acc, curr) => acc + curr.amount, 0);
+    const transactionFeeRefund = parseFloat(fullRefunds * TRANSACTION_FEE).toFixed(2);
 
-  const transactionFeeRefund = parseFloat(
-    (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
-  ).toFixed(2);
+    return parseInt((fullRefunds + Number(transactionFeeRefund)) * 100);
+  } else {
+    const fiftyPercentRefunds = lineItems
+      ?.filter(l => {
+        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+        return differenceInHours < 72 * 36e5 && differenceInHours > 0;
+      })
+      .reduce((acc, curr) => acc + curr.amount / 2, 0);
 
-  console.log('transactionFeeRefund ', transactionFeeRefund);
-  console.log('full refunds ', fullRefunds);
+    const fullRefunds = lineItems
+      ?.filter(l => {
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return startTime - moment().toDate() > 72 * 36e5;
+      })
+      .reduce((acc, curr) => acc + curr.amount, 0);
 
-  console.log(
-    'total refund ',
-    parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100)
-  );
+    const transactionFeeRefund = parseFloat(
+      (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
+    ).toFixed(2);
 
-  return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
+    return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
+  }
 };
 
 export const calculateAverageRating = reviews => {
