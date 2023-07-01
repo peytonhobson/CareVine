@@ -282,7 +282,6 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
   margin-bottom: 1rem;
   align-items: center;
   width: 100%;
@@ -353,4 +352,6 @@
   display: grid;
   grid-template-columns: 50% 50%;
   width: 100%;
+  align-items: flex-start;
+  margin-top: 0.5rem;
 }
