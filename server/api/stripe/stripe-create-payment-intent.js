@@ -13,7 +13,7 @@ module.exports = (req, res) => {
     stripeCustomerId,
     description,
     bookingFee,
-    creditCardFee,
+    processingFee,
     params,
     paymentMethods,
   } = req.body;
@@ -29,13 +29,13 @@ module.exports = (req, res) => {
       const senderId = sender?.id?.uuid;
 
       return stripe.paymentIntents.create({
-        amount: amount,
+        amount: parseInt(amount + processingFee),
         currency: 'usd',
         payment_method_types: paymentMethods ? paymentMethods : ['card'],
         transfer_data: {
           destination: stripeAccountId,
         },
-        application_fee_amount: bookingFee + creditCardFee,
+        application_fee_amount: parseInt(bookingFee + processingFee),
         customer: stripeCustomerId,
         receipt_email: senderEmail,
         description,

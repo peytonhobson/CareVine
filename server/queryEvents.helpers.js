@@ -438,7 +438,7 @@ const createBookingPayment = async transaction => {
     lineItems,
     paymentMethodId,
     bookingFee,
-    creditCardFee,
+    processingFee,
     stripeCustomerId,
     clientEmail,
     stripeAccountId,
@@ -451,17 +451,17 @@ const createBookingPayment = async transaction => {
 
   const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
   const formattedBookingFee = parseInt(bookingFee * 100);
-  const formattedCreditCardFee = parseInt(creditCardFee * 100);
+  const formattedProcessingFee = parseInt(processingFee * 100);
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: parseInt(amount),
+      amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
       currency: 'usd',
       payment_method_types: ['card', 'us_bank_account'],
       transfer_data: {
         destination: stripeAccountId,
       },
-      application_fee_amount: parseInt(formattedBookingFee + formattedCreditCardFee),
+      application_fee_amount: parseInt(formattedBookingFee + formattedProcessingFee),
       customer: stripeCustomerId,
       receipt_email: clientEmail,
       description: 'Carevine Booking',
