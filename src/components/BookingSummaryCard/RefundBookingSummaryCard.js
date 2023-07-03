@@ -107,7 +107,7 @@ const RefundBookingSummaryCard = props => {
         <div className={css.totalContainer}>
           <div className={css.totalCalc}>
             <h4 className={css.paymentCalc}>
-              +5% transaction fee refund - ${parseFloat(bookingFee).toFixed(2)}
+              +5% Booking fee refund - ${parseFloat(bookingFee).toFixed(2)}
             </h4>
           </div>
           <h3 className={css.total}>Total Refund: ${parseFloat(total).toFixed(2)}</h3>
