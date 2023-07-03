@@ -330,7 +330,7 @@ const EmployerBookingCard = props => {
         <p className={css.modalTitle}>Submit Dispute</p>
         <p className={css.modalMessage}>
           Any dispute submitted will be reviewed by CareVine. You will be notified of the outcome
-          within 72 hours.
+          once we have reviewed the case.
         </p>
         <DisputeForm
           onSubmit={handleDisputeBooking}

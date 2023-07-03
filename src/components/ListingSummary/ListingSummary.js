@@ -193,12 +193,14 @@ const ListingSummaryComponent = props => {
             </div>
           </div>
         </div>
-        <SectionReviews
-          reviews={reviews}
-          fetchReviewsError={fetchReviewsError}
-          onManageDisableScrolling={onManageDisableScrolling}
-          providerDisplayName={displayName}
-        />
+        {userType === CAREGIVER ? (
+          <SectionReviews
+            reviews={reviews}
+            fetchReviewsError={fetchReviewsError}
+            onManageDisableScrolling={onManageDisableScrolling}
+            providerDisplayName={displayName}
+          />
+        ) : null}
       </div>
       {!isOwnListing ? (
         <div className={css.buttonContainer}>
