@@ -154,6 +154,7 @@
   background-color: var(--matterColorLight);
   margin-top: 2rem;
   height: 100%;
+  width: 100%;
 }
 
 .requestMessage {
