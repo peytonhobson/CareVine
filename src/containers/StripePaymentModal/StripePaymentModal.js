@@ -10,7 +10,7 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import { injectIntl, intlShape, FormattedMessage } from '../../util/reactIntl';
 import { Modal, UserListingPreview, IconConfirm, Button } from '../../components';
-import { userDisplayNameAsString } from '../../util/data';
+import { calculateProcessingFee, userDisplayNameAsString } from '../../util/data';
 import { PaymentForm, PaymentDetailsForm } from '../../forms';
 import {
   setInitialValues,
@@ -133,11 +133,7 @@ const StripePaymentModalComponent = props => {
       recipientName,
     };
 
-    const processingFee = !isCard
-      ? parseFloat(Math.ceil((amount.amount / (1 - 0.008) - amount.amount) * 100) / 100).toFixed(2)
-      : parseFloat(
-          Math.ceil((amount.amount / (1 - CARD_FEE) - amount.amount + 0.3) * 100) / 100
-        ).toFixed(2);
+    const processingFee = calculateProcessingFee(amount, 0, paymentMethod);
 
     onCreatePaymentIntent({
       amount: amount?.amount,
