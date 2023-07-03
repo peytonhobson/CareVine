@@ -62,6 +62,7 @@
 .button {
   white-space: nowrap;
   min-width: 0;
+  max-width: 15rem;
 
   margin-inline: 1rem;
 
