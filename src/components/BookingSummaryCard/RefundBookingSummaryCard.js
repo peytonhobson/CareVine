@@ -1,22 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 
-import { Form as FinalForm } from 'react-final-form';
-import {
-  Avatar,
-  IconArrowHead,
-  InlineTextButton,
-  Modal,
-  Form,
-  FieldRangeSlider,
-  Button,
-} from '../../components';
 import { useMediaQuery } from '@mui/material';
 import { addTimeToStartOfDay } from '../../util/dates';
 import { convertTimeFrom12to24 } from '../../util/data';
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 
 import css from './BookingSummaryCard.module.css';
-import moment from 'moment';
 
 const TRANSACTION_FEE = 0.05;
 
