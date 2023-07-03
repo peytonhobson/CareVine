@@ -17,6 +17,10 @@ import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constant
 import moment from 'moment';
 import { addTimeToStartOfDay } from './dates';
 
+const BANK_ACCOUNT = 'Bank Account';
+const CARD_PROCESSING_FEE = 0.029;
+const BANK_PROCESSING_FEE = 0.008;
+
 /**
  * Combine the given relationships objects
  *
@@ -624,4 +628,17 @@ export const calculateAverageRating = reviews => {
   if (!reviews || reviews.length === 0) return 0;
   const sum = reviews.reduce((acc, curr) => acc + curr.attributes.rating, 0);
   return sum / reviews.length;
+};
+
+export const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
+  const totalAmount = Number(subTotal) + Number(transactionFee);
+  if (selectedPaymentMethod === BANK_ACCOUNT) {
+    return parseFloat(
+      Math.ceil((totalAmount / (1 - BANK_PROCESSING_FEE) - totalAmount) * 100) / 100
+    ).toFixed(2);
+  }
+
+  return parseFloat(
+    Math.ceil((totalAmount / (1 - CARD_PROCESSING_FEE) - totalAmount + 0.3) * 100) / 100
+  ).toFixed(2);
 };

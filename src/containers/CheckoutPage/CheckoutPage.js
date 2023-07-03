@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
 import { findRouteByRouteName } from '../../util/routes';
-import { ensureListing, ensureUser } from '../../util/data';
+import { calculateProcessingFee, ensureListing, ensureUser } from '../../util/data';
 import {
   NamedLink,
   NamedRedirect,
@@ -244,16 +244,13 @@ export class CheckoutPageComponent extends Component {
     });
 
     const bookingFee = subTotal * BOOKING_FEE_PERCENTAGE;
-    const totalAmount = subTotal + bookingFee;
-
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
-    const processingFee =
-      this.state.selectedPaymentMethod === BANK_ACCOUNT
-        ? parseFloat(Math.ceil((totalAmount / (1 - 0.008) - totalAmount) * 100) / 100).toFixed(2)
-        : parseFloat(
-            Math.ceil((totalAmount / (1 - 0.029) - totalAmount + 0.3) * 100) / 100
-          ).toFixed(2);
+    const processingFee = calculateProcessingFee(
+      subTotal,
+      bookingFee,
+      this.state.selectedPaymentMethod
+    );
 
     const metadata = {
       lineItems,

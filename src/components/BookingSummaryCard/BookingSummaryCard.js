@@ -11,15 +11,12 @@ import {
   Button,
 } from '../../components';
 import { useMediaQuery } from '@mui/material';
-import { convertTimeFrom12to24 } from '../../util/data';
+import { convertTimeFrom12to24, calculateProcessingFee } from '../../util/data';
 import { v4 as uuidv4 } from 'uuid';
 
 import css from './BookingSummaryCard.module.css';
 
-const CREDIT_CARD = 'Payment Card';
-const BANK_ACCOUNT = 'Bank Account';
 const TRANSACTION_FEE = 0.05;
-const CARD_FEE = 0.029;
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -41,17 +38,6 @@ const calculateCost = (bookingStart, bookingEnd, price) =>
 
 const calculateTransactionFee = subTotal =>
   parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
-
-const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
-  const totalAmount = Number(subTotal) + Number(transactionFee);
-  if (selectedPaymentMethod === BANK_ACCOUNT) {
-    return parseFloat(Math.ceil((totalAmount / (1 - 0.008) - totalAmount) * 100) / 100).toFixed(2);
-  }
-
-  return parseFloat(
-    Math.ceil((totalAmount / (1 - CARD_FEE) - totalAmount + 0.3) * 100) / 100
-  ).toFixed(2);
-};
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes
