@@ -788,7 +788,8 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
     metadata,
     description,
     additionalParams,
-    applicationFee,
+    bookingFee,
+    creditCardFee,
     paymentMethods,
   } = params;
 
@@ -814,7 +815,8 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
       sender: currentUser,
       metadata,
       params: additionalParams,
-      applicationFee,
+      bookingFee,
+      creditCardFee,
       paymentMethods,
     })
       .then(res => handleSuccess(res))
@@ -830,7 +832,8 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
           sender: currentUser,
           metadata,
           params: additionalParams,
-          applicationFee,
+          bookingFee,
+          creditCardFee,
           paymentMethods,
         });
       })

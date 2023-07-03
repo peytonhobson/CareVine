@@ -12,7 +12,8 @@ module.exports = (req, res) => {
     metadata,
     stripeCustomerId,
     description,
-    applicationFee = 0,
+    bookingFee,
+    creditCardFee,
     params,
     paymentMethods,
   } = req.body;
@@ -28,13 +29,13 @@ module.exports = (req, res) => {
       const senderId = sender?.id?.uuid;
 
       return stripe.paymentIntents.create({
-        amount: amount + amount * applicationFee,
+        amount: amount,
         currency: 'usd',
         payment_method_types: paymentMethods ? paymentMethods : ['card'],
         transfer_data: {
           destination: stripeAccountId,
         },
-        application_fee_amount: amount * applicationFee,
+        application_fee_amount: bookingFee + creditCardFee,
         customer: stripeCustomerId,
         receipt_email: senderEmail,
         description,
