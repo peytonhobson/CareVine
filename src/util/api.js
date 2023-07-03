@@ -18,7 +18,7 @@ export const apiBaseUrl = () => {
   }
 
   // Otherwise, use the same domain and port as the frontend
-  return `${window.location.origin}`;
+  return window ? `${window.location.origin}` : process.env.REACT_APP_CANONICAL_ROOT_URL;
 };
 
 // Application type handlers for JS SDK.
