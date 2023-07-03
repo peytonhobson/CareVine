@@ -314,6 +314,7 @@ const EmployerBookingCard = props => {
             onClick={handleCancelBooking}
             className={css.modalButton}
             ready={cancelBookingSuccess}
+            disabled={cancelBookingSuccess || cancelBookingInProgress}
           >
             Cancel
           </CancelButton>

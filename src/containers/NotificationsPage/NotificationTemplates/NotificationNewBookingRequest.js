@@ -17,6 +17,7 @@ import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_DECLINE_PAYMENT,
   TRANSITION_DISPUTE,
+  TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../../util/transaction';
 import { userDisplayNameAsString, findEndTimeFromLineItems } from '../../../util/data';
 
@@ -79,6 +80,8 @@ const NotificationNewBookingRequest = props => {
   const hasSameDayBooking = listing?.attributes.metadata.bookedDates?.some(date =>
     lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
   );
+  const isCanceledRequest =
+    currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
 
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
@@ -202,6 +205,9 @@ const NotificationNewBookingRequest = props => {
               {isDeclined && <h2 className={css.bookingDeclined}>Booking Declined</h2>}
               {isExpired && <h2 className={css.bookingDeclined}>Booking Request Expired</h2>}
               {isPaymentFailed && <h2 className={css.bookingDeclined}>Client Payment Failed</h2>}
+              {isCanceledRequest && (
+                <h2 className={css.bookingDeclined}>Customer Canceled Booking Request</h2>
+              )}
             </div>
           )}
         </div>
