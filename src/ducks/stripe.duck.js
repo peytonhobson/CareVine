@@ -789,7 +789,7 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
     description,
     additionalParams,
     bookingFee,
-    creditCardFee,
+    processingFee,
     paymentMethods,
   } = params;
 
@@ -816,7 +816,7 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
       metadata,
       params: additionalParams,
       bookingFee,
-      creditCardFee,
+      processingFee,
       paymentMethods,
     })
       .then(res => handleSuccess(res))
@@ -833,7 +833,7 @@ export const createPaymentIntent = params => (dispatch, getState, sdk) => {
           metadata,
           params: additionalParams,
           bookingFee,
-          creditCardFee,
+          processingFee,
           paymentMethods,
         });
       })

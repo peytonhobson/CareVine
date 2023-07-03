@@ -8,7 +8,7 @@ module.exports = (req, res) => {
   stripe.refunds
     .create({
       payment_intent: paymentIntentId,
-      amount,
+      amount: amount + applicationFeeRefund,
       reason: 'requested_by_customer',
       reverse_transfer: true,
       ...params,

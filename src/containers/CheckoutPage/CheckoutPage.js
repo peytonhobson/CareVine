@@ -221,13 +221,13 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
-    let totalAmount = 0;
+    let subTotal = 0;
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
       const { startTime, endTime, date } = booking;
 
       const hours = calculateTimeBetween(startTime, endTime);
       const amount = hours * bookingRate;
-      totalAmount += amount;
+      subTotal += amount;
       const isoDate = bookingDates
         .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
         ?.toISOString();
@@ -243,8 +243,17 @@ export class CheckoutPageComponent extends Component {
       };
     });
 
+    const bookingFee = subTotal * BOOKING_FEE_PERCENTAGE;
+    const totalAmount = subTotal + bookingFee;
+
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
+    const processingFee =
+      this.state.selectedPaymentMethod === BANK_ACCOUNT
+        ? parseFloat(Math.ceil((totalAmount / (1 - 0.008) - totalAmount) * 100) / 100).toFixed(2)
+        : parseFloat(
+            Math.ceil((totalAmount / (1 - 0.029) - totalAmount + 0.3) * 100) / 100
+          ).toFixed(2);
 
     const metadata = {
       lineItems,
@@ -252,9 +261,8 @@ export class CheckoutPageComponent extends Component {
       paymentMethodId,
       paymentMethodType:
         this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
-      bookingFee: totalAmount * BOOKING_FEE_PERCENTAGE,
-      creditCardFee:
-        this.state.selectedPaymentMethod === CREDIT_CARD ? totalAmount * CC_FEE_PERCENTAGE : 0,
+      bookingFee,
+      processingFee,
       message,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,

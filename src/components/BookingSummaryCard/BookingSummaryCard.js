@@ -19,7 +19,7 @@ import css from './BookingSummaryCard.module.css';
 const CREDIT_CARD = 'Payment Card';
 const BANK_ACCOUNT = 'Bank Account';
 const TRANSACTION_FEE = 0.05;
-const CARD_FEE = 0.03;
+const CARD_FEE = 0.029;
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -42,7 +42,16 @@ const calculateCost = (bookingStart, bookingEnd, price) =>
 const calculateTransactionFee = subTotal =>
   parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
 
-const calculateCardFee = subTotal => parseFloat(subTotal * CARD_FEE).toFixed(2);
+const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
+  const totalAmount = Number(subTotal) + Number(transactionFee);
+  if (selectedPaymentMethod === BANK_ACCOUNT) {
+    return parseFloat(Math.ceil((totalAmount / (1 - 0.008) - totalAmount) * 100) / 100).toFixed(2);
+  }
+
+  return parseFloat(
+    Math.ceil((totalAmount / (1 - CARD_FEE) - totalAmount + 0.3) * 100) / 100
+  ).toFixed(2);
+};
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes
@@ -56,9 +65,9 @@ const calculateSubTotal = (bookingTimes, bookingRate) =>
     )
     .toFixed(2);
 
-const calculateTotalCost = (subTotal, transactionFee, cardFee, refundAmount = 0) =>
-  Number.parseFloat(
-    Number(subTotal) + Number(transactionFee) + Number(cardFee) - Number(refundAmount)
+const calculateTotalCost = (subTotal, transactionFee, processingFee, refundAmount = 0) =>
+  parseFloat(
+    Number(subTotal) + Number(transactionFee) + Number(processingFee) - Number(refundAmount)
   ).toFixed(2);
 
 const BookingSummaryCard = props => {
@@ -86,9 +95,10 @@ const BookingSummaryCard = props => {
 
   const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
   const transactionFee = hideFees ? 0 : calculateTransactionFee(subTotal);
-  const cardFee =
-    hideFees || selectedPaymentMethod === BANK_ACCOUNT ? 0 : calculateCardFee(subTotal);
-  const total = calculateTotalCost(subTotal, transactionFee, cardFee, refundAmount);
+  const processingFee = calculateProcessingFee(subTotal, transactionFee, selectedPaymentMethod);
+  const total = hideFees
+    ? subTotal
+    : calculateTotalCost(subTotal, transactionFee, processingFee, refundAmount);
   const isLarge = useMediaQuery('(min-width:1024px)');
 
   return (!isLarge && displayOnMobile) || (isLarge && !displayOnMobile) ? (
@@ -159,10 +169,8 @@ const BookingSummaryCard = props => {
               </h4>
               {!hideFees ? (
                 <>
-                  <h4 className={css.paymentCalc}>+5% transaction fee - ${transactionFee}</h4>
-                  {selectedPaymentMethod === CREDIT_CARD ? (
-                    <h4 className={css.paymentCalc}>+3% card fee - ${cardFee}</h4>
-                  ) : null}
+                  <h4 className={css.paymentCalc}>+5% Booking fee - ${transactionFee}</h4>
+                  <h4 className={css.paymentCalc}>+ Processing fee - ${processingFee}</h4>
                   {refundAmount && refundAmount > 0 ? (
                     <h4 className={css.paymentCalc} style={{ color: 'var(--failColor)' }}>
                       Refunded - ${refundAmount}

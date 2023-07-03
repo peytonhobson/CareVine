@@ -24,9 +24,11 @@ const PaymentSection = props => {
   return (
     <section className={css.paymentContainer}>
       <h2>Payment</h2>
-      <p className={css.tinyNoMargin}>
-        *A 3% fee will be added to transactions that use payment cards.
-      </p>
+      <p className={css.tinyNoMargin}>*Processing Fees</p>
+      <ul className={css.processingFeesList}>
+        <li className={css.tinyNoMargin}>Bank Accounts: 0.8%</li>
+        <li className={css.tinyNoMargin}>Payment Cards: 0.29% + $0.30</li>
+      </ul>
       {showPaymentForm ? (
         <SavePaymentMethodsContainer
           defaultPaymentFetched={defaultPaymentFetched}

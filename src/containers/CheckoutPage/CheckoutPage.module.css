@@ -364,3 +364,13 @@
     max-width: 30rem;
   }
 }
+
+.tinyNoMargin {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.processingFeesList {
+  list-style-type: disc;
+  margin-left: 1rem;
+}
