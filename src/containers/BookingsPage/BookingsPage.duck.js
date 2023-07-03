@@ -362,8 +362,9 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
   const isAccepted = booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
   const bookingId = booking.id.uuid;
-  const { paymentIntentId, lineItems } = booking.attributes.metadata;
+  const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
   const listingId = booking.listing.id.uuid;
+  const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
 
   const isBookingActive = isActive(booking);
 
@@ -382,7 +383,9 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       await stripeCreateRefund({
         paymentIntentId,
         amount: refundAmount,
-        reason: 'requested_by_customer',
+        applicationFeeRefund: parseInt(
+          (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
+        ),
       });
 
       const newLineItems = mapLineItemsForCancellation(lineItems);

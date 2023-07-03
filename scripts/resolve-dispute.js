@@ -25,7 +25,6 @@ const main = async () => {
       await stripe.refunds.create({
         payment_intent: paymentIntentId,
         amount: refundAmount,
-        // refund_application_fee: true,
         reason: 'requested_by_customer',
         reverse_transfer: true,
       });

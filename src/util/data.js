@@ -600,9 +600,7 @@ export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 
-    const transactionFeeRefund = parseFloat(fullRefunds * TRANSACTION_FEE).toFixed(2);
-
-    return parseInt((fullRefunds + Number(transactionFeeRefund)) * 100);
+    return parseInt(Number(fullRefunds) * 100);
   } else {
     const fiftyPercentRefunds = lineItems
       ?.filter(l => {
@@ -618,11 +616,7 @@ export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 
-    const transactionFeeRefund = parseFloat(
-      (fiftyPercentRefunds + fullRefunds) * TRANSACTION_FEE
-    ).toFixed(2);
-
-    return parseInt((fiftyPercentRefunds + fullRefunds + Number(transactionFeeRefund)) * 100);
+    return parseInt((Number(fiftyPercentRefunds) + Number(fullRefunds)) * 100);
   }
 };
 

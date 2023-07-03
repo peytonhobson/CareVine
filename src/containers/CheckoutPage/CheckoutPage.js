@@ -32,6 +32,8 @@ import moment from 'moment';
 const STORAGE_KEY = 'CheckoutPage';
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
+const BOOKING_FEE_PERCENTAGE = 0.05;
+const CC_FEE_PERCENTAGE = 0.03;
 
 const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -219,11 +221,13 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
+    let totalAmount = 0;
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
       const { startTime, endTime, date } = booking;
 
       const hours = calculateTimeBetween(startTime, endTime);
       const amount = hours * bookingRate;
+      totalAmount += amount;
       const isoDate = bookingDates
         .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
         ?.toISOString();
@@ -248,7 +252,9 @@ export class CheckoutPageComponent extends Component {
       paymentMethodId,
       paymentMethodType:
         this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
-      applicationFee: this.state.selectedPaymentMethod === BANK_ACCOUNT ? 0.05 : 0.08,
+      bookingFee: totalAmount * BOOKING_FEE_PERCENTAGE,
+      creditCardFee:
+        this.state.selectedPaymentMethod === CREDIT_CARD ? totalAmount * CC_FEE_PERCENTAGE : 0,
       message,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,

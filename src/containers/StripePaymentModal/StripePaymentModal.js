@@ -133,6 +133,8 @@ const StripePaymentModalComponent = props => {
       recipientName,
     };
 
+    const creditCardFee = parseInt(amount * 0.03);
+
     onCreatePaymentIntent({
       amount: amount?.amount,
       recipientId: provider?.id,
@@ -140,7 +142,7 @@ const StripePaymentModalComponent = props => {
       recipientName,
       metadata: intentMetadata,
       description: `Payment to ${recipientName}`,
-      applicationFee: isCard ? CARD_APPLICATION_FEE : BANK_APPLICATION_FEE,
+      creditCardFee,
       paymentMethods: isCard ? ['card'] : ['us_bank_account'],
     });
   };
