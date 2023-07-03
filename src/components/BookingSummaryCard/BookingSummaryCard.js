@@ -37,12 +37,12 @@ const calculateTotalHours = bookingTimes =>
   );
 
 const calculateCost = (bookingStart, bookingEnd, price) =>
-  calculateTimeBetween(bookingStart, bookingEnd) * price;
+  parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * price).toFixed(2);
 
 const calculateTransactionFee = subTotal =>
-  Number(Number.parseFloat(subTotal * TRANSACTION_FEE).toFixed(2));
+  Number.parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
 
-const calculateCardFee = subTotal => Number(Number.parseFloat(subTotal * CARD_FEE).toFixed(2));
+const calculateCardFee = subTotal => Number.parseFloat(subTotal * CARD_FEE).toFixed(2);
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes?.reduce(
@@ -55,7 +55,9 @@ const calculateSubTotal = (bookingTimes, bookingRate) =>
   );
 
 const calculateTotalCost = (subTotal, transactionFee, cardFee, refundAmount = 0) =>
-  Number.parseFloat(subTotal + transactionFee + cardFee - refundAmount).toFixed(2);
+  Number.parseFloat(
+    Number(subTotal) + Number(transactionFee) + Number(cardFee) - Number(refundAmount)
+  ).toFixed(2);
 
 const BookingSummaryCard = props => {
   const {
