@@ -39,20 +39,21 @@ const calculateTotalHours = bookingTimes =>
 const calculateCost = (bookingStart, bookingEnd, price) =>
   parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * price).toFixed(2);
 
-const calculateTransactionFee = subTotal =>
-  Number.parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
+const calculateTransactionFee = subTotal => parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
 
-const calculateCardFee = subTotal => Number.parseFloat(subTotal * CARD_FEE).toFixed(2);
+const calculateCardFee = subTotal => parseFloat(subTotal * CARD_FEE).toFixed(2);
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
-  bookingTimes?.reduce(
-    (acc, curr) =>
-      acc +
-      (curr.startTime && curr.endTime
-        ? calculateCost(curr.startTime, curr.endTime, bookingRate)
-        : 0),
-    0
-  );
+  bookingTimes
+    ?.reduce(
+      (acc, curr) =>
+        acc +
+        (curr.startTime && curr.endTime
+          ? Number(calculateCost(curr.startTime, curr.endTime, bookingRate))
+          : 0),
+      0
+    )
+    .toFixed(2);
 
 const calculateTotalCost = (subTotal, transactionFee, cardFee, refundAmount = 0) =>
   Number.parseFloat(
@@ -191,7 +192,7 @@ const BookingSummaryCard = props => {
             initialValues={{ bookingRate: [bookingRate] }}
             render={fieldRenderProps => {
               const { handleSubmit, pristine, invalid, values } = fieldRenderProps;
-              const { minPrice, maxPrice } = listing?.attributes.publicData;
+              const { minPrice } = listing?.attributes.publicData;
 
               return (
                 <Form onSubmit={handleSubmit}>

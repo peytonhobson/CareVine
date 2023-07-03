@@ -443,9 +443,10 @@ const createBookingPayment = async transaction => {
     stripeAccountId,
   } = transaction.attributes.metadata;
 
-  const { customer } = transaction.relationships;
+  const { customer, listing } = transaction.relationships;
   const txId = transaction.id.uuid;
   const userId = customer.data.id?.uuid;
+  const listingId = listing.data.id?.uuid;
 
   const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
 
@@ -476,10 +477,24 @@ const createBookingPayment = async transaction => {
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
   } catch (e) {
     try {
-      integrationSdk.transactions.transition({
+      await integrationSdk.transactions.transition({
         id: transaction.id.uuid,
         transition: 'transition/decline-payment',
         params: {},
+      });
+
+      const fullListingResponse = await integrationSdk.listings.show({ id: listingId });
+      const fullListing = fullListingResponse.data.data;
+      const bookedDates = fullListing.attributes.metadata.bookedDates;
+      const bookingDates = lineItems.map(l => l.date);
+
+      const newBookedDates = bookedDates.filter(b => !bookingDates.includes(b));
+
+      await integrationSdk.listings.update({
+        id: listingId,
+        metadata: {
+          bookedDates: newBookedDates,
+        },
       });
     } catch (e) {
       log.error(e, 'transition-decline-payment-failed', {});
