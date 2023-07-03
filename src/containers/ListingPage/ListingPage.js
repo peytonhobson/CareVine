@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { array, arrayOf, bool, func, object, shape, string, oneOf } from 'prop-types';
+import { array, arrayOf, bool, func, shape, string, oneOf } from 'prop-types';
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import config from '../../config';
 import routeConfiguration from '../../routeConfiguration';
 import { findOptionsForSelectFilter } from '../../util/search';
-import { LISTING_STATE_PENDING_APPROVAL, LISTING_STATE_CLOSED, propTypes } from '../../util/types';
+import { LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
@@ -25,7 +25,7 @@ import {
   userCanMessage,
   userDisplayNameAsString,
 } from '../../util/data';
-import { timestampToDate, calculateQuantityFromHours } from '../../util/dates';
+import classNames from 'classnames';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
@@ -396,6 +396,7 @@ export class ListingPageComponent extends Component {
     ) : null;
 
     const listingUserType = currentListing.attributes.metadata.listingType;
+    const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
 
     return (
       <Page
@@ -416,7 +417,7 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperMain>
             {actionBar}
             <div className={css.mainContainer}>
-              <div className={css.subContainer}>
+              <div className={classNames(css.subContainer, hasBooking && css.hasBooking)}>
                 {!this.state.showListingPreview ? (
                   <>
                     <ListingSummary
@@ -459,7 +460,7 @@ export class ListingPageComponent extends Component {
                   />
                 )}
               </div>
-              {listingUserType === CAREGIVER && !isOwnListing ? (
+              {hasBooking ? (
                 <BookingContainer
                   listing={currentListing}
                   onSubmit={this.handleBookingSubmit}
