@@ -18,9 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import css from './BookingSummaryCard.module.css';
 import moment from 'moment';
 
-const CREDIT_CARD = 'Payment Card';
 const TRANSACTION_FEE = 0.05;
-const CARD_FEE = 0.03;
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -54,7 +52,7 @@ const RefundBookingSummaryCard = props => {
     Number(fiftyPercentRefund.reduce((acc, curr) => acc + curr.amount, 0)) +
     Number(fullRefund.reduce((acc, curr) => acc + curr.amount, 0));
   const bookingFee = parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
-  const total = Number(subTotal) + Number(bookingFee);
+  const total = subTotal + Number(bookingFee);
 
   return (
     <div
@@ -72,7 +70,7 @@ const RefundBookingSummaryCard = props => {
             return startTime && endTime ? (
               <div className={css.bookingTime} key={uuidv4()}>
                 <h3 className={css.summaryDate}>
-                  {date} - ${amount} (50% refund)
+                  {date} - ${parseFloat(amount).toFixed(2)} (50% refund)
                 </h3>
                 <div className={css.summaryTimeContainer}>
                   <span className={css.summaryTimes}>
@@ -92,7 +90,7 @@ const RefundBookingSummaryCard = props => {
             return startTime && endTime ? (
               <div className={css.bookingTime} key={uuidv4()}>
                 <h3 className={css.summaryDate}>
-                  {date} - ${amount} (100% refund)
+                  {date} - ${parseFloat(amount).toFixed(2)} (100% refund)
                 </h3>
                 <div className={css.summaryTimeContainer}>
                   <span className={css.summaryTimes}>
@@ -108,9 +106,11 @@ const RefundBookingSummaryCard = props => {
         </div>
         <div className={css.totalContainer}>
           <div className={css.totalCalc}>
-            <h4 className={css.paymentCalc}>+5% transaction fee refund - ${bookingFee}</h4>
+            <h4 className={css.paymentCalc}>
+              +5% transaction fee refund - ${parseFloat(bookingFee).toFixed(2)}
+            </h4>
           </div>
-          <h3 className={css.total}>Total Refund: ${total}</h3>
+          <h3 className={css.total}>Total Refund: ${parseFloat(total).toFixed(2)}</h3>
         </div>
       </div>
     </div>

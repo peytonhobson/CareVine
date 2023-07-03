@@ -37,9 +37,10 @@ const calculateTotalHours = bookingTimes =>
   );
 
 const calculateCost = (bookingStart, bookingEnd, price) =>
-  parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * price).toFixed(2);
+  parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * Number(price)).toFixed(2);
 
-const calculateTransactionFee = subTotal => parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
+const calculateTransactionFee = subTotal =>
+  parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
 
 const calculateCardFee = subTotal => parseFloat(subTotal * CARD_FEE).toFixed(2);
 
