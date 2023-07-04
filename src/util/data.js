@@ -634,11 +634,11 @@ export const calculateProcessingFee = (subTotal, transactionFee, selectedPayment
   const totalAmount = Number(subTotal) + Number(transactionFee);
   if (selectedPaymentMethod === BANK_ACCOUNT) {
     return parseFloat(
-      Math.ceil((totalAmount / (1 - BANK_PROCESSING_FEE) - totalAmount) * 100) / 100
+      Math.round(((totalAmount * BANK_PROCESSING_FEE) / (1 - CARD_PROCESSING_FEE)) * 100) / 100
     ).toFixed(2);
   }
 
   return parseFloat(
-    Math.ceil((totalAmount / (1 - CARD_PROCESSING_FEE) - totalAmount + 0.3) * 100) / 100
+    Math.round(((totalAmount * CARD_PROCESSING_FEE + 0.3) / (1 - CARD_PROCESSING_FEE)) * 100) / 100
   ).toFixed(2);
 };
