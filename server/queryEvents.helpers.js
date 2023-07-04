@@ -450,8 +450,8 @@ const createBookingPayment = async transaction => {
   const listingId = listing.data.id?.uuid;
 
   const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
-  const formattedBookingFee = parseInt(bookingFee * 100);
-  const formattedProcessingFee = parseInt(processingFee * 100);
+  const formattedBookingFee = parseInt(Math.round(bookingFee * 100));
+  const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -461,7 +461,7 @@ const createBookingPayment = async transaction => {
       transfer_data: {
         destination: stripeAccountId,
       },
-      application_fee_amount: parseInt(formattedBookingFee + formattedProcessingFee),
+      application_fee_amount: parseInt(Math.round(formattedBookingFee + formattedProcessingFee)),
       customer: stripeCustomerId,
       receipt_email: clientEmail,
       description: 'Carevine Booking',
