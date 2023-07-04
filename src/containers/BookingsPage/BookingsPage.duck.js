@@ -394,7 +394,11 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       // Update line items so caregiver is paid out correct amount after refund
       await updateTransactionMetadata({
         txId: bookingId,
-        metadata: { lineItems: newLineItems, refundAmount, payout },
+        metadata: {
+          lineItems: newLineItems,
+          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
+          payout,
+        },
       });
     }
 
