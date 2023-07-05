@@ -43,7 +43,7 @@ const InitialBookingFormComponent = props => (
         <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.fieldContainer}>
             <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
-            <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
+            <h1 className={css.fieldLabel} style={{ marginBlock: 0 }}>
               ${values.rate}
             </h1>
             <div className={css.availableRatesContainer}>

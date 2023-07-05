@@ -4,13 +4,18 @@
   margin-bottom: 3rem;
 
   @media (--viewportLarge) {
-    margin-bottom: 1rem;
+    margin-block: 1rem;
   }
 }
 
 .fieldLabel {
   width: 100%;
   text-align: center;
+
+  @media (--viewportLarge) {
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
 }
 
 .priceRange {
@@ -51,7 +56,7 @@
 }
 
 .submitButton {
-  margin-top: 2rem;
+  margin-block: 2rem;
 }
 
 .selectDatesContainer {
