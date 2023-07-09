@@ -181,7 +181,7 @@ export { default as PriceFilter } from './PriceFilter/PriceFilter';
 export { default as QuizTimer} from './QuizTimer/QuizTimer';
 export { default as RefundBookingSummaryCard } from './BookingSummaryCard/RefundBookingSummaryCard';
 export { default as Reviews } from './Reviews/Reviews';
-export { default as SavedBankDetails } from './SavedBankDetails/SavedBankDetails';
+export { default as SavedPaymentDetails } from './SavedPaymentDetails/SavedPaymentDetails';
 export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails';
 export { default as SearchFiltersMobile } from './SearchFiltersMobile/SearchFiltersMobile';
 export { default as SearchFiltersPrimary } from './SearchFiltersPrimary/SearchFiltersPrimary';

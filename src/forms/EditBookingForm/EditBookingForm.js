@@ -187,7 +187,7 @@ const EditBookingFormComponent = props => (
         invalid ||
         disabled ||
         !checkValidBookingTimes(values.dateTimes, bookingDates) ||
-        !checkValidPaymentMethod(selectedPaymentMethod, defaultPaymentMethods);
+        !selectedPaymentMethod;
 
       const onSubmit = e => {
         e.preventDefault();

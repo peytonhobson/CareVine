@@ -36,7 +36,7 @@ const PaymentSection = props => {
           fetchDefaultPaymentError={fetchDefaultPaymentError}
           fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
           stripeCustomerFetched={stripeCustomerFetched}
-          onChangeSelectedTab={onChangePaymentMethod}
+          onChangePaymentMethod={onChangePaymentMethod}
           className={css.paymentMethods}
         />
       ) : null}

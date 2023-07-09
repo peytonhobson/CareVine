@@ -15,7 +15,7 @@ import {
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
-import { SavedCardDetails, ButtonTabNavHorizontal, SavedBankDetails } from '../../components';
+import { SavedCardDetails, ButtonTabNavHorizontal, SavedPaymentDetails } from '../../components';
 import { SaveBankAccountForm, SaveCreditCardForm } from '../../forms';
 import config from '../../config';
 
@@ -58,8 +58,8 @@ const SavePaymentMethodsContainerComponent = props => {
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
-  const card = defaultPaymentMethods?.card?.card;
-  const bankAccount = defaultPaymentMethods?.bankAccount?.us_bank_account;
+  const cards = defaultPaymentMethods?.cards;
+  const bankAccounts = defaultPaymentMethods?.bankAccounts;
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
 
@@ -149,9 +149,9 @@ const SavePaymentMethodsContainerComponent = props => {
   ];
 
   const showBankForm =
-    (!bankAccount && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
+    (!bankAccounts && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
   const showCardForm =
-    (!card && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
+    (!cards && defaultPaymentFetched && !fetchDefaultPaymentError) || !stripeCustomerId;
 
   const fetchDefaultPaymentErrorMessage = (
     <p className={css.error}>
@@ -165,9 +165,9 @@ const SavePaymentMethodsContainerComponent = props => {
     case BANK_ACCOUNT:
       tabContentPanel = (
         <>
-          {!!bankAccount ? (
-            <SavedBankDetails
-              bank={bankAccount}
+          {!!bankAccounts ? (
+            <SavedPaymentDetails
+              bankAccounts={bankAccounts}
               deletePaymentMethodError={deletePaymentMethodError}
               deletePaymentMethodInProgress={deletePaymentMethodInProgress}
               deletePaymentMethodSuccess={deletePaymentMethodSuccess}
@@ -198,9 +198,9 @@ const SavePaymentMethodsContainerComponent = props => {
     case CREDIT_CARD:
       tabContentPanel = (
         <>
-          {!!card ? (
+          {!!cards ? (
             <SavedCardDetails
-              card={ensurePaymentMethodCard(card)}
+              cards={cards}
               deletePaymentMethodInProgress={deletePaymentMethodInProgress}
               deletePaymentMethodSuccess={deletePaymentMethodSuccess}
               onDeleteCard={handleRemovePaymentMethod}

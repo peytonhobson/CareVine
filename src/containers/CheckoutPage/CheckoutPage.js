@@ -188,7 +188,6 @@ export class CheckoutPageComponent extends Component {
       bookingDates: bookingDatesProps,
       bookingRate: bookingRateProps,
       onInitiateOrder,
-      defaultPaymentMethods,
       listing: listingProps,
       currentUserListing,
       currentUser,
@@ -204,10 +203,7 @@ export class CheckoutPageComponent extends Component {
     const bookingRate = bookingRateProps || bookingRateState;
     const bookingDates = bookingDatesProps || bookingDatesState;
 
-    const paymentMethodId =
-      this.state.selectedPaymentMethod === BANK_ACCOUNT
-        ? defaultPaymentMethods.bankAccount?.id
-        : defaultPaymentMethods.card?.id;
+    const paymentMethodId = this.state.selectedPaymentMethod.id;
 
     const listingId = listing.id;
 
@@ -250,15 +246,14 @@ export class CheckoutPageComponent extends Component {
     const processingFee = calculateProcessingFee(
       subTotal,
       bookingFee,
-      this.state.selectedPaymentMethod
+      this.state.selectedPaymentMethod.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT
     );
 
     const metadata = {
       lineItems,
       bookingRate,
       paymentMethodId,
-      paymentMethodType:
-        this.state.selectedPaymentMethod === BANK_ACCOUNT ? 'us_bank_account' : 'card',
+      paymentMethodType: this.state.selectedPaymentMethod.type,
       bookingFee,
       processingFee,
       message,
@@ -379,6 +374,9 @@ export class CheckoutPageComponent extends Component {
       );
     }
 
+    const selectedPaymentMethodType =
+      this.state.selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
+
     return (
       <Page {...pageProps}>
         {topbar}
@@ -396,7 +394,7 @@ export class CheckoutPageComponent extends Component {
               onSetState={onSetState}
               authorDisplayName={authorDisplayName}
               defaultPaymentMethods={defaultPaymentMethods}
-              selectedPaymentMethod={this.state.selectedPaymentMethod}
+              selectedPaymentMethod={selectedPaymentMethodType}
               initiateOrderInProgress={initiateOrderInProgress}
               initiateOrderError={initiateOrderError}
               transaction={transaction}
@@ -425,7 +423,7 @@ export class CheckoutPageComponent extends Component {
                 onManageDisableScrolling={onManageDisableScrolling}
                 onSetState={onSetState}
                 displayOnMobile
-                selectedPaymentMethod={this.state.selectedPaymentMethod}
+                selectedPaymentMethod={selectedPaymentMethodType}
               />
             </EditBookingForm>
           </div>
@@ -438,7 +436,7 @@ export class CheckoutPageComponent extends Component {
             listing={currentListing}
             onManageDisableScrolling={onManageDisableScrolling}
             onSetState={onSetState}
-            selectedPaymentMethod={this.state.selectedPaymentMethod}
+            selectedPaymentMethod={selectedPaymentMethodType}
           />
         </div>
       </Page>
