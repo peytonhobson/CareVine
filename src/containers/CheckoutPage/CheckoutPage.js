@@ -12,6 +12,7 @@ import {
   IconConfirm,
   BookingConfirmationCard,
   BookingSummaryCard,
+  BookingPayment,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';

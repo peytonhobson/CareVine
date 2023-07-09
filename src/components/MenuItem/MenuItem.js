@@ -13,12 +13,12 @@ import classNames from 'classnames';
 import css from './MenuItem.module.css';
 
 const MenuItem = props => {
-  const { children, className, rootClassName } = props;
+  const { children, className, rootClassName, onClick } = props;
   const rootClass = rootClassName || css.root;
   const classes = classNames(rootClass, className);
 
   return (
-    <li className={classes} role="menuitem">
+    <li className={classes} role="menuitem" onClick={onClick}>
       {children}
     </li>
   );
