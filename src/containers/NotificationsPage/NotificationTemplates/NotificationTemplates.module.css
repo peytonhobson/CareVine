@@ -162,7 +162,7 @@
   margin: 0;
   border: 1px solid var(--matterColorNegative);
   padding: 1rem;
-  max-height: 10rem;
+  height: 10rem;
 }
 
 .avatar {

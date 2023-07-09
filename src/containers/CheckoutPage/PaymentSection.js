@@ -27,7 +27,7 @@ const PaymentSection = props => {
       <p className={css.tinyNoMargin}>*Processing Fees</p>
       <ul className={css.processingFeesList}>
         <li className={css.tinyNoMargin}>Bank Accounts: 0.8%</li>
-        <li className={css.tinyNoMargin}>Payment Cards: 0.29% + $0.30</li>
+        <li className={css.tinyNoMargin}>Payment Cards: 2.9% + $0.30</li>
       </ul>
       {showPaymentForm ? (
         <SavePaymentMethodsContainer
