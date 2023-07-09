@@ -501,6 +501,7 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
 
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
+  const listingId = transaction.listing.id.uuid;
   const newBookingEnd = findEndTimeFromLineItems(lineItems);
   const newBookingStart = moment(newBookingEnd)
     .subtract(1, 'hours')
