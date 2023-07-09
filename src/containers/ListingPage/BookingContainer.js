@@ -96,8 +96,12 @@ const BookingContainer = props => {
         id="BookingModal"
       >
         <div className={css.bookingModalHeader}>
+          <Avatar
+            className={css.bookingAvatar}
+            initialsClassName={css.bookingAvatarInitials}
+            user={listing.author}
+          />
           <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
-          <Avatar className={css.bookingAvatar} user={listing.author} />
         </div>
         <InitialBookingForm className={css.bookingForm} listing={listing} onSubmit={onSubmit} />
       </Modal>
