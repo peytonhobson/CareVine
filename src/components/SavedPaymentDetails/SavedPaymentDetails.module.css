@@ -9,7 +9,12 @@
 .defaultPaymentMethod {
   display: flex;
   margin-right: auto;
-  width: 18em;
+}
+
+.defaultPaymentMethodCard {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
 }
 
 .savedPaymentMethod {
@@ -18,16 +23,19 @@
   padding: 1rem;
   border-bottom: 1px solid var(--matterColorNegative);
   cursor: pointer;
-  min-width: 21em !important;
 
   & .bankIconContainer {
     flex-grow: 0;
   }
 }
 
+.savedPaymentMethodCard {
+  align-items: center;
+}
+
 .bankIconContainer {
   display: flex;
-  flex-grow: 1;
+  flex-grow: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -47,18 +55,9 @@
   margin-right: 5px;
 }
 
-.menuLabelActive {
-  border: 1px solid var(--marketplaceColor);
-  background-color: var(--matterColorLight);
-  box-shadow: 2px 2px 2px var(--marketplaceColor);
-}
-
 .menuContent {
   position: absolute;
   z-index: var(--zIndexPopup);
-  border: 1px solid var(--marketplaceColor);
-  background-color: var(--matterColorLight);
-  box-shadow: 2px 2px 2px var(--marketplaceColor);
 
   background-color: var(--matterColorLight);
   box-shadow: var(--boxShadowFilterButton);
@@ -67,9 +66,8 @@
 
   transition: all 0.15s ease-out;
 
-  top: 3.4rem;
-  left: -1rem !important;
-  min-width: 21em !important;
+  top: 100%;
+  /* min-width: 21em !important; */
 }
 
 .menu {
@@ -84,13 +82,19 @@
   }
 }
 
+.menuLabel {
+  border: 1px solid var(--marketplaceColor);
+  background-color: var(--matterColorLight);
+  /* box-shadow: 2px 2px 2px var(--marketplaceColor); */
+  padding: 12px 1rem 10px 16px;
+}
+
 .menuLabelWrapper {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
-  padding: 12px 24px 10px 16px;
 }
 
 .savedPaymentMethodDelete {
@@ -164,7 +168,49 @@
 }
 
 .dropDownArrowContainer {
-  margin: auto;
+  margin-left: 2.5rem;
+  margin-block: auto;
   height: 100%;
-  margin-left: 2rem;
+}
+
+.paymentMethodPlaceholderDesktop {
+  display: none;
+}
+
+.paymentMethodPlaceholderMobile {
+  display: inline-block;
+}
+
+@media (--viewportSmall) {
+  .paymentMethodPlaceholderDesktop {
+    display: inline-block;
+  }
+
+  .paymentMethodPlaceholderMobile {
+    display: none;
+  }
+}
+
+.expirationDate {
+  padding-left: 24px;
+}
+
+.expirationDateExpired {
+  padding-left: 24px;
+  color: var(--failColor);
+}
+
+.cardExpiredText {
+  composes: h4 from global;
+  color: var(--failColor);
+  font-weight: var(--fontWeightSemiBold);
+  margin-top: 13px;
+  margin-bottom: 11px;
+}
+
+.cardIcon {
+  margin: 0 12px 0 4px;
+  width: 24px;
+  height: 16px;
+  display: inline-block;
 }

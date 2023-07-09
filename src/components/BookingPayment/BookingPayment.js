@@ -18,7 +18,7 @@ import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck
 import {
   SavedCardDetails,
   ButtonTabNavHorizontal,
-  SavedBankDetails,
+  SavedPaymentDetails,
   InlineTextButton,
   IconSpinner,
 } from '..';
@@ -35,6 +35,7 @@ const BookingPaymentComponent = props => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTab, setSelectedTab] = useState(BANK_ACCOUNT);
   const [useDifferentMethod, setUseDifferentMethod] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null);
 
   const {
     createBankAccountError,
@@ -58,7 +59,7 @@ const BookingPaymentComponent = props => {
     onDeletePaymentMethod,
     onFetchDefaultPayment,
     onManageDisableScrolling,
-    onChangeSelectedTab,
+    onChangePaymentMethod,
     rootClassName,
     className,
   } = props;
@@ -122,29 +123,30 @@ const BookingPaymentComponent = props => {
       });
   };
 
-  const handleRemovePaymentMethod = methodType => {
-    const paymentMethodId =
-      methodType === 'card'
-        ? !!defaultPaymentMethods && !!defaultPaymentMethods.card && defaultPaymentMethods.card.id
-        : !!defaultPaymentMethods &&
-          !!defaultPaymentMethods.bankAccount &&
-          defaultPaymentMethods.bankAccount.id;
-
-    onDeletePaymentMethod(paymentMethodId);
-  };
-
   // Get first and last name of the current user and use it in the StripePaymentForm to autofill the name field
   const userName = `${ensuredCurrentUser.attributes.profile.firstName} ${ensuredCurrentUser.attributes.profile.lastName}`;
 
   const initalValuesForStripePayment = { name: userName };
 
-  const handleSelectedTab = e => {
-    if (onChangeSelectedTab) {
-      onChangeSelectedTab(e.target.textContent);
+  const handleChangePaymentMethod = paymentMethod => {
+    if (onChangePaymentMethod) {
+      onChangePaymentMethod(paymentMethod);
     }
 
     setUseDifferentMethod(false);
+  };
+
+  const handleUseDifferentMethod = () => {
+    setUseDifferentMethod(true);
+
+    if (onChangePaymentMethod) {
+      onChangePaymentMethod();
+    }
+  };
+
+  const handleSelectedTab = e => {
     setSelectedTab(e.target.textContent);
+    setUseDifferentMethod(false);
   };
 
   const tabs = [
@@ -174,15 +176,14 @@ const BookingPaymentComponent = props => {
         <>
           {bankAccounts && defaultPaymentFetched && !useDifferentMethod ? (
             <>
-              <SavedBankDetails
+              <SavedPaymentDetails
                 rootClassName={css.defaultMethod}
-                bankAccounts={bankAccounts}
+                methods={bankAccounts}
                 onManageDisableScrolling={onManageDisableScrolling}
-                hideContent={true}
-                selected={true}
+                onChange={handleChangePaymentMethod}
               />
               <InlineTextButton
-                onClick={() => setUseDifferentMethod(true)}
+                onClick={handleUseDifferentMethod}
                 className={css.paymentSwitch}
                 type="button"
               >
@@ -205,7 +206,7 @@ const BookingPaymentComponent = props => {
                   className={css.saveBankAccountForm}
                 />
               </Elements>
-              {!!bankAccounts ? (
+              {bankAccounts?.length > 0 ? (
                 <InlineTextButton
                   onClick={() => setUseDifferentMethod(false)}
                   className={css.paymentSwitch}
@@ -222,17 +223,17 @@ const BookingPaymentComponent = props => {
     case CREDIT_CARD:
       tabContentPanel = (
         <>
-          {cards && defaultPaymentFetched && !useDifferentMethod ? (
+          {cards?.length > 0 && defaultPaymentFetched && !useDifferentMethod ? (
             <div className={css.defaultMethodContainer}>
-              <SavedCardDetails
+              <SavedPaymentDetails
                 rootClassName={css.defaultMethod}
-                card={ensurePaymentMethodCard(cards)}
+                methods={cards}
                 onManageDisableScrolling={onManageDisableScrolling}
-                hideContent={true}
-                selected={true}
+                type="card"
+                onChange={handleChangePaymentMethod}
               />
               <InlineTextButton
-                onClick={() => setUseDifferentMethod(true)}
+                onClick={handleUseDifferentMethod}
                 className={css.paymentSwitch}
                 type="button"
               >
@@ -244,24 +245,30 @@ const BookingPaymentComponent = props => {
           ) : fetchDefaultPaymentInProgress ? (
             <IconSpinner />
           ) : (
-            <StripePaymentForm
-              className={css.paymentForm}
-              onSubmit={() => {}}
-              inProgress={false}
-              formId="CheckoutPagePaymentForm"
-              paymentInfo={`Payment Info`}
-              authorDisplayName={`Bob`}
-              showInitialMessageInput={true}
-              initialValues={initalValuesForStripePayment}
-              initiateOrderError={null}
-              confirmCardPaymentError={null}
-              confirmPaymentError={null}
-              hasHandledCardPayment={false}
-              loadingData={false}
-              defaultPaymentMethod={cards}
-              paymentIntent={null}
-              onStripeInitialized={() => {}}
-            />
+            <>
+              {cards?.length > 0 ? (
+                <InlineTextButton
+                  onClick={() => setUseDifferentMethod(false)}
+                  className={css.paymentSwitch}
+                  type="button"
+                >
+                  Use saved Payment Card
+                </InlineTextButton>
+              ) : null}
+              <SaveCreditCardForm
+                className={css.paymentForm}
+                createCreditCardError={createCreditCardError}
+                createCreditCardInProgress={createCreditCardInProgress}
+                createCreditCardSuccess={createCreditCardSuccess}
+                createStripeCustomerError={createStripeCustomerError}
+                deletePaymentMethodError={deletePaymentMethodError}
+                formId="PaymentMethodsForm"
+                handleCardSetupError={handleCardSetupError}
+                initialValues={initalValuesForStripePayment}
+                inProgress={isSubmitting}
+                onSubmit={handleCardSubmit}
+              />
+            </>
           )}
         </>
       );

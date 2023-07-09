@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, Fragment } from 'react';
 
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-import { Button, Checkbox, SavedCardDetails, SavedBankDetails, Form } from '../../components';
+import { Button, Checkbox, SavedCardDetails, SavedPaymentDetails, Form } from '../../components';
 import { FormattedMessage } from '../../util/reactIntl';
 import { ensureStripeCustomer, ensurePaymentMethodCard } from '../../util/data';
 
@@ -171,7 +171,7 @@ const PaymentForm = props => {
                 />
               )}
               {bankAccount && selectedPaymentMethod === 'bankAccount' && (
-                <SavedBankDetails
+                <SavedPaymentDetails
                   rootClassName={css.defaultMethod}
                   bank={bankAccount}
                   onManageDisableScrolling={onManageDisableScrolling}

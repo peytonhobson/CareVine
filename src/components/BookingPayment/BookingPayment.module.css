@@ -10,7 +10,7 @@
   padding: 0;
   overflow-x: scroll;
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 
   @media (--viewportLarge) {
     /* padding: 128px 0 82px 36px; */
@@ -71,4 +71,8 @@
 .saveBankAccountForm {
   max-width: 15rem;
   margin-top: 3rem;
+}
+
+.paymentForm {
+  margin-top: 1rem;
 }
