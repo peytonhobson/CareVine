@@ -66,7 +66,7 @@ const filterActiveOrUpcomingBookings = bookings => {
   return { active, upcoming };
 };
 
-const mapLineItemsForCancellation = lineItems => {
+const mapLineItemsForCancellationCustomer = lineItems => {
   // Half the amount of the line item if it is within 72 hours of the start time.
   // Remove line items that are more than 72 hours away.
   // This is to create the correct amount for caregiver payout
@@ -88,6 +88,14 @@ const mapLineItemsForCancellation = lineItems => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
       return startTime - moment().toDate() < 72 * 36e5;
     });
+};
+
+const mapLineItemsForCancellationProvider = lineItems => {
+  // Filter out all line items that occur after now.
+  return lineItems.filter(lineItem => {
+    const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+    return startTime < moment().toDate();
+  });
 };
 
 const roundDateToNearest5Minutes = date => {
@@ -367,9 +375,10 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
 
   const isBookingActive = isActive(booking);
+  const isCaregiver = userType === CAREGIVER;
 
   const transition = isAccepted
-    ? userType === CAREGIVER
+    ? isCaregiver
       ? isBookingActive
         ? TRANSITION_CANCEL_ACTIVE_PROVIDER
         : TRANSITION_CANCEL_BOOKING_PROVIDER
@@ -388,7 +397,9 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         ),
       });
 
-      const newLineItems = mapLineItemsForCancellation(lineItems);
+      const newLineItems = isCaregiver
+        ? mapLineItemsForCancellationProvider(lineItems)
+        : mapLineItemsForCancellationCustomer(lineItems);
       const payout = newLineItems.reduce((acc, item) => acc + item.amount, 0);
 
       // Update line items so caregiver is paid out correct amount after refund
@@ -467,7 +478,7 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       fromEmail: 'admin-notification@carevine-mail.us',
       receiverEmail: 'peyton.hobson@carevine.us',
       subject: 'Booking Dispute',
-      html: `${JSON.stringify(disputeReason).replace('"', '')}<br><br>
+      html: `${JSON.stringify(disputeReason).replaceAll('"', '')}<br><br>
       txId: ${bookingId}<br>`,
     });
 
@@ -504,6 +515,12 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
         bookingEnd: newBookingEnd,
       },
     });
+
+    const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
+    const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
+    const newBookedDates = [...bookedDates, ...bookingDates];
+
+    await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
 
     dispatch(fetchCurrentUserHasListings());
     dispatch(acceptBookingSuccess());

@@ -1,6 +1,21 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { integrationSdk } = require('../server/api-util/sdk');
+// const { integrationSdk } = require('../server/api-util/sdk');
+const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+
+// node ./scripts/resolve-dispute.js 1000 tx_1HJ5Xt2eZvKYlo2CJ5QZ1Z5c --dry
+// CLI amount should be in decimal format (50.26)
+
+const integrationSdk = flexIntegrationSdk.createInstance({
+  // These two env vars need to be set in the `.env` file.
+  clientId: '5358ca4c-fb73-40d8-bc3d-606a5a1bc566',
+  clientSecret: '3ec0f388a16b5c64237c555e9b5cfffbf28974b8',
+
+  // Normally you can just skip setting the base URL and just use the
+  // default that the `createInstance` uses. We explicitly set it here
+  // for local testing and development.
+  baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
+});
 
 const refundAmount = process.argv[2];
 const txId = process.argv[3];
@@ -24,7 +39,7 @@ const main = async () => {
     if (!dryRun) {
       await stripe.refunds.create({
         payment_intent: paymentIntentId,
-        amount: refundAmount,
+        amount: parseInt(refundAmount * 100),
         reason: 'requested_by_customer',
         reverse_transfer: true,
       });
