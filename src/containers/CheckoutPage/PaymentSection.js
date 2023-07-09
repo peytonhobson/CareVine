@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SavePaymentMethodsContainer from '../SavePaymentMethodsContainer/SavePaymentMethodsContainer';
+import { BookingPayment } from '../../components';
 
 import css from './CheckoutPage.module.css';
 
@@ -30,7 +30,7 @@ const PaymentSection = props => {
         <li className={css.tinyNoMargin}>Payment Cards: 2.9% + $0.30</li>
       </ul>
       {showPaymentForm ? (
-        <SavePaymentMethodsContainer
+        <BookingPayment
           defaultPaymentFetched={defaultPaymentFetched}
           defaultPaymentMethods={defaultPaymentMethods}
           fetchDefaultPaymentError={fetchDefaultPaymentError}

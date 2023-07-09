@@ -141,7 +141,7 @@
     /* margin: 0.1em !important; */
     background: none;
     font-size: 1rem;
-    aspect-ratio: 1/1;
+    aspect-ratio: 1.1/1;
 
     & .day {
       display: flex;
@@ -149,7 +149,7 @@
       height: calc(100% - 0.6rem);
       justify-content: center;
       align-items: center;
-      margin: 0.3rem;
+      margin-inline: 0.3rem;
       cursor: pointer;
 
       @media (--viewportLarge) {

@@ -6,7 +6,7 @@ import { useStripe } from '@stripe/react-stripe-js';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 
-import { Button } from '../../components';
+import { Button, IconSpinner } from '../../components';
 import { propTypes } from '../../util/types';
 
 import css from './SaveBankAccountForm.module.css';
@@ -32,7 +32,7 @@ const SaveBankAccountForm = props => {
     if (createBankAccountSuccess && stripeCustomer) {
       onFetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId);
     }
-  }, [createBankAccountSuccess, stripeCustomer]);
+  }, [createBankAccountSuccess, stripeCustomer?.id.uuid]);
 
   const classes = classNames(css.root, className);
 
@@ -47,15 +47,19 @@ const SaveBankAccountForm = props => {
   return (
     <div className={classes}>
       {hasErrors && <span className={css.errorMessage}>{createBankAccountErrorMessage}</span>}
-      <Button
-        className={css.submitButton}
-        type="submit"
-        inProgress={submitInProgress}
-        disabled={submitDisabled}
-        onClick={() => onSubmit(stripe)}
-      >
-        <FormattedMessage id="SaveBankAccountForm.submitPaymentInfo" />
-      </Button>
+      {fetchDefaultPaymentInProgress ? (
+        <IconSpinner />
+      ) : (
+        <Button
+          className={css.submitButton}
+          type="submit"
+          inProgress={submitInProgress}
+          disabled={submitDisabled}
+          onClick={() => onSubmit(stripe)}
+        >
+          <FormattedMessage id="SaveBankAccountForm.submitPaymentInfo" />
+        </Button>
+      )}
     </div>
   );
 };

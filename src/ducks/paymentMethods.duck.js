@@ -174,14 +174,14 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
     case FETCH_DEFAULT_PAYMENT_REQUEST:
       return { ...state, fetchDefaultPaymentInProgress: true, fetchDefaultPaymentError: null };
     case FETCH_DEFAULT_PAYMENT_SUCCESS:
-      const card = payload.find(p => p.type === 'card');
-      const bankAccount = payload.find(p => p.type === 'us_bank_account');
+      const cards = payload.filter(p => p.type === 'card');
+      const bankAccounts = payload.filter(p => p.type === 'us_bank_account');
       return {
         ...state,
         fetchDefaultPaymentInProgress: false,
         defaultPaymentMethods: {
-          card,
-          bankAccount,
+          cards,
+          bankAccounts,
         },
         defaultPaymentFetched: true,
       };

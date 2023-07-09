@@ -155,6 +155,7 @@ export { default as BookingConfirmationCard } from './BookingConfirmationCard/Bo
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
 export { default as BookingDateRangeLengthFilter } from './BookingDateRangeLengthFilter/BookingDateRangeLengthFilter';
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
+export { default as BookingPayment } from './BookingPayment/BookingPayment';
 export { default as BookingSummaryCard} from './BookingSummaryCard/BookingSummaryCard';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverBookingCard} from './BookingCards/CaregiverBookingCard';

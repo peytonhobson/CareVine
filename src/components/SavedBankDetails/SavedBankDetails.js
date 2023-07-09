@@ -4,17 +4,48 @@ import { bool, func, shape, string } from 'prop-types';
 import classNames from 'classnames';
 
 import { injectIntl, intlShape } from '../../util/reactIntl';
-import { IconBank, IconClose, Button, InlineTextButton, Modal } from '../../components';
+import {
+  IconBank,
+  IconClose,
+  Button,
+  InlineTextButton,
+  Modal,
+  IconArrowHead,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuLabel,
+} from '../../components';
 import { propTypes } from '../../util/types';
 
 import css from './SavedBankDetails.module.css';
 
+const BankAccount = props => {
+  const { bank } = props;
+
+  const bankName = bank.us_bank_account.bank_name;
+  const last4Digits = bank.us_bank_account.last4;
+
+  return (
+    <div className={css.savedPaymentMethod}>
+      <div className={css.bankIconContainer}>
+        <IconBank className={css.bankIcon} />
+      </div>
+      <div className={css.bankContent}>
+        <span className={css.bankName}>{bankName}</span>
+        <span className={css.accountNumber}>Account ending in {last4Digits}</span>
+      </div>
+    </div>
+  );
+};
+
 const SavedBankDetails = props => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const {
-    bank,
+    bankAccounts,
     className,
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
@@ -29,17 +60,22 @@ const SavedBankDetails = props => {
     stripeCustomer,
   } = props;
 
-  const bankName = bank && bank.bank_name;
-  const last4Digits = bank && bank.last4;
+  const [selectedBank, setSelectedBank] = useState(bankAccounts?.[0]);
+
+  const bankName = selectedBank.us_bank_account.bank_name;
+  const last4Digits = selectedBank.us_bank_account.last4;
 
   const defaultBank = (
-    <div className={css.savedPaymentMethod}>
+    <div className={css.defaultPaymentMethod}>
       <div className={css.bankIconContainer}>
         <IconBank className={css.bankIcon} />
       </div>
       <div className={css.bankContent}>
         <span className={css.bankName}>{bankName}</span>
         <span className={css.accountNumber}>Account ending in {last4Digits}</span>
+      </div>
+      <div className={css.dropDownArrowContainer}>
+        <IconArrowHead direction="down" class={css.dropDownArrow} />
       </div>
     </div>
   );
@@ -67,6 +103,11 @@ const SavedBankDetails = props => {
     setError(null);
   };
 
+  const handleBankSelect = bank => {
+    setIsMenuOpen(false);
+    setSelectedBank(bank);
+  };
+
   const removeCardModalTitle = intl.formatMessage({
     id: 'SavedBankDetails.removeBankAccountModalTitle',
   });
@@ -88,7 +129,50 @@ const SavedBankDetails = props => {
     <div className={classes} onClick={() => onSelect && onSelect('bankAccount')}>
       <div className={css.menu}>
         <div className={menuLabelClasses}>
-          <div className={css.menuLabelWrapper}>{defaultBank}</div>
+          <div className={css.menuLabelWrapper}>
+            <Menu
+              className={css.menu}
+              isOpen={isMenuOpen}
+              onToggleActive={isOpen => setIsMenuOpen(isOpen)}
+              useArrow={false}
+            >
+              <MenuLabel className={css.menuLabel}>{defaultBank}</MenuLabel>
+
+              <MenuContent rootClassName={css.menuContent}>
+                {bankAccounts
+                  .filter(bank => bank.id !== selectedBank.id)
+                  .map(bank => {
+                    return (
+                      <MenuItem
+                        key={bank.id}
+                        className={css.menuItem}
+                        onClick={() => handleBankSelect(bank)}
+                      >
+                        <BankAccount bank={bank} />
+                      </MenuItem>
+                    );
+                  })}
+
+                {/* <MenuItem key="divider" className={css.menuDivider}>
+                  {replaceCardTitle}
+                </MenuItem>
+                <MenuItem key="second item" className={css.menuItem}>
+                  <IconCheckmark
+                    className={
+                      active === REPLACE_CARD ? css.iconCheckmark : css.iconCheckmarkHidden
+                    }
+                    size="small"
+                  />
+                  <InlineTextButton
+                    className={css.menuTextReplaceCard}
+                    onClick={handleClick(REPLACE_CARD)}
+                  >
+                    {replaceCard}
+                  </InlineTextButton>
+                </MenuItem> */}
+              </MenuContent>
+            </Menu>
+          </div>
         </div>
       </div>
 

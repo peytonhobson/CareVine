@@ -754,8 +754,6 @@
   flex-grow: 1;
   justify-content: center;
   max-width: 30vw;
-  max-height: calc(100vh - var(--topbarHeightDesktop));
-  overflow-y: scroll;
   overflow-x: hidden;
   border-left: 1px solid var(--matterColorNegative);
 }
