@@ -25,6 +25,7 @@ import {
   setInitialState,
   submitReview,
 } from './BookingsPage.duck';
+import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 import css from './BookingsPage.module.css';
 
@@ -62,6 +63,7 @@ const BookingsPage = props => {
     submitReviewInProgress,
     submitReviewError,
     reviewSubmitted,
+    onFetchCurrentUserListing,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -95,6 +97,7 @@ const BookingsPage = props => {
     submitReviewInProgress,
     submitReviewError,
     reviewSubmitted,
+    onFetchCurrentUserListing,
   };
 
   const tabs = [
@@ -224,6 +227,7 @@ const mapDispatchToProps = {
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
   onSubmitReview: submitReview,
+  onFetchCurrentUserListing: fetchCurrentUserHasListings,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);
