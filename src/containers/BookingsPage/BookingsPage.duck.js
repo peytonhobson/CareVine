@@ -523,7 +523,6 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
 
     await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
 
-    dispatch(fetchCurrentUserHasListings());
     dispatch(acceptBookingSuccess());
     return;
   } catch (e) {
