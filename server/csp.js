@@ -118,7 +118,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.googleadservices.com')
     .concat('*.facebook.net')
     .concat('www.google.com')
-    .concat('*.googlesyndication.com');
+    .concat('*.googlesyndication.com')
+    .concat('*.crisp.chat');
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
 
   const customDirectives = {
