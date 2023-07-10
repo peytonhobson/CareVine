@@ -3,7 +3,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
-import { findRouteByRouteName } from '../../util/routes';
 import { calculateProcessingFee, ensureListing, ensureUser } from '../../util/data';
 import {
   NamedLink,
@@ -12,7 +11,7 @@ import {
   IconConfirm,
   BookingConfirmationCard,
   BookingSummaryCard,
-  BookingPayment,
+  PaymentMethods,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
@@ -27,14 +26,12 @@ import {
 import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 import { convertTimeFrom12to24 } from '../../util/data';
-import PaymentSection from './PaymentSection';
 import moment from 'moment';
 
 const STORAGE_KEY = 'CheckoutPage';
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 const BOOKING_FEE_PERCENTAGE = 0.05;
-const CC_FEE_PERCENTAGE = 0.03;
 
 const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -90,7 +87,7 @@ export class CheckoutPageComponent extends Component {
       dataLoaded: false,
       submitting: false,
       selectedBookingTimes: [],
-      selectedPaymentMethod: BANK_ACCOUNT,
+      selectedPaymentMethod: null,
       showConfirmation: false,
       showBookingSummary: false,
     };
@@ -374,6 +371,7 @@ export class CheckoutPageComponent extends Component {
       );
     }
 
+    const showPaymentForm = !!(currentUser && hasRequiredData && currentListing);
     const selectedPaymentMethodType =
       this.state.selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
@@ -401,18 +399,28 @@ export class CheckoutPageComponent extends Component {
               currentListing={currentListing}
               listingTitle={listingTitle}
             >
-              <PaymentSection
-                currentUser={currentUser}
-                hasRequiredData={hasRequiredData}
-                currentListing={currentListing}
-                listingTitle={listingTitle}
-                defaultPaymentFetched={defaultPaymentFetched}
-                defaultPaymentMethods={defaultPaymentMethods}
-                fetchDefaultPaymentError={fetchDefaultPaymentError}
-                fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-                stripeCustomerFetched={stripeCustomerFetched}
-                onChangePaymentMethod={value => this.setState({ selectedPaymentMethod: value })}
-              />
+              <section className={css.paymentContainer}>
+                <h2>Payment</h2>
+                <p className={css.tinyNoMargin}>*Processing Fees</p>
+                <ul className={css.processingFeesList}>
+                  <li className={css.tinyNoMargin}>Bank Accounts: 0.8%</li>
+                  <li className={css.tinyNoMargin}>Payment Cards: 2.9% + $0.30</li>
+                </ul>
+                {showPaymentForm ? (
+                  <PaymentMethods
+                    defaultPaymentFetched={defaultPaymentFetched}
+                    defaultPaymentMethods={defaultPaymentMethods}
+                    fetchDefaultPaymentError={fetchDefaultPaymentError}
+                    fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+                    stripeCustomerFetched={stripeCustomerFetched}
+                    onChangePaymentMethod={method =>
+                      this.setState({ selectedPaymentMethod: method })
+                    }
+                    className={css.paymentMethods}
+                    removeDisabled
+                  />
+                ) : null}
+              </section>
               <BookingSummaryCard
                 authorDisplayName={authorDisplayName}
                 currentAuthor={currentAuthor}

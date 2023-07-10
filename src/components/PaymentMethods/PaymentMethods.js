@@ -25,7 +25,7 @@ import {
 import { SaveBankAccountForm, SaveCreditCardForm, StripePaymentForm } from '../../forms';
 import config from '../../config';
 
-import css from './BookingPayment.module.css';
+import css from './PaymentMethods.module.css';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
@@ -35,7 +35,6 @@ const BookingPaymentComponent = props => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTab, setSelectedTab] = useState(BANK_ACCOUNT);
   const [useDifferentMethod, setUseDifferentMethod] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(null);
 
   const {
     createBankAccountError,
@@ -50,7 +49,7 @@ const BookingPaymentComponent = props => {
     defaultPaymentMethods,
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
-    deletePaymentMethodSuccess,
+    deletedPaymentMethod,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
     handleCardSetupError,
@@ -62,6 +61,7 @@ const BookingPaymentComponent = props => {
     onChangePaymentMethod,
     rootClassName,
     className,
+    removeDisabled,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -96,6 +96,12 @@ const BookingPaymentComponent = props => {
     };
 
     return billingDetails;
+  };
+
+  const handleRemovePaymentMethod = paymentMethod => {
+    if (!deletePaymentMethodInProgress || removeDisabled) {
+      onDeletePaymentMethod(paymentMethod.id);
+    }
   };
 
   const handleBankAccountSubmit = stripe => {
@@ -181,13 +187,21 @@ const BookingPaymentComponent = props => {
                 methods={bankAccounts}
                 onManageDisableScrolling={onManageDisableScrolling}
                 onChange={handleChangePaymentMethod}
+                deletePaymentMethodError={deletePaymentMethodError}
+                deletePaymentMethodInProgress={deletePaymentMethodInProgress}
+                deletedPaymentMethod={deletedPaymentMethod}
+                removeDisabled={removeDisabled}
+                onDeleteMethod={handleRemovePaymentMethod}
+                methodType={BANK_ACCOUNT}
+                stripeCustomer={stripeCustomer}
+                onFetchDefaultPayment={onFetchDefaultPayment}
               />
               <InlineTextButton
                 onClick={handleUseDifferentMethod}
                 className={css.paymentSwitch}
                 type="button"
               >
-                Use a different Bank Account
+                Add a new Bank Account
               </InlineTextButton>
             </>
           ) : !!fetchDefaultPaymentError ? (
@@ -231,13 +245,21 @@ const BookingPaymentComponent = props => {
                 onManageDisableScrolling={onManageDisableScrolling}
                 type="card"
                 onChange={handleChangePaymentMethod}
+                deletePaymentMethodError={deletePaymentMethodError}
+                deletePaymentMethodInProgress={deletePaymentMethodInProgress}
+                deletedPaymentMethod={deletedPaymentMethod}
+                removeDisabled={removeDisabled}
+                onDeleteMethod={handleRemovePaymentMethod}
+                methodType={CREDIT_CARD}
+                stripeCustomer={stripeCustomer}
+                onFetchDefaultPayment={onFetchDefaultPayment}
               />
               <InlineTextButton
                 onClick={handleUseDifferentMethod}
                 className={css.paymentSwitch}
                 type="button"
               >
-                Use a different Payment Card
+                Add a new Payment Card
               </InlineTextButton>
             </div>
           ) : fetchDefaultPaymentError ? (
@@ -307,7 +329,7 @@ const mapStateToProps = state => {
     createStripeCustomerError,
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
-    deletePaymentMethodSuccess,
+    deletedPaymentMethod,
   } = state.paymentMethods;
 
   return {
@@ -321,7 +343,7 @@ const mapStateToProps = state => {
     currentUser,
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
-    deletePaymentMethodSuccess,
+    deletedPaymentMethod,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
   };
@@ -338,9 +360,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(createCreditCard(stripeCustomerId, stripe, billingDetails, card)),
 });
 
-const BookingPayment = compose(
+const PaymentMethods = compose(
   connect(mapStateToProps, mapDispatchToProps),
   injectIntl
 )(BookingPaymentComponent);
 
-export default BookingPayment;
+export default PaymentMethods;

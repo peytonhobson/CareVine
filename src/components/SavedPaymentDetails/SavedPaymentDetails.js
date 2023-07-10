@@ -20,6 +20,9 @@ import {
 
 import css from './SavedPaymentDetails.module.css';
 
+const BANK_ACCOUNT = 'Bank Account';
+const CREDIT_CARD = 'Payment Card';
+
 const isExpired = (expirationMonth, expirationYear) => {
   const currentTime = new Date();
   const currentYear = currentTime.getFullYear();
@@ -35,10 +38,11 @@ const isExpired = (expirationMonth, expirationYear) => {
 };
 
 const BankAccount = props => {
-  const { method: bank } = props;
+  const { method: bank, removeDisabled, onOpenDeleteModal } = props;
 
   const bankName = bank.us_bank_account.bank_name;
   const last4Digits = bank.us_bank_account.last4;
+  const bankId = bank.id;
 
   return (
     <div className={css.savedPaymentMethod}>
@@ -49,17 +53,26 @@ const BankAccount = props => {
         <span className={css.bankName}>{bankName}</span>
         <span className={css.accountNumber}>Account ending in {last4Digits}</span>
       </div>
+      {!removeDisabled && (
+        <div className={css.closeIconContainer}>
+          <IconClose
+            className={css.closeIcon}
+            onClick={() => onOpenDeleteModal({ id: bankId, last4: last4Digits })}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 const Card = props => {
-  const { method: card, intl } = props;
+  const { method: card, intl, removeDisabled, onOpenDeleteModal } = props;
 
   const expirationYear = card.card.expirationYear || card.card.exp_year;
   const expirationMonth = card.card.expirationMonth || card.card.exp_month;
   const last4Digits = card.card.last4Digits || card.card.last4;
   const brand = card.card.brand;
+  const cardId = card.id;
 
   const isCardExpired =
     expirationMonth && expirationYear && isExpired(expirationMonth, expirationYear);
@@ -85,12 +98,20 @@ const Card = props => {
       <span className={isCardExpired ? css.expirationDateExpired : css.expirationDate}>
         {expirationMonth}/{expirationYear?.toString().substring(2)}
       </span>
+      {!removeDisabled && (
+        <div className={css.closeIconContainer}>
+          <IconClose
+            className={css.closeIcon}
+            onClick={() => onOpenDeleteModal({ id: cardId, last4: last4Digits })}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 const SavedPaymentDetails = props => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalVals, setIsModalOpen] = useState({});
   const [error, setError] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -99,9 +120,9 @@ const SavedPaymentDetails = props => {
     className,
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
-    deletePaymentMethodSuccess,
+    deletedPaymentMethod,
     intl,
-    onDeleteAccount,
+    onDeleteMethod,
     onFetchDefaultPayment,
     onManageDisableScrolling,
     rootClassName,
@@ -109,6 +130,8 @@ const SavedPaymentDetails = props => {
     stripeCustomer,
     onChange,
     type,
+    removeDisabled,
+    methodType,
   } = props;
 
   const [selectedMethod, setSelectedMethod] = useState(methods?.[0]);
@@ -189,12 +212,11 @@ const SavedPaymentDetails = props => {
   }, [methods?.length]);
 
   useEffect(() => {
-    if (deletePaymentMethodSuccess && !!stripeCustomer) {
-      setIsModalOpen(false);
+    if (deletedPaymentMethod && stripeCustomer) {
       onFetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId);
       setError(null);
     }
-  }, [deletePaymentMethodSuccess]);
+  }, [deletedPaymentMethod]);
 
   useEffect(() => {
     if (deletePaymentMethodError) {
@@ -202,12 +224,12 @@ const SavedPaymentDetails = props => {
     }
   }, [deletePaymentMethodError]);
 
-  const handleOpenDeleteModal = () => {
-    setIsModalOpen(true);
+  const handleOpenDeleteModal = vals => {
+    setIsModalOpen(vals);
   };
 
   const handleDeleteAccount = () => {
-    onDeleteAccount('bankAccount');
+    onDeleteMethod(selectedMethod);
     setError(null);
   };
 
@@ -216,12 +238,15 @@ const SavedPaymentDetails = props => {
     setSelectedMethod(bank);
   };
 
-  const removeCardModalTitle = intl.formatMessage({
-    id: 'SavedPaymentDetails.removeBankAccountModalTitle',
-  });
+  const removeCardModalTitle = intl.formatMessage(
+    {
+      id: 'SavedPaymentDetails.removeBankAccountModalTitle',
+    },
+    { methodType }
+  );
   const removeCardModalContent = intl.formatMessage(
     { id: 'SavedPaymentDetails.removeBankAccountModalContent' },
-    { last4Digits }
+    { last4Digits: modalVals.last4, methodType }
   );
   const cancel = intl.formatMessage({ id: 'SavedPaymentDetails.cancel' });
   const removeBankAccount = intl.formatMessage({ id: 'SavedPaymentDetails.removeBankAccount' });
@@ -234,6 +259,8 @@ const SavedPaymentDetails = props => {
   });
 
   const ItemType = type === 'card' ? Card : BankAccount;
+
+  const deletedPaymentMethodId = deletedPaymentMethod?.id;
 
   return (
     <div className={classes}>
@@ -257,7 +284,12 @@ const SavedPaymentDetails = props => {
                       className={css.menuItem}
                       onClick={() => handleMethodSelect(m)}
                     >
-                      <ItemType method={m} intl={intl} />
+                      <ItemType
+                        method={m}
+                        intl={intl}
+                        removeDisabled={removeDisabled}
+                        onOpenDeleteModal={handleOpenDeleteModal}
+                      />
                     </MenuItem>
                   );
                 })}
@@ -270,7 +302,7 @@ const SavedPaymentDetails = props => {
       {onManageDisableScrolling ? (
         <Modal
           id="VerifyDeletingPaymentMethod"
-          isOpen={isModalOpen}
+          isOpen={modalVals.id}
           onClose={() => {
             setIsModalOpen(false);
           }}
@@ -300,8 +332,13 @@ const SavedPaymentDetails = props => {
                 onClick={handleDeleteAccount}
                 inProgress={deletePaymentMethodInProgress}
                 type="button"
+                ready={deletedPaymentMethodId && deletedPaymentMethodId === modalVals.id}
+                disabled={
+                  deletePaymentMethodInProgress ||
+                  (deletedPaymentMethodId && deletedPaymentMethodId === modalVals.id)
+                }
               >
-                {removeBankAccount}
+                Remove {methodType}
               </Button>
             </div>
           </div>

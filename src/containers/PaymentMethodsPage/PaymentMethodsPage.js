@@ -16,10 +16,10 @@ import {
   Page,
   UserNav,
   NamedRedirect,
+  PaymentMethods,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { CAREGIVER } from '../../util/constants';
-import SavePaymentMethodsContainer from '../SavePaymentMethodsContainer/SavePaymentMethodsContainer';
 
 import css from './PaymentMethodsPage.module.css';
 
@@ -64,12 +64,13 @@ const PaymentMethodsPageComponent = props => {
             <h1 className={css.title}>
               <FormattedMessage id="PaymentMethodsPage.heading" />
             </h1>
-            <SavePaymentMethodsContainer
+            <PaymentMethods
               defaultPaymentFetched={defaultPaymentFetched}
               defaultPaymentMethods={defaultPaymentMethods}
               fetchDefaultPaymentError={fetchDefaultPaymentError}
               fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
               stripeCustomerFetched={stripeCustomerFetched}
+              className={css.paymentMethods}
             />
           </div>
         </LayoutWrapperMain>

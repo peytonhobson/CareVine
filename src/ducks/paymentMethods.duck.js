@@ -58,7 +58,7 @@ const initialState = {
   createStripeCustomerInProgress: null,
   deletePaymentMethodError: null,
   deletePaymentMethodInProgress: null,
-  deletePaymentMethodSuccess: false,
+  deletedPaymentMethod: null,
   stripeCustomer: null,
   defaultPaymentMethods: null,
   defaultPaymentFetched: false,
@@ -113,16 +113,15 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         ...state,
         deletePaymentMethodError: null,
         deletePaymentMethodInProgress: true,
-        deletePaymentMethodSuccess: false,
+        deletedPaymentMethod: null,
       };
     case DELETE_PAYMENT_METHOD_SUCCESS:
       return {
         ...state,
         deletePaymentMethodInProgress: false,
-        deletePaymentMethodSuccess: true,
+        deletedPaymentMethod: payload,
       };
     case DELETE_PAYMENT_METHOD_ERROR:
-      console.error(payload);
       return {
         ...state,
         deletePaymentMethodError: payload,
@@ -262,8 +261,9 @@ export const addPaymentMethodError = e => ({
 
 export const deletePaymentMethodRequest = () => ({ type: DELETE_PAYMENT_METHOD_REQUEST });
 
-export const deletePaymentMethodSuccess = () => ({
+export const deletePaymentMethodSuccess = paymentMethod => ({
   type: DELETE_PAYMENT_METHOD_SUCCESS,
+  payload: paymentMethod,
 });
 
 export const deletePaymentMethodError = e => ({
@@ -406,7 +406,7 @@ export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) 
 
   return stripeDetachPaymentMethod({ paymentMethodId })
     .then(response => {
-      dispatch(deletePaymentMethodSuccess());
+      dispatch(deletePaymentMethodSuccess(response.data));
       return response;
     })
     .catch(e => {
