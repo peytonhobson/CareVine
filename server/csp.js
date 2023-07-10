@@ -111,11 +111,14 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     styleSrc = [self],
     fontSrc = [self],
   } = defaultDirectives;
+  // concat web socket url
   const customConnectSrc = connectSrc
     .concat('*.sentry.io')
     .concat('*.ingest.sentry.io')
     .concat('https://strapi.carevine.us/graphql')
-    .concat('*.crisp.chat');
+    .concat('*.crisp.chat')
+    .concat('wss://*.crisp.chat');
+
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc
     .concat('*.googleadservices.com')
