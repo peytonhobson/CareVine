@@ -65,6 +65,7 @@ const CaregiverBookingCard = props => {
     onFetchBookings,
     onResetInitialState,
     bookedDates,
+    onFetchCurrentUserListing,
   } = props;
 
   const { customer } = booking;
@@ -85,6 +86,7 @@ const CaregiverBookingCard = props => {
     modalCloseFunc(false);
     onResetInitialState();
     onFetchBookings();
+    onFetchCurrentUserListing();
   };
 
   const customerDisplayName = (
