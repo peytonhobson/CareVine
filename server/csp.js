@@ -109,6 +109,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     scriptSrc = [self],
     frameSrc = [self],
     styleSrc = [self],
+    fontSrc = [self],
   } = defaultDirectives;
   const customConnectSrc = connectSrc
     .concat('*.sentry.io')
@@ -124,6 +125,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.crisp.chat');
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
   const customStyleSrc = styleSrc.concat('*.crisp.chat');
+  const customFontSrc = fontSrc.concat('*.crisp.chat');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
@@ -131,6 +133,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     scriptSrc: customScriptSrc,
     frameSrc: customFrameSrc,
     styleSrc: customStyleSrc,
+    fontSrc: customFontSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //
