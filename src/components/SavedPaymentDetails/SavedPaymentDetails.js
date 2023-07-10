@@ -20,9 +20,6 @@ import {
 
 import css from './SavedPaymentDetails.module.css';
 
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
-
 const isExpired = (expirationMonth, expirationYear) => {
   const currentTime = new Date();
   const currentYear = currentTime.getFullYear();
@@ -249,10 +246,8 @@ const SavedPaymentDetails = props => {
     { last4Digits: modalVals.last4, methodType }
   );
   const cancel = intl.formatMessage({ id: 'SavedPaymentDetails.cancel' });
-  const removeBankAccount = intl.formatMessage({ id: 'SavedPaymentDetails.removeBankAccount' });
 
   const classes = classNames(rootClassName || css.root, className);
-  const menuLabelClasses = classNames(css.menuLabel, selected && css.menuLabelActive);
 
   const deletePaymentMethodErrorMessage = intl.formatMessage({
     id: 'SavedPaymentDetails.deletePaymentMethodError',
