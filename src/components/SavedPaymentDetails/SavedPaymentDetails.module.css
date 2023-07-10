@@ -214,3 +214,20 @@
   height: 16px;
   display: inline-block;
 }
+
+.closeIconContainer {
+  margin-left: auto;
+  margin-block: auto;
+  height: 100%;
+}
+
+.closeIcon {
+  padding: 0.25rem;
+  border-radius: 10%;
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--matterColorAnti);
+    margin-left: auto;
+  }
+}
