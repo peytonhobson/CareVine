@@ -58,8 +58,8 @@
 
   background: none;
   padding-right: 0 !important;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
   min-width: 4rem;
 
   &:select {
@@ -85,9 +85,10 @@
 }
 
 .dashBetweenTimes {
+  margin-top: auto;
   padding-left: 6px;
   padding-right: 6px;
-  padding-bottom: 8px;
+  padding-bottom: 0.325rem;
 }
 
 .changeDatesButton {
@@ -162,4 +163,10 @@
 
 .error {
   color: var(--failColor);
+}
+
+.timeSelectLabel {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+  padding: 0;
 }

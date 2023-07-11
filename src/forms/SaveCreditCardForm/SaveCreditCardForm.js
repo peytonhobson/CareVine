@@ -12,7 +12,13 @@ import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import config from '../../config';
-import { Form, PrimaryButton, FieldTextInput, StripePaymentAddress } from '../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldTextInput,
+  StripePaymentAddress,
+  FieldCheckbox,
+} from '../../components';
 
 import css from './SaveCreditCardForm.module.css';
 
@@ -85,6 +91,7 @@ const cardStyles = {
 const initialState = {
   error: null,
   cardValueValid: false,
+  saveForLaterError: false,
 };
 
 /**
@@ -158,6 +165,11 @@ class PaymentMethodsForm extends Component {
 
     if (inProgress || cardInputNeedsAttention) {
       // Already submitting or card value incomplete/invalid
+      return;
+    }
+
+    if (!values.saveAfterOnetimePayment) {
+      this.setState({ saveForLaterError: true });
       return;
     }
 
@@ -241,7 +253,20 @@ class PaymentMethodsForm extends Component {
             this.cardContainer = el;
           }}
         />
-        <div className={css.infoText}>{infoText}</div>
+        <div className={css.saveForLaterUse}>
+          <FieldCheckbox
+            className={css.saveForLaterUseCheckbox}
+            textClassName={css.saveForLaterUseLabel}
+            id="saveAfterOnetimePayment"
+            name="saveAfterOnetimePayment"
+            label="I agree to add this payment method to my account for future use."
+            value="saveAfterOnetimePayment"
+            useSuccessColor
+          />
+          <span className={css.saveForLaterUseLegalInfo}>
+            <FormattedMessage id="StripePaymentForm.saveforLaterUseLegalInfo" />
+          </span>
+        </div>
         {hasCardError ? <span className={css.error}>{this.state.error}</span> : null}
         <div className={css.paymentAddressField}>
           <h3 className={css.billingHeading}>
@@ -265,6 +290,11 @@ class PaymentMethodsForm extends Component {
           {hasErrors ? (
             <span className={css.errorMessage}>
               {hasErrors.message ? hasErrors.message : errorMessage}
+            </span>
+          ) : null}
+          {this.state.saveForLaterError ? (
+            <span className={css.errorMessage}>
+              Please agree to add this payment method to your account for future use.
             </span>
           ) : null}
           <PrimaryButton

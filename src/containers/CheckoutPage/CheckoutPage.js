@@ -200,7 +200,7 @@ export class CheckoutPageComponent extends Component {
     const bookingRate = bookingRateProps || bookingRateState;
     const bookingDates = bookingDatesProps || bookingDatesState;
 
-    const paymentMethodId = this.state.selectedPaymentMethod.id;
+    const paymentMethodId = this.state.selectedPaymentMethod?.id;
 
     const listingId = listing.id;
 
@@ -392,7 +392,7 @@ export class CheckoutPageComponent extends Component {
               onSetState={onSetState}
               authorDisplayName={authorDisplayName}
               defaultPaymentMethods={defaultPaymentMethods}
-              selectedPaymentMethod={selectedPaymentMethodType}
+              selectedPaymentMethod={this.state.selectedPaymentMethod}
               initiateOrderInProgress={initiateOrderInProgress}
               initiateOrderError={initiateOrderError}
               transaction={transaction}

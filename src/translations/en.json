@@ -1349,7 +1349,7 @@
   "StripePaymentForm.payWithHeading": "Pay with",
   "StripePaymentForm.replaceAfterOnetimePayment": "Replace card …{last4Digits} with the new card for future bookings",
   "StripePaymentForm.saveAfterOnetimePayment": "Save card details for future bookings",
-  "StripePaymentForm.saveforLaterUseLegalInfo": "I authorise CareVine to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.",
+  "StripePaymentForm.saveforLaterUseLegalInfo": "I authorize CareVine to send instructions to the financial institution that issued my card to take payments from my card account in accordance with the terms of my agreement with you.",
   "StripePaymentForm.stripe.api_connection_error": "Could not connect to Stripe API.",
   "StripePaymentForm.stripe.api_error": "Error in Stripe API.",
   "StripePaymentForm.stripe.authentication_error": "Could not authenticate with Stripe.",

@@ -87,6 +87,9 @@ const EditBookingFormComponent = props => (
         listingTitle,
       } = formRenderProps;
 
+      const [invalidBookingDatesError, setInvalidBookingDatesError] = useState(false);
+      const [invalidPaymentMethodError, setInvalidPaymentMethodError] = useState(false);
+
       const listingNotFound = isTransactionInitiateListingNotFoundError(initiateOrderError);
       const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
       const isBookingTimeNotAvailableError = isTransactionInitiateBookingTimeNotAvailableError(
@@ -183,15 +186,16 @@ const EditBookingFormComponent = props => (
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
-      const submitDisabled =
-        invalid ||
-        disabled ||
-        !checkValidBookingTimes(values.dateTimes, bookingDates) ||
-        !selectedPaymentMethod;
 
       const onSubmit = e => {
         e.preventDefault();
-        if (submitDisabled) {
+        if (!checkValidBookingTimes(values.dateTimes, bookingDates)) {
+          setInvalidBookingDatesError(true);
+          return;
+        }
+
+        if (!selectedPaymentMethod) {
+          setInvalidPaymentMethodError(true);
           return;
         }
         handleSubmit(e);
@@ -199,7 +203,13 @@ const EditBookingFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={onSubmit}>
-          <FormSpy onChange={onChange} />
+          <FormSpy
+            onChange={e => {
+              onChange(e);
+              setInvalidBookingDatesError(false);
+              setInvalidPaymentMethodError(false);
+            }}
+          />
           <h2 className={css.pickYourTimes}>Pick your Times</h2>
           <Button
             className={css.changeDatesButton}
@@ -224,6 +234,12 @@ const EditBookingFormComponent = props => (
                   <h3 className={css.date}>{monthYearBookingDate}</h3>
                   <div className={css.formRow}>
                     <div className={css.field}>
+                      <label
+                        htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
+                        class={css.timeSelectLabel}
+                      >
+                        Start Time
+                      </label>
                       <FieldSelect
                         id={`dateTimes.${monthYearBookingDate}.startTime`}
                         name={`dateTimes.${monthYearBookingDate}.startTime`}
@@ -250,6 +266,12 @@ const EditBookingFormComponent = props => (
                     </div>
                     <span className={css.dashBetweenTimes}>-</span>
                     <div className={css.field}>
+                      <label
+                        htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
+                        class={css.timeSelectLabel}
+                      >
+                        End Time
+                      </label>
                       <FieldSelect
                         id={`dateTimes.${monthYearBookingDate}.endTime`}
                         name={`dateTimes.${monthYearBookingDate}.endTime`}
@@ -293,12 +315,22 @@ const EditBookingFormComponent = props => (
           <div>
             {listingNotFoundErrorMessage}
             {initiateOrderErrorMessage}
+            {invalidBookingDatesError && (
+              <p className={css.error}>
+                Please select start times and end times for each booking date.
+              </p>
+            )}
+            {invalidPaymentMethodError && (
+              <p className={css.error}>
+                You must add or select a payment method before requesting to book. You will not be
+                charged for the booking until the caregiver accepts.
+              </p>
+            )}
             <p className={css.paymentInfo}>
               You will not be charged until the caregiver accepts the booking
             </p>
             <Button
               className={css.submitButton}
-              disabled={submitDisabled}
               inProgress={initiateOrderInProgress}
               ready={transaction}
               type="submit"
