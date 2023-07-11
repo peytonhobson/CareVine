@@ -121,6 +121,7 @@ export const FieldDatePickerComponent = props => {
           formatDay(locale, date, selectedDays, bookedDates, handleSelectDay, bufferDays)
         }
         value={initialDate}
+        view="month"
       />
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates
