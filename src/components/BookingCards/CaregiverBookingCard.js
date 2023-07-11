@@ -139,7 +139,7 @@ const CaregiverBookingCard = props => {
     <div className={css.bookingCard}>
       <div className={css.header}>
         <div className={css.bookingTitle}>
-          <Avatar user={customer} disableProfileLink className={css.avatar} />
+          <Avatar user={customer} className={css.avatar} />
           <div>
             {isMobile ? (
               <h3 style={{ margin: 0 }}>{senderListingTitle}</h3>

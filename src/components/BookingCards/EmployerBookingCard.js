@@ -152,7 +152,7 @@ const EmployerBookingCard = props => {
     <div className={css.bookingCard}>
       <div className={css.header}>
         <div className={css.bookingTitle}>
-          <Avatar user={provider} disableProfileLink className={css.avatar} />
+          <Avatar user={provider} listing={listing} className={css.avatar} />
           <div>
             <h2 style={{ margin: 0 }}>Booking with </h2>
             <h2 style={{ margin: 0 }}>{providerDisplayName}</h2>
