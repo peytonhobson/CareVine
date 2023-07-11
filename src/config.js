@@ -66,7 +66,7 @@ const enableAvailability = process.env.REACT_APP_AVAILABILITY_ENABLED === 'true'
 //
 // See also the API reference for querying time slots:
 // https://www.sharetribe.com/api-reference/marketplace.html#query-time-slots
-const dayCountAvailableForBooking = 90;
+const dayCountAvailableForBooking = 74;
 
 // To pass environment variables to the client app in the build
 // script, react-scripts (and the sharetribe-scripts fork of
