@@ -120,7 +120,7 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
   const currentUserDisplayName = getState().user.currentUser.attributes.profile.displayName;
 
   const bodyParams = {
-    processAlias: config.bookingProcessAlias,
+    processAlias: config.singleBookingProcessAlias,
     transition: TRANSITION_REQUEST_BOOKING,
   };
   const queryParams = {

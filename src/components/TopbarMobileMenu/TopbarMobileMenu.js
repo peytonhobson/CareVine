@@ -49,7 +49,7 @@ const TopbarMobileMenu = props => {
   useEffect(() => {
     if (isOpen && crisp) {
       crisp.push(['do', 'chat:hide']);
-    } else {
+    } else if (crisp) {
       crisp.push(['do', 'chat:show']);
     }
   }, [isOpen]);
