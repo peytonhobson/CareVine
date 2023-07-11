@@ -327,6 +327,7 @@ const EmployerBookingCard = props => {
         onClose={() => handleModalClose(setIsDisputeModalOpen)}
         onManageDisableScrolling={onManageDisableScrolling}
         usePortal
+        containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Submit Dispute</p>
         <p className={css.modalMessage}>

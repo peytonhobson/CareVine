@@ -47,6 +47,9 @@ const pastBookingTransitions = [
 // TODO: Check if this is correct. It may be end of array instead of start of array.
 const isActive = booking => {
   const { lineItems } = booking.attributes.metadata;
+
+  if (!lineItems || lineItems.length === 0) return false;
+
   const sortedLineItemsByDate = lineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
   const startTimeAsDate = addTimeToStartOfDay(
     sortedLineItemsByDate[0].date,
@@ -60,6 +63,7 @@ const isActive = booking => {
 };
 
 const filterActiveOrUpcomingBookings = bookings => {
+  console.log(bookings);
   const active = bookings.filter(booking => isActive(booking));
   const upcoming = bookings.filter(b => !active.find(ab => ab.id.uuid === b.id.uuid));
 
