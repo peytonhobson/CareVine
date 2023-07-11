@@ -395,9 +395,6 @@ export class ListingPageComponent extends Component {
       </p>
     ) : null;
 
-    const listingUserType = currentListing.attributes.metadata.listingType;
-    const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
-
     return (
       <Page
         title={schemaTitle}
@@ -417,7 +414,7 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperMain>
             {actionBar}
             <div className={css.mainContainer}>
-              <div className={classNames(css.subContainer, hasBooking && css.hasBooking)}>
+              <div className={classNames(css.subContainer)}>
                 {!this.state.showListingPreview ? (
                   <>
                     <ListingSummary
@@ -441,6 +438,11 @@ export class ListingPageComponent extends Component {
                       reviews={reviews}
                       fetchReviewsError={fetchReviewsError}
                       onManageDisableScrolling={onManageDisableScrolling}
+                      onContinueBooking={this.handleBookingSubmit}
+                      authorDisplayName={authorDisplayName}
+                      hasStripeAccount={hasStripeAccount}
+                      hasStripeAccountInProgress={hasStripeAccountInProgress}
+                      hasStripeAccountError={hasStripeAccountError}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -460,17 +462,6 @@ export class ListingPageComponent extends Component {
                   />
                 )}
               </div>
-              {hasBooking ? (
-                <BookingContainer
-                  listing={currentListing}
-                  onSubmit={this.handleBookingSubmit}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                  authorDisplayName={authorDisplayName}
-                  hasStripeAccount={hasStripeAccount}
-                  hasStripeAccountInProgress={hasStripeAccountInProgress}
-                  hasStripeAccountError={hasStripeAccountError}
-                />
-              ) : null}
             </div>
             {this.state.enquiryModalOpen && (
               <Modal
