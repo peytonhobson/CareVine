@@ -16,6 +16,7 @@ import DefaultAvatar3 from '../../assets/Dava3.png';
 import DefaultAvatar4 from '../../assets/Dava4.png';
 
 import css from './Avatar.module.css';
+import { createSlug } from '../../util/urlHelpers';
 
 // Responsive image sizes hint
 const AVATAR_SIZES = '40px';
@@ -39,15 +40,7 @@ const AVATAR_IMAGE_VARIANTS = [
 ];
 
 export const AvatarComponent = props => {
-  const {
-    rootClassName,
-    className,
-    initialsClassName,
-    user,
-    renderSizes,
-    disableProfileLink,
-    intl,
-  } = props;
+  const { rootClassName, className, initialsClassName, user, renderSizes, intl, listing } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   const userIsCurrentUser = user && user.type === 'currentUser';
@@ -96,11 +89,12 @@ export const AvatarComponent = props => {
   const displayName = userDisplayNameAsString(avatarUser, defaultUserDisplayName);
   const abbreviatedName = userAbbreviatedName(avatarUser, defaultUserAbbreviatedName);
   const rootProps = { className: classes, title: displayName };
-  const linkProps = avatarUser.id
-    ? { name: 'ProfilePage', params: { id: avatarUser.id.uuid } }
-    : { name: 'ProfileBasePage' };
+  const linkProps = {
+    name: 'ListingPage',
+    params: { id: listing?.id.uuid, slug: createSlug(avatarUser) },
+  };
   const hasProfileImage = avatarUser?.profileImage?.id;
-  const profileLinkEnabled = !disableProfileLink;
+  const profileLinkEnabled = !!listing?.id.uuid;
 
   const classForInitials = classNames(css.initials, initialsClassName);
 
@@ -109,6 +103,18 @@ export const AvatarComponent = props => {
       <div {...rootProps}>
         <IconBannedUser className={css.bannedUserIcon} />
       </div>
+    );
+  } else if (hasProfileImage && profileLinkEnabled) {
+    return (
+      <NamedLink {...rootProps} {...linkProps}>
+        <ResponsiveImage
+          rootClassName={css.avatarImage}
+          alt={displayName}
+          image={avatarUser.profileImage || avatarUser.relationships.profileImage.data}
+          variants={AVATAR_IMAGE_VARIANTS}
+          sizes={renderSizes}
+        />
+      </NamedLink>
     );
   } else if (hasProfileImage) {
     return (
@@ -121,6 +127,13 @@ export const AvatarComponent = props => {
           sizes={renderSizes}
         />
       </div>
+    );
+  } else if (profileLinkEnabled) {
+    // Placeholder avatar (initials)
+    return (
+      <NamedLink {...rootProps} {...linkProps} className={classNames(classes, defaultAvatarImage)}>
+        <span className={classForInitials}>{abbreviatedName}</span>
+      </NamedLink>
     );
   } else {
     // Placeholder avatar (initials)
