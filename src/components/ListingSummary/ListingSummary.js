@@ -8,6 +8,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 import SectionReviews from '../../containers/ListingPage/SectionReviews';
+import BookingContainer from '../../containers/ListingPage/BookingContainer';
 
 import css from './ListingSummary.module.css';
 
@@ -34,7 +35,14 @@ const ListingSummaryComponent = props => {
     reviews,
     fetchReviewsError,
     onManageDisableScrolling,
+    onContinueBooking,
+    authorDisplayName,
+    hasStripeAccount,
+    hasStripeAccountInProgress,
+    hasStripeAccountError,
   } = props;
+
+  const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
 
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
@@ -69,22 +77,14 @@ const ListingSummaryComponent = props => {
 
   const distanceFromLocation =
     geolocation && origin ? calculateDistanceBetweenOrigins(origin, geolocation) : '0.00';
-
-  // const handleBook = () => {
-  //   const initialValues = {
-  //     listing,
-  //     bookingStartTime: new Date().getTime(),
-  //     bookingEndTime: new Date().getTime() + 360000000,
-  //   };
-
-  //   onBookNow(initialValues);
-  // };
-
   const backgroundCheckTitle = (
     <p>
       <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
     </p>
   );
+
+  const listingUserType = listing.attributes.metadata.listingType;
+  const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
 
   return (
     <div className={css.root}>
@@ -211,6 +211,15 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
+          {hasStripeAccount ? (
+            <Button
+              className={css.button}
+              onClick={() => setIsBookingModalOpen(true)}
+              disabled={fetchExistingConversationInProgress}
+            >
+              Book Now
+            </Button>
+          ) : null}
         </div>
       ) : (
         <div className={css.buttonContainer}>
@@ -238,6 +247,20 @@ const ListingSummaryComponent = props => {
           </Button>
         </div>
       )}
+      {hasBooking ? (
+        <BookingContainer
+          listing={listing}
+          onSubmit={onContinueBooking}
+          onManageDisableScrolling={onManageDisableScrolling}
+          authorDisplayName={authorDisplayName}
+          hasStripeAccount={hasStripeAccount}
+          hasStripeAccountInProgress={hasStripeAccountInProgress}
+          hasStripeAccountError={hasStripeAccountError}
+          isBookingModalOpen={isBookingModalOpen}
+          onBookingModalClose={() => setIsBookingModalOpen(false)}
+          onBookingModalOpen={() => setIsBookingModalOpen(true)}
+        />
+      ) : null}
     </div>
   );
 };
