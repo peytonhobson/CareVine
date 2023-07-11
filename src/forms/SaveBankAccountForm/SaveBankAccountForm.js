@@ -52,7 +52,7 @@ const SaveBankAccountForm = props => {
       ) : (
         <Button
           className={css.submitButton}
-          type="submit"
+          type="button"
           inProgress={submitInProgress}
           disabled={submitDisabled}
           onClick={() => onSubmit(stripe)}

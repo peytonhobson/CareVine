@@ -43,17 +43,6 @@ const TopbarMobileMenu = props => {
     isOpen,
   } = props;
 
-  const crisp = window.$crisp;
-
-  // Hide crisp if open
-  useEffect(() => {
-    if (isOpen && crisp) {
-      crisp.push(['do', 'chat:hide']);
-    } else if (crisp) {
-      crisp.push(['do', 'chat:show']);
-    }
-  }, [isOpen]);
-
   const user = ensureCurrentUser(currentUser);
 
   const userType = user.attributes.profile.metadata.userType;

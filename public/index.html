@@ -21,7 +21,28 @@
 
     <!-- End Favicons -->
 
-    <script type="text/javascript"> window.$crisp=[];window.CRISP_WEBSITE_ID="a450dec9-5a31-4559-8ce8-b722a1b6acd2";(function(){ d=document;s=d.createElement("script"); s.src="https://client.crisp.chat/l.js"; s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})(); </script>
+    <script type="text/javascript"> window.$crisp=[];
+
+      window.CRISP_READY_TRIGGER = function() {
+        if (!window.$crisp.get("session:data", "firstMessage")) {
+            setTimeout(() => {
+              window.$crisp.push(["do", "message:show", ["text", "Hi! If you have any questions, we are here to help."]]);
+              window.$crisp.push(["set", "session:data", [[["firstMessage", true]]]])
+            }, 3000)
+        }
+
+        $crisp.push(["on", "message:sent", () => {
+          if(window.$crisp.get("session:data", "firstUserMessageSent")) {
+            return
+          }
+
+          window.$crisp.push(["set", "session:data", [[["firstUserMessageSent", true]]]])
+          $crisp.push(["do", "message:show", ["text", "Thanks for the message! Please provide your email below and we will get back to you as soon as possible."]]);
+        }])
+      };
+
+
+      window.CRISP_WEBSITE_ID="a450dec9-5a31-4559-8ce8-b722a1b6acd2";(function(){ d=document;s=d.createElement("script"); s.src="https://client.crisp.chat/l.js"; s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})(); </script>
 
     <!--!link-->
     <!--!ssrStyles-->

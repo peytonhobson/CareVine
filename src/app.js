@@ -108,6 +108,7 @@ const apolloClient = new GraphQLClient({
 export const ClientApp = props => {
   const { store, hostedTranslations = {} } = props;
   setupLocale();
+
   return (
     <IntlProvider
       locale={config.locale}
