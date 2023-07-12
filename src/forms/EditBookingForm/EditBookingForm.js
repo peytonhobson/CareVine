@@ -1,35 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
-import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
+import { injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import {
   Form,
   Button,
-  FieldSelect,
   Modal,
   FieldDatePicker,
   FieldTextInput,
   NamedLink,
+  BookingSummaryCard,
+  PaymentMethods,
+  ButtonTabNavHorizontal,
 } from '../../components';
 import {
-  isTransactionInitiateAmountTooLowError,
   isTransactionInitiateListingNotFoundError,
   isTransactionInitiateBookingTimeNotAvailableError,
   isTransactionChargeDisabledError,
   transactionInitiateOrderStripeErrors,
 } from '../../util/errors';
 import { createSlug } from '../../util/urlHelpers';
-import { convertTimeFrom12to24 } from '../../util/data';
+import DateTimeSelect from './DateTimeSelect';
+import { useMediaQuery } from '@mui/material';
 
 import css from './EditBookingForm.module.css';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 
+const formatDateTimeValues = dateTimes =>
+  Object.keys(dateTimes).map(key => {
+    const startTime = dateTimes[key].startTime;
+    const endTime = dateTimes[key].endTime;
+
+    return {
+      startTime,
+      endTime,
+      date: key,
+    };
+  });
+
 const checkValidBookingTimes = (bookingTimes, bookingDates) => {
-  if (!bookingTimes || !bookingDates) return false;
+  if (!bookingTimes || !bookingDates || bookingDates.length === 0) return false;
 
   const sameLength = Object.keys(bookingTimes).length === bookingDates.length;
   const hasStartAndEndTimes = Object.keys(bookingTimes).every(
@@ -39,20 +53,6 @@ const checkValidBookingTimes = (bookingTimes, bookingDates) => {
   return sameLength && hasStartAndEndTimes;
 };
 
-const checkValidPaymentMethod = (paymentMethod, defaultPaymentMethods) => {
-  if (!paymentMethod || !defaultPaymentMethods) return false;
-
-  if (paymentMethod === BANK_ACCOUNT) {
-    return !!defaultPaymentMethods.bankAccount?.id;
-  }
-
-  if (paymentMethod === CREDIT_CARD) {
-    return !!defaultPaymentMethods.card?.id;
-  }
-
-  return false;
-};
-
 const EditBookingFormComponent = props => (
   <FinalForm
     {...props}
@@ -60,18 +60,14 @@ const EditBookingFormComponent = props => (
     render={formRenderProps => {
       const {
         className,
-        disabled,
         ready,
         handleSubmit,
-        intl,
-        invalid,
         pristine,
         updated,
         updateInProgress,
         monthYearBookingDates,
         onChange,
         values,
-        monthlyTimeSlots,
         form,
         onManageDisableScrolling,
         bookingDates,
@@ -85,10 +81,76 @@ const EditBookingFormComponent = props => (
         transaction,
         currentListing,
         listingTitle,
+        currentAuthor,
+        bookingRate,
+        showPaymentForm,
+        defaultPaymentFetched,
+        fetchDefaultPaymentError,
+        fetchDefaultPaymentInProgress,
+        stripeCustomerFetched,
+        onChangePaymentMethod,
       } = formRenderProps;
 
-      const [invalidBookingDatesError, setInvalidBookingDatesError] = useState(false);
-      const [invalidPaymentMethodError, setInvalidPaymentMethodError] = useState(false);
+      const [selectedTab, setSelectedTab] = useState('Dates/Times');
+      const [isPaymentLearnMoreModalOpen, setIsPaymentLearnMoreModalOpen] = useState(false);
+      const [goToPaymentError, setGoToPaymentError] = useState(false);
+      const [goToRequestError, setGoToRequestError] = useState(false);
+
+      const isLarge = useMediaQuery('(min-width:1024px)');
+
+      // {
+      //   invalidPaymentMethodError && (
+      //     <p className={css.error}>
+      //       You must add or select a payment method before requesting to book. You will not be
+      //       charged for the booking until the caregiver accepts.
+      //     </p>
+      //   );
+      // }
+
+      const handleGoToPayment = () => {
+        if (values.bookingDates.length === 0) {
+          setGoToPaymentError('Please select at least one booking date.');
+          return;
+        }
+
+        if (!checkValidBookingTimes(values.dateTimes, values.bookingDates)) {
+          setGoToPaymentError('Please select start times and end times for each booking date.');
+          return;
+        }
+
+        setSelectedTab('Payment');
+      };
+
+      const handleGoToRequest = () => {
+        if (!selectedPaymentMethod) {
+          setGoToRequestError('You must add or select a payment method before requesting to book.');
+          return;
+        }
+
+        setSelectedTab('Request');
+      };
+
+      const tabs = [
+        {
+          text: 'Dates/Times',
+          selected: 'Dates/Times' === selectedTab,
+          onClick: () => setSelectedTab('Dates/Times'),
+        },
+        {
+          text: 'Payment',
+          selected: 'Payment' === selectedTab,
+          onClick: () => setSelectedTab('Payment'),
+          disabled: !checkValidBookingTimes(values.dateTimes, values.bookingDates),
+        },
+        {
+          text: 'Request',
+          selected: 'Request' === selectedTab,
+          onClick: () => setSelectedTab('Request'),
+          disabled:
+            !checkValidBookingTimes(values.dateTimes, values.bookingDates) ||
+            !selectedPaymentMethod,
+        },
+      ];
 
       const listingNotFound = isTransactionInitiateListingNotFoundError(initiateOrderError);
       const isChargeDisabledError = isTransactionChargeDisabledError(initiateOrderError);
@@ -151,19 +213,13 @@ const EditBookingFormComponent = props => (
         );
       }
 
-      const [isEditBookingDatesModalOpen, setIsEditBookingDatesModalOpen] = useState(false);
-
       useEffect(() => {
         form.change('bookingDates', bookingDates);
       }, [JSON.stringify(bookingDates)]);
 
-      const handleCloseEditBookingDatesModal = () => {
-        setIsEditBookingDatesModalOpen(false);
-      };
-
-      const handleSaveBookingDates = () => {
-        onSetState({ bookingDates: values.bookingDates });
-        const newMonthYearBookingDates = values.bookingDates.map(
+      const handleSaveBookingDates = bd => {
+        onSetState({ bookingDates: bd });
+        const newMonthYearBookingDates = bd.map(
           bookingDate =>
             `${new Date(bookingDate).getMonth() + 1}/${new Date(bookingDate).getDate()}`
         );
@@ -178,189 +234,227 @@ const EditBookingFormComponent = props => (
           : {};
 
         form.change('dateTimes', newDateTimes);
-        setIsEditBookingDatesModalOpen(false);
       };
 
       const bookedDates = currentListing.attributes.metadata.bookedDates;
+      const selectedPaymentMethodType =
+        selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
       const submitReady = (updated && pristine) || ready;
 
-      const onSubmit = e => {
-        e.preventDefault();
-        if (!checkValidBookingTimes(values.dateTimes, bookingDates)) {
-          setInvalidBookingDatesError(true);
-          return;
-        }
-
-        if (!selectedPaymentMethod) {
-          setInvalidPaymentMethodError(true);
-          return;
-        }
-        handleSubmit(e);
-      };
+      let tabContent = null;
+      switch (selectedTab) {
+        case 'Dates/Times':
+          tabContent = (
+            <div className={css.datesTimesContainer}>
+              <div>
+                <h2 className={css.pickYourTimes}>Pick your Dates</h2>
+                <FieldDatePicker
+                  className={css.datePicker}
+                  bookedDates={bookedDates}
+                  name="bookingDates"
+                  id="bookingDates"
+                  onChange={handleSaveBookingDates}
+                >
+                  <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+                </FieldDatePicker>
+              </div>
+              <div>
+                <h2 className={css.pickYourTimes}>Pick your Times</h2>
+                <div className={css.datesContainer}>
+                  {monthYearBookingDates.map(monthYearBookingDate => (
+                    <DateTimeSelect
+                      key={monthYearBookingDate}
+                      monthYearBookingDate={monthYearBookingDate}
+                      values={values}
+                    />
+                  ))}
+                </div>
+              </div>
+              {!isLarge ? (
+                <>
+                  <div className={css.nextButton}>
+                    {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
+                    <Button onClick={handleGoToPayment} type="button">
+                      Next: Payment
+                    </Button>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          );
+          break;
+        case 'Payment':
+          tabContent = (
+            <div className={css.paymentContentContainer}>
+              <section className={css.paymentContainer}>
+                <p>
+                  We understand the importance of trust and security, particularly when it comes to
+                  your financial information. Click{' '}
+                  <span
+                    className={css.paymentLearnMore}
+                    onClick={() => setIsPaymentLearnMoreModalOpen(true)}
+                  >
+                    here
+                  </span>{' '}
+                  to learn more about why we ask for your payment details upfront when you request
+                  to book a caregiver.
+                </p>
+                <div className={css.processingFees}>
+                  <p className={css.tinyNoMargin}>*Processing Fees</p>
+                  <ul className={css.processingFeesList}>
+                    <li className={css.tinyNoMargin}>Bank Accounts: 0.8%</li>
+                    <li className={css.tinyNoMargin}>Payment Cards: 2.9% + $0.30</li>
+                  </ul>
+                </div>
+                {showPaymentForm ? (
+                  <PaymentMethods
+                    defaultPaymentFetched={defaultPaymentFetched}
+                    defaultPaymentMethods={defaultPaymentMethods}
+                    fetchDefaultPaymentError={fetchDefaultPaymentError}
+                    fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+                    stripeCustomerFetched={stripeCustomerFetched}
+                    onChangePaymentMethod={method => {
+                      onChangePaymentMethod(method);
+                      setGoToRequestError(null);
+                    }}
+                    className={css.paymentMethods}
+                    removeDisabled
+                  />
+                ) : null}
+                {!isLarge ? (
+                  <>
+                    <div className={css.nextButton}>
+                      {goToRequestError ? <p className={css.error}>{goToRequestError}</p> : null}
+                      <Button onClick={handleGoToRequest} type="button">
+                        Next: Request
+                      </Button>
+                    </div>
+                  </>
+                ) : null}
+              </section>
+            </div>
+          );
+          break;
+        case 'Request':
+          tabContent = (
+            <div className={css.requestContentContainer}>
+              <BookingSummaryCard
+                authorDisplayName={authorDisplayName}
+                currentAuthor={currentAuthor}
+                selectedBookingTimes={formatDateTimeValues(values.dateTimes)}
+                bookingRate={bookingRate}
+                bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
+                listing={currentListing}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onSetState={onSetState}
+                selectedPaymentMethod={selectedPaymentMethodType}
+                displayOnMobile
+              />
+              <div>
+                <div className={css.sendAMessage}>
+                  <h2>Send a Message (Optional)</h2>
+                  <FieldTextInput
+                    id="message"
+                    name="message"
+                    type="textarea"
+                    label="Message"
+                    placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
+                    className={css.message}
+                  />
+                </div>
+                <div>
+                  {listingNotFoundErrorMessage}
+                  {initiateOrderErrorMessage}
+                  <p className={css.paymentInfo}>
+                    You will not be charged until the caregiver accepts the booking
+                  </p>
+                  <Button
+                    className={css.submitButton}
+                    inProgress={initiateOrderInProgress}
+                    ready={transaction}
+                    type="submit"
+                  >
+                    Request to Book
+                  </Button>
+                </div>
+              </div>
+              <BookingSummaryCard
+                authorDisplayName={authorDisplayName}
+                currentAuthor={currentAuthor}
+                selectedBookingTimes={formatDateTimeValues(values.dateTimes)}
+                bookingRate={bookingRate}
+                bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
+                listing={currentListing}
+                onManageDisableScrolling={onManageDisableScrolling}
+                onSetState={onSetState}
+                selectedPaymentMethod={selectedPaymentMethodType}
+              />
+            </div>
+          );
+          break;
+        default:
+          tabContent = null;
+      }
 
       return (
-        <Form className={classes} onSubmit={onSubmit}>
+        <Form className={classes} onSubmit={handleSubmit}>
           <FormSpy
             onChange={e => {
               onChange(e);
-              setInvalidBookingDatesError(false);
-              setInvalidPaymentMethodError(false);
+              setGoToPaymentError(null);
+              setGoToRequestError(null);
             }}
           />
-          <h2 className={css.pickYourTimes}>Pick your Times</h2>
-          <Button
-            className={css.changeDatesButton}
-            onClick={() => setIsEditBookingDatesModalOpen(true)}
-            type="button"
-          >
-            Change Dates
-          </Button>
-          <div className={css.datesContainer}>
-            {monthYearBookingDates.map(monthYearBookingDate => {
-              const startTimeValue = values.dateTimes?.[monthYearBookingDate]?.startTime;
-              const endTimeValue = values.dateTimes?.[monthYearBookingDate]?.endTime;
-              const integerStartTimeVal = startTimeValue
-                ? Number.parseInt(convertTimeFrom12to24(startTimeValue).split(':')[0])
-                : null;
-              const integerEndTimeVal = endTimeValue
-                ? Number.parseInt(convertTimeFrom12to24(endTimeValue).split(':')[0])
-                : 0;
-
-              return (
-                <div className={css.dateContainer} key={monthYearBookingDate}>
-                  <h3 className={css.date}>{monthYearBookingDate}</h3>
-                  <div className={css.formRow}>
-                    <div className={css.field}>
-                      <label
-                        htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
-                        class={css.timeSelectLabel}
-                      >
-                        Start Time
-                      </label>
-                      <FieldSelect
-                        id={`dateTimes.${monthYearBookingDate}.startTime`}
-                        name={`dateTimes.${monthYearBookingDate}.startTime`}
-                        selectClassName={css.timeSelect}
-                        initialValueSelected={monthYearBookingDate.startTime}
-                      >
-                        <option disabled value="">
-                          8:00am
-                        </option>
-                        {Array.from(
-                          { length: integerEndTimeVal ? integerEndTimeVal : 24 },
-                          (v, i) => i
-                        ).map(i => {
-                          const hour = i % 12 || 12;
-                          const ampm = i < 12 ? 'am' : 'pm';
-                          const time = `${hour}:00${ampm}`;
-                          return (
-                            <option key={time} value={time}>
-                              {time}
-                            </option>
-                          );
-                        })}
-                      </FieldSelect>
-                    </div>
-                    <span className={css.dashBetweenTimes}>-</span>
-                    <div className={css.field}>
-                      <label
-                        htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
-                        class={css.timeSelectLabel}
-                      >
-                        End Time
-                      </label>
-                      <FieldSelect
-                        id={`dateTimes.${monthYearBookingDate}.endTime`}
-                        name={`dateTimes.${monthYearBookingDate}.endTime`}
-                        selectClassName={css.timeSelect}
-                      >
-                        <option disabled value="">
-                          5:00pm
-                        </option>
-                        {Array.from({ length: 24 - integerStartTimeVal }, (v, i) => i).map(i => {
-                          const hour = (i + integerStartTimeVal + 1) % 12 || 12;
-                          const ampm =
-                            i + integerStartTimeVal + 1 < 12 || i + integerStartTimeVal === 23
-                              ? 'am'
-                              : 'pm';
-                          const time = `${hour}:00${ampm}`;
-                          return (
-                            <option key={i + 25} value={time}>
-                              {time}
-                            </option>
-                          );
-                        })}
-                      </FieldSelect>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {children}
-          <div className={css.sendAMessage}>
-            <h2>Send a Message (Optional)</h2>
-            <FieldTextInput
-              id="message"
-              name="message"
-              type="textarea"
-              label="Message"
-              placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
-              className={css.message}
-            />
-          </div>
-          <div>
-            {listingNotFoundErrorMessage}
-            {initiateOrderErrorMessage}
-            {invalidBookingDatesError && (
-              <p className={css.error}>
-                Please select start times and end times for each booking date.
-              </p>
-            )}
-            {invalidPaymentMethodError && (
-              <p className={css.error}>
-                You must add or select a payment method before requesting to book. You will not be
-                charged for the booking until the caregiver accepts.
-              </p>
-            )}
-            <p className={css.paymentInfo}>
-              You will not be charged until the caregiver accepts the booking
-            </p>
-            <Button
-              className={css.submitButton}
-              inProgress={initiateOrderInProgress}
-              ready={transaction}
-              type="submit"
-            >
-              Request to Book
-            </Button>
-          </div>
+          <ButtonTabNavHorizontal
+            tabs={tabs}
+            rootClassName={css.nav}
+            tabRootClassName={css.tab}
+            tabContentClass={css.tabContent}
+            tabClassName={css.tab}
+          />
+          {tabContent}
           <Modal
             id="EditBookingDatesModal"
-            isOpen={isEditBookingDatesModalOpen}
-            onClose={handleCloseEditBookingDatesModal}
+            isOpen={isPaymentLearnMoreModalOpen}
+            onClose={() => setIsPaymentLearnMoreModalOpen(false)}
             onManageDisableScrolling={onManageDisableScrolling}
             containerClassName={css.modalContainer}
             className={css.modalContent}
           >
-            <FieldDatePicker
-              className={css.datePicker}
-              bookedDates={bookedDates}
-              name="bookingDates"
-              id="bookingDates"
-            >
-              <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
-            </FieldDatePicker>
-            <Button
-              onClick={handleSaveBookingDates}
-              type="button"
-              disabled={!values.bookingDates || values.bookingDates?.length === 0}
-            >
-              Save Dates
-            </Button>
+            <p className={css.modalTitle}>Why do we ask for payment details upfront?</p>
+            <p className={css.modalMessage}>
+              <ol>
+                <li className={css.learnMoreListItem}>
+                  <strong>Payment Upon Confirmation</strong>: Your selected payment method (either a
+                  bank account or a payment card) is used to ensure a seamless transaction. Rest
+                  assured, it is only charged once the caregiver accepts your booking request. Until
+                  that happens, no charges are applied.
+                </li>
+                <li className={css.learnMoreListItem}>
+                  <strong>Escrow Protection</strong>: To further protect your interests, we hold
+                  your payment in a secure escrow account until the booking is complete. This
+                  process ensures your payment is safeguarded throughout the duration of the
+                  service.
+                </li>
+                <li className={css.learnMoreListItem}>
+                  <strong>Dispute Resolution</strong>: If anything goes awry during the booking, you
+                  have a 48-hour window to raise a dispute. Our dedicated review team will evaluate
+                  the situation thoroughly and refund the amount we find appropriate based on the
+                  circumstances.
+                </li>
+                <li className={css.learnMoreListItem}>
+                  <strong>Flexible Cancellation</strong>: We understand that plans change, and we've
+                  got you covered. If you need to cancel the booking, you'll be refunded in
+                  accordance with our fair and transparent cancellation policy.
+                </li>
+              </ol>
+              We take your security and trust very seriously. Our process is designed to ensure
+              every transaction is safe, secure, and convenient for you. If you have any further
+              questions or concerns, feel free to reach out to us.
+            </p>
           </Modal>
         </Form>
       );
