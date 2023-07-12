@@ -3,7 +3,7 @@
 import config from '../config';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
-import { updateUser } from '../util/api';
+import { updateUser, fetchHasStripeAccount } from '../util/api';
 
 // ================ Action types ================ //
 
@@ -25,6 +25,10 @@ export const GET_ACCOUNT_LINK_REQUEST = 'app/stripeConnectAccount.duck.js/GET_AC
 export const GET_ACCOUNT_LINK_SUCCESS = 'app/stripeConnectAccount.duck.js/GET_ACCOUNT_LINK_SUCCESS';
 export const GET_ACCOUNT_LINK_ERROR = 'app/stripeConnectAccount.duck.js/GET_ACCOUNT_LINK_ERROR';
 
+export const HAS_STRIPE_ACCOUNT_REQUEST = 'app/stripe/HAS_STRIPE_ACCOUNT_REQUEST';
+export const HAS_STRIPE_ACCOUNT_SUCCESS = 'app/stripe/HAS_STRIPE_ACCOUNT_SUCCESS';
+export const HAS_STRIPE_ACCOUNT_ERROR = 'app/stripe/HAS_STRIPE_ACCOUNT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -38,6 +42,9 @@ const initialState = {
   getAccountLinkError: null,
   stripeAccount: null,
   stripeAccountFetched: false,
+  hasStripeAccount: false,
+  hasStripeAccountError: null,
+  hasStripeAccountInProgress: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -92,6 +99,13 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, getAccountLinkInProgress: false, getAccountLinkError: payload };
     case GET_ACCOUNT_LINK_SUCCESS:
       return { ...state, getAccountLinkInProgress: false };
+
+    case HAS_STRIPE_ACCOUNT_REQUEST:
+      return { ...state, hasStripeAccountError: null, hasStripeAccountInProgress: true };
+    case HAS_STRIPE_ACCOUNT_ERROR:
+      return { ...state, hasStripeAccountInProgress: false, hasStripeAccountError: payload };
+    case HAS_STRIPE_ACCOUNT_SUCCESS:
+      return { ...state, hasStripeAccountInProgress: false, hasStripeAccount: payload };
 
     default:
       return state;
@@ -153,6 +167,19 @@ export const getAccountLinkError = e => ({
 });
 export const getAccountLinkSuccess = () => ({
   type: GET_ACCOUNT_LINK_SUCCESS,
+});
+
+export const hasStripeAccountRequest = () => ({
+  type: HAS_STRIPE_ACCOUNT_REQUEST,
+});
+export const hasStripeAccountError = e => ({
+  type: HAS_STRIPE_ACCOUNT_ERROR,
+  payload: e,
+  error: true,
+});
+export const hasStripeAccountSuccess = hasStripeAccount => ({
+  type: HAS_STRIPE_ACCOUNT_SUCCESS,
+  payload: hasStripeAccount,
 });
 
 // ================ Thunks ================ //
@@ -304,4 +331,22 @@ export const getStripeConnectAccountLink = params => (dispatch, getState, sdk) =
       log.error(err, 'get-stripe-account-link-failed', { stripeMessage });
       throw e;
     });
+};
+
+export const hasStripeAccount = userId => (dispatch, getState, sdk) => {
+  dispatch(hasStripeAccountRequest());
+
+  const handleSuccess = response => {
+    dispatch(hasStripeAccountSuccess({ userId, data: response.data }));
+    return response;
+  };
+
+  const handleError = e => {
+    dispatch(hasStripeAccountError(storableError(e)));
+    log.error(e, 'fetch-provider-account-failed', {});
+  };
+
+  return fetchHasStripeAccount({ userId })
+    .then(handleSuccess)
+    .catch(handleError);
 };

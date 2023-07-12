@@ -7,6 +7,7 @@ import {
   NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
   NOTIFICATION_TYPE_PAYMENT_RECEIVED,
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+  NOTIFICATION_TYPE_BOOKING_REQUESTED,
 } from '../../util/constants';
 import { IconVerticalDots } from '../../components';
 import { isToday, isYesterday, timestampToDate } from '../../util/dates';
@@ -52,6 +53,9 @@ const buildText = (type, metadata) => {
   if (type === NOTIFICATION_TYPE_LISTING_OPENED) {
     return `Your profile listing has been posted on the marketplace and is now viewable by others.`;
   }
+  if (type === NOTIFICATION_TYPE_BOOKING_REQUESTED) {
+    return `You have a new booking request from ${metadata.senderName}.`;
+  }
 };
 
 const TitleContent = ({ type, metadata }) => {
@@ -88,6 +92,13 @@ const TitleContent = ({ type, metadata }) => {
   }
   if (type === NOTIFICATION_TYPE_LISTING_OPENED) {
     return <span>Listing Opened</span>;
+  }
+  if (type === NOTIFICATION_TYPE_BOOKING_REQUESTED) {
+    return (
+      <span>
+        Booking Request from <span className={css.noWrapText}>{metadata.senderName}</span>
+      </span>
+    );
   }
 };
 

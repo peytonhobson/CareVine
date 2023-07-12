@@ -777,12 +777,21 @@ export const createPayment = params => (dispatch, getState, sdk) => {
   }
 };
 
-export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, metadata) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const createPaymentIntent = params => (dispatch, getState, sdk) => {
   dispatch(createPaymentIntentRequest());
+
+  const {
+    amount,
+    recipientId,
+    currentUser = {},
+    stripeCustomerId: stripeId,
+    metadata,
+    description,
+    additionalParams,
+    bookingFee,
+    processingFee,
+    paymentMethods,
+  } = params;
 
   const handleSuccess = response => {
     dispatch(createPaymentIntentSuccess(response));
@@ -795,17 +804,20 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
     throw e;
   };
 
-  const stripeCustomerId = sender.stripeCustomer?.attributes.stripeCustomerId;
+  const stripeCustomerId = currentUser.stripeCustomer?.attributes.stripeCustomerId || stripeId;
 
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({
       amount,
-      userId,
+      recipientId,
       stripeCustomerId,
-      isCard,
-      description: `Payment to ${caregiverName}`,
-      sender,
+      description,
+      sender: currentUser,
       metadata,
+      params: additionalParams,
+      bookingFee,
+      processingFee,
+      paymentMethods,
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
@@ -814,12 +826,15 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
       .then(res => {
         return stripeCreatePaymentIntent({
           amount,
-          userId,
+          recipientId,
           stripeCustomerId: res.id,
-          isCard,
-          description: `Payment to ${caregiverName}`,
-          sender,
+          description,
+          sender: currentUser,
           metadata,
+          params: additionalParams,
+          bookingFee,
+          processingFee,
+          paymentMethods,
         });
       })
       .then(res => {

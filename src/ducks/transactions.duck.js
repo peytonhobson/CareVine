@@ -2,6 +2,10 @@ import pick from 'lodash/pick';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
 import { types as sdkTypes } from '../util/sdkLoader';
+import { TRANSITION_ACCEPT_BOOKING, TRANSITION_DECLINE_BOOKING } from '../util/transaction';
+import { updateListingMetadata, updateNotificationMetadata } from '../util/api';
+import { fetchCurrentUser } from './user.duck';
+import { denormalisedResponseEntities } from '../util/data';
 const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
@@ -19,6 +23,10 @@ export const FETCH_TRANSACTION_REQUEST = 'app/transactions/FETCH_TRANSACTION_REQ
 export const FETCH_TRANSACTION_SUCCESS = 'app/transactions/FETCH_TRANSACTION_SUCCESS';
 export const FETCH_TRANSACTION_ERROR = 'app/transactions/FETCH_TRANSACTION_ERROR';
 
+export const TRANSITION_TRANSACTION_REQUEST = 'app/transactions/TRANSITION_TRANSACTION_REQUEST';
+export const TRANSITION_TRANSACTION_SUCCESS = 'app/transactions/TRANSITION_TRANSACTION_SUCCESS';
+export const TRANSITION_TRANSACTION_ERROR = 'app/transactions/TRANSITION_TRANSACTION_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -30,6 +38,8 @@ const initialState = {
   fetchTransactionInProgress: false,
   fetchTransactionError: false,
   currentTransaction: null,
+  transitionTransactionInProgress: false,
+  transitionTransactionError: null,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -72,6 +82,26 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         ...state,
         currentTransaction: payload,
       };
+
+    case TRANSITION_TRANSACTION_REQUEST:
+      return {
+        ...state,
+        transitionTransactionInProgress: payload,
+        transitionTransactionError: null,
+      };
+    case TRANSITION_TRANSACTION_SUCCESS:
+      return {
+        ...state,
+        transitionTransactionInProgress: false,
+        currentTransaction: payload,
+      };
+    case TRANSITION_TRANSACTION_ERROR:
+      return {
+        ...state,
+        transitionTransactionInProgress: false,
+        transitionTransactionError: payload,
+      };
+
     default:
       return state;
   }
@@ -87,12 +117,10 @@ export const setInitialValues = initialValues => ({
 export const fetchCurrentUserTransactionsRequest = () => ({
   type: FETCH_CURRENT_USER_TRANSACTIONS_REQUEST,
 });
-
 export const fetchCurrentUserTransactionsSuccess = transactions => ({
   type: FETCH_CURRENT_USER_TRANSACTIONS_SUCCESS,
   payload: transactions,
 });
-
 export const fetchCurrentUserTransactionsError = e => ({
   type: FETCH_CURRENT_USER_TRANSACTIONS_ERROR,
   payload: e,
@@ -102,14 +130,26 @@ export const fetchCurrentUserTransactionsError = e => ({
 export const fetchTransactionRequest = () => ({
   type: FETCH_TRANSACTION_REQUEST,
 });
-
 export const fetchTransactionSuccess = transaction => ({
   type: FETCH_TRANSACTION_SUCCESS,
   payload: transaction,
 });
-
 export const fetchTransactionError = e => ({
   type: FETCH_TRANSACTION_ERROR,
+  payload: e,
+  error: true,
+});
+
+export const transitionTransactionRequest = transition => ({
+  type: TRANSITION_TRANSACTION_REQUEST,
+  payload: transition,
+});
+export const transitionTransactionSuccess = transaction => ({
+  type: TRANSITION_TRANSACTION_SUCCESS,
+  payload: transaction,
+});
+export const transitionTransactionError = e => ({
+  type: TRANSITION_TRANSACTION_ERROR,
   payload: e,
   error: true,
 });
@@ -148,9 +188,10 @@ export const fetchTransaction = txId => (dispatch, getState, sdk) => {
   return sdk.transactions
     .show({
       id: new UUID(txId),
+      include: ['booking', 'customer', 'provider', 'listing'],
     })
     .then(response => {
-      const transaction = response.data.data;
+      const transaction = denormalisedResponseEntities(response)[0];
       dispatch(fetchTransactionSuccess(transaction));
       return transaction;
     })
@@ -158,4 +199,52 @@ export const fetchTransaction = txId => (dispatch, getState, sdk) => {
       log.error(storableError(e), 'fetch-transaction-failed');
       dispatch(fetchTransactionError(storableError(e)));
     });
+};
+
+export const transitionTransaction = params => async (dispatch, getState, sdk) => {
+  const { transaction, transition, bookingStart, bookingEnd, include } = params;
+
+  const txId = transaction.id.uuid;
+  const listing = transaction.listing;
+  const listingId = listing.id.uuid;
+  const lineItems = transaction.attributes.metadata.lineItems;
+  const prevBookedDates = listing.attributes.metadata.bookedDates ?? [];
+  const bookingDates = lineItems.reduce((acc, lineItem) => {
+    return [...acc, lineItem.date];
+  }, []);
+
+  dispatch(transitionTransactionRequest(transition));
+
+  try {
+    const transitionResponse = await sdk.transactions.transition(
+      {
+        id: txId,
+        transition,
+        params: {
+          bookingStart,
+          bookingEnd,
+        },
+      },
+      {
+        expand: true,
+        include,
+      }
+    );
+
+    const updatedTransaction = denormalisedResponseEntities(transitionResponse)[0];
+
+    if (transition === TRANSITION_ACCEPT_BOOKING) {
+      await updateListingMetadata({
+        listingId,
+        metadata: {
+          bookedDates: [...bookingDates, ...prevBookedDates],
+        },
+      });
+    }
+
+    dispatch(transitionTransactionSuccess(updatedTransaction));
+  } catch (e) {
+    log.error(e, 'transition-transaction-failed');
+    dispatch(transitionTransactionError(storableError(e)));
+  }
 };

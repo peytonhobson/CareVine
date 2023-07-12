@@ -192,6 +192,7 @@ class TopbarComponent extends Component {
         onChangeModalValue={onChangeModalValue}
         unreadMessages={unreadMessages}
         unreadNotificationCount={unreadNotificationCount}
+        isOpen={isMobileMenuOpen}
       />
     );
 

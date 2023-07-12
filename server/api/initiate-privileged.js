@@ -2,9 +2,9 @@ const { transactionLineItems } = require('../api-util/lineItems');
 const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
 
 module.exports = (req, res) => {
-  const { isSpeculative, bookingData, bodyParams, queryParams } = req.body;
+  const { isSpeculative, bodyParams, queryParams, bookingDates } = req.body;
 
-  const listingId = bodyParams && bodyParams.params ? bodyParams.params.listingId : null;
+  const listingId = bodyParams?.params ? bodyParams.params.listingId : null;
 
   const sdk = getSdk(req, res);
 
@@ -12,7 +12,7 @@ module.exports = (req, res) => {
     .show({ id: listingId })
     .then(listingResponse => {
       const listing = listingResponse.data.data;
-      lineItems = transactionLineItems(listing, bookingData);
+      // lineItems = transactionLineItems(listing, bookingData);
 
       return getTrustedSdk(req);
     })
@@ -24,7 +24,7 @@ module.exports = (req, res) => {
         ...bodyParams,
         params: {
           ...params,
-          lineItems,
+          // lineItems,
         },
       };
 

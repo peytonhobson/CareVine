@@ -23,7 +23,9 @@ const integrationSdk = flexIntegrationSdk.createInstance({
 });
 const main = async () => {
   try {
-    const res = await integrationSdk.listings.show({ id: '64527f99-195b-4de8-9801-a8fa2e7ed95b' });
+    const res = await integrationSdk.listings.show({
+      id: '648e1eeb-e21f-45ab-8c14-545f028957da',
+    });
 
     const listing = res.data.data;
 
@@ -39,7 +41,9 @@ const main = async () => {
     const authorIds = listings
       .filter(l => {
         const { geolocation: cGeolocation } = l?.attributes;
-        return calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20;
+        return cGeolocation
+          ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
+          : false;
       })
       .map(l => l.relationships.author.data.id.uuid);
 
@@ -49,29 +53,35 @@ const main = async () => {
       })
     );
 
-    const emails = userResponse.map(u => u.data.data.attributes.email);
-
-    console.log(emails);
+    const emails = userResponse.map(u => ({
+      to: u.data.data.attributes.email,
+      dynamic_template_data: {
+        listingTitle: listing.attributes.title,
+        marketplaceUrl: 'https://carevine.us',
+      },
+    }));
 
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
       from: 'CareVine@carevine-mail.us',
-      to: emails,
-      template_id: 'd-7da4e1b9c133497499ddcb6ad1ccff9f',
+      template_id: 'd-4440656b0a504f3d9e5d2c2311dbc888',
       asm: {
-        group_id: 22860,
+        group_id: 42912,
       },
+      personalizations: emails,
     };
 
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    console.log(emails);
+
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   } catch (err) {
     console.log(err);
   }

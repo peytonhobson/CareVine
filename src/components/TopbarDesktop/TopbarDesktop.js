@@ -295,6 +295,19 @@ const TopbarDesktop = props => {
     </NamedLink>
   );
 
+  const bookingsLink = authenticatedOnClientSide ? (
+    <NamedLink
+      className={classNames(
+        css.regularLink,
+        css.bookingsLink,
+        currentPage === 'BookingsPage' && css.activeLink
+      )}
+      name="BookingsPage"
+    >
+      <span className={css.linkText}>My Bookings</span>
+    </NamedLink>
+  ) : null;
+
   const postListing = isAuthenticatedOrJustHydrated ? null : (
     <NamedLink name="SignupPage" className={css.postButtonLink}>
       + Post a Job
@@ -311,6 +324,7 @@ const TopbarDesktop = props => {
         {listingLink}
         {createListingLink}
         {inboxLink}
+        {bookingsLink}
         {/* {feedbackLink} */}
       </div>
 

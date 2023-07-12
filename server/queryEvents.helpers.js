@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const createSlug = str => {
   let text = str
@@ -432,6 +433,134 @@ const sendQuizFailedEmail = async userId => {
   }
 };
 
+const createBookingPayment = async transaction => {
+  const {
+    lineItems,
+    paymentMethodId,
+    bookingFee,
+    processingFee,
+    stripeCustomerId,
+    clientEmail,
+    stripeAccountId,
+  } = transaction.attributes.metadata;
+
+  const { customer, listing } = transaction.relationships;
+  const txId = transaction.id.uuid;
+  const userId = customer.data.id?.uuid;
+  const listingId = listing.data.id?.uuid;
+
+  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+  const formattedBookingFee = parseInt(Math.round(bookingFee * 100));
+  const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
+      currency: 'usd',
+      payment_method_types: ['card', 'us_bank_account'],
+      transfer_data: {
+        destination: stripeAccountId,
+      },
+      application_fee_amount: parseInt(Math.round(formattedBookingFee + formattedProcessingFee)),
+      customer: stripeCustomerId,
+      receipt_email: clientEmail,
+      description: 'Carevine Booking',
+      metadata: { userId, txId },
+    });
+
+    const paymentIntentId = paymentIntent.id;
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        paymentIntentId,
+      },
+    });
+
+    await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+  } catch (e) {
+    try {
+      await integrationSdk.transactions.transition({
+        id: transaction.id.uuid,
+        transition: 'transition/decline-payment',
+        params: {},
+      });
+
+      const fullListingResponse = await integrationSdk.listings.show({ id: listingId });
+      const fullListing = fullListingResponse.data.data;
+      const bookedDates = fullListing.attributes.metadata.bookedDates;
+      const bookingDates = lineItems.map(l => l.date);
+
+      const newBookedDates = bookedDates.filter(b => !bookingDates.includes(b));
+
+      await integrationSdk.listings.update({
+        id: listingId,
+        metadata: {
+          bookedDates: newBookedDates,
+        },
+      });
+    } catch (e) {
+      log.error(e, 'transition-decline-payment-failed', {});
+    }
+
+    log.error(e, 'create-booking-payment-failed', {});
+  }
+};
+
+const createCaregiverPayout = async transaction => {
+  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
+
+  const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
+
+  console.log('amount ', amount);
+
+  if (!amount || amount === 0 || !paymentIntentId) return;
+
+  try {
+    const balance = await stripe.balance.retrieve({
+      stripeAccount: stripeAccountId,
+    });
+
+    const availableBalance = balance.available?.[0]?.amount;
+
+    console.log('availableBalance ', availableBalance);
+
+    if (availableBalance > amount) {
+      await stripe.payouts.create(
+        {
+          amount,
+          currency: 'usd',
+        },
+        {
+          stripeAccount: stripeAccountId,
+        }
+      );
+    } else {
+      const providerId = transaction.relationships.provider.data.id.uuid;
+
+      const providerResponse = await integrationSdk.users.show({
+        id: providerId,
+      });
+      const provider = providerResponse.data.data;
+
+      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
+
+      await integrationSdk.users.updateProfile({
+        id: providerId,
+        privateData: {
+          hasPendingPayout: true,
+          pendingPayouts: [
+            ...pendingPayouts,
+            { amount, paymentIntentId, date: new Date().toISOString() },
+          ],
+        },
+      });
+    }
+  } catch (e) {
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -445,4 +574,6 @@ module.exports = {
   addUnreadMessageCount,
   sendQuizFailedEmail,
   closeListingNotification,
+  createBookingPayment,
+  createCaregiverPayout,
 };

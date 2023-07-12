@@ -1,0 +1,241 @@
+@import '../../styles/customMediaQueries.css';
+
+.bookingCard {
+  box-shadow: var(--boxShadowCard);
+  background-color: var(--matterColorLight);
+  display: flex;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  padding: 1rem;
+  max-width: calc(100vw - 2rem);
+}
+
+.avatar {
+  min-height: 4rem;
+  min-width: 4rem;
+  margin-right: 1.5rem;
+
+  & span {
+    font-size: 1.5rem;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.body {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.bookingTitle {
+  display: flex;
+  align-items: center;
+}
+
+.changeButtonsContainer {
+  display: flex;
+  gap: 1.5rem;
+  padding-inline: 0.5rem;
+
+  @media (--viewportMedium) {
+    padding-right: 1.5rem;
+  }
+}
+
+.changeButton {
+  min-height: 0;
+  width: 7rem;
+  height: 2rem;
+  margin: auto;
+}
+
+.dateTimesContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.datesAndTimes {
+  width: 100%;
+}
+
+.dateTimes {
+  display: flex;
+  flex-shrink: 1;
+  border: 1px solid var(--matterColorNegative);
+}
+
+.bookingTime {
+  padding: 0.5rem 1rem;
+  border-left: 1px solid var(--matterColorNegative);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bookingTime:not:first-of-type {
+  border-left: none;
+}
+
+.summaryDate {
+  margin: 0;
+  display: inline;
+}
+
+.summaryTimeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 1;
+}
+
+.tinyNoMargin {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.summaryTimes {
+  composes: tinyNoMargin;
+  flex-shrink: 1;
+}
+
+.payRateDetails {
+  color: var(--marketplaceColor);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 1;
+}
+
+.bookingCalc {
+  border-bottom: 1px solid var(--matterColor);
+  margin: 0;
+}
+
+.viewContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 1.5rem;
+  padding-top: 3rem;
+}
+
+.viewButton {
+  min-height: 0;
+  width: 9rem;
+  height: 3rem;
+  padding: 0 0.5rem;
+}
+
+.tablePagination {
+  display: flex;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    justify-content: center;
+  }
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  justify-content: center;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.modalError {
+  color: var(--failColor);
+  margin-top: 1rem;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 3rem;
+}
+
+.modalButton {
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.refundSummaryCard {
+  padding: 1rem;
+  border: 1px solid var(--matterColor);
+  border-radius: 0.5rem;
+  margin-top: 2rem;
+
+  & div {
+    margin: 0;
+  }
+}
+
+.changeSummaryCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid var(--matterColor);
+  border-radius: 0.5rem;
+  flex-shrink: 1;
+  margin-block: 2rem;
+}
+
+.refundList {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+}
+
+.refundListItem {
+  composes: marketplaceTinyFontStyles from global;
+  display: list-item;
+  list-style-type: disc;
+  margin: 0;
+}
+
+.modalMessageRefund {
+  composes: modalMessage from global;
+  composes: marketplaceTinyFontStyles from global;
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.userDisplayName {
+  white-space: nowrap;
+}
+
+.acceptDeclineButtons {
+  display: flex;
+  margin-top: 2rem;
+  gap: 1.5rem;
+}
+
+.bookingDeclined {
+  width: 100%;
+  text-align: center;
+  color: var(--failColor);
+}

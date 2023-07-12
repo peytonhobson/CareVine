@@ -5,10 +5,15 @@ module.exports = async (req, res) => {
   const { txId, metadata } = req.body;
 
   try {
-    const apiResponse = await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata,
-    });
+    const apiResponse = await integrationSdk.transactions.updateMetadata(
+      {
+        id: txId,
+        metadata,
+      },
+      {
+        expand: true,
+      }
+    );
 
     const { status, statusText, data } = apiResponse;
     res

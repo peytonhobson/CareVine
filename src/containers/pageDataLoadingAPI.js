@@ -1,7 +1,9 @@
 /**
  * Export loadData calls from ducks modules of different containers
  */
+import { loadData as BookingsPageLoader } from './BookingsPage/BookingsPage.duck';
 import { setInitialValues as CheckoutPageInitialValues } from './CheckoutPage/CheckoutPage.duck';
+import { loadData as CheckoutPageLoader } from './CheckoutPage/CheckoutPage.duck';
 import { loadData as ContactDetailsPageLoader } from './ContactDetailsPage/ContactDetailsPage.duck';
 import { loadData as EditListingPageLoader } from './EditListingPage/EditListingPage.duck';
 import { loadData as EmailVerificationPageLoader } from './EmailVerificationPage/EmailVerificationPage.duck';
@@ -24,8 +26,12 @@ import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
+    BookingsPage: {
+      loadData: BookingsPageLoader,
+    },
     CheckoutPage: {
       setInitialValues: CheckoutPageInitialValues,
+      loadData: CheckoutPageLoader,
     },
     ContactDetailsPage: {
       loadData: ContactDetailsPageLoader,

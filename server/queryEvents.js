@@ -24,6 +24,8 @@ module.exports = queryEvents = () => {
     sendQuizFailedEmail,
     approveListingNotification,
     closeListingNotification,
+    createBookingPayment,
+    createCaregiverPayout,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -70,6 +72,7 @@ module.exports = queryEvents = () => {
         'user/updated, listing/updated, user/deleted',
         'user/created',
         'message/created',
+        'transaction/transitioned',
       ],
     };
     return integrationSdk.events
@@ -260,6 +263,27 @@ module.exports = queryEvents = () => {
 
       if (tcmEnrolled && userAccessCode && !isDev) {
         deEnrollUserTCM(event, userAccessCode);
+      }
+    }
+
+    if (eventType === 'transaction/transitioned') {
+      const transaction = event.attributes.resource;
+      const lastTransition = transaction.attributes.lastTransition;
+
+      if (lastTransition === 'transition/accept') {
+        createBookingPayment(transaction);
+      }
+
+      // If transition is dispute-resolved we need to first check if the dispute was resolved in favor of the caregiver
+      // If it was, we need to pay the caregiver the full amount,
+      // otherwise we need to use a script to refund the client X amount and then update the transaction by removing any refunded line items
+      // Line items are used to calculate caregiver payout
+      if (
+        lastTransition === 'transition/pay-caregiver' ||
+        lastTransition === 'transition/resolve-dispute' ||
+        lastTransition === 'transition/cancel-pay-caregiver'
+      ) {
+        createCaregiverPayout(transaction);
       }
     }
 

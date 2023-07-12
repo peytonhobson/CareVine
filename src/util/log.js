@@ -21,6 +21,13 @@ export const setup = () => {
     Sentry.init({
       dsn: config.sentryDsn,
       environment: config.env,
+      beforeSend(event, hint) {
+        const error = hint.originalException;
+        if (error?.message?.match(/@context/i)) {
+          return null;
+        }
+        return event;
+      },
     });
   }
 };

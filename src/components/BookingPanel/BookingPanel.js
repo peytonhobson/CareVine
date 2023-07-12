@@ -6,30 +6,17 @@ import { array, bool, func, node, object, oneOfType, shape, string } from 'prop-
 import classNames from 'classnames';
 import omit from 'lodash/omit';
 import { propTypes, LISTING_STATE_CLOSED, LINE_ITEM_NIGHT, LINE_ITEM_DAY } from '../../util/types';
-import { formatMoney } from '../../util/currency';
 import { parse, stringify } from '../../util/urlHelpers';
 import config from '../../config';
 import { ModalInMobile, Button } from '../../components';
 import { BookingTimeForm } from '../../forms';
+import { formatPrice } from '../../util/data';
 
 import css from './BookingPanel.module.css';
 
 // This defines when ModalInMobile shows content as Modal
 const MODAL_BREAKPOINT = 1023;
 const TODAY = new Date();
-
-const priceData = (price, intl) => {
-  if (price && price.currency === config.currency) {
-    const formattedPrice = formatMoney(intl, price);
-    return { formattedPrice, priceTitle: formattedPrice };
-  } else if (price) {
-    return {
-      formattedPrice: `(${price.currency})`,
-      priceTitle: `Unsupported currency (${price.currency})`,
-    };
-  }
-  return {};
-};
 
 const openBookModal = (isOwnListing, isClosed, history, location) => {
   if (isOwnListing || isClosed) {
@@ -67,15 +54,23 @@ const BookingPanel = props => {
     history,
     location,
     intl,
+    onFetchTransactionLineItems,
+    lineItems,
+    fetchLineItemsInProgress,
+    fetchLineItemsError,
   } = props;
 
-  const price = listing.attributes.price;
-  const timeZone = listing.attributes.publicData.availabilityPlan.timezone;
+  const { minPrice, maxPrice } = listing.attributes.publicData;
+  const timeZone =
+    listing.attributes.availabilityPlan && listing.attributes.availabilityPlan.timezone;
   const hasListingState = !!listing.attributes.state;
   const isClosed = hasListingState && listing.attributes.state === LISTING_STATE_CLOSED;
   const showBookingTimeForm = hasListingState && !isClosed;
   const showClosedListingHelpText = listing.id && isClosed;
-  const { formattedPrice, priceTitle } = priceData(price, intl);
+  const { formattedMinPrice, formattedMaxPrice, priceTitle } = formatPrice(
+    [minPrice, maxPrice],
+    intl
+  );
   const isBook = !!parse(location.search).book;
 
   const subTitleText = !!subTitle
@@ -86,9 +81,6 @@ const BookingPanel = props => {
 
   const isNightly = unitType === LINE_ITEM_NIGHT;
   const isDaily = unitType === LINE_ITEM_DAY;
-
-  const minPrice = listing.attributes.publicData.minPrice;
-  const maxPrice = listing.attributes.publicData.maxPrice;
 
   const unitTranslationKey = isNightly
     ? 'BookingPanel.perNight'
@@ -101,56 +93,50 @@ const BookingPanel = props => {
 
   return (
     <div className={classes}>
-      <ModalInMobile
-        containerClassName={css.modalContainer}
-        id="BookingTimeFormInModal"
-        isModalOpenOnMobile={isBook}
-        onClose={() => closeBookModal(history, location)}
-        showAsModalMaxWidth={MODAL_BREAKPOINT}
-        onManageDisableScrolling={onManageDisableScrolling}
-      >
-        <div className={css.modalHeading}>
-          <h1 className={css.title}>{title}</h1>
-        </div>
-        <div className={css.bookingHeading}>
-          <div className={css.desktopPriceContainer}>
-            <div className={css.desktopPriceValue} title={priceTitle}>
-              {formattedPrice}
-            </div>
-            <div className={css.desktopPerUnit}>
-              <FormattedMessage id={unitTranslationKey} />
-            </div>
+      <div className={css.modalHeading}>
+        <h1 className={css.title}>{title}</h1>
+      </div>
+      <div className={css.bookingHeading}>
+        <div className={css.desktopPriceContainer}>
+          <div className={css.desktopPriceValue} title={priceTitle}>
+            {formattedMinPrice} - {formattedMaxPrice}
           </div>
-          <div className={css.bookingHeadingContainer}>
-            <h2 className={titleClasses}>{title}</h2>
-            {subTitleText ? <div className={css.bookingHelp}>{subTitleText}</div> : null}
+          <div className={css.desktopPerUnit}>
+            <FormattedMessage id={unitTranslationKey} />
           </div>
         </div>
+        <div className={css.bookingHeadingContainer}>
+          <h2 className={titleClasses}>{title}</h2>
+          {subTitleText ? <div className={css.bookingHelp}>{subTitleText}</div> : null}
+        </div>
+      </div>
 
-        {showBookingTimeForm ? (
-          <BookingTimeForm
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            className={css.bookingForm}
-            formId="BookingPanel"
-            submitButtonWrapperClassName={css.submitButtonWrapper}
-            unitType={unitType}
-            onSubmit={onSubmit}
-            price={price}
-            listingId={listing.id}
-            isOwnListing={isOwnListing}
-            monthlyTimeSlots={monthlyTimeSlots}
-            onFetchTimeSlots={onFetchTimeSlots}
-            startDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
-            endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
-            timeZone={timeZone}
-          />
-        ) : null}
-      </ModalInMobile>
+      {showBookingTimeForm ? (
+        <BookingTimeForm
+          className={css.bookingForm}
+          formId="BookingPanel"
+          submitButtonWrapperClassName={css.submitButtonWrapper}
+          unitType={unitType}
+          onSubmit={onSubmit}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          listingId={listing.id}
+          isOwnListing={isOwnListing}
+          monthlyTimeSlots={monthlyTimeSlots}
+          onFetchTimeSlots={onFetchTimeSlots}
+          startDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
+          endDatePlaceholder={intl.formatDate(TODAY, dateFormattingOptions)}
+          timeZone={timeZone}
+          onFetchTransactionLineItems={onFetchTransactionLineItems}
+          lineItems={lineItems}
+          fetchLineItemsInProgress={fetchLineItemsInProgress}
+          fetchLineItemsError={fetchLineItemsError}
+        />
+      ) : null}
       <div className={css.openBookingForm}>
         <div className={css.priceContainer}>
           <div className={css.priceValue} title={priceTitle}>
-            {formattedPrice}
+            {formattedMinPrice}
           </div>
           <div className={css.perUnit}>
             <FormattedMessage id={unitTranslationKey} />

@@ -53,8 +53,11 @@ const ListingTabs = props => {
   };
 
   const scrollToRef = ref => {
-    const elementHeight = ref.offsetTop - (isMobile ? 100 : 130);
-    window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+    if (isMobile) {
+      window.scrollTo({ top: ref.offsetTop - 100, behavior: 'smooth' });
+    } else {
+      ref.parentNode.scrollTo({ top: ref.offsetTop - 130, behavior: 'smooth' });
+    }
   };
 
   const listingType = listing?.attributes?.metadata?.listingType;

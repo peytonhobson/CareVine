@@ -5,22 +5,14 @@
  */
 import React, { Component } from 'react';
 import { bool, func, object, string } from 'prop-types';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import classNames from 'classnames';
 import config from '../../config';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensurePaymentMethodCard } from '../../util/data';
 
-import {
-  Form,
-  PrimaryButton,
-  FieldCheckbox,
-  FieldTextInput,
-  IconSpinner,
-  SavedCardDetails,
-  StripePaymentAddress,
-} from '../../components';
+import { Form, FieldCheckbox, FieldTextInput, StripePaymentAddress } from '../../components';
 import css from './StripePaymentForm.module.css';
 
 /**
@@ -95,9 +87,6 @@ const OneTimePaymentWithCardElement = props => {
     label || intl.formatMessage({ id: 'StripePaymentForm.saveAfterOnetimePayment' });
   return (
     <React.Fragment>
-      <label className={css.paymentLabel} htmlFor={`${formId}-card`}>
-        <FormattedMessage id="StripePaymentForm.paymentCardDetails" />
-      </label>
       <div className={cardClasses} id={`${formId}-card`} ref={handleStripeElementRef} />
       {hasCardError ? <span className={css.error}>{error}</span> : null}
       <div className={css.saveForLaterUse}>
@@ -114,49 +103,6 @@ const OneTimePaymentWithCardElement = props => {
           <FormattedMessage id="StripePaymentForm.saveforLaterUseLegalInfo" />
         </span>
       </div>
-    </React.Fragment>
-  );
-};
-
-const PaymentMethodSelector = props => {
-  const {
-    cardClasses,
-    formId,
-    changePaymentMethod,
-    defaultPaymentMethod,
-    handleStripeElementRef,
-    hasCardError,
-    error,
-    paymentMethod,
-    intl,
-  } = props;
-  const last4 = defaultPaymentMethod.card.last4;
-  const labelText = intl.formatMessage(
-    { id: 'StripePaymentForm.replaceAfterOnetimePayment' },
-    { last4 }
-  );
-
-  return (
-    <React.Fragment>
-      <h3 className={css.paymentHeading}>
-        <FormattedMessage id="StripePaymentForm.payWithHeading" />
-      </h3>
-      <SavedCardDetails
-        className={css.paymentMethodSelector}
-        card={defaultPaymentMethod?.card}
-        onChange={changePaymentMethod}
-      />
-      {paymentMethod === 'replaceCard' ? (
-        <OneTimePaymentWithCardElement
-          cardClasses={cardClasses}
-          formId={formId}
-          handleStripeElementRef={handleStripeElementRef}
-          hasCardError={hasCardError}
-          error={error}
-          label={labelText}
-          intl={intl}
-        />
-      ) : null}
     </React.Fragment>
   );
 };
@@ -240,7 +186,7 @@ class StripePaymentForm extends Component {
       this.stripe = window.Stripe(config.stripe.publishableKey);
       onStripeInitialized(this.stripe);
 
-      if (!(hasHandledCardPayment || defaultPaymentMethod || loadingData)) {
+      if (!(hasHandledCardPayment || loadingData)) {
         this.initializeStripeElement();
       }
     }
@@ -427,107 +373,43 @@ class StripePaymentForm extends Component {
       <StripePaymentAddress intl={intl} form={form} fieldId={formId} card={this.card} />
     );
 
-    const hasStripeKey = config.stripe.publishableKey;
-    return hasStripeKey ? (
+    return (
       <Form className={classes} onSubmit={handleSubmit} enforcePagePreloadFor="OrderDetailsPage">
-        {billingDetailsNeeded && !loadingData ? (
-          <React.Fragment>
-            {hasDefaultPaymentMethod ? (
-              <PaymentMethodSelector
-                cardClasses={cardClasses}
-                formId={formId}
-                defaultPaymentMethod={ensuredDefaultPaymentMethod}
-                changePaymentMethod={this.changePaymentMethod}
-                handleStripeElementRef={this.handleStripeElementRef}
-                hasCardError={hasCardError}
-                error={this.state.error}
-                paymentMethod={selectedPaymentMethod}
-                intl={intl}
-              />
-            ) : (
-              <React.Fragment>
-                <h3 className={css.paymentHeading}>
-                  <FormattedMessage id="StripePaymentForm.paymentHeading" />
-                </h3>
-                <OneTimePaymentWithCardElement
-                  cardClasses={cardClasses}
-                  formId={formId}
-                  handleStripeElementRef={this.handleStripeElementRef}
-                  hasCardError={hasCardError}
-                  error={this.state.error}
-                  intl={intl}
-                />
-              </React.Fragment>
-            )}
+        <FormSpy
+          onChange={values =>
+            console.log({
+              card: this.card,
+              formValues: values,
+            })
+          }
+        />
+        <OneTimePaymentWithCardElement
+          cardClasses={cardClasses}
+          formId={formId}
+          handleStripeElementRef={this.handleStripeElementRef}
+          hasCardError={hasCardError}
+          error={this.state.error}
+          intl={intl}
+        />
 
-            {showOnetimePaymentFields ? (
-              <div className={css.paymentAddressField}>
-                <h3 className={css.billingHeading}>
-                  <FormattedMessage id="StripePaymentForm.billingDetails" />
-                </h3>
+        <div className={css.paymentAddressField}>
+          <h3 className={css.billingHeading}>
+            <FormattedMessage id="StripePaymentForm.billingDetails" />
+          </h3>
 
-                <FieldTextInput
-                  className={css.field}
-                  type="text"
-                  id="name"
-                  name="name"
-                  autoComplete="cc-name"
-                  label={billingDetailsNameLabel}
-                  placeholder={billingDetailsNamePlaceholder}
-                />
+          <FieldTextInput
+            className={css.field}
+            type="text"
+            id="name"
+            name="name"
+            autoComplete="cc-name"
+            label={billingDetailsNameLabel}
+            placeholder={billingDetailsNamePlaceholder}
+          />
 
-                {billingAddress}
-              </div>
-            ) : null}
-          </React.Fragment>
-        ) : loadingData ? (
-          <p className={css.spinner}>
-            <IconSpinner />
-          </p>
-        ) : null}
-
-        {initiateOrderError ? (
-          <span className={css.errorMessage}>{initiateOrderError.message}</span>
-        ) : null}
-        {showInitialMessageInput ? (
-          <div>
-            <h3 className={css.messageHeading}>
-              <FormattedMessage id="StripePaymentForm.messageHeading" />
-            </h3>
-
-            <FieldTextInput
-              type="textarea"
-              id={`${formId}-message`}
-              name="initialMessage"
-              label={initialMessageLabel}
-              placeholder={messagePlaceholder}
-              className={css.message}
-            />
-          </div>
-        ) : null}
-        <div className={css.submitContainer}>
-          {hasPaymentErrors ? (
-            <span className={css.errorMessage}>{paymentErrorMessage}</span>
-          ) : null}
-          <p className={css.paymentInfo}>{paymentInfo}</p>
-          <PrimaryButton
-            className={css.submitButton}
-            type="submit"
-            inProgress={submitInProgress}
-            disabled={submitDisabled}
-          >
-            {billingDetailsNeeded ? (
-              <FormattedMessage id="StripePaymentForm.submitPaymentInfo" />
-            ) : (
-              <FormattedMessage id="StripePaymentForm.submitConfirmPaymentInfo" />
-            )}
-          </PrimaryButton>
+          {billingAddress}
         </div>
       </Form>
-    ) : (
-      <div className={css.missingStripeKey}>
-        <FormattedMessage id="StripePaymentForm.missingStripeKey" />
-      </div>
     );
   }
 

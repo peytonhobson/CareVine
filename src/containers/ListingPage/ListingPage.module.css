@@ -5,24 +5,36 @@
 
 .mainContainer {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+
   width: 100%;
-  margin: 0 auto;
-  padding: 3rem 0;
+  /* margin: 0 2rem; */
 
   min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));
 
   @media (--viewportMedium) {
-    min-height: calc(100vh - var(--topbarHeightDesktop) - var(--userNavHeight));
+    min-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
 
 .subContainer {
   width: 100%;
+  padding-bottom: 3rem;
+
+  padding-bottom: 3rem;
 
   @media (--viewportLarge) {
-    padding-inline: 15%;
+    /* padding-inline: 15%; */
+    padding: 0 3rem 3rem 3rem;
+    margin: auto;
+    max-width: 70rem;
+  }
+}
+
+.hasBooking {
+  @media (--viewportLarge) {
+    max-width: 100%;
+    overflow-y: scroll;
+    max-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
 
@@ -526,9 +538,12 @@
 .sectionReviews {
   padding: 0 24px;
   margin-bottom: 5px;
+  max-width: 30rem;
 
   @media (--viewportMedium) {
     padding: 0;
+    width: 20rem;
+    max-width: auto;
   }
   @media (--viewportLarge) {
     margin-bottom: 3px;
@@ -538,14 +553,13 @@
 .reviewsHeading {
   composes: h3 from global;
   color: var(--matterColorAnti);
-
-  margin: 52px 0 20px 0;
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: 3rem;
 
   @media (--viewportMedium) {
-    margin: 53px 0 27px 0;
-  }
-  @media (--viewportLarge) {
-    margin: 50px 0 26px 0;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }
 
@@ -714,4 +728,107 @@
     margin-top: 0;
     margin-bottom: 0;
   }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: center;
+}
+
+.modalAvatar {
+  margin-left: 1rem;
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  text-align: center;
+}
+
+.bookingContainer {
+  /* Make box shadow for card */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  padding: 0 5rem 3rem 5rem;
+  /* position: fixed; */
+  right: 2rem;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  max-width: 30vw;
+  overflow-x: hidden;
+  border-left: 1px solid var(--matterColorNegative);
+}
+
+.fixedAvailability {
+  position: fixed;
+  bottom: 0;
+  z-index: var(--zIndexTopbar);
+  background-color: var(--matterColorLight);
+  display: flex;
+  width: 100vw;
+  padding: 1.25rem;
+
+  box-shadow: var(--boxShadowTop);
+}
+
+.startingRateContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  white-space: nowrap;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.availabilityButton {
+  padding: 1.5rem 2.5rem;
+
+  margin-left: 1rem;
+}
+
+.startingRateText {
+  composes: h3 from global;
+  margin-top: 0;
+}
+
+.startingRate {
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  color: var(--marketplaceColor);
+  margin: 0;
+}
+
+.bookingModalHeader {
+  padding-block: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bookingAvatar {
+  margin-right: 2rem;
+  width: 5rem;
+  height: 5rem;
+}
+
+.bookingAvatarInitials {
+  font-size: 2rem;
+  line-height: 2rem;
+}
+
+.noStripeAccountContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.seeMoreButton {
+  composes: marketplaceTinyFontStyles from global;
+  margin-left: 1rem;
+}
+
+.allReviews {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 2rem;
 }

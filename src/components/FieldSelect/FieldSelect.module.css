@@ -3,7 +3,7 @@
 
 .select {
   color: var(--matterColorAnti);
-  border-bottom-color: var(--successColor);
+  border-bottom-color: var(--matterColor);
   padding-right: 20px;
 
   & > option {

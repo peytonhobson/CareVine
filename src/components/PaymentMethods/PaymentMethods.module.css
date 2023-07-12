@@ -1,0 +1,78 @@
+@import '../../styles/customMediaQueries.css';
+
+.error {
+  color: var(--failColor);
+}
+
+.nav {
+  /* Layout */
+  display: flex;
+  padding: 0;
+  overflow-x: scroll;
+  width: 100%;
+  margin-bottom: 1rem;
+
+  @media (--viewportLarge) {
+    /* padding: 128px 0 82px 36px; */
+    /* flex-direction: column; */
+    overflow-x: auto;
+    box-shadow: none;
+  }
+}
+
+.tab {
+  margin-left: 16px;
+  white-space: nowrap;
+  font-size: x-large;
+
+  &:first-child {
+    margin-left: 0;
+
+    /* Padding added to tab so that it will be visible after call to scrollToTab */
+    padding-left: 24px;
+  }
+
+  &:last-child {
+    /* Padding added to tab so that it will be visible after call to scrollToTab */
+    padding-right: 24px;
+  }
+
+  @media (--viewportLarge) {
+    margin-left: 0;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+.tabContent {
+  /* Font */
+  font-weight: var(--fontWeightSemiBold);
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  padding: 16px 10px 14px 10px;
+}
+
+.paymentSwitch {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.defaultMethod {
+  display: flex;
+}
+
+.saveBankAccountForm {
+  max-width: 15rem;
+  margin-top: 3rem;
+}
+
+.paymentForm {
+  margin-top: 1rem;
+}
