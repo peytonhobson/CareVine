@@ -454,6 +454,25 @@ const createBookingPayment = async transaction => {
   const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
   try {
+    const fullListingResponse = await integrationSdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
       currency: 'usd',
@@ -474,6 +493,7 @@ const createBookingPayment = async transaction => {
       id: txId,
       metadata: {
         paymentIntentId,
+        bookingNumber,
       },
     });
 
