@@ -209,3 +209,129 @@
 .goldenText {
   color: #ffc000;
 }
+
+.content {
+  padding: 1.5rem;
+}
+
+.employerSection {
+  padding: 4rem 0 2rem 0;
+
+  @media (--viewportMedium) {
+    padding: 6rem 0 3rem 0;
+  }
+}
+
+.caregiverSection {
+  padding: 3rem 0 6rem 0;
+}
+
+.employerSectionContent {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column-reverse;
+  margin: auto;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+  }
+
+  @media (--viewportLarge) {
+    max-width: 75rem;
+    width: auto;
+  }
+}
+
+.employerSectionCard {
+  background-color: rgb(235, 235, 235);
+  border-radius: 0.675rem;
+  padding: 3rem;
+
+  @media (--viewportMedium) {
+    max-width: 27rem;
+  }
+
+  @media (--viewportLarge) {
+    padding: 4rem 4rem 4rem 3rem;
+    max-width: 45rem;
+  }
+}
+
+.employerSectionImageContainer {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+}
+
+.employerSectionImage {
+  width: 100%;
+  aspect-ratio: 1/1 !important;
+  border-radius: 0.675rem;
+}
+
+.employerSectionTitle {
+  font-size: 1.75rem;
+  line-height: 2rem;
+  /* margin-top + n * line-height + margin-bottom => x * 6px */
+  margin-top: 1.313rem;
+  margin-bottom: 1.063rem;
+
+  @media (--viewportMedium) {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 1.313rem;
+    margin-bottom: 1.188rem;
+  }
+}
+
+.getStartedLinkContainer {
+  margin-top: 2rem;
+}
+
+.getStartedButton {
+  composes: button buttonBorders buttonColors h2 from global;
+  color: var(--matterColorLight);
+  text-align: center;
+  border-radius: 0.675rem;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (--viewportMedium) {
+    display: block;
+    max-width: 20rem;
+  }
+}
+
+.citySection {
+  padding: 3rem 0;
+}
+
+.citySectionContent {
+  max-width: 75rem;
+  margin: auto;
+}
+
+.cityCardContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 1.5rem;
+  }
+}
+
+.cityName {
+  margin: 0;
+}
+
+.forCaregivers {
+  margin: 0;
+  font-weight: normal;
+}
