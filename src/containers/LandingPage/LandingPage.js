@@ -35,18 +35,19 @@ import css from './LandingPage.module.css';
 
 const useStyles = makeStyles(theme => ({
   cityCard: {
-    width: '17rem',
     transition: 'all 0.2s ease-in 0s',
     '&:hover': {
       transform: 'scale(1.05)',
     },
     [theme.breakpoints.down('sm')]: {
-      width: ' 100%',
+      width: '100%',
       marginBottom: '2rem',
     },
-    [theme.breakpoints.down('md')]: {
-      width: 'auto',
-      maxWidth: '15rem',
+    [theme.breakpoints.only('md')]: {
+      width: '15rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: '20rem',
     },
   },
   cityImage: {
