@@ -55,7 +55,9 @@ const BookingConfirmationCard = props => {
         subHeading={
           <div className={css.subHeading}>
             <Avatar user={currentAuthor} disableProfileLink className={css.avatar} />
-            <span className={css.bookingWith}>Booking with {authorDisplayName}</span>
+            <span className={css.bookingWith}>
+              Booking with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
+            </span>
           </div>
         }
         hideRatesButton
