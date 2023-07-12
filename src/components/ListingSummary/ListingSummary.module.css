@@ -1,21 +1,30 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
-  padding-bottom: 2rem;
+  padding-block: 2rem;
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
   width: 100%;
 }
 
+.topRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    width: 100%;
+  }
+}
+
 .user {
   max-width: 85%;
   display: grid;
   grid-template-columns: auto auto;
-
-  @media (--viewportMedium) {
-    max-width: 70%;
-  }
 }
 
 .userDisplay {
@@ -42,48 +51,34 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  @media (--viewportMedium) {
-    width: auto;
-    margin-top: 0;
-  }
-}
-
-.ownListingButtonContainer {
-  margin-top: 2rem;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
 
   @media (--viewportMedium) {
-    width: auto;
-    margin-top: 0;
-
-    flex-direction: column;
+    margin-top: 3rem;
   }
 }
 
 .button {
-  min-height: 0;
-  padding: 0.75rem 2rem;
+  white-space: nowrap;
   min-width: 0;
+  max-width: 15rem;
+
+  margin-inline: 1rem;
+
   border: 2px solid var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    margin-inline: 5rem;
+  }
 }
 
 .secondaryButton {
-  min-height: 0;
-  padding: 0.75rem 2rem;
   min-width: 0;
   max-width: 10rem;
 }
 
 .previewButton {
-  min-height: 0;
-  padding: 0.75rem 2rem;
   max-width: 13rem;
   margin-inline: 0.5rem;
 }
@@ -94,6 +89,11 @@
   margin: auto;
 
   @media (--viewportMedium) {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  @media (--viewportLarge) {
     width: 10rem;
     height: 10rem;
   }
@@ -104,6 +104,10 @@
   font-weight: var(--fontWeightSemiBold);
 
   @media (--viewportMedium) {
+    font-size: 3.5rem;
+  }
+
+  @media (--viewportLarge) {
     font-size: 5rem;
   }
 }
@@ -162,6 +166,7 @@
   color: var(--matterColor);
   position: relative;
   width: 100%;
+  white-space: nowrap;
 
   /* Remove default margins from font */
   margin: 0;

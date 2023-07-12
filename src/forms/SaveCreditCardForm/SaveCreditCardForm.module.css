@@ -164,3 +164,45 @@
 .field {
   margin-top: 24px;
 }
+
+.saveForLaterUse {
+  padding-top: 6px;
+
+  @media (--viewportMedium) {
+    padding-top: 8px;
+    margin-top: 0px;
+  }
+}
+
+.saveForLaterUseCheckbox {
+  display: inline-block;
+  padding: 2px 0 3px 0;
+
+  @media (--viewportMedium) {
+    padding: 1px 0 0px 0;
+  }
+}
+
+.saveForLaterUseLabel {
+  composes: h5 from global;
+
+  color: var(--matterColor);
+  margin-top: 3px;
+  margin-bottom: 0px;
+  cursor: pointer;
+}
+
+.saveForLaterUseLegalInfo {
+  composes: h5 from global;
+
+  color: var(--matterColorAnti);
+  display: inline-block;
+  padding: 0px 0 0px 26px;
+  margin-top: -2px;
+  margin-bottom: 2px;
+
+  @media (--viewportMedium) {
+    margin-top: -1px;
+    margin-bottom: 1px;
+  }
+}

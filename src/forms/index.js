@@ -8,6 +8,8 @@ export { default as ConfirmSignupForm } from './ConfirmSignupForm/ConfirmSignupF
 export { default as ConsentModalForm } from './ConsentModalForm/ConsentModalForm';
 export { default as ContactDetailsForm } from './ContactDetailsForm/ContactDetailsForm';
 export { default as ContactUsForm } from './ContactUsForm/ContactUsForm';
+export { default as DisputeForm} from './DisputeForm/DisputeForm';
+export { default as EditBookingForm} from './EditBookingForm/EditBookingForm';
 export { default as EditListingAddCareRecipientForm } from './EditListingAddCareRecipientForm/EditListingAddCareRecipientForm';
 export { default as EditListingAdditionalDetailsForm } from './EditListingAdditionalDetailsForm/EditListingAdditionalDetailsForm';
 export { default as EditListingAvailabilityExceptionForm } from './EditListingAvailabilityExceptionForm/EditListingAvailabilityExceptionForm';
@@ -29,6 +31,7 @@ export { default as EnquiryForm } from './EnquiryForm/EnquiryForm';
 export { default as FeedbackForm } from './FeedbackForm/FeedbackForm';
 export { default as FilterForm } from './FilterForm/FilterForm';
 export { default as IdentityProofForm } from './IdentityProofForm/IdentityProofForm';
+export { default as InitialBookingForm } from './InitialBookingForm/InitialBookingForm';
 export { default as LocationSearchForm } from './LocationSearchForm/LocationSearchForm';
 export { default as LoginForm } from './LoginForm/LoginForm';
 export { default as PasswordChangeForm } from './PasswordChangeForm/PasswordChangeForm';
@@ -49,4 +52,6 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 export { default as StripePaymentForm } from './StripePaymentForm/StripePaymentForm';
 export { default as TimelineForm } from './TimelineForm/TimelineForm';
 export { default as HeroSearchForm } from './HeroSearchForm/HeroSearchForm';
-export { default as RequestPaymentForm} from './RequestPaymentForm/RequestPaymentForm'
+export { default as RequestPaymentForm } from './RequestPaymentForm/RequestPaymentForm'
+
+export { default as ModifyBookingForm } from './ModifyBookingForm/ModifyBookingForm';

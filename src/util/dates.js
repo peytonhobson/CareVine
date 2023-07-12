@@ -867,3 +867,10 @@ export const isYesterday = dirtyDate => {
   const dateRightStartOfDay = new Date().setHours(0, 0, 0, 0);
   return dateLeftStartOfDay === dateRightStartOfDay - 86400000;
 };
+
+export const addTimeToStartOfDay = (day, time) => {
+  const hours = moment(time, ['h:mm A']).format('HH');
+  return moment(day)
+    .add(hours, 'hours')
+    .toDate();
+};

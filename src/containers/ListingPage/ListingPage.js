@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { array, arrayOf, bool, func, object, shape, string, oneOf } from 'prop-types';
+import { array, arrayOf, bool, func, shape, string, oneOf } from 'prop-types';
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 import config from '../../config';
 import routeConfiguration from '../../routeConfiguration';
 import { findOptionsForSelectFilter } from '../../util/search';
-import { LISTING_STATE_PENDING_APPROVAL, LISTING_STATE_CLOSED, propTypes } from '../../util/types';
+import { LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
@@ -25,7 +25,7 @@ import {
   userCanMessage,
   userDisplayNameAsString,
 } from '../../util/data';
-import { timestampToDate, calculateQuantityFromHours } from '../../util/dates';
+import classNames from 'classnames';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
@@ -42,8 +42,9 @@ import {
   ListingTabs,
   ListingPreview,
   GenericError,
+  Avatar,
 } from '../../components';
-import { EnquiryForm } from '../../forms';
+import { EnquiryForm, InitialBookingForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { BACKGROUND_CHECK_APPROVED, CAREGIVER } from '../../util/constants';
 import ActionBarMaybe from './ActionBarMaybe';
@@ -58,7 +59,10 @@ import {
   sendMessage,
   closeListing,
   openListing,
+  fetchTimeSlots,
+  fetchReviews,
 } from './ListingPage.duck';
+import BookingContainer from './BookingContainer';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -72,17 +76,16 @@ export class ListingPageComponent extends Component {
       pageClassNames: [],
       imageCarouselOpen: false,
       enquiryModalOpen: false,
-      bookingModalOpen: false,
       showListingPreview: false,
     };
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleBookingSubmit = this.handleBookingSubmit.bind(this);
     this.onContactUser = this.onContactUser.bind(this);
     this.onSubmitEnquiry = this.onSubmitEnquiry.bind(this);
     this.goBackToSearchResults = this.goBackToSearchResults.bind(this);
   }
 
-  handleSubmit(values) {
+  handleBookingSubmit(values) {
     const {
       history,
       getListing,
@@ -93,22 +96,12 @@ export class ListingPageComponent extends Component {
     const listingId = new UUID(params.id);
     const listing = getListing(listingId);
 
-    const { bookingStartTime, bookingEndTime, ...restOfValues } = values;
-    const bookingStart = timestampToDate(bookingStartTime);
-    const bookingEnd = timestampToDate(bookingEndTime);
-
-    const bookingData = {
-      quantity: calculateQuantityFromHours(bookingStart, bookingEnd),
-      ...restOfValues,
-    };
+    const { bookingDates, rate: bookingRate } = values;
 
     const initialValues = {
       listing,
-      bookingData,
-      bookingDates: {
-        bookingStart,
-        bookingEnd,
-      },
+      bookingRate: bookingRate?.length > 0 ? bookingRate[0] : null,
+      bookingDates,
       confirmPaymentError: null,
     };
 
@@ -116,9 +109,12 @@ export class ListingPageComponent extends Component {
 
     const routes = routeConfiguration();
     // Customize checkout page state with current listing and selected bookingDates
-    const { setInitialValues } = findRouteByRouteName('CheckoutPage', routes);
+    const { setInitialValues: checkoutSetInitialValues } = findRouteByRouteName(
+      'CheckoutPage',
+      routes
+    );
 
-    callSetInitialValues(setInitialValues, initialValues, saveToSessionStorage);
+    callSetInitialValues(checkoutSetInitialValues, initialValues, saveToSessionStorage);
 
     // Clear previous Stripe errors from store if there is any
     onInitializeCardPaymentData();
@@ -243,10 +239,19 @@ export class ListingPageComponent extends Component {
       openListingError,
       onOpenListing,
       origin,
+      onFetchTimeSlots,
+      monthlyTimeSlots,
+      hasStripeAccount,
+      hasStripeAccountInProgress,
+      hasStripeAccountError,
+      fetchReviewsError,
+      fetchReviewsInProgress,
+      reviews,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const isLarge = typeof window !== 'undefined' && window.innerWidth > 1024;
 
     const listingId = new UUID(rawParams.id);
     const isPendingApprovalVariant = rawParams.variant === LISTING_PAGE_PENDING_APPROVAL_VARIANT;
@@ -354,15 +359,6 @@ export class ListingPageComponent extends Component {
     // banned or deleted display names for the function
     const authorDisplayName = userDisplayNameAsString(ensuredAuthor, '');
 
-    const handleBookingSubmit = values => {
-      const isCurrentlyClosed = currentListing.attributes.state === LISTING_STATE_CLOSED;
-      if (isOwnListing || isCurrentlyClosed) {
-        window.scrollTo(0, 0);
-      } else {
-        this.handleSubmit(values);
-      }
-    };
-
     const siteTitle = config.siteTitle;
     const schemaTitle = intl.formatMessage(
       { id: 'ListingPage.schemaTitle' },
@@ -418,7 +414,7 @@ export class ListingPageComponent extends Component {
           <LayoutWrapperMain>
             {actionBar}
             <div className={css.mainContainer}>
-              <div className={css.subContainer}>
+              <div className={classNames(css.subContainer)}>
                 {!this.state.showListingPreview ? (
                   <>
                     <ListingSummary
@@ -427,8 +423,6 @@ export class ListingPageComponent extends Component {
                       currentUserListing={currentUserListing}
                       onContactUser={this.onContactUser}
                       isOwnListing={isOwnListing}
-                      onOpenBookingModal={() => this.setState({ bookingModalOpen: true })}
-                      onBookNow={handleBookingSubmit}
                       onShowListingPreview={() => this.setState({ showListingPreview: true })}
                       isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
@@ -441,6 +435,14 @@ export class ListingPageComponent extends Component {
                       isFromSearchPage={isFromSearchPage}
                       onGoBackToSearchResults={this.goBackToSearchResults}
                       origin={origin || currentUserOrigin}
+                      reviews={reviews}
+                      fetchReviewsError={fetchReviewsError}
+                      onManageDisableScrolling={onManageDisableScrolling}
+                      onContinueBooking={this.handleBookingSubmit}
+                      authorDisplayName={authorDisplayName}
+                      hasStripeAccount={hasStripeAccount}
+                      hasStripeAccountInProgress={hasStripeAccountInProgress}
+                      hasStripeAccountError={hasStripeAccountError}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -479,25 +481,6 @@ export class ListingPageComponent extends Component {
                 />
               </Modal>
             )}
-            {/* {this.state.bookingModalOpen && (
-              <Modal
-                id="BookingPanel"
-                isOpen={isAuthenticated && !!this.state.bookingModalOpen}
-                onClose={() => this.setState({ bookingModalOpen: false })}
-                onManageDisableScrolling={onManageDisableScrolling}
-                containerClassName={css.bookingModalContainer}
-                usePortal
-              >
-                <BookingContainer
-                  listing={currentListing}
-                  currentUserListing={currentUserListing}
-                  currentUser={currentUser}
-                  intl={intl}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                  onBookNow={handleBookingSubmit}
-                />
-              </Modal>
-            )} */}
           </LayoutWrapperMain>
           <LayoutWrapperFooter>
             <Footer />
@@ -570,13 +553,20 @@ const mapStateToProps = state => {
     existingConversation,
     closeListingInProgress,
     closeListingError,
-    listingClosed,
     openListingInProgress,
     openListingError,
-    listingOpened,
     origin,
+    monthlyTimeSlots,
+    fetchReviewsError,
+    fetchReviewsInProgress,
+    reviews,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
+  const {
+    hasStripeAccount,
+    hasStripeAccountInProgress,
+    hasStripeAccountError,
+  } = state.stripeConnectAccount;
 
   const getListing = id => {
     const ref = { id, type: 'listing' };
@@ -610,19 +600,31 @@ const mapStateToProps = state => {
     openListingInProgress,
     openListingError,
     origin,
+    monthlyTimeSlots,
+    hasStripeAccount,
+    hasStripeAccountInProgress,
+    hasStripeAccountError,
+    fetchReviewsError,
+    fetchReviewsInProgress,
+    reviews,
   };
 };
 
-const mapDispatchToProps = {
-  onManageDisableScrolling: manageDisableScrolling,
-  callSetInitialValues: setInitialValues,
-  onInitializeCardPaymentData: initializeCardPaymentData,
-  onChangeModalValue: changeModalValue,
-  onSendEnquiry: sendEnquiry,
-  onSendMessage: sendMessage,
-  onCloseListing: closeListing,
-  onOpenListing: openListing,
-};
+const mapDispatchToProps = dispatch => ({
+  onManageDisableScrolling: (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  callSetInitialValues: (setInitialValues, values, saveToSessionStorage) =>
+    dispatch(setInitialValues(values, saveToSessionStorage)),
+  onChangeModalValue: value => dispatch(changeModalValue(value)),
+  onSendEnquiry: (listing, message, history, routes) =>
+    dispatch(sendEnquiry(listing, message, history, routes)),
+  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
+  onCloseListing: listingId => dispatch(closeListing(listingId)),
+  onOpenListing: listingId => dispatch(openListing(listingId)),
+  onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
+  onFetchTimeSlots: (listingId, start, end, timeZone) =>
+    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+});
 
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route

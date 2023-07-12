@@ -41,8 +41,7 @@ const sortSearchByDistance = true;
 // this particular web application is able to handle.
 const messageProcessAlias = `message-process/active`;
 const singleActionProcessAlias = `single-action-process/active`;
-
-const bookingProcessAlias = `flex-default-process/release-1`;
+const singleBookingProcessAlias = `single-booking-process/active`;
 
 // The transaction line item code for the main unit type in bookings.
 //
@@ -67,7 +66,7 @@ const enableAvailability = process.env.REACT_APP_AVAILABILITY_ENABLED === 'true'
 //
 // See also the API reference for querying time slots:
 // https://www.sharetribe.com/api-reference/marketplace.html#query-time-slots
-const dayCountAvailableForBooking = 90;
+const dayCountAvailableForBooking = 74;
 
 // To pass environment variables to the client app in the build
 // script, react-scripts (and the sharetribe-scripts fork of
@@ -212,7 +211,7 @@ const config = {
   appCdnAssets,
   locale,
   singleActionProcessAlias,
-  bookingProcessAlias,
+  singleBookingProcessAlias,
   messageProcessAlias,
   bookingUnitType,
   enableAvailability,

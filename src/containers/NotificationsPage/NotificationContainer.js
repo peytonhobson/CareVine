@@ -7,6 +7,7 @@ import {
   NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
   NOTIFICATION_TYPE_PAYMENT_RECEIVED,
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
+  NOTIFICATION_TYPE_BOOKING_REQUESTED,
 } from '../../util/constants';
 import {
   NotificationPaymentRequested,
@@ -15,7 +16,11 @@ import {
   NotificationNewMessage,
   NotificationListingRemoved,
   NotificationListingOpened,
+  NotificationNewBookingRequest,
 } from './NotificationTemplates';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { transitionTransaction, fetchTransaction } from '../../ducks/transactions.duck';
 
 import css from './NotificationsPage.module.css';
 
@@ -31,6 +36,14 @@ const NotificationContainer = props => {
     senderListing,
     fetchSenderListingInProgress,
     fetchSenderListingError,
+    onManageDisableScrolling,
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+    onTransitionTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+    onFetchTransaction,
   } = props;
 
   let notificationTemplate = null;
@@ -69,6 +82,22 @@ const NotificationContainer = props => {
         />
       );
       break;
+    case NOTIFICATION_TYPE_BOOKING_REQUESTED:
+      notificationTemplate = (
+        <NotificationNewBookingRequest
+          notification={notification}
+          currentUser={currentUser}
+          onManageDisableScrolling={onManageDisableScrolling}
+          transitionTransactionInProgress={transitionTransactionInProgress}
+          transitionTransactionError={transitionTransactionError}
+          currentTransaction={currentTransaction}
+          onTransitionTransaction={onTransitionTransaction}
+          fetchTransactionError={fetchTransactionError}
+          fetchTransactionInProgress={fetchTransactionInProgress}
+          onFetchTransaction={onFetchTransaction}
+        />
+      );
+      break;
     default:
       notificationTemplate =
         notifications.length === 0 ? (
@@ -88,4 +117,27 @@ const NotificationContainer = props => {
   return <div className={css.notificationContainerRoot}>{notificationTemplate}</div>;
 };
 
-export default NotificationContainer;
+const mapStateToProps = state => {
+  const {
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+  } = state.transactions;
+
+  return {
+    transitionTransactionInProgress,
+    transitionTransactionError,
+    currentTransaction,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+  };
+};
+
+const mapDispatchToProps = {
+  onTransitionTransaction: transitionTransaction,
+  onFetchTransaction: fetchTransaction,
+};
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationContainer);

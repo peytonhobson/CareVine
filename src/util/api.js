@@ -18,7 +18,7 @@ export const apiBaseUrl = () => {
   }
 
   // Otherwise, use the same domain and port as the frontend
-  return `${window.location.origin}`;
+  return window ? `${window.location.origin}` : process.env.REACT_APP_CANONICAL_ROOT_URL;
 };
 
 // Application type handlers for JS SDK.
@@ -307,4 +307,16 @@ export const fetchStripeSubscription = body => {
 
 export const stripeRetrieveUpcomingInvoice = body => {
   return post('/api/stripe-retrieve-upcoming-invoice', body);
+};
+
+export const initiateTransaction = body => {
+  return post('/api/initiate-transaction', body);
+};
+
+export const updateNotificationMetadata = body => {
+  return post('/api/update-notification-metadata', body);
+};
+
+export const stripeCreateRefund = body => {
+  return post('/api/stripe-create-refund', body);
 };

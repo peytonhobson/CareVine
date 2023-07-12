@@ -9,60 +9,35 @@ import { ensureTransaction } from './data';
  * so we need to understand what those strings mean.
  */
 
-// A customer can also initiate a transaction with an enquiry, and
-// then transition that with a request.
-export const TRANSITION_ENQUIRE = 'transition/enquire';
-export const TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY = 'transition/request-payment-after-enquiry';
-
-// When a customer makes a booking to a listing, a transaction is
-// created with the initial request-payment transition.
-// At this transition a PaymentIntent is created by Marketplace API.
-// After this transition, the actual payment must be made on client-side directly to Stripe.
+// Single Action Process Transitions
 export const TRANSITION_REQUEST_PAYMENT = 'transition/request-payment';
-
-// A customer can also initiate a transaction with an enquiry, and
-// then transition that with a request.
 export const TRANSITION_NOTIFY_FOR_PAYMENT = 'transition/notify-for-payment';
-export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
 
-// Stripe SDK might need to ask 3D security from customer, in a separate front-end step.
-// Therefore we need to make another transition to Marketplace API,
-// to tell that the payment is confirmed.
-// export const TRANSITION_CONFIRM_PAYMENT = 'transition/confirm-payment';
-
-// If the payment is not confirmed in the time limit set in transaction process (by default 15min)
-// the transaction will expire automatically.
-export const TRANSITION_EXPIRE_PAYMENT = 'transition/expire-payment';
-
-// When the provider accepts or declines a transaction from the
-// SalePage, it is transitioned with the accept or decline transition.
-export const TRANSITION_ACCEPT = 'transition/accept';
-export const TRANSITION_DECLINE = 'transition/decline';
-
-// The backend automatically expire the transaction.
-export const TRANSITION_EXPIRE = 'transition/expire';
-
-// Admin can also cancel the transition.
-export const TRANSITION_CANCEL = 'transition/cancel';
-
-// The backend will mark the transaction completed.
-export const TRANSITION_COMPLETE = 'transition/complete';
-
-// Reviews are given through transaction transitions. Review 1 can be
-// by provider or customer, and review 2 will be the other party of
-// the transaction.
-export const TRANSITION_REVIEW_1_BY_PROVIDER = 'transition/review-1-by-provider';
-export const TRANSITION_REVIEW_2_BY_PROVIDER = 'transition/review-2-by-provider';
-export const TRANSITION_REVIEW_1_BY_CUSTOMER = 'transition/review-1-by-customer';
-export const TRANSITION_REVIEW_2_BY_CUSTOMER = 'transition/review-2-by-customer';
-export const TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD = 'transition/expire-customer-review-period';
-export const TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD = 'transition/expire-provider-review-period';
-export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
-
-// Messaging Transaction Transitions
+// Messaging Process Transitions
 export const TRANSITION_INITIAL_MESSAGE = 'transition/initial-message';
 export const TRANSITION_CUSTOMER_DELETE_CONVERSATION = 'transition/customer-delete-conversation';
 export const TRANSITION_PROVIDER_DELETE_CONVERSATION = 'transition/provider-delete-conversation';
+
+// Booking Process Transitions
+export const TRANSITION_REQUEST_BOOKING = 'transition/request-booking';
+export const TRANSITION_DECLINE_BOOKING = 'transition/decline';
+export const TRANSITION_EXPIRE_BOOKING = 'transition/expire';
+export const TRANSITION_ACCEPT_BOOKING = 'transition/accept';
+export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-request';
+export const TRANSITION_CANCEL_BOOKING_CUSTOMER = 'transition/cancel-booking-customer';
+export const TRANSITION_CANCEL_BOOKING_PROVIDER = 'transition/cancel-booking-provider';
+export const TRANSITION_CANCEL_BOOKING_OPERATOR = 'transition/cancel-booking-operator';
+export const TRANSITION_CANCEL_ACTIVE_PROVIDER = 'transition/cancel-active-provider';
+export const TRANSITION_CANCEL_ACTIVE_CUSTOMER = 'transition/cancel-active-customer';
+export const TRANSITION_COMPLETE_CANCELED = 'transition/complete-canceled';
+export const TRANSITION_COMPLETE = 'transition/complete';
+export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
+export const TRANSITION_DISPUTE = 'transition/dispute';
+export const TRANSITION_RESOLVE_DISPUTE = 'transition/resolve-dispute';
+export const TRANSITION_REVIEW = 'transition/review';
+export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
+export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
+export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver';
 
 /**
  * Actors
@@ -83,27 +58,19 @@ export const TX_TRANSITION_ACTORS = [
   TX_TRANSITION_ACTOR_OPERATOR,
 ];
 
-/**
- * States
- *
- * These constants are only for making it clear how transitions work together.
- * You should not use these constants outside of this file.
- *
- * Note: these states are not in sync with states used transaction process definitions
- *       in Marketplace API. Only last transitions are passed along transaction object.
- */
-const STATE_INITIAL = 'initial';
-const STATE_ENQUIRY = 'enquiry';
-const STATE_PAYMENT_PENDING = 'payment-pending';
-const STATE_PAYMENT_EXPIRED = 'payment-expired';
-const STATE_PREAUTHORIZED = 'preauthorized';
-const STATE_DECLINED = 'declined';
-const STATE_ACCEPTED = 'accepted';
-const STATE_CANCELED = 'canceled';
-const STATE_DELIVERED = 'delivered';
-const STATE_REVIEWED = 'reviewed';
-const STATE_REVIEWED_BY_CUSTOMER = 'reviewed-by-customer';
-const STATE_REVIEWED_BY_PROVIDER = 'reviewed-by-provider';
+export const STATE_INITIAL = 'initial';
+export const STATE_BOOKING_REQUESTED = 'booking-requested';
+export const STATE_ACCEPTED = 'accepted';
+export const STATE_DECLINED = 'declined';
+export const STATE_CANCELED = 'canceled';
+export const STATE_DELIVERED = 'delivered';
+export const STATE_PAID_OUT = 'paid-out';
+export const STATE_DISPUTE_REVIEW = 'dispute-review';
+export const STATE_REVIEWED = 'reviewed';
+export const STATE_PAYMENT_FAILED = 'payment-failed';
+export const STATE_ACTIVE_CANCELED = 'active-canceled';
+export const STATE_CANCELED_PAID_OUT = 'canceled-paid-out';
+export const STATE_REQUEST_CANCELED = 'request-canceled';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
 const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
@@ -133,7 +100,6 @@ const stateDescriptionSingle = {
       on: {
         [TRANSITION_NOTIFY_FOR_PAYMENT]: STATE_NOTIFIED_FOR_PAYMENT,
         [TRANSITION_REQUEST_PAYMENT]: STATE_PAYMENT_REQUESTED,
-        [TRANSITION_CONFIRM_PAYMENT]: STATE_PAYMENT_CONFIRMED,
       },
     },
   },
@@ -143,7 +109,7 @@ const stateDescription = {
   // id is defined only to support Xstate format.
   // However if you have multiple transaction processes defined,
   // it is best to keep them in sync with transaction process aliases.
-  id: 'flex-hourly-default-process/release-1',
+  id: 'booking-process/active',
 
   // This 'initial' state is a starting point for new transaction
   initial: STATE_INITIAL,
@@ -152,62 +118,60 @@ const stateDescription = {
   states: {
     [STATE_INITIAL]: {
       on: {
-        [TRANSITION_ENQUIRE]: STATE_ENQUIRY,
-        [TRANSITION_REQUEST_PAYMENT]: STATE_PAYMENT_PENDING,
+        [TRANSITION_REQUEST_BOOKING]: STATE_BOOKING_REQUESTED,
       },
     },
-    [STATE_ENQUIRY]: {
+    [STATE_BOOKING_REQUESTED]: {
       on: {
-        [TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY]: STATE_PAYMENT_PENDING,
+        [TRANSITION_ACCEPT_BOOKING]: STATE_ACCEPTED,
+        [TRANSITION_DECLINE_BOOKING]: STATE_DECLINED,
+        [TRANSITION_EXPIRE_BOOKING]: STATE_DECLINED,
+        [TRANSITION_CANCEL_BOOKING_REQUEST]: STATE_REQUEST_CANCELED,
       },
     },
-
-    [STATE_PAYMENT_PENDING]: {
-      on: {
-        [TRANSITION_EXPIRE_PAYMENT]: STATE_PAYMENT_EXPIRED,
-        [TRANSITION_CONFIRM_PAYMENT]: STATE_PREAUTHORIZED,
-      },
-    },
-
-    [STATE_PAYMENT_EXPIRED]: {},
-    [STATE_PREAUTHORIZED]: {
-      on: {
-        [TRANSITION_DECLINE]: STATE_DECLINED,
-        [TRANSITION_EXPIRE]: STATE_DECLINED,
-        [TRANSITION_ACCEPT]: STATE_ACCEPTED,
-      },
-    },
-
-    [STATE_DECLINED]: {},
     [STATE_ACCEPTED]: {
       on: {
-        [TRANSITION_CANCEL]: STATE_CANCELED,
         [TRANSITION_COMPLETE]: STATE_DELIVERED,
+        [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_PROVIDER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_CUSTOMER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
       },
     },
-
-    [STATE_CANCELED]: {},
+    [STATE_CANCELED]: {
+      on: {
+        [TRANSITION_CANCEL_PAY_CAREGIVER]: STATE_CANCELED_PAID_OUT,
+      },
+    },
+    [STATE_ACTIVE_CANCELED]: {
+      on: {
+        [TRANSITION_COMPLETE_CANCELED]: STATE_DELIVERED,
+      },
+    },
     [STATE_DELIVERED]: {
       on: {
+        [TRANSITION_PAY_CAREGIVER]: STATE_PAID_OUT,
+        [TRANSITION_DISPUTE]: STATE_DISPUTE_REVIEW,
+      },
+    },
+    [STATE_DISPUTE_REVIEW]: {
+      on: {
+        [TRANSITION_RESOLVE_DISPUTE]: STATE_PAID_OUT,
+      },
+    },
+    [STATE_PAID_OUT]: {
+      on: {
+        [TRANSITION_REVIEW]: STATE_REVIEWED,
         [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
-        [TRANSITION_REVIEW_1_BY_CUSTOMER]: STATE_REVIEWED_BY_CUSTOMER,
-        [TRANSITION_REVIEW_1_BY_PROVIDER]: STATE_REVIEWED_BY_PROVIDER,
       },
     },
-
-    [STATE_REVIEWED_BY_CUSTOMER]: {
-      on: {
-        [TRANSITION_REVIEW_2_BY_PROVIDER]: STATE_REVIEWED,
-        [TRANSITION_EXPIRE_PROVIDER_REVIEW_PERIOD]: STATE_REVIEWED,
-      },
-    },
-    [STATE_REVIEWED_BY_PROVIDER]: {
-      on: {
-        [TRANSITION_REVIEW_2_BY_CUSTOMER]: STATE_REVIEWED,
-        [TRANSITION_EXPIRE_CUSTOMER_REVIEW_PERIOD]: STATE_REVIEWED,
-      },
-    },
+    [STATE_DECLINED]: { type: 'final' },
     [STATE_REVIEWED]: { type: 'final' },
+    [STATE_PAYMENT_FAILED]: { type: 'final' },
+    [STATE_CANCELED_PAID_OUT]: { type: 'final' },
+    [STATE_REQUEST_CANCELED]: { type: 'final' },
   },
 };
 
@@ -281,16 +245,8 @@ export const txIsCanceled = tx =>
 export const txIsDelivered = tx =>
   getTransitionsToState(STATE_DELIVERED).includes(txLastTransition(tx));
 
-const firstReviewTransitions = [
-  ...getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER),
-  ...getTransitionsToState(STATE_REVIEWED_BY_PROVIDER),
-];
+const firstReviewTransitions = [...getTransitionsToState(STATE_REVIEWED)];
 export const txIsInFirstReview = tx => firstReviewTransitions.includes(txLastTransition(tx));
-
-export const txIsInFirstReviewBy = (tx, isCustomer) =>
-  isCustomer
-    ? getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER).includes(txLastTransition(tx))
-    : getTransitionsToState(STATE_REVIEWED_BY_PROVIDER).includes(txLastTransition(tx));
 
 export const txIsReviewed = tx =>
   getTransitionsToState(STATE_REVIEWED).includes(txLastTransition(tx));
@@ -318,41 +274,7 @@ export const transitionIsReviewed = transition =>
   getTransitionsToState(STATE_REVIEWED).includes(transition);
 
 export const transitionIsFirstReviewedBy = (transition, isCustomer) =>
-  isCustomer
-    ? getTransitionsToState(STATE_REVIEWED_BY_CUSTOMER).includes(transition)
-    : getTransitionsToState(STATE_REVIEWED_BY_PROVIDER).includes(transition);
-
-export const getReview1Transition = isCustomer =>
-  isCustomer ? TRANSITION_REVIEW_1_BY_CUSTOMER : TRANSITION_REVIEW_1_BY_PROVIDER;
-
-export const getReview2Transition = isCustomer =>
-  isCustomer ? TRANSITION_REVIEW_2_BY_CUSTOMER : TRANSITION_REVIEW_2_BY_PROVIDER;
-
-// Check if a transition is the kind that should be rendered
-// when showing transition history (e.g. ActivityFeed)
-// The first transition and most of the expiration transitions made by system are not relevant
-export const isRelevantPastTransition = transition => {
-  return [
-    TRANSITION_ACCEPT,
-    TRANSITION_CANCEL,
-    TRANSITION_COMPLETE,
-    TRANSITION_CONFIRM_PAYMENT,
-    TRANSITION_DECLINE,
-    TRANSITION_EXPIRE,
-    TRANSITION_REVIEW_1_BY_CUSTOMER,
-    TRANSITION_REVIEW_1_BY_PROVIDER,
-    TRANSITION_REVIEW_2_BY_CUSTOMER,
-    TRANSITION_REVIEW_2_BY_PROVIDER,
-  ].includes(transition);
-};
-
-export const isCustomerReview = transition => {
-  return [TRANSITION_REVIEW_1_BY_CUSTOMER, TRANSITION_REVIEW_2_BY_CUSTOMER].includes(transition);
-};
-
-export const isProviderReview = transition => {
-  return [TRANSITION_REVIEW_1_BY_PROVIDER, TRANSITION_REVIEW_2_BY_PROVIDER].includes(transition);
-};
+  isCustomer ? getTransitionsToState(STATE_REVIEWED).includes(transition) : null;
 
 export const getUserTxRole = (currentUserId, transaction) => {
   const tx = ensureTransaction(transaction);
@@ -368,72 +290,5 @@ export const getUserTxRole = (currentUserId, transaction) => {
   }
 };
 
-// export const filterNotificationsByUserType = (notifications, currentUser) => {
-//   const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-
-//   // console.log(userType);
-
-//   if (userType === CAREGIVER) {
-//     return notifications.filter(notification => {
-//       return (
-//         notification &&
-//         (notification.transition === TRANSITION_CONFIRM_PAYMENT ||
-//           notification.transition === TRANSITION_NOTIFY_FOR_PAYMENT)
-//       );
-//     });
-//   } else {
-//     return notifications.filter(
-//       notification =>
-//         notification &&
-//         (notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY ||
-//           notification.transition === TRANSITION_REQUEST_PAYMENT_AFTER_NOTIFICATION)
-//     );
-//   }
-// };
-
-// export const getNotifications = (currentTransactions, currentUser) => {
-//   let notifications = [];
-//   if (currentTransactions) {
-//     currentTransactions.forEach(transaction => {
-//       transaction.attributes.transitions.forEach(transition => {
-//         transition.transaction = transaction;
-//         if (NOTIFICATION_TRANSITIONS.includes(transition.transition)) {
-//           notifications.push(transition);
-//         }
-//       });
-//     });
-//   }
-
-//   const filteredNotifications = filterNotificationsByUserType(notifications, currentUser);
-
-//   return filteredNotifications;
-// };
-
-// export const filterViewedNotifications = (notifications, currentUser) => {
-//   const viewedNotifications =
-//     (currentUser &&
-//       currentUser.attributes.profile.metadata &&
-//       currentUser.attributes.profile.metadata.viewedNotifications) ||
-//     [];
-
-//   const notViewedNotifications = notifications.filter(
-//     notification => !viewedNotifications.includes(getUuid(notification.createdAt.toUTCString()))
-//   );
-
-//   return notViewedNotifications;
-// };
-
 export const txRoleIsProvider = userRole => userRole === TX_TRANSITION_ACTOR_PROVIDER;
 export const txRoleIsCustomer = userRole => userRole === TX_TRANSITION_ACTOR_CUSTOMER;
-
-// Check if the given transition is privileged.
-//
-// Privileged transitions need to be handled from a secure context,
-// i.e. the backend. This helper is used to check if the transition
-// should go through the local API endpoints, or if using JS SDK is
-// enough.
-export const isPrivileged = transition => {
-  return [TRANSITION_REQUEST_PAYMENT, TRANSITION_REQUEST_PAYMENT_AFTER_ENQUIRY].includes(
-    transition
-  );
-};

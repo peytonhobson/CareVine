@@ -85,11 +85,13 @@ export class AuthenticationPageComponent extends Component {
       const image = new Image();
 
       image.onload = () => {
-        this.heroRef.current.style.background = `url('${backgroundImage}')`;
-        this.heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        this.heroRef.current.style.backgroundPosition = 'center center';
-        this.heroRef.current.style.backgroundSize = 'cover';
-        this.setState({ heroLoaded: true });
+        if (this.heroRef?.current) {
+          this.heroRef.current.style.background = `url('${backgroundImage}')`;
+          this.heroRef.current.style.backgroundColor = 'var(--matterColor)';
+          this.heroRef.current.style.backgroundPosition = 'center center';
+          this.heroRef.current.style.backgroundSize = 'cover';
+          this.setState({ heroLoaded: true });
+        }
       };
 
       image.src = backgroundImage;

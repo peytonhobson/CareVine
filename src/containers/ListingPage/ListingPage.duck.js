@@ -12,11 +12,16 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import { updateUserNotifications } from '../../util/api';
+import {
+  updateUserNotifications,
+  transactionLineItems,
+  fetchHasStripeAccount,
+} from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
 import { denormalisedResponseEntities } from '../../util/data';
+import { hasStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 
 const { UUID } = sdkTypes;
 
@@ -55,6 +60,10 @@ export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUES
 export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
 export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
 
+export const FETCH_REVIEWS_REQUEST = 'app/ListingPage/FETCH_REVIEWS_REQUEST';
+export const FETCH_REVIEWS_SUCCESS = 'app/ListingPage/FETCH_REVIEWS_SUCCESS';
+export const FETCH_REVIEWS_ERROR = 'app/ListingPage/FETCH_REVIEWS_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -80,6 +89,9 @@ const initialState = {
     //   fetchTimeSlotsInProgress: null,
     // },
   },
+  fetchReviewsError: null,
+  fetchReviewsInProgress: false,
+  reviews: [],
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -178,6 +190,13 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, monthlyTimeSlots };
     }
 
+    case FETCH_REVIEWS_REQUEST:
+      return { ...state, fetchReviewsInProgress: true, fetchReviewsError: null };
+    case FETCH_REVIEWS_SUCCESS:
+      return { ...state, fetchReviewsInProgress: false, reviews: payload };
+    case FETCH_REVIEWS_ERROR:
+      return { ...state, fetchReviewsInProgress: false, fetchReviewsError: payload };
+
     default:
       return state;
   }
@@ -250,6 +269,13 @@ export const fetchTimeSlotsError = (monthId, error) => ({
   error: true,
   payload: { monthId, error },
 });
+
+export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
+export const fetchReviewsSuccess = reviews => ({
+  type: FETCH_REVIEWS_SUCCESS,
+  payload: reviews,
+});
+export const fetchReviewsError = e => ({ type: FETCH_REVIEWS_ERROR, error: true, payload: e });
 
 // ================ Thunks ================ //
 
@@ -474,6 +500,24 @@ const fetchMonthlyTimeSlots = (dispatch, listing) => {
   return Promise.all([]);
 };
 
+export const fetchReviews = listingId => (dispatch, getState, sdk) => {
+  dispatch(fetchReviewsRequest());
+  return sdk.reviews
+    .query({
+      listing_id: listingId,
+      state: 'public',
+      include: ['author', 'author.profileImage'],
+      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+    })
+    .then(response => {
+      const reviews = denormalisedResponseEntities(response);
+      dispatch(fetchReviewsSuccess(reviews));
+    })
+    .catch(e => {
+      dispatch(fetchReviewsError(storableError(e)));
+    });
+};
+
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const listingId = new UUID(params.id);
 
@@ -494,6 +538,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     dispatch(showListing(listingId)),
     currentUser?.id && dispatch(fetchExistingConversation(listingId)),
     dispatch(setOrigin(origin)),
+    dispatch(fetchReviews(listingId)),
   ]).then(responses => {
     if (responses[0] && responses[0].data && responses[0].data.data) {
       const listing = responses[0].data.data;
@@ -502,6 +547,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
       // This can happen parallel to loadData.
       // We are not interested to return them from loadData call.
       fetchMonthlyTimeSlots(dispatch, listing);
+      dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
     }
     return responses;
   });

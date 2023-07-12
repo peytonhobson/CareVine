@@ -14,6 +14,12 @@ import { types as sdkTypes } from '../util/sdkLoader';
 const { Money } = sdkTypes;
 import { formatMoneyInteger } from './currency';
 import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constants';
+import moment from 'moment';
+import { addTimeToStartOfDay } from './dates';
+
+const BANK_ACCOUNT = 'Bank Account';
+const CARD_PROCESSING_FEE = 0.029;
+const BANK_PROCESSING_FEE = 0.008;
 
 /**
  * Combine the given relationships objects
@@ -530,22 +536,16 @@ export const convertTimeFrom12to24 = fullTime => {
   }
 
   const [time, ampm] = fullTime.split(/(am|pm)/i);
-
   const [hours, minutes] = time.split(':');
+  let convertedHours = parseInt(hours);
 
-  if (hours === '12' && ampm === 'am') {
-    return '00:00';
+  if (ampm.toLowerCase() === 'am' && hours === '12') {
+    convertedHours = 0;
+  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
+    convertedHours += 12;
   }
 
-  if (ampm === 'pm') {
-    return `${parseInt(hours) + 12}:${minutes}`;
-  }
-
-  if (hours < 10 && hours.includes('0')) {
-    return `${hours < 10 ? `${hours}` : hours}:${minutes}`;
-  }
-
-  return `${hours < 10 ? `0${hours}` : hours}:${minutes}`;
+  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
 };
 
 export const convertTimeFrom24to12 = fullTime => {
@@ -572,4 +572,73 @@ export const convertTimeFrom24to12 = fullTime => {
   }
 
   return `${hours}:${minutes}am`;
+};
+
+export const findEndTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  const additionalTime =
+    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
+  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return endTime;
+};
+
+const TRANSACTION_FEE = 0.05;
+
+export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
+  // If caregiver canceled then we need to refund the full amount
+  // Otherwise, all line items that are within 72 hours of the start time
+  // will be refunded at 50% of the amount
+  if (caregiverCanceled) {
+    const fullRefunds = lineItems
+      ?.filter(l => {
+        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+        return differenceInHours > 0;
+      })
+      .reduce((acc, curr) => acc + curr.amount, 0);
+
+    return parseInt(Number(fullRefunds) * 100);
+  } else {
+    const fiftyPercentRefunds = lineItems
+      ?.filter(l => {
+        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
+        return differenceInHours < 72 * 36e5 && differenceInHours > 0;
+      })
+      .reduce((acc, curr) => acc + curr.amount / 2, 0);
+
+    const fullRefunds = lineItems
+      ?.filter(l => {
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return startTime - moment().toDate() > 72 * 36e5;
+      })
+      .reduce((acc, curr) => acc + curr.amount, 0);
+
+    return parseInt((Number(fiftyPercentRefunds) + Number(fullRefunds)) * 100);
+  }
+};
+
+export const calculateAverageRating = reviews => {
+  if (!reviews || reviews.length === 0) return 0;
+  const sum = reviews.reduce((acc, curr) => acc + curr.attributes.rating, 0);
+  return sum / reviews.length;
+};
+
+export const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
+  const totalAmount = Number(subTotal) + Number(transactionFee);
+  if (selectedPaymentMethod === BANK_ACCOUNT) {
+    return parseFloat(
+      Math.round(((totalAmount * BANK_PROCESSING_FEE) / (1 - BANK_PROCESSING_FEE)) * 100) / 100
+    ).toFixed(2);
+  }
+
+  return parseFloat(
+    Math.round(((totalAmount * CARD_PROCESSING_FEE + 0.3) / (1 - CARD_PROCESSING_FEE)) * 100) / 100
+  ).toFixed(2);
 };

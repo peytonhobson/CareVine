@@ -7,7 +7,7 @@ const SIZE_SMALL = 'small';
 const SIZE_NORMAL = 'normal';
 
 const IconConfirm = props => {
-  const { className, rootClassName, size } = props;
+  const { className, rootClassName } = props;
   const classes = classNames(rootClassName || css.checkmark, className);
 
   return (

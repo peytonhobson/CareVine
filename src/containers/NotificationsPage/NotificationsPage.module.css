@@ -280,7 +280,6 @@
   opacity: 1;
 
   @media (--viewportMedium) {
-    left: 0.8rem;
     top: 0.875rem;
   }
 }
@@ -288,11 +287,12 @@
 .mainWrapper {
   padding: 0;
   background-color: #eeeeee;
+  overflow-y: scroll;
 
   height: 0;
 
   @media (--viewportMedium) {
-    height: calc(100vh - var(--topbarHeightDesktop));
+    min-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
 
@@ -319,18 +319,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 90vh;
+  min-height: calc(100vh - var(--topbarHeightDesktop));
   width: 100%;
-  padding: 0 1rem;
-
-  @media (--viewportMedium) {
-    height: 100%;
-    padding: 0 3rem;
-  }
-
-  @media (--viewportLarge) {
-    padding: 0 15rem;
-  }
+  padding: 2rem 1rem;
 }
 
 .noTextWrap {
