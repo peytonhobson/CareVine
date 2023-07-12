@@ -9,6 +9,7 @@ import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 import SectionReviews from '../../containers/ListingPage/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
+import { useMediaQuery } from '@mui/material';
 
 import css from './ListingSummary.module.css';
 
@@ -85,6 +86,7 @@ const ListingSummaryComponent = props => {
 
   const listingUserType = listing.attributes.metadata.listingType;
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
+  const isLarge = useMediaQuery('(min-width:1024px)');
 
   return (
     <div className={css.root}>
@@ -211,7 +213,7 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {hasStripeAccount ? (
+          {hasStripeAccount && isLarge ? (
             <Button
               className={css.button}
               onClick={() => setIsBookingModalOpen(true)}
