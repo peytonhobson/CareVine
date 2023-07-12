@@ -316,7 +316,7 @@ export class CheckoutPageComponent extends Component {
     const isOwnListing = currentAuthor?.id?.uuid === currentUser?.id?.uuid;
 
     const hasListingAndAuthor = !!(currentListing.id && currentAuthor.id);
-    const hasRequiredData = hasListingAndAuthor && bookingDates?.length > 0;
+    const hasRequiredData = hasListingAndAuthor;
     const canShowPage = hasRequiredData && !isOwnListing;
     const shouldRedirect = !isLoading && !canShowPage;
 
@@ -379,72 +379,32 @@ export class CheckoutPageComponent extends Component {
       <Page {...pageProps}>
         {topbar}
         <div className={css.contentContainer}>
-          <div className={css.bookListingContainer}>
-            <EditBookingForm
-              className={css.editBookingForm}
-              listing={currentListing}
-              onSubmit={this.handleSubmit}
-              onChange={this.handleEditBookingFormChange}
-              monthYearBookingDates={monthYearBookingDates}
-              monthlyTimeSlots={monthlyTimeSlots}
-              onManageDisableScrolling={onManageDisableScrolling}
-              bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
-              onSetState={onSetState}
-              authorDisplayName={authorDisplayName}
-              defaultPaymentMethods={defaultPaymentMethods}
-              selectedPaymentMethod={this.state.selectedPaymentMethod}
-              initiateOrderInProgress={initiateOrderInProgress}
-              initiateOrderError={initiateOrderError}
-              transaction={transaction}
-              currentListing={currentListing}
-              listingTitle={listingTitle}
-            >
-              <section className={css.paymentContainer}>
-                <h2>Payment</h2>
-                <p className={css.tinyNoMargin}>*Processing Fees</p>
-                <ul className={css.processingFeesList}>
-                  <li className={css.tinyNoMargin}>Bank Accounts: 0.8%</li>
-                  <li className={css.tinyNoMargin}>Payment Cards: 2.9% + $0.30</li>
-                </ul>
-                {showPaymentForm ? (
-                  <PaymentMethods
-                    defaultPaymentFetched={defaultPaymentFetched}
-                    defaultPaymentMethods={defaultPaymentMethods}
-                    fetchDefaultPaymentError={fetchDefaultPaymentError}
-                    fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-                    stripeCustomerFetched={stripeCustomerFetched}
-                    onChangePaymentMethod={method =>
-                      this.setState({ selectedPaymentMethod: method })
-                    }
-                    className={css.paymentMethods}
-                    removeDisabled
-                  />
-                ) : null}
-              </section>
-              <BookingSummaryCard
-                authorDisplayName={authorDisplayName}
-                currentAuthor={currentAuthor}
-                selectedBookingTimes={this.state.selectedBookingTimes}
-                bookingRate={bookingRate}
-                bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
-                listing={currentListing}
-                onManageDisableScrolling={onManageDisableScrolling}
-                onSetState={onSetState}
-                displayOnMobile
-                selectedPaymentMethod={selectedPaymentMethodType}
-              />
-            </EditBookingForm>
-          </div>
-          <BookingSummaryCard
-            authorDisplayName={authorDisplayName}
-            currentAuthor={currentAuthor}
-            selectedBookingTimes={this.state.selectedBookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates}
+          <EditBookingForm
+            className={css.editBookingForm}
             listing={currentListing}
+            onSubmit={this.handleSubmit}
+            onChange={this.handleEditBookingFormChange}
+            monthYearBookingDates={monthYearBookingDates}
+            monthlyTimeSlots={monthlyTimeSlots}
             onManageDisableScrolling={onManageDisableScrolling}
+            bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
             onSetState={onSetState}
-            selectedPaymentMethod={selectedPaymentMethodType}
+            authorDisplayName={authorDisplayName}
+            defaultPaymentMethods={defaultPaymentMethods}
+            selectedPaymentMethod={this.state.selectedPaymentMethod}
+            initiateOrderInProgress={initiateOrderInProgress}
+            initiateOrderError={initiateOrderError}
+            transaction={transaction}
+            currentListing={currentListing}
+            listingTitle={listingTitle}
+            currentAuthor={currentAuthor}
+            bookingRate={bookingRate}
+            showPaymentForm={showPaymentForm}
+            defaultPaymentFetched={defaultPaymentFetched}
+            fetchDefaultPaymentError={fetchDefaultPaymentError}
+            fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+            stripeCustomerFetched={stripeCustomerFetched}
+            onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
           />
         </div>
       </Page>
