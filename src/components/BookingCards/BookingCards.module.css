@@ -239,3 +239,10 @@
   text-align: center;
   color: var(--failColor);
 }
+
+.bookingNumber {
+  color: var(--marketplaceColor);
+  margin: 0;
+  text-align: end;
+  width: 100%;
+}
