@@ -454,20 +454,6 @@ const createBookingPayment = async transaction => {
   const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
-      currency: 'usd',
-      payment_method_types: ['card', 'us_bank_account'],
-      transfer_data: {
-        destination: stripeAccountId,
-      },
-      application_fee_amount: parseInt(Math.round(formattedBookingFee + formattedProcessingFee)),
-      customer: stripeCustomerId,
-      receipt_email: clientEmail,
-      description: 'Carevine Booking',
-      metadata: { userId, txId },
-    });
-
     const fullListingResponse = await integrationSdk.listings.show({
       id: listingId,
       'fields.listing': ['metadata'],
@@ -482,6 +468,25 @@ const createBookingPayment = async transaction => {
       bookingNumber = Math.floor(Math.random() * 100000000);
     }
 
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
+      currency: 'usd',
+      payment_method_types: ['card', 'us_bank_account'],
+      transfer_data: {
+        destination: stripeAccountId,
+      },
+      application_fee_amount: parseInt(Math.round(formattedBookingFee + formattedProcessingFee)),
+      customer: stripeCustomerId,
+      receipt_email: clientEmail,
+      description: 'Carevine Booking',
+      metadata: { userId, txId },
+    });
+
     const paymentIntentId = paymentIntent.id;
 
     await integrationSdk.transactions.updateMetadata({
@@ -493,10 +498,6 @@ const createBookingPayment = async transaction => {
     });
 
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
   } catch (e) {
     try {
       await integrationSdk.transactions.transition({
