@@ -76,7 +76,7 @@ const EmployerBookingCard = props => {
   const { provider } = booking;
 
   const bookingMetadata = booking.attributes.metadata;
-  const { bookingRate, lineItems, paymentMethodType } = bookingMetadata;
+  const { bookingRate, lineItems, paymentMethodType, bookingNumber } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -150,6 +150,7 @@ const EmployerBookingCard = props => {
 
   return (
     <div className={css.bookingCard}>
+      {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
         <div className={css.bookingTitle}>
           <Avatar user={provider} listing={listing} className={css.avatar} />

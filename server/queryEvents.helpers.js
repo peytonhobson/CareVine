@@ -468,16 +468,35 @@ const createBookingPayment = async transaction => {
       metadata: { userId, txId },
     });
 
+    const fullListingResponse = await integrationSdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
     const paymentIntentId = paymentIntent.id;
 
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
         paymentIntentId,
+        bookingNumber,
       },
     });
 
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
   } catch (e) {
     try {
       await integrationSdk.transactions.transition({
