@@ -14,6 +14,7 @@ import {
   createCreditCard,
   fetchDefaultPayment,
 } from '../../ducks/paymentMethods.duck';
+import { stripeCustomer } from '../../ducks/stripe.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 import {
   SavedCardDetails,
@@ -62,6 +63,7 @@ const BookingPaymentComponent = props => {
     rootClassName,
     className,
     removeDisabled,
+    onFetchStripeCustomer,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -120,6 +122,13 @@ const BookingPaymentComponent = props => {
     onCreateCreditCard(stripeCustomerId, stripe, billingDetails, card)
       .then(() => {
         // Update default payment methods
+
+        if (!stripeCustomerId) {
+          return onFetchStripeCustomer();
+        }
+        return;
+      })
+      .then(() => {
         onFetchDefaultPayment(stripeCustomerId);
         setIsSubmitting(false);
       })
@@ -180,7 +189,7 @@ const BookingPaymentComponent = props => {
     case BANK_ACCOUNT:
       tabContentPanel = (
         <>
-          {bankAccounts && defaultPaymentFetched && !useDifferentMethod ? (
+          {bankAccounts?.length > 0 && defaultPaymentFetched && !useDifferentMethod ? (
             <>
               <SavedPaymentDetails
                 rootClassName={css.defaultMethod}
@@ -358,6 +367,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(createBankAccount(stripeCustomerId, stripe, currentUser)),
   onCreateCreditCard: (stripeCustomerId, stripe, billingDetails, card) =>
     dispatch(createCreditCard(stripeCustomerId, stripe, billingDetails, card)),
+  onFetchStripeCustomer: () => dispatch(stripeCustomer()),
 });
 
 const PaymentMethods = compose(
