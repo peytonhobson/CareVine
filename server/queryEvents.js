@@ -268,9 +268,8 @@ module.exports = queryEvents = () => {
 
     if (eventType === 'transaction/transitioned') {
       const transaction = event.attributes.resource;
-      const lastTransition = transaction.attributes.lastTransition;
 
-      if (lastTransition === 'transition/accept') {
+      if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
       }
 

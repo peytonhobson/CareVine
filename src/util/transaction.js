@@ -24,11 +24,26 @@ export const TRANSITION_DECLINE_BOOKING = 'transition/decline';
 export const TRANSITION_EXPIRE_BOOKING = 'transition/expire';
 export const TRANSITION_ACCEPT_BOOKING = 'transition/accept';
 export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-request';
-export const TRANSITION_CANCEL_BOOKING_CUSTOMER = 'transition/cancel-booking-customer';
-export const TRANSITION_CANCEL_BOOKING_PROVIDER = 'transition/cancel-booking-provider';
-export const TRANSITION_CANCEL_BOOKING_OPERATOR = 'transition/cancel-booking-operator';
-export const TRANSITION_CANCEL_ACTIVE_PROVIDER = 'transition/cancel-active-provider';
-export const TRANSITION_CANCEL_ACTIVE_CUSTOMER = 'transition/cancel-active-customer';
+export const TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER =
+  'transition/cancel-accepted-booking-customer';
+export const TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER =
+  'transition/cancel-accepted-booking-provider';
+export const TRANSITION_CANCEL_ACCEPTED_BOOKING_OPERATOR =
+  'transition/cancel-accepted-booking-operator';
+export const TRANSITION_CHARGE = 'transition/charge';
+export const TRANSITION_CANCEL_CHARGED_BOOKING_CUSTOMER =
+  'transition/cancel-charged-booking-customer';
+export const TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER =
+  'transition/cancel-charged-booking-provider';
+export const TRANSITION_CANCEL_CHARGED_BOOKING_OPERATOR =
+  'transition/cancel-charged-booking-operator';
+export const TRANSITION_START = 'transition/start';
+export const TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER =
+  'transition/cancel-active-booking-customer';
+export const TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER =
+  'transition/cancel-active-booking-provider';
+export const TRANSITION_CANCEL_ACTIVE_BOOKING_OPERATOR =
+  'transition/cancel-active-booking-operator';
 export const TRANSITION_COMPLETE_CANCELED = 'transition/complete-canceled';
 export const TRANSITION_COMPLETE = 'transition/complete';
 export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
@@ -63,6 +78,8 @@ export const STATE_BOOKING_REQUESTED = 'booking-requested';
 export const STATE_ACCEPTED = 'accepted';
 export const STATE_DECLINED = 'declined';
 export const STATE_CANCELED = 'canceled';
+export const STATE_CHARGED = 'charged';
+export const STATE_ACTIVE = 'active';
 export const STATE_DELIVERED = 'delivered';
 export const STATE_PAID_OUT = 'paid-out';
 export const STATE_DISPUTE_REVIEW = 'dispute-review';
@@ -131,13 +148,27 @@ const stateDescription = {
     },
     [STATE_ACCEPTED]: {
       on: {
-        [TRANSITION_COMPLETE]: STATE_DELIVERED,
-        [TRANSITION_CANCEL_BOOKING_CUSTOMER]: STATE_CANCELED,
-        [TRANSITION_CANCEL_BOOKING_PROVIDER]: STATE_CANCELED,
-        [TRANSITION_CANCEL_BOOKING_OPERATOR]: STATE_CANCELED,
-        [TRANSITION_CANCEL_ACTIVE_PROVIDER]: STATE_ACTIVE_CANCELED,
-        [TRANSITION_CANCEL_ACTIVE_CUSTOMER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_ACCEPTED_BOOKING_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_CHARGE]: STATE_CHARGED,
         [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
+      },
+    },
+    [STATE_CHARGED]: {
+      on: {
+        [TRANSITION_CANCEL_CHARGED_BOOKING_CUSTOMER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER]: STATE_CANCELED,
+        [TRANSITION_CANCEL_CHARGED_BOOKING_OPERATOR]: STATE_CANCELED,
+        [TRANSITION_START]: STATE_ACTIVE,
+      },
+    },
+    [STATE_ACTIVE]: {
+      on: {
+        [TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_CANCEL_ACTIVE_BOOKING_OPERATOR]: STATE_ACTIVE_CANCELED,
+        [TRANSITION_COMPLETE]: STATE_DELIVERED,
       },
     },
     [STATE_CANCELED]: {

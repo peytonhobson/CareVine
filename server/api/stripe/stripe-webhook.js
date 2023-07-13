@@ -297,8 +297,6 @@ const sendChargeFailedEmail = data => {
 const transitionTransactionToPaymentFailed = async data => {
   const txId = data?.metadata?.txId;
 
-  console.log('metadata', data?.metadata);
-
   if (!txId) return;
 
   try {
