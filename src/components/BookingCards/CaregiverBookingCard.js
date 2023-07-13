@@ -15,6 +15,8 @@ import {
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_CHARGE,
+  TRANSITION_START,
 } from '../../util/transaction';
 import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -115,7 +117,10 @@ const CaregiverBookingCard = props => {
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
   const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const isAccepted = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const isCharged = booking?.attributes.lastTransition === TRANSITION_CHARGE;
+  const isActive = booking?.attributes.lastTransition === TRANSITION_START;
+  const showCancel = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
       bookedDates?.some(date =>
@@ -162,7 +167,7 @@ const CaregiverBookingCard = props => {
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
-          {isActive && (
+          {showCancel && (
             <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
               Cancel
             </CancelButton>
