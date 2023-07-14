@@ -38,10 +38,11 @@ const isDev = process.env.REACT_APP_ENV === 'development';
 
 const useStyles = makeStyles(theme => ({
   cityCard: {
-    transition: 'all 0.2s ease-in 0s',
+    transition: 'all 0.2s ease-in 0s !important',
     '&:hover': {
       transform: 'scale(1.05)',
     },
+    borderRadius: 'var(--borderRadius) !important',
     [theme.breakpoints.down('sm')]: {
       width: '100%',
       marginBottom: '2rem',

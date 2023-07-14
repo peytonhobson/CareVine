@@ -211,7 +211,7 @@
 }
 
 .content {
-  padding: 1.5rem;
+  padding: 6rem 0;
   max-width: 75rem;
   margin: auto;
 }
@@ -220,12 +220,12 @@
   padding: 4rem 0 2rem 0;
 
   @media (--viewportMedium) {
-    padding: 6rem 0 3rem 0;
+    padding: 0 0 3rem 0;
   }
 }
 
 .caregiverSection {
-  padding: 3rem 0 6rem 0;
+  padding: 3rem 0 3rem 0;
 }
 
 .employerSectionContent {
@@ -247,7 +247,7 @@
 
 .employerSectionCard {
   background-color: rgb(235, 235, 235);
-  border-radius: 0.675rem;
+  border-radius: var(--borderRadius);
   padding: 3rem;
 
   @media (--viewportMedium) {
@@ -269,7 +269,7 @@
 .employerSectionImage {
   width: 100%;
   aspect-ratio: 1/1 !important;
-  border-radius: 0.675rem;
+  border-radius: var(--borderRadius);
 }
 
 .employerSectionTitle {
@@ -309,7 +309,7 @@
 }
 
 .citySection {
-  padding: 3rem 0;
+  padding: 0 0 3rem 0;
 }
 
 .citySectionContent {
@@ -336,4 +336,15 @@
 .forCaregivers {
   margin: 0;
   font-weight: normal;
+}
+
+.link {
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.blogTitle {
+  font-weight: var(--fontWeightMedium);
+  font-family: var(--fontFamily);
 }
