@@ -17,6 +17,7 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_CHARGE,
   TRANSITION_START,
+  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -72,6 +73,7 @@ const CaregiverBookingCard = props => {
 
   const { customer } = booking;
 
+  const lastTransition = booking.attributes.lastTransition;
   const bookingMetadata = booking.attributes.metadata;
   const {
     bookingRate,
@@ -115,11 +117,12 @@ const CaregiverBookingCard = props => {
     ?.filter(l => l.code === 'refund')
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
-  const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
-  const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isAccepted = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
-  const isCharged = booking?.attributes.lastTransition === TRANSITION_CHARGE;
-  const isActive = booking?.attributes.lastTransition === TRANSITION_START;
+  const disputeInReview = lastTransition === TRANSITION_DISPUTE;
+  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const isCharged = lastTransition === TRANSITION_CHARGE;
+  const isActive =
+    lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
   const showCancel = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
