@@ -41,8 +41,13 @@
           class="body1"
           style="padding: 32px 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
-          Your booking with {{transaction.provider.display-name}} has been canceled. You will be
+          Your booking with {{transaction.provider.display-name}} has been canceled.
+          {{#if transaction.metadata.refundAmount}}
+          You will be
           refunded ${{transaction.metadata.refundAmount}} for the remaining time.
+          {{else}}
+          Your payment method was not charged.
+          {{/if}}
         </p>
         <p
           class="body2"
