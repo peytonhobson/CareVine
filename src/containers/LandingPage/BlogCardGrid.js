@@ -44,6 +44,7 @@ const BLOG = `
     }) {
       data {
         attributes {
+          slug
           title
           hero {
             data {
@@ -94,15 +95,16 @@ const CardGrid = props => {
           <IconSpinner className={css.spinner} />
         </Box>
       ) : data ? (
-        <Grid container spacing={3}>
+        <Grid container spacing={10}>
           {data?.blogs?.data.map(blog => {
             const blogCardProps = {
               hero: blog.attributes.hero?.data?.attributes?.url,
               title: blog.attributes.title,
+              slug: blog.attributes.slug,
             };
 
             return (
-              <Grid item xs={12} sm={6} md={4} key={1}>
+              <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
                 <BlogCard {...blogCardProps} />
               </Grid>
             );
