@@ -56,7 +56,7 @@ const SectionHero = props => {
       image.onload = () => {
         heroRef.current.style.background = `url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        heroRef.current.style.backgroundPosition = '50%';
+        heroRef.current.style.backgroundPosition = 'center';
         heroRef.current.style.backgroundSize = 'cover';
         setHeroLoaded(true);
       };
@@ -155,16 +155,27 @@ const SectionHero = props => {
           </div>
         ) : (
           <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>
-              <span style={{ whiteSpace: 'nowrap' }}>No Agency.</span>{' '}
-              <span style={{ whiteSpace: 'nowrap' }}>No Problem.</span>
-            </h1>
+            <h1 className={css.yourCare}>Find Your Caregiver</h1>
             <h2 className={css.perfectCaregiver}>
               <div className={css.subPerfectCaregiver}>
                 Private, independent, and experienced caregivers without the agency fees.{' '}
               </div>
               <div className={css.subPerfectCaregiver}>Find yours.</div>
             </h2>
+            <div className={css.stepContainer}>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>1</h2>
+                <h2>Create your profile</h2>
+              </div>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>2</h2>
+                <h2>Find your caregiver</h2>
+              </div>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>3</h2>
+                <h2>Book them on CareVine</h2>
+              </div>
+            </div>
             <HeroSearchForm
               className={css.heroSearchForm}
               onSubmit={handleSearchSubmit}

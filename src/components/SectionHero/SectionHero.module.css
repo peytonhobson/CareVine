@@ -225,9 +225,23 @@
   padding: 0 0 5rem 0;
 
   @media (--viewportMedium) {
-    margin: auto;
+    margin-left: auto;
     position: static;
     padding: 0;
+    padding-right: 5rem;
+    max-width: 55rem;
+  }
+
+  @media (--viewportLarge) {
+    max-width: 50rem;
+    padding: 0;
+    padding-right: 3rem;
+  }
+
+  @media (--viewportXLarge) {
+    max-width: 55rem;
+    padding: 0;
+    padding-right: 5rem;
   }
 }
 
@@ -273,4 +287,32 @@
 .heroSearchForm {
   composes: animation;
   composes: heroButtonFEDelay;
+}
+
+.stepContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 100%;
+  justify-items: center;
+  margin-top: 3rem;
+  gap: 3rem;
+}
+
+.stepIcon {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+  width: 3rem;
+  min-width: 3rem;
+  background-color: var(--marketplaceColor);
+  border-radius: 100%;
+  margin-right: 1rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
