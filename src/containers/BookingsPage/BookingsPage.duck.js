@@ -435,7 +435,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       });
     }
 
-    if ((bookingState !== 'requested' || bookingState !== 'accepted') && !paymentIntentId) {
+    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
       throw new Error('Missing payment intent id');
     }
 

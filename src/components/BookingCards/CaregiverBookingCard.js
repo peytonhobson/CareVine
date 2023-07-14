@@ -279,7 +279,7 @@ const CaregiverBookingCard = props => {
         <p className={css.modalTitle}>Cancel Booking with {customerDisplayName}</p>
         {cancelBookingError ? (
           <p className={css.modalError}>
-            There was an error canceling your booking. Please try again.
+            There was an error cancelling your booking. Please try again.
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>
