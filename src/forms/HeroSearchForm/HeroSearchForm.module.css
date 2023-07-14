@@ -14,7 +14,7 @@
 .desktopInputRoot {
   height: var(--topbarHeightDesktop);
   background-color: var(--matterColorLight);
-  width: 40rem;
+  width: 100%;
   margin: 2rem auto 0;
   display: flex;
   position: relative;

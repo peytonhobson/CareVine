@@ -65,6 +65,7 @@
   position: absolute;
   bottom: 0;
   top: 35%;
+  z-index: 1;
 
   @media (--viewportMedium) {
     top: 25%;
@@ -186,14 +187,12 @@
 }
 
 .learnMoreButtonContainer {
-  position: absolute;
   bottom: 0;
-
   display: flex;
   width: 100%;
   justify-content: center;
   margin-bottom: 0.5rem;
-  visibility: hidden;
+  position: absolute;
 }
 
 .learnMoreButton {
@@ -220,27 +219,27 @@
   align-items: center;
   color: var(--matterColorBright);
   position: absolute;
-  top: 25%;
+  top: 18%;
   width: 90%;
   padding: 0 0 5rem 0;
+  z-index: 1;
 
   @media (--viewportMedium) {
     margin-left: auto;
+    margin-block: auto;
     position: static;
-    padding: 0;
+    padding: 0 0 5rem 0;
     padding-right: 5rem;
     max-width: 55rem;
   }
 
   @media (--viewportLarge) {
     max-width: 50vw;
-    padding: 0;
     padding-right: 5vw;
   }
 
   @media (--viewportXLarge) {
     max-width: 55rem;
-    padding: 0;
     padding-right: 10rem;
   }
 }
@@ -255,7 +254,7 @@
 
   @media (--viewportMedium) {
     font-size: 3.5rem;
-    line-height: 3.75rem;
+    line-height: 4rem;
   }
   text-align: center;
 }
@@ -287,15 +286,22 @@
 .heroSearchForm {
   composes: animation;
   composes: heroButtonFEDelay;
+  width: 100%;
 }
 
 .stepContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: 100%;
-  justify-items: center;
-  margin-top: 3rem;
-  gap: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    justify-items: center;
+    margin-top: 1rem;
+    gap: 2em;
+  }
 }
 
 .stepIcon {
