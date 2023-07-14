@@ -33,8 +33,7 @@
   {:name :transition/accept,
    :actor :actor.role/provider,
    :actions
-   [{:name :action/update-booking :config {:type :time}},
-   {:name :action/accept-booking}],
+   [{:name :action/accept-booking}],
    :from :state/booking-requested,
    :to :state/accepted}
 
@@ -92,6 +91,13 @@
    :at
    {:fn/timepoint [:time/booking-start]}
    :from :state/charged,
+   :to :state/active}
+
+    {:name :transition/start-update-times,
+    :actor :actor.role/operator,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}]
+   :from :state/active,
    :to :state/active}
 
    {:name :transition/cancel-pay-caregiver,

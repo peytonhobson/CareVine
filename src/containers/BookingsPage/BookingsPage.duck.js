@@ -21,6 +21,7 @@ import {
   TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER,
   TRANSITION_START,
   TRANSITION_CHARGE,
+  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -32,13 +33,12 @@ import {
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
-import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
 
 const upcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE];
 
-const activeBookingTransitions = [TRANSITION_START];
+const activeBookingTransitions = [TRANSITION_START, TRANSITION_START_UPDATE_TIMES];
 
 const pastBookingTransitions = [
   TRANSITION_COMPLETE,
@@ -341,6 +341,7 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
         TRANSITION_REQUEST_BOOKING,
         TRANSITION_CHARGE,
         TRANSITION_START,
+        TRANSITION_START_UPDATE_TIMES,
         TRANSITION_COMPLETE,
         TRANSITION_COMPLETE_CANCELED,
         TRANSITION_DISPUTE,
@@ -396,6 +397,9 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       bookingState = 'charged';
       break;
     case TRANSITION_START:
+      bookingState = 'active';
+      break;
+    case TRANSITION_START_UPDATE_TIMES:
       bookingState = 'active';
       break;
     case TRANSITION_REQUEST_BOOKING:
@@ -533,10 +537,6 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
     await sdk.transactions.transition({
       id: txId,
       transition: TRANSITION_ACCEPT_BOOKING,
-      params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
-      },
     });
 
     const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];

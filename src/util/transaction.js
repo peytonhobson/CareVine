@@ -38,6 +38,7 @@ export const TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER =
 export const TRANSITION_CANCEL_CHARGED_BOOKING_OPERATOR =
   'transition/cancel-charged-booking-operator';
 export const TRANSITION_START = 'transition/start';
+export const TRANSITION_START_UPDATE_TIMES = 'transition/start-update-times';
 export const TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER =
   'transition/cancel-active-booking-customer';
 export const TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER =
