@@ -78,6 +78,7 @@ const EmployerBookingCard = props => {
   const { provider } = booking;
 
   const bookingMetadata = booking.attributes.metadata;
+  const lastTransition = booking.attributes.lastTransition;
   const { bookingRate, lineItems, paymentMethodType, bookingNumber } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
@@ -85,7 +86,8 @@ const EmployerBookingCard = props => {
   };
 
   const handleCancelBooking = () => {
-    const refundAmount = calculateRefundAmount(lineItems);
+    const refundAmount =
+      lastTransition === TRANSITION_ACCEPT_BOOKING ? 0 : calculateRefundAmount(lineItems);
     onCancelBooking(booking, refundAmount);
   };
 
@@ -284,7 +286,7 @@ const EmployerBookingCard = props => {
         containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
-        {!isRequest ? (
+        {!isRequest && !isAccepted ? (
           <>
             <p className={css.modalMessageRefund}>
               You will be refunded for any days that are canceled as follows:
@@ -304,7 +306,7 @@ const EmployerBookingCard = props => {
         ) : null}
         {cancelBookingError ? (
           <p className={css.modalError}>
-            There was an error canceling your booking. Please try again.
+            There was an error cancelling your booking. Please try again.
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>
