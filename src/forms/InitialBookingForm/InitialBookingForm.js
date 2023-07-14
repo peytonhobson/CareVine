@@ -71,7 +71,9 @@ const InitialBookingFormComponent = props => (
               />
             </div>
             <FieldDatePicker bookedDates={bookedDates} name="bookingDates" id="bookingDates">
-              <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+              <p className={css.bookingTimeText}>
+                Caregivers can only be booked within a two-week period
+              </p>
             </FieldDatePicker>
           </div>
 

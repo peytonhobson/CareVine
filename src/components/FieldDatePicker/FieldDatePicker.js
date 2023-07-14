@@ -116,6 +116,7 @@ export const FieldDatePickerComponent = props => {
 
   return (
     <div className={classes}>
+      {children}
       <Calendar
         formatDay={(locale, date) =>
           formatDay(locale, date, selectedDays, bookedDates, handleSelectDay, bufferDays)
@@ -126,7 +127,6 @@ export const FieldDatePickerComponent = props => {
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates
       </InlineTextButton>
-      {children}
     </div>
   );
 };

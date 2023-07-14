@@ -68,7 +68,8 @@
 .bookingTimeText {
   composes: marketplaceTinyFontStyles from global;
   font-weight: var(--fontWeightSemiBold);
-  margin-top: 0;
+  margin-bottom: 0;
   width: 100%;
   text-align: center;
+  color: var(--failColor);
 }
