@@ -65,32 +65,6 @@ const cancelBookingTransitions = {
   },
 };
 
-// TODO: Check if this is correct. It may be end of array instead of start of array.
-const isActive = booking => {
-  const { lineItems } = booking.attributes.metadata;
-
-  if (!lineItems || lineItems.length === 0) return false;
-
-  const sortedLineItemsByDate = lineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
-  const startTimeAsDate = addTimeToStartOfDay(
-    sortedLineItemsByDate[0].date,
-    sortedLineItemsByDate[0].startTime
-  );
-  const endTimeAsDate = addTimeToStartOfDay(
-    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].date,
-    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].endTime
-  );
-  return startTimeAsDate < new Date() && endTimeAsDate > new Date();
-};
-
-const filterActiveOrUpcomingBookings = bookings => {
-  console.log(bookings);
-  const active = bookings.filter(booking => isActive(booking));
-  const upcoming = bookings.filter(b => !active.find(ab => ab.id.uuid === b.id.uuid));
-
-  return { active, upcoming };
-};
-
 const mapLineItemsForCancellationCustomer = lineItems => {
   // Half the amount of the line item if it is within 72 hours of the start time.
   // Remove line items that are more than 72 hours away.
@@ -461,7 +435,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       });
     }
 
-    if (bookingState !== 'requested' && !paymentIntentId) {
+    if ((bookingState !== 'requested' || bookingState !== 'accepted') && !paymentIntentId) {
       throw new Error('Missing payment intent id');
     }
 

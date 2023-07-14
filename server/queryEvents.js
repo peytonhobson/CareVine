@@ -26,6 +26,7 @@ module.exports = queryEvents = () => {
     closeListingNotification,
     createBookingPayment,
     createCaregiverPayout,
+    generateBookingNumber,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -269,6 +270,10 @@ module.exports = queryEvents = () => {
     if (eventType === 'transaction/transitioned') {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
+
+      if (lastTransition === 'transition/accept') {
+        generateBookingNumber(transaction);
+      }
 
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);

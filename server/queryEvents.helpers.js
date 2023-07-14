@@ -454,25 +454,6 @@ const createBookingPayment = async transaction => {
   const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
   try {
-    const fullListingResponse = await integrationSdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
       currency: 'usd',
@@ -493,7 +474,6 @@ const createBookingPayment = async transaction => {
       id: txId,
       metadata: {
         paymentIntentId,
-        bookingNumber,
       },
     });
 
@@ -532,8 +512,6 @@ const createCaregiverPayout = async transaction => {
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
-  console.log('amount ', amount);
-
   if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
@@ -542,8 +520,6 @@ const createCaregiverPayout = async transaction => {
     });
 
     const availableBalance = balance.available?.[0]?.amount;
-
-    console.log('availableBalance ', availableBalance);
 
     if (availableBalance > amount) {
       await stripe.payouts.create(
@@ -581,6 +557,42 @@ const createCaregiverPayout = async transaction => {
   }
 };
 
+const generateBookingNumber = async transaction => {
+  const txId = transaction.id.uuid;
+  const { listing } = transaction.relationships;
+  const listingId = listing.data.id?.uuid;
+
+  try {
+    const fullListingResponse = await integrationSdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        bookingNumber,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -596,4 +608,5 @@ module.exports = {
   closeListingNotification,
   createBookingPayment,
   createCaregiverPayout,
+  generateBookingNumber,
 };
