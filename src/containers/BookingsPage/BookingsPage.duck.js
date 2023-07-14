@@ -435,7 +435,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount: parseFloat(refundAmount / 100 + applicationFeeRefund).toFixed(2),
+          refundAmount: parseFloat((refundAmount + applicationFeeRefund) / 100).toFixed(2),
           payout,
         },
       });
