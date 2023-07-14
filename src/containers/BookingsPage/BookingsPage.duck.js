@@ -415,7 +415,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   let bookingState = null;
 
   switch (lastTransition) {
-    case TRANSITION_ACCEPT:
+    case TRANSITION_ACCEPT_BOOKING:
       bookingState = 'accepted';
       break;
     case TRANSITION_CHARGE:
