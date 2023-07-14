@@ -233,15 +233,15 @@
   }
 
   @media (--viewportLarge) {
-    max-width: 50rem;
+    max-width: 50vw;
     padding: 0;
-    padding-right: 3rem;
+    padding-right: 5vw;
   }
 
   @media (--viewportXLarge) {
     max-width: 55rem;
     padding: 0;
-    padding-right: 5rem;
+    padding-right: 10rem;
   }
 }
 
