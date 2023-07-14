@@ -300,11 +300,24 @@ const transitionTransactionToPaymentFailed = async data => {
   if (!txId) return;
 
   try {
+    const transactionResponse = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['listing'],
+    });
+    const transaction = transactionResponse?.data?.data;
+
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/decline-payment',
       params: {},
     });
+
+    const { bookedDates = [], lineItems = [] } = transaction.listing.attributes.metadata;
+    const bookingDates = lineItems.map(lineItem => lineItem.date);
+    const newBookedDates = bookedDates.filter(
+      date => !bookingDates.includes(date) || new Date(date) < new Date()
+    );
+    await integrationSdk.listings.update({ listingId, metadata: { bookedDates: newBookedDates } });
   } catch (e) {
     log.error(e, 'transition-transaction-to-payment-failed-failed');
   }
