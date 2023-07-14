@@ -415,12 +415,14 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
 
   try {
     if (paymentIntentId && refundAmount > 0) {
+      const applicationFeeRefund = parseInt(
+        (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
+      );
+
       await stripeCreateRefund({
         paymentIntentId,
         amount: refundAmount,
-        applicationFeeRefund: parseInt(
-          (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
-        ),
+        applicationFeeRefund,
       });
 
       const newLineItems = isCaregiver
@@ -433,7 +435,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
+          refundAmount: parseFloat(refundAmount / 100 + applicationFeeRefund).toFixed(2),
           payout,
         },
       });
