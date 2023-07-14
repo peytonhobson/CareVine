@@ -151,7 +151,7 @@ const CaregiverBookingCard = props => {
 
   return (
     <div className={css.bookingCard}>
-      {bookingNumber ? <h2>Booking #{bookingNumber}</h2> : null}
+      {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
         <div className={css.bookingTitle}>
           <Avatar user={customer} className={css.avatar} />
