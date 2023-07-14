@@ -303,7 +303,11 @@ const EmployerBookingCard = props => {
               <RefundBookingSummaryCard className={css.refundSummaryCard} lineItems={lineItems} />
             </div>
           </>
-        ) : null}
+        ) : (
+          <p className={css.modalMessage}>
+            You have not been charged for this booking and will therefore not receive a refund.
+          </p>
+        )}
         {cancelBookingError ? (
           <p className={css.modalError}>
             There was an error cancelling your booking. Please try again.
