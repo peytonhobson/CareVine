@@ -159,7 +159,7 @@ export const CaregiverListingCardComponent = props => {
     marginBottom: '3rem',
     marginInline: isMobile ? 0 : '1.5rem',
     '&.MuiPaper-rounded': {
-      borderRadius: '3rem',
+      borderRadius: 'var(--borderRadius)',
     },
   }));
 

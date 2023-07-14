@@ -8,6 +8,7 @@
   flex-wrap: wrap;
   padding: 1rem;
   max-width: calc(100vw - 2rem);
+  border-radius: var(--borderRadius);
 }
 
 .avatar {
