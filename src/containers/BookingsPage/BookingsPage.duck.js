@@ -436,7 +436,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const transition = cancelBookingTransitions[userType][bookingState];
 
   try {
-    if (bookingState === 'accepted' && paymentIntentId && refundAmount > 0) {
+    if (paymentIntentId && refundAmount > 0) {
       await stripeCreateRefund({
         paymentIntentId,
         amount: refundAmount,
@@ -461,7 +461,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       });
     }
 
-    if (bookingState === 'accepted' && !paymentIntentId) {
+    if (bookingState !== 'requested' && !paymentIntentId) {
       throw new Error('Missing payment intent id');
     }
 
@@ -488,7 +488,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     });
 
     // Update listing metadata to remove cancelled booking dates
-    if (bookingState === 'accepted') {
+    if (bookingState !== 'requested') {
       try {
         const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
         const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
