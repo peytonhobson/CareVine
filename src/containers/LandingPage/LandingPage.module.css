@@ -22,7 +22,6 @@
 .hero {
   flex-grow: 1;
   justify-content: flex-end;
-  padding-bottom: 5rem;
 
   @media (--viewportLarge) {
     justify-content: center;

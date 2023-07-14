@@ -66,6 +66,7 @@ const SectionHero = props => {
   }, [heroRef?.current]);
 
   const handleSearchSubmit = values => {
+    console.log('values', values);
     const valOrigin = values.location.selectedPlace.origin;
     // Need to parse float twice to ensure no trailing zeros
     // If there are trailing zeros then urlHelpers parse will return null
@@ -155,25 +156,32 @@ const SectionHero = props => {
           </div>
         ) : (
           <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>Find Your Caregiver</h1>
-            <h2 className={css.perfectCaregiver}>
+            <h1 className={css.yourCare}>
+              Your marketplace.<br></br> Your caregiver.
+            </h1>
+            {/* <h2 className={css.perfectCaregiver}>
               <div className={css.subPerfectCaregiver}>
                 Private, independent, and experienced caregivers without the agency fees.{' '}
               </div>
-              <div className={css.subPerfectCaregiver}>Find yours.</div>
-            </h2>
+            </h2> */}
             <div className={css.stepContainer}>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>1</h2>
-                <h2>Create your profile</h2>
+                <h2>
+                  Create your<br></br> profile
+                </h2>
               </div>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>2</h2>
-                <h2>Find your caregiver</h2>
+                <h2>
+                  Find your<br></br> caregiver
+                </h2>
               </div>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>3</h2>
-                <h2>Book them on CareVine</h2>
+                <h2>
+                  Book them <br></br>on CareVine
+                </h2>
               </div>
             </div>
             <HeroSearchForm
@@ -185,11 +193,13 @@ const SectionHero = props => {
         )
       ) : null}
 
-      {!isMobile && showLearnMore && (
+      {!isMobile && (
         <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
-          <InlineTextButton className={css.learnMoreButton}>
-            Learn More <IconArrowHead direction="down" className={css.arrowHead} />
-          </InlineTextButton>
+          {showLearnMore && (
+            <InlineTextButton className={css.learnMoreButton}>
+              Learn More <IconArrowHead direction="down" className={css.arrowHead} />
+            </InlineTextButton>
+          )}
         </div>
       )}
     </div>
