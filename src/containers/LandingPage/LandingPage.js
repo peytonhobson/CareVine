@@ -243,8 +243,8 @@ export const LandingPageComponent = props => {
               </div>
             </section>
 
-            <section>
-              <h1>Recent Blog Posts</h1>
+            <section style={{ backgroundColor: 'var(--marketplaceColor)' }}>
+              <h1 style={{ paddingLeft: isMobile && '4rem' }}>Recent Blog Posts</h1>
               {!isSsr && <BlogCardGrid />}
             </section>
           </div>
