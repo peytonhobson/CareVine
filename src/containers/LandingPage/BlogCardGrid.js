@@ -62,7 +62,6 @@ const BLOG = `
 
 const CardGrid = props => {
   const classes = useStyles();
-  const [page, setPage] = useState(1);
 
   const containerRef = useRef(null);
   const isMobile = useCheckMobileScreen();
@@ -79,14 +78,9 @@ const CardGrid = props => {
 
   const { loading, error, data } = useQuery(BLOG, {
     variables: {
-      limit: 3,
+      limit: 5,
     },
   });
-
-  console.log(error);
-  console.log(data);
-
-  const pageCount = data?.blogs?.meta?.pagination.pageCount;
 
   return (
     <Container maxWidth="lg" className={classes.blogsContainer} ref={containerRef}>
@@ -95,21 +89,35 @@ const CardGrid = props => {
           <IconSpinner className={css.spinner} />
         </Box>
       ) : data ? (
-        <Grid container spacing={10}>
-          {data?.blogs?.data.map(blog => {
-            const blogCardProps = {
-              hero: blog.attributes.hero?.data?.attributes?.url,
-              title: blog.attributes.title,
-              slug: blog.attributes.slug,
-            };
+        !isMobile ? (
+          <Grid container spacing={10}>
+            {data?.blogs?.data.map(blog => {
+              const blogCardProps = {
+                hero: blog.attributes.hero?.data?.attributes?.url,
+                title: blog.attributes.title,
+                slug: blog.attributes.slug,
+              };
 
-            return (
-              <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
-                <BlogCard {...blogCardProps} />
-              </Grid>
-            );
-          })}
-        </Grid>
+              return (
+                <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
+                  <BlogCard {...blogCardProps} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <div className={css.mobileBlogCardContainer}>
+            {data?.blogs?.data.map(blog => {
+              const blogCardProps = {
+                hero: blog.attributes.hero?.data?.attributes?.url,
+                title: blog.attributes.title,
+                slug: blog.attributes.slug,
+              };
+
+              return <BlogCard {...blogCardProps} />;
+            })}
+          </div>
+        )
       ) : error ? (
         <p className={css.error}>Error loading blogs</p>
       ) : null}
