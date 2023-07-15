@@ -6,13 +6,13 @@ import css from './Track.module.css';
 
 class Track extends Component {
   render() {
-    const { rootClassName, className, children, handles, valueToPosition } = this.props;
+    const { rootClassName, className, children, handles, valueToPosition, trackClass } = this.props;
     const positionFromIndex = index => valueToPosition(handles[index]);
 
     const classes = classNames(rootClassName || css.root, className);
     return (
       <div className={classes}>
-        <div className={css.track} />
+        <div className={classNames(css.track, trackClass)} />
 
         {handles.reduce((ranges, h, index) => {
           return index < handles.length - 1

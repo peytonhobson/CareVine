@@ -119,6 +119,7 @@ export class SearchPageComponent extends Component {
       searchParams,
       params,
       sortConfig,
+      reviews,
     } = this.props;
     // eslint-disable-next-line no-unused-vars
     const { mapSearch, page, ...searchInURL } = parse(location.search, {
@@ -127,7 +128,6 @@ export class SearchPageComponent extends Component {
     });
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const userType = ensuredCurrentUser.attributes.profile.metadata.userType;
 
     // urlQueryParams doesn't contain page specific url params
     // like mapSearch, page or origin (origin depends on config.sortSearchByDistance)
@@ -136,8 +136,6 @@ export class SearchPageComponent extends Component {
     const searchParamsAreInSync = true;
 
     const validQueryParams = validURLParamsForExtendedData(searchInURL, filterConfig);
-
-    const isWindowDefined = typeof window !== 'undefined';
 
     const onMapIconClick = () => {
       this.useLocationSearchBounds = true;
@@ -189,6 +187,7 @@ export class SearchPageComponent extends Component {
             searchParamsForPagination={parse(location.search)}
             showAsModalMaxWidth={MODAL_BREAKPOINT}
             urlQueryParams={validQueryParams}
+            reviews={reviews}
           />
         </div>
       </Page>
@@ -249,6 +248,7 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     searchListingsSuccess,
+    reviews,
   } = state.SearchPage;
   const currentUser = state.user.currentUser;
   const currentUserListing = state.user.currentUserListing;
@@ -304,6 +304,7 @@ const mapStateToProps = state => {
     fetchChannelInProgress,
     fetchChannelError,
     searchListingsSuccess,
+    reviews,
   };
 };
 

@@ -7,6 +7,8 @@ const { v4: uuidv4 } = require('uuid');
 const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const moment = require('moment');
 
 const createSlug = str => {
   let text = str
@@ -432,6 +434,223 @@ const sendQuizFailedEmail = async userId => {
   }
 };
 
+const createBookingPayment = async transaction => {
+  const {
+    lineItems,
+    paymentMethodId,
+    bookingFee,
+    processingFee,
+    stripeCustomerId,
+    clientEmail,
+    stripeAccountId,
+  } = transaction.attributes.metadata;
+
+  const { customer, listing } = transaction.relationships;
+  const txId = transaction.id.uuid;
+  const userId = customer.data.id?.uuid;
+  const listingId = listing.data.id?.uuid;
+
+  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+  const formattedBookingFee = parseInt(Math.round(bookingFee * 100));
+  const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
+      currency: 'usd',
+      payment_method_types: ['card', 'us_bank_account'],
+      transfer_data: {
+        destination: stripeAccountId,
+      },
+      application_fee_amount: parseInt(Math.round(formattedBookingFee + formattedProcessingFee)),
+      customer: stripeCustomerId,
+      receipt_email: clientEmail,
+      description: 'Carevine Booking',
+      metadata: { userId, txId },
+    });
+
+    const paymentIntentId = paymentIntent.id;
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        paymentIntentId,
+      },
+    });
+
+    await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+  } catch (e) {
+    try {
+      await integrationSdk.transactions.transition({
+        id: transaction.id.uuid,
+        transition: 'transition/decline-payment',
+        params: {},
+      });
+
+      const fullListingResponse = await integrationSdk.listings.show({ id: listingId });
+      const fullListing = fullListingResponse.data.data;
+      const bookedDates = fullListing.attributes.metadata.bookedDates;
+      const bookingDates = lineItems.map(l => l.date);
+
+      const newBookedDates = bookedDates.filter(b => !bookingDates.includes(b));
+
+      await integrationSdk.listings.update({
+        id: listingId,
+        metadata: {
+          bookedDates: newBookedDates,
+        },
+      });
+    } catch (e) {
+      log.error(e, 'transition-decline-payment-failed', {});
+    }
+
+    log.error(e, 'create-booking-payment-failed', {});
+  }
+};
+
+const createCaregiverPayout = async transaction => {
+  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
+
+  const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
+
+  if (!amount || amount === 0 || !paymentIntentId) return;
+
+  try {
+    const balance = await stripe.balance.retrieve({
+      stripeAccount: stripeAccountId,
+    });
+
+    const availableBalance = balance.available?.[0]?.amount;
+
+    if (availableBalance > amount) {
+      await stripe.payouts.create(
+        {
+          amount,
+          currency: 'usd',
+        },
+        {
+          stripeAccount: stripeAccountId,
+        }
+      );
+    } else {
+      const providerId = transaction.relationships.provider.data.id.uuid;
+
+      const providerResponse = await integrationSdk.users.show({
+        id: providerId,
+      });
+      const provider = providerResponse.data.data;
+
+      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
+
+      await integrationSdk.users.updateProfile({
+        id: providerId,
+        privateData: {
+          hasPendingPayout: true,
+          pendingPayouts: [
+            ...pendingPayouts,
+            { amount, paymentIntentId, date: new Date().toISOString() },
+          ],
+        },
+      });
+    }
+  } catch (e) {
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
+  }
+};
+
+const generateBookingNumber = async transaction => {
+  const txId = transaction.id.uuid;
+  const { listing } = transaction.relationships;
+  const listingId = listing.data.id?.uuid;
+
+  try {
+    const fullListingResponse = await integrationSdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        bookingNumber,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
+  }
+};
+
+const convertTimeFrom12to24 = fullTime => {
+  if (!fullTime || fullTime.length === 5) {
+    return fullTime;
+  }
+
+  const [time, ampm] = fullTime.split(/(am|pm)/i);
+  const [hours, minutes] = time.split(':');
+  let convertedHours = parseInt(hours);
+
+  if (ampm.toLowerCase() === 'am' && hours === '12') {
+    convertedHours = 0;
+  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
+    convertedHours += 12;
+  }
+
+  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+const findEndTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  const additionalTime =
+    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
+  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return endTime;
+};
+
+const updateBookingEnd = async transaction => {
+  const txId = transaction.id.uuid;
+  const { lineItems } = transaction.attributes.metadata;
+
+  const newBookingEnd = findEndTimeFromLineItems(lineItems);
+  const newBookingStart = moment(newBookingEnd)
+    .subtract(1, 'hours')
+    .toDate();
+
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/start-update-times',
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'update-booking-end-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -445,4 +664,8 @@ module.exports = {
   addUnreadMessageCount,
   sendQuizFailedEmail,
   closeListingNotification,
+  createBookingPayment,
+  createCaregiverPayout,
+  generateBookingNumber,
+  updateBookingEnd,
 };

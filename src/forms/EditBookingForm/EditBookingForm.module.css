@@ -1,0 +1,299 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  width: 100%;
+}
+
+.datesContainer {
+  display: flex;
+  margin-top: 1.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+
+  @media (--viewportMedium) {
+    gap: 1rem;
+  }
+
+  @media (--viewportLarge) {
+    justify-content: flex-start;
+  }
+}
+
+.dateContainer {
+  box-shadow: var(--boxShadow);
+  padding: 0.75rem;
+  margin-block: 0.5rem;
+  background-color: var(--matterColorLight);
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--matterColorNegative);
+
+  @media (--viewportMedium) {
+    width: 12rem;
+    padding: 1rem;
+    margin-block: 1rem;
+  }
+}
+
+.formRow {
+  /* This container uses flexbox layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* parent aka fieldWrapper is flexbox, this container takes all available space */
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+
+  z-index: 1;
+}
+
+.date {
+  text-align: center;
+  margin-top: 0;
+}
+
+.timeSelect {
+  composes: marketplaceTabNavHorizontalFontStyles from global;
+
+  background: none;
+  padding-right: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+  min-width: 4rem;
+
+  &:select {
+    margin-right: 0;
+  }
+
+  & > option {
+    color: var(--matterColor);
+  }
+  & > option:disabled {
+    color: var(--matterColorAnti);
+  }
+
+  &:disabled {
+    border-bottom-color: var(--matterColorNegative);
+    color: var(--matterColorNegative);
+    cursor: default;
+  }
+
+  @media (--viewportMedium) {
+    min-width: 4.5rem;
+  }
+}
+
+.dashBetweenTimes {
+  margin-top: auto;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 0.325rem;
+}
+
+.changeDatesButton {
+  min-height: 0;
+
+  width: auto;
+  display: inline;
+  padding: 0.5rem 1rem;
+}
+
+.bookingTimeText {
+  composes: marketplaceTinyFontStyles from global;
+  font-weight: var(--fontWeightSemiBold);
+  width: 100%;
+  text-align: center;
+  padding-block: 0.25rem;
+
+  @media (--viewportMedium) {
+    padding-block: 0;
+  }
+}
+
+.datePicker {
+  margin-bottom: 2rem;
+  max-width: 18rem;
+  margin-top: 2.5rem;
+  margin-inline: auto;
+
+  @media (--viewportLarge) {
+    margin-inline: 0;
+    max-width: 20rem;
+  }
+}
+
+.modalContainer {
+  flex-grow: 1;
+
+  /* Create context so the close button can be positioned within it */
+  position: relative;
+
+  /* Display and dimensions */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  padding: var(--modalPadding);
+
+  background-color: var(--matterColorLight);
+  border-radius: var(--borderRadius);
+  border-bottom: none;
+
+  min-height: 100vh;
+  height: 100%;
+
+  @media (--viewportMedium) {
+    flex-basis: 576px;
+    flex-grow: 0;
+    min-height: auto;
+    height: auto;
+    padding: 0;
+
+    padding: var(--modalPaddingMedium);
+    margin-top: 12.5vh;
+    margin-bottom: 12.5vh;
+    border-bottom: 8px solid var(--marketplaceColor);
+  }
+}
+
+.submitButton {
+  margin: 1rem auto 4rem auto;
+  max-width: 30rem;
+}
+
+.paymentInfo {
+  composes: h5 from global;
+
+  color: var(--matterColorAnti);
+  text-align: center;
+  padding: 0 2.5rem;
+  margin: 3rem 0 0 0;
+
+  @media (--viewportLarge) {
+    /* TODO this is ugly overwrite to fix unconsistent font styles */
+    padding: 0;
+  }
+}
+
+.sendAMessage {
+}
+
+.pickYourTimes {
+  display: inline;
+  margin-right: 2rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.timeSelectLabel {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+  padding: 0;
+}
+
+.paymentContentContainer {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportLarge) {
+    flex-direction: row;
+  }
+}
+
+.paymentContainer {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: column;
+  margin: auto;
+  margin-top: 2rem;
+  max-width: 40rem;
+}
+
+.datesTimesContainer {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  @media (--viewportLarge) {
+    display: grid;
+    grid-template-columns: 20rem auto;
+    gap: 4rem;
+    text-align: left;
+  }
+}
+
+.tabContent {
+  @media (--viewportMedium) {
+    font-size: 1.5rem !important;
+    line-height: 1.75rem;
+  }
+}
+
+.tinyNoMargin {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.processingFeesList {
+  list-style-type: disc;
+  margin-left: 1rem;
+}
+
+.requestContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportLarge) {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-top: 0;
+    height: calc(100vh - var(--topbarHeightDesktop) - 10rem);
+  }
+}
+
+.paymentLearnMore {
+  color: var(--marketplaceColor);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.learnMoreListItem {
+  margin-bottom: 1rem;
+}
+
+.processingFees {
+  margin-top: 2rem;
+}
+
+.nextButton {
+  margin-top: 4rem;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+}

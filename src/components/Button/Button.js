@@ -131,4 +131,9 @@ export const GradientButton = props => {
   return <Button {...props} rootClassName={classes} />;
 };
 
+export const CancelButton = props => {
+  const classes = classNames(props.rootClassName || css.CancelButtonRoot, css.CancelButton);
+  return <Button {...props} rootClassName={classes} />;
+};
+
 SocialLoginButton.displayName = 'SocialLoginButton';

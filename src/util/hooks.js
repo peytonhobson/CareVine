@@ -27,6 +27,13 @@ export const usePrevious = value => {
   return ref.current;
 };
 
+export const useIsScrollable = ref => {
+  if (ref && ref.current) {
+    return ref.current.scrollHeight > ref.current.clientHeight;
+  }
+  return false;
+};
+
 export const useIsSsr = () => {
   // we always start off in "SSR mode", to ensure our initial browser render
   // matches the SSR render

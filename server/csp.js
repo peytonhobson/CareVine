@@ -108,24 +108,35 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     imgSrc = [self],
     scriptSrc = [self],
     frameSrc = [self],
+    styleSrc = [self],
+    fontSrc = [self],
   } = defaultDirectives;
+  // concat web socket url
   const customConnectSrc = connectSrc
     .concat('*.sentry.io')
     .concat('*.ingest.sentry.io')
-    .concat('https://strapi.carevine.us/graphql');
+    .concat('https://strapi.carevine.us/graphql')
+    .concat('*.crisp.chat')
+    .concat('wss://*.crisp.chat');
+
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc
     .concat('*.googleadservices.com')
     .concat('*.facebook.net')
     .concat('www.google.com')
-    .concat('*.googlesyndication.com');
+    .concat('*.googlesyndication.com')
+    .concat('*.crisp.chat');
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
+  const customStyleSrc = styleSrc.concat('*.crisp.chat');
+  const customFontSrc = fontSrc.concat('*.crisp.chat');
 
   const customDirectives = {
     connectSrc: customConnectSrc,
     imgSrc: customImgSrc,
     scriptSrc: customScriptSrc,
     frameSrc: customFrameSrc,
+    styleSrc: customStyleSrc,
+    fontSrc: customFontSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //

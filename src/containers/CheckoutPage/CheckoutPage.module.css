@@ -62,12 +62,16 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  padding: 2rem;
 
   @media (--viewportLarge) {
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
-    padding: 0 48px;
+    padding: 3rem;
+    position: relative;
+    margin: auto;
+    width: 70rem;
   }
 }
 
@@ -75,12 +79,13 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  padding: 2rem;
 
   @media (--viewportLarge) {
-    flex-grow: 0;
-    flex-basis: 519px;
-    margin-top: 121px;
-    margin-right: 132px;
+    flex-grow: 1;
+    padding: 0;
+    width: 150rem;
+    position: relative;
   }
 }
 
@@ -121,6 +126,32 @@
 
   @media (--viewportLarge) {
     margin-left: 48px;
+  }
+}
+
+.cardAvatarWrapper {
+  padding: 2rem;
+
+  display: grid;
+
+  grid-template-columns: auto auto;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.cardAvatar {
+  width: 6rem;
+  height: 6rem;
+  margin-right: 2rem;
+}
+
+.cardAvatarInitials {
+  font-size: 2.5rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 3rem;
   }
 }
 
@@ -210,15 +241,15 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 24px;
   margin-bottom: 35px;
+  margin-top: 3rem;
 
   @media (--viewportMedium) {
-    margin-top: 2px;
+    margin-top: 1.5rem;
   }
 
   @media (--viewportLarge) {
-    margin-top: 4px;
+    margin-top: 2rem;
     padding: 0;
   }
 }
@@ -251,62 +282,10 @@
   flex-grow: 1;
 }
 
-/* Details column is visible only on desktop */
-.detailsContainerDesktop {
-  display: none;
-
-  @media (--viewportLarge) {
-    flex-shrink: 0;
-    display: block;
-    /* Dimensions */
-    width: 409px;
-    padding-bottom: 55px;
-
-    /* Position */
-    margin: 120px 0 24px 0;
-
-    /* Coloring */
-    background-color: var(--matterColorLight);
-    border: 1px solid var(--matterColorNegative);
-    border-radius: 2px;
-  }
-}
-
 .detailsAspectWrapper {
   position: relative;
   padding-bottom: 66.6667%; /* 3:2 Aspect Ratio */
   background-color: var(--matterColorNegative); /* Loading BG color */
-}
-
-.detailsHeadings {
-  display: none;
-
-  @media (--viewportLarge) {
-    display: block;
-    margin: 0 48px;
-  }
-}
-
-.detailsTitle {
-  margin-bottom: 10px;
-
-  @media (--viewportLarge) {
-    margin-top: 17px;
-    margin-bottom: 9px;
-  }
-}
-
-.detailsSubtitle {
-  composes: h5 from global;
-
-  /* Reset margins from font styles */
-  margin-top: 0;
-  margin-bottom: 0;
-
-  @media (--viewportLarge) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
 }
 
 .bookingBreakdownTitle {
@@ -321,8 +300,72 @@
   }
 }
 
-.bookingBreakdown {
-  @media (--viewportLarge) {
-    margin: 0 48px;
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.confirmationText {
+  font-size: 30px;
+  line-height: 36px;
+  animation: 2.5s fadeIn;
+  animation-fill-mode: forwards;
+  max-width: 30rem;
+  text-align: center;
+}
+
+.confirmationContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+  }
+}
+
+.confirmationSubContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2rem;
+
+  @media (--viewportMedium) {
+    margin: 0;
+  }
+}
+
+.iconContainer {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+}
+
+.iconConfirm {
+  height: 7em;
+  width: 7em;
+}
+
+.toBookings {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+
+  margin-top: 1rem;
+  min-height: 0;
+  height: 2.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    max-width: 30rem;
   }
 }

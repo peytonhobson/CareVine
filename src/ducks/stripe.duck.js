@@ -80,6 +80,10 @@ export const UPDATE_CUSTOMER_CREDIT_BALANCE_SUCCESS =
 export const UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR =
   'app/stripe/UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR';
 
+export const FETCH_STRIPE_CUSTOMER_REQUEST = 'app/stripe/FETCH_STRIPE_CUSTOMER_REQUEST';
+export const FETCH_STRIPE_CUSTOMER_SUCCESS = 'app/stripe/FETCH_STRIPE_CUSTOMER_SUCCESS';
+export const FETCH_STRIPE_CUSTOMER_ERROR = 'app/stripe/FETCH_STRIPE_CUSTOMER_ERROR';
+
 // ================ Reducer ================ //
 
 export const initialState = {
@@ -109,6 +113,8 @@ export const initialState = {
   updateSubscriptionError: null,
   updateCustomerCreditBalanceInProgress: false,
   updateCustomerCreditBalanceError: null,
+  fetchStripeCustomerInProgress: false,
+  fetchStripeCustomerError: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -327,6 +333,14 @@ export default function reducer(state = initialState, action = {}) {
         updateCustomerCreditBalanceInProgress: false,
       };
 
+    case FETCH_STRIPE_CUSTOMER_REQUEST:
+      return { ...state, stripeCustomerFetched: false };
+    case FETCH_STRIPE_CUSTOMER_SUCCESS:
+      return { ...state, stripeCustomerFetched: true };
+    case FETCH_STRIPE_CUSTOMER_ERROR:
+      console.error(payload); // eslint-disable-line no-console
+      return { ...state, stripeCustomerFetchError: payload };
+
     default:
       return state;
   }
@@ -477,6 +491,18 @@ export const updateCustomerCreditBalanceSuccess = () => ({
 });
 export const updateCustomerCreditBalanceError = payload => ({
   type: UPDATE_CUSTOMER_CREDIT_BALANCE_ERROR,
+  payload,
+  error: true,
+});
+
+export const fetchStripeCustomerRequest = () => ({
+  type: FETCH_STRIPE_CUSTOMER_REQUEST,
+});
+export const fetchStripeCustomerSuccess = () => ({
+  type: FETCH_STRIPE_CUSTOMER_SUCCESS,
+});
+export const fetchStripeCustomerError = payload => ({
+  type: FETCH_STRIPE_CUSTOMER_ERROR,
   payload,
   error: true,
 });
@@ -777,12 +803,21 @@ export const createPayment = params => (dispatch, getState, sdk) => {
   }
 };
 
-export const createPaymentIntent = (amount, userId, sender, isCard, caregiverName, metadata) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const createPaymentIntent = params => (dispatch, getState, sdk) => {
   dispatch(createPaymentIntentRequest());
+
+  const {
+    amount,
+    recipientId,
+    currentUser = {},
+    stripeCustomerId: stripeId,
+    metadata,
+    description,
+    additionalParams,
+    bookingFee,
+    processingFee,
+    paymentMethods,
+  } = params;
 
   const handleSuccess = response => {
     dispatch(createPaymentIntentSuccess(response));
@@ -795,17 +830,20 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
     throw e;
   };
 
-  const stripeCustomerId = sender.stripeCustomer?.attributes.stripeCustomerId;
+  const stripeCustomerId = currentUser.stripeCustomer?.attributes.stripeCustomerId || stripeId;
 
   if (stripeCustomerId) {
     return stripeCreatePaymentIntent({
       amount,
-      userId,
+      recipientId,
       stripeCustomerId,
-      isCard,
-      description: `Payment to ${caregiverName}`,
-      sender,
+      description,
+      sender: currentUser,
       metadata,
+      params: additionalParams,
+      bookingFee,
+      processingFee,
+      paymentMethods,
     })
       .then(res => handleSuccess(res))
       .catch(e => handleError(e));
@@ -814,12 +852,15 @@ export const createPaymentIntent = (amount, userId, sender, isCard, caregiverNam
       .then(res => {
         return stripeCreatePaymentIntent({
           amount,
-          userId,
+          recipientId,
           stripeCustomerId: res.id,
-          isCard,
-          description: `Payment to ${caregiverName}`,
-          sender,
+          description,
+          sender: currentUser,
           metadata,
+          params: additionalParams,
+          bookingFee,
+          processingFee,
+          paymentMethods,
         });
       })
       .then(res => {
@@ -979,4 +1020,19 @@ export const updateCustomerCreditBalance = (referralCode, amount) => (dispatch, 
   return stripeUpdateCustomerCreditBalance({ referralCode, amount })
     .then(res => handleSuccess(res))
     .catch(e => handleError(e));
+};
+
+export const stripeCustomer = () => (dispatch, getState, sdk) => {
+  dispatch(fetchStripeCustomerRequest());
+
+  return dispatch(fetchCurrentUser({ include: ['stripeCustomer.defaultPaymentMethod'] }))
+    .then(response => {
+      dispatch(fetchStripeCustomerSuccess());
+      return response;
+    })
+    .catch(e => {
+      const error = storableError(e);
+      log.error(error, 'fetch-stripe-customer-failed');
+      dispatch(fetchStripeCustomerError(error));
+    });
 };

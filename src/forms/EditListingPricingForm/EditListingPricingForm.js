@@ -14,9 +14,6 @@ import css from './EditListingPricingForm.module.css';
 
 const { Money } = sdkTypes;
 
-const HOURLY = 'hourly';
-const DAILY = 'daily';
-
 export const EditListingPricingFormComponent = props => (
   <FinalForm
     {...props}

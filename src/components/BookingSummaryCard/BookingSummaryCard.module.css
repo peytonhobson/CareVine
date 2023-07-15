@@ -1,0 +1,198 @@
+@import '../../styles/customMediaQueries.css';
+
+.detailsContainerDesktop {
+  display: none;
+
+  @media (--viewportLarge) {
+    flex-shrink: 0;
+    display: block;
+    /* Dimensions */
+    padding-bottom: 2rem;
+    max-width: 30rem;
+
+    width: 33vw;
+    max-height: calc(100vh - 15rem);
+    overflow-y: auto;
+
+    /* Coloring */
+    background-color: var(--matterColorLight);
+    border: 1px solid var(--matterColorNegative);
+    border-radius: 2px;
+  }
+}
+
+.detailsContainerMobile {
+  flex-shrink: 0;
+  display: block;
+  /* Dimensions */
+  padding-bottom: 2rem;
+
+  /* Coloring */
+  background-color: var(--matterColorLight);
+  border: 1px solid var(--matterColorNegative);
+  border-radius: 2px;
+  margin: 3rem 0 2rem 0;
+
+  @media (--viewportLarge) {
+    display: none;
+  }
+}
+
+.cardAvatarWrapper {
+  padding: 2rem;
+
+  display: grid;
+
+  grid-template-columns: auto auto;
+  align-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.cardAvatar {
+  width: 4rem;
+  height: 4rem;
+  margin-right: 2rem;
+}
+
+.cardAvatarInitials {
+  font-size: 2rem;
+  font-weight: var(--fontWeightSemiBold);
+
+  @media (--viewportMedium) {
+    font-size: 1.75rem;
+  }
+}
+
+.bookAuthor {
+  composes: h1 from global;
+  display: inline;
+}
+
+.bookAuthorMobile {
+  font-size: 2.25rem;
+  line-height: 2.75rem;
+}
+
+.summaryDetailsContainer {
+  margin: 0 3rem;
+}
+
+.detailsHeadings {
+  width: 100%;
+
+  & h2 {
+    margin-top: 0;
+  }
+}
+
+.detailsSubtitle {
+  composes: h5 from global;
+
+  /* Reset margins from font styles */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  @media (--viewportLarge) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.bookingTimes {
+  overflow-y: auto;
+  max-height: 9rem;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+.bookingTime {
+  padding-block: 0.5rem;
+}
+
+.bookingTime:not(:first-of-type) {
+  border-top: 1px solid var(--matterColorNegative);
+}
+
+.summaryDate {
+  margin-bottom: 0;
+  display: inline;
+  white-space: nowrap;
+}
+
+.summaryTimeContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tinyNoMargin {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.summaryTimes {
+  composes: tinyNoMargin;
+  width: 100%;
+}
+
+.totalContainer {
+  border-top: 1px solid var(--matterColorNegative);
+  padding: 1rem 0 0 0;
+}
+
+.totalCalc {
+  border-bottom: 1px solid var(--matterColor);
+  margin-bottom: 0;
+  padding-block: 0.5rem;
+}
+
+.paymentCalc {
+  margin-block: 0.5rem;
+}
+
+.total {
+  margin-top: 0.5rem;
+}
+
+.changeRateButton {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.changeRatesForm {
+  margin: auto;
+}
+
+.submitRateButton {
+  margin-top: 4rem;
+}
+
+.fieldLabel {
+  width: 100%;
+  text-align: center;
+}
+
+.priceRange {
+  padding: 0 2rem;
+}
+
+.track {
+  background-color: var(--marketplaceColor);
+}
+
+.availableRatesContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0rem 2.5rem;
+
+  & p {
+    margin: 0;
+  }
+}

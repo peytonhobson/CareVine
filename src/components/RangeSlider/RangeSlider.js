@@ -62,10 +62,10 @@ class RangeSliderComponent extends Component {
   }
 
   render() {
-    const { handles, min, max, step, noHandleLabels, withMarks } = this.props;
+    const { handles, min, max, step, noHandleLabels, withMarks, trackClass } = this.props;
 
     return (
-      <Track handles={handles} valueToPosition={this.toPosition}>
+      <Track handles={handles} valueToPosition={this.toPosition} trackClass={trackClass}>
         {withMarks && (
           <div className={css.marks}>
             {this.markPositions().map((p, index) => (

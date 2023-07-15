@@ -2,7 +2,7 @@
  *  TopbarMobileMenu prints the menu content for authenticated user or
  * shows login actions for those who are not authenticated.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { bool, func, number, string, array } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
@@ -40,6 +40,7 @@ const TopbarMobileMenu = props => {
     onChangeModalValue,
     unreadMessages,
     unreadNotificationCount,
+    isOpen,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -99,6 +100,12 @@ const TopbarMobileMenu = props => {
         <FormattedMessage id="TopbarDesktop.referAFriendLink" />
       </NamedLink>
     ) : null;
+
+  const bookingsLink = isAuthenticated ? (
+    <NamedLink className={css.navigationLink} name="BookingsPage">
+      My Bookings
+    </NamedLink>
+  ) : null;
 
   const feedbackLink = isDev ? (
     <NamedLink className={css.navigationLink} name="FeedbackPage">
@@ -208,6 +215,7 @@ const TopbarMobileMenu = props => {
         >
           <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
         </NamedLink>
+        {bookingsLink}
         {referralLink}
         {feedbackLink}
       </div>

@@ -14,6 +14,7 @@ const AboutPage = loadable(() => import(/* webpackChunkName: "AboutPage" */ './c
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ './containers/AuthenticationPage/AuthenticationPage'));
 const BlogHomePage = loadable(() => import(/* webpackChunkName: "BlogPage" */ './containers/BlogHomePage/BlogHomePage'));
 const BlogPostPage = loadable(() => import(/* webpackChunkName: "BlogPostPage" */ './containers/BlogPostPage/BlogPostPage'));
+const BookingsPage = loadable(() => import(/* webpackChunkName: "BookingsPage" */ './containers/BookingsPage/BookingsPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ './containers/CheckoutPage/CheckoutPage'));
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ './containers/ContactDetailsPage/ContactDetailsPage'));
 const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
@@ -84,6 +85,13 @@ const routeConfiguration = () => {
       component: BlogPostPage,
     },
     {
+      path: '/bookings',
+      name: 'BookingsPage',
+      component: BookingsPage,
+      auth: true,
+      loadData: pageDataLoadingAPI.BookingsPage.loadData,
+    },
+    {
       path: '/contact-us',
       name: 'ContactUsPage',
       component: ContactUsPage,
@@ -101,6 +109,7 @@ const routeConfiguration = () => {
       auth: true,
       component: CheckoutPage,
       setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
+      loadData: pageDataLoadingAPI.CheckoutPage.loadData,
     },
     {
       path: '/feedback',

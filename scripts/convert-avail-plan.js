@@ -13,23 +13,6 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const convertTimeFrom12to24 = fullTime => {
-  // Current time looks like 7:00am
-  // We want to convert it to 07:00
-  const [time, ampm] = fullTime.split(/(am|pm)/i);
-
-  const [hours, minutes] = time.split(':');
-
-  if (hours === '12' && ampm === 'am') {
-    return '00:00';
-  }
-
-  if (ampm === 'pm') {
-    return `${parseInt(hours) + 12}:${minutes}`;
-  }
-  return `${hours < 10 ? `0${hours}` : hours}:${minutes}`;
-};
-
 const convertPublicPlanToBuiltIn = publicPlan => {
   const { timezone } = publicPlan;
 
@@ -53,6 +36,8 @@ const main = async () => {
     const listingsResponse = await integrationSdk.listings.query({ meta_listingType: 'caregiver' });
 
     const listings = listingsResponse.data.data;
+
+    console.log;
 
     const hasPublicPlan = listings.filter(
       listing => listing.attributes.publicData.availabilityPlan

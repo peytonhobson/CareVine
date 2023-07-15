@@ -81,7 +81,7 @@ const InboxChannelHeader = props => {
               </div>
             )}
           </div>
-          <div className={css.headerRight}>
+          {/* <div className={css.headerRight}>
             {currentUserType === EMPLOYER ? (
               <PaymentButton
                 disabled={!otherUser || !listing || fetchOtherUserListingInProgress}
@@ -97,7 +97,7 @@ const InboxChannelHeader = props => {
                 <FormattedMessage id="InboxChannelHeader.requestPayment" />
               </Button>
             )}
-          </div>
+          </div> */}
         </>
       )}
       <RequestPaymentModal

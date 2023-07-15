@@ -1,0 +1,86 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+
+  @media (--viewportMedium) {
+    max-width: 40rem;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+}
+
+.newBookingRequested {
+  font-size: 3rem;
+  line-height: 3.25rem;
+  text-align: center;
+}
+
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.5rem;
+  margin: 2rem 0;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-grow: 0;
+  /* Dimensions */
+  padding: 2rem;
+  width: auto;
+
+  /* Coloring */
+  background-color: var(--matterColorLight);
+  border: 1px solid var(--matterColorNegative);
+  border-radius: 2px;
+
+  @media (--viewportMedium) {
+    min-width: 30rem;
+  }
+
+  & div {
+    width: 100%;
+  }
+
+  & ::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+  }
+
+  & ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.avatar {
+  width: 2.5rem !important;
+  height: 2.5rem;
+  display: flex;
+}
+
+.subHeading {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.bookingWith {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5rem;
+}

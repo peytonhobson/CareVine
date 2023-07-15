@@ -8,6 +8,7 @@ import {
 import * as log from '../util/log';
 import { stripePaymentMethods } from '../util/api';
 import { fetchCurrentUser } from './user.duck';
+import { stripeCustomer } from './stripe.duck';
 
 // ================ Action types ================ //
 
@@ -58,7 +59,7 @@ const initialState = {
   createStripeCustomerInProgress: null,
   deletePaymentMethodError: null,
   deletePaymentMethodInProgress: null,
-  deletePaymentMethodSuccess: false,
+  deletedPaymentMethod: null,
   stripeCustomer: null,
   defaultPaymentMethods: null,
   defaultPaymentFetched: false,
@@ -113,16 +114,15 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         ...state,
         deletePaymentMethodError: null,
         deletePaymentMethodInProgress: true,
-        deletePaymentMethodSuccess: false,
+        deletedPaymentMethod: null,
       };
     case DELETE_PAYMENT_METHOD_SUCCESS:
       return {
         ...state,
         deletePaymentMethodInProgress: false,
-        deletePaymentMethodSuccess: true,
+        deletedPaymentMethod: payload,
       };
     case DELETE_PAYMENT_METHOD_ERROR:
-      console.error(payload);
       return {
         ...state,
         deletePaymentMethodError: payload,
@@ -174,14 +174,14 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
     case FETCH_DEFAULT_PAYMENT_REQUEST:
       return { ...state, fetchDefaultPaymentInProgress: true, fetchDefaultPaymentError: null };
     case FETCH_DEFAULT_PAYMENT_SUCCESS:
-      const card = payload.find(p => p.type === 'card');
-      const bankAccount = payload.find(p => p.type === 'us_bank_account');
+      const cards = payload.filter(p => p.type === 'card');
+      const bankAccounts = payload.filter(p => p.type === 'us_bank_account');
       return {
         ...state,
         fetchDefaultPaymentInProgress: false,
         defaultPaymentMethods: {
-          card,
-          bankAccount,
+          cards,
+          bankAccounts,
         },
         defaultPaymentFetched: true,
       };
@@ -262,8 +262,9 @@ export const addPaymentMethodError = e => ({
 
 export const deletePaymentMethodRequest = () => ({ type: DELETE_PAYMENT_METHOD_REQUEST });
 
-export const deletePaymentMethodSuccess = () => ({
+export const deletePaymentMethodSuccess = paymentMethod => ({
   type: DELETE_PAYMENT_METHOD_SUCCESS,
+  payload: paymentMethod,
 });
 
 export const deletePaymentMethodError = e => ({
@@ -406,7 +407,7 @@ export const deletePaymentMethod = paymentMethodId => (dispatch, getState, sdk) 
 
   return stripeDetachPaymentMethod({ paymentMethodId })
     .then(response => {
-      dispatch(deletePaymentMethodSuccess());
+      dispatch(deletePaymentMethodSuccess(response.data));
       return response;
     })
     .catch(e => {
@@ -432,6 +433,7 @@ export const createBankAccount = (stripeCustomerId, stripe, currentUser) => asyn
     let setupIntentResponse;
 
     if (!stripeCustomerId) {
+      dispatch(stripeCustomer());
       setupIntentResponse = await stripeCreateSetupIntent({ stripeCustomerId: response.id });
     } else {
       setupIntentResponse = response;
@@ -494,6 +496,7 @@ export const createCreditCard = (
   return savePromise
     .then(response => {
       if (!stripeCustomerId) {
+        dispatch(fetchCurrentUser());
         return stripeCreateSetupIntent({ stripeCustomerId: response.id }).then(response => {
           return stripe.confirmCardSetup(response.client_secret, {
             payment_method: {
@@ -510,9 +513,6 @@ export const createCreditCard = (
           },
         });
       }
-    })
-    .then(response => {
-      dispatch(createCreditCardSuccess());
     })
     .catch(e => {
       log.error(storableError(e), 'create-credit-card-failed');
@@ -533,7 +533,10 @@ export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk)
     log.error(e, 'fetch-default-payment-failed', {});
   };
 
-  return stripePaymentMethods({ stripeCustomerId })
+  const customerId =
+    stripeCustomerId || getState().user.currentUser.stripeCustomer?.attributes.stripeCustomerId;
+
+  return stripePaymentMethods({ stripeCustomerId: customerId })
     .then(handleSuccess)
     .catch(handleError);
 };

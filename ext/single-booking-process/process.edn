@@ -1,0 +1,330 @@
+{:format :v3,
+ :transitions
+ [
+  {:name :transition/request-booking,
+ :actions
+ [{:name :action/privileged-update-metadata},
+   {:name :action/create-proposed-booking :config {:type :time}}]
+   :actor :actor.role/customer,
+   :to :state/booking-requested,
+   :privileged? true}
+
+   {:name :transition/cancel-request,
+   :actor :actor.role/customer,
+   :from :state/booking-requested,
+   :to :state/request-canceled}
+
+  {:name :transition/decline,
+    :actions
+    [{:name :action/decline-booking}],
+   :actor :actor.role/provider,
+   :from :state/booking-requested,
+   :to :state/declined}
+
+  {:name :transition/expire,
+   :at
+   {:fn/min [{:fn/plus
+      [{:fn/timepoint [:time/first-entered-state :state/booking-requested]}
+       {:fn/period ["P3D"]}]},
+       {:fn/timepoint [:time/booking-start]}]}
+   :from :state/booking-requested,
+   :to :state/declined}
+
+  {:name :transition/accept,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/accept-booking}],
+   :from :state/booking-requested,
+   :to :state/accepted}
+
+   {:name :transition/cancel-accepted-booking-customer,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/customer,
+   :from :state/accepted,
+   :to :state/canceled}
+   {:name :transition/cancel-accepted-booking-provider,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/provider,
+   :from :state/accepted,
+   :to :state/canceled}
+   {:name :transition/cancel-accepted-booking-operator,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/operator,
+   :from :state/accepted,
+   :to :state/canceled}
+
+   {:name :transition/decline-payment,
+   :actor :actor.role/operator,
+   :actions
+    [{:name :action/cancel-booking}],
+   :from :state/charged,
+   :to :state/payment-failed}
+
+   {:name :transition/charge,
+   :at
+   {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P3D"]}]},
+   :from :state/accepted,
+   :to :state/charged}
+   {:name :transition/cancel-charged-booking-customer,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/customer,
+   :from :state/charged,
+   :to :state/canceled}
+   {:name :transition/cancel-charged-booking-provider,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/provider,
+   :from :state/charged,
+   :to :state/canceled}
+   {:name :transition/cancel-charged-booking-operator,
+   :actions
+   [{:name :action/cancel-booking}],
+   :actor :actor.role/operator,
+   :from :state/charged,
+   :to :state/canceled}
+
+   {:name :transition/start,
+   :at
+   {:fn/timepoint [:time/booking-start]}
+   :from :state/charged,
+   :to :state/active}
+
+    {:name :transition/start-update-times,
+    :actor :actor.role/operator,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}]
+   :from :state/active,
+   :to :state/active}
+
+   {:name :transition/cancel-pay-caregiver,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/canceled]} {:fn/period ["P2D"]}]},
+   :from :state/canceled,
+   :to :state/canceled-paid-out}
+
+   {:name :transition/cancel-active-booking-customer,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}],
+   :actor :actor.role/customer,
+   :from :state/active,
+   :to :state/active-canceled}
+   {:name :transition/cancel-active-booking-provider,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}],
+   :actor :actor.role/provider,
+   :from :state/active,
+   :to :state/active-canceled}
+   {:name :transition/cancel-active-booking-operator,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}],
+   :actor :actor.role/operator,
+   :from :state/active,
+   :to :state/active-canceled}
+
+   {:name :transition/complete-canceled,
+   :at {:fn/timepoint [:time/booking-end]},
+   :from :state/active-canceled,
+   :to :state/delivered}
+
+   {:name :transition/complete,
+   :at {:fn/timepoint [:time/booking-end]},
+   :from :state/active,
+   :to :state/delivered}
+
+   {:name :transition/pay-caregiver,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/delivered]} {:fn/period ["P2D"]}]},
+   :from :state/delivered,
+   :to :state/paid-out}
+
+   {:name :transition/dispute,
+   :actor :actor.role/customer,
+   :from :state/delivered,
+   :to :state/dispute-review}
+
+  {:name :transition/resolve-dispute,
+    :actor :actor.role/operator,
+   :from :state/dispute-review,
+   :to :state/paid-out}
+
+   {:name :transition/review,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/post-review-by-customer}
+    {:name :action/publish-reviews}],
+   :from :state/paid-out,
+   :to :state/reviewed}
+
+   {:name :transition/expire-review-period,
+   :at
+   {:fn/plus
+    [{:fn/timepoint [:time/first-entered-state :state/paid-out]} {:fn/period ["P7D"]}]},
+   :from :state/paid-out,
+   :to :state/reviewed}
+   ],
+ :notifications
+ [
+   ; Customer created new booking request
+  {:name :notification/new-booking-request,
+   :on :transition/request-booking,
+   :to :actor.role/provider,
+   :template :new-booking-request}
+
+    ; Booking request expired
+   {:name :notification/booking-request-auto-declined,
+   :on :transition/expire,
+   :to :actor.role/customer,
+   :template :booking-request-auto-declined}
+
+    ; Provider declined booking
+   {:name :notification/booking-request-declined,
+   :on :transition/decline,
+   :to :actor.role/customer,
+   :template :booking-request-declined}
+
+   ; Booking accepted notifications
+   {:name :notification/booking-request-accepted,
+   :on :transition/accept,
+   :to :actor.role/customer,
+   :template :booking-request-accepted}
+   {:name :notification/new-booking-confirmed,
+   :on :transition/accept,
+   :to :actor.role/provider,
+   :template :booking-confirmed}
+
+    ; Provider canceling booking after acceptance, but before charging
+    {:name :notification/booking-canceled-accepted-provider-confirmation,
+    :on :transition/cancel-accepted-booking-provider,
+    :to :actor.role/provider
+    :template :booking-canceled-provider-confirmation}
+    {:name :notification/provider-canceled-accepted-booking,
+    :on :transition/cancel-accepted-booking-provider,
+    :to :actor.role/customer,
+    :template :provider-canceled-booking}
+
+    ; Provider canceling booking after charge, but before active
+    {:name :notification/booking-canceled-charged-provider-confirmation,
+    :on :transition/cancel-charged-booking-provider,
+    :to :actor.role/provider
+    :template :booking-canceled-provider-confirmation}
+    {:name :notification/provider-canceled-charged-booking,
+    :on :transition/cancel-charged-booking-provider,
+    :to :actor.role/customer,
+    :template :provider-canceled-booking}
+
+    ; Provider cancelling active Booking
+    {:name :notification/booking-active-canceled-provider-confirmation,
+    :on :transition/cancel-active-booking-provider,
+    :to :actor.role/provider
+    :template :booking-canceled-provider-confirmation}
+    {:name :notification/provider-active-canceled-booking,
+    :on :transition/cancel-active-booking-provider,
+    :to :actor.role/customer,
+    :template :provider-canceled-booking}
+
+    ; Customer canceling booking after acceptance, but before charging
+    {:name :notification/booking-canceled-accepted-customer-confirmation,
+    :on :transition/cancel-accepted-booking-customer,
+    :to :actor.role/customer,
+    :template :booking-canceled-customer-confirmation}
+    {:name :notification/customer-canceled-accepted-booking,
+    :on :transition/cancel-accepted-booking-customer,
+    :to :actor.role/provider,
+    :template :customer-canceled-booking}
+
+    ; Customer canceling booking after acceptance, but before charging
+    {:name :notification/booking-canceled-charged-customer-confirmation,
+    :on :transition/cancel-charged-booking-customer,
+    :to :actor.role/customer,
+    :template :booking-canceled-customer-confirmation}
+    {:name :notification/customer-canceled-charged-booking,
+    :on :transition/cancel-charged-booking-customer,
+    :to :actor.role/provider,
+    :template :customer-canceled-booking}
+
+    ; Customer canceled active booking
+    {:name :notification/booking-active-canceled-customer-confirmation,
+    :on :transition/cancel-active-booking-customer,
+    :to :actor.role/customer,
+    :template :booking-canceled-customer-confirmation}
+    {:name :notification/customer-active-canceled-booking,
+    :on :transition/cancel-active-booking-customer,
+    :to :actor.role/provider,
+    :template :customer-canceled-booking}
+
+    ; Customer canceled booking request
+    {:name :notification/booking-request-canceled-confirmation,
+    :on :transition/cancel-request,
+    :to :actor.role/customer,
+    :template :booking-request-canceled-confirmation}
+
+    ; Customer Payment was declined
+    {:name :notification/payment-failed-customer,
+   :on :transition/decline-payment,
+   :to :actor.role/customer,
+   :template :payment-failed-customer}
+   {:name :notification/payment-failed-provider
+   :on :transition/decline-payment,
+   :to :actor.role/provider,
+   :template :payment-failed-provider}
+
+    ; Booking completed normally
+    {:name :notification/booking-completed,
+    :on :transition/complete,
+    :to :actor.role/customer,
+    :template :booking-completed}
+    {:name :notification/booking-completed-provider,
+   :on :transition/complete,
+   :to :actor.role/provider,
+   :template :booking-completed-provider}
+
+    ; Customer submitted dispute
+   {:name :notification/dispute-in-review,
+   :on :transition/dispute,
+   :to :actor.role/customer,
+   :template :dispute-in-review}
+   {:name :notification/customer-disputed,
+   :on :transition/dispute,
+   :to :actor.role/provider,
+   :template :customer-disputed}
+
+    ; Dispute resolved. We will personally send dispute emails, but this lets the customer know they can now review the caregiver.
+   {:name :notification/customer-can-review-dispute,
+    :on :transition/resolve-dispute,
+    :to :actor.role/customer,
+    :template :customer-can-review}
+
+    ; Caregiver paid out as normal
+    {:name :notification/customer-can-review,
+    :on :transition/pay-caregiver,
+    :to :actor.role/customer,
+    :template :customer-can-review}
+
+    ; Customer reviewed caregiver
+    {:name :notification/customer-reviewed,
+    :on :transition/review,
+    :to :actor.role/provider,
+    :template :customer-reviewed}
+
+    {:name :notification/booking-reminder-customer
+    :on :transition/charge,
+    :to :actor.role/customer,
+    :template :booking-reminder-customer,
+    :at
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    }
+
+    {:name :notification/booking-reminder-provider
+    :on :transition/charge,
+    :to :actor.role/provider,
+    :template :booking-reminder-provider,
+    :at
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    }
+]}

@@ -1,0 +1,234 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.defaultPaymentMethod {
+  display: flex;
+  margin-right: auto;
+}
+
+.defaultPaymentMethodCard {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+.savedPaymentMethod {
+  display: flex;
+  margin-right: auto;
+  padding: 1rem;
+  border-bottom: 1px solid var(--matterColorNegative);
+  cursor: pointer;
+
+  & .bankIconContainer {
+    flex-grow: 0;
+  }
+}
+
+.savedPaymentMethodCard {
+  align-items: center;
+}
+
+.bankIconContainer {
+  display: flex;
+  flex-grow: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  float: left;
+}
+
+.bankIcon {
+  margin: 0 12px 0 4px;
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+}
+
+.closeIcon {
+  composes: marketplaceModalCloseIcon from global;
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+.menuContent {
+  position: absolute;
+  z-index: var(--zIndexPopup);
+
+  background-color: var(--matterColorLight);
+  box-shadow: var(--boxShadowFilterButton);
+  border-radius: 4px;
+  border: 1px solid var(--matterColorNegative);
+
+  transition: all 0.15s ease-out;
+
+  width: 100% !important;
+  left: 0 !important;
+  top: 100%;
+}
+
+.menu {
+  max-width: 100%;
+  height: auto;
+}
+
+.menuItem {
+  color: var(--matterColor);
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}
+
+.menuLabel {
+  border: 1px solid var(--marketplaceColor);
+  background-color: var(--matterColorLight);
+  /* box-shadow: 2px 2px 2px var(--marketplaceColor); */
+  padding: 12px 1rem 10px 16px;
+}
+
+.menuLabelWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.savedPaymentMethodDelete {
+  composes: h4 from global;
+  color: var(--matterColorAnti);
+  cursor: pointer;
+  margin-top: 14px;
+  margin-bottom: 10px;
+
+  &:hover {
+    color: var(--matterColor);
+  }
+
+  &:focus {
+    outline: none;
+    color: var(--matterColor);
+  }
+}
+
+.modalButtonsWrapper {
+  padding-top: 80px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  padding-top: 36px;
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+  min-height: 200px;
+}
+
+.errorMessage {
+  color: var(--failColor);
+}
+
+.cancelAccountDelete {
+  color: var(--matterColorAnti);
+  cursor: pointer;
+  width: 50%;
+  text-align: right;
+  padding-right: 64px;
+
+  &:hover {
+    color: var(--matterColor);
+  }
+}
+
+.bankName {
+  display: inline-block;
+  line-height: 10px;
+  font-size: 12px;
+  text-align: left;
+}
+
+.accountNumber {
+  display: block;
+  white-space: nowrap;
+}
+
+.bankContent {
+  display: flex;
+  flex-shrink: 1;
+  flex-direction: column;
+}
+
+.dropDownArrowContainer {
+  margin-left: 2.5rem;
+  margin-block: auto;
+  height: 100%;
+}
+
+.paymentMethodPlaceholderDesktop {
+  display: none;
+}
+
+.paymentMethodPlaceholderMobile {
+  display: inline-block;
+}
+
+@media (--viewportSmall) {
+  .paymentMethodPlaceholderDesktop {
+    display: inline-block;
+  }
+
+  .paymentMethodPlaceholderMobile {
+    display: none;
+  }
+}
+
+.expirationDate {
+  padding-left: 24px;
+}
+
+.expirationDateExpired {
+  padding-left: 24px;
+  color: var(--failColor);
+}
+
+.cardExpiredText {
+  composes: h4 from global;
+  color: var(--failColor);
+  font-weight: var(--fontWeightSemiBold);
+  margin-top: 13px;
+  margin-bottom: 11px;
+}
+
+.cardIcon {
+  margin: 0 12px 0 4px;
+  width: 24px;
+  height: 16px;
+  display: inline-block;
+}
+
+.closeIconContainer {
+  margin-left: auto;
+  margin-block: auto;
+  height: 100%;
+}
+
+.closeIcon {
+  padding: 0.25rem;
+  border-radius: 10%;
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--matterColorAnti);
+    margin-left: auto;
+  }
+}

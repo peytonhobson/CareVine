@@ -1,0 +1,36 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  margin-inline: auto;
+  padding-bottom: 3rem;
+  padding: 3rem 1rem;
+  width: 100%;
+  min-height: calc(100vh - var(--topbarHeight));
+
+  @media (--viewportMedium) {
+    width: 45rem;
+    min-height: calc(100vh - var(--topbarHeightDesktop));
+  }
+}
+
+.title {
+  color: var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    font-size: 3.5rem;
+    font-weight: var(--fontWeightSemiBold);
+    line-height: 4rem;
+    letter-spacing: -0.063rem;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.cardSection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}

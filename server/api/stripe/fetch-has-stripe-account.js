@@ -7,7 +7,7 @@ module.exports = (req, res) => {
   const { userId } = req.body;
 
   integrationSdk.users
-    .show({ id: userId.uuid, include: ['stripeAccount'] })
+    .show({ id: userId.uuid ? userId.uuid : userId, include: ['stripeAccount'] })
     .then(apiResponse => {
       const stripeAccountId =
         apiResponse?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
