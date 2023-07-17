@@ -89,6 +89,15 @@ export class ModalComponent extends Component {
         this.refDiv.current.focus();
       }
     }
+
+    const isMobile = window.innerWidth < 768;
+    if (!this.props.isOpen && isOpen && window.$crisp && isMobile) {
+      window.$crisp.push(['do', 'chat:show']);
+    }
+
+    if (this.props.isOpen && !isOpen && window.$crisp && isMobile) {
+      window.$crisp.push(['do', 'chat:hide']);
+    }
   }
 
   componentWillUnmount() {
@@ -96,6 +105,11 @@ export class ModalComponent extends Component {
     window.document.body.removeEventListener('keyup', this.handleBodyKeyUp);
     window.document.body.removeEventListener('resize', this.handleResize);
     onManageDisableScrolling(id, false);
+
+    const isMobile = window.innerWidth < 768;
+    if (window.$crisp && isMobile) {
+      window.$crisp.push(['do', 'chat:show']);
+    }
   }
 
   handleBodyKeyUp(event) {

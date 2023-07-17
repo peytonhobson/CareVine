@@ -13,6 +13,37 @@ import { useMediaQuery } from '@mui/material';
 
 import css from './ListingSummary.module.css';
 
+const whiteListedCaregiverIds = [
+  '646cfff8-1bac-4cf8-ab52-5171c1322e68',
+  '646d0a79-bc93-43ad-8fcd-ed7acce16f20',
+  '646d128f-618b-4986-9ffb-5c05cb65afc1',
+  '646d23fa-4c97-48fb-976c-106f92b58933',
+  '646d352d-b1c1-4e6a-90ed-9059bba066ca',
+  '646d3aa3-a683-44f5-be23-947a4987e3b1',
+  '646d6371-35fc-442d-83c2-c77f9dec75da',
+  '646d6938-2bb0-4949-b8e4-e69132076b9c',
+  '646e251e-f57b-4bfc-9282-f17f84cbff41',
+  '646e2e04-8bf3-451d-8792-31b3f7fc0067',
+  '647a3963-6cb9-4dbe-91f0-d50461aed926',
+  '647a3fa1-1326-450e-b502-14ef5285bc25',
+  '647a4b35-3a5a-4a85-b6f4-45d32852cd9e',
+  '647a4cee-14cb-4491-9e94-68111fc84b2d',
+  '647b8492-aaa9-4af5-8652-b5861603affa',
+  '647b8962-031c-456f-b74f-86ec443d27a2',
+  '647b8c08-3a97-4882-a764-b7193df46530',
+  '647b8df5-6fce-4239-a87d-5debcdee22e6',
+  '647b9379-78ae-45de-b9c3-da973b42cd9e',
+  '647ba33d-228b-408a-b6f2-1e6011ddf595',
+  '647caffb-bdc3-41ed-a24f-9370f487082d',
+  '647d1155-5155-491b-aca9-30c103bfd80f',
+  '647d1304-b878-4d56-a0eb-139c04781a6d',
+  '647d1919-ae23-4c64-a02f-98d60b9aabe3',
+  '647dfd75-367d-4507-8e82-6c395c2537f3',
+  '6480d22c-ebb4-481a-bc0f-ee50c2a3ff64',
+  '6480d9e0-2cd6-4fcf-8d46-9df242c7e497',
+  '6480e2ea-aa0b-4c7b-84b1-711755cb6ee4',
+];
+
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
 
 const ListingSummaryComponent = props => {
@@ -49,6 +80,7 @@ const ListingSummaryComponent = props => {
   const { author } = listing;
   const { minPrice, maxPrice, location } = publicData;
   const authorMetadata = author?.attributes?.profile?.metadata;
+  const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
 
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
@@ -213,7 +245,7 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {hasStripeAccount && isLarge ? (
+          {(hasStripeAccount || authorWhiteListed) && isLarge ? (
             <Button
               className={css.button}
               onClick={() => setIsBookingModalOpen(true)}
@@ -261,6 +293,7 @@ const ListingSummaryComponent = props => {
           isBookingModalOpen={isBookingModalOpen}
           onBookingModalClose={() => setIsBookingModalOpen(false)}
           onBookingModalOpen={() => setIsBookingModalOpen(true)}
+          authorWhiteListed={authorWhiteListed}
         />
       ) : null}
     </div>
