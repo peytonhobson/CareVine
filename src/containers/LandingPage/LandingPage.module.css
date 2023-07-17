@@ -213,7 +213,7 @@
 .content {
   display: flex;
   flex-direction: column;
-  padding: 6rem 0;
+  padding: 6rem 0 0 0;
   margin: auto;
 
   @media (--viewportMedium) {
@@ -223,7 +223,7 @@
 }
 
 .employerSection {
-  padding: 4rem 2rem 2rem 2rem;
+  padding: 0rem 2rem 2rem 2rem;
 
   @media (--viewportMedium) {
     padding: 0 0 3rem 0;
@@ -319,7 +319,7 @@
 }
 
 .citySection {
-  padding: 0 2rem 3rem 2rem;
+  padding: 2rem 2rem 3rem 2rem;
 
   @media (--viewportMedium) {
     padding: 0 0 3rem 0;
@@ -369,6 +369,7 @@
 
 .blogSection {
   background-color: var(--marketplaceColor);
+  margin-top: 2rem;
 
   @media (--viewportMedium) {
     padding: 0;
