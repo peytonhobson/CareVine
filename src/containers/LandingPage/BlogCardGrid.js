@@ -15,15 +15,11 @@ const isDev = process.env.REACT_APP_ENV === 'development';
 const PAGE_SIZE = 9;
 
 const useStyles = makeStyles(theme => ({
+  blogsContainer: {
+    padding: 0,
+  },
   appBar: {
     backgroundColor: '#fff',
-  },
-  blogsContainer: {
-    paddingTop: theme.spacing(3),
-  },
-  blogTitle: {
-    fontWeight: 800,
-    paddingBottom: theme.spacing(3),
   },
   paginationContainer: {
     display: 'flex',
@@ -53,6 +49,7 @@ const BLOG = `
               }
             }
           }
+          description
           status
         }
       }
@@ -66,20 +63,19 @@ const CardGrid = props => {
   const containerRef = useRef(null);
   const isMobile = useCheckMobileScreen();
 
-  const handlePageChange = (event, value) => {
-    setPage(value);
-    if (containerRef.current) {
-      const elementHeight = containerRef.current.offsetTop - (isMobile ? 100 : 130);
-      setTimeout(() => {
-        window.scrollTo({ top: elementHeight, behavior: 'smooth' });
-      }, 10);
-    }
-  };
-
   const { loading, error, data } = useQuery(BLOG, {
     variables: {
-      limit: 5,
+      limit: isMobile ? 5 : 3,
     },
+  });
+
+  const blogCardProps = data?.blogs?.data.map((blog, index) => {
+    return {
+      hero: blog.attributes.hero?.data?.attributes?.url,
+      title: blog.attributes.title,
+      slug: blog.attributes.slug,
+      description: index === 0 ? blog.attributes.description : null,
+    };
   });
 
   return (
@@ -89,24 +85,8 @@ const CardGrid = props => {
           <IconSpinner className={css.spinner} />
         </Box>
       ) : data ? (
-        !isMobile ? (
-          <Grid container spacing={10}>
-            {data?.blogs?.data.map(blog => {
-              const blogCardProps = {
-                hero: blog.attributes.hero?.data?.attributes?.url,
-                title: blog.attributes.title,
-                slug: blog.attributes.slug,
-              };
-
-              return (
-                <Grid item xs={12} sm={6} md={4} key={blog.attributes.slug}>
-                  <BlogCard {...blogCardProps} />
-                </Grid>
-              );
-            })}
-          </Grid>
-        ) : (
-          <div className={css.mobileBlogCardContainer}>
+        isMobile ? (
+          <div className={css.blogCardContainer}>
             {data?.blogs?.data.map(blog => {
               const blogCardProps = {
                 hero: blog.attributes.hero?.data?.attributes?.url,
@@ -116,6 +96,18 @@ const CardGrid = props => {
 
               return <BlogCard {...blogCardProps} />;
             })}
+          </div>
+        ) : (
+          <div className={css.blogCardContainerGrid}>
+            <div className={css.left}>
+              <BlogCard {...blogCardProps[0]} />
+            </div>
+            <div className={css.rightTop}>
+              <BlogCard {...blogCardProps[1]} />
+            </div>
+            <div className={css.rightBottom}>
+              <BlogCard {...blogCardProps[2]} />
+            </div>
           </div>
         )
       ) : error ? (

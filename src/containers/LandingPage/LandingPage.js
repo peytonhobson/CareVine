@@ -243,27 +243,11 @@ export const LandingPageComponent = props => {
               </div>
             </section>
 
-            <section style={{ backgroundColor: 'var(--marketplaceColor)' }}>
-              <h1 style={{ paddingLeft: isMobile && '4rem' }}>Recent Blog Posts</h1>
+            <section className={css.blogSection}>
+              <h2 className={css.blogPostsTitle}>Recent Blog Posts</h2>
               {!isSsr && <BlogCardGrid />}
             </section>
           </div>
-          {/* <div id="how-it-works" className={css.anchorDiv}></div>
-          <ul className={css.sections} ref={contentRef}>
-            <li className={css.section}>
-              <div className={css.sectionContent}>
-                {currentUser ? (
-                  <SectionHowItWorks
-                    currentUser={currentUser}
-                    currentUserListing={currentUserListing}
-                    currentUserListingFetched={currentUserListingFetched}
-                  />
-                ) : (
-                  <SectionMarketplaceSummary onScrollIntoView={scrollToContent} />
-                )}
-              </div>
-            </li>
-          </ul> */}
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />

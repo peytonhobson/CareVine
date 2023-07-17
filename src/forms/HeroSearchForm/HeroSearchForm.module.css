@@ -164,6 +164,7 @@
   border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
+  border-radius: var(--borderRadius);
 
   margin-top: calc(
     var(--topbarHeightDesktop) - var(--TopbarSearchForm_inputHeight) +
