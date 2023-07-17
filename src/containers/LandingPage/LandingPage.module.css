@@ -368,12 +368,13 @@
 }
 
 .blogSection {
-  background-color: var(--marketplaceColor);
-  margin-top: 2rem;
+  background-color: #c6d9c6;
+  margin-bottom: 6rem;
 
   @media (--viewportMedium) {
     padding: 0;
-    background-color: var(--matterColorLight);
+    background-color: var(--matterColorBright);
+    margin-bottom: 0;
   }
 }
 
@@ -421,9 +422,10 @@
   overflow-x: scroll;
   margin-top: 2rem;
   position: relative;
-  padding: 2rem 0 4rem 0;
+  padding: 2rem 0 6rem 0;
   max-width: 85vw;
   margin-inline: auto;
+  min-height: 70vh;
 
   @media (--viewportMedium) {
     max-width: 100%;
