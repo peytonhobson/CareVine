@@ -24,21 +24,25 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
-import { useCheckMobileScreen } from '../../util/hooks';
+import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 import queryString from 'query-string';
 import { Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
+import BlogCardGrid from './BlogCardGrid';
 
 import shareImage from '../../assets/Background_Share_Image.png';
 import tempImg from '../../assets/Magnify-BG.png';
 import css from './LandingPage.module.css';
 
+const isDev = process.env.REACT_APP_ENV === 'development';
+
 const useStyles = makeStyles(theme => ({
   cityCard: {
-    transition: 'all 0.2s ease-in 0s',
+    transition: 'all 0.2s ease-in 0s !important',
     '&:hover': {
       transform: 'scale(1.05)',
     },
+    borderRadius: 'var(--borderRadius) !important',
     [theme.breakpoints.down('sm')]: {
       width: '100%',
       marginBottom: '2rem',
@@ -84,6 +88,8 @@ export const LandingPageComponent = props => {
       setIsExternalPromoModalOpen(true);
     }
   }, [externalPromo]);
+
+  const isSsr = useIsSsr();
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -235,6 +241,11 @@ export const LandingPageComponent = props => {
                   <img src={tempImg} className={css.employerSectionImage} />
                 </div>
               </div>
+            </section>
+
+            <section style={{ backgroundColor: 'var(--marketplaceColor)' }}>
+              <h1 style={{ paddingLeft: isMobile && '4rem' }}>Recent Blog Posts</h1>
+              {!isSsr && <BlogCardGrid />}
             </section>
           </div>
           {/* <div id="how-it-works" className={css.anchorDiv}></div>
