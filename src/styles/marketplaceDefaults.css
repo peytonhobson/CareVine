@@ -92,6 +92,7 @@
   /* ================ Border radius ================ */
 
   --borderRadius: 1.5rem;
+  --borderRadiusButton: 0.5rem;
   --borderRadiusMobileSearch: 0.188rem;
 
   /* ================ Transition styles ================ */
@@ -781,14 +782,14 @@ textarea {
 /* Default button has no borders */
 .buttonBorders {
   border: none;
-  border-radius: var(--borderRadius);
+  border-radius: var(--borderRadiusButton);
 }
 /* Secondary button has clear borders */
 .buttonBordersSecondary {
   border-width: 1px;
   border-style: solid;
   border-color: var(--matterColorNegative);
-  border-radius: var(--borderRadius);
+  border-radius: var(--borderRadiusButton);
 }
 .buttonBordersSecondary:hover,
 .buttonBordersSecondary:focus {
