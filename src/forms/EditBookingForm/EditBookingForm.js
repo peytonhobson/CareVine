@@ -258,7 +258,9 @@ const EditBookingFormComponent = props => (
                   id="bookingDates"
                   onChange={handleSaveBookingDates}
                 >
-                  <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+                  <p className={css.bookingTimeText}>
+                    Caregivers can only be booked within a two-week period
+                  </p>
                 </FieldDatePicker>
               </div>
               <div>
