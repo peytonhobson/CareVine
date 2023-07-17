@@ -125,7 +125,7 @@
 
 .mobileRoot {
   padding: 0 1.5rem;
-  border-radius: 3px;
+  border-radius: var(--borderRadius);
 }
 
 .mobilePredictions {
@@ -136,10 +136,9 @@
   padding: 1rem 0;
   padding-bottom: var(--locationAutocompleteBottomPadding);
   background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
+  border-radius: var(--borderRadius);
 
   & > ul > li {
     padding: 0.25rem 1rem;
@@ -160,8 +159,6 @@
   top: 50px;
   left: 0;
   background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
   border-radius: var(--borderRadius);
