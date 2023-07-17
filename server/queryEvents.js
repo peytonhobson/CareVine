@@ -10,7 +10,6 @@ module.exports = queryEvents = () => {
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const activeSubscriptionTypes = ['active', 'trialing'];
-  var Readable = require('stream').Readable;
   const {
     closeListing,
     updateListingApproveListing,
@@ -26,6 +25,8 @@ module.exports = queryEvents = () => {
     closeListingNotification,
     createBookingPayment,
     createCaregiverPayout,
+    generateBookingNumber,
+    updateBookingEnd,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -270,7 +271,15 @@ module.exports = queryEvents = () => {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
 
+      if (lastTransition === 'transition/start') {
+        updateBookingEnd(transaction);
+      }
+
       if (lastTransition === 'transition/accept') {
+        generateBookingNumber(transaction);
+      }
+
+      if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
       }
 

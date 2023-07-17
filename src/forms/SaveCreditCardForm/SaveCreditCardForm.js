@@ -160,6 +160,7 @@ class PaymentMethodsForm extends Component {
     });
   }
   handleSubmit(values) {
+    this.setState({ saveForLaterError: false });
     const { onSubmit, inProgress, formId } = this.props;
     const cardInputNeedsAttention = !this.state.cardValueValid;
 
@@ -168,7 +169,7 @@ class PaymentMethodsForm extends Component {
       return;
     }
 
-    if (!values.saveAfterOnetimePayment) {
+    if (!values.saveAfterOneTimePayment || values.saveAfterOneTimePayment?.length === 0) {
       this.setState({ saveForLaterError: true });
       return;
     }
@@ -257,10 +258,10 @@ class PaymentMethodsForm extends Component {
           <FieldCheckbox
             className={css.saveForLaterUseCheckbox}
             textClassName={css.saveForLaterUseLabel}
-            id="saveAfterOnetimePayment"
-            name="saveAfterOnetimePayment"
+            id="saveAfterOneTimePayment"
+            name="saveAfterOneTimePayment"
             label="I agree to add this payment method to my account for future use."
-            value="saveAfterOnetimePayment"
+            value="saveAfterOneTimePayment"
             useSuccessColor
           />
           <span className={css.saveForLaterUseLegalInfo}>

@@ -15,6 +15,9 @@ import {
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_CHARGE,
+  TRANSITION_START,
+  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -70,6 +73,7 @@ const CaregiverBookingCard = props => {
 
   const { customer } = booking;
 
+  const lastTransition = booking.attributes.lastTransition;
   const bookingMetadata = booking.attributes.metadata;
   const {
     bookingRate,
@@ -113,9 +117,13 @@ const CaregiverBookingCard = props => {
     ?.filter(l => l.code === 'refund')
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
-  const disputeInReview = booking?.attributes.lastTransition === TRANSITION_DISPUTE;
-  const isRequest = booking?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isActive = booking?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const disputeInReview = lastTransition === TRANSITION_DISPUTE;
+  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const isCharged = lastTransition === TRANSITION_CHARGE;
+  const isActive =
+    lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
+  const showCancel = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
       bookedDates?.some(date =>
@@ -143,7 +151,7 @@ const CaregiverBookingCard = props => {
 
   return (
     <div className={css.bookingCard}>
-      {bookingNumber ? <h2>Booking #{bookingNumber}</h2> : null}
+      {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
         <div className={css.bookingTitle}>
           <Avatar user={customer} className={css.avatar} />
@@ -162,7 +170,7 @@ const CaregiverBookingCard = props => {
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
-          {isActive && (
+          {showCancel && (
             <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
               Cancel
             </CancelButton>
@@ -274,7 +282,7 @@ const CaregiverBookingCard = props => {
         <p className={css.modalTitle}>Cancel Booking with {customerDisplayName}</p>
         {cancelBookingError ? (
           <p className={css.modalError}>
-            There was an error canceling your booking. Please try again.
+            There was an error cancelling your booking. Please try again.
           </p>
         ) : null}
         <div className={css.modalButtonContainer}>

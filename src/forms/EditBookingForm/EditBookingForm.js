@@ -258,7 +258,9 @@ const EditBookingFormComponent = props => (
                   id="bookingDates"
                   onChange={handleSaveBookingDates}
                 >
-                  <p className={css.bookingTimeText}>Caregivers can be booked for 1-14 days</p>
+                  <p className={css.bookingTimeText}>
+                    Caregivers can only be booked within a two-week period
+                  </p>
                 </FieldDatePicker>
               </div>
               <div>
@@ -435,9 +437,9 @@ const EditBookingFormComponent = props => (
                 </li>
                 <li className={css.learnMoreListItem}>
                   <strong>Escrow Protection</strong>: To further protect your interests, we hold
-                  your payment in a secure escrow account until the booking is complete. This
-                  process ensures your payment is safeguarded throughout the duration of the
-                  service.
+                  your payment in a secure escrow account. This process ensures your payment is
+                  safeguarded throughout the duration of the service and the caregiver won't receive
+                  the funds until the booking is complete.
                 </li>
                 <li className={css.learnMoreListItem}>
                   <strong>Dispute Resolution</strong>: If anything goes awry during the booking, you

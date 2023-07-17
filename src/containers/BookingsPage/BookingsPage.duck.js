@@ -11,12 +11,17 @@ import {
   TRANSITION_RESOLVE_DISPUTE,
   TRANSITION_REVIEW,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
-  TRANSITION_CANCEL_BOOKING_PROVIDER,
-  TRANSITION_CANCEL_BOOKING_CUSTOMER,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
-  TRANSITION_CANCEL_ACTIVE_PROVIDER,
-  TRANSITION_CANCEL_ACTIVE_CUSTOMER,
+  TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER,
+  TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER,
+  TRANSITION_CANCEL_CHARGED_BOOKING_CUSTOMER,
+  TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER,
+  TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER,
+  TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER,
+  TRANSITION_START,
+  TRANSITION_CHARGE,
+  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -28,11 +33,12 @@ import {
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
-import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 
 const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
 
-const activeOrUpcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING];
+const upcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE];
+
+const activeBookingTransitions = [TRANSITION_START, TRANSITION_START_UPDATE_TIMES];
 
 const pastBookingTransitions = [
   TRANSITION_COMPLETE,
@@ -44,30 +50,19 @@ const pastBookingTransitions = [
   TRANSITION_REVIEW,
 ];
 
-// TODO: Check if this is correct. It may be end of array instead of start of array.
-const isActive = booking => {
-  const { lineItems } = booking.attributes.metadata;
-
-  if (!lineItems || lineItems.length === 0) return false;
-
-  const sortedLineItemsByDate = lineItems.sort((a, b) => new Date(a.date) - new Date(b.date));
-  const startTimeAsDate = addTimeToStartOfDay(
-    sortedLineItemsByDate[0].date,
-    sortedLineItemsByDate[0].startTime
-  );
-  const endTimeAsDate = addTimeToStartOfDay(
-    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].date,
-    sortedLineItemsByDate[sortedLineItemsByDate.length - 1].endTime
-  );
-  return startTimeAsDate < new Date() && endTimeAsDate > new Date();
-};
-
-const filterActiveOrUpcomingBookings = bookings => {
-  console.log(bookings);
-  const active = bookings.filter(booking => isActive(booking));
-  const upcoming = bookings.filter(b => !active.find(ab => ab.id.uuid === b.id.uuid));
-
-  return { active, upcoming };
+const cancelBookingTransitions = {
+  employer: {
+    requested: TRANSITION_CANCEL_BOOKING_REQUEST,
+    accepted: TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER,
+    charged: TRANSITION_CANCEL_CHARGED_BOOKING_CUSTOMER,
+    active: TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER,
+  },
+  caregiver: {
+    requested: TRANSITION_CANCEL_BOOKING_REQUEST,
+    accepted: TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER,
+    charged: TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER,
+    active: TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER,
+  },
 };
 
 const mapLineItemsForCancellationCustomer = lineItems => {
@@ -338,26 +333,40 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     include,
   };
 
-  const queryFunc = await sdk.transactions.query;
-
   try {
-    const response = await Promise.all([
-      queryFunc({ ...params, lastTransitions: requestBookingTransitions }),
-      queryFunc({ ...params, lastTransitions: activeOrUpcomingBookingTransitions }),
-      queryFunc({ ...params, lastTransitions: pastBookingTransitions }),
-    ]);
-
-    const denormalizedBookings = response.map(b => {
-      return denormalisedResponseEntities(b);
+    const response = await sdk.transactions.query({
+      ...params,
+      lastTransitions: [
+        TRANSITION_ACCEPT_BOOKING,
+        TRANSITION_REQUEST_BOOKING,
+        TRANSITION_CHARGE,
+        TRANSITION_START,
+        TRANSITION_START_UPDATE_TIMES,
+        TRANSITION_COMPLETE,
+        TRANSITION_COMPLETE_CANCELED,
+        TRANSITION_DISPUTE,
+        TRANSITION_RESOLVE_DISPUTE,
+        TRANSITION_PAY_CAREGIVER,
+        TRANSITION_EXPIRE_REVIEW_PERIOD,
+        TRANSITION_REVIEW,
+      ],
     });
 
-    const { active, upcoming } = filterActiveOrUpcomingBookings(denormalizedBookings[1]);
+    const denormalizedBookings = denormalisedResponseEntities(response);
 
     const sortedBookings = {
-      requests: denormalizedBookings[0],
-      active,
-      upcoming,
-      past: denormalizedBookings[2],
+      requests: denormalizedBookings.filter(b =>
+        requestBookingTransitions.includes(b.attributes.lastTransition)
+      ),
+      active: denormalizedBookings.filter(b =>
+        activeBookingTransitions.includes(b.attributes.lastTransition)
+      ),
+      upcoming: denormalizedBookings.filter(b =>
+        upcomingBookingTransitions.includes(b.attributes.lastTransition)
+      ),
+      past: denormalizedBookings.filter(b =>
+        pastBookingTransitions.includes(b.attributes.lastTransition)
+      ),
     };
 
     dispatch(fetchBookingsSuccess(sortedBookings));
@@ -372,33 +381,48 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   dispatch(cancelBookingRequest());
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
-  const isAccepted = booking.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
   const bookingId = booking.id.uuid;
   const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
   const listingId = booking.listing.id.uuid;
   const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
 
-  const isBookingActive = isActive(booking);
+  const lastTransition = booking.attributes.lastTransition;
+  let bookingState = null;
+
+  switch (lastTransition) {
+    case TRANSITION_ACCEPT_BOOKING:
+      bookingState = 'accepted';
+      break;
+    case TRANSITION_CHARGE:
+      bookingState = 'charged';
+      break;
+    case TRANSITION_START:
+      bookingState = 'active';
+      break;
+    case TRANSITION_START_UPDATE_TIMES:
+      bookingState = 'active';
+      break;
+    case TRANSITION_REQUEST_BOOKING:
+      bookingState = 'requested';
+      break;
+    default:
+      bookingState = null;
+  }
+
   const isCaregiver = userType === CAREGIVER;
 
-  const transition = isAccepted
-    ? isCaregiver
-      ? isBookingActive
-        ? TRANSITION_CANCEL_ACTIVE_PROVIDER
-        : TRANSITION_CANCEL_BOOKING_PROVIDER
-      : isBookingActive
-      ? TRANSITION_CANCEL_ACTIVE_CUSTOMER
-      : TRANSITION_CANCEL_BOOKING_CUSTOMER
-    : TRANSITION_CANCEL_BOOKING_REQUEST;
+  const transition = cancelBookingTransitions[userType][bookingState];
 
   try {
-    if (isAccepted && paymentIntentId && refundAmount > 0) {
+    if (paymentIntentId && refundAmount > 0) {
+      const applicationFeeRefund = parseInt(
+        (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
+      );
+
       await stripeCreateRefund({
         paymentIntentId,
         amount: refundAmount,
-        applicationFeeRefund: parseInt(
-          (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
-        ),
+        applicationFeeRefund,
       });
 
       const newLineItems = isCaregiver
@@ -411,20 +435,20 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
+          refundAmount: parseFloat((refundAmount + applicationFeeRefund) / 100).toFixed(2),
           payout,
         },
       });
     }
 
-    if (isAccepted && !paymentIntentId) {
+    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
       throw new Error('Missing payment intent id');
     }
 
     // Create new booking end so cancel-active goes to delivered after transitioning
     let newBookingEnd = null;
     let newBookingStart = null;
-    if (isBookingActive) {
+    if (bookingState === 'active') {
       // Add 10 minutes to booking end to give time for backend to process transition to delivered
       newBookingEnd = moment(roundDateToNearest5Minutes(new Date()))
         .add(10, 'minutes')
@@ -444,7 +468,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     });
 
     // Update listing metadata to remove cancelled booking dates
-    if (isAccepted) {
+    if (bookingState !== 'requested') {
       try {
         const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
         const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
@@ -515,10 +539,6 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
     await sdk.transactions.transition({
       id: txId,
       transition: TRANSITION_ACCEPT_BOOKING,
-      params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
-      },
     });
 
     const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];

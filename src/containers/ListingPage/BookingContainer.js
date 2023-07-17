@@ -19,12 +19,14 @@ const BookingContainer = props => {
     isBookingModalOpen,
     onBookingModalClose,
     onBookingModalOpen,
+    authorWhiteListed,
   } = props;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const minPrice = listing.attributes.publicData.minPrice;
   const authorId = listing.author?.id.uuid;
-  const authorHasStripeAccount = hasStripeAccount.userId === authorId && hasStripeAccount.data;
+  const authorHasStripeAccount =
+    (hasStripeAccount.userId === authorId && hasStripeAccount.data) || authorWhiteListed;
 
   return (
     <>

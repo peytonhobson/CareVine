@@ -16,7 +16,7 @@ import {
   TRANSITION_EXPIRE_BOOKING,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_DECLINE_PAYMENT,
-  TRANSITION_DISPUTE,
+  TRANSITION_CHARGE,
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../../util/transaction';
 import { userDisplayNameAsString, findEndTimeFromLineItems } from '../../../util/data';
@@ -73,7 +73,9 @@ const NotificationNewBookingRequest = props => {
   const isNotAcceptedOrDeclined =
     currentTransaction?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
   const isDeclined = currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_BOOKING;
-  const isAccepted = currentTransaction?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING;
+  const isUpcoming =
+    currentTransaction?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING ||
+    currentTransaction?.attributes.lastTransition === TRANSITION_CHARGE;
   const isExpired = currentTransaction?.attributes.lastTransition === TRANSITION_EXPIRE_BOOKING;
   const isPaymentFailed =
     currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_PAYMENT;
@@ -111,7 +113,9 @@ const NotificationNewBookingRequest = props => {
                 <p className={css.listingLocation}>{senderCity}</p>
               </div>
             </div>
-            <h2 className={css.listingTitle}>{senderListingTitle}</h2>
+            <h2 className={css.listingTitle}>
+              {senderListingTitle !== 'Title' ? senderListingTitle : ''}
+            </h2>
           </div>
           {message && (
             <div className={css.messageContainer}>
@@ -194,7 +198,7 @@ const NotificationNewBookingRequest = props => {
             )
           ) : (
             <div className={css.bookingDecisionContainer}>
-              {isAccepted && (
+              {isUpcoming && (
                 <>
                   <h2 className={css.bookingAccepted}>Booking Accepted</h2>
                   <NamedLink className={css.viewBookingLink} name="BookingsPage">

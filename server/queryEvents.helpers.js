@@ -8,6 +8,7 @@ const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const moment = require('moment');
 
 const createSlug = str => {
   let text = str
@@ -454,25 +455,6 @@ const createBookingPayment = async transaction => {
   const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
   try {
-    const fullListingResponse = await integrationSdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: parseInt(amount + formattedBookingFee + formattedProcessingFee),
       currency: 'usd',
@@ -493,7 +475,6 @@ const createBookingPayment = async transaction => {
       id: txId,
       metadata: {
         paymentIntentId,
-        bookingNumber,
       },
     });
 
@@ -532,8 +513,6 @@ const createCaregiverPayout = async transaction => {
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
-  console.log('amount ', amount);
-
   if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
@@ -542,8 +521,6 @@ const createCaregiverPayout = async transaction => {
     });
 
     const availableBalance = balance.available?.[0]?.amount;
-
-    console.log('availableBalance ', availableBalance);
 
     if (availableBalance > amount) {
       await stripe.payouts.create(
@@ -581,6 +558,99 @@ const createCaregiverPayout = async transaction => {
   }
 };
 
+const generateBookingNumber = async transaction => {
+  const txId = transaction.id.uuid;
+  const { listing } = transaction.relationships;
+  const listingId = listing.data.id?.uuid;
+
+  try {
+    const fullListingResponse = await integrationSdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        bookingNumber,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
+  }
+};
+
+const convertTimeFrom12to24 = fullTime => {
+  if (!fullTime || fullTime.length === 5) {
+    return fullTime;
+  }
+
+  const [time, ampm] = fullTime.split(/(am|pm)/i);
+  const [hours, minutes] = time.split(':');
+  let convertedHours = parseInt(hours);
+
+  if (ampm.toLowerCase() === 'am' && hours === '12') {
+    convertedHours = 0;
+  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
+    convertedHours += 12;
+  }
+
+  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+const findEndTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  const additionalTime =
+    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
+  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return endTime;
+};
+
+const updateBookingEnd = async transaction => {
+  const txId = transaction.id.uuid;
+  const { lineItems } = transaction.attributes.metadata;
+
+  const newBookingEnd = findEndTimeFromLineItems(lineItems);
+  const newBookingStart = moment(newBookingEnd)
+    .subtract(1, 'hours')
+    .toDate();
+
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/start-update-times',
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'update-booking-end-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -596,4 +666,6 @@ module.exports = {
   closeListingNotification,
   createBookingPayment,
   createCaregiverPayout,
+  generateBookingNumber,
+  updateBookingEnd,
 };

@@ -8,6 +8,7 @@ import {
 import * as log from '../util/log';
 import { stripePaymentMethods } from '../util/api';
 import { fetchCurrentUser } from './user.duck';
+import { stripeCustomer } from './stripe.duck';
 
 // ================ Action types ================ //
 
@@ -432,6 +433,7 @@ export const createBankAccount = (stripeCustomerId, stripe, currentUser) => asyn
     let setupIntentResponse;
 
     if (!stripeCustomerId) {
+      dispatch(stripeCustomer());
       setupIntentResponse = await stripeCreateSetupIntent({ stripeCustomerId: response.id });
     } else {
       setupIntentResponse = response;
@@ -494,6 +496,7 @@ export const createCreditCard = (
   return savePromise
     .then(response => {
       if (!stripeCustomerId) {
+        dispatch(fetchCurrentUser());
         return stripeCreateSetupIntent({ stripeCustomerId: response.id }).then(response => {
           return stripe.confirmCardSetup(response.client_secret, {
             payment_method: {
@@ -510,9 +513,6 @@ export const createCreditCard = (
           },
         });
       }
-    })
-    .then(response => {
-      dispatch(createCreditCardSuccess());
     })
     .catch(e => {
       log.error(storableError(e), 'create-credit-card-failed');
@@ -533,7 +533,10 @@ export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk)
     log.error(e, 'fetch-default-payment-failed', {});
   };
 
-  return stripePaymentMethods({ stripeCustomerId })
+  const customerId =
+    stripeCustomerId || getState().user.currentUser.stripeCustomer?.attributes.stripeCustomerId;
+
+  return stripePaymentMethods({ stripeCustomerId: customerId })
     .then(handleSuccess)
     .catch(handleError);
 };

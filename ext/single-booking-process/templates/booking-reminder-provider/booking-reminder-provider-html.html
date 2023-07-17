@@ -3,11 +3,11 @@
     <style type="text/css">
       @media only screen and (max-width: 768px) {
         .body1 {
-          padding: 32px 32px 44px 32px !important;
+          padding: 32px 32px 32px 32px !important;
         }
 
         .body2 {
-          padding: 0 32px 44px 32px !important;
+          padding: 0 32px 32px 32px !important;
         }
 
         .content {
@@ -35,31 +35,19 @@
           class="title"
           style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 28px;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
         >
-          Booking Successfully Canceled
+            Booking Reminder
         </p>
         <p
           class="body1"
-          style="padding: 32px 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+          style="padding: 32px 56px 32px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
-          Your booking with {{transaction.provider.display-name}} has been canceled.
-          {{#if transaction.metadata.refundAmount}}
-          You will be
-          refunded ${{transaction.metadata.refundAmount}} for the remaining time.
-          {{else}}
-          Your payment method was not charged.
-          {{/if}}
+            You have an upcoming booking with {{transaction.customer.display-name}} on {{transaction.booking.start.month}}/{{transaction.booking.start.day}} at {{transaction.metadata.lineItems.[0].startTime}}.
         </p>
         <p
           class="body2"
-          style="padding: 0 56px 44px 32px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
+          style="padding: 0 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
         >
-          If you have any questions or concerns regarding the booking or your refund amount, please
-          contact us at
-          <a
-            href="mailto:support@carevine.us"
-            style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-            >support@carevine.us</a
-          >.
+            If you experience any issues during your booking or have any questions, please reach out to us at <a href="mailto:support@carevine.us" style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;">support@carevine.us</a>
         </p>
       </div>
       <div class="footer" style="text-align: center;">

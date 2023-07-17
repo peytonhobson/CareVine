@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { Calendar } from 'react-calendar';
-import { timestampToDate } from '../../util/dates';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -20,19 +19,13 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
   const beforeBuffer =
     date.getTime() <
     moment()
-      .add(bufferDays ?? 0, 'days')
+      .add(bufferDays ?? 1, 'days')
       .startOf('day')
-      .toDate()
-      .getTime();
-  const afterThreeMonths =
-    date.getTime() >
-    moment()
-      .add(3, 'months')
       .toDate()
       .getTime();
 
   if (selectedDays.length == 0) {
-    return booked || beforeBuffer || afterThreeMonths;
+    return booked || beforeBuffer;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -51,9 +44,7 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
   const isBeforeFirstSelectedDay = date.getTime() >= twoWeeksAfterFirstSelectedDay.getTime();
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
-  return (
-    booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer || afterThreeMonths
-  );
+  return booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer;
 };
 
 const formatDay = (locale, date, selectedDays, bookedDates, onClick, bufferDays) => {
@@ -116,6 +107,7 @@ export const FieldDatePickerComponent = props => {
 
   return (
     <div className={classes}>
+      {children}
       <Calendar
         formatDay={(locale, date) =>
           formatDay(locale, date, selectedDays, bookedDates, handleSelectDay, bufferDays)
@@ -126,7 +118,6 @@ export const FieldDatePickerComponent = props => {
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates
       </InlineTextButton>
-      {children}
     </div>
   );
 };
