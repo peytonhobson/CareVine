@@ -67,6 +67,7 @@
   height: var(--topbarHeightDesktop);
   border: none;
   padding-top: 3px;
+  border-radius: var(--borderRadius);
 
   display: flex;
   width: 24px;
@@ -119,7 +120,7 @@
 
 .desktopRoot {
   padding: 0 1rem;
-  border-radius: 3px;
+  border-radius: var(--borderRadius);
 }
 
 .mobileRoot {
