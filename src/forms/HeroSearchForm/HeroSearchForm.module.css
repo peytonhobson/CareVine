@@ -23,6 +23,7 @@
 
 .mobileIcon {
   padding: 11px 0 17px 0;
+  margin: auto;
 
   /* Borders */
   border-bottom-width: var(--borderRadiusMobileSearch);
@@ -64,10 +65,9 @@
 }
 
 .desktopIcon {
-  height: var(--topbarHeightDesktop);
   border: none;
-  padding-top: 3px;
-  border-radius: var(--borderRadius);
+  margin: auto;
+  border-radius: var(--topbarHeightDesktop);
 
   display: flex;
   width: 24px;
@@ -120,12 +120,12 @@
 
 .desktopRoot {
   padding: 0 1rem;
-  border-radius: var(--borderRadius);
+  border-radius: var(--topbarHeightDesktop);
 }
 
 .mobileRoot {
   padding: 0 1.5rem;
-  border-radius: var(--borderRadius);
+  border-radius: var(--topbarHeightDesktop);
 }
 
 .mobilePredictions {
