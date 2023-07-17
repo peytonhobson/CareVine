@@ -108,6 +108,7 @@
   width: 100%;
   text-align: center;
   padding-block: 0.25rem;
+  color: var(--failColor);
 
   @media (--viewportMedium) {
     padding-block: 0;
