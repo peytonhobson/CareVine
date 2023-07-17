@@ -206,6 +206,10 @@
   }
 }
 
+.heroSearchForm {
+  width: 100%;
+}
+
 .arrowHead {
   margin-top: 0.1rem;
   fill: transparent;
@@ -311,7 +315,7 @@
   height: 3rem;
   width: 3rem;
   min-width: 3rem;
-  background-color: #cfe3d7;
+  background-color: var(--marketplaceColor);
   border-radius: 100%;
   margin-right: 1rem;
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -10,46 +9,49 @@ import { NamedLink } from '../../components';
 
 import css from './LandingPage.module.css';
 
-const useStyles = makeStyles(theme => ({
-  card: {
-    maxWidth: '100%',
-    borderRadius: 'var(--borderRadius)',
-    transition: 'all 0.2s ease-in 0s',
-    '&:hover': {
-      transform: 'scale(1.05)',
-    },
-  },
-  media: {
-    height: '12rem',
-  },
-  cardActions: {
-    display: 'flex',
-    margin: '0 10px',
-    justifyContent: 'space-between',
-  },
-  content: {
-    height: '8rem',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  author: {
-    display: 'flex',
-  },
-}));
-
 const BlogCard = props => {
-  const { hero, title, slug } = props;
+  const { hero, title, slug, description } = props;
 
+  const useStyles = makeStyles(theme => ({
+    card: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 'var(--borderRadius)',
+      transition: 'all 0.2s ease-in 0s !important',
+      '&:hover': {
+        transform: 'scale(1.02)',
+      },
+    },
+    media: {
+      height: '100%',
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${hero}) !important`,
+    },
+    actionArea: {
+      height: '100%',
+    },
+    content: {
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      flexDirection: 'column',
+      color: 'var(--matterColorLight)',
+    },
+    author: {
+      display: 'flex',
+    },
+  }));
   const classes = useStyles();
 
   return (
     <NamedLink name="BlogPostPage" params={{ slug: slug }} className={css.link}>
       <Card className={classes.card}>
-        <CardActionArea>
-          <CardMedia className={classes.media} image={hero} title="Contemplative Reptile" />
-          <CardContent className={classes.content}>
-            <h3 className={css.blogTitle}>{title}</h3>
-          </CardContent>
+        <CardActionArea className={classes.actionArea}>
+          <CardMedia className={classes.media} image={hero} title="Contemplative Reptile">
+            <CardContent className={classes.content}>
+              <h2 className={css.blogTitle}>{title}</h2>
+              {description && <p className={css.blogDescription}>{description}</p>}
+            </CardContent>
+          </CardMedia>
         </CardActionArea>
       </Card>
     </NamedLink>

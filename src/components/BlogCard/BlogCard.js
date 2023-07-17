@@ -17,7 +17,7 @@ import css from './BlogCard.module.css';
 
 const useStyles = makeStyles(theme => ({
   card: {
-    width: '80vw',
+    width: '100%',
     height: '30rem',
     borderRadius: 'var(--borderRadius)',
   },
