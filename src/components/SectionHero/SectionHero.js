@@ -157,31 +157,27 @@ const SectionHero = props => {
         ) : (
           <div className={css.unAuthContainer}>
             <h1 className={css.yourCare}>
-              Your marketplace.<br></br> Your caregiver.
+              Choose <span style={{ color: 'var(--marketplaceColor)' }}>Your Care</span>.<br></br>{' '}
+              On Your Terms.
             </h1>
-            {/* <h2 className={css.perfectCaregiver}>
-              <div className={css.subPerfectCaregiver}>
-                Private, independent, and experienced caregivers without the agency fees.{' '}
-              </div>
-            </h2> */}
             <div className={css.stepContainer}>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>1</h2>
-                <h2>
-                  Create your<br></br> profile
-                </h2>
+                <h4>
+                  Craft Your<br></br> Personal Profile
+                </h4>
               </div>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>2</h2>
-                <h2>
-                  Find your<br></br> caregiver
-                </h2>
+                <h4>
+                  Discover Your <br></br> Ideal Caregiver
+                </h4>
               </div>
               <div className={css.step}>
                 <h2 className={css.stepIcon}>3</h2>
-                <h2>
-                  Book them <br></br>on CareVine
-                </h2>
+                <h4>
+                  Book Your<br></br> Care
+                </h4>
               </div>
             </div>
             <HeroSearchForm
