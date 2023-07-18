@@ -213,28 +213,28 @@
 .content {
   display: flex;
   flex-direction: column;
-  padding: 6rem 0 0 0;
+  padding: 6rem 0;
   margin: auto;
 
   @media (--viewportMedium) {
     max-width: 75rem;
-    padding: 6rem 2rem 0 2rem;
+    padding: 6rem 2rem;
   }
 }
 
 .employerSection {
-  padding: 0rem 2rem 2rem 2rem;
+  padding: 0rem 2rem 6rem 2rem;
 
   @media (--viewportMedium) {
-    padding: 0 0 3rem 0;
+    padding: 0 0 6rem 0;
   }
 }
 
 .caregiverSection {
-  padding: 3rem 2rem 3rem 2rem;
+  padding: 0 2rem 6rem 2rem;
 
   @media (--viewportMedium) {
-    padding: 3rem 0 3rem 0;
+    padding: 0rem 0 6rem 0;
   }
 }
 
@@ -318,17 +318,70 @@
   }
 }
 
-.citySection {
-  padding: 2rem 2rem 3rem 2rem;
+.stepsSection {
+  padding: 0 2rem 6rem 2rem;
 
   @media (--viewportMedium) {
-    padding: 0 0 3rem 0;
+    padding: 0 0 6rem 0;
+  }
+}
+
+.stepsSectionCard {
+  width: 100%;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--matterColorAnti);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+
+  @media (--viewportMedium) {
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-direction: row;
+    padding: 3rem 0;
+  }
+}
+
+.step {
+  text-align: center;
+  padding: 3rem 0;
+
+  & > p {
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  @media (--viewportMedium) {
+    padding: 0;
+    max-width: 11rem;
+  }
+
+  @media (--viewportLarge) {
+    max-width: 13rem;
+  }
+}
+
+.stepArrow {
+  margin: auto 0;
+  stroke-width: 0;
+}
+
+.citySection {
+  padding: 0 2rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
   }
 }
 
 .citySectionContent {
   max-width: 75rem;
   margin: auto;
+
+  & > h1 {
+    margin-top: 0;
+  }
 }
 
 .cityCardContainer {
@@ -378,7 +431,7 @@
   }
 }
 
-.blogPostsTitle {
+.contentTitle {
   color: var(--matterColorLight);
   width: 100%;
   text-align: center;
@@ -393,7 +446,7 @@
     line-height: 3rem;
     width: auto;
     text-align: left;
-    margin-top: 1.5rem;
+    margin-top: 0;
     margin-bottom: 1.5rem;
   }
 }
@@ -404,15 +457,31 @@
   color: var(--matterColorLight);
 
   @media (--viewportMedium) {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+  }
+
+  @media (--viewportLarge) {
     font-size: 1.75rem;
     line-height: 2rem;
-    margin-bottom: 0;
   }
 }
 
 .blogDescription {
   margin-bottom: 0;
   line-height: 1.35rem;
+
+  @media (--viewportMedium) {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    line-height: 1rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1rem;
+    line-height: 1.35rem;
+  }
 }
 
 .blogCardContainer {
@@ -425,7 +494,7 @@
   padding: 2rem 0 6rem 0;
   max-width: 85vw;
   margin-inline: auto;
-  min-height: 70vh;
+  min-height: 60vh;
 
   @media (--viewportMedium) {
     max-width: 100%;

@@ -45,8 +45,11 @@ export {
     IconSocialMediaTwitter,
     IconSpinner,
     IconSuccess,
+    IconUserProfile,
+    IconCaregiver,
     IconVerticalDots,
     IconWallet,
+    IconCalendarHeart,
 } from './Icons';
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';

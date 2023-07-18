@@ -21,6 +21,11 @@ import {
   Modal,
   Button,
   NamedLink,
+  IconArrowHead,
+  IconReviewUser,
+  IconUserProfile,
+  IconCaregiver,
+  IconCalendarHeart,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
@@ -170,9 +175,83 @@ export const LandingPageComponent = props => {
               </div>
             </section>
 
+            <section className={css.stepsSection}>
+              <div className={css.stepsSectionCard}>
+                <div className={css.step}>
+                  <IconUserProfile width="3.5em" height="3.5em" />
+                  <h2 className={css.stepTitle}>
+                    Craft Your Personal<br></br> Profile
+                  </h2>
+                  <p>Begin your journey by creating a personalized profile.</p>
+                </div>
+                <IconArrowHead
+                  direction={isMobile ? 'down' : 'right'}
+                  height="3em"
+                  width="3em"
+                  className={css.stepArrow}
+                />
+                <div className={css.step}>
+                  <IconCaregiver width="3.5em" height="3.5em" />
+                  <h2 className={css.stepTitle}>
+                    Discover Your Ideal<br></br> Caregiver
+                  </h2>
+                  <p>Browse through our network of experienced caregivers.</p>
+                </div>
+                <IconArrowHead
+                  direction={isMobile ? 'down' : 'right'}
+                  height="3em"
+                  width="3em"
+                  className={css.stepArrow}
+                />
+
+                <div className={css.step}>
+                  <IconCalendarHeart width="3.5em" height="3.5em" />
+                  <h2 className={css.stepTitle}>
+                    Book Your<br></br> Care
+                  </h2>
+                  <p className={css.stepSubText}>
+                    Book your perfect caregiver using our hassle-free booking system.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className={css.caregiverSection}>
+              <div className={css.employerSectionContent}>
+                <div className={css.employerSectionCard}>
+                  <h3 className={css.forCaregivers}>For Caregivers</h3>
+                  <h2 className={css.employerSectionTitle}>
+                    Caregiving Freedom:<br></br>
+                    Your Journey, Your Way
+                  </h2>
+                  <span>
+                    Set your rates, choose your hours, and handpick your clients in your preferred
+                    location. Showcase your unique skills and passion to our community, unlocking
+                    endless opportunities. Reimagine your caregiving career with freedom,
+                    flexibility, and recognition—only at CareVine.
+                  </span>
+                  <div className={css.getStartedLinkContainer}>
+                    <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
+                      Learn More
+                    </NamedLink>
+                  </div>
+                </div>
+                <div className={css.employerSectionImageContainer}>
+                  <img src={tempImg} className={css.employerSectionImage} />
+                </div>
+              </div>
+            </section>
+
+            <section className={css.blogSection}>
+              <h2 className={css.contentTitle}>Recent Blog Posts</h2>
+              {!isSsr && <BlogCardGrid />}
+            </section>
+
             <section className={css.citySection}>
               <div className={css.citySectionContent}>
-                <h1>Available across the Country</h1>
+                <h1 className={css.contentTitle} style={{ color: 'var(--matterColor)' }}>
+                  Available across the Country
+                </h1>
                 <div className={css.cityCardContainer}>
                   <Card className={classes.cityCard}>
                     <CardActionArea>
@@ -215,37 +294,6 @@ export const LandingPageComponent = props => {
                   </Card>
                 </div>
               </div>
-            </section>
-
-            <section className={css.caregiverSection}>
-              <div className={css.employerSectionContent}>
-                <div className={css.employerSectionCard}>
-                  <h3 className={css.forCaregivers}>For Caregivers</h3>
-                  <h2 className={css.employerSectionTitle}>
-                    Caregiving Freedom:<br></br>
-                    Your Journey, Your Way
-                  </h2>
-                  <span>
-                    Set your rates, choose your hours, and handpick your clients in your preferred
-                    location. Showcase your unique skills and passion to our community, unlocking
-                    endless opportunities. Reimagine your caregiving career with freedom,
-                    flexibility, and recognition—only at CareVine.
-                  </span>
-                  <div className={css.getStartedLinkContainer}>
-                    <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
-                      Learn More
-                    </NamedLink>
-                  </div>
-                </div>
-                <div className={css.employerSectionImageContainer}>
-                  <img src={tempImg} className={css.employerSectionImage} />
-                </div>
-              </div>
-            </section>
-
-            <section className={css.blogSection}>
-              <h2 className={css.blogPostsTitle}>Recent Blog Posts</h2>
-              {!isSsr && <BlogCardGrid />}
             </section>
           </div>
         </LayoutWrapperMain>
