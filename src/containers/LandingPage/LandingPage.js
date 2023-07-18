@@ -27,6 +27,10 @@ import {
   IconCaregiver,
   IconCalendarHeart,
 } from '../../components';
+import Geocoder, {
+  GeocoderAttribution,
+  CURRENT_LOCATION_ID,
+} from '../../components/LocationAutocompleteInput/GeocoderMapbox';
 import { TopbarContainer } from '../../containers';
 import { EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
@@ -95,6 +99,32 @@ export const LandingPageComponent = props => {
   }, [externalPromo]);
 
   const isSsr = useIsSsr();
+
+  const handleCurrentLocation = () => {
+    let geocoder = new Geocoder();
+
+    const prediction = {
+      id: CURRENT_LOCATION_ID,
+      predictionPlace: {},
+    };
+
+    geocoder
+      .getPlaceDetails(prediction)
+      .then(place => {
+        const valOrigin = place.origin;
+        // Need to parse float twice to ensure no trailing zeros
+        // If there are trailing zeros then urlHelpers parse will return null
+        const lat = parseFloat(parseFloat(valOrigin.lat).toFixed(5));
+        const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
+        const origin = `${lat}%2C${lng}`;
+
+        history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
+      })
+      .catch(e => {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      });
+  };
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -212,6 +242,11 @@ export const LandingPageComponent = props => {
                   <p className={css.stepSubText}>
                     Book your perfect caregiver using our hassle-free booking system.
                   </p>
+                </div>
+                <div className={css.stepButtonContainer}>
+                  <Button className={css.stepButton} onClick={handleCurrentLocation}>
+                    Find Your Caregiver
+                  </Button>
                 </div>
               </div>
             </section>

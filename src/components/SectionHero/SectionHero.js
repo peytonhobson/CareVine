@@ -66,7 +66,6 @@ const SectionHero = props => {
   }, [heroRef?.current]);
 
   const handleSearchSubmit = values => {
-    console.log('values', values);
     const valOrigin = values.location.selectedPlace.origin;
     // Need to parse float twice to ensure no trailing zeros
     // If there are trailing zeros then urlHelpers parse will return null
