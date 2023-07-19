@@ -89,8 +89,6 @@ const NotificationNewBookingRequest = props => {
   const isCanceledRequest =
     currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
 
-  console.log(currentTransaction?.booking);
-
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
       <IconSpinner className={css.bookingRequestSpinner} />
