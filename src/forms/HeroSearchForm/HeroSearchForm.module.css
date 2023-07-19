@@ -21,7 +21,7 @@
   color: var(--matterColor);
 
   @media (--viewportLarge) {
-    height: 5vw;
+    height: clamp(2rem, 5vw, 4.5rem);
   }
 }
 
@@ -122,8 +122,8 @@
   }
 
   @media (--viewportLarge) {
-    height: 5vw;
-    font-size: 1vw;
+    height: clamp(2rem, 5vw, 4.5rem);
+    font-size: clamp(0.75rem, 1vw, 1rem);
   }
 }
 
@@ -132,8 +132,8 @@
   border-radius: var(--topbarHeightDesktop);
 
   @media (--viewportLarge) {
-    height: 5vw;
-    border-radius: 5vw;
+    height: clamp(2rem, 5vw, 4.5rem);
+    border-radius: clamp(2rem, 5vw, 4.5rem);
   }
 }
 
@@ -183,18 +183,19 @@
 
   @media (--viewportLarge) {
     margin-top: calc(
-      5vw - var(--TopbarSearchForm_inputHeight) + var(--TopbarSearchForm_bottomBorder)
+      clamp(2rem, 5vw, 4.5rem) - var(--TopbarSearchForm_inputHeight) +
+        var(--TopbarSearchForm_bottomBorder)
     );
 
     & > ul > li {
-      font-size: 1vw;
-      line-height: 1.5vw;
-      padding: 0.75vw 2vw;
+      font-size: clamp(0.5rem, 1vw, 1rem);
+      line-height: clamp(0.75rem, 1.5vw, 1.5rem);
+      padding: clamp(0.5rem 1rem, 0.75vw 2vw, 1rem 3rem);
     }
 
     & > ul > li > span {
-      font-size: 1vw;
-      line-height: 1.5vw;
+      font-size: clamp(0.5rem, 1vw, 1rem);
+      line-height: clamp(0.75rem, 1.5vw, 1.5rem);
     }
   }
 }
