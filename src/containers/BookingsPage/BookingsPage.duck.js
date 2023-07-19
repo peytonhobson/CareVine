@@ -1,5 +1,5 @@
 import { CAREGIVER } from '../../util/constants';
-import { denormalisedResponseEntities, findEndTimeFromLineItems } from '../../util/data';
+import { denormalisedResponseEntities, findStartTimeFromLineItems } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
@@ -528,17 +528,13 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
   dispatch(acceptBookingRequest());
 
   const txId = transaction.id.uuid;
-  const { lineItems } = transaction.attributes.metadata;
   const listingId = transaction.listing.id.uuid;
-  const newBookingEnd = findEndTimeFromLineItems(lineItems);
-  const newBookingStart = moment(newBookingEnd)
-    .subtract(1, 'hours')
-    .toDate();
 
   try {
     await sdk.transactions.transition({
       id: txId,
       transition: TRANSITION_ACCEPT_BOOKING,
+      params: {},
     });
 
     const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];

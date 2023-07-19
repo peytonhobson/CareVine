@@ -590,6 +590,21 @@ export const findEndTimeFromLineItems = lineItems => {
   return endTime;
 };
 
+export const findStartTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const firstDay = sortedLineItems[0] ?? { startTime: '12:00am' };
+  const additionalTime = convertTimeFrom12to24(firstDay.startTime).split(':')[0];
+  const startTime = moment(sortedLineItems[0].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return startTime;
+};
+
 const TRANSACTION_FEE = 0.05;
 
 export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
