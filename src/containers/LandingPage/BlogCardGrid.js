@@ -80,38 +80,38 @@ const CardGrid = props => {
 
   return (
     <Container maxWidth="lg" className={classes.blogsContainer} ref={containerRef}>
-      {loading ? (
-        <Box className={classes.spinnerContainer}>
-          <IconSpinner className={css.spinner} />
-        </Box>
-      ) : data ? (
+      {data ? (
         isMobile ? (
-          <div className={css.blogCardContainer}>
-            {data?.blogs?.data.map(blog => {
-              const blogCardProps = {
-                hero: blog.attributes.hero?.data?.attributes?.url,
-                title: blog.attributes.title,
-                slug: blog.attributes.slug,
-              };
+          <section className={css.blogSection}>
+            <h2 className={css.contentTitle}>Recent Blog Posts</h2>
+            <div className={css.blogCardContainer}>
+              {data?.blogs?.data.map(blog => {
+                const blogCardProps = {
+                  hero: blog.attributes.hero?.data?.attributes?.url,
+                  title: blog.attributes.title,
+                  slug: blog.attributes.slug,
+                };
 
-              return <BlogCard {...blogCardProps} />;
-            })}
-          </div>
+                return <BlogCard {...blogCardProps} />;
+              })}
+            </div>
+          </section>
         ) : (
-          <div className={css.blogCardContainerGrid}>
-            <div className={css.left}>
-              <BlogCard {...blogCardProps[0]} />
+          <section className={css.blogSection}>
+            <h2 className={css.contentTitle}>Recent Blog Posts</h2>
+            <div className={css.blogCardContainerGrid}>
+              <div className={css.left}>
+                <BlogCard {...blogCardProps[0]} />
+              </div>
+              <div className={css.rightTop}>
+                <BlogCard {...blogCardProps[1]} />
+              </div>
+              <div className={css.rightBottom}>
+                <BlogCard {...blogCardProps[2]} />
+              </div>
             </div>
-            <div className={css.rightTop}>
-              <BlogCard {...blogCardProps[1]} />
-            </div>
-            <div className={css.rightBottom}>
-              <BlogCard {...blogCardProps[2]} />
-            </div>
-          </div>
+          </section>
         )
-      ) : error ? (
-        <p className={css.error}>Error loading blogs</p>
       ) : null}
     </Container>
   );

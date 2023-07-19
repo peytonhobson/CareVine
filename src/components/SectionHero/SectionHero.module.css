@@ -73,22 +73,10 @@
 
   @media (--viewportLarge) {
     margin-left: auto;
+    margin-right: 15vw;
     position: static;
     padding: 0;
   }
-
-  /* Special viewport for adjusting the heroContent's placement */
-
-  @media only screen and (min-width: 1025px) and (max-width: 1366px) {
-    padding: 0 36px 0 36px;
-  }
-
-  /* @media only screen and (min-width: 1367px) {
-    margin: 0 auto;
-    max-width: calc(1052px + 36px + 36px);
-    width: 100%;
-    padding: 0 36px 0 36px;
-  } */
 }
 
 .heroMainTitle {
@@ -122,6 +110,13 @@
     margin: 0 0 2rem 0;
     text-align: left;
   }
+
+  @media (--viewportLarge) {
+    font-size: 1.25rem;
+    font-size: 1.25vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
+  }
 }
 
 .centered {
@@ -150,26 +145,29 @@
   }
 
   @media (--viewportLarge) {
-    display: block;
+    max-width: auto;
     width: 16.25rem;
+    width: 15vw;
+    height: 3.5rem;
+    height: 3.5vw;
+    min-height: 0;
+
     margin: 0;
+    padding: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1rem;
+    font-size: 1vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
   }
 }
 
 .heroButtonFEDelay {
   animation-delay: 0.3s;
-}
-
-.heroButtonUnAuth {
-  composes: button buttonFont buttonText buttonBorders buttonColors from global;
-  composes: animation;
-  margin-inline: 1rem;
-
-  @media (--viewportMedium) {
-    display: block;
-    margin-right: 2.5rem;
-    margin-left: 0;
-  }
 }
 
 .logo {
@@ -258,6 +256,11 @@
     font-size: 3.5rem;
     line-height: 4rem;
   }
+
+  @media (--viewportLarge) {
+    font-size: 4vw;
+    line-height: 4.5vw;
+  }
   text-align: center;
 }
 
@@ -316,6 +319,15 @@
   background-color: var(--marketplaceColor);
   border-radius: 100%;
   margin-right: 1rem;
+
+  @media (--viewportLarge) {
+    width: 3vw;
+    height: 3vw;
+    min-width: 3vw;
+
+    font-size: 1.35vw;
+    line-height: 1.75vw;
+  }
 }
 
 .step {
@@ -323,4 +335,11 @@
   align-items: center;
   justify-content: center;
   color: var(--matterColorLight);
+
+  @media (--viewportLarge) {
+    & > h4 {
+      font-size: 1vw;
+      line-height: 1.5vw;
+    }
+  }
 }

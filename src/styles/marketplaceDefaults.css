@@ -148,7 +148,7 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 35rem;
+  --SectionHero_desktopTitleMaxWidth: 25vw;
 
   /* ================ TabNav ================ */
   --TabNav_linkWidth: 15rem;
@@ -598,6 +598,13 @@ textarea {
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     padding-top: 1.563rem;
     padding-bottom: 1.438rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 5rem;
+    font-size: 5vw;
+    line-height: 5rem;
+    line-height: 5.5vw;
   }
 }
 
