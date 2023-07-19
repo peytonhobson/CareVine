@@ -22,6 +22,7 @@ import {
   TRANSITION_CHARGE,
   TRANSITION_START,
   TRANSITION_START_UPDATE_TIMES,
+  TRANSITION_MAKE_REVIEWABLE,
 } from '../../util/transaction';
 import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -135,9 +136,7 @@ const EmployerBookingCard = props => {
   const isActive =
     lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
-  const isReviewable =
-    booking?.attributes.lastTransition === TRANSITION_PAY_CAREGIVER ||
-    booking?.attributes.lastTransition === TRANSITION_RESOLVE_DISPUTE;
+  const isReviewable = booking?.attributes.lastTransition === TRANSITION_MAKE_REVIEWABLE;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();

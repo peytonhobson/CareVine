@@ -27,6 +27,7 @@ module.exports = queryEvents = () => {
     createCaregiverPayout,
     generateBookingNumber,
     updateBookingEnd,
+    makeReviewable,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -293,6 +294,10 @@ module.exports = queryEvents = () => {
         lastTransition === 'transition/cancel-pay-caregiver'
       ) {
         createCaregiverPayout(transaction);
+
+        if (lastTransition !== 'transition/cancel-pay-caregiver') {
+          makeReviewable(transaction);
+        }
       }
     }
 

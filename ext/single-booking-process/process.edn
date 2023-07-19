@@ -153,19 +153,24 @@
    :from :state/dispute-review,
    :to :state/paid-out}
 
+   {:name :transition/make-reviewable,
+    :actor :actor.role/operator,
+   :from :state/paid-out,
+   :to :state/reviewable}
+
    {:name :transition/review,
    :actor :actor.role/customer,
    :actions
    [{:name :action/post-review-by-customer}
     {:name :action/publish-reviews}],
-   :from :state/paid-out,
+   :from :state/reviewable,
    :to :state/reviewed}
 
    {:name :transition/expire-review-period,
    :at
    {:fn/plus
-    [{:fn/timepoint [:time/first-entered-state :state/paid-out]} {:fn/period ["P7D"]}]},
-   :from :state/paid-out,
+    [{:fn/timepoint [:time/first-entered-state :state/reviewable]} {:fn/period ["P7D"]}]},
+   :from :state/reviewable,
    :to :state/reviewed}
    ],
  :notifications
@@ -294,15 +299,9 @@
    :to :actor.role/provider,
    :template :customer-disputed}
 
-    ; Dispute resolved. We will personally send dispute emails, but this lets the customer know they can now review the caregiver.
-   {:name :notification/customer-can-review-dispute,
-    :on :transition/resolve-dispute,
-    :to :actor.role/customer,
-    :template :customer-can-review}
-
     ; Caregiver paid out as normal
     {:name :notification/customer-can-review,
-    :on :transition/pay-caregiver,
+    :on :transition/make-reviewable,
     :to :actor.role/customer,
     :template :customer-can-review}
 
