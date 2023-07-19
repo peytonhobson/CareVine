@@ -651,6 +651,31 @@ const updateBookingEnd = async transaction => {
   }
 };
 
+const makeReviewable = async transaction => {
+  const txId = transaction.id.uuid;
+
+  try {
+    const transactionResponse = await integrationSdk.transactions.query({
+      customerId: transaction.relationships.customer.data.id.uuid,
+      providerId: transaction.relationships.provider.data.id.uuid,
+      include: ['reviews'],
+    });
+
+    const reviews = await transactionResponse.data.data.filter(
+      tx => tx.relationships.reviews.data.length > 0
+    );
+
+    if (reviews.length === 0) {
+      await integrationSdk.transactions.transition({
+        id: txId,
+        transition: 'transition/make-reviewable',
+      });
+    }
+  } catch (e) {
+    log.error(e, 'make-reviewable-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -668,4 +693,5 @@ module.exports = {
   createCaregiverPayout,
   generateBookingNumber,
   updateBookingEnd,
+  makeReviewable,
 };
