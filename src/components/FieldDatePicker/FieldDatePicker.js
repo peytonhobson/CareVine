@@ -19,7 +19,7 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
   const beforeBuffer =
     date.getTime() <
     moment()
-      .add(bufferDays ?? 1, 'days')
+      .add(bufferDays ?? 0, 'days')
       .startOf('day')
       .toDate()
       .getTime();
