@@ -277,10 +277,7 @@ export const LandingPageComponent = props => {
               </div>
             </section>
 
-            <section className={css.blogSection}>
-              <h2 className={css.contentTitle}>Recent Blog Posts</h2>
-              {!isSsr && <BlogCardGrid />}
-            </section>
+            {!isSsr && <BlogCardGrid />}
 
             <section className={css.citySection}>
               <div className={css.citySectionContent}>

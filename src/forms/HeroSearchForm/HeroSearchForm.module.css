@@ -19,6 +19,10 @@
   display: flex;
   position: relative;
   color: var(--matterColor);
+
+  @media (--viewportLarge) {
+    height: 5vw;
+  }
 }
 
 .mobileIcon {
@@ -70,7 +74,7 @@
   border-radius: var(--topbarHeightDesktop);
 
   display: flex;
-  width: 24px;
+  width: 1.5rem;
   align-self: stretch;
   background-color: var(--matterColorLight);
 }
@@ -116,11 +120,21 @@
     margin-bottom: 0;
     font-weight: var(--fontWeightSemiBold);
   }
+
+  @media (--viewportLarge) {
+    height: 5vw;
+    font-size: 1vw;
+  }
 }
 
 .desktopRoot {
   padding: 0 1rem;
   border-radius: var(--topbarHeightDesktop);
+
+  @media (--viewportLarge) {
+    height: 5vw;
+    border-radius: 5vw;
+  }
 }
 
 .mobileRoot {
@@ -154,10 +168,9 @@
 
 .desktopPredictions {
   position: absolute;
-  width: 100%;
-  padding-bottom: var(--locationAutocompleteBottomPadding);
+  width: calc(100% - var(--borderRadius) * 2);
   top: 50px;
-  left: 0;
+  left: var(--borderRadius);
   background-color: var(--marketplaceColor);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
@@ -167,4 +180,35 @@
     var(--topbarHeightDesktop) - var(--TopbarSearchForm_inputHeight) +
       var(--TopbarSearchForm_bottomBorder)
   );
+
+  & > ul > li {
+    border-radius: var(--borderRadius);
+
+    &:hover {
+      border: none;
+      background-color: var(--matterColorLight);
+      color: var(--marketplaceColor);
+
+      & > span > svg > path {
+        fill: var(--marketplaceColor);
+      }
+    }
+  }
+
+  @media (--viewportLarge) {
+    margin-top: calc(
+      5vw - var(--TopbarSearchForm_inputHeight) + var(--TopbarSearchForm_bottomBorder)
+    );
+
+    & > ul > li {
+      font-size: 1vw;
+      line-height: 1.5vw;
+      padding: 0.75vw 2vw;
+    }
+
+    & > ul > li > span {
+      font-size: 1vw;
+      line-height: 1.5vw;
+    }
+  }
 }
