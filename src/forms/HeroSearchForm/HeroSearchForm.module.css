@@ -181,20 +181,6 @@
       var(--TopbarSearchForm_bottomBorder)
   );
 
-  & > ul > li {
-    border-radius: var(--borderRadius);
-
-    &:hover {
-      border: none;
-      background-color: var(--matterColorLight);
-      color: var(--marketplaceColor);
-
-      & > span > svg > path {
-        fill: var(--marketplaceColor);
-      }
-    }
-  }
-
   @media (--viewportLarge) {
     margin-top: calc(
       5vw - var(--TopbarSearchForm_inputHeight) + var(--TopbarSearchForm_bottomBorder)

@@ -63,8 +63,7 @@ size and position, etc.
   top: var(--LocationAutocompleteInput_inputHeight);
   left: 0;
   background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
+  border-radius: var(--borderRadius) !important;
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
 }
@@ -93,6 +92,7 @@ bottom of the container.
   composes: marketplaceBodyFontStyles from global;
 
   margin: 0;
+  border-radius: var(--borderRadius) !important;
   /* padding: 14px 0; */
 
   & li {
@@ -100,6 +100,7 @@ bottom of the container.
     transition: var(--transitionStyleButton);
     margin: 0; /* Remove the double white space */
     line-height: 24px;
+    border-radius: var(--borderRadius);
 
     /* Assign enough vertical padding to make the element at least 44px high */
     /* padding: 9px 24px; */
@@ -113,10 +114,13 @@ bottom of the container.
     &:hover,
     &.highlighted {
       cursor: pointer;
-      border-left: 6px solid var(--matterColorLight);
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      color: var(--matterColorLight);
+      border: none;
+      background-color: var(--matterColorLight);
+      color: var(--marketplaceColor);
+
+      & > span > svg > path {
+        fill: var(--marketplaceColor);
+      }
     }
   }
 }
