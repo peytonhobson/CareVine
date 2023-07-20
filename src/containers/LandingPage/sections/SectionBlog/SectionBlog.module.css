@@ -1,0 +1,131 @@
+@import '../../../../styles/customMediaQueries.css';
+
+.left {
+  grid-area: left;
+}
+
+.rightTop {
+  grid-area: right-top;
+}
+
+.rightBottom {
+  grid-area: right-bottom;
+}
+
+.blogCardContainerGrid {
+  display: grid;
+  grid-template-areas: 'left right-top' 'left right-bottom';
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  padding-bottom: 6rem;
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    height: auto;
+  }
+
+  @media (--viewportLarge) {
+    height: 30rem;
+  }
+}
+
+.blogDescription {
+  margin-bottom: 0;
+  line-height: 1.35rem;
+
+  @media (--viewportMedium) {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    line-height: 1rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1rem;
+    line-height: 1.35rem;
+  }
+}
+
+.blogCardContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  overflow-x: scroll;
+  margin-top: 2rem;
+  position: relative;
+  padding: 2rem 0 6rem 0;
+  max-width: 85vw;
+  margin-inline: auto;
+  min-height: 60vh;
+
+  @media (--viewportMedium) {
+    max-width: 100%;
+    justify-content: space-evenly;
+    padding: 1.5rem 0 6rem 0;
+  }
+}
+
+.blogTitle {
+  font-weight: var(--fontWeightMedium);
+  font-family: var(--fontFamily);
+  color: var(--matterColorLight);
+
+  @media (--viewportMedium) {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+}
+
+.contentTitle {
+  color: var(--matterColorLight);
+  width: 100%;
+  text-align: center;
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  margin-top: 3rem;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    color: var(--matterColor);
+    font-size: 2.5rem;
+    line-height: 3rem;
+    width: auto;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.blogSection {
+  background-color: #c6d9c6;
+  margin-bottom: 6rem;
+  padding: 2rem 0;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    background-color: var(--matterColorBright);
+    margin-bottom: 0;
+  }
+}
+
+.link {
+  min-width: 55vw;
+  height: 50vh;
+  display: block;
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (--viewportMedium) {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+  }
+}

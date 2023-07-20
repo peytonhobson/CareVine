@@ -7,11 +7,11 @@ import {
   IconUserProfile,
   IconCaregiver,
   NamedLink,
-} from '../../../components';
-import { useCheckMobileScreen } from '../../../util/hooks';
+} from '../../../../components';
+import { useCheckMobileScreen } from '../../../../util/hooks';
 import Geocoder, {
   CURRENT_LOCATION_ID,
-} from '../../../components/LocationAutocompleteInput/GeocoderMapbox';
+} from '../../../../components/LocationAutocompleteInput/GeocoderMapbox';
 
 const INTERVIEW_SLUG = 'the-art-of-interviewing-how-to-hire-the-perfect-caregiver-for-private-care';
 
