@@ -1,0 +1,111 @@
+@custom-media --viewportSmall (min-width: 550px);
+@custom-media --viewportMedium (min-width: 768px);
+@custom-media --viewportLarge (min-width: 1024px);
+@custom-media --viewportLargeWithPaddings (min-width: 1128px);
+@custom-media --viewportXLarge (min-width: 1921px);
+
+.stepsSection {
+  position: relative;
+  height: 41rem;
+
+  @media (--viewportMedium) {
+    max-width: auto;
+    height: 31rem;
+  }
+}
+
+.stepsSectionCard {
+  width: 100%;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--matterColorAnti);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  height: 35rem;
+  max-width: calc(100vw - 4rem);
+  -webkit-transition: left 500ms ease-in-out;
+  -moz-transition: left 500ms ease-in-out;
+  -ms-transition: left 500ms ease-in-out;
+  -o-transition: left 500ms ease-in-out;
+  transition: left 500ms ease-in-out;
+  padding: 3rem 0;
+
+  @media (--viewportMedium) {
+    max-width: auto;
+    height: 25rem;
+  }
+}
+
+.card1 {
+  left: 2rem;
+
+  @media (--viewportMedium) {
+    left: 0;
+  }
+}
+
+.card2,
+.card3,
+.card4 {
+  left: calc(100vw + 2rem);
+
+  @media (--viewportMedium) {
+    left: 100vw;
+  }
+}
+
+.step {
+  text-align: center;
+  padding: 3rem 0;
+  max-width: calc(100vw - 16rem);
+
+  @media (--viewportMedium) {
+    padding: 0;
+    max-width: 20rem;
+    text-align: left;
+
+    & > h2 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    & > p {
+      line-height: 1.5rem;
+      font-size: 1rem;
+    }
+  }
+
+  @media (--viewportMedium) {
+    max-width: calc(100vw - 20rem);
+  }
+
+  @media (--viewportLarge) {
+    max-width: 35rem;
+  }
+}
+
+.stepArrow {
+  margin: auto 0.5rem;
+  stroke-width: 0;
+  cursor: pointer;
+
+  @media (--viewportMedium) {
+    margin: auto 2rem;
+  }
+}
+
+.disabled {
+  fill: var(--matterColorNegative);
+}
+
+.stepButtonContainer {
+  width: 100%;
+  padding-top: 1rem;
+
+  & .stepButton {
+    width: auto;
+    padding: 0 2rem;
+  }
+}

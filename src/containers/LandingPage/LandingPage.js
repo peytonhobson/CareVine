@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -10,40 +10,26 @@ import config from '../../config';
 import {
   Page,
   SectionHero,
-  SectionHowItWorks,
-  SectionLocations,
-  SectionMarketplaceSummary,
   LayoutSingleColumn,
   LayoutWrapperTopbar,
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
   Modal,
-  Button,
   NamedLink,
-  IconArrowHead,
-  IconReviewUser,
-  IconUserProfile,
-  IconCaregiver,
-  IconCalendarHeart,
 } from '../../components';
-import Geocoder, {
-  GeocoderAttribution,
-  CURRENT_LOCATION_ID,
-} from '../../components/LocationAutocompleteInput/GeocoderMapbox';
 import { TopbarContainer } from '../../containers';
-import { EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 import queryString from 'query-string';
-import { Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
+import { Card, CardContent, CardMedia, CardActionArea } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import BlogCardGrid from './BlogCardGrid';
+
+import SectionStepSwipe from './sections/SectionStepSwipe';
 
 import shareImage from '../../assets/Background_Share_Image.png';
 import tempImg from '../../assets/Magnify-BG.png';
 import css from './LandingPage.module.css';
-
-const isDev = process.env.REACT_APP_ENV === 'development';
 
 const useStyles = makeStyles(theme => ({
   cityCard: {
@@ -84,7 +70,7 @@ export const LandingPageComponent = props => {
     onManageDisableScrolling,
   } = props;
 
-  const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = React.useState(false);
+  const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = useState(false);
 
   const isMobile = useCheckMobileScreen();
   const classes = useStyles();
@@ -99,32 +85,6 @@ export const LandingPageComponent = props => {
   }, [externalPromo]);
 
   const isSsr = useIsSsr();
-
-  const handleCurrentLocation = () => {
-    let geocoder = new Geocoder();
-
-    const prediction = {
-      id: CURRENT_LOCATION_ID,
-      predictionPlace: {},
-    };
-
-    geocoder
-      .getPlaceDetails(prediction)
-      .then(place => {
-        const valOrigin = place.origin;
-        // Need to parse float twice to ensure no trailing zeros
-        // If there are trailing zeros then urlHelpers parse will return null
-        const lat = parseFloat(parseFloat(valOrigin.lat).toFixed(5));
-        const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
-        const origin = `${lat}%2C${lng}`;
-
-        history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
-      })
-      .catch(e => {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      });
-  };
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -205,77 +165,8 @@ export const LandingPageComponent = props => {
               </div>
             </section>
 
-            <section className={css.stepsSection}>
-              <div className={css.stepsSectionCard}>
-                <div className={css.step}>
-                  <IconUserProfile width="3.5em" height="3.5em" />
-                  <h2 className={css.stepTitle}>
-                    Craft Your Personal<br></br> Profile
-                  </h2>
-                  <p>Begin your journey by creating a personalized profile.</p>
-                </div>
-                <IconArrowHead
-                  direction={isMobile ? 'down' : 'right'}
-                  height="3em"
-                  width="3em"
-                  className={css.stepArrow}
-                />
-                <div className={css.step}>
-                  <IconCaregiver width="3.5em" height="3.5em" />
-                  <h2 className={css.stepTitle}>
-                    Discover Your Ideal<br></br> Caregiver
-                  </h2>
-                  <p>Browse through our network of experienced caregivers.</p>
-                </div>
-                <IconArrowHead
-                  direction={isMobile ? 'down' : 'right'}
-                  height="3em"
-                  width="3em"
-                  className={css.stepArrow}
-                />
+            <SectionStepSwipe />
 
-                <div className={css.step}>
-                  <IconCalendarHeart width="3.5em" height="3.5em" />
-                  <h2 className={css.stepTitle}>
-                    Book Your<br></br> Care
-                  </h2>
-                  <p className={css.stepSubText}>
-                    Book your perfect caregiver using our hassle-free booking system.
-                  </p>
-                </div>
-                <div className={css.stepButtonContainer}>
-                  <Button className={css.stepButton} onClick={handleCurrentLocation}>
-                    Find Your Caregiver
-                  </Button>
-                </div>
-              </div>
-            </section>
-
-            <section className={css.caregiverSection}>
-              <div className={css.employerSectionContent}>
-                <div className={css.employerSectionCard}>
-                  <h3 className={css.forCaregivers}>For Caregivers</h3>
-                  <h2 className={css.employerSectionTitle}>
-                    Caregiving Freedom:<br></br>
-                    Your Journey, Your Way
-                  </h2>
-                  <span>
-                    Set your rates, choose your hours, and handpick your clients in your preferred
-                    location. Showcase your unique skills and passion to our community, unlocking
-                    endless opportunities. Reimagine your caregiving career with freedom,
-                    flexibility, and recognition—only at CareVine.
-                  </span>
-                  <div className={css.getStartedLinkContainer}>
-                    <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
-                      Learn More
-                    </NamedLink>
-                  </div>
-                </div>
-                <div className={css.employerSectionImageContainer}>
-                  <img src={tempImg} className={css.employerSectionImage} />
-                </div>
-              </div>
-            </section>
             <section className={css.caregiverSection}>
               <div className={css.employerSectionContent}>
                 <div className={css.employerSectionCard}>
