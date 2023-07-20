@@ -192,13 +192,21 @@
 }
 
 .learnMoreButton {
-  color: var(--matterColorLightTransparent);
+  color: var(--matterColor);
+  font-weight: var(--fontWeightMedium);
 
   composes: animation;
   animation-delay: 0s;
 
   &:hover {
     text-decoration: none;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1.15rem;
+    font-size: 1vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
   }
 }
 
@@ -210,7 +218,7 @@
   margin-top: 0.1rem;
   fill: transparent;
   stroke-width: 1px;
-  stroke: var(--matterColorLightTransparent);
+  stroke: var(--matterColor);
 }
 
 .unAuthContainer {
@@ -258,8 +266,8 @@
   }
 
   @media (--viewportLarge) {
-    font-size: 4vw;
-    line-height: 4.5vw;
+    font-size: 3.5vw;
+    line-height: 4vw;
   }
   text-align: center;
 }

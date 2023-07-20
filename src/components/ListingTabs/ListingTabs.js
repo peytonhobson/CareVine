@@ -56,7 +56,8 @@ const ListingTabs = props => {
     if (isMobile) {
       window.scrollTo({ top: ref.offsetTop - 100, behavior: 'smooth' });
     } else {
-      ref.parentNode.scrollTo({ top: ref.offsetTop - 130, behavior: 'smooth' });
+      console.log(ref.offsetTop);
+      window.scrollTo({ top: ref.offsetTop - 130, behavior: 'smooth' });
     }
   };
 
@@ -93,6 +94,7 @@ const ListingTabs = props => {
 
   const onClick = tab => {
     if (refMap[tab].current) {
+      console.log(refMap[tab].current);
       scrollToRef(refMap[tab].current);
     }
 

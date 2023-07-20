@@ -156,8 +156,9 @@ const SectionHero = props => {
         ) : (
           <div className={css.unAuthContainer}>
             <h1 className={css.yourCare}>
-              Choose <span style={{ color: 'var(--marketplaceColor)' }}>Your Care</span>.<br></br>{' '}
-              On Your Terms.
+              Find <span style={{ color: 'var(--marketplaceColor)' }}>Local Caregivers</span>
+              <br></br> For Your <br></br>{' '}
+              <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
             </h1>
             <div className={css.stepContainer}>
               <div className={css.step}>
@@ -188,15 +189,14 @@ const SectionHero = props => {
         )
       ) : null}
 
-      {!isMobile && (
-        <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
-          {showLearnMore && (
-            <InlineTextButton className={css.learnMoreButton}>
-              Learn More <IconArrowHead direction="down" className={css.arrowHead} />
-            </InlineTextButton>
-          )}
-        </div>
-      )}
+      <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+        {showLearnMore && (
+          <InlineTextButton className={css.learnMoreButton}>
+            Learn More{' '}
+            <IconArrowHead direction="down" className={css.arrowHead} height="1em" width="1em" />
+          </InlineTextButton>
+        )}
+      </div>
     </div>
   );
 };
