@@ -16,46 +16,20 @@ import {
   LayoutWrapperFooter,
   Footer,
   Modal,
-  NamedLink,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 import queryString from 'query-string';
-import { Card, CardContent, CardMedia, CardActionArea } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
-import BlogCardGrid from './BlogCardGrid';
-
-import SectionStepSwipe from './sections/SectionStepSwipe';
+import {
+  SectionStepSwipe,
+  SectionEmployer,
+  SectionCaregiver,
+  SectionCity,
+  SectionBlog,
+} from './sections';
 
 import shareImage from '../../assets/Background_Share_Image.png';
-import tempImg from '../../assets/Magnify-BG.png';
 import css from './LandingPage.module.css';
-
-const useStyles = makeStyles(theme => ({
-  cityCard: {
-    transition: 'all 0.2s ease-in 0s !important',
-    '&:hover': {
-      transform: 'scale(1.05)',
-    },
-    borderRadius: 'var(--borderRadius) !important',
-    [theme.breakpoints.down('sm')]: {
-      width: '100%',
-      marginBottom: '2rem',
-    },
-    [theme.breakpoints.only('md')]: {
-      width: '15rem',
-    },
-    [theme.breakpoints.up('lg')]: {
-      width: '20rem',
-    },
-  },
-  cityImage: {
-    maxHeight: '12rem',
-    [theme.breakpoints.down('sm')]: {
-      maxHeight: '15rem',
-    },
-  },
-}));
 
 export const LandingPageComponent = props => {
   const {
@@ -71,9 +45,6 @@ export const LandingPageComponent = props => {
   } = props;
 
   const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = useState(false);
-
-  const isMobile = useCheckMobileScreen();
-  const classes = useStyles();
 
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
@@ -100,7 +71,7 @@ export const LandingPageComponent = props => {
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - (isMobile ? 20 : 60);
+      const elementHeight = contentRef.current.offsetTop;
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };
@@ -138,111 +109,12 @@ export const LandingPageComponent = props => {
             />
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
-          <div className={css.content}>
-            <section className={css.employerSection} ref={contentRef}>
-              <div className={css.employerSectionContent}>
-                <div className={css.employerSectionCard}>
-                  <h2 className={css.employerSectionTitle}>
-                    Your Care, In Your Hands:<br></br>
-                    Find the Perfect Caregiver for You
-                  </h2>
-                  <span>
-                    Discover the seamless solution to finding the perfect caregiver. Tailor your
-                    care experience by selecting professionals that fit your needs, budget, and
-                    location. Our user-friendly platform eliminates the middleman, empowering you to
-                    take control of your care journey. Accessible to all, CareVine puts the power in
-                    your hands.
-                  </span>
-                  <div className={css.getStartedLinkContainer}>
-                    <NamedLink name="SignupPage" className={css.getStartedButton}>
-                      Get Started
-                    </NamedLink>
-                  </div>
-                </div>
-                <div className={css.employerSectionImageContainer}>
-                  <img src={tempImg} className={css.employerSectionImage} />
-                </div>
-              </div>
-            </section>
-
+          <div className={css.content} ref={contentRef}>
+            <SectionEmployer />
             <SectionStepSwipe />
-
-            <section className={css.caregiverSection}>
-              <div className={css.employerSectionContent}>
-                <div className={css.employerSectionCard}>
-                  <h3 className={css.forCaregivers}>For Caregivers</h3>
-                  <h2 className={css.employerSectionTitle}>
-                    Caregiving Freedom:<br></br>
-                    Your Journey, Your Way
-                  </h2>
-                  <span>
-                    Set your rates, choose your hours, and handpick your clients in your preferred
-                    location. Showcase your unique skills and passion to our community, unlocking
-                    endless opportunities. Reimagine your caregiving career with freedom,
-                    flexibility, and recognition—only at CareVine.
-                  </span>
-                  <div className={css.getStartedLinkContainer}>
-                    <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
-                      Learn More
-                    </NamedLink>
-                  </div>
-                </div>
-                <div className={css.employerSectionImageContainer}>
-                  <img src={tempImg} className={css.employerSectionImage} />
-                </div>
-              </div>
-            </section>
-
-            {!isSsr && <BlogCardGrid />}
-
-            <section className={css.citySection}>
-              <div className={css.citySectionContent}>
-                <h1 className={css.contentTitle} style={{ color: 'var(--matterColor)' }}>
-                  Available across the Country
-                </h1>
-                <div className={css.cityCardContainer}>
-                  <Card className={classes.cityCard}>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        image={tempImg}
-                        alt="Portland"
-                        className={classes.cityImage}
-                      />
-                      <CardContent>
-                        <h2 className={css.cityName}>Portland</h2>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                  <Card className={classes.cityCard}>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        image={tempImg}
-                        alt="Miami"
-                        className={classes.cityImage}
-                      />
-                      <CardContent>
-                        <h2 className={css.cityName}>Miami</h2>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                  <Card className={classes.cityCard}>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        image={tempImg}
-                        alt="Orlando"
-                        className={classes.cityImage}
-                      />
-                      <CardContent>
-                        <h2 className={css.cityName}>Orlando</h2>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </div>
-              </div>
-            </section>
+            <SectionCaregiver />
+            {!isSsr && <SectionBlog />}
+            <SectionCity />
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>

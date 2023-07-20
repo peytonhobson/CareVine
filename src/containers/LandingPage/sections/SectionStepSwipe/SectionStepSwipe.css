@@ -58,7 +58,7 @@
 .step {
   text-align: center;
   padding: 3rem 0;
-  max-width: calc(100vw - 16rem);
+  max-width: calc(100vw - 12rem);
 
   @media (--viewportMedium) {
     padding: 0;

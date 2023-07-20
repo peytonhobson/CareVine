@@ -1,18 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Pagination from '@material-ui/lab/Pagination';
-import { IconSpinner } from '../../components';
 import { useQuery } from 'graphql-hooks';
-import { useCheckMobileScreen } from '../../util/hooks';
+import { useCheckMobileScreen } from '../../../../util/hooks';
 import BlogCard from './BlogCard';
 
-import css from './LandingPage.module.css';
+import css from './SectionBlog.module.css';
 
 const isDev = process.env.REACT_APP_ENV === 'development';
-const PAGE_SIZE = 9;
 
 const useStyles = makeStyles(theme => ({
   blogsContainer: {
@@ -57,13 +52,13 @@ const BLOG = `
   }
 `;
 
-const CardGrid = props => {
+const SectionBlog = props => {
   const classes = useStyles();
 
   const containerRef = useRef(null);
   const isMobile = useCheckMobileScreen();
 
-  const { loading, error, data } = useQuery(BLOG, {
+  const { data } = useQuery(BLOG, {
     variables: {
       limit: isMobile ? 5 : 3,
     },
@@ -117,4 +112,4 @@ const CardGrid = props => {
   );
 };
 
-export default CardGrid;
+export default SectionBlog;

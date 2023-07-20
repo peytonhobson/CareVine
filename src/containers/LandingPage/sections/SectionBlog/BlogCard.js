@@ -5,9 +5,9 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
-import { NamedLink } from '../../components';
+import { NamedLink } from '../../../../components';
 
-import css from './LandingPage.module.css';
+import css from './SectionBlog.module.css';
 
 const BlogCard = props => {
   const { hero, title, slug, description } = props;
