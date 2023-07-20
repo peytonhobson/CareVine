@@ -320,6 +320,7 @@
 
 .stepsSection {
   padding: 0 2rem 6rem 2rem;
+  display: flex;
 
   @media (--viewportMedium) {
     padding: 0 0 6rem 0;
@@ -364,9 +365,16 @@
   }
 }
 
-.stepArrow {
-  margin: auto 0;
+.stepArrowRight {
+  margin: auto 2rem auto auto;
   stroke-width: 0;
+  cursor: pointer;
+}
+
+.stepArrowLeft {
+  margin: auto auto auto 2rem;
+  stroke-width: 0;
+  cursor: pointer;
 }
 
 .stepButtonContainer {
@@ -439,6 +447,7 @@
 .blogSection {
   background-color: #c6d9c6;
   margin-bottom: 6rem;
+  padding: 2rem 0;
 
   @media (--viewportMedium) {
     padding: 0;
