@@ -16,8 +16,8 @@ import {
   prevMonthFn,
   formatFieldDateInput,
   parseFieldDateInput,
-  getAvailabileStartDates,
-  getAvailabileEndDates,
+  getAvailableStartDates,
+  getAvailableEndDates,
 } from '../../util/dates';
 import { FieldDateInput, Form, IconArrowHead, IconClose } from '../../components';
 
@@ -148,7 +148,7 @@ const TimelineForm = props => {
                     placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                     format={formatFieldDateInput(timeZone)}
                     parse={parseFieldDateInput(timeZone)}
-                    isDayBlocked={getAvailabileStartDates(endDay)}
+                    isDayBlocked={getAvailableStartDates(endDay)}
                     onChange={date => onStartDateChange(date)}
                     onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
                     onNextMonthClick={() => handleMonthClick(nextMonthFn)}
@@ -176,7 +176,7 @@ const TimelineForm = props => {
                     placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                     format={formatFieldDateInput(timeZone)}
                     parse={parseFieldDateInput(timeZone)}
-                    isDayBlocked={getAvailabileEndDates(startDay, timeZone)}
+                    isDayBlocked={getAvailableEndDates(startDay, timeZone)}
                     onChange={date => onEndDateChange(date)}
                     onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
                     onNextMonthClick={() => handleMonthClick(nextMonthFn)}

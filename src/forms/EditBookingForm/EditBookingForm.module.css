@@ -298,4 +298,104 @@
   width: 100%;
   max-width: 40rem;
   margin-inline: auto;
+
+  @media (--viewportLarge) {
+    margin-top: 1rem;
+    max-width: 100%;
+    text-align: center;
+  }
+}
+
+.week {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+
+  padding-top: 2rem;
+  margin-bottom: 2rem;
+
+  @media (--viewportLarge) {
+    margin-bottom: 4rem;
+  }
+}
+
+.fieldDateInput {
+  flex-grow: 1;
+
+  & :global(.SingleDatePickerInput) {
+    width: 100%;
+    margin: 0;
+  }
+
+  & :global(.SingleDatePicker_picker__directionLeft) {
+    width: 100vw;
+
+    @media (--viewportMedium) {
+      width: calc(200% + 24px);
+    }
+  }
+}
+
+.dateInputContainer {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  align-items: flex-end;
+}
+
+.removeExceptionButton {
+  padding: 0 0.75rem 0 0.75rem;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.5rem;
+}
+
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+
+  &:hover {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+
+  @media (--viewportMedium) {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.endDateContainer {
+  position: relative;
+}
+
+.recurringRoot {
+  margin: auto;
+  margin-top: 3rem;
+
+  max-width: 30rem;
+}
+
+.recurringModalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 4rem;
+
+  background-color: var(--matterColorBright);
+
+  & > div > .modalTitle {
+    padding-left: 2rem;
+  }
+}
+
+.saveWeekButton {
+  max-width: calc(100% - 4rem);
+  margin: 0 auto;
 }

@@ -115,12 +115,6 @@ const EditListingAvailabilityPanel = props => {
     updateInProgress,
     errors,
     panelUpdated,
-    fetchExceptionsInProgress,
-    availabilityExceptions,
-    addExceptionError,
-    addExceptionInProgress,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
   } = props;
 
   const currentListing = ensureOwnListing(listing);
