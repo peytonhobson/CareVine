@@ -66,15 +66,15 @@ const cancelBookingTransitions = {
 };
 
 const mapLineItemsForCancellationCustomer = lineItems => {
-  // Half the amount of the line item if it is within 72 hours of the start time.
-  // Remove line items that are more than 72 hours away.
+  // Half the amount of the line item if it is within 48 hours of the start time.
+  // Remove line items that are more than 48 hours away.
   // This is to create the correct amount for caregiver payout
   return lineItems
     .map(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      const isWithin72Hours =
-        startTime - moment().toDate() < 72 * 36e5 && startTime > moment().toDate();
-      if (isWithin72Hours) {
+      const isWithin48Hours =
+        startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+      if (isWithin48Hours) {
         return {
           ...lineItem,
           amount: lineItem.amount / 2,
@@ -85,7 +85,7 @@ const mapLineItemsForCancellationCustomer = lineItems => {
     })
     .filter(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return startTime - moment().toDate() < 72 * 36e5;
+      return startTime - moment().toDate() < 48 * 36e5;
     });
 };
 

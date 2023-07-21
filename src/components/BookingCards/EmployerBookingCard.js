@@ -294,10 +294,10 @@ const EmployerBookingCard = props => {
             </p>
             <ul className={css.refundList}>
               <li className={css.refundListItem}>
-                100% refund for booked times canceled more than 72 hours in advance
+                100% refund for booked times canceled more than 48 hours in advance
               </li>
               <li className={css.refundListItem}>
-                50% refund for booked times canceled less than 72 hours in advance
+                50% refund for booked times canceled less than 48 hours in advance
               </li>
             </ul>
             <div>

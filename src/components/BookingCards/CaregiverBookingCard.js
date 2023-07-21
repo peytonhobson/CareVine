@@ -280,6 +280,10 @@ const CaregiverBookingCard = props => {
         containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Cancel Booking with {customerDisplayName}</p>
+        <p className={css.modalMessage}>
+          If you cancel the booking now, {customerDisplayName} will be fully refunded for any
+          booking times not completed. Your search ranking may also be affected.
+        </p>
         {cancelBookingError ? (
           <p className={css.modalError}>
             There was an error cancelling your booking. Please try again.
