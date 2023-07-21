@@ -450,6 +450,7 @@ const EditBookingFormComponent = props => (
                 <li className={css.learnMoreListItem}>
                   <strong>Flexible Cancellation</strong>: We understand that plans change, and we've
                   got you covered. If you need to cancel the booking, you'll be refunded in
+                  {/* TODO: Add link to cancellation policy in TOS here */}
                   accordance with our fair and transparent cancellation policy.
                 </li>
               </ol>
