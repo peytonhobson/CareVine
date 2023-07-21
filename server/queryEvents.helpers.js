@@ -669,6 +669,7 @@ const makeReviewable = async transaction => {
       await integrationSdk.transactions.transition({
         id: txId,
         transition: 'transition/make-reviewable',
+        params: {},
       });
     }
   } catch (e) {
