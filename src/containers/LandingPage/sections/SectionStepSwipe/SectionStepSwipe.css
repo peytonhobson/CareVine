@@ -5,12 +5,10 @@
 @custom-media --viewportXLarge (min-width: 1921px);
 
 .stepsSection {
-  position: relative;
-  height: 41rem;
+  padding: 0 2rem 6rem 2rem;
 
   @media (--viewportMedium) {
-    max-width: auto;
-    height: 31rem;
+    padding: 0 0 6rem 0;
   }
 }
 
@@ -21,49 +19,68 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: absolute;
   height: 35rem;
   max-width: calc(100vw - 4rem);
-  -webkit-transition: left 500ms ease-in-out;
-  -moz-transition: left 500ms ease-in-out;
-  -ms-transition: left 500ms ease-in-out;
-  -o-transition: left 500ms ease-in-out;
-  transition: left 500ms ease-in-out;
   padding: 3rem 0;
 
   @media (--viewportMedium) {
     max-width: auto;
+    height: 30rem;
+    padding: 0;
+  }
+
+  @media (--viewportLarge) {
     height: 25rem;
   }
 }
 
-.card1 {
-  left: 2rem;
+.stepsContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: calc(100vw - 14rem);
+  max-width: calc(100vw - 14rem);
 
   @media (--viewportMedium) {
-    left: 0;
+    min-width: 28rem;
+    max-width: 28rem;
   }
-}
 
-.card2,
-.card3,
-.card4 {
-  left: calc(100vw + 2rem);
-
-  @media (--viewportMedium) {
-    left: 100vw;
+  @media (--viewportLarge) {
+    min-width: 45rem;
+    max-width: 45rem;
   }
 }
 
 .step {
   text-align: center;
   padding: 3rem 0;
-  max-width: calc(100vw - 12rem);
+  width: calc(100vw - 14rem);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  -webkit-transition: left 500ms ease-in-out;
+  -moz-transition: left 500ms ease-in-out;
+  -ms-transition: left 500ms ease-in-out;
+  -o-transition: left 500ms ease-in-out;
+  transition: left 500ms ease-in-out;
+
+  position: absolute;
+  height: 35rem;
 
   @media (--viewportMedium) {
     padding: 0;
-    max-width: 20rem;
     text-align: left;
+    height: 25rem;
+    align-items: flex-start;
 
     & > h2 {
       font-size: 1.5rem;
@@ -78,12 +95,30 @@
   }
 
   @media (--viewportMedium) {
-    max-width: calc(100vw - 20rem);
+    width: 28rem;
+
+    & > h2 {
+      margin-bottom: 0;
+    }
   }
 
   @media (--viewportLarge) {
-    max-width: 35rem;
+    width: 35rem;
   }
+}
+
+.step1 {
+  left: 0;
+
+  @media (--viewportLarge) {
+    left: 5rem;
+  }
+}
+
+.step2,
+.step3,
+.step4 {
+  left: 100vw;
 }
 
 .stepArrow {
@@ -102,10 +137,19 @@
 
 .stepButtonContainer {
   width: 100%;
-  padding-top: 1rem;
+  padding-top: 2rem;
 
   & .stepButton {
     width: auto;
     padding: 0 2rem;
+    margin: 0 auto;
+  }
+
+  @media (--viewportMedium) {
+    padding-top: 1rem;
+
+    & .stepButton {
+      margin: 0;
+    }
   }
 }
