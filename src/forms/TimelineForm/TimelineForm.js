@@ -9,23 +9,17 @@ import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import {
   resetToStartOfDay,
-  timeOfDayFromLocalToTimeZone,
-  timeOfDayFromTimeZoneToLocal,
   dateIsAfter,
   monthIdStringInTimeZone,
   getMonthStartInTimeZone,
   nextMonthFn,
   prevMonthFn,
+  formatFieldDateInput,
+  parseFieldDateInput,
+  getAvailabileStartDates,
+  getAvailabileEndDates,
 } from '../../util/dates';
-import { bookingDateRequired } from '../../util/validators';
-import {
-  FieldDateInput,
-  FieldSelect,
-  Form,
-  IconArrowHead,
-  PrimaryButton,
-  IconClose,
-} from '../../components';
+import { FieldDateInput, Form, IconArrowHead, IconClose } from '../../components';
 
 import css from './TimelineForm.module.css';
 
@@ -54,14 +48,6 @@ const onMonthClick = (currentMonth, setCurrentMonth, timeZone, onMonthChanged) =
   }
 };
 
-// Format form's value for the react-dates input: convert timeOfDay to the local time
-const formatFieldDateInput = timeZone => v =>
-  v && v.date ? { date: timeOfDayFromTimeZoneToLocal(v.date, timeZone) } : { date: v };
-
-// Parse react-dates input's value: convert timeOfDay to the given time zone
-const parseFieldDateInput = timeZone => v =>
-  v && v.date ? { date: timeOfDayFromLocalToTimeZone(v.date, timeZone) } : v;
-
 /////////////////
 // Next & Prev //
 /////////////////
@@ -83,20 +69,6 @@ const Prev = props => {
   return dateIsAfter(prevMonthDate, currentMonthDate) ? (
     <IconArrowHead direction="left" size="small" />
   ) : null;
-};
-
-const getAvailabileEndDates = startDate => day => {
-  if (day >= startDate) {
-    return false;
-  }
-  return true;
-};
-
-const getAvailabileStartDates = endDate => day => {
-  if (!endDate || day <= endDate) {
-    return false;
-  }
-  return true;
 };
 
 //////////////////////////////////////////
