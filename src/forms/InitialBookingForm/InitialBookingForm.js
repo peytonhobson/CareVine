@@ -45,7 +45,6 @@ const InitialBookingFormComponent = props => (
     {...props}
     render={formRenderProps => {
       const {
-        careSchedule,
         disabled,
         invalid,
         intl,

@@ -62,13 +62,25 @@ export const isValidTransaction = transaction => {
 };
 
 // Stores given bookingDates and listing to sessionStorage
-export const storeData = (bookingRate, bookingDates, listing, transaction, storageKey) => {
-  if (window?.sessionStorage && listing && bookingDates && bookingRate) {
+export const storeData = ({
+  bookingRate,
+  bookingDates,
+  listing,
+  transaction,
+  scheduleType,
+  startDate,
+  endDate,
+  storageKey,
+}) => {
+  if (window?.sessionStorage && listing && bookingRate) {
     const data = {
       bookingRate,
       bookingDates,
       listing,
       transaction,
+      scheduleType,
+      startDate,
+      endDate,
       storedAt: new Date(),
     };
 
@@ -105,9 +117,16 @@ export const storedData = storageKey => {
       return sdkTypes.reviver(k, v);
     };
 
-    const { bookingRate, bookingDates, listing, transaction, storedAt } = checkoutPageData
-      ? JSON.parse(checkoutPageData, reviver)
-      : {};
+    const {
+      bookingRate,
+      bookingDates,
+      listing,
+      transaction,
+      scheduleType,
+      startDate,
+      endDate,
+      storedAt,
+    } = checkoutPageData ? JSON.parse(checkoutPageData, reviver) : {};
 
     // If sessionStore contains freshly saved data (max 1 day old), use it
     const isFreshlySaved = storedAt
@@ -118,10 +137,13 @@ export const storedData = storageKey => {
     const isTransactionValid = !!transaction ? isValidTransaction(transaction) : true;
 
     const isStoredDataValid =
-      isFreshlySaved && bookingDates.length > 0 && isValidListing(listing) && isTransactionValid;
+      isFreshlySaved &&
+      (bookingDates?.length > 0 || startDate) &&
+      isValidListing(listing) &&
+      isTransactionValid;
 
     if (isStoredDataValid) {
-      return { bookingRate, bookingDates, listing, transaction };
+      return { bookingRate, bookingDates, listing, transaction, scheduleType, startDate, endDate };
     }
   }
   return {};
