@@ -487,6 +487,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     return bookingResponse;
   } catch (e) {
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
+    dispatch(fetchBookings());
     dispatch(cancelBookingError(storableError(e)));
   }
 };
