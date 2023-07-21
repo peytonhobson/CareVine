@@ -153,7 +153,16 @@ export class CheckoutPageComponent extends Component {
    * based on this initial data.
    */
   loadInitialData() {
-    const { bookingRate, bookingDates, listing, transaction, history } = this.props;
+    const {
+      bookingRate,
+      bookingDates = [],
+      listing,
+      scheduleType,
+      startDate,
+      endDate,
+      transaction,
+      history,
+    } = this.props;
 
     // Browser's back navigation should not rewrite data in session store.
     // Action is 'POP' on both history.back() and page refresh cases.
@@ -161,20 +170,27 @@ export class CheckoutPageComponent extends Component {
     // Action is 'REPLACE' when user has directed through login/signup process
     const hasNavigatedThroughLink = history.action === 'PUSH' || history.action === 'REPLACE';
 
-    const hasDataInProps = !!(bookingRate && bookingDates && listing) && hasNavigatedThroughLink;
+    const hasDates = scheduleType === 'oneTime' ? bookingDates?.length > 0 : startDate;
+    const hasDataInProps =
+      !!(bookingRate && listing && scheduleType && hasDates) && hasNavigatedThroughLink;
     if (hasDataInProps) {
       // Store data only if data is passed through props and user has navigated through a link.
-      storeData(bookingRate, bookingDates, listing, transaction, STORAGE_KEY);
+      storeData({
+        bookingRate,
+        bookingDates,
+        listing,
+        transaction,
+        scheduleType,
+        startDate,
+        endDate,
+        storageKey: STORAGE_KEY,
+      });
     }
 
     // NOTE: stored data can be empty if user has already successfully completed transaction.
     const pageData = hasDataInProps
-      ? { bookingRate, bookingDates, listing, transaction }
+      ? { bookingRate, bookingDates, listing, transaction, scheduleType, startDate, endDate }
       : storedData(STORAGE_KEY);
-
-    // Check if a booking is already created according to stored data.
-    const tx = pageData ? pageData.transaction : null;
-    const isBookingCreated = tx && tx.booking && tx.booking.id;
 
     this.setState({ pageData: pageData || {}, dataLoaded: true });
   }
@@ -198,7 +214,7 @@ export class CheckoutPageComponent extends Component {
 
     const listing = listingProps || listingState;
     const bookingRate = bookingRateProps || bookingRateState;
-    const bookingDates = bookingDatesProps || bookingDatesState;
+    const bookingDates = bookingDatesProps || bookingDatesState || [];
 
     const paymentMethodId = this.state.selectedPaymentMethod?.id;
 
@@ -292,7 +308,7 @@ export class CheckoutPageComponent extends Component {
 
     const isLoading = !this.state.dataLoaded;
 
-    const { listing, bookingDates, bookingRate, transaction } = this.state.pageData;
+    const { listing, bookingDates = [], bookingRate, transaction } = this.state.pageData;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
 
@@ -315,8 +331,7 @@ export class CheckoutPageComponent extends Component {
 
     const isOwnListing = currentAuthor?.id?.uuid === currentUser?.id?.uuid;
 
-    const hasListingAndAuthor = !!(currentListing.id && currentAuthor.id);
-    const hasRequiredData = hasListingAndAuthor;
+    const hasRequiredData = !!(currentListing.id && currentAuthor.id);
     const canShowPage = hasRequiredData && !isOwnListing;
     const shouldRedirect = !isLoading && !canShowPage;
 
@@ -325,7 +340,6 @@ export class CheckoutPageComponent extends Component {
     if (shouldRedirect) {
       // eslint-disable-next-line no-console
       console.error('Missing or invalid data for checkout, redirecting back to listing page.', {
-        bookingDates,
         listing,
       });
       return <NamedRedirect name="ListingPage" params={params} />;
@@ -372,8 +386,6 @@ export class CheckoutPageComponent extends Component {
     }
 
     const showPaymentForm = !!(currentUser && hasRequiredData && currentListing);
-    const selectedPaymentMethodType =
-      this.state.selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
     return (
       <Page {...pageProps}>
@@ -422,6 +434,9 @@ const mapStateToProps = state => {
     transaction,
     initiateOrderError,
     initiateOrderInProgress,
+    startDate,
+    endDate,
+    scheduleType,
   } = state.CheckoutPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -447,6 +462,9 @@ const mapStateToProps = state => {
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
     currentUserListing,
+    startDate,
+    endDate,
+    scheduleType,
   };
 };
 
@@ -469,8 +487,16 @@ const CheckoutPage = compose(
 
 CheckoutPage.setInitialValues = (initialValues, saveToSessionStorage = false) => {
   if (saveToSessionStorage) {
-    const { listing, bookingRate, bookingDates } = initialValues;
-    storeData(bookingRate, bookingDates, listing, null, STORAGE_KEY);
+    const { listing, bookingRate, bookingDates, scheduleType, startDate, endDate } = initialValues;
+    storeData({
+      bookingRate,
+      bookingDates,
+      listing,
+      scheduleType,
+      startDate,
+      endDate,
+      storageKey: STORAGE_KEY,
+    });
   }
 
   return setInitialValues(initialValues);

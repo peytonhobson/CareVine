@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import config from '../../config';
 import routeConfiguration from '../../routeConfiguration';
-import { findOptionsForSelectFilter } from '../../util/search';
 import { LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import {
@@ -16,7 +15,6 @@ import {
   LISTING_PAGE_PARAM_TYPE_EDIT,
   createSlug,
 } from '../../util/urlHelpers';
-import { formatMoney } from '../../util/currency';
 import { createResourceLocatorString, findRouteByRouteName } from '../../util/routes';
 import {
   ensureListing,
@@ -42,9 +40,8 @@ import {
   ListingTabs,
   ListingPreview,
   GenericError,
-  Avatar,
 } from '../../components';
-import { EnquiryForm, InitialBookingForm } from '../../forms';
+import { EnquiryForm } from '../../forms';
 import { TopbarContainer, NotFoundPage } from '../../containers';
 import { BACKGROUND_CHECK_APPROVED, CAREGIVER } from '../../util/constants';
 import ActionBarMaybe from './ActionBarMaybe';
@@ -60,9 +57,7 @@ import {
   closeListing,
   openListing,
   fetchTimeSlots,
-  fetchReviews,
 } from './ListingPage.duck';
-import BookingContainer from './BookingContainer';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -96,13 +91,15 @@ export class ListingPageComponent extends Component {
     const listingId = new UUID(params.id);
     const listing = getListing(listingId);
 
-    const { bookingDates, rate: bookingRate } = values;
+    const { bookingDates, rate: bookingRate, scheduleType, startDate, endDate } = values;
 
     const initialValues = {
       listing,
       bookingRate: bookingRate?.length > 0 ? bookingRate[0] : null,
       bookingDates,
-      confirmPaymentError: null,
+      scheduleType,
+      startDate,
+      endDate,
     };
 
     const saveToSessionStorage = !this.props.currentUser;
