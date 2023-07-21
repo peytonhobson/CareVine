@@ -8,7 +8,6 @@ import {
   Form,
   Button,
   Modal,
-  FieldDatePicker,
   FieldTextInput,
   NamedLink,
   BookingSummaryCard,
@@ -22,13 +21,16 @@ import {
   transactionInitiateOrderStripeErrors,
 } from '../../util/errors';
 import { createSlug } from '../../util/urlHelpers';
-import DateTimeSelect from './DateTimeSelect';
 import { useMediaQuery } from '@mui/material';
+import SectionOneTime from './SectionOneTime';
+import SectionRecurring from './SectionRecurring';
 
 import css from './EditBookingForm.module.css';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
+
+const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -72,7 +74,6 @@ const EditBookingFormComponent = props => (
         onManageDisableScrolling,
         bookingDates,
         onSetState,
-        children,
         authorDisplayName,
         defaultPaymentMethods,
         selectedPaymentMethod,
@@ -89,6 +90,7 @@ const EditBookingFormComponent = props => (
         fetchDefaultPaymentInProgress,
         stripeCustomerFetched,
         onChangePaymentMethod,
+        intl,
       } = formRenderProps;
 
       const [selectedTab, setSelectedTab] = useState('Dates/Times');
@@ -98,24 +100,23 @@ const EditBookingFormComponent = props => (
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
-      // {
-      //   invalidPaymentMethodError && (
-      //     <p className={css.error}>
-      //       You must add or select a payment method before requesting to book. You will not be
-      //       charged for the booking until the caregiver accepts.
-      //     </p>
-      //   );
-      // }
-
       const handleGoToPayment = () => {
-        if (values.bookingDates.length === 0) {
-          setGoToPaymentError('Please select at least one booking date.');
-          return;
-        }
+        if (values.scheduleType === 'oneTime') {
+          if (values.bookingDates?.length === 0) {
+            setGoToPaymentError('Please select at least one booking date.');
+            return;
+          }
 
-        if (!checkValidBookingTimes(values.dateTimes, values.bookingDates)) {
-          setGoToPaymentError('Please select start times and end times for each booking date.');
-          return;
+          if (!checkValidBookingTimes(values.dateTimes, values.bookingDates)) {
+            setGoToPaymentError('Please select start times and end times for each booking date.');
+            return;
+          }
+        } else {
+          const hasWeekdayvalues = WEEKDAYS.some(weekday => values[weekday]);
+          if (!hasWeekdayvalues) {
+            setGoToPaymentError('Please select at least one weekday.');
+            return;
+          }
         }
 
         setSelectedTab('Payment');
@@ -139,16 +140,12 @@ const EditBookingFormComponent = props => (
         {
           text: 'Payment',
           selected: 'Payment' === selectedTab,
-          onClick: () => setSelectedTab('Payment'),
-          disabled: !checkValidBookingTimes(values.dateTimes, values.bookingDates),
+          onClick: handleGoToPayment,
         },
         {
           text: 'Request',
           selected: 'Request' === selectedTab,
-          onClick: () => setSelectedTab('Request'),
-          disabled:
-            !checkValidBookingTimes(values.dateTimes, values.bookingDates) ||
-            !selectedPaymentMethod,
+          onClick: handleGoToRequest,
         },
       ];
 
@@ -248,44 +245,35 @@ const EditBookingFormComponent = props => (
       switch (selectedTab) {
         case 'Dates/Times':
           tabContent = (
-            <div className={css.datesTimesContainer}>
-              <div>
-                <h2 className={css.pickYourTimes}>Pick your Dates</h2>
-                <FieldDatePicker
-                  className={css.datePicker}
+            <>
+              {values.scheduleType === 'oneTime' ? (
+                <SectionOneTime
                   bookedDates={bookedDates}
-                  name="bookingDates"
-                  id="bookingDates"
-                  onChange={handleSaveBookingDates}
-                >
-                  <p className={css.bookingTimeText}>
-                    Caregivers can only be booked within a two-week period
-                  </p>
-                </FieldDatePicker>
+                  onSaveBookingDates={handleSaveBookingDates}
+                  values={values}
+                  goToPaymentError={goToPaymentError}
+                  onGoToPayment={handleGoToPayment}
+                  isLarge={isLarge}
+                  monthYearBookingDates={monthYearBookingDates}
+                />
+              ) : (
+                <SectionRecurring
+                  values={values}
+                  intl={intl}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                  listing={currentListing}
+                  isLarge={isLarge}
+                />
+              )}
+              <div className={css.nextButton}>
+                {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
+                {!isLarge ? (
+                  <Button onClick={handleGoToPayment} type="button">
+                    Next: Payment
+                  </Button>
+                ) : null}
               </div>
-              <div>
-                <h2 className={css.pickYourTimes}>Pick your Times</h2>
-                <div className={css.datesContainer}>
-                  {monthYearBookingDates.map(monthYearBookingDate => (
-                    <DateTimeSelect
-                      key={monthYearBookingDate}
-                      monthYearBookingDate={monthYearBookingDate}
-                      values={values}
-                    />
-                  ))}
-                </div>
-              </div>
-              {!isLarge ? (
-                <>
-                  <div className={css.nextButton}>
-                    {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
-                    <Button onClick={handleGoToPayment} type="button">
-                      Next: Payment
-                    </Button>
-                  </div>
-                </>
-              ) : null}
-            </div>
+            </>
           );
           break;
         case 'Payment':
@@ -326,16 +314,14 @@ const EditBookingFormComponent = props => (
                     removeDisabled
                   />
                 ) : null}
-                {!isLarge ? (
-                  <>
-                    <div className={css.nextButton}>
-                      {goToRequestError ? <p className={css.error}>{goToRequestError}</p> : null}
-                      <Button onClick={handleGoToRequest} type="button">
-                        Next: Request
-                      </Button>
-                    </div>
-                  </>
-                ) : null}
+                <div className={css.nextButton}>
+                  {goToRequestError ? <p className={css.error}>{goToRequestError}</p> : null}
+                  {!isLarge ? (
+                    <Button onClick={handleGoToRequest} type="button">
+                      Next: Request
+                    </Button>
+                  ) : null}
+                </div>
               </section>
             </div>
           );

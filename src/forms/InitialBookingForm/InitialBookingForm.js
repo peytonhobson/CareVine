@@ -17,8 +17,8 @@ import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import {
   formatFieldDateInput,
   parseFieldDateInput,
-  getAvailabileStartDates,
-  getAvailabileEndDates,
+  getAvailableStartDates,
+  getAvailableEndDates,
 } from '../../util/dates';
 import classNames from 'classnames';
 
@@ -144,11 +144,7 @@ const InitialBookingFormComponent = props => (
                     placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                     format={formatFieldDateInput(timezone)}
                     parse={parseFieldDateInput(timezone)}
-                    isDayBlocked={getAvailabileStartDates(endDay)}
-                    // onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
-                    // onNextMonthClick={() => handleMonthClick(nextMonthFn)}
-                    // navNext={<Next currentMonth={currentMonth} timeZone={timezone} />}
-                    // navPrev={<Prev currentMonth={currentMonth} timeZone={timezone} />}
+                    isDayBlocked={getAvailableStartDates(endDay)}
                     useMobileMargins
                     showErrorMessage={false}
                   />
@@ -161,11 +157,7 @@ const InitialBookingFormComponent = props => (
                       placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                       format={formatFieldDateInput(timezone)}
                       parse={parseFieldDateInput(timezone)}
-                      isDayBlocked={getAvailabileEndDates(startDay, timezone)}
-                      // onPrevMonthClick={() => handleMonthClick(prevMonthFn)}
-                      // onNextMonthClick={() => handleMonthClick(nextMonthFn)}
-                      // navNext={<Next currentMonth={currentMonth} timeZone={timeZone} />}
-                      // navPrev={<Prev currentMonth={currentMonth} timeZone={timeZone} />}
+                      isDayBlocked={getAvailableEndDates(startDay, timezone)}
                       useMobileMargins
                       showErrorMessage={false}
                       disabled={!startDate || !startDate.date}

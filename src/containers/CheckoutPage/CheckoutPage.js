@@ -308,7 +308,15 @@ export class CheckoutPageComponent extends Component {
 
     const isLoading = !this.state.dataLoaded;
 
-    const { listing, bookingDates = [], bookingRate, transaction } = this.state.pageData;
+    const {
+      listing,
+      bookingDates = [],
+      bookingRate,
+      transaction,
+      scheduleType,
+      startDate,
+      endDate,
+    } = this.state.pageData;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
 
@@ -417,6 +425,7 @@ export class CheckoutPageComponent extends Component {
             fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
             stripeCustomerFetched={stripeCustomerFetched}
             onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
+            initialValues={{ scheduleType, startDate, endDate }}
           />
         </div>
       </Page>

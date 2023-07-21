@@ -165,6 +165,7 @@ export { default as CaregiverBookingCard} from './BookingCards/CaregiverBookingC
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';
 export { default as CareScheduleExceptions } from './CareScheduleExceptions/CareScheduleExceptions';
 export { default as ChangeLocationFilter } from './ChangeLocationFilter/ChangeLocationFilter';
+export { default as DailyPlan } from './DailyPlan/DailyPlan';
 export { default as Discussion } from './Discussion/Discussion';
 export { default as DistanceFilter } from './DistanceFilter/DistanceFilter';
 export { default as EmployerBookingCard} from './BookingCards/EmployerBookingCard';

@@ -882,14 +882,14 @@ export const formatFieldDateInput = timeZone => v =>
 export const parseFieldDateInput = timeZone => v =>
   v && v.date ? { date: timeOfDayFromLocalToTimeZone(v.date, timeZone) } : v;
 
-export const getAvailabileEndDates = startDate => day => {
+export const getAvailableEndDates = startDate => day => {
   if (day >= startDate) {
     return false;
   }
   return true;
 };
 
-export const getAvailabileStartDates = endDate => day => {
+export const getAvailableStartDates = endDate => day => {
   if (!endDate || day <= endDate) {
     return false;
   }
