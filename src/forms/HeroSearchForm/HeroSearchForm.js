@@ -77,7 +77,9 @@ class HeroSearchFormComponent extends Component {
                         isMobile ? css.mobilePredictions : css.desktopPredictions
                       }
                       predictionsAttributionClassName={
-                        isMobile ? css.mobilePredictionsAttribution : null
+                        isMobile
+                          ? css.mobilePredictionsAttribution
+                          : css.desktopPredictionsAttribution
                       }
                       placeholder="Where are you located?"
                       closeOnBlur

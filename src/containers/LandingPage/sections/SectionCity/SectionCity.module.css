@@ -1,0 +1,54 @@
+@import '../../../../styles/customMediaQueries.css';
+
+.citySection {
+  padding: 0 2rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
+  }
+}
+
+.citySectionContent {
+  max-width: 75rem;
+  margin: auto;
+
+  & > h1 {
+    margin-top: 0;
+  }
+}
+
+.cityCardContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 1.5rem;
+  }
+}
+
+.cityName {
+  margin: 0;
+}
+
+.contentTitle {
+  color: var(--matterColorLight);
+  width: 100%;
+  text-align: center;
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  margin-top: 3rem;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    color: var(--matterColor);
+    font-size: 2.5rem;
+    line-height: 3rem;
+    width: auto;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+  }
+}

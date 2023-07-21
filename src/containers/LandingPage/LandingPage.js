@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { bool, object } from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -10,9 +10,6 @@ import config from '../../config';
 import {
   Page,
   SectionHero,
-  SectionHowItWorks,
-  SectionLocations,
-  SectionMarketplaceSummary,
   LayoutSingleColumn,
   LayoutWrapperTopbar,
   LayoutWrapperMain,
@@ -21,9 +18,15 @@ import {
   Modal,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
-import { EMPLOYER } from '../../util/constants';
-import { useCheckMobileScreen } from '../../util/hooks';
+import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 import queryString from 'query-string';
+import {
+  SectionStepSwipe,
+  SectionEmployer,
+  SectionCaregiver,
+  SectionCity,
+  SectionBlog,
+} from './sections';
 
 import shareImage from '../../assets/Background_Share_Image.png';
 import css from './LandingPage.module.css';
@@ -41,9 +44,7 @@ export const LandingPageComponent = props => {
     onManageDisableScrolling,
   } = props;
 
-  const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = React.useState(false);
-
-  const isMobile = useCheckMobileScreen();
+  const [isExternalPromoModalOpen, setIsExternalPromoModalOpen] = useState(false);
 
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
@@ -53,6 +54,8 @@ export const LandingPageComponent = props => {
       setIsExternalPromoModalOpen(true);
     }
   }, [externalPromo]);
+
+  const isSsr = useIsSsr();
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -68,7 +71,7 @@ export const LandingPageComponent = props => {
 
   const scrollToContent = () => {
     if (contentRef.current) {
-      const elementHeight = contentRef.current.offsetTop - (isMobile ? 20 : 60);
+      const elementHeight = contentRef.current.offsetTop;
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
     }
   };
@@ -106,21 +109,13 @@ export const LandingPageComponent = props => {
             />
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
-          <ul className={css.sections} ref={contentRef}>
-            <li className={css.section}>
-              <div className={css.sectionContent}>
-                {currentUser ? (
-                  <SectionHowItWorks
-                    currentUser={currentUser}
-                    currentUserListing={currentUserListing}
-                    currentUserListingFetched={currentUserListingFetched}
-                  />
-                ) : (
-                  <SectionMarketplaceSummary onScrollIntoView={scrollToContent} />
-                )}
-              </div>
-            </li>
-          </ul>
+          <div className={css.content} ref={contentRef}>
+            <SectionEmployer />
+            <SectionStepSwipe />
+            <SectionCaregiver />
+            {!isSsr && <SectionBlog />}
+            <SectionCity />
+          </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />

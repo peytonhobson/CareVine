@@ -33,7 +33,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 50vh;
 
   @media (--viewportMedium) {
     position: relative;
@@ -65,28 +65,17 @@
   position: absolute;
   bottom: 0;
   top: 35%;
+  z-index: 1;
 
   @media (--viewportMedium) {
     top: 25%;
   }
 
   @media (--viewportLarge) {
-    margin: 0 7.5vw 0 7.5vw;
+    margin-left: auto;
+    margin-right: 15vw;
     position: static;
     padding: 0;
-  }
-
-  /* Special viewport for adjusting the heroContent's placement */
-
-  @media only screen and (min-width: 1025px) and (max-width: 1366px) {
-    padding: 0 36px 0 36px;
-  }
-
-  @media only screen and (min-width: 1367px) {
-    margin: 0 auto;
-    max-width: calc(1052px + 36px + 36px);
-    width: 100%;
-    padding: 0 36px 0 36px;
   }
 }
 
@@ -94,17 +83,15 @@
   composes: marketplaceHeroTitleFontStyles from global;
   /* color: var(--marketplaceColorLight); */
   composes: animation;
-  background: -webkit-linear-gradient(var(--marketplaceColorLight) 20%, var(--marketplaceColor));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: brightness(1.5);
+  color: var(--matterColorLight);
   text-align: center;
 
   @media (--viewportLarge) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     padding-bottom: 0;
     text-align: left;
+    margin-top: 0;
+    padding-top: 0;
   }
 }
 .heroMainTitleFEDelay {
@@ -122,6 +109,13 @@
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     margin: 0 0 2rem 0;
     text-align: left;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 1.25rem;
+    font-size: 1.25vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
   }
 }
 
@@ -151,26 +145,29 @@
   }
 
   @media (--viewportLarge) {
-    display: block;
+    max-width: auto;
     width: 16.25rem;
+    width: 15vw;
+    height: 3.5rem;
+    height: 3.5vw;
+    min-height: 0;
+
     margin: 0;
+    padding: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1rem;
+    font-size: 1vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
   }
 }
 
 .heroButtonFEDelay {
   animation-delay: 0.3s;
-}
-
-.heroButtonUnAuth {
-  composes: button buttonFont buttonText buttonBorders buttonColors from global;
-  composes: animation;
-  margin-inline: 1rem;
-
-  @media (--viewportMedium) {
-    display: block;
-    margin-right: 2.5rem;
-    margin-left: 0;
-  }
 }
 
 .logo {
@@ -186,18 +183,17 @@
 }
 
 .learnMoreButtonContainer {
-  position: absolute;
   bottom: 0;
-
   display: flex;
   width: 100%;
   justify-content: center;
   margin-bottom: 0.5rem;
-  visibility: hidden;
+  position: absolute;
 }
 
 .learnMoreButton {
-  color: var(--matterColorLightTransparent);
+  color: var(--matterColor);
+  font-weight: var(--fontWeightMedium);
 
   composes: animation;
   animation-delay: 0s;
@@ -205,13 +201,24 @@
   &:hover {
     text-decoration: none;
   }
+
+  @media (--viewportLarge) {
+    font-size: 1.15rem;
+    font-size: 1vw;
+    line-height: 1.5rem;
+    line-height: 1.5vw;
+  }
+}
+
+.heroSearchForm {
+  width: 100%;
 }
 
 .arrowHead {
   margin-top: 0.1rem;
   fill: transparent;
   stroke-width: 1px;
-  stroke: var(--matterColorLightTransparent);
+  stroke: var(--matterColor);
 }
 
 .unAuthContainer {
@@ -220,14 +227,28 @@
   align-items: center;
   color: var(--matterColorBright);
   position: absolute;
-  top: 25%;
+  top: 18%;
   width: 90%;
   padding: 0 0 5rem 0;
+  z-index: 1;
 
   @media (--viewportMedium) {
-    margin: auto;
+    margin-left: auto;
+    margin-block: auto;
     position: static;
-    padding: 0;
+    padding: 0 0 5rem 0;
+    padding-right: 5rem;
+    max-width: 55rem;
+  }
+
+  @media (--viewportLarge) {
+    max-width: 50vw;
+    padding-right: 5vw;
+  }
+
+  @media (--viewportXLarge) {
+    max-width: 55rem;
+    padding-right: 10rem;
   }
 }
 
@@ -241,7 +262,12 @@
 
   @media (--viewportMedium) {
     font-size: 3.5rem;
-    line-height: 3.75rem;
+    line-height: 4rem;
+  }
+
+  @media (--viewportLarge) {
+    font-size: 3.5vw;
+    line-height: 4vw;
   }
   text-align: center;
 }
@@ -273,4 +299,55 @@
 .heroSearchForm {
   composes: animation;
   composes: heroButtonFEDelay;
+}
+
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (--viewportMedium) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    justify-items: center;
+    margin-top: 1rem;
+    gap: 2em;
+  }
+}
+
+.stepIcon {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+  width: 3rem;
+  min-width: 3rem;
+  background-color: var(--marketplaceColor);
+  border-radius: 100%;
+  margin-right: 1rem;
+
+  @media (--viewportLarge) {
+    width: 3vw;
+    height: 3vw;
+    min-width: 3vw;
+
+    font-size: 1.35vw;
+    line-height: 1.75vw;
+  }
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--matterColorLight);
+
+  @media (--viewportLarge) {
+    & > h4 {
+      font-size: 1vw;
+      line-height: 1.5vw;
+    }
+  }
 }
