@@ -120,6 +120,8 @@ const ListingSummaryComponent = props => {
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
 
+  const canOpenListing = userType !== CAREGIVER || backgroundCheckSubscription?.status === 'active';
+
   return (
     <div className={css.root}>
       {isFromSearchPage && !isOwnListing && (
@@ -266,7 +268,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.closeListing" />
             </Button>
-          ) : (
+          ) : canOpenListing ? (
             <Button
               className={css.button}
               onClick={() => onOpenListing(listing.id.uuid)}
@@ -275,7 +277,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.openListing" />
             </Button>
-          )}
+          ) : null}
           <Button className={css.button} onClick={onShowListingPreview}>
             <FormattedMessage id="ListingSummary.viewPreview" />
           </Button>
