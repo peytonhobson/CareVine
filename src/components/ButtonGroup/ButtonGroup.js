@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import classNames from 'classnames';
-import { Button } from '../';
+import { Button, SecondaryButton } from '../';
 
 import css from './ButtonGroup.module.css';
 
@@ -41,15 +41,18 @@ const ButtonGroup = props => {
             [className || css.button]: !isSelected,
             [selectedClassName || css.selected]: isSelected,
           });
+
+          const ButtonComponent = isSelected ? Button : SecondaryButton;
+
           return (
-            <Button
+            <ButtonComponent
               key={option.key}
               className={buttonClass}
               onClick={() => handleOnChange(option.key)}
               type="button"
             >
               {option.label}
-            </Button>
+            </ButtonComponent>
           );
         })}
     </div>

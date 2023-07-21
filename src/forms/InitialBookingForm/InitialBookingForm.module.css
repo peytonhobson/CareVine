@@ -1,19 +1,20 @@
 @import '../../styles/customMediaQueries.css';
 
 .fieldContainer {
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
 
-  @media (--viewportLarge) {
-    margin-block: 1rem;
+  & > h2 {
+    width: 100%;
+    text-align: center;
   }
 }
 
 .fieldLabel {
   width: 100%;
   text-align: center;
+  margin-bottom: 1rem;
 
   @media (--viewportLarge) {
-    margin-bottom: 0.5rem;
     margin-top: 0;
   }
 }
@@ -72,4 +73,45 @@
   width: 100%;
   text-align: center;
   color: var(--failColor);
+}
+
+.scheduleType {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dateInputContainer {
+  display: flex;
+  gap: 2rem;
+}
+
+.removeExceptionButton {
+  padding: 0 0.75rem 0 0.75rem;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.5rem;
+}
+
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+
+  &:hover {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+
+  @media (--viewportMedium) {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.endDateContainer {
+  position: relative;
 }

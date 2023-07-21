@@ -3,7 +3,6 @@
 // and slows down the first paint.
 import moment from 'moment-timezone/builds/moment-timezone-with-data-10-year-range.min';
 import jstz from 'jstimezonedetect';
-
 /**
  * Input names for the DateRangePicker from react-dates.
  */
@@ -873,4 +872,26 @@ export const addTimeToStartOfDay = (day, time) => {
   return moment(day)
     .add(hours, 'hours')
     .toDate();
+};
+
+// Format form's value for the react-dates input: convert timeOfDay to the local time
+export const formatFieldDateInput = timeZone => v =>
+  v && v.date ? { date: timeOfDayFromTimeZoneToLocal(v.date, timeZone) } : { date: v };
+
+// Parse react-dates input's value: convert timeOfDay to the given time zone
+export const parseFieldDateInput = timeZone => v =>
+  v && v.date ? { date: timeOfDayFromLocalToTimeZone(v.date, timeZone) } : v;
+
+export const getAvailabileEndDates = startDate => day => {
+  if (day >= startDate) {
+    return false;
+  }
+  return true;
+};
+
+export const getAvailabileStartDates = endDate => day => {
+  if (!endDate || day <= endDate) {
+    return false;
+  }
+  return true;
 };
