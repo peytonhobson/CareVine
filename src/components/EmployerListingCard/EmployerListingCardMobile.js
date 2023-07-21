@@ -140,7 +140,7 @@ export const EmployerListingCardMobileComponent = props => {
     height: 'auto',
     marginBottom: '1.5rem',
     '&.MuiPaper-rounded': {
-      borderRadius: '3rem',
+      borderRadius: 'var(--borderRadius)',
     },
     '&.MuiCard-root': {
       border: '1px solid var(--marketplaceColor)',

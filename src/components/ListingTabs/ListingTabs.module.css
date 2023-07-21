@@ -4,7 +4,7 @@
   /* Layout */
   display: flex;
   position: sticky;
-  top: 0;
+  top: var(--topbarHeight);
   z-index: 1;
   flex-direction: row;
   padding: 0 0.5rem;
@@ -15,6 +15,10 @@
   overflow-x: scroll;
   max-width: 100%;
   justify-content: space-between;
+
+  @media (--viewportMedium) {
+    top: var(--topbarHeightDesktop);
+  }
 
   @media (--viewportLarge) {
     /* top: var(--topbarHeightDesktop); */

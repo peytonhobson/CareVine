@@ -56,7 +56,7 @@ const SectionHero = props => {
       image.onload = () => {
         heroRef.current.style.background = `url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        heroRef.current.style.backgroundPosition = '50%';
+        heroRef.current.style.backgroundPosition = 'center';
         heroRef.current.style.backgroundSize = 'cover';
         setHeroLoaded(true);
       };
@@ -156,15 +156,30 @@ const SectionHero = props => {
         ) : (
           <div className={css.unAuthContainer}>
             <h1 className={css.yourCare}>
-              <span style={{ whiteSpace: 'nowrap' }}>No Agency.</span>{' '}
-              <span style={{ whiteSpace: 'nowrap' }}>No Problem.</span>
+              Find <span style={{ color: 'var(--marketplaceColor)' }}>Local Caregivers</span>
+              <br></br> For Your <br></br>{' '}
+              <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
             </h1>
-            <h2 className={css.perfectCaregiver}>
-              <div className={css.subPerfectCaregiver}>
-                Private, independent, and experienced caregivers without the agency fees.{' '}
+            <div className={css.stepContainer}>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>1</h2>
+                <h4>
+                  Craft Your<br></br> Personal Profile
+                </h4>
               </div>
-              <div className={css.subPerfectCaregiver}>Find yours.</div>
-            </h2>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>2</h2>
+                <h4>
+                  Discover Your <br></br> Ideal Caregiver
+                </h4>
+              </div>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>3</h2>
+                <h4>
+                  Book Your<br></br> Care
+                </h4>
+              </div>
+            </div>
             <HeroSearchForm
               className={css.heroSearchForm}
               onSubmit={handleSearchSubmit}
@@ -174,13 +189,14 @@ const SectionHero = props => {
         )
       ) : null}
 
-      {!isMobile && showLearnMore && (
-        <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+      <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+        {showLearnMore && (
           <InlineTextButton className={css.learnMoreButton}>
-            Learn More <IconArrowHead direction="down" className={css.arrowHead} />
+            Learn More{' '}
+            <IconArrowHead direction="down" className={css.arrowHead} height="1em" width="1em" />
           </InlineTextButton>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

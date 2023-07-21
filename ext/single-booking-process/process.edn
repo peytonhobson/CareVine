@@ -65,7 +65,7 @@
 
    {:name :transition/charge,
    :at
-   {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P3D"]}]},
+   {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]},
    :from :state/accepted,
    :to :state/charged}
    {:name :transition/cancel-charged-booking-customer,
