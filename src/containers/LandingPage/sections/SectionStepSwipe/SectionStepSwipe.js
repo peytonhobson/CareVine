@@ -12,6 +12,7 @@ import { useCheckMobileScreen } from '../../../../util/hooks';
 import Geocoder, {
   CURRENT_LOCATION_ID,
 } from '../../../../components/LocationAutocompleteInput/GeocoderMapbox';
+import { useMediaQuery } from '@mui/material';
 
 const INTERVIEW_SLUG = 'the-art-of-interviewing-how-to-hire-the-perfect-caregiver-for-private-care';
 
@@ -20,11 +21,11 @@ import './SectionStepSwipe.css';
 const SectionStepSwipe = () => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const isMobile = useCheckMobileScreen();
+  const isLarge = useMediaQuery('(min-width: 1024px)');
 
-  const leftScreen = isMobile ? 'calc(-100vw - 2rem)' : '-100vw';
-  const middleScreen = isMobile ? '2rem' : '0';
-  const rightScreen = isMobile ? 'calc(100vw + 2rem)' : '100vw';
+  const leftScreen = '-100vw';
+  const middleScreen = !isLarge ? '0' : '5rem';
+  const rightScreen = '100vw';
 
   const nodeRef1 = useRef(null);
   const nodeRef2 = useRef(null);
@@ -95,16 +96,16 @@ const SectionStepSwipe = () => {
 
   return (
     <section className="stepsSection">
-      <div className="stepsSectionCard card1" ref={nodeRef1}>
+      <div className="stepsSectionCard card1">
         <IconArrowHead
           direction="left"
           height="3em"
           width="3em"
-          className="stepArrow disabled"
+          className={`stepArrow ${currentStep === 0 ? 'disabled' : ''}`}
           onClick={handleChangePrevStep}
         />
-        <div>
-          <div className="step">
+        <div className="stepsContainer">
+          <div className="step step1" ref={nodeRef1}>
             <IconUserProfile width="4em" height="4em" />
             <h2 className="stepTitle">Create Your Personalized Profile</h2>
             <p className="stepSubText">
@@ -113,30 +114,7 @@ const SectionStepSwipe = () => {
               they think they would be a good fit.
             </p>
           </div>
-          {/* <div className="stepButtonContainer">
-              <Button className="stepButton" onClick={handleCurrentLocation}>
-                Find Your Caregiver
-              </Button>
-            </div> */}
-        </div>
-        <IconArrowHead
-          direction="right"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangeNextStep}
-        />
-      </div>
-      <div className="stepsSectionCard card2" ref={nodeRef2}>
-        <IconArrowHead
-          direction="left"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangePrevStep}
-        />
-        <div>
-          <div className="step">
+          <div className="step step2" ref={nodeRef2}>
             <IconCaregiver width="4em" height="4em" />
             <h2 className="stepTitle">Discover Your Ideal Caregiver</h2>
             <p className="stepSubText">
@@ -146,25 +124,7 @@ const SectionStepSwipe = () => {
               and sort based off your preferences.
             </p>
           </div>
-        </div>
-        <IconArrowHead
-          direction="right"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangeNextStep}
-        />
-      </div>
-      <div className="stepsSectionCard card3" ref={nodeRef3}>
-        <IconArrowHead
-          direction="left"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangePrevStep}
-        />
-        <div>
-          <div className="step">
+          <div className="step step3" ref={nodeRef3}>
             <IconCalendarHeart width="3.5em" height="3.5em" />
             <h2 className="stepTitle">Tackle the nitty-gritty</h2>
             <p className="stepSubText">
@@ -178,43 +138,27 @@ const SectionStepSwipe = () => {
               .
             </p>
           </div>
-        </div>
-        <IconArrowHead
-          direction="right"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangeNextStep}
-        />
-      </div>
-      <div className="stepsSectionCard card4" ref={nodeRef4}>
-        <IconArrowHead
-          direction="left"
-          height="3em"
-          width="3em"
-          className="stepArrow"
-          onClick={handleChangePrevStep}
-        />
-        <div className="step">
-          <IconCalendarHeart width="3.5em" height="3.5em" />
-          <h2 className="stepTitle">Book Your Care</h2>
-          <p className="stepSubText">
-            When you’ve found your perfect caregiver, use our hassle-free booking system to make it
-            official. The booking system allows you to request dates and times, send payments,
-            change or cancel bookings, as well as providing a convenient way to view previous or
-            future bookings.
-          </p>
-          <div className="stepButtonContainer">
-            <Button className="stepButton" onClick={handleCurrentLocation}>
-              Find Your Caregiver
-            </Button>
+          <div className="step step4" ref={nodeRef4}>
+            <IconCalendarHeart width="3.5em" height="3.5em" />
+            <h2 className="stepTitle">Book Your Care</h2>
+            <p className="stepSubText">
+              When you’ve found your perfect caregiver, use our hassle-free booking system to make
+              it official. The booking system allows you to request dates and times, send payments,
+              change or cancel bookings, as well as providing a convenient way to view previous or
+              future bookings.
+            </p>
+            <div className="stepButtonContainer">
+              <Button className="stepButton" onClick={handleCurrentLocation}>
+                Find Your Caregiver
+              </Button>
+            </div>
           </div>
         </div>
         <IconArrowHead
           direction="right"
           height="3em"
           width="3em"
-          className="stepArrow disabled"
+          className={`stepArrow ${currentStep === 3 ? 'disabled' : ''}`}
           onClick={handleChangeNextStep}
         />
       </div>
