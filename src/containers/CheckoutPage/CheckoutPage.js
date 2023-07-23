@@ -10,8 +10,6 @@ import {
   Page,
   IconConfirm,
   BookingConfirmationCard,
-  BookingSummaryCard,
-  PaymentMethods,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
@@ -232,6 +230,7 @@ export class CheckoutPageComponent extends Component {
         endTime,
         seats: 1,
         date: isoDate,
+        shortDate: moment(isoDate).format('MM/DD'),
         hours,
         amount,
       };
@@ -372,8 +371,6 @@ export class CheckoutPageComponent extends Component {
     }
 
     const showPaymentForm = !!(currentUser && hasRequiredData && currentListing);
-    const selectedPaymentMethodType =
-      this.state.selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
     return (
       <Page {...pageProps}>

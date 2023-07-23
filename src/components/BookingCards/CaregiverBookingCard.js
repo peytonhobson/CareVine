@@ -19,7 +19,7 @@ import {
   TRANSITION_START,
   TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
-import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
+import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -85,11 +85,6 @@ const CaregiverBookingCard = props => {
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
-  };
-
-  const handleCancelBooking = () => {
-    const refundAmount = calculateRefundAmount(lineItems, true);
-    onCancelBooking(booking, refundAmount);
   };
 
   const handleModalClose = modalCloseFunc => {
@@ -298,7 +293,7 @@ const CaregiverBookingCard = props => {
           </Button>
           <CancelButton
             inProgress={cancelBookingInProgress}
-            onClick={handleCancelBooking}
+            onClick={() => onCancelBooking(booking)}
             className={css.modalButton}
             ready={cancelBookingSuccess}
             disabled={cancelBookingSuccess || cancelBookingInProgress}

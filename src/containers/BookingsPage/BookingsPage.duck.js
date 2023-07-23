@@ -97,6 +97,27 @@ const mapLineItemsForCancellationProvider = lineItems => {
   });
 };
 
+const mapRefundItems = (lineItems, isCaregiver) => {
+  return lineItems.map(lineItem => {
+    const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+    const isWithin48Hours =
+      startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+    const isFifty = isWithin48Hours && !isCaregiver;
+
+    const base = isFifty
+      ? parseFloat(lineItem.amount / 2).toFixed(2)
+      : parseFloat(lineItem.amount).toFixed(2);
+    const bookingFee = parseFloat(amount * 0.05).toFixed(0);
+    return {
+      isFifty,
+      base,
+      bookingFee,
+      amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+      date: moment(lineItem.date).format('MM/DD'),
+    };
+  });
+};
+
 const roundDateToNearest5Minutes = date => {
   const currentTimestamp = Math.floor(date.getTime() / 1000);
 
@@ -377,7 +398,7 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const cancelBooking = (booking, refundAmount) => async (dispatch, getState, sdk) => {
+export const cancelBooking = booking => async (dispatch, getState, sdk) => {
   dispatch(cancelBookingRequest());
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
@@ -385,6 +406,11 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
   const listingId = booking.listing.id.uuid;
   const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
+
+  const refundItems = mapRefundItems(lineItems, userType === CAREGIVER);
+  const refundAmount = parseInt(
+    refundItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
+  );
 
   const lastTransition = booking.attributes.lastTransition;
   let bookingState = null;
@@ -435,8 +461,11 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount: parseFloat((refundAmount + applicationFeeRefund) / 100).toFixed(2),
+          refundAmount,
           payout,
+          refundItems,
+          bookingFeeRefundAmount: applicationFeeRefund,
+          baseRefundAmount: refundAmount - applicationFeeRefund,
         },
       });
     }
@@ -475,6 +504,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         const newBookedDates = bookedDates.filter(
           date => !bookingDates.includes(date) || new Date(date) < new Date()
         );
+
         await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
       } catch (e) {
         log.error(e, 'update-caregiver-booking-dates-failed', {});
