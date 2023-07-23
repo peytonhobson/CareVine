@@ -81,10 +81,10 @@
                               class="title"
                               style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              {{transaction.customer.display-name}} has accepted your booking
-                              request starting on {{transaction.metadata.lineItems.[0].shortDate}}
-                              at {{transaction.metadata.lineItems.[0].startTime}}. You can view and
-                              manage this booking by clicking the button below.
+                              Your booking with {{transaction.customer.display-name}} starting on
+                              {{transaction.metadata.lineItems.[0].shortDate}} at
+                              {{transaction.metadata.lineItems.[0].startTime}} has been confirmed.
+                              You can view and manage this booking by clicking the button below.
                             </p>
                           </td>
                         </tr>
@@ -109,20 +109,19 @@
                               style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               <li style="padding: 4px 0;">
-                                Now that the booking has been accepted, your chosen payment method
-                                will be charged for the full booking, including booking and
-                                processing fees. CareVine will hold your payment in escrow until the
-                                booking has been canceled or completed. Once the booking is
-                                complete, all applicable funds will be transferred to the caregiver.
+                                Now that the booking has been confirmed, the client will be charged
+                                for the full booking. CareVine will hold your your payment in escrow
+                                until the booking has been canceled or completed. Once the booking
+                                is complete, all applicable funds will be transferred to the you.
                               </li>
                               <li style="padding: 4px 0;">
-                                After the booking is complete, you will have 48 hours to submit any
-                                disputes if issues arise.
+                                After the booking is complete, the client will have 48 hours to
+                                submit any disputes if issues arise.
                               </li>
                               <li style="padding: 4px 0;">
-                                You can cancel the booking at any time, however, your refund will be
-                                subject to our
-                                <a href="" style="color: #6BA0B6;">cancellation policy</a>.
+                                You can cancel the booking at any time. Any booking time not
+                                completed will be fully refunded to the client. Your search ranking
+                                may also be impacted.
                               </li>
                             </ul>
                           </td>
