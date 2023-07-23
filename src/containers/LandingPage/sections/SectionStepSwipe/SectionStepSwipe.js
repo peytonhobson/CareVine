@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 
+import { compose } from 'redux';
+import { withRouter } from 'react-router-dom';
 import {
   IconArrowHead,
   IconCalendarHeart,
@@ -8,7 +10,6 @@ import {
   IconCaregiver,
   NamedLink,
 } from '../../../../components';
-import { useCheckMobileScreen } from '../../../../util/hooks';
 import Geocoder, {
   CURRENT_LOCATION_ID,
 } from '../../../../components/LocationAutocompleteInput/GeocoderMapbox';
@@ -18,7 +19,7 @@ const INTERVIEW_SLUG = 'the-art-of-interviewing-how-to-hire-the-perfect-caregive
 
 import './SectionStepSwipe.css';
 
-const SectionStepSwipe = () => {
+const SectionStepSwipe = ({ history }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const isLarge = useMediaQuery('(min-width: 1024px)');
@@ -166,4 +167,4 @@ const SectionStepSwipe = () => {
   );
 };
 
-export default SectionStepSwipe;
+export default compose(withRouter)(SectionStepSwipe);
