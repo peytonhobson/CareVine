@@ -475,6 +475,7 @@ const createBookingPayment = async transaction => {
       id: txId,
       metadata: {
         paymentIntentId,
+        payout: amount,
       },
     });
 
