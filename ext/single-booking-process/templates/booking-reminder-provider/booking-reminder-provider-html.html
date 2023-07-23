@@ -1,86 +1,161 @@
 <html>
   <head>
-    <style type="text/css">
-      @media only screen and (max-width: 768px) {
-        .body1 {
-          padding: 32px 32px 32px 32px !important;
+    <meta name="supported-color-schemes" content="light dark" />
+
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .inner-table {
+          background-color: #1c1c1c !important;
         }
 
-        .body2 {
-          padding: 0 32px 32px 32px !important;
+        .button {
+          color: #1c1c1c !important;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .inner-table {
+          border-radius: 0 !important;
         }
 
-        .content {
-          padding: 64px 0 96px 0;
+        .outer-td {
+          padding: 0 !important;
         }
       }
     </style>
   </head>
   <body style="padding: 0; margin: 0">
-    <div
-      class="main-container"
-      style="max-width: 600px;background-color: rgba(142, 213, 181, 0.1);margin: auto;"
+    <table
+      style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
+      width="100%"
+      height="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      align="center"
     >
-      <div class="header">
-        <a href="{{marketplace.url}}">
-          <img
-            src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
-            class="logo"
-            style="height: 50px;width: 176px;padding: 16px;"
-          />
-        </a>
-      </div>
-      <div class="content" style="padding: 96px 0 128px 0;">
-        <p
-          class="title"
-          style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 28px;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
-        >
-            Booking Reminder
-        </p>
-        <p
-          class="body1"
-          style="padding: 32px 56px 32px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-            You have an upcoming booking with {{transaction.customer.display-name}} on {{transaction.booking.start.month}}/{{transaction.booking.start.day}} at {{transaction.metadata.lineItems.[0].startTime}}.
-        </p>
-        <p
-          class="body2"
-          style="padding: 0 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-            If you experience any issues during your booking or have any questions, please reach out to us at <a href="mailto:support@carevine.us" style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;">support@carevine.us</a>
-        </p>
-      </div>
-      <div class="footer" style="text-align: center;">
-        <div
-          class="footer-sub"
-          style="padding: 16px 32px 24px 32px;margin: 0 32px;border-top: solid 1px #CCCCCC"
-        >
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/contact-us"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Contact Us</a
+      <tbody>
+        <tr>
+          <td
+            style="padding: 25px 0; border-top: 0; height: 100%; width: 100%;"
+            valign="top"
+            align="center"
+            class="outer-td"
+          >
+            <table
+              class="inner-table"
+              style="border-collapse:collapse; border:0; max-width: 450px; background-color: #FFFFFF; border-radius: 10px;"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
             >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/privacy-policy"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Privacy-Policy</a
-            >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/terms-of-service"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Terms &amp; Conditions</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
+              <tbody>
+                <tr>
+                  <td style="padding: 0 25px 25px 25px;">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td align="center">
+                            <a href="{{marketplace.url}}">
+                              <img
+                                src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
+                                class="logo"
+                                style="height: 50px;width: 176px;padding-top: 16px;"
+                              />
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                            >
+                              Booking Reminder
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              You have an upcoming booking with
+                              {{transaction.customer.display-name}} starting on
+                              {{transaction.booking.start.month}}/{{transaction.booking.start.day}}
+                              at {{transaction.metadata.lineItems.[0].startTime}}. Click the button
+                              below to view and/or manage this booking
+                            </p>
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td style="padding: 8px 0 24px 0;">
+                            <a
+                              href="{{marketplace.url}}/bookings"
+                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              class="button"
+                              >Go to Booking</a
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
+                          >
+                            <p
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              If you have any questions or concerns, please contact
+                              <a href="support@carevine.us" style="color: #6BA0B6;"
+                                >CareVine Support</a
+                              >.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table align="center" style="padding-top: 16px;">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/contact-us"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Contact Us</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/privacy-policy"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Privacy-Policy</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/terms-of-service"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Terms &amp; Conditions</a
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
