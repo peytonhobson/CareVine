@@ -84,6 +84,122 @@
                           </td>
                         </tr>
                         <tr>
+                          <td align="center">
+                            <table
+                              class="title"
+                              style="margin-top: 24px;width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <p
+                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                    >
+                                      <b>Booking Summary</b>
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    {{#each transaction.metadata.lineItems}}
+                                    <table
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #6BA0B6;"
+                                    >
+                                      <tbody>
+                                        <tr>
+                                          <td
+                                            style="vertical-align:top; padding-left: 20px; padding-top: 4px;"
+                                          >
+                                            <b
+                                              >{{this.shortDate}} ({{this.startTime}} -
+                                              {{this.endTime}})</b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="font-size:14px;padding-left: 20px">
+                                            Base Fee
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.amount}}
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px;"
+                                          >
+                                            Booking Fee
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.bookingFee}}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {{/each}}
+                                    <table
+                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size: 16px; line-height: 120%;font-family: Helvetica;"
+                                    >
+                                      <tr>
+                                        <td style="font-size:14px;padding-left:20px">
+                                          Total Base Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.payout}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size:14px;padding-left: 20px">
+                                          Total Booking Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.bookingFee}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size:14px;padding-left: 20px">
+                                          Processing Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.processingFee}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; line-height: 200%;"
+                                        >
+                                          <b>Total</b>
+                                        </td>
+                                        <td
+                                          style="font-size:18px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
                           <td style="padding-top: 32px;">
                             <p
                               style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"

@@ -218,7 +218,7 @@ export class CheckoutPageComponent extends Component {
       const { startTime, endTime, date } = booking;
 
       const hours = calculateTimeBetween(startTime, endTime);
-      const amount = hours * bookingRate;
+      const amount = parseFloat(hours * bookingRate).toFixed(2);
       subTotal += amount;
       const isoDate = bookingDates
         .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
@@ -233,10 +233,11 @@ export class CheckoutPageComponent extends Component {
         shortDate: moment(isoDate).format('MM/DD'),
         hours,
         amount,
+        bookingFee: parseFloat(amount * 0.05).toFixed(2),
       };
     });
 
-    const bookingFee = subTotal * BOOKING_FEE_PERCENTAGE;
+    const bookingFee = parseFloat(subTotal * BOOKING_FEE_PERCENTAGE).toFixed(2);
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
     const processingFee = calculateProcessingFee(
