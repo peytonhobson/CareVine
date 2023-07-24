@@ -69,7 +69,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
                             >
                               Booking Accepted!
                             </p>
@@ -81,8 +81,11 @@
                               class="title"
                               style="padding-top: 24px; padding-bottom: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              {{transaction.provider.display-name}} has accepted your booking
-                              starting on {{transaction.metadata.lineItems.[0].shortDate}} at
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              has accepted your booking starting on
+                              {{transaction.metadata.lineItems.[0].shortDate}} at
                               {{transaction.metadata.lineItems.[0].startTime}}.
                             </p>
                           </td>

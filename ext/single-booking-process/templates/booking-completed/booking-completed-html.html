@@ -69,7 +69,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
                             >
                               Booking Complete
                             </p>
@@ -81,9 +81,12 @@
                               class="title"
                               style="padding-top: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Your booking with {{transaction.provider.display-name}} has been
-                              completed. You have 48 hours to submit any disputes before funds are
-                              transferred to the caregiver.
+                              Your booking with
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              has been completed. You have 48 hours to submit any disputes before
+                              funds are transferred to the caregiver.
                             </p>
                           </td>
                         </tr>

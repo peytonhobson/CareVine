@@ -78,6 +78,7 @@ const mapLineItemsForCancellationCustomer = lineItems => {
         return {
           ...lineItem,
           amount: lineItem.amount / 2,
+          isFifty: true,
         };
       }
 
