@@ -81,15 +81,32 @@
                               class="title"
                               style="padding-top: 24px; padding-bottom: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              {{transaction.customer.display-name}} has canceled your booking and
-                              all future booking times. {{#if transaction.metadata.payout}} You will
-                              be paid out ${{transaction.metadata.payout}} for all prior time
-                              worked. Below is summary of your payout. {{else}} You did not complete
+                              {{transaction.customer.display-name}} has canceled the remainder of
+                              your booking. {{#if transaction.metadata.payout}} You will be paid
+                              ${{transaction.metadata.payout}} in accordance with our cancellation
+                              policy. Below is summary of your payout. {{else}} You did not complete
                               any booking times and will not receive a payout. {{/if}}
                             </p>
                           </td>
                         </tr>
                         {{#if transaction.metadata.payout}}
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-bottom: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              If no disputes are submitted by the client, you will receive payment
+                              in the next 3-7 days. If you don't receive payment within 10 days,
+                              please contact
+                              <a
+                                href="mailto:support@carevine.us"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
+                                >CareVine Support</a
+                              >.
+                            </p>
+                          </td>
+                        </tr>
                         <tr>
                           <td align="center">
                             <table
@@ -183,8 +200,8 @@
                               </li>
                               <li style="padding: 4px 0;">
                                 Bookings cancelled by caregivers will be refunded 100% to the client
-                                for any remaining time not completed. Caregivers will be paid out
-                                for any time already completed.
+                                for any remaining time not completed. Caregivers will be paid for
+                                any time already completed.
                               </li>
                             </ul>
                           </td>
@@ -197,7 +214,9 @@
                               style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               If you have any questions or concerns, please contact
-                              <a href="support@carevine.us" style="color: #6BA0B6;"
+                              <a
+                                href="mailto:support@carevine.us"
+                                style="color: #6BA0B6; text-decoration: underline;"
                                 >CareVine Support</a
                               >.
                             </p>
