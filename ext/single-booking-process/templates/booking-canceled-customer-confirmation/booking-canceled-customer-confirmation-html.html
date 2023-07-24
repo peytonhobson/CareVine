@@ -65,7 +65,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
                             >
                               Booking Canceled
                             </p>
@@ -77,9 +77,12 @@
                               class="title"
                               style="padding-top: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Your booking with {{transaction.provider.display-name}} has been
-                              canceled. {{#if transaction.metadata.refundAmount}} You will be
-                              refunded ${{transaction.metadata.refundAmount}} for the remaining
+                              Your booking with
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              has been canceled. {{#if transaction.metadata.refundAmount}} You will
+                              be refunded ${{transaction.metadata.refundAmount}} for the remaining
                               time. You can view the breakdown of the refund below. {{else}} Your
                               payment method was not charged. {{/if}}
                             </p>
@@ -195,14 +198,14 @@
                                 in advance
                               </li>
                               <li style="padding: 4px 0;">
-                                Base caregiving and booking fees are refunded according to the
-                                stipulations above. Processing fees for your chosen payment method
-                                are not refundable.
-                              </li>
-                              <li style="padding: 4px 0;">
                                 Bookings cancelled by caregivers will be refunded 100% to the client
                                 for any remaining time not completed. Caregivers will be paid out
                                 for any time already completed.
+                              </li>
+                              <li style="padding: 4px 0;">
+                                Base caregiving and booking fees are refunded according to the
+                                stipulations above. Processing fees for your chosen payment method
+                                are not refundable.
                               </li>
                             </ul>
                           </td>

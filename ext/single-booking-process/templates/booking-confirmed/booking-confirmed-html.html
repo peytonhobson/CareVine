@@ -69,7 +69,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
                             >
                               Booking Confirmed!
                             </p>
@@ -81,8 +81,11 @@
                               class="title"
                               style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Your booking with {{transaction.customer.display-name}} starting on
-                              {{transaction.metadata.lineItems.[0].shortDate}} at
+                              Your booking with
+                              <span style="white-space: nowrap"
+                                >{{transaction.customer.display-name}}</span
+                              >
+                              starting on {{transaction.metadata.lineItems.[0].shortDate}} at
                               {{transaction.metadata.lineItems.[0].startTime}} has been confirmed.
                               You can view and manage this booking by clicking the button below.
                             </p>

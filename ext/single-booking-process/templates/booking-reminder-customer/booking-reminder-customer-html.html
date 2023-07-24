@@ -69,7 +69,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
                             >
                               Booking Reminder
                             </p>
@@ -82,7 +82,10 @@
                               style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               You have an upcoming booking with
-                              {{transaction.provider.display-name}} starting on
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              starting on
                               {{transaction.booking.start.month}}/{{transaction.booking.start.day}}
                               at {{transaction.metadata.lineItems.[0].startTime}}. Click the button
                               below to view and/or manage this booking

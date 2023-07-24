@@ -1,103 +1,297 @@
 <html>
   <head>
-    <style type="text/css">
-      @media only screen and (max-width: 768px) {
-        .body1 {
-          padding: 32px 32px 32px 32px !important;
+    <meta name="supported-color-schemes" content="light dark" />
+
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .inner-table {
+          background-color: #1c1c1c !important;
         }
 
-        .body2 {
-          padding: 0 32px 0 32px !important;
+        .button {
+          color: #1c1c1c !important;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .inner-table {
+          border-radius: 0 !important;
         }
 
-        .content {
-          padding: 64px 0 96px 0;
+        .outer-td {
+          padding: 0 !important;
+        }
+
+        .button-td {
+          padding: 40px 0 !important;
+        }
+
+        .description {
+          padding: 40px 0 24px 0 !important;
         }
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0">
-    <div
-      class="main-container"
-      style="max-width: 600px;background-color: rgba(142, 213, 181, 0.1);margin: auto;"
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6; font-family: Helvetica;">
+    <table
+      style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
+      width="100%"
+      height="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      align="center"
     >
-      <div class="header">
-        <a href="{{marketplace.url}}">
-          <img
-            src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
-            class="logo"
-            style="height: 50px;width: 176px;padding: 16px;"
-          />
-        </a>
-      </div>
-      <div class="content" style="padding: 96px 0 128px 0;">
-        <p
-          class="title"
-          style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 28px;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
-        >
-          Caregiver Canceled Booking
-        </p>
-        <p
-          class="body1"
-          style="padding: 32px 56px 32px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-          {{transaction.provider.display-name}} has canceled the remainder of your booking.
-          {{#if transaction.metadata.payout}}
-            They will be paid out ${{transaction.metadata.payout}} for all prior time worked.
-            {{#if transaction.metadata.refundAmount}}
-              You will receive a refund of ${{transaction.metadata.refundAmount}} for the remaining time.
-            {{/if}}
-          {{else}}
-            {{#if transaction.metadata.refundAmount}}
-                They did not complete any booking times and you will receive a full
-                refund of ${{transaction.metadata.refundAmount}}.
-            {{/if}}
-          {{/if}}
-        </p>
-        <p
-          class="body2"
-          style="padding: 0 56px 0 32px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-          If you have any questions or concerns regarding the booking or the amount you were
-          refunded, please contact us at
-          <a
-            href="mailto:support@carevine.us"
-            style="font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-            >support@carevine.us</a
-          >.
-        </p>
-      </div>
-      <div class="footer" style="text-align: center;">
-        <div
-          class="footer-sub"
-          style="padding: 16px 32px 24px 32px;margin: 0 32px;border-top: solid 1px #CCCCCC"
-        >
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/contact-us"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Contact Us</a
+      <tbody>
+        <tr>
+          <td
+            class="outer-td"
+            style="padding: 25px 0; border-top: 0; height: 100%; width: 100%;"
+            valign="top"
+            align="center"
+          >
+            <table
+              class="inner-table"
+              style="border-collapse:collapse; border:0; max-width: 450px; background-color: #FFFFFF; border-radius: 10px;"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
             >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/privacy-policy"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Privacy-Policy</a
-            >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/terms-of-service"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Terms &amp; Conditions</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
+              <tbody>
+                <tr>
+                  <td style="padding: 0 25px 25px 25px;">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td align="center">
+                            <a href="{{marketplace.url}}">
+                              <img
+                                src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
+                                class="logo"
+                                style="height: 50px;width: 176px;padding-top: 16px;"
+                              />
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;"
+                            >
+                              Caregiver Canceled Booking
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="description"
+                              style="padding: 24px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                            >
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              has canceled the remainder of your booking. {{#if
+                              transaction.metadata.refundAmount}} You will receive a refund of
+                              ${{transaction.metadata.refundAmount}} in accordance with our
+                              cancellation policy. You can view a summary of your refund below.
+                              {{else}} Your payment method was not charged. {{/if}}
+                            </p>
+                          </td>
+                        </tr>
+                        {{#if transaction.metadata.refundAmount}}
+                        <tr>
+                          <td align="center">
+                            <table
+                              class="title"
+                              style="width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <p
+                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                    >
+                                      <b>Refund Summary</b>
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    {{#each transaction.metadata.refundItems}}
+                                    <table
+                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #6BA0B6;"
+                                    >
+                                      <tbody>
+                                        <tr>
+                                          <td style="vertical-align:top; padding-left: 20px">
+                                            <b>{{this.date}} {{#if this.isFifty}} (50%) {{/if}} </b>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="font-size:14px;padding-left: 20px">
+                                            Base Fee Refund
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.base}}
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px;"
+                                          >
+                                            Booking Fee Refund
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.bookingFee}}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {{/each}}
+                                    <table
+                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                                    >
+                                      <tr>
+                                        <td style="font-size:14px;padding-left:20px">
+                                          Total Base Fee Refund
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.baseFeeRefundAmount}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size:14px;padding-left: 20px">
+                                          Total Booking Fee Refund
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.bookingFeeRefundAmount}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px"
+                                        >
+                                          <b>Total Refund</b>
+                                        </td>
+                                        <td
+                                          style="font-size:18px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                        {{/if}}
+                        <tr>
+                          <td style="padding-top: 32px;">
+                            <p
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
+                            >
+                              Cancellation Policy
+                            </p>
+                            <ul
+                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              <li style="padding: 4px 0;">
+                                100% refund for booked times canceled by clients more than 48 hours
+                                in advance
+                              </li>
+                              <li style="padding: 4px 0;">
+                                50% refund for booked times canceled by clients less than 48 hours
+                                in advance
+                              </li>
+                              <li style="padding: 4px 0;">
+                                Bookings cancelled by caregivers will be refunded 100% to the client
+                                for any remaining time not completed. Caregivers will be paid out
+                                for any time already completed.
+                              </li>
+                              <li style="padding: 4px 0;">
+                                Base caregiving and booking fees are refunded according to the
+                                stipulations above. Processing fees for your chosen payment method
+                                are not refundable.
+                              </li>
+                            </ul>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
+                          >
+                            <p
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;"
+                            >
+                              If you have any questions or concerns, please contact
+                              <a
+                                href="support@carevine.us"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;"
+                                >CareVine Support</a
+                              >.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table align="center" style="padding-top: 16px;">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="https://carevine.us/contact-us"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Contact Us</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="https://carevine.us/privacy-policy"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Privacy-Policy</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="https://carevine.us/terms-of-service"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Terms &amp; Conditions</a
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
