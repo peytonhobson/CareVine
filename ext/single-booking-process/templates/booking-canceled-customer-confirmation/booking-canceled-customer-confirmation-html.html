@@ -40,7 +40,7 @@
           >
             <table
               class="inner-table"
-              style="border-collapse:collapse; border:0; max-width: 450px; background-color: #FFFFFF; border-radius: 10px;"
+              style="border-collapse:collapse; border:0; max-width: 450px; height: 100%; background-color: #FFFFFF; border-radius: 10px;"
               cellspacing="0"
               cellpadding="0"
               border="0"
@@ -52,7 +52,7 @@
                       <tbody>
                         <tr>
                           <td align="center">
-                            <a href="{{marketplace.url}}">
+                            <a href="{{marketplace.url}}" class="logo-link">
                               <img
                                 src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
                                 class="logo"
@@ -81,10 +81,11 @@
                               <span style="white-space: nowrap"
                                 >{{transaction.provider.display-name}}</span
                               >
-                              has been canceled. {{#if transaction.metadata.refundAmount}} You will
-                              be refunded ${{transaction.metadata.refundAmount}} for the remaining
-                              time. You can view the breakdown of the refund below. {{else}} Your
-                              payment method was not charged. {{/if}}
+                              has been successfully canceled. {{#if
+                              transaction.metadata.refundAmount}} You will be refunded
+                              ${{transaction.metadata.refundAmount}} for the remaining time. You can
+                              view the breakdown of the refund below. {{else}} Your payment method
+                              was not charged. {{/if}}
                             </p>
                           </td>
                         </tr>
@@ -95,6 +96,15 @@
                               style="margin-top: 24px;width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               <tbody>
+                                <tr>
+                                  <td>
+                                    <p
+                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                    >
+                                      <b>Refund Summary</b>
+                                    </p>
+                                  </td>
+                                </tr>
                                 <tr>
                                   <td>
                                     {{#each transaction.metadata.refundItems}}
@@ -109,7 +119,7 @@
                                         </tr>
                                         <tr>
                                           <td style="font-size:14px;padding-left: 20px">
-                                            Base Fee
+                                            Base Fee Refund
                                           </td>
                                           <td
                                             style="font-size:14px; padding-right: 20px;"
@@ -122,7 +132,7 @@
                                           <td
                                             style="font-size:14px;padding-left: 20px; padding-bottom: 8px;"
                                           >
-                                            Booking Fee
+                                            Booking Fee Refund
                                           </td>
                                           <td
                                             style="font-size:14px; padding-right: 20px;"
@@ -139,7 +149,7 @@
                                     >
                                       <tr>
                                         <td style="font-size:14px;padding-left:20px">
-                                          Total Base Fee
+                                          Total Base Fee Refund
                                         </td>
                                         <td
                                           style="font-size:14px; padding-right: 20px;"
@@ -150,7 +160,7 @@
                                       </tr>
                                       <tr>
                                         <td style="font-size:14px;padding-left: 20px">
-                                          Total Booking Fee
+                                          Total Booking Fee Refund
                                         </td>
                                         <td
                                           style="font-size:14px; padding-right: 20px;"
@@ -163,7 +173,7 @@
                                         <td
                                           style="vertical-align:top; padding-left: 20px; font-size:18px"
                                         >
-                                          <b>Total</b>
+                                          <b>Total Refund</b>
                                         </td>
                                         <td
                                           style="font-size:18px; padding-right: 20px;"
@@ -204,8 +214,7 @@
                               </li>
                               <li style="padding: 4px 0;">
                                 Base caregiving and booking fees are refunded according to the
-                                stipulations above. Processing fees for your chosen payment method
-                                are not refundable.
+                                stipulations above. Processing fees are not refundable.
                               </li>
                             </ul>
                           </td>
@@ -220,7 +229,7 @@
                               If you have any questions or concerns, please contact
                               <a
                                 href="support@carevine.us"
-                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
                                 >CareVine Support</a
                               >.
                             </p>
