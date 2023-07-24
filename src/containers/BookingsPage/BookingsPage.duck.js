@@ -349,6 +349,7 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
         TRANSITION_DISPUTE,
         TRANSITION_RESOLVE_DISPUTE,
         TRANSITION_PAY_CAREGIVER,
+        TRANSITION_MAKE_REVIEWABLE,
         TRANSITION_EXPIRE_REVIEW_PERIOD,
         TRANSITION_REVIEW,
       ],
