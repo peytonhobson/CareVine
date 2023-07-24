@@ -94,7 +94,7 @@
                         <tr align="center">
                           <td>
                             <a
-                              href="{{marketplace.url}}/bookings"
+                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
                               style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
                               class="button"
                               >Go to Booking</a
@@ -113,7 +113,7 @@
                             >
                               <li style="padding: 4px 0;">
                                 Now that the booking has been confirmed, the client will be charged
-                                for the full booking. CareVine will hold your your payment in escrow
+                                for the full booking. CareVine will hold your payment in escrow
                                 until the booking has been canceled or completed. Once the booking
                                 is complete, all applicable funds will be transferred to the you.
                               </li>
@@ -137,7 +137,9 @@
                               style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               If you have any questions or concerns, please contact
-                              <a href="support@carevine.us" style="color: #6BA0B6;"
+                              <a
+                                href="support@carevine.us"
+                                style="color: #6BA0B6; text-decoration: underline;"
                                 >CareVine Support</a
                               >.
                             </p>
