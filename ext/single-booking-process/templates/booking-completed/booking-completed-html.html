@@ -102,7 +102,10 @@
                                     <p
                                       style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
                                     >
-                                      <b>Booking Summary</b>
+                                      <b
+                                        >Booking Summary
+                                        (#{{transaction.metadata.bookingNumber}})</b
+                                      >
                                     </p>
                                   </td>
                                 </tr>
@@ -196,7 +199,7 @@
                                           style="font-size:18px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                          <b>${{transaction.metadata.totalPayment}}</b>
                                         </td>
                                       </tr>
                                     </table>

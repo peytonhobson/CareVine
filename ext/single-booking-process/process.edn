@@ -316,7 +316,7 @@
     :to :actor.role/customer,
     :template :booking-reminder-customer,
     :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
 
     {:name :notification/booking-reminder-provider
@@ -324,6 +324,6 @@
     :to :actor.role/provider,
     :template :booking-reminder-provider,
     :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
 ]}

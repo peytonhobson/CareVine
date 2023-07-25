@@ -108,7 +108,7 @@ const mapRefundItems = (lineItems, isCaregiver) => {
     const base = isFifty
       ? parseFloat(lineItem.amount / 2).toFixed(2)
       : parseFloat(lineItem.amount).toFixed(2);
-    const bookingFee = parseFloat(amount * 0.05).toFixed(0);
+    const bookingFee = parseFloat(base * 0.05).toFixed(0);
     return {
       isFifty,
       base,
