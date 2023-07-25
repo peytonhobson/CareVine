@@ -22,6 +22,7 @@ import {
   TRANSITION_START,
   TRANSITION_CHARGE,
   TRANSITION_START_UPDATE_TIMES,
+  TRANSITION_MAKE_REVIEWABLE,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -46,6 +47,7 @@ const pastBookingTransitions = [
   TRANSITION_DISPUTE,
   TRANSITION_RESOLVE_DISPUTE,
   TRANSITION_PAY_CAREGIVER,
+  TRANSITION_MAKE_REVIEWABLE,
   TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_REVIEW,
 ];
@@ -77,7 +79,7 @@ const mapLineItemsForCancellationCustomer = lineItems => {
       if (isWithin48Hours) {
         return {
           ...lineItem,
-          amount: lineItem.amount / 2,
+          amount: parseFloat(lineItem.amount / 2).toFixed(2),
           isFifty: true,
         };
       }
@@ -108,7 +110,7 @@ const mapRefundItems = (lineItems, isCaregiver) => {
     const base = isFifty
       ? parseFloat(lineItem.amount / 2).toFixed(2)
       : parseFloat(lineItem.amount).toFixed(2);
-    const bookingFee = parseFloat(base * 0.05).toFixed(0);
+    const bookingFee = parseFloat(base * 0.05).toFixed(2);
     return {
       isFifty,
       base,
@@ -369,6 +371,7 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
         TRANSITION_DISPUTE,
         TRANSITION_RESOLVE_DISPUTE,
         TRANSITION_PAY_CAREGIVER,
+        TRANSITION_MAKE_REVIEWABLE,
         TRANSITION_EXPIRE_REVIEW_PERIOD,
         TRANSITION_REVIEW,
       ],
@@ -406,11 +409,11 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
   const bookingId = booking.id.uuid;
   const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
   const listingId = booking.listing.id.uuid;
-  const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
+  const totalAmount = lineItems.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) * 100;
 
   const refundItems = mapRefundItems(lineItems, userType === CAREGIVER);
   const refundAmount = parseInt(
-    refundItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
+    refundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
   );
 
   const lastTransition = booking.attributes.lastTransition;
@@ -455,18 +458,28 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
       const newLineItems = isCaregiver
         ? mapLineItemsForCancellationProvider(lineItems)
         : mapLineItemsForCancellationCustomer(lineItems);
-      const payout = newLineItems.reduce((acc, item) => acc + item.amount, 0);
+      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
       // Update line items so caregiver is paid out correct amount after refund
       await updateTransactionMetadata({
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount,
-          payout,
+          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
+          payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
           refundItems,
-          bookingFeeRefundAmount: applicationFeeRefund,
-          baseRefundAmount: refundAmount - applicationFeeRefund,
+          bookingFeeRefundAmount: parseFloat(applicationFeeRefund / 100).toFixed(2),
+          totalRefund: parseFloat(refundAmount / 100 + applicationFeeRefund / 100).toFixed(2),
+        },
+      });
+    } else {
+      await updateTransactionMetadata({
+        txId: bookingId,
+        metadata: {
+          lineItems: [],
+          refundAmount: 0,
+          payout: 0,
+          refundItems: [],
         },
       });
     }

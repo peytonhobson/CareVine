@@ -95,6 +95,11 @@ const EmployerBookingCard = props => {
     onSubmitReview(booking, reviewRating, reviewContent);
   };
 
+  const handleModalOpen = modalOpenFunc => {
+    onFetchBookings();
+    modalOpenFunc(true);
+  };
+
   const handleModalClose = modalCloseFunc => {
     modalCloseFunc(false);
     onResetInitialState();
@@ -160,18 +165,27 @@ const EmployerBookingCard = props => {
         </div>
         <div className={css.changeButtonsContainer}>
           {isComplete && (
-            <Button className={css.changeButton} onClick={() => setIsDisputeModalOpen(true)}>
+            <Button
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsDisputeModalOpen)}
+            >
               Dispute
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Dispute In Review</h3>}
           {showCancel && (
-            <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
+            <CancelButton
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsCancelModalOpen)}
+            >
               Cancel
             </CancelButton>
           )}
           {isReviewable && (
-            <Button className={css.changeButton} onClick={() => setIsReviewModalOpen(true)}>
+            <Button
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsReviewModalOpen)}
+            >
               Review
             </Button>
           )}
@@ -218,7 +232,10 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.viewContainer}>
-          <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
+          <Button
+            className={css.viewButton}
+            onClick={() => handleModalOpen(setIsPaymentDetailsModalOpen)}
+          >
             Payment Details
           </Button>
           <SecondaryButton

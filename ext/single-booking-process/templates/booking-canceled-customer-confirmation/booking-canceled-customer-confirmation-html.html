@@ -82,13 +82,14 @@
                                 >{{transaction.provider.display-name}}</span
                               >
                               has been successfully canceled. {{#if
-                              transaction.metadata.refundAmount}} You will be refunded
-                              ${{transaction.metadata.refundAmount}} for the remaining time. You can
+                              transaction.metadata.totalRefund}} You will be refunded
+                              ${{transaction.metadata.totalRefund}} for the remaining time. You can
                               view the breakdown of the refund below. {{else}} Your payment method
                               was not charged. {{/if}}
                             </p>
                           </td>
                         </tr>
+                        {{#if transaction.metadata.totalRefund}}
                         <tr>
                           <td align="center">
                             <table
@@ -157,7 +158,7 @@
                                           style="font-size:14px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          ${{transaction.metadata.baseFeeRefundAmount}}
+                                          ${{transaction.metadata.refundAmount}}
                                         </td>
                                       </tr>
                                       <tr>
@@ -181,7 +182,7 @@
                                           style="font-size:18px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                          <b>${{transaction.metadata.totalRefund}}</b>
                                         </td>
                                       </tr>
                                     </table>
@@ -191,6 +192,7 @@
                             </table>
                           </td>
                         </tr>
+                        {{/if}}
                         <tr>
                           <td style="padding-top: 32px;">
                             <p
