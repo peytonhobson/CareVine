@@ -153,7 +153,7 @@
                                     </table>
                                     {{/each}}
                                     <table
-                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%;"
+                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #6BA0B6"
                                     >
                                       <tr>
                                         <td style="font-size:14px;padding-left:20px">
@@ -198,7 +198,7 @@
                                           style="font-size:18px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                          <b>${{transaction.metadata.totalPayment}}</b>
                                         </td>
                                       </tr>
                                     </table>
@@ -221,7 +221,7 @@
                         <tr align="center">
                           <td>
                             <a
-                              href="{{marketplace.url}}/bookings?tab=upcoming&bookingId={{transaction.id}}"
+                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
                               style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
                               class="button"
                               >Go to Booking</a

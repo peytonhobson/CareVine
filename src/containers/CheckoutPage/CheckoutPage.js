@@ -213,13 +213,11 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
-    let subTotal = 0;
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
       const { startTime, endTime, date } = booking;
 
       const hours = calculateTimeBetween(startTime, endTime);
       const amount = parseFloat(hours * bookingRate).toFixed(2);
-      subTotal += amount;
       const isoDate = bookingDates
         .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
         ?.toISOString();
@@ -237,11 +235,13 @@ export class CheckoutPageComponent extends Component {
       };
     });
 
-    const bookingFee = parseFloat(subTotal * BOOKING_FEE_PERCENTAGE).toFixed(2);
+    const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+    const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
     const processingFee = calculateProcessingFee(
-      subTotal,
+      payout,
       bookingFee,
       this.state.selectedPaymentMethod.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT
     );
@@ -259,6 +259,10 @@ export class CheckoutPageComponent extends Component {
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+        2
+      ),
+      payout: parseFloat(payout).toFixed(2),
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);

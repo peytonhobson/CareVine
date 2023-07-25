@@ -92,7 +92,7 @@ const BookingsPage = props => {
     if (searchString?.bookingId && initialBookingsFetched) {
       const element = document.getElementById(searchString.bookingId);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   }, [searchString?.tab, searchString?.bookingId, initialBookingsFetched]);
