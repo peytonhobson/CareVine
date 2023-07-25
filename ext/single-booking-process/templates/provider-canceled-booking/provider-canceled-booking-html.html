@@ -93,14 +93,14 @@
                                 >{{transaction.provider.display-name}}</span
                               >
                               has canceled the remainder of your booking. {{#if
-                              transaction.metadata.refundAmount}} You will receive a refund of
-                              ${{transaction.metadata.refundAmount}} in accordance with our
+                              transaction.metadata.totalRefund}} You will receive a refund of
+                              ${{transaction.metadata.totalRefund}} in accordance with our
                               cancellation policy. You can view a summary of your refund below.
                               {{else}} Your payment method was not charged. {{/if}}
                             </p>
                           </td>
                         </tr>
-                        {{#if transaction.metadata.refundAmount}}
+                        {{#if transaction.metadata.totalRefund}}
                         <tr>
                           <td align="center">
                             <table
@@ -169,7 +169,7 @@
                                           style="font-size:14px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          ${{transaction.metadata.baseFeeRefundAmount}}
+                                          ${{transaction.metadata.refundAmount}}
                                         </td>
                                       </tr>
                                       <tr>
@@ -193,7 +193,7 @@
                                           style="font-size:18px; padding-right: 20px;"
                                           align="right"
                                         >
-                                          <b>${{transaction.metadata.refundAmount}}</b>
+                                          <b>${{transaction.metadata.totalRefund}}</b>
                                         </td>
                                       </tr>
                                     </table>
