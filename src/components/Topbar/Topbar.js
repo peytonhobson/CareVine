@@ -288,7 +288,7 @@ class TopbarComponent extends Component {
           <SessionTimeout
             intervalFunction={this.pollUser}
             intervalTime="10000"
-            maxInactiveTime="1"
+            maxInactiveTime="5"
             isAuthenticated={isAuthenticated}
           />
         )}
