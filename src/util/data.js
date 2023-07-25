@@ -648,9 +648,10 @@ export const calculateAverageRating = reviews => {
 export const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
   const totalAmount = Number(subTotal) + Number(transactionFee);
   if (selectedPaymentMethod === BANK_ACCOUNT) {
-    return parseFloat(
+    const calculatedFee = parseFloat(
       Math.round(((totalAmount * BANK_PROCESSING_FEE) / (1 - BANK_PROCESSING_FEE)) * 100) / 100
     ).toFixed(2);
+    return calculatedFee > 5 ? '5.00' : calculatedFee;
   }
 
   return parseFloat(
