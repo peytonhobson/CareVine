@@ -87,6 +87,11 @@ const CaregiverBookingCard = props => {
     setBookingTimesPage(page);
   };
 
+  const handleModalOpen = modalOpenFunc => {
+    onFetchBookings();
+    modalOpenFunc(true);
+  };
+
   const handleModalClose = modalCloseFunc => {
     modalCloseFunc(false);
     onResetInitialState();
@@ -160,13 +165,19 @@ const CaregiverBookingCard = props => {
         </div>
         <div className={css.changeButtonsContainer}>
           {isRequest && (
-            <Button className={css.changeButton} onClick={() => setIsRespondModalOpen(true)}>
+            <Button
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsRespondModalOpen)}
+            >
               Respond
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
           {showCancel && (
-            <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
+            <CancelButton
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsCancelModalOpen)}
+            >
               Cancel
             </CancelButton>
           )}
@@ -213,12 +224,15 @@ const CaregiverBookingCard = props => {
           </div>
         </div>
         <div className={css.viewContainer}>
-          <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
+          <Button
+            className={css.viewButton}
+            onClick={() => handleModalOpen(setIsPaymentDetailsModalOpen)}
+          >
             Payment Details
           </Button>
           <SecondaryButton
             className={css.viewButton}
-            onClick={() => setIsBookingCalendarModalOpen(true)}
+            onClick={() => handleModalOpen(setIsBookingCalendarModalOpen)}
           >
             View Calendar
           </SecondaryButton>

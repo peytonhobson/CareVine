@@ -17,6 +17,10 @@
         .outer-td {
           padding: 0 !important;
         }
+
+        .inner-td {
+          padding: 0 0 25px 0 !important;
+        }
       }
     </style>
   </head>
@@ -47,7 +51,7 @@
             >
               <tbody>
                 <tr>
-                  <td style="padding: 0 25px 25px 25px;">
+                  <td style="padding: 0 25px 25px 25px;" class="inner-td">
                     <table>
                       <tbody>
                         <tr>
@@ -65,25 +69,19 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;font-family: Helvetica;"
-                            >
-                              Booking Canceled
-                            </p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td align="center">
-                            <p
-                              class="title"
-                              style="padding-top: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               You have successfully canceled your booking with
                               <span style="white-space: nowrap"
                                 >{{transaction.customer.display-name}}</span
                               >. {{#if transaction.metadata.payout}} You will be paid out
-                              ${{transaction.metadata.payout}} in accordance with our cancellation
-                              policy. {{else}} You did not complete any booking times and will
-                              therefore not be paid out. {{/if}}
+                              ${{transaction.metadata.payout}} in accordance with our
+                              <a
+                                href="{{marketplace.url}}/terms-of-service#cancellation-policy"
+                                style="color: #6ba0b6; white-space: nowrap; text-decoration: underline"
+                                >cancellation policy</a
+                              >. {{else}} You did not complete any booking times and will therefore
+                              not be paid out. {{/if}}
                             </p>
                           </td>
                         </tr>
@@ -99,7 +97,7 @@
                               please contact
                               <a
                                 href="mailto:support@carevine.us"
-                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6; line-height: 150%;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>
@@ -189,7 +187,7 @@
                               Cancellation Policy
                             </p>
                             <ul
-                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; padding-left: 30px;"
                             >
                               <li style="padding: 4px 0;">
                                 No payout for booked times canceled by clients more than 48 hours in
@@ -218,7 +216,7 @@
                               If you have any questions or concerns, please contact
                               <a
                                 href="mailto:support@carevine.us"
-                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>

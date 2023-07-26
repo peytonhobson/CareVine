@@ -21,6 +21,10 @@
         .outer-td {
           padding: 0 !important;
         }
+
+        .inner-td {
+          padding: 0 0 25px 0 !important;
+        }
       }
     </style>
   </head>
@@ -53,7 +57,7 @@
             >
               <tbody>
                 <tr>
-                  <td style="padding: 0 25px 25px 25px;">
+                  <td style="padding: 0 25px 25px 25px;" class="inner-td">
                     <table>
                       <tbody>
                         <tr>
@@ -68,20 +72,10 @@
                           </td>
                         </tr>
                         <tr>
-                          <td align="center">
-                            <p
-                              class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;font-size: 40px; line-height: 130%;"
-                            >
-                              Booking Accepted!
-                            </p>
-                          </td>
-                        </tr>
-                        <tr>
                           <td>
                             <p
                               class="title"
-                              style="padding-top: 24px; padding-bottom: 16px;width: 100%;margin: 0;font-size: 16px; line-height: 150%;"
+                              style="padding-top: 32px; padding-bottom: 16px;width: 100%;margin: 0;font-size: 16px; line-height: 150%;"
                             >
                               <span style="white-space: nowrap"
                                 >{{transaction.provider.display-name}}</span
@@ -212,7 +206,7 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;font-size: 16px; line-height: 150%;"
+                              style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: center;margin: 0;font-size: 16px; line-height: 150%;"
                             >
                               You can view and manage this booking by clicking the button below.
                             </p>
@@ -236,7 +230,7 @@
                               So what happens now?
                             </p>
                             <ul
-                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;"
+                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%; padding-left: 30px;"
                             >
                               <li style="padding: 4px 0;">
                                 Now that the booking has been accepted, your chosen payment method
@@ -252,7 +246,9 @@
                               <li style="padding: 4px 0;">
                                 You can cancel the booking at any time, however, your refund will be
                                 subject to our
-                                <a href="" style="color: #6BA0B6; text-decoration: underline;"
+                                <a
+                                  href=""
+                                  style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
                                   >cancellation policy</a
                                 >.
                               </li>
@@ -269,7 +265,7 @@
                               If you have any questions or concerns, please contact
                               <a
                                 href="mailto:support@carevine.us"
-                                style="color: #6BA0B6; text-decoration: underline;"
+                                style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>

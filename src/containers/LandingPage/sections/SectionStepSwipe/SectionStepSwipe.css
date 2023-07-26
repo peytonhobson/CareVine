@@ -153,3 +153,22 @@
     }
   }
 }
+
+.contentTitle {
+  color: var(--matterColorLight);
+  width: 100%;
+  text-align: center;
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  margin-top: 3rem;
+  margin-bottom: 0;
+
+  @media (--viewportMedium) {
+    color: var(--matterColor);
+    font-size: 2.5rem;
+    line-height: 3rem;
+    width: auto;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+  }
+}

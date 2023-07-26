@@ -29,6 +29,10 @@
         .description {
           padding: 40px 0 24px 0 !important;
         }
+
+        .inner-td {
+          padding: 0 0 25px 0 !important;
+        }
       }
     </style>
   </head>
@@ -59,7 +63,7 @@
             >
               <tbody>
                 <tr>
-                  <td style="padding: 0 25px 25px 25px;">
+                  <td style="padding: 0 25px 25px 25px;" class="inner-td">
                     <table>
                       <tbody>
                         <tr>
@@ -76,18 +80,8 @@
                         <tr>
                           <td align="center">
                             <p
-                              class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px; line-height: 130%;"
-                            >
-                              Caregiver Canceled Booking
-                            </p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td align="center">
-                            <p
                               class="description"
-                              style="padding: 24px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                              style="padding: 32px 0 16px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;"
                             >
                               <span style="white-space: nowrap"
                                 >{{transaction.provider.display-name}}</span
@@ -95,8 +89,12 @@
                               has canceled the remainder of your booking. {{#if
                               transaction.metadata.totalRefund}} You will receive a refund of
                               ${{transaction.metadata.totalRefund}} in accordance with our
-                              cancellation policy. You can view a summary of your refund below.
-                              {{else}} Your payment method was not charged. {{/if}}
+                              <a
+                                style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
+                                href="{{marketplace.url}}/terms-of-service#cancellation-policy"
+                                >cancellation policy</a
+                              >. You can view a summary of your refund below. {{else}} Your payment
+                              method was not charged. {{/if}}
                             </p>
                           </td>
                         </tr>
@@ -212,7 +210,7 @@
                               Cancellation Policy
                             </p>
                             <ul
-                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; padding-left: 30px;"
                             >
                               <li style="padding: 4px 0;">
                                 100% refund for booked times canceled by clients more than 48 hours
@@ -244,7 +242,7 @@
                               If you have any questions or concerns, please contact
                               <a
                                 href="mailto:support@carevine.us"
-                                style="color: #6BA0B6; text-decoration: underline;"
+                                style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>
