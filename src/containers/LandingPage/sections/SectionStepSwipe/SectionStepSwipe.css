@@ -30,7 +30,7 @@
   }
 
   @media (--viewportLarge) {
-    height: 25rem;
+    height: 28rem;
   }
 }
 
@@ -42,25 +42,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  min-width: calc(100vw - 14rem);
-  max-width: calc(100vw - 14rem);
-
-  @media (--viewportMedium) {
-    min-width: 28rem;
-    max-width: 28rem;
-  }
-
-  @media (--viewportLarge) {
-    min-width: 45rem;
-    max-width: 45rem;
-  }
 }
 
 .step {
   text-align: center;
   padding: 3rem 0;
-  width: calc(100vw - 14rem);
+  width: 100%;
   margin: auto;
   display: flex;
   justify-content: center;
@@ -95,11 +82,18 @@
   }
 
   @media (--viewportMedium) {
-    width: 28rem;
-
     & > h2 {
       margin-bottom: 0;
     }
+  }
+}
+
+.innerStep {
+  width: calc(100vw - 14rem);
+  margin: auto;
+
+  @media (--viewportMedium) {
+    width: 28rem;
   }
 
   @media (--viewportLarge) {
@@ -109,10 +103,6 @@
 
 .step1 {
   left: 0;
-
-  @media (--viewportLarge) {
-    left: 5rem;
-  }
 }
 
 .step2,
@@ -146,7 +136,7 @@
   }
 
   @media (--viewportMedium) {
-    padding-top: 1rem;
+    padding-top: 0.5rem;
 
     & .stepButton {
       margin: 0;
