@@ -14,7 +14,7 @@ const TermsOfService = props => {
   // prettier-ignore
   return (
     <div className={classes}>
-      <p className={css.lastUpdated}>Last updated: April, 11 2023</p>
+      <p className={css.lastUpdated}>Last updated: July, 25 2023</p>
 
       <p>
         This website, <a href={`https://${marketplaceUrl}`}>www.carevine.us</a> ("Site"), is
@@ -315,7 +315,110 @@ const TermsOfService = props => {
           </ul>
         </li>
         <li>
-          <h1>5. Termination</h1>
+          <h1>5. Bookings</h1>
+          <ul>
+            <li>
+              <h2>5.1. Booking Services and Process</h2>
+              <p>
+                CareVine acts as an intermediary for facilitating the booking of caregiving services
+                from independent caregivers through its platform. Care Searchers book Providers on
+                an hourly basis, and these bookings can span over multiple days within a two-week
+                period.
+              </p>
+            </li>
+            <li>
+              <h2>5.2. Payment Information</h2>
+              <p>
+                Care Searchers must provide valid and accurate payment information prior to
+                requesting a booking. If provided payment information fails prior to booking start,
+                the booking will be cancelled and both the Care Searcher and Provider will be
+                notified. All payment information is processed and stored securely as per our{' '}
+                <NamedLink name="PrivacyPolicyPage">Privacy Policy</NamedLink>.
+              </p>
+            </li>
+            <li>
+              <h2>5.3. Booking Confirmation and Charges </h2>
+              <p>
+                A booking is considered confirmed when the Provider accepts the booking request..
+                Care Searchers are charged either 48 hours before the booking start time or
+                immediately if the booking is made within 48 hours of the start time.
+              </p>
+            </li>
+            <li>
+              <h2>5.4. Booking Restrictions</h2>
+              <p>
+                Providers can be booked for the following day or later; same-day bookings are not
+                permitted.
+              </p>
+            </li>
+            <li>
+              <h2>5.5. Fees</h2>
+              <div id="cancellation-policy" />
+              <p>
+                For each booking, a 5% booking fee is applied. Additionally, a processing fee,
+                depending on the payment method chosen, is charged for each booking. Credit card
+                payments incur a fee of 2.9% plus $0.30, while bank account payments incur a fee of
+                0.8%, up to $5.00.
+              </p>
+            </li>
+            <li>
+              <h2>5.6. Cancellation Policy</h2>
+              <p>
+                Either party can cancel a booking at any time. For Care Searchers, bookings
+                cancelled within 48 hours of the start time will be refunded at 50% of the cost,
+                with the remaining 50% going to the Provider. Bookings cancelled more than 48 hours
+                before the start time will be fully refunded. If a Provider cancels, the client will
+                be refunded 100% of the cost for the uncompleted service time.
+              </p>
+            </li>
+            <li>
+              <h2>5.7. Payment for Completed Services</h2>
+              <p>
+                Providers will be paid in full for any service time that has already been completed,
+                irrespective of who cancels the booking, with the exception of a dispute decision
+                that results in a refund to the Care Searcher.
+              </p>
+            </li>
+            <li>
+              <h2>5.8. Refunds of Fees</h2>
+              <p>
+                In the event of cancellation, the booking fee will be refunded in proportion to the
+                refunded base booking amount. Processing fees are non-refundable under all
+                circumstances.
+              </p>
+            </li>
+            <li>
+              <h2>5.9. Dispute Resolution</h2>
+              <p>
+                After a booking is completed, Care Searchers have 48 hours to dispute the payment.
+                In the event of a dispute, CareVine will evaluate the information provided and
+                decide on an appropriate refund amount, if any. The refund amount will be deducted
+                from the total payout to the Provider.
+              </p>
+            </li>
+            <li>
+              <h2>5.10. Reviews</h2>
+              <p>
+                Care Searchers are allowed to review Providers after a booking has been completed.
+                However, Care Searchers must ensure that their reviews are fair, accurate, and
+                respectful. Reviews should not contain offensive language, personal insults, or
+                defamatory statements.
+              </p>
+              <p>
+                CareVine does not endorse or verify the comments or ratings given by users in their
+                reviews. As such, CareVine cannot be held liable for the content of reviews or any
+                reliance by users on these reviews.
+              </p>
+              <p>
+                CareVine reserves the right, but not the obligation, to monitor, remove or edit any
+                user reviews, at our sole discretion. Reviews that violate our guidelines may be
+                removed without notice.
+              </p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h1>6. Termination</h1>
           <p>
             CareVine reserves the right to terminate your access, remove your profile and/or
             content, and/or close your account without notice for any reason at our sole discretion.
@@ -325,7 +428,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>6. Privacy</h1>
+          <h1>7. Privacy</h1>
           <p>
             CareVine processes the information you provide on the Site or through the Services in
             accordance with our
@@ -334,7 +437,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>7. Links to External Sites</h1>
+          <h1>8. Links to External Sites</h1>
           <p>
             Advertisements, external links, and third-party content on CareVine's website are
             provided for user convenience and reference only, without endorsement by CareVine.
@@ -346,7 +449,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>8. Payment and Refund Policy</h1>
+          <h1>9. Payment and Refund Policy</h1>
           <p>
             Users may be required to pay fees for certain CareVine services or products, including
             recurring subscriptions, one-time fees, or other charges. Users are responsible for any
@@ -385,7 +488,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>9. Release of Liability for Conduct and Disputes</h1>
+          <h1>10. Release of Liability for Conduct and Disputes</h1>
           <p>
             By using this Site or Services, you agree to release and indemnify CareVine and its
             affiliates from any disputes, claims, or actions arising from interactions or
@@ -396,10 +499,10 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>10. Disclaimers, Assumption of Risk, Limitations, and Indemnification</h1>
+          <h1>11. Disclaimers, Assumption of Risk, Limitations, and Indemnification</h1>
           <ul>
             <li>
-              <h2>10.1. Disclaimer of Warranties</h2>
+              <h2>11.1. Disclaimer of Warranties</h2>
               <p>
                 The Site and Services are provided "as is" and "as available," with CareVine and its
                 affiliates expressly disclaiming all warranties, express, implied, or statutory,
@@ -410,7 +513,7 @@ const TermsOfService = props => {
               </p>
             </li>
             <li>
-              <h2>10.2. Limitation of Liability</h2>
+              <h2>11.2. Limitation of Liability</h2>
               <p>
                 CareVine and its affiliates shall not be liable for any indirect, incidental,
                 special, consequential, or punitive damages, including loss of profits, data, use,
@@ -423,7 +526,7 @@ const TermsOfService = props => {
               </p>
             </li>
             <li>
-              <h2>10.3. Assumption of Risk</h2>
+              <h2>11.3. Assumption of Risk</h2>
               <p>
                 CareVine takes measures to promote safety on the platform, but finding care or
                 care-related jobs online involves inherent risks. We don't provide training,
@@ -438,7 +541,7 @@ const TermsOfService = props => {
               </p>
             </li>
             <li>
-              <h2>10.4. Indemnification</h2>
+              <h2>11.4. Indemnification</h2>
               <p>
                 You agree to indemnify and hold harmless CareVine, its officers, directors,
                 employees, agents, licensors, and suppliers from any claims, actions, suits, losses,
@@ -457,7 +560,7 @@ const TermsOfService = props => {
           </ul>
         </li>
         <li>
-          <h1>11. Copyright Notices/Complaints</h1>
+          <h1>12. Copyright Notices/Complaints</h1>
           <p>
             CareVine respects intellectual property rights and expects users to do the same. We
             respond to copyright infringement notices that comply with applicable law. If you
@@ -535,7 +638,7 @@ const TermsOfService = props => {
           <p>We may reinstate the content in question at our sole discretion.</p>
         </li>
         <li>
-          <h1>12. Arbitration</h1>
+          <h1>13. Arbitration</h1>
           <p>
             Any dispute, claim, or controversy arising from your use of CareVine's platform and
             services, including these Terms of Service, shall be resolved exclusively through
@@ -556,7 +659,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>13. Governing Law and Jurisdiction</h1>
+          <h1>14. Governing Law and Jurisdiction</h1>
           <p>
             These Terms of Service and any related disputes are governed by and construed in
             accordance with the laws of the State of Wyoming, without regard to conflicts of law
@@ -580,7 +683,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>13. Consent to Elecronic Communication</h1>
+          <h1>15. Consent to Elecronic Communication</h1>
           <p>
             By using CareVine's platform and services, you consent to receive electronic
             communications from us, including emails, text messages, push notifications, or other
@@ -601,7 +704,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>14. Severability</h1>
+          <h1>16. Severability</h1>
           <p>
             If any provision of these Terms of Service is found to be unlawful, void, or
             unenforceable, it will still be enforceable to the maximum extent permitted by law. The
@@ -611,7 +714,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>15. Contact Information</h1>
+          <h1>17. Contact Information</h1>
           <p>
             Questions about the Terms of Service should be sent to{' '}
             <a href="mailto: support@carevine.us">support@carevine.us</a>

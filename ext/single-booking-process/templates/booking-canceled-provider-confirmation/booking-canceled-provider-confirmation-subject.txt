@@ -1,1 +1,1 @@
-Booking Successfully Canceled
+Booking with {{transaction.customer.display-name}} Successfully Canceled

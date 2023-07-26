@@ -9,7 +9,7 @@ const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const integrationSdk = flexIntegrationSdk.createInstance({
   // These two env vars need to be set in the `.env` file.
   clientId: process.env.FLEX_INTEGRATION_CLIENT_ID,
-  clientSecret: FLEX_INTEGRATION_CLIENT_SECRET,
+  clientSecret: process.env.FLEX_INTEGRATION_CLIENT_SECRET,
 
   // Normally you can just skip setting the base URL and just use the
   // default that the `createInstance` uses. We explicitly set it here
