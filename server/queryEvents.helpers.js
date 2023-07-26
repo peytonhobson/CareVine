@@ -450,7 +450,7 @@ const createBookingPayment = async transaction => {
   const userId = customer.data.id?.uuid;
   const listingId = listing.data.id?.uuid;
 
-  const amount = lineItems.reduce((acc, item) => acc + item.amount, 0) * 100;
+  const amount = parseInt(lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0) * 100);
   const formattedBookingFee = parseInt(Math.round(bookingFee * 100));
   const formattedProcessingFee = parseInt(Math.round(processingFee * 100));
 
@@ -669,6 +669,7 @@ const makeReviewable = async transaction => {
       await integrationSdk.transactions.transition({
         id: txId,
         transition: 'transition/make-reviewable',
+        params: {},
       });
     }
   } catch (e) {

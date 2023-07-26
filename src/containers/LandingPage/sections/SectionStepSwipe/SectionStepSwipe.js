@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 
+import { compose } from 'redux';
+import { withRouter } from 'react-router-dom';
 import {
   IconArrowHead,
   IconCalendarHeart,
@@ -8,7 +10,6 @@ import {
   IconCaregiver,
   NamedLink,
 } from '../../../../components';
-import { useCheckMobileScreen } from '../../../../util/hooks';
 import Geocoder, {
   CURRENT_LOCATION_ID,
 } from '../../../../components/LocationAutocompleteInput/GeocoderMapbox';
@@ -17,14 +18,13 @@ import { useMediaQuery } from '@mui/material';
 const INTERVIEW_SLUG = 'the-art-of-interviewing-how-to-hire-the-perfect-caregiver-for-private-care';
 
 import './SectionStepSwipe.css';
+import css from 'styled-jsx/css';
 
-const SectionStepSwipe = () => {
+const SectionStepSwipe = ({ history }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
-  const isLarge = useMediaQuery('(min-width: 1024px)');
-
   const leftScreen = '-100vw';
-  const middleScreen = !isLarge ? '0' : '5rem';
+  const middleScreen = '0';
   const rightScreen = '100vw';
 
   const nodeRef1 = useRef(null);
@@ -96,6 +96,7 @@ const SectionStepSwipe = () => {
 
   return (
     <section className="stepsSection">
+      <h2 className="contentTitle">Your Roadmap to Finding the Perfect Caregiver</h2>
       <div className="stepsSectionCard card1">
         <IconArrowHead
           direction="left"
@@ -106,51 +107,59 @@ const SectionStepSwipe = () => {
         />
         <div className="stepsContainer">
           <div className="step step1" ref={nodeRef1}>
-            <IconUserProfile width="4em" height="4em" />
-            <h2 className="stepTitle">Create Your Personalized Profile</h2>
-            <p className="stepSubText">
-              Become a part of the CareVine and create a profile that gives a basic description of
-              the care recipient’s needs. This also allows caregivers to find and contact you if
-              they think they would be a good fit.
-            </p>
+            <div className="innerStep">
+              <IconUserProfile width="4em" height="4em" />
+              <h2 className="stepTitle">Create Your Personalized Profile</h2>
+              <p className="stepSubText">
+                Become a part of the CareVine and create a profile that gives a basic description of
+                the care recipient’s needs. This also allows caregivers to find and contact you if
+                they think they would be a good fit.
+              </p>
+            </div>
           </div>
           <div className="step step2" ref={nodeRef2}>
-            <IconCaregiver width="4em" height="4em" />
-            <h2 className="stepTitle">Discover Your Ideal Caregiver</h2>
-            <p className="stepSubText">
-              Browse the CareVine network of caregivers in your area to find the right one for you.
-              CareVine’s platform automatically sorts caregivers based on the information in your
-              profile, giving you the best matches at the top. You can also add additional filters
-              and sort based off your preferences.
-            </p>
+            <div className="innerStep">
+              <IconCaregiver width="4em" height="4em" />
+              <h2 className="stepTitle">Discover Your Ideal Caregiver</h2>
+              <p className="stepSubText">
+                Browse the CareVine network of caregivers in your area to find the right one for
+                you. CareVine’s platform automatically sorts caregivers based on the information in
+                your profile, giving you the best matches at the top. You can also add additional
+                filters and sort based off your preferences.
+              </p>
+            </div>
           </div>
           <div className="step step3" ref={nodeRef3}>
-            <IconCalendarHeart width="3.5em" height="3.5em" />
-            <h2 className="stepTitle">Tackle the nitty-gritty</h2>
-            <p className="stepSubText">
-              Send the caregiver a message and get to know them a little bit. Ask questions that are
-              important to you as well as more mundane things such as: ( ). If they seem like a fit,
-              we recommend conducting a thorough interview before you book for care. Our interview
-              guide can help guide you through this process and can be found{' '}
-              <NamedLink name="BlogPostPage" params={{ slug: INTERVIEW_SLUG }}>
-                here
-              </NamedLink>
-              .
-            </p>
+            <div className="innerStep">
+              <IconCalendarHeart width="3.5em" height="3.5em" />
+              <h2 className="stepTitle">Tackle the nitty-gritty</h2>
+              <p className="stepSubText">
+                Send the caregiver a message and get to know them a little bit. Ask questions that
+                are important to you as well as more mundane things such as: ( ). If they seem like
+                a fit, we recommend conducting a thorough interview before you book for care. Our
+                interview guide can help guide you through this process and can be found{' '}
+                <NamedLink name="BlogPostPage" params={{ slug: INTERVIEW_SLUG }}>
+                  here
+                </NamedLink>
+                .
+              </p>
+            </div>
           </div>
           <div className="step step4" ref={nodeRef4}>
-            <IconCalendarHeart width="3.5em" height="3.5em" />
-            <h2 className="stepTitle">Book Your Care</h2>
-            <p className="stepSubText">
-              When you’ve found your perfect caregiver, use our hassle-free booking system to make
-              it official. The booking system allows you to request dates and times, send payments,
-              change or cancel bookings, as well as providing a convenient way to view previous or
-              future bookings.
-            </p>
-            <div className="stepButtonContainer">
-              <Button className="stepButton" onClick={handleCurrentLocation}>
-                Find Your Caregiver
-              </Button>
+            <div className="innerStep">
+              <IconCalendarHeart width="3.5em" height="3.5em" />
+              <h2 className="stepTitle">Book Your Care</h2>
+              <p className="stepSubText">
+                When you’ve found your perfect caregiver, use our hassle-free booking system to make
+                it official. The booking system allows you to request dates and times, send
+                payments, change or cancel bookings, as well as providing a convenient way to view
+                previous or future bookings.
+              </p>
+              <div className="stepButtonContainer">
+                <Button className="stepButton" onClick={handleCurrentLocation}>
+                  Find Your Caregiver
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -166,4 +175,4 @@ const SectionStepSwipe = () => {
   );
 };
 
-export default SectionStepSwipe;
+export default compose(withRouter)(SectionStepSwipe);

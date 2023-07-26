@@ -235,6 +235,7 @@
     grid-template-columns: 20rem auto;
     gap: 4rem;
     text-align: left;
+    align-items: flex-start;
   }
 }
 
