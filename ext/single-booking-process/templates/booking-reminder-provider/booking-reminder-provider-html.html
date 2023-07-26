@@ -1,48 +1,31 @@
 <html>
   <head>
     <meta name="supported-color-schemes" content="light dark" />
-
     <style>
-        @media (prefers-color-scheme: dark) {
-          .inner-table {
-            background-color: #1c1c1c !important;
-      <meta name="supported-color-schemes" content="light dark" />
-
-      <style>
-        @media (prefers-color-scheme: dark) {
-          .inner-table {
-            background-color: #1c1c1c !important;
-          }
-
-          .button {
-            color: #1c1c1c !important;
-          }
+      @media (prefers-color-scheme: dark) {
+        .inner-table {
+          background-color: #1c1c1c !important;
         }
 
-        @media screen and (max-width: 768px) {
-          .inner-table {
-            border-radius: 0 !important;
-          }
+        .button {
+          color: #1c1c1c !important;
+        }
+      }
 
-          .button {
-            color: #1c1c1c !important;
-          }
+      @media screen and (max-width: 768px) {
+        .inner-table {
+          border-radius: 0 !important;
+        }
+      }
+
+        .outer-td {
+          padding: 0 !important;
         }
 
-        @media screen and (max-width: 768px) {
-          .inner-table {
-            border-radius: 0 !important;
-          }
+        .inner-td {
+          padding: 0 0 25px 0 !important;
         }
-
-          .outer-td {
-            padding: 0 !important;
-          }
-
-          .inner-td {
-            padding: 0 0 25px 0 !important;
-          }
-        }
+      }
     </style>
   </head>
   <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
