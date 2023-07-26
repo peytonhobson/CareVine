@@ -1,1 +1,1 @@
-Booking Request Canceled Confirmation
+Booking Request Cancellation Confirmation

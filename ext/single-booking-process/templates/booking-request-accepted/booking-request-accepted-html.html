@@ -1,87 +1,319 @@
 <html>
   <head>
-    <style type="text/css">
-      @media only screen and (max-width: 768px) {
-        .body {
-          padding: 32px 32px 44px 32px !important;
+    <meta name="supported-color-schemes" content="light dark" />
+
+    <style>
+      @media (prefers-color-scheme: dark) {
+        .inner-table {
+          background-color: #1c1c1c !important;
         }
 
-        .content {
-          padding: 64px 0 96px 0;
+        .button {
+          color: #1c1c1c !important;
+        }
+      }
+
+      @media screen and (max-width: 768px) {
+        .inner-table {
+          border-radius: 0 !important;
+        }
+
+        .outer-td {
+          padding: 0 !important;
+        }
+
+        .inner-td {
+          padding: 0 0 25px 0 !important;
         }
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0">
-    <div
-      class="main-container"
-      style="max-width: 600px;background-color: rgba(142, 213, 181, 0.1);margin: auto;"
+  <body
+    style="padding: 0; margin: 0; background-color: #6BA0B6; color: #6BA0B6; font-family: Helvetica;"
+  >
+    <table
+      style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6; font-family: Helvetica;"
+      width="100%"
+      height="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+      align="center"
     >
-      <div class="header">
-        <a href="{{marketplace.url}}">
-          <img
-            src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
-            class="logo"
-            style="height: 50px;width: 176px;padding: 16px;"
-          />
-        </a>
-      </div>
-      <div class="content" style="padding: 96px 0 128px 0;">
-        <p
-          class="title"
-          style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 28px;font-weight: normal;font-family: Trebuchet MS, Verdana;word-wrap: break-word !important;white-space: normal !important;"
-        >
-          Booking Request Accepted
-        </p>
-        <p
-          class="body"
-          style="padding: 32px 56px 44px 56px;margin: 0;text-align: center;font-family: Trebuchet MS, Verdana, Arial;font-size: 16px;line-height: 28px;color: #6BA0B6;"
-        >
-          Great news! {{transaction.provider.display-name}} accepted your booking request. You can
-          view or cancel the booking by clicking the button below.
-        </p>
-        <div
-          class="button-container"
-          style="width: 100%;padding-left: auto;padding-right: auto;text-align: center;"
-        >
-          <a
-            href="{{marketplace.url}}/bookings"
-            style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 48px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
-            >Go to Booking</a
+      <tbody>
+        <tr>
+          <td
+            style="padding: 25px 0; border-top: 0; height: 100%; width: 100%;"
+            valign="top"
+            align="center"
+            class="outer-td"
           >
-        </div>
-      </div>
-      <div class="footer" style="text-align: center;">
-        <div
-          class="footer-sub"
-          style="padding: 16px 32px 24px 32px;margin: 0 32px;border-top: solid 1px #CCCCCC"
-        >
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/contact-us"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Contact Us</a
+            <table
+              class="inner-table"
+              style="border-collapse:collapse; border:0;max-width: 450px; background-color: #FFFFFF; border-radius: 10px;"
+              cellspacing="0"
+              cellpadding="0"
+              border="0"
             >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/privacy-policy"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Privacy-Policy</a
-            >
-          </div>
-          <div class="footer-link-container" style="padding-bottom: 16px;display: inline;">
-            <a
-              class="footer-link"
-              href="{{marketplace.url}}/terms-of-service"
-              style="color: rgba(0, 0, 0, 0.5);margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
-              >Terms &amp; Conditions</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
+              <tbody>
+                <tr>
+                  <td style="padding: 0 25px 25px 25px;" class="inner-td">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td align="center">
+                            <a href="{{marketplace.url}}">
+                              <img
+                                src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
+                                class="logo"
+                                style="height: 50px;width: 176px;padding-top: 16px;"
+                              />
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <p
+                              class="title"
+                              style="padding-top: 32px; padding-bottom: 16px;width: 100%;margin: 0;font-size: 16px; line-height: 150%;"
+                            >
+                              <span style="white-space: nowrap"
+                                >{{transaction.provider.display-name}}</span
+                              >
+                              has accepted your booking starting on
+                              {{transaction.metadata.lineItems.[0].shortDate}} at
+                              {{transaction.metadata.lineItems.[0].startTime}}.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <table
+                              class="title"
+                              style="width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <p
+                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;"
+                                    >
+                                      <b>Booking Summary</b>
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>
+                                    {{#each transaction.metadata.lineItems}}
+                                    <table
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%; border-bottom: 1px solid #6BA0B6;"
+                                    >
+                                      <tbody>
+                                        <tr>
+                                          <td
+                                            style="vertical-align:top; padding-left: 20px; padding-top: 4px;"
+                                          >
+                                            <b
+                                              >{{this.shortDate}} ({{this.startTime}} -
+                                              {{this.endTime}})</b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="font-size:14px;padding-left: 20px">
+                                            Base Fee
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.amount}}
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px;"
+                                          >
+                                            Booking Fee
+                                          </td>
+                                          <td
+                                            style="font-size:14px; padding-right: 20px;"
+                                            align="right"
+                                          >
+                                            ${{this.bookingFee}}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {{/each}}
+                                    <table
+                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #6BA0B6"
+                                    >
+                                      <tr>
+                                        <td style="font-size:14px;padding-left:20px">
+                                          Total Base Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.payout}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size:14px;padding-left: 20px">
+                                          Total Booking Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.bookingFee}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td style="font-size:14px;padding-left: 20px">
+                                          Processing Fee
+                                        </td>
+                                        <td
+                                          style="font-size:14px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          ${{transaction.metadata.processingFee}}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; line-height: 200%;"
+                                        >
+                                          <b>Total</b>
+                                        </td>
+                                        <td
+                                          style="font-size:18px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          <b>${{transaction.metadata.totalPayment}}</b>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: center;margin: 0;font-size: 16px; line-height: 150%;"
+                            >
+                              You can view and manage this booking by clicking the button below.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td>
+                            <a
+                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
+                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              class="button"
+                              >Go to Booking</a
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding-top: 48px;">
+                            <p
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;"
+                            >
+                              So what happens now?
+                            </p>
+                            <ul
+                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%; padding-left: 30px;"
+                            >
+                              <li style="padding: 4px 0;">
+                                Now that the booking has been accepted, your chosen payment method
+                                will be charged for the full booking, including booking and
+                                processing fees. CareVine will hold your payment in escrow until the
+                                booking has been canceled or completed. Once the booking is
+                                complete, all applicable funds will be transferred to the caregiver.
+                              </li>
+                              <li style="padding: 4px 0;">
+                                After the booking is complete, you will have 48 hours to submit any
+                                disputes if issues arise.
+                              </li>
+                              <li style="padding: 4px 0;">
+                                You can cancel the booking at any time, however, your refund will be
+                                subject to our
+                                <a
+                                  href=""
+                                  style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
+                                  >cancellation policy</a
+                                >.
+                              </li>
+                            </ul>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
+                          >
+                            <p
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;"
+                            >
+                              If you have any questions or concerns, please contact
+                              <a
+                                href="mailto:support@carevine.us"
+                                style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
+                                >CareVine Support</a
+                              >.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <table align="center" style="padding-top: 16px;">
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/contact-us"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Contact Us</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/privacy-policy"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Privacy-Policy</a
+                                    >
+                                  </td>
+                                  <td>
+                                    <a
+                                      class="footer-link"
+                                      href="{{marketplace.url}}/terms-of-service"
+                                      style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
+                                      >Terms &amp; Conditions</a
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </body>
 </html>
