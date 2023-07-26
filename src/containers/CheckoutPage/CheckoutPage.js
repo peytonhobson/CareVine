@@ -10,8 +10,6 @@ import {
   Page,
   IconConfirm,
   BookingConfirmationCard,
-  BookingSummaryCard,
-  PaymentMethods,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
@@ -215,13 +213,11 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
-    let subTotal = 0;
     const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
       const { startTime, endTime, date } = booking;
 
       const hours = calculateTimeBetween(startTime, endTime);
-      const amount = hours * bookingRate;
-      subTotal += amount;
+      const amount = parseFloat(hours * bookingRate).toFixed(2);
       const isoDate = bookingDates
         .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
         ?.toISOString();
@@ -232,16 +228,20 @@ export class CheckoutPageComponent extends Component {
         endTime,
         seats: 1,
         date: isoDate,
+        shortDate: moment(isoDate).format('MM/DD'),
         hours,
         amount,
+        bookingFee: parseFloat(amount * 0.05).toFixed(2),
       };
     });
 
-    const bookingFee = subTotal * BOOKING_FEE_PERCENTAGE;
+    const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+    const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
     const processingFee = calculateProcessingFee(
-      subTotal,
+      payout,
       bookingFee,
       this.state.selectedPaymentMethod.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT
     );
@@ -259,6 +259,10 @@ export class CheckoutPageComponent extends Component {
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+        2
+      ),
+      payout: parseFloat(payout).toFixed(2),
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
@@ -372,8 +376,6 @@ export class CheckoutPageComponent extends Component {
     }
 
     const showPaymentForm = !!(currentUser && hasRequiredData && currentListing);
-    const selectedPaymentMethodType =
-      this.state.selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
     return (
       <Page {...pageProps}>

@@ -96,6 +96,7 @@ const SectionStepSwipe = ({ history }) => {
 
   return (
     <section className="stepsSection">
+      <h2 className="contentTitle">Your Roadmap to Finding the Perfect Caregiver</h2>
       <div className="stepsSectionCard card1">
         <IconArrowHead
           direction="left"

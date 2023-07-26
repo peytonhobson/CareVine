@@ -1,7 +1,6 @@
 <html>
   <head>
     <meta name="supported-color-schemes" content="light dark" />
-
     <style>
       @media (prefers-color-scheme: dark) {
         .inner-table {
@@ -9,7 +8,7 @@
         }
 
         .button {
-            color: #1c1c1c !important;
+          color: #1c1c1c !important;
         }
       }
 
@@ -17,14 +16,19 @@
         .inner-table {
           border-radius: 0 !important;
         }
+      }
 
         .outer-td {
           padding: 0 !important;
         }
+
+        .inner-td {
+          padding: 0 0 25px 0 !important;
+        }
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0">
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
     <table
       style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
       width="100%"
@@ -51,7 +55,7 @@
             >
               <tbody>
                 <tr>
-                  <td style="padding: 0 25px 25px 25px;">
+                  <td style="padding: 0 25px 25px 25px;" class="inner-td">
                     <table>
                       <tbody>
                         <tr>
@@ -69,31 +73,28 @@
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 40px;font-family: Helvetica;"
+                              style="padding-top: 32px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Booking Reminder
-                            </p>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td align="center">
-                            <p
-                              class="title"
-                              style="padding-top: 24px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
-                            >
-                               You have an upcoming booking with {{transaction.customer.display-name}} starting on {{transaction.booking.start.month}}/{{transaction.booking.start.day}} at {{transaction.metadata.lineItems.[0].startTime}}. Click the button below to view and/or manage this booking
+                              You have an upcoming booking with
+                              <span style="white-space: nowrap"
+                                >{{transaction.customer.display-name}}</span
+                              >
+                              starting on
+                              {{transaction.booking.start.month}}/{{transaction.booking.start.day}}
+                              at {{transaction.metadata.lineItems.[0].startTime}}. Click the button
+                              below to view and/or manage this booking
                             </p>
                           </td>
                         </tr>
                         <tr align="center">
-                            <td style="padding: 8px 0 24px 0;">
-                                <a
-                                    href="{{marketplace.url}}/bookings"
-                                    style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
-                                    class="button"
-                                    >Go to Booking</a
-                                  >
-                            </td>
+                          <td style="padding: 8px 0 24px 0;">
+                            <a
+                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
+                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              class="button"
+                              >Go to Booking</a
+                            >
+                          </td>
                         </tr>
                         <tr>
                           <td
@@ -104,8 +105,8 @@
                             >
                               If you have any questions or concerns, please contact
                               <a
-                                href="support@carevine.us"
-                                style="color: #6BA0B6;"
+                                href="mailto:support@carevine.us"
+                                style="color: #6BA0B6; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>
