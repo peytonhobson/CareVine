@@ -249,7 +249,7 @@ const CaregiverBookingCard = props => {
       >
         <p className={css.modalTitle}>Payment Summary</p>
         <BookingSummaryCard
-          className={css.refundSummaryCard}
+          className={css.bookingSummaryCard}
           authorDisplayName={customerDisplayName}
           currentAuthor={customer}
           selectedBookingTimes={bookingTimes}
@@ -327,7 +327,7 @@ const CaregiverBookingCard = props => {
       >
         <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
         <BookingSummaryCard
-          className={css.refundSummaryCard}
+          className={css.bookingSummaryCard}
           authorDisplayName={customerDisplayName}
           currentAuthor={customer}
           selectedBookingTimes={bookingTimes}
@@ -335,7 +335,6 @@ const CaregiverBookingCard = props => {
           bookingDates={bookingDates}
           onManageDisableScrolling={onManageDisableScrolling}
           selectedPaymentMethod={selectedPaymentMethod}
-          displayOnMobile={!isLarge}
           hideAvatar
           subHeading={<span className={css.bookingWith}>Payment Details</span>}
           refundAmount={refundAmount}

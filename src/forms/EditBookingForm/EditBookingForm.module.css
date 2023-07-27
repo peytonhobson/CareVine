@@ -258,16 +258,22 @@
 
 .requestContentContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
 
   @media (--viewportLarge) {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
+    align-items: flex-start;
     gap: 3rem;
     margin-top: 0;
     height: calc(100vh - var(--topbarHeightDesktop) - 10rem);
   }
+}
+
+.submissionContainer {
+  margin-top: 3rem;
+  left: calc(100vw - 76rem);
 }
 
 .paymentLearnMore {

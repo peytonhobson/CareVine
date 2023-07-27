@@ -180,11 +180,13 @@
   margin-left: 1rem;
 }
 
-.refundSummaryCard {
+.bookingSummaryCard {
   padding: 1rem;
   border: 1px solid var(--matterColor);
   border-radius: 0.5rem;
   margin-top: 2rem;
+  max-height: 30rem;
+  overflow-y: scroll;
 
   & div {
     margin: 0;

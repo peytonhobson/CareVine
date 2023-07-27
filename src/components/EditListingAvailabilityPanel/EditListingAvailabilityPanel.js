@@ -16,10 +16,9 @@ import {
 import { EditListingAvailabilityPlanForm } from '../../forms';
 import AvailabilityTypeForm from './AvailabilityTypeForm';
 import zipcodeToTimezone from 'zipcode-to-timezone';
+import { WEEKDAYS } from '../../util/constants';
 
 import css from './EditListingAvailabilityPanel.module.css';
-
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'America/New_York';

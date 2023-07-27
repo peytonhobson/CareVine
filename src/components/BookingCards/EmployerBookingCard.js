@@ -257,7 +257,7 @@ const EmployerBookingCard = props => {
       >
         <p className={css.modalTitle}>Payment Summary</p>
         <BookingSummaryCard
-          className={css.refundSummaryCard}
+          className={css.bookingSummaryCard}
           authorDisplayName={providerDisplayName}
           currentAuthor={provider}
           selectedBookingTimes={bookingTimes}
@@ -310,7 +310,7 @@ const EmployerBookingCard = props => {
               </li>
             </ul>
             <div>
-              <RefundBookingSummaryCard className={css.refundSummaryCard} lineItems={lineItems} />
+              <RefundBookingSummaryCard className={css.bookingSummaryCard} lineItems={lineItems} />
             </div>
           </>
         ) : (

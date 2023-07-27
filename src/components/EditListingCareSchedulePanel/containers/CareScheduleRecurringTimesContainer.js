@@ -16,10 +16,9 @@ import Weekday from '../Weekday';
 import { createCareSchedule, createInitialValues } from '../EditListingCareSchedule.helpers';
 import { EditListingAvailabilityPlanForm, TimelineForm } from '../../../forms';
 import { timestampToDate } from '../../../util/dates';
+import { WEEKDAYS } from '../../../util/constants';
 
 import css from './containers.module.css';
-
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const REPEAT = 'repeat';
 

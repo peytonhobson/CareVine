@@ -77,3 +77,5 @@ export const NOTIFICATION_TYPE_LISTING_OPENED = 'listingOpened';
 export const NOTIFICATION_TYPE_LISTING_REMOVED = 'listingRemoved';
 export const NOTIFICATION_TYPE_NEW_MESSAGE = 'newMessage';
 export const NOTIFICATION_TYPE_BOOKING_REQUESTED = 'bookingRequested';
+
+export const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];

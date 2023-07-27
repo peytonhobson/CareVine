@@ -3,10 +3,9 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import { convertTimeFrom24to12 } from '../../util/data';
+import { WEEKDAYS } from '../../util/constants';
 
 import css from './WeekPanel.module.css';
-
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const findEntry = (availabilityPlan, dayOfWeek) =>
   availabilityPlan?.entries?.find(d => d.dayOfWeek === dayOfWeek);
