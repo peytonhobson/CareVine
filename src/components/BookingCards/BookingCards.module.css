@@ -220,6 +220,7 @@
 .modalMessageRefund {
   composes: modalMessage from global;
   composes: marketplaceTinyFontStyles from global;
+  text-decoration: underline;
 }
 
 .error {
