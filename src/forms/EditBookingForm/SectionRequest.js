@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  BookingSummaryCard,
-  RecurringBookingSummaryCard,
-  FieldTextInput,
-  Button,
-} from '../../components';
+import { BookingSummaryCard, FieldTextInput, Button } from '../../components';
 import { pick } from 'lodash';
 import { WEEKDAYS } from '../../util/constants';
 
@@ -70,32 +65,20 @@ const SectionRequest = props => {
           </Button>
         </div>
       </div>
-      {values.scheduleType === 'oneTime' ? (
-        <BookingSummaryCard
-          authorDisplayName={authorDisplayName}
-          currentAuthor={currentAuthor}
-          selectedBookingTimes={formatDateTimeValues(values.dateTimes)}
-          bookingRate={bookingRate}
-          bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
-          listing={currentListing}
-          onManageDisableScrolling={onManageDisableScrolling}
-          onSetState={onSetState}
-          selectedPaymentMethod={selectedPaymentMethodType}
-        />
-      ) : (
-        <RecurringBookingSummaryCard
-          authorDisplayName={authorDisplayName}
-          currentAuthor={currentAuthor}
-          weekdays={pick(values, WEEKDAYS)}
-          bookingRate={bookingRate}
-          startDate={values.startDate?.date}
-          listing={currentListing}
-          onManageDisableScrolling={onManageDisableScrolling}
-          onSetState={onSetState}
-          selectedPaymentMethod={selectedPaymentMethodType}
-          endDate={values.endDate?.date}
-        />
-      )}
+      <BookingSummaryCard
+        authorDisplayName={authorDisplayName}
+        currentAuthor={currentAuthor}
+        selectedBookingTimes={values.dateTimes && formatDateTimeValues(values.dateTimes)}
+        bookingRate={bookingRate}
+        bookingDates={bookingDates && bookingDates.map(bookingDate => new Date(bookingDate))}
+        listing={currentListing}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onSetState={onSetState}
+        selectedPaymentMethod={selectedPaymentMethodType}
+        weekdays={pick(values, WEEKDAYS)}
+        startDate={values.startDate?.date}
+        endDate={values.endDate?.date}
+      />
     </div>
   );
 };

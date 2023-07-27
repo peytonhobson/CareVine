@@ -77,48 +77,7 @@ const RefundBookingSummaryCard = props => {
         <div className={css.detailsHeadings}>
           <h2 className={css.detailsTitle}>{subHeading || 'Refund Summary'}</h2>
         </div>
-        <div className={css.bookingTimes}>
-          {fiftyPercentRefund.map((lineItem, index) => {
-            const date = moment(lineItem.date).format('MM/DD');
-            const { startTime, endTime, amount } = lineItem;
-
-            return startTime && endTime ? (
-              <div className={css.bookingTime} key={uuidv4()}>
-                <h3 className={css.summaryDate}>
-                  {date} - ${parseFloat(amount).toFixed(2)} (50% refund)
-                </h3>
-                <div className={css.summaryTimeContainer}>
-                  <span className={css.summaryTimes}>
-                    {startTime} - {endTime}
-                  </span>
-                  <p className={css.tinyNoMargin}>
-                    ({calculateTimeBetween(startTime, endTime)} hours)
-                  </p>
-                </div>
-              </div>
-            ) : null;
-          })}
-          {fullRefund.map((lineItem, index) => {
-            const date = moment(lineItem.date).format('MM/DD');
-            const { startTime, endTime, amount } = lineItem;
-
-            return startTime && endTime ? (
-              <div className={css.bookingTime} key={uuidv4()}>
-                <h3 className={css.summaryDate}>
-                  {date} - ${parseFloat(amount).toFixed(2)} (100% refund)
-                </h3>
-                <div className={css.summaryTimeContainer}>
-                  <span className={css.summaryTimes}>
-                    {startTime} - {endTime}
-                  </span>
-                  <p className={css.tinyNoMargin}>
-                    ({calculateTimeBetween(startTime, endTime)} hours)
-                  </p>
-                </div>
-              </div>
-            ) : null;
-          })}
-        </div>
+        <div className={css.bookingTimes}></div>
         <div className={css.totalContainer}>
           <div className={css.totalCalc}>
             <h4 className={css.paymentCalc}>

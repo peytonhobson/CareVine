@@ -38,7 +38,7 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
-const calculateTotalHours = weekdays =>
+const calculateRecurringTotalHours = weekdays =>
   Object.keys(weekdays)?.reduce(
     (acc, curr) =>
       acc +
@@ -105,18 +105,6 @@ const RecurringBookingSummaryCard = props => {
       });
     }
   }, []);
-
-  const filteredWeekdays = useMemo(
-    () =>
-      Object.keys(weekdays).reduce((acc, weekdayKey) => {
-        const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
-
-        return bookingDate >= startDate || showFullWeek
-          ? { ...acc, [weekdayKey]: weekdays[weekdayKey] }
-          : acc;
-      }, {}),
-    [weekdays, startDate, showFullWeek]
-  );
 
   const totalHours = calculateTotalHours(filteredWeekdays);
 

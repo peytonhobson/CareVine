@@ -134,13 +134,12 @@ const NotificationNewBookingRequest = props => {
             currentAuthor={currentUser}
             selectedBookingTimes={bookingTimes}
             bookingRate={bookingRate}
-            bookingDates={bookingDates?.map(bookingDate => new Date(bookingDate))}
+            bookingDates={bookingDates?.map(bookingDate => new Date(bookingDate)) ?? []}
             onManageDisableScrolling={onManageDisableScrolling}
             selectedPaymentMethod={selectedPaymentMethod}
             hideAvatar
             hideRatesButton
             hideFees
-            displayOnMobile={!isLarge}
           />
           {transitionTransactionError && (
             <p className={css.error}>

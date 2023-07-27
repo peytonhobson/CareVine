@@ -118,13 +118,9 @@
   flex-grow: 1;
   /* Dimensions */
   margin-top: 2rem;
-  padding: 2rem;
+  padding: 2rem 0;
   width: 100%;
   box-shadow: var(--boxShadowCard);
-
-  & div {
-    width: 100%;
-  }
 
   /* Coloring */
   background-color: var(--matterColorLight);
@@ -135,6 +131,10 @@
     width: 25rem;
     margin-top: 0;
     max-height: 28rem;
+
+    & > div {
+      width: calc(100% - 6rem);
+    }
   }
 }
 

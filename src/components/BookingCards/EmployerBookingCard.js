@@ -5,7 +5,6 @@ import {
   SecondaryButton,
   Modal,
   BookingSummaryCard,
-  RefundBookingSummaryCard,
   BookingCalendar,
   CancelButton,
   Button,
@@ -246,133 +245,149 @@ const EmployerBookingCard = props => {
           </SecondaryButton>
         </div>
       </div>
-      <Modal
-        title="Payment Details"
-        id="PaymentDetailsModal"
-        isOpen={isPaymentDetailsModalOpen}
-        onClose={() => setIsPaymentDetailsModalOpen(false)}
-        containerClassName={css.modalContainer}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-      >
-        <p className={css.modalTitle}>Payment Summary</p>
-        <BookingSummaryCard
-          className={css.bookingSummaryCard}
-          authorDisplayName={providerDisplayName}
-          currentAuthor={provider}
-          selectedBookingTimes={bookingTimes}
-          bookingRate={bookingRate}
-          bookingDates={bookingDates}
+      {isPaymentDetailsModalOpen && (
+        <Modal
+          title="Payment Details"
+          id="PaymentDetailsModal"
+          isOpen={isPaymentDetailsModalOpen}
+          onClose={() => setIsPaymentDetailsModalOpen(false)}
+          containerClassName={css.modalContainer}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethod}
-          displayOnMobile={!isLarge}
-          hideAvatar
-          subHeading={<span className={css.bookingWith}>Payment Details</span>}
-          refundAmount={refundAmount}
-          hideRatesButton
-        />
-      </Modal>
-      <Modal
-        title="Booking Calendar"
-        id="BookingCalendarModal"
-        isOpen={isBookingCalendarModalOpen}
-        onClose={() => setIsBookingCalendarModalOpen(false)}
-        containerClassName={css.modalContainer}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-      >
-        <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
-          Booking Calendar
-        </p>
-        <BookingCalendar bookedDates={bookingDates} noDisabled />
-      </Modal>
-      <Modal
-        title="Cancel Booking"
-        id="CancelBookingModal"
-        isOpen={isCancelModalOpen}
-        onClose={() => handleModalClose(setIsCancelModalOpen)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-        containerClassName={css.modalContainer}
-      >
-        <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
-        {!isRequest && !isAccepted ? (
-          <>
-            <p className={css.modalMessageRefund}>
-              You will be refunded for any days that are canceled as follows:
+          usePortal
+        >
+          <p className={css.modalTitle}>Payment Summary</p>
+          <BookingSummaryCard
+            className={css.bookingSummaryCard}
+            authorDisplayName={providerDisplayName}
+            currentAuthor={provider}
+            selectedBookingTimes={bookingTimes}
+            bookingRate={bookingRate}
+            bookingDates={bookingDates}
+            onManageDisableScrolling={onManageDisableScrolling}
+            selectedPaymentMethod={selectedPaymentMethod}
+            displayOnMobile={!isLarge}
+            hideAvatar
+            subHeading={<span className={css.bookingWith}>Payment Details</span>}
+            refundAmount={refundAmount}
+            hideRatesButton
+          />
+        </Modal>
+      )}
+      {isBookingCalendarModalOpen && (
+        <Modal
+          title="Booking Calendar"
+          id="BookingCalendarModal"
+          isOpen={isBookingCalendarModalOpen}
+          onClose={() => setIsBookingCalendarModalOpen(false)}
+          containerClassName={css.modalContainer}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+        >
+          <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
+            Booking Calendar
+          </p>
+          <BookingCalendar bookedDates={bookingDates} noDisabled />
+        </Modal>
+      )}
+      {isCancelModalOpen && (
+        <Modal
+          title="Cancel Booking"
+          id="CancelBookingModal"
+          isOpen={isCancelModalOpen}
+          onClose={() => handleModalClose(setIsCancelModalOpen)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+          containerClassName={css.modalContainer}
+        >
+          <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
+          {!isRequest && !isAccepted ? (
+            <>
+              <p className={css.modalMessageRefund}>Cancellation Policy</p>
+              <ul className={css.refundList}>
+                <li className={css.refundListItem}>
+                  100% refund for booked times canceled more than 48 hours in advance
+                </li>
+                <li className={css.refundListItem}>
+                  50% refund for booked times canceled less than 48 hours in advance
+                </li>
+                <li className={css.refundListItem}>
+                  Service fees will be refunded in proportion to the refunded base booking amount.
+                  Processing fees are non-refundable under all circumstances.
+                </li>
+              </ul>
+              <div>
+                <BookingSummaryCard
+                  className={css.bookingSummaryCard}
+                  lineItems={lineItems}
+                  onManageDisableScrolling={onManageDisableScrolling}
+                />
+              </div>
+            </>
+          ) : (
+            <p className={css.modalMessage}>
+              You have not been charged for this booking and will therefore not receive a refund.
             </p>
-            <ul className={css.refundList}>
-              <li className={css.refundListItem}>
-                100% refund for booked times canceled more than 48 hours in advance
-              </li>
-              <li className={css.refundListItem}>
-                50% refund for booked times canceled less than 48 hours in advance
-              </li>
-            </ul>
-            <div>
-              <RefundBookingSummaryCard className={css.bookingSummaryCard} lineItems={lineItems} />
-            </div>
-          </>
-        ) : (
+          )}
+          {cancelBookingError ? (
+            <p className={css.modalError}>
+              There was an error cancelling your booking. Please try again.
+            </p>
+          ) : null}
+          <div className={css.modalButtonContainer}>
+            <Button
+              onClick={() => handleModalClose(setIsCancelModalOpen)}
+              className={css.modalButton}
+            >
+              Back
+            </Button>
+            <CancelButton
+              inProgress={cancelBookingInProgress}
+              onClick={() => onCancelBooking(booking)}
+              className={css.modalButton}
+              ready={cancelBookingSuccess}
+              disabled={cancelBookingSuccess || cancelBookingInProgress}
+            >
+              Cancel
+            </CancelButton>
+          </div>
+        </Modal>
+      )}
+      {isDisputeModalOpen && (
+        <Modal
+          title="Dispute Booking"
+          id="DisputeBookingModal"
+          isOpen={isDisputeModalOpen}
+          onClose={() => handleModalClose(setIsDisputeModalOpen)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+          containerClassName={css.modalContainer}
+        >
+          <p className={css.modalTitle}>Submit Dispute</p>
           <p className={css.modalMessage}>
-            You have not been charged for this booking and will therefore not receive a refund.
+            Any dispute submitted will be reviewed by CareVine. You will be notified of the outcome
+            once we have reviewed the case.
           </p>
-        )}
-        {cancelBookingError ? (
-          <p className={css.modalError}>
-            There was an error cancelling your booking. Please try again.
-          </p>
-        ) : null}
-        <div className={css.modalButtonContainer}>
-          <Button
-            onClick={() => handleModalClose(setIsCancelModalOpen)}
-            className={css.modalButton}
-          >
-            Back
-          </Button>
-          <CancelButton
-            inProgress={cancelBookingInProgress}
-            onClick={() => onCancelBooking(booking)}
-            className={css.modalButton}
-            ready={cancelBookingSuccess}
-            disabled={cancelBookingSuccess || cancelBookingInProgress}
-          >
-            Cancel
-          </CancelButton>
-        </div>
-      </Modal>
-      <Modal
-        title="Dispute Booking"
-        id="DisputeBookingModal"
-        isOpen={isDisputeModalOpen}
-        onClose={() => handleModalClose(setIsDisputeModalOpen)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        usePortal
-        containerClassName={css.modalContainer}
-      >
-        <p className={css.modalTitle}>Submit Dispute</p>
-        <p className={css.modalMessage}>
-          Any dispute submitted will be reviewed by CareVine. You will be notified of the outcome
-          once we have reviewed the case.
-        </p>
-        <DisputeForm
-          onSubmit={handleDisputeBooking}
-          inProgress={disputeBookingInProgress}
-          disputeBookingError={disputeBookingError}
-          disputeBookingSuccess={disputeBookingSuccess}
+          <DisputeForm
+            onSubmit={handleDisputeBooking}
+            inProgress={disputeBookingInProgress}
+            disputeBookingError={disputeBookingError}
+            disputeBookingSuccess={disputeBookingSuccess}
+          />
+        </Modal>
+      )}
+      {isReviewModalOpen && (
+        <ReviewModal
+          id={`ReviewOrderModal.${booking.id.uuid}`}
+          isOpen={isReviewModalOpen}
+          onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          onSubmitReview={handleReviewSubmit}
+          revieweeName={providerDisplayName}
+          reviewSent={reviewSubmitted}
+          sendReviewInProgress={submitReviewInProgress}
+          sendReviewError={submitReviewError}
         />
-      </Modal>
-      <ReviewModal
-        id={`ReviewOrderModal.${booking.id.uuid}`}
-        isOpen={isReviewModalOpen}
-        onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        onSubmitReview={handleReviewSubmit}
-        revieweeName={providerDisplayName}
-        reviewSent={reviewSubmitted}
-        sendReviewInProgress={submitReviewInProgress}
-        sendReviewError={submitReviewError}
-      />
+      )}
     </div>
   );
 };
