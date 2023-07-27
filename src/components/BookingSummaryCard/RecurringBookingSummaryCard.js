@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 
 import { Form as FinalForm } from 'react-final-form';
 import {
@@ -9,15 +9,27 @@ import {
   Form,
   FieldRangeSlider,
   Button,
+  ButtonTabNavHorizontal,
 } from '../../components';
-import classNames from 'classnames';
 import { useMediaQuery } from '@mui/material';
 import { convertTimeFrom12to24, calculateProcessingFee } from '../../util/data';
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
+import classNames from 'classnames';
 
 import css from './BookingSummaryCard.module.css';
 
 const TRANSACTION_FEE = 0.05;
+
+const weekdayMap = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
+};
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -26,11 +38,13 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
-const calculateTotalHours = bookingTimes =>
-  bookingTimes?.reduce(
+const calculateTotalHours = weekdays =>
+  Object.keys(weekdays)?.reduce(
     (acc, curr) =>
       acc +
-      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
+      (weekdays[curr]?.[0].startTime && weekdays[curr]?.[0].endTime
+        ? calculateTimeBetween(weekdays[curr]?.[0].startTime, weekdays[curr]?.[0].endTime)
+        : 0),
     0
   );
 
@@ -40,33 +54,25 @@ const calculateCost = (bookingStart, bookingEnd, price) =>
 const calculateTransactionFee = subTotal =>
   parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
 
-const calculateSubTotal = (bookingTimes, bookingRate) =>
-  bookingTimes
-    ?.reduce(
-      (acc, curr) =>
-        acc +
-        (curr.startTime && curr.endTime
-          ? Number(calculateCost(curr.startTime, curr.endTime, bookingRate))
-          : 0),
-      0
-    )
-    .toFixed(2);
+const calculateSubTotal = (totalHours, bookingRate) => totalHours * Number(bookingRate);
 
 const calculateTotalCost = (subTotal, transactionFee, processingFee, refundAmount = 0) =>
   parseFloat(
     Number(subTotal) + Number(transactionFee) + Number(processingFee) - Number(refundAmount)
   ).toFixed(2);
 
-const BookingSummaryCard = props => {
+const RecurringBookingSummaryCard = props => {
   const {
     authorDisplayName,
     currentAuthor,
-    selectedBookingTimes,
+    weekdays,
+    endDate,
+    startDate,
     bookingRate,
-    bookingDates,
     listing,
     onManageDisableScrolling,
     onSetState,
+    displayOnMobile,
     selectedPaymentMethod,
     className,
     hideAvatar,
@@ -75,11 +81,11 @@ const BookingSummaryCard = props => {
     hideFees,
     refundAmount,
   } = props;
-  const totalHours = calculateTotalHours(selectedBookingTimes);
 
-  const isLarge = useMediaQuery('(min-width:1024px)');
-  const [showArrow, setShowArrow] = useState(false);
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
+  const [showFullWeek, setShowFullWeek] = useState(false);
+  const isLarge = useMediaQuery('(min-width:1024px)');
+  const [showArrow, setShowArrow] = useState(true);
 
   const heightRef = useRef(null);
   const clientHeight = heightRef.current?.clientHeight;
@@ -93,7 +99,6 @@ const BookingSummaryCard = props => {
 
   const cardRef = useCallback(node => {
     if (node !== null && window.innerWidth >= 1024) {
-      heightRef.current = node;
       node.addEventListener('scroll', () => {
         const isTop = node.scrollTop === 0;
         setShowArrow(isTop);
@@ -101,12 +106,39 @@ const BookingSummaryCard = props => {
     }
   }, []);
 
-  const subTotal = calculateSubTotal(selectedBookingTimes, bookingRate);
+  const filteredWeekdays = useMemo(
+    () =>
+      Object.keys(weekdays).reduce((acc, weekdayKey) => {
+        const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+
+        return bookingDate >= startDate || showFullWeek
+          ? { ...acc, [weekdayKey]: weekdays[weekdayKey] }
+          : acc;
+      }, {}),
+    [weekdays, startDate, showFullWeek]
+  );
+
+  const totalHours = calculateTotalHours(filteredWeekdays);
+
+  const subTotal = calculateSubTotal(totalHours, bookingRate);
   const transactionFee = hideFees ? 0 : calculateTransactionFee(subTotal);
   const processingFee = calculateProcessingFee(subTotal, transactionFee, selectedPaymentMethod);
   const total = hideFees
     ? subTotal
     : calculateTotalCost(subTotal, transactionFee, processingFee, refundAmount);
+
+  const tabs = [
+    {
+      text: 'First Week',
+      selected: !showFullWeek,
+      onClick: () => setShowFullWeek(false),
+    },
+    {
+      text: 'Full Week',
+      selected: showFullWeek,
+      onClick: () => setShowFullWeek(true),
+    },
+  ];
 
   return (
     <div
@@ -117,7 +149,7 @@ const BookingSummaryCard = props => {
       ref={cardRef}
     >
       {!hideAvatar ? (
-        <div className={css.cardAvatarWrapper}>
+        <div className={css.cardAvatarWrapper} style={{ paddingBottom: 0 }}>
           <Avatar
             user={currentAuthor}
             disableProfileLink
@@ -131,23 +163,27 @@ const BookingSummaryCard = props => {
           </div>
         </div>
       ) : null}
+      <div className={css.startEnd}>
+        <p>Start Date: {moment(startDate).format('MM/DD/YYYY')}</p>
+        {endDate ? <p>End Date: {moment(endDate).format('MM/DD/YYYY')}</p> : null}
+      </div>
+      <ButtonTabNavHorizontal className={css.tabNav} tabNavClassName={css.tabNav} tabs={tabs} />
       <div className={css.summaryDetailsContainer}>
-        <div className={css.detailsHeadings}>
-          <h2 className={css.detailsTitle}>{subHeading || 'Booking Summary'}</h2>
-        </div>
         <div className={css.bookingTimes}>
-          {bookingDates?.map((bookingDate, index) => {
-            const month = new Date(bookingDate).getMonth() + 1;
-            const day = new Date(bookingDate).getDate();
-            const bookingTime = selectedBookingTimes.find(b => b.date === `${month}/${day}`) ?? {};
-            const date = bookingTime.date;
-            const startTime = bookingTime.startTime;
-            const endTime = bookingTime.endTime;
+          {Object.keys(filteredWeekdays)?.map((weekdayKey, index) => {
+            const weekday = filteredWeekdays[weekdayKey];
+            const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
 
-            return startTime && endTime ? (
+            const format = showFullWeek ? 'dddd' : 'ddd, MMM Do';
+
+            const formattedBookingDate = bookingDate.format(format);
+
+            const { startTime, endTime } = weekday[0];
+
+            return (
               <div className={css.bookingTime} key={uuidv4()}>
                 <h3 className={css.summaryDate}>
-                  {date} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
+                  {formattedBookingDate} - ${calculateCost(startTime, endTime, bookingRate)}{' '}
                 </h3>
                 <div className={css.summaryTimeContainer}>
                   <span className={css.summaryTimes}>
@@ -158,7 +194,7 @@ const BookingSummaryCard = props => {
                   </p>
                 </div>
               </div>
-            ) : null;
+            );
           })}
         </div>
         <div className={css.totalContainer}>
@@ -182,11 +218,6 @@ const BookingSummaryCard = props => {
                 <>
                   <h4 className={css.paymentCalc}>CareVine Service fee - ${transactionFee}</h4>
                   <h4 className={css.paymentCalc}>Processing fee - ${processingFee}</h4>
-                  {refundAmount && refundAmount > 0 ? (
-                    <h4 className={css.paymentCalc} style={{ color: 'var(--failColor)' }}>
-                      Refunded - ${refundAmount}
-                    </h4>
-                  ) : null}
                 </>
               ) : null}
             </div>
@@ -195,7 +226,7 @@ const BookingSummaryCard = props => {
         </div>
       </div>
       {showArrow ? (
-        <IconArrowHead direction="down" height="2em" width="2em" className={css.arrow} />
+        <IconArrowHead direction="down" height="1.5em" width="1.5em" className={css.arrow} />
       ) : null}
       {!hideRatesButton ? (
         <Modal
@@ -255,4 +286,4 @@ const BookingSummaryCard = props => {
   );
 };
 
-export default BookingSummaryCard;
+export default RecurringBookingSummaryCard;

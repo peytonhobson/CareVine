@@ -187,7 +187,7 @@ const getEntryBoundaries = (values, dayOfWeek, intl, findStartHours) => index =>
 };
 
 const DailyPlan = props => {
-  const { dayOfWeek, values, intl } = props;
+  const { dayOfWeek, values, intl, multipleTimesDisabled } = props;
   const getEntryStartTimes = getEntryBoundaries(values, dayOfWeek, intl, true);
   const getEntryEndTimes = getEntryBoundaries(values, dayOfWeek, intl, false);
 
@@ -286,7 +286,7 @@ const DailyPlan = props => {
                 >
                   <FormattedMessage id="EditListingAvailabilityPlanForm.setHours" />
                 </InlineTextButton>
-              ) : (
+              ) : multipleTimesDisabled ? null : (
                 <InlineTextButton
                   type="button"
                   className={css.buttonAddNew}

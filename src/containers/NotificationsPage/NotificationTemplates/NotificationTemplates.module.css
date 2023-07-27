@@ -134,6 +134,7 @@
   @media (--viewportLarge) {
     width: 25rem;
     margin-top: 0;
+    max-height: 28rem;
   }
 }
 

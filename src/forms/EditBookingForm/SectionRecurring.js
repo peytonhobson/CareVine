@@ -8,6 +8,7 @@ import {
   getAvailableEndDates,
 } from '../../util/dates';
 import { useCheckMobileScreen } from '../../util/hooks';
+import { WEEKDAYS } from '../../util/constants';
 
 import css from './EditBookingForm.module.css';
 
@@ -15,8 +16,6 @@ const TODAY = new Date();
 
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
-
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const SectionRecurring = props => {
   const { values, intl, onManageDisableScrolling, listing } = props;
@@ -101,7 +100,9 @@ const SectionRecurring = props => {
         <p className={css.modalTitle}>Edit Care Schedule</p>
         <div className={css.week}>
           {WEEKDAYS.map(w => {
-            return <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} />;
+            return (
+              <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} multipleTimesDisabled />
+            );
           })}
         </div>
         <Button className={css.saveWeekButton} onClick={() => setIsEditDatesModalOpen(false)}>

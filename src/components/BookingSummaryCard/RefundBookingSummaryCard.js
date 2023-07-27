@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
+import classNames from 'classnames';
 import { useMediaQuery } from '@mui/material';
 import { addTimeToStartOfDay } from '../../util/dates';
 import { convertTimeFrom12to24 } from '../../util/data';
@@ -35,6 +36,26 @@ const RefundBookingSummaryCard = props => {
   const { lineItems, className, subHeading } = props;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
+  const [showArrow, setShowArrow] = useState(true);
+
+  const heightRef = useRef(null);
+  const clientHeight = heightRef.current?.clientHeight;
+  const scrollHeight = heightRef.current?.scrollHeight;
+
+  useEffect(() => {
+    if (scrollHeight > clientHeight) {
+      setShowArrow(true);
+    }
+  }, [clientHeight, scrollHeight]);
+
+  const cardRef = useCallback(node => {
+    if (node !== null && window.innerWidth >= 1024) {
+      node.addEventListener('scroll', () => {
+        const isTop = node.scrollTop === 0;
+        setShowArrow(isTop);
+      });
+    }
+  }, []);
 
   const fiftyPercentRefund = filterFiftyPercentRefund(lineItems) ?? [];
   const fullRefund = filterFullRefund(lineItems) ?? [];
@@ -46,7 +67,11 @@ const RefundBookingSummaryCard = props => {
 
   return (
     <div
-      className={className || (!isLarge ? css.detailsContainerMobile : css.detailsContainerDesktop)}
+      className={classNames(
+        !isLarge ? css.detailsContainerMobile : css.detailsContainerDesktop,
+        className
+      )}
+      ref={cardRef}
     >
       <div className={css.summaryDetailsContainer}>
         <div className={css.detailsHeadings}>
@@ -97,12 +122,15 @@ const RefundBookingSummaryCard = props => {
         <div className={css.totalContainer}>
           <div className={css.totalCalc}>
             <h4 className={css.paymentCalc}>
-              +5% Booking fee refund - ${parseFloat(bookingFee).toFixed(2)}
+              + CareVine Service Fee Refund - ${parseFloat(bookingFee).toFixed(2)}
             </h4>
           </div>
           <h3 className={css.total}>Total Refund: ${parseFloat(total).toFixed(2)}</h3>
         </div>
       </div>
+      {showArrow ? (
+        <IconArrowHead direction="down" height="1.5em" width="1.5em" className={css.arrow} />
+      ) : null}
     </div>
   );
 };

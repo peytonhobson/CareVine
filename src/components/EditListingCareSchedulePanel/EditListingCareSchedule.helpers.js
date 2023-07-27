@@ -1,7 +1,6 @@
 import { getDefaultTimeZoneOnBrowser } from '../../util/dates';
 import zipcodeToTimezone from 'zipcode-to-timezone';
-
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+import { WEEKDAYS } from '../../util/constants';
 
 export const defaultTimeZone = () =>
   typeof window !== 'undefined' ? getDefaultTimeZoneOnBrowser() : 'Etc/UTC';

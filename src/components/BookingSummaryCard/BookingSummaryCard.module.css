@@ -10,14 +10,13 @@
     padding-bottom: 2rem;
     max-width: 30rem;
 
-    width: 33vw;
-    max-height: calc(100vh - 15rem);
-    overflow-y: auto;
-
     /* Coloring */
     background-color: var(--matterColorLight);
     border: 1px solid var(--matterColorNegative);
     border-radius: 2px;
+    max-height: 32rem;
+    overflow-y: scroll;
+    position: relative;
   }
 }
 
@@ -101,7 +100,6 @@
 
 .bookingTimes {
   overflow-y: auto;
-  max-height: 9rem;
   position: relative;
   scroll-behavior: smooth;
 }
@@ -195,4 +193,25 @@
   & p {
     margin: 0;
   }
+}
+
+.tabNav {
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.startEnd {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 3rem;
+
+  & > p {
+    font-weight: var(--fontWeightSemiBold);
+  }
+}
+
+.arrow {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
 }
