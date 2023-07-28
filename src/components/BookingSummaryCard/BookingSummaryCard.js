@@ -1,12 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 
-import { Form as FinalForm } from 'react-final-form';
 import {
   Avatar,
   IconArrowHead,
   InlineTextButton,
   Modal,
-  Form,
   FieldRangeSlider,
   Button,
   ButtonTabNavHorizontal,
@@ -88,6 +86,8 @@ const BookingSummaryCard = props => {
     currentAuthor,
     selectedBookingTimes,
     bookingRate,
+    formValues,
+    form,
     bookingDates,
     listing,
     onManageDisableScrolling,
@@ -144,8 +144,8 @@ const BookingSummaryCard = props => {
       });
 
       const resizeObserver = new ResizeObserver(() => {
-        const isTop = node.scrollTop === 0;
-        setShowArrow(isTop);
+        const isScrollable = node.scrollHeight > node.clientHeight;
+        setShowArrow(isScrollable);
       });
       resizeObserver.observe(node);
     }
@@ -197,6 +197,8 @@ const BookingSummaryCard = props => {
       onClick: () => setShowFullWeek(true),
     },
   ];
+
+  const minPrice = listing?.attributes?.publicData?.minPrice;
 
   return (
     <div
@@ -322,54 +324,44 @@ const BookingSummaryCard = props => {
         <Modal
           id="changeRatesModal"
           isOpen={isChangeRatesModalOpen}
-          onClose={() => setIsChangeRatesModalOpen(false)}
+          onClose={() => {
+            form.change('bookingRate', bookingRate);
+            onSetState({ bookingRate: bookingRate });
+            setIsChangeRatesModalOpen(false);
+          }}
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
           containerClassName={css.modalContainer}
         >
-          <FinalForm
-            className={css.changeRatesForm}
-            onSubmit={values => {
-              onSetState({ bookingRate: values.bookingRate[0] });
+          <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
+          <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
+            ${formValues?.bookingRate}
+          </h1>
+          <div className={css.availableRatesContainer}>
+            <p>${minPrice / 100}</p>
+            <p>$50</p>
+          </div>
+          <FieldRangeSlider
+            id="bookingRate"
+            name="bookingRate"
+            className={css.priceRange}
+            trackClass={css.track}
+            min={minPrice / 100}
+            max={50}
+            step={1}
+            handles={[bookingRate]}
+            noHandleLabels
+          />
+          <Button
+            type="submit"
+            className={css.submitRateButton}
+            onClick={values => {
+              onSetState({ bookingRate: formValues.bookingRate[0] });
               setIsChangeRatesModalOpen(false);
             }}
-            initialValues={{ bookingRate: [bookingRate] }}
-            render={fieldRenderProps => {
-              const { handleSubmit, pristine, invalid, values } = fieldRenderProps;
-              const { minPrice } = listing?.attributes.publicData;
-
-              return (
-                <Form onSubmit={handleSubmit}>
-                  <h2 className={css.fieldLabel}>Choose an hourly rate:</h2>
-                  <h1 className={css.fieldLabel} style={{ marginBottom: 0 }}>
-                    ${values.bookingRate}
-                  </h1>
-                  <div className={css.availableRatesContainer}>
-                    <p>${minPrice / 100}</p>
-                    <p>$50</p>
-                  </div>
-                  <FieldRangeSlider
-                    id="bookingRate"
-                    name="bookingRate"
-                    className={css.priceRange}
-                    trackClass={css.track}
-                    min={minPrice / 100}
-                    max={50}
-                    step={1}
-                    handles={values.bookingRate}
-                    noHandleLabels
-                  />
-                  <Button
-                    type="submit"
-                    disabled={pristine || invalid}
-                    className={css.submitRateButton}
-                  >
-                    Save Rate
-                  </Button>
-                </Form>
-              );
-            }}
-          />
+          >
+            Save Rate
+          </Button>
         </Modal>
       ) : null}
     </div>

@@ -25,6 +25,8 @@ import css from './EditBookingForm.module.css';
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 
+const STORAGE_KEY = 'CheckoutPage';
+
 const weekdayMap = {
   0: 'sun',
   1: 'mon',
@@ -101,6 +103,7 @@ const EditBookingFormComponent = props => (
         stripeCustomerFetched,
         onChangePaymentMethod,
         intl,
+        storeData,
       } = formRenderProps;
 
       const [selectedTab, setSelectedTab] = useState('Dates/Times');
@@ -109,24 +112,54 @@ const EditBookingFormComponent = props => (
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
-      const handleGoToPayment = () => {
+      const storeFormData = () => {
+        const saveParams = {
+          bookingRate: values.bookingRate?.[0] || bookingRate,
+          bookingDates: values.bookingDates,
+          listing: currentListing,
+          scheduleType: values.scheduleType,
+          startDate: values.startDate,
+          endDate: values.endDate,
+          weekdays: findWeekdays(values),
+          dateTimes: values.dateTimes,
+          storageKey: STORAGE_KEY,
+        };
+
+        onSetState(saveParams);
+        storeData(saveParams);
+      };
+
+      const checkValidDates = () => {
         if (values.scheduleType === 'oneTime') {
           if (values.bookingDates?.length === 0) {
             setGoToPaymentError('Please select at least one booking date.');
-            return;
+            return false;
           }
 
           if (!checkValidBookingTimes(values.dateTimes, values.bookingDates)) {
             setGoToPaymentError('Please select start times and end times for each booking date.');
-            return;
+            return false;
           }
         } else {
           const hasWeekdayvalues = WEEKDAYS.some(weekday => values[weekday]);
           if (!hasWeekdayvalues) {
             setGoToPaymentError('Please select at least one weekday.');
-            return;
+            return false;
           }
         }
+        return true;
+      };
+
+      const checkvalidPayment = () => {
+        if (!selectedPaymentMethod) {
+          setGoToRequestError('You must add or select a payment method before requesting to book.');
+          return false;
+        }
+        return true;
+      };
+
+      const handleGoToPayment = () => {
+        if (!checkValidDates()) return;
 
         if (values.startDate) {
           const newStartDate = findNewStartDate(values.startDate.date, findWeekdays(values));
@@ -135,14 +168,12 @@ const EditBookingFormComponent = props => (
           }
         }
 
+        storeFormData();
         setSelectedTab('Payment');
       };
 
       const handleGoToRequest = () => {
-        if (!selectedPaymentMethod) {
-          setGoToRequestError('You must add or select a payment method before requesting to book.');
-          return;
-        }
+        if (!checkValidDates() || !checkvalidPayment()) return;
 
         if (values.startDate) {
           const newStartDate = findNewStartDate(values.startDate.date, findWeekdays(values));
@@ -151,6 +182,7 @@ const EditBookingFormComponent = props => (
           }
         }
 
+        storeFormData();
         setSelectedTab('Request');
       };
 
@@ -291,6 +323,7 @@ const EditBookingFormComponent = props => (
                   onManageDisableScrolling={onManageDisableScrolling}
                   listing={currentListing}
                   isLarge={isLarge}
+                  onDeleteEndDate={() => form.change('endDate', null)}
                 />
               )}
               {!isLarge ? (
@@ -339,6 +372,7 @@ const EditBookingFormComponent = props => (
               listingNotFoundErrorMessage={listingNotFoundErrorMessage}
               initiateOrderInProgress={initiateOrderInProgress}
               transaction={transaction}
+              form={form}
             />
           );
           break;
