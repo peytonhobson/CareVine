@@ -183,7 +183,6 @@ export { default as OwnListingLink } from './OwnListingLink/OwnListingLink';
 export { default as Page } from './Page/Page';
 export { default as PriceFilter } from './PriceFilter/PriceFilter';
 export { default as QuizTimer} from './QuizTimer/QuizTimer';
-export { default as RefundBookingSummaryCard } from './BookingSummaryCard/RefundBookingSummaryCard';
 export { default as Reviews } from './Reviews/Reviews';
 export { default as SavedPaymentDetails } from './SavedPaymentDetails/SavedPaymentDetails';
 export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails';
@@ -205,7 +204,6 @@ export { default as TransactionPanel } from './TransactionPanel/TransactionPanel
 export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export { default as WeekPanel } from './WeekPanel/WeekPanel';
-export { default as RecurringBookingSummaryCard } from './BookingSummaryCard/RecurringBookingSummaryCard';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

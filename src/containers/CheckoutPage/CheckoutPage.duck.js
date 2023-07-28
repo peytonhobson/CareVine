@@ -41,6 +41,8 @@ const initialState = {
   scheduleType: null,
   startDate: null,
   endDate: null,
+  weekdays: null,
+  dateTimes: null,
   initiateOrderError: null,
   initiateOrderInProgress: false,
   stripeCustomerFetched: false,

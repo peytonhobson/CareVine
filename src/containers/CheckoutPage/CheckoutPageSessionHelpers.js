@@ -70,9 +70,11 @@ export const storeData = ({
   scheduleType,
   startDate,
   endDate,
+  weekdays,
+  dateTimes,
   storageKey,
 }) => {
-  if (window?.sessionStorage && listing && bookingRate) {
+  if (window?.sessionStorage) {
     const data = {
       bookingRate,
       bookingDates,
@@ -81,6 +83,8 @@ export const storeData = ({
       scheduleType,
       startDate,
       endDate,
+      weekdays,
+      dateTimes,
       storedAt: new Date(),
     };
 
@@ -125,6 +129,8 @@ export const storedData = storageKey => {
       scheduleType,
       startDate,
       endDate,
+      weekdays,
+      dateTimes,
       storedAt,
     } = checkoutPageData ? JSON.parse(checkoutPageData, reviver) : {};
 
@@ -143,7 +149,17 @@ export const storedData = storageKey => {
       isTransactionValid;
 
     if (isStoredDataValid) {
-      return { bookingRate, bookingDates, listing, transaction, scheduleType, startDate, endDate };
+      return {
+        bookingRate,
+        bookingDates,
+        listing,
+        transaction,
+        scheduleType,
+        startDate,
+        endDate,
+        weekdays,
+        dateTimes,
+      };
     }
   }
   return {};

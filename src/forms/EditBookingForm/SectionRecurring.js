@@ -18,15 +18,9 @@ const TODAY = new Date();
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
 const SectionRecurring = props => {
-  const { values, intl, onManageDisableScrolling, listing } = props;
+  const { values, intl, onManageDisableScrolling, listing, onDeleteEndDate } = props;
 
   const [isEditDatesModalOpen, setIsEditDatesModalOpen] = useState(false);
-
-  const isMobile = useCheckMobileScreen();
-
-  const onDeleteEndDate = () => {
-    form.change('endDate', null);
-  };
 
   const { startDate, endDate } = values;
 

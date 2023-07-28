@@ -33,6 +33,7 @@ const SectionRequest = props => {
     listingNotFoundErrorMessage,
     initiateOrderInProgress,
     transaction,
+    form,
   } = props;
 
   return (
@@ -78,6 +79,8 @@ const SectionRequest = props => {
         weekdays={pick(values, WEEKDAYS)}
         startDate={values.startDate?.date}
         endDate={values.endDate?.date}
+        formValues={values}
+        form={form}
       />
     </div>
   );

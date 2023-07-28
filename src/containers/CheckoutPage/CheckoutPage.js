@@ -3,7 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl } from '../../util/reactIntl';
 import { withRouter } from 'react-router-dom';
-import { calculateProcessingFee, ensureListing, ensureUser } from '../../util/data';
+import { ensureListing, ensureUser } from '../../util/data';
 import {
   NamedLink,
   NamedRedirect,
@@ -22,59 +22,27 @@ import {
   setInitialValues,
 } from './CheckoutPage.duck';
 import { storeData, storedData } from './CheckoutPageSessionHelpers';
-import css from './CheckoutPage.module.css';
-import { convertTimeFrom12to24 } from '../../util/data';
+import {
+  formatDateTimeValues,
+  findStartTimeFromBookingTimes,
+  constructBookingMetadataOneTime,
+  constructBookingMetadataRecurring,
+  findStartTimeRecurring,
+} from './CheckoutPage.helpers';
+import { WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 
+import css from './CheckoutPage.module.css';
+
 const STORAGE_KEY = 'CheckoutPage';
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
-const BOOKING_FEE_PERCENTAGE = 0.05;
 
-const formatDateTimeValues = dateTimes =>
-  Object.keys(dateTimes).map(key => {
-    const startTime = dateTimes[key].startTime;
-    const endTime = dateTimes[key].endTime;
-
-    return {
-      startTime,
-      endTime,
-      date: key,
-    };
-  });
-
-const findStartTimeFromBookingTimes = bookingTimes => {
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth();
-
-  const dateBookingTimes = formatDateTimeValues(bookingTimes).map(bookingTime => {
-    const split = bookingTime.date.split('/');
-    const date = new Date(
-      split[0] - 1 < currentMonth ? currentYear + 1 : currentYear,
-      split[0] - 1,
-      split[1]
-    );
-    return { date, startTime: bookingTime.startTime, endTime: bookingTime.endTime };
-  });
-  const sortedBookingTimes = dateBookingTimes.sort((a, b) => {
-    return a.date - b.date;
-  });
-
-  const firstDay = sortedBookingTimes[0];
-  const additionalTime = parseInt(convertTimeFrom12to24(firstDay.startTime).split(':')[0], 10);
-  const startTime = moment(sortedBookingTimes[0].date)
-    .add(additionalTime, 'hours')
-    .toDate();
-
-  return startTime;
-};
-
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
-
-  return end - start;
-};
+const findWeekdays = values =>
+  WEEKDAYS.reduce((acc, key) => {
+    if (values[key]) {
+      return { ...acc, [key]: values[key] };
+    }
+    return acc;
+  }, {});
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -158,6 +126,8 @@ export class CheckoutPageComponent extends Component {
       scheduleType,
       startDate,
       endDate,
+      weekdays,
+      dateTimes,
       transaction,
       history,
     } = this.props;
@@ -181,44 +151,54 @@ export class CheckoutPageComponent extends Component {
         scheduleType,
         startDate,
         endDate,
+        weekdays,
+        dateTimes,
         storageKey: STORAGE_KEY,
       });
     }
 
     // NOTE: stored data can be empty if user has already successfully completed transaction.
     const pageData = hasDataInProps
-      ? { bookingRate, bookingDates, listing, transaction, scheduleType, startDate, endDate }
+      ? {
+          bookingRate,
+          bookingDates,
+          listing,
+          transaction,
+          scheduleType,
+          startDate,
+          endDate,
+          weekdays,
+          dateTimes,
+        }
       : storedData(STORAGE_KEY);
 
     this.setState({ pageData: pageData || {}, dataLoaded: true });
   }
 
   handleSubmit(values) {
-    const { dateTimes: bookingTimes, message } = values;
     const {
-      bookingDates: bookingDatesProps,
-      bookingRate: bookingRateProps,
-      onInitiateOrder,
-      listing: listingProps,
-      currentUserListing,
-      currentUser,
-    } = this.props;
+      dateTimes: bookingTimes,
+      message,
+      bookingDates,
+      startDate: startDateDate,
+      endDate: endDateDate,
+      bookingRate: bookingRateArr,
+      scheduleType,
+    } = values;
 
-    const {
-      listing: listingState,
-      bookingRate: bookingRateState,
-      bookingDates: bookingDatesState,
-    } = this.state.pageData;
+    const weekdays = findWeekdays(values);
 
-    const listing = listingProps || listingState;
-    const bookingRate = bookingRateProps || bookingRateState;
-    const bookingDates = bookingDatesProps || bookingDatesState || [];
-
-    const paymentMethodId = this.state.selectedPaymentMethod?.id;
+    const startDate = startDateDate?.date;
+    const endDate = endDateDate?.date;
+    const bookingRate = bookingRateArr[0];
+    const { onInitiateOrder, currentUserListing, currentUser, listing } = this.props;
 
     const listingId = listing.id;
 
-    const bookingStart = findStartTimeFromBookingTimes(bookingTimes);
+    const bookingStart =
+      scheduleType === 'oneTime'
+        ? findStartTimeFromBookingTimes(bookingTimes)
+        : findStartTimeRecurring(weekdays, startDate);
     const bookingEnd = moment(bookingStart)
       .add(1, 'hours')
       .toDate();
@@ -229,66 +209,46 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
-    const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
-      const { startTime, endTime, date } = booking;
+    const scheduleTypeMetadata =
+      scheduleType === 'oneTime'
+        ? constructBookingMetadataOneTime(
+            bookingDates,
+            bookingTimes,
+            bookingRate,
+            this.state.selectedPaymentMethod.type
+          )
+        : constructBookingMetadataRecurring(
+            weekdays,
+            startDate,
+            endDate,
+            bookingRate,
+            this.state.selectedPaymentMethod.type
+          );
 
-      const hours = calculateTimeBetween(startTime, endTime);
-      const amount = parseFloat(hours * bookingRate).toFixed(2);
-      const isoDate = bookingDates
-        .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
-        ?.toISOString();
-
-      return {
-        code: 'line-item/booking',
-        startTime,
-        endTime,
-        seats: 1,
-        date: isoDate,
-        shortDate: moment(isoDate).format('MM/DD'),
-        hours,
-        amount,
-        bookingFee: parseFloat(amount * 0.05).toFixed(2),
-      };
-    });
-
-    const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-    const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
-    const processingFee = calculateProcessingFee(
-      payout,
-      bookingFee,
-      this.state.selectedPaymentMethod.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT
-    );
 
     const metadata = {
-      lineItems,
-      bookingRate,
-      paymentMethodId,
-      paymentMethodType: this.state.selectedPaymentMethod.type,
-      bookingFee,
-      processingFee,
+      ...scheduleTypeMetadata,
       message,
+      bookingRate,
+      paymentMethodId: this.state.selectedPaymentMethod?.id,
+      paymentMethodType: this.state.selectedPaymentMethod?.type,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
-      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
-        2
-      ),
-      payout: parseFloat(payout).toFixed(2),
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
   }
 
   handleEditBookingFormChange = e => {
-    const { dateTimes = {} } = e.values;
+    const { dateTimes } = e.values;
 
     this.setState({
-      selectedBookingTimes: formatDateTimeValues(dateTimes),
+      selectedBookingTimes: formatDateTimeValues(dateTimes || {}),
     });
   };
 
@@ -320,6 +280,8 @@ export class CheckoutPageComponent extends Component {
       scheduleType,
       startDate,
       endDate,
+      weekdays,
+      dateTimes,
     } = this.state.pageData;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
@@ -429,7 +391,8 @@ export class CheckoutPageComponent extends Component {
             fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
             stripeCustomerFetched={stripeCustomerFetched}
             onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
-            initialValues={{ scheduleType, startDate, endDate }}
+            initialValues={{ scheduleType, startDate, endDate, ...weekdays, dateTimes }}
+            storeData={storeData}
           />
         </div>
       </Page>
@@ -450,6 +413,8 @@ const mapStateToProps = state => {
     startDate,
     endDate,
     scheduleType,
+    weekdays,
+    dateTimes,
   } = state.CheckoutPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -478,6 +443,8 @@ const mapStateToProps = state => {
     startDate,
     endDate,
     scheduleType,
+    weekdays,
+    dateTimes,
   };
 };
 
@@ -500,7 +467,15 @@ const CheckoutPage = compose(
 
 CheckoutPage.setInitialValues = (initialValues, saveToSessionStorage = false) => {
   if (saveToSessionStorage) {
-    const { listing, bookingRate, bookingDates, scheduleType, startDate, endDate } = initialValues;
+    const {
+      listing,
+      bookingRate,
+      bookingDates,
+      scheduleType,
+      startDate,
+      endDate,
+      weekdays,
+    } = initialValues;
     storeData({
       bookingRate,
       bookingDates,
@@ -508,6 +483,7 @@ CheckoutPage.setInitialValues = (initialValues, saveToSessionStorage = false) =>
       scheduleType,
       startDate,
       endDate,
+      weekdays,
       storageKey: STORAGE_KEY,
     });
   }
