@@ -28,6 +28,7 @@ module.exports = queryEvents = () => {
     generateBookingNumber,
     updateBookingEnd,
     makeReviewable,
+    triggerNextBooking,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -271,9 +272,12 @@ module.exports = queryEvents = () => {
     if (eventType === 'transaction/transitioned') {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
+      const metadata = transaction.attributes.metadata;
 
       if (lastTransition === 'transition/start') {
-        updateBookingEnd(transaction);
+        if (!metadata.cancelAtPeriodEnd && metadata.bookingSchedule && !metadata.nextBookingId) {
+          triggerNextBooking(transaction, 'transition/start-loop');
+        }
       }
 
       if (lastTransition === 'transition/accept') {
@@ -282,6 +286,10 @@ module.exports = queryEvents = () => {
 
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
+
+        if (!metadata.cancelAtPeriodEnd && metadata.bookingSchedule) {
+          triggerNextBooking(transaction, 'transition/charge-loop');
+        }
       }
 
       // If transition is dispute-resolved we need to first check if the dispute was resolved in favor of the caregiver

@@ -9,6 +9,15 @@
    :to :state/booking-requested,
    :privileged? true}
 
+   {:name :transition/initial-repeat,
+   :actions
+   [{:name :action/privileged-update-metadata},
+   {:name :action/create-proposed-booking :config {:type :time}},
+   {:name :action/accept-booking}]
+   :actor :actor.role/operator,
+   :to :state/accepted,
+   :privileged? true}
+
    {:name :transition/cancel-request,
    :actor :actor.role/customer,
    :from :state/booking-requested,
@@ -68,6 +77,13 @@
    {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]},
    :from :state/accepted,
    :to :state/charged}
+   {:name :transition/charge-loop,
+   :actions
+   [{:name :action/privileged-update-metadata}],
+    :actor :actor.role/operator,
+   :from :state/charge,
+   :to :state/charge,
+   :privileged? true}
    {:name :transition/cancel-charged-booking-customer,
    :actions
    [{:name :action/cancel-booking}],
@@ -92,13 +108,13 @@
    {:fn/timepoint [:time/booking-start]}
    :from :state/charged,
    :to :state/active}
-
-    {:name :transition/start-update-times,
+    {:name :transition/start-loop,
     :actor :actor.role/operator,
    :actions
-   [{:name :action/update-booking :config {:type :time}}]
+   [{:name :action/update-booking :config {:type :time}}, {:name :action/privileged-update-metadata}]
    :from :state/active,
-   :to :state/active}
+   :to :state/active,
+   :privileged? true}
 
    {:name :transition/cancel-pay-caregiver,
    :at
@@ -318,7 +334,6 @@
     :at
     {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
-
     {:name :notification/booking-reminder-provider
     :on :transition/charge,
     :to :actor.role/provider,
@@ -326,4 +341,18 @@
     :at
     {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
-]}
+    {:name :notification/booking-reminder-repeat-customer
+    :on :transition/initial-repeat,
+    :to :actor.role/customer
+    :template :booking-reminder-repeat-customer
+    :at {:fn/ignore-if-past [{:fn/minus
+       [{:fn/timepoint [:time/booking-start]}
+        {:fn/period ["P3D"]}]}]}}
+    {:name :notification/booking-reminder-repeat-provider
+    :on :transition/initial-repeat,
+    :to :actor.role/provider
+    :template :booking-reminder-repeat-provider
+    :at {:fn/ignore-if-past [{:fn/minus
+       [{:fn/timepoint [:time/booking-start]}
+        {:fn/period ["P3D"]}]}]}}
+    ]}
