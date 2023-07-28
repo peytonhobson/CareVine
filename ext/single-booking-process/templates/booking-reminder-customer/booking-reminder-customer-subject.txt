@@ -1,0 +1,1 @@
+Reminder: Upcoming Booking with {{transaction.provider.display-name}}
