@@ -82,6 +82,9 @@ const ListingSummaryComponent = props => {
   const authorMetadata = author?.attributes?.profile?.metadata;
   const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
 
+  const thisUserHasStripeAccount =
+    hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
+
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
@@ -247,7 +250,7 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {(hasStripeAccount || authorWhiteListed) && isLarge ? (
+          {(thisUserHasStripeAccount || authorWhiteListed) && isLarge ? (
             <Button
               className={css.button}
               onClick={() => setIsBookingModalOpen(true)}
