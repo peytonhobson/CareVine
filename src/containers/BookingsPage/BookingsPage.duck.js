@@ -1,5 +1,5 @@
 import { CAREGIVER } from '../../util/constants';
-import { denormalisedResponseEntities, findStartTimeFromLineItems } from '../../util/data';
+import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
@@ -163,10 +163,6 @@ export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
-export const SUBMIT_REVIEW_REQUEST = 'app/BookingsPage/SUBMIT_REVIEW_REQUEST';
-export const SUBMIT_REVIEW_SUCCESS = 'app/BookingsPage/SUBMIT_REVIEW_SUCCESS';
-export const SUBMIT_REVIEW_ERROR = 'app/BookingsPage/SUBMIT_REVIEW_ERROR';
-
 // ================ Reducer ================ //
 
 const initialState = {
@@ -190,9 +186,6 @@ const initialState = {
   declineBookingError: null,
   declineBookingInProgress: false,
   declineBookingSuccess: false,
-  submitReviewInProgress: false,
-  submitReviewError: null,
-  reviewSubmitted: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -322,14 +315,6 @@ export const declineBookingError = e => ({
   payload: e,
 });
 
-export const submitReviewRequest = () => ({ type: SUBMIT_REVIEW_REQUEST });
-export const submitReviewSuccess = () => ({ type: SUBMIT_REVIEW_SUCCESS });
-export const submitReviewError = e => ({
-  type: SUBMIT_REVIEW_ERROR,
-  error: true,
-  payload: e,
-});
-
 /* ================ Thunks ================ */
 
 export const fetchBookings = () => async (dispatch, getState, sdk) => {
@@ -444,6 +429,10 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
   const transition = cancelBookingTransitions[userType][bookingState];
 
   try {
+    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
+      throw new Error('Missing payment intent id');
+    }
+
     if (paymentIntentId && refundAmount > 0) {
       const applicationFeeRefund = parseInt(
         (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
@@ -482,10 +471,6 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
           refundItems: [],
         },
       });
-    }
-
-    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
-      throw new Error('Missing payment intent id');
     }
 
     // Create new booking end so cancel-active goes to delivered after transitioning
@@ -613,26 +598,6 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });
     dispatch(declineBookingError(storableError(e)));
-  }
-};
-
-export const submitReview = (tx, reviewRating, reviewContent) => async (
-  dispatch,
-  getState,
-  sdk
-) => {
-  dispatch(submitReviewRequest());
-
-  const txId = tx.id.uuid;
-  const params = { reviewRating, reviewContent };
-
-  try {
-    await sdk.transactions.transition({ id: txId, transition: TRANSITION_REVIEW, params });
-
-    dispatch(submitReviewSuccess());
-  } catch (e) {
-    log.error(e, 'review-submission-failed', { txId });
-    dispatch(submitReviewError(storableError(e)));
   }
 };
 

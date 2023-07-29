@@ -24,7 +24,6 @@ import {
   disputeBooking,
   fetchBookings,
   setInitialState,
-  submitReview,
 } from './BookingsPage.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
@@ -62,10 +61,6 @@ const BookingsPage = props => {
     onFetchBookings,
     onResetInitialState,
     currentUserListing,
-    onSubmitReview,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
     onFetchCurrentUserListing,
     history,
   } = props;
@@ -125,10 +120,6 @@ const BookingsPage = props => {
     onFetchBookings,
     onResetInitialState,
     bookedDates,
-    onSubmitReview,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
     onFetchCurrentUserListing,
   };
 
@@ -221,9 +212,6 @@ const mapStateToProps = state => {
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
   } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -246,9 +234,6 @@ const mapStateToProps = state => {
     declineBookingInProgress,
     declineBookingSuccess,
     currentUserListing,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
   };
 };
 
@@ -260,7 +245,6 @@ const mapDispatchToProps = {
   onDeclineBooking: declineBooking,
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
-  onSubmitReview: submitReview,
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
 };
 

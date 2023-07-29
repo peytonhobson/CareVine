@@ -1,0 +1,65 @@
+@import '../../styles/customMediaQueries.css';
+
+.sectionReviews {
+  padding: 0 24px;
+  margin-bottom: 5px;
+  max-width: 30rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    width: 20rem;
+    max-width: auto;
+  }
+  @media (--viewportLarge) {
+    margin-bottom: 3px;
+  }
+}
+
+.reviewsHeading {
+  composes: h3 from global;
+  color: var(--matterColorAnti);
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: 3rem;
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.seeMoreButton {
+  composes: marketplaceTinyFontStyles from global;
+  margin-left: 1rem;
+}
+
+.allReviews {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: 2rem;
+}
+
+.writeReviewButton {
+  composes: marketplaceTinyFontStyles from global;
+  width: auto;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  min-height: 0;
+  margin-inline: auto;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+
+  padding-top: 5rem;
+  background-color: var(--matterColorBright);
+
+  @media (--viewportMedium) {
+    padding-top: 3rem;
+  }
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  text-align: center;
+}
