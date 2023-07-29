@@ -22,7 +22,6 @@ const SectionReviews = props => {
     onSubmitReview,
     onFetchReviews,
     currentUser,
-    providerId,
   } = props;
 
   const [isAllReviewsModalOpen, setIsAllReviewsModalOpen] = useState(false);
@@ -46,7 +45,7 @@ const SectionReviews = props => {
   );
 
   const pendingReviews = currentUser?.attributes.profile.metadata.pendingReviews || [];
-  const canWriteReview = pendingReviews.includes(providerId);
+  const canWriteReview = pendingReviews.includes(listingId);
 
   const previewReview = reviews?.length > 0 ? reviews[0] : null;
   const shortenedReviews = previewReview
@@ -75,10 +74,7 @@ const SectionReviews = props => {
       {fetchReviewsError ? reviewsError : null}
       <Reviews reviews={shortenedReviews} />
       {canWriteReview ? (
-        <PrimaryButton
-          className={css.writeReviewButton}
-          onClick={() => setIsAllReviewsModalOpen(true)}
-        >
+        <PrimaryButton className={css.writeReviewButton} onClick={() => setIsReviewModalOpen(true)}>
           Write a Review
         </PrimaryButton>
       ) : null}
@@ -100,7 +96,7 @@ const SectionReviews = props => {
       <ReviewModal
         id={`ReviewBookingModal`}
         isOpen={isReviewModalOpen}
-        onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
+        onCloseModal={() => setIsReviewModalOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         onSubmitReview={handleReviewSubmit}
         revieweeName={providerDisplayName}

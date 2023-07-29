@@ -249,18 +249,6 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
     case DECLINE_BOOKING_ERROR:
       return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
-    case SUBMIT_REVIEW_REQUEST:
-      return {
-        ...state,
-        submitReviewInProgress: true,
-        submitReviewError: null,
-        reviewSubmitted: false,
-      };
-    case SUBMIT_REVIEW_SUCCESS:
-      return { ...state, submitReviewInProgress: false, reviewSubmitted: true };
-    case SUBMIT_REVIEW_ERROR:
-      return { ...state, submitReviewInProgress: false, submitReviewError: payload };
-
     default:
       return state;
   }
