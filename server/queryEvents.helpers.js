@@ -653,8 +653,8 @@ const makeReviewable = async transaction => {
     const pendingReviews = customer.attributes.profile.metadata.pendingReviews ?? [];
 
     const transactionResponse = await integrationSdk.transactions.query({
-      customerId: transaction.relationships.customer.data.id.uuid,
-      providerId: transaction.relationships.provider.data.id.uuid,
+      customerId,
+      providerId,
       include: ['reviews'],
     });
 
@@ -662,12 +662,12 @@ const makeReviewable = async transaction => {
       tx => tx.relationships.reviews.data.length > 0
     );
 
-    if (pendingReviews.includes(providerId) || reviews.length !== 0) return;
+    if (pendingReviews.includes(listingId) || reviews.length !== 0) return;
 
     await integrationSdk.users.updateProfile({
       id: customerId,
-      privateData: {
-        pendingReviews: [...pendingReviews, providerId],
+      metadata: {
+        pendingReviews: [...pendingReviews, listingId],
       },
     });
 
@@ -695,6 +695,73 @@ const makeReviewable = async transaction => {
   }
 };
 
+const addTimeToStartOfDay = (day, time) => {
+  const hours = moment(time, ['h:mm A']).format('HH');
+  return moment(day)
+    .add(hours, 'hours')
+    .toDate();
+};
+
+const updateBookingLedger = async transaction => {
+  const txId = transaction.id.uuid;
+
+  const {
+    lineItems,
+    paymentMethodType,
+    bookingRate,
+    paymentMethodId,
+    paymentIntentId,
+    refundAmount,
+  } = transaction.attributes.metadata;
+
+  const amount = parseFloat(
+    lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
+  ).toFixed(2);
+  const bookingFee = parseInt(Math.round(amount * 0.05));
+  const processingFee =
+    paymentMethodType === 'Bank Account'
+      ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
+      : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
+
+  try {
+    const transactionResponse = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['booking'],
+    });
+
+    const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
+
+    const booking = transactionResponse.data.data.relationships.booking.data;
+    const bookingEnd = booking.attributes.end;
+
+    const ledgerEntry = {
+      bookingRate,
+      paymentMethodId,
+      paymentMethodType,
+      bookingFee,
+      processingFee,
+      paymentIntentId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
+        2
+      ),
+      payout: parseFloat(amount).toFixed(2),
+      refundAmount,
+      start: lineItems?.[0]
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime)
+        : null,
+      end: bookingEnd,
+    };
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        ledger: [...bookingLedger, ledgerEntry],
+      },
+    });
+  } catch (e) {
+    log.error(e, 'update-booking-ledger-failed', {});
+  }
+};
+
 module.exports = {
   updateUserListingApproved,
   approveListingNotification,
@@ -713,4 +780,5 @@ module.exports = {
   generateBookingNumber,
   updateBookingEnd,
   makeReviewable,
+  updateBookingLedger,
 };

@@ -5,6 +5,7 @@ import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import config from '../../config';
 import { denormalisedResponseEntities } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { updateUser } from '../../util/api';
 
 const { UUID } = sdkTypes;
 
@@ -109,6 +110,18 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
   } catch (e) {
     log.error(e, 'review-submission-failed', { txId });
     dispatch(submitReviewError(storableError(e)));
+  }
+
+  try {
+    const userId = getState().user.currentUser.id.uuid;
+    const pendingReviews =
+      getState().user.currentUser.attributes.profile.metadata.pendingReviews ?? [];
+
+    const newPendingReviews = pendingReviews.filter(id => id !== listingId);
+
+    await updateUser({ userId, metadata: { pendingReviews: newPendingReviews } });
+  } catch (e) {
+    log.error(e, 'update-user-pending-reviews-failed', { userId });
   }
 };
 

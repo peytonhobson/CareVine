@@ -113,7 +113,14 @@ const EmployerBookingCard = props => {
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const listing = booking?.listing;
-  const isComplete = lastTransition === TRANSITION_COMPLETE;
+
+  const bookingLedger = booking?.attributes.metadata.ledger ?? [];
+
+  const isDisputable =
+    bookingLedger.length > 0 &&
+    bookingLedger[bookingLedger.length - 1].end &&
+    Date.now() - bookingLedger[bookingLedger.length - 1].end < 48 * 36e5;
+
   const disputeInReview = lastTransition === TRANSITION_DISPUTE;
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
@@ -151,7 +158,7 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
-          {isComplete && (
+          {isDisputable && (
             <Button
               className={css.changeButton}
               onClick={() => handleModalOpen(setIsDisputeModalOpen)}

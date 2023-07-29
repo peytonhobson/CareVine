@@ -28,6 +28,7 @@ module.exports = queryEvents = () => {
     generateBookingNumber,
     updateBookingEnd,
     makeReviewable,
+    updateBookingLedger,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -290,6 +291,7 @@ module.exports = queryEvents = () => {
       ) {
         makeReviewable(transaction);
         createCaregiverPayout(transaction);
+        updateBookingLedger(transaction);
       }
     }
 

@@ -229,11 +229,7 @@ const ListingSummaryComponent = props => {
           </div>
         </div>
         {userType === CAREGIVER ? (
-          <SectionReviews
-            providerDisplayName={displayName}
-            listingId={listing?.id.uuid}
-            providerId={author?.id.uuid}
-          />
+          <SectionReviews providerDisplayName={displayName} listingId={listing?.id.uuid} />
         ) : null}
       </div>
       {!isOwnListing ? (
