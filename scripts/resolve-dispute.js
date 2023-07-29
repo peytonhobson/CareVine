@@ -23,7 +23,7 @@ const dryRun = process.argv[4] === '--dry';
 
 const main = async () => {
   try {
-    const tx = await integrationSdk.transactions.show({ id: txId });
+    const tx = await integrationSdk.transactions.show({ id: txId, include: ['provider'] });
 
     if (tx.data.data.attributes.lastTransition !== 'transition/dispute') {
       console.log('Transaction is not in dispute state');
@@ -51,10 +51,24 @@ const main = async () => {
         },
       });
 
-      await integrationSdk.transactions.transition({
-        id: txId,
-        transition: 'transition/resolve-dispute',
-        params: {},
+      const provider = tx.data.data.relationships.provider.data;
+
+      const pendingPayouts = provider.attributes.profile.metadata.pendingPayouts ?? [];
+      const newPendingPayouts = pendingPayouts.map(payout => {
+        if (payout.txId === bookingId) {
+          return {
+            ...payout,
+            openDispute: false,
+          };
+        }
+        return payout;
+      });
+
+      await integrationSdk.users.updateProfile({
+        id: tx.data.data.relationships.provider.data.id.uuid,
+        metadata: {
+          pendingPayouts: newPendingPayouts,
+        },
       });
 
       console.log('Refund successful');

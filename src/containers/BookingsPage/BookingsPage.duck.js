@@ -30,6 +30,7 @@ import {
   updateTransactionMetadata,
   sendgridStandardEmail,
   updateListingMetadata,
+  sendgridTemplateEmail,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
@@ -41,16 +42,7 @@ const upcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE
 
 const activeBookingTransitions = [TRANSITION_START, TRANSITION_START_UPDATE_TIMES];
 
-const pastBookingTransitions = [
-  TRANSITION_COMPLETE,
-  TRANSITION_COMPLETE_CANCELED,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_MAKE_REVIEWABLE,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
-  TRANSITION_REVIEW,
-];
+const pastBookingTransitions = [TRANSITION_COMPLETE, TRANSITION_COMPLETE_CANCELED];
 
 const cancelBookingTransitions = {
   employer: {
@@ -341,14 +333,10 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
         TRANSITION_START_UPDATE_TIMES,
         TRANSITION_COMPLETE,
         TRANSITION_COMPLETE_CANCELED,
-        TRANSITION_DISPUTE,
-        TRANSITION_RESOLVE_DISPUTE,
-        TRANSITION_PAY_CAREGIVER,
-        TRANSITION_MAKE_REVIEWABLE,
-        TRANSITION_EXPIRE_REVIEW_PERIOD,
-        TRANSITION_REVIEW,
       ],
     });
+
+    console.log(response);
 
     const denormalizedBookings = denormalisedResponseEntities(response);
 
@@ -513,13 +501,54 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
   dispatch(disputeBookingRequest());
 
   const bookingId = booking.id.uuid;
+  const bookingLedger = booking.attributes.metadata.ledger ?? [];
+  const latestLedger = bookingLedger.length > 0 ? bookingLedger[bookingLedger.length - 1] : null;
+
+  if (!latestLedger) return;
+
+  const newBookingLegder = bookingLedger.map((ledger, index) => {
+    if (index === bookingLedger.length - 1) {
+      return {
+        ...latestLedger,
+        dispute: { date: Date.now(), disputeReason },
+      };
+    }
+    return ledger;
+  });
 
   try {
     await updateTransactionMetadata({
       txId: bookingId,
-      metadata: { disputeReason },
+      metadata: { ledger: newBookingLegder },
     });
 
+    const pendingPayouts = booking.provider.attributes.profile.metadata.pendingPayouts ?? [];
+
+    const newPendingPayouts = pendingPayouts.map(payout => {
+      if (payout.txId === bookingId) {
+        return {
+          ...payout,
+          openDispute: true,
+        };
+      }
+      return payout;
+    });
+
+    await updateUser({
+      userId: booking.provider.id.uuid,
+      privateData: {
+        pendingPayouts: newPendingPayouts,
+      },
+    });
+
+    dispatch(disputeBookingSuccess());
+    return booking;
+  } catch (e) {
+    log.error(e, 'dispute-booking-failed', { bookingId });
+    dispatch(disputeBookingError(storableError(e)));
+  }
+
+  try {
     await sendgridStandardEmail({
       fromEmail: 'admin-notification@carevine-mail.us',
       receiverEmail: 'peyton.hobson@carevine.us',
@@ -528,17 +557,26 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       txId: ${bookingId}<br>`,
     });
 
-    await sdk.transactions.transition({
-      id: bookingId,
-      transition: TRANSITION_DISPUTE,
-      params: {},
+    await sendgridTemplateEmail({
+      receiverId: booking.customer.id.uuid,
+      templateData: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        providerName: booking.provider.attributes.profile.displayName,
+        bookingId: bookingId,
+      },
+      templateName: 'dispute-in-review',
     });
 
-    dispatch(disputeBookingSuccess());
-    return booking;
+    await sendgridTemplateEmail({
+      receiverId: booking.provider.id.uuid,
+      templateData: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        customerName: booking.customer.attributes.profile.displayName,
+      },
+      templateName: 'customer-disputed',
+    });
   } catch (e) {
-    log.error(e, 'dispute-booking-failed', { bookingId });
-    dispatch(disputeBookingError(storableError(e)));
+    log.error(e, 'dispute-booking-emails-failed', { bookingId });
   }
 };
 
