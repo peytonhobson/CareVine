@@ -731,7 +731,7 @@ const updateBookingLedger = async transaction => {
 
     const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
 
-    const booking = transactionResponse.data.data.relationships.booking.data;
+    const booking = transactionResponse.data.data.included.find(i => i.type === 'booking');
     const bookingEnd = booking.attributes.end;
 
     const ledgerEntry = {
