@@ -81,8 +81,8 @@
    :actions
    [{:name :action/privileged-update-metadata}],
     :actor :actor.role/operator,
-   :from :state/charge,
-   :to :state/charge,
+   :from :state/charged,
+   :to :state/charged,
    :privileged? true}
    {:name :transition/cancel-charged-booking-customer,
    :actions
