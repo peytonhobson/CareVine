@@ -509,50 +509,38 @@ const createBookingPayment = async transaction => {
 };
 
 const createCaregiverPayout = async transaction => {
-  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
+  const { lineItems, paymentIntentId } = transaction.attributes.metadata;
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
   if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
-    const balance = await stripe.balance.retrieve({
-      stripeAccount: stripeAccountId,
+    const providerId = transaction.relationships.provider.data.id.uuid;
+
+    const providerResponse = await integrationSdk.users.show({
+      id: providerId,
     });
+    const provider = providerResponse.data.data;
 
-    const availableBalance = balance.available?.[0]?.amount;
+    const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
 
-    if (availableBalance > amount) {
-      await stripe.payouts.create(
-        {
-          amount,
-          currency: 'usd',
-        },
-        {
-          stripeAccount: stripeAccountId,
-        }
-      );
-    } else {
-      const providerId = transaction.relationships.provider.data.id.uuid;
-
-      const providerResponse = await integrationSdk.users.show({
-        id: providerId,
-      });
-      const provider = providerResponse.data.data;
-
-      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
-
-      await integrationSdk.users.updateProfile({
-        id: providerId,
-        privateData: {
-          hasPendingPayout: true,
-          pendingPayouts: [
-            ...pendingPayouts,
-            { amount, paymentIntentId, date: new Date().toISOString() },
-          ],
-        },
-      });
-    }
+    await integrationSdk.users.updateProfile({
+      id: providerId,
+      privateData: {
+        hasPendingPayout: true,
+        pendingPayouts: [
+          ...pendingPayouts,
+          {
+            amount,
+            paymentIntentId,
+            date: new Date().toISOString(),
+            openDispute: false,
+            txId: transaction.id.uuid,
+          },
+        ],
+      },
+    });
   } catch (e) {
     log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
   }
@@ -652,9 +640,18 @@ const updateBookingEnd = async transaction => {
 };
 
 const makeReviewable = async transaction => {
-  const txId = transaction.id.uuid;
+  const customerId = transaction.relationships.customer.data.id.uuid;
+  const providerId = transaction.relationships.provider.data.id.uuid;
+  const listingId = transaction.relationships.listing.data.id.uuid;
 
   try {
+    const customerResponse = await integrationSdk.users.show({
+      id: customerId,
+    });
+
+    const customer = customerResponse.data.data;
+    const pendingReviews = customer.attributes.profile.metadata.pendingReviews ?? [];
+
     const transactionResponse = await integrationSdk.transactions.query({
       customerId: transaction.relationships.customer.data.id.uuid,
       providerId: transaction.relationships.provider.data.id.uuid,
@@ -665,13 +662,34 @@ const makeReviewable = async transaction => {
       tx => tx.relationships.reviews.data.length > 0
     );
 
-    if (reviews.length === 0) {
-      await integrationSdk.transactions.transition({
-        id: txId,
-        transition: 'transition/make-reviewable',
-        params: {},
-      });
-    }
+    if (pendingReviews.includes(providerId) || reviews.length !== 0) return;
+
+    await integrationSdk.users.updateProfile({
+      id: customerId,
+      privateData: {
+        pendingReviews: [...pendingReviews, providerId],
+      },
+    });
+
+    const { providerName } = transaction.attributes.metadata;
+
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: customerId,
+        templateName: 'customer-can-review',
+        templateData: {
+          marketplaceUrl: rootUrl,
+          listingId,
+          providerName,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
   } catch (e) {
     log.error(e, 'make-reviewable-failed', {});
   }

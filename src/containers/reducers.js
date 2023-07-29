@@ -28,6 +28,7 @@ import TopbarContainer from './TopbarContainer/TopbarContainer.duck';
 import TransactionPage from './TransactionPage/TransactionPage.duck';
 import UserTypePage from './UserTypePage/UserTypePage.duck';
 import StripePayoutModal from './StripePayoutModal/StripePayoutModal.duck';
+import SectionReviews from './SectionReviews/SectionReviews.duck';
 
 export {
   BookingsPage,
@@ -55,4 +56,5 @@ export {
   TransactionPage,
   UserTypePage,
   StripePayoutModal,
+  SectionReviews,
 };
