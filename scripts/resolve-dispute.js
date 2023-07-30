@@ -51,6 +51,8 @@ const main = async () => {
         },
       });
 
+      const newAmount = newLineItems.reduce((acc, item) => acc + item.amount, 0);
+
       const provider = tx.data.data.relationships.provider.data;
 
       const pendingPayouts = provider.attributes.profile.metadata.pendingPayouts ?? [];
@@ -59,6 +61,7 @@ const main = async () => {
           return {
             ...payout,
             openDispute: false,
+            amount: newAmount,
           };
         }
         return payout;

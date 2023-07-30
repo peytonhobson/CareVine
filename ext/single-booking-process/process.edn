@@ -33,9 +33,10 @@
   {:name :transition/accept,
    :actor :actor.role/provider,
    :actions
-   [{:name :action/accept-booking}],
+   [{:name :action/accept-booking}, {:name :action/privileged-update-metadata}],
    :from :state/booking-requested,
-   :to :state/accepted}
+   :to :state/accepted,
+   :privileged? true}
 
    {:name :transition/cancel-accepted-booking-customer,
    :actions

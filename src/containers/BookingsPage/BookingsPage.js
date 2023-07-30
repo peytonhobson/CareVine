@@ -123,8 +123,6 @@ const BookingsPage = props => {
     onFetchCurrentUserListing,
   };
 
-  console.log(bookings);
-
   const tabs = [
     {
       text: 'Requests',

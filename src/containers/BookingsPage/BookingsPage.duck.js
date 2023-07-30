@@ -31,6 +31,7 @@ import {
   sendgridStandardEmail,
   updateListingMetadata,
   sendgridTemplateEmail,
+  transitionPrivileged,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
@@ -336,8 +337,6 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
       ],
     });
 
-    console.log(response);
-
     const denormalizedBookings = denormalisedResponseEntities(response);
 
     const sortedBookings = {
@@ -580,6 +579,30 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
   }
 };
 
+const generateBookingNumber = async (transaction, sdk) => {
+  const listingId = transaction.listing.id?.uuid;
+
+  try {
+    const fullListingResponse = await sdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    return { bookingNumber, bookingNumbers };
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
+  }
+};
+
 export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
   dispatch(acceptBookingRequest());
 
@@ -587,17 +610,28 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
   const listingId = transaction.listing.id.uuid;
 
   try {
-    await sdk.transactions.transition({
-      id: txId,
-      transition: TRANSITION_ACCEPT_BOOKING,
-      params: {},
+    const { bookingNumber, bookingNumbers } = await generateBookingNumber(transaction, sdk);
+
+    await transitionPrivileged({
+      bodyParams: {
+        id: txId,
+        transition: TRANSITION_ACCEPT_BOOKING,
+        params: {
+          metadata: {
+            bookingNumber,
+          },
+        },
+      },
     });
 
     const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
     const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
     const newBookedDates = [...bookedDates, ...bookingDates];
 
-    await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
+    await updateListingMetadata({
+      listingId,
+      metadata: { bookedDates: newBookedDates, bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
 
     dispatch(acceptBookingSuccess());
     return;

@@ -20,7 +20,11 @@ import {
 } from './NotificationTemplates';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { transitionTransaction, fetchTransaction } from '../../ducks/transactions.duck';
+import {
+  transitionTransaction,
+  fetchTransaction,
+  acceptBooking,
+} from '../../ducks/transactions.duck';
 
 import css from './NotificationsPage.module.css';
 
@@ -44,6 +48,9 @@ const NotificationContainer = props => {
     fetchTransactionError,
     fetchTransactionInProgress,
     onFetchTransaction,
+    acceptBookingInProgress,
+    acceptBookingError,
+    onAcceptBooking,
   } = props;
 
   let notificationTemplate = null;
@@ -95,6 +102,9 @@ const NotificationContainer = props => {
           fetchTransactionError={fetchTransactionError}
           fetchTransactionInProgress={fetchTransactionInProgress}
           onFetchTransaction={onFetchTransaction}
+          acceptBookingInProgress={acceptBookingInProgress}
+          acceptBookingError={acceptBookingError}
+          onAcceptBooking={onAcceptBooking}
         />
       );
       break;
@@ -124,6 +134,8 @@ const mapStateToProps = state => {
     currentTransaction,
     fetchTransactionError,
     fetchTransactionInProgress,
+    acceptBookingInProgress,
+    acceptBookingError,
   } = state.transactions;
 
   return {
@@ -132,12 +144,15 @@ const mapStateToProps = state => {
     currentTransaction,
     fetchTransactionError,
     fetchTransactionInProgress,
+    acceptBookingInProgress,
+    acceptBookingError,
   };
 };
 
 const mapDispatchToProps = {
   onTransitionTransaction: transitionTransaction,
   onFetchTransaction: fetchTransaction,
+  onAcceptBooking: acceptBooking,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationContainer);

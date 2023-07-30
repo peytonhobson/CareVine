@@ -121,7 +121,7 @@ const EmployerBookingCard = props => {
   const isDisputable =
     bookingLedger.length > 0 &&
     bookingLedger[bookingLedger.length - 1].end &&
-    Date.now() - bookingLedger[bookingLedger.length - 1].end < 48 * 36e5 &&
+    Date.now() - new Date(bookingLedger[bookingLedger.length - 1].end) < 48 * 36e5 &&
     !hasCurrentDispute;
 
   const disputeInReview = lastTransition === TRANSITION_DISPUTE;
