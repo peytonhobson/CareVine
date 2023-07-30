@@ -509,7 +509,7 @@ const createBookingPayment = async transaction => {
 };
 
 const createCaregiverPayout = async transaction => {
-  const { lineItems, paymentIntentId } = transaction.attributes.metadata;
+  const { lineItems, paymentIntentId, stripeAccountId } = transaction.attributes.metadata;
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
@@ -542,43 +542,7 @@ const createCaregiverPayout = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
-  }
-};
-
-const generateBookingNumber = async transaction => {
-  const txId = transaction.id.uuid;
-  const { listing } = transaction.relationships;
-  const listingId = listing.data.id?.uuid;
-
-  try {
-    const fullListingResponse = await integrationSdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
-    await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata: {
-        bookingNumber,
-      },
-    });
-  } catch (e) {
-    log.error(e, 'generate-booking-number-failed', {});
+    log.error(e, 'create-caregiver-payout-failed', { providerId });
   }
 };
 
@@ -730,8 +694,7 @@ const updateBookingLedger = async transaction => {
     });
 
     const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
-
-    const booking = transactionResponse.data.data.included.find(i => i.type === 'booking');
+    const booking = transactionResponse.data.included.find(i => i.type === 'booking');
     const bookingEnd = booking.attributes.end;
 
     const ledgerEntry = {
@@ -745,12 +708,18 @@ const updateBookingLedger = async transaction => {
         2
       ),
       payout: parseFloat(amount).toFixed(2),
-      refundAmount,
+      refundAmount: refundAmount ? refundAmount : null,
       start: lineItems?.[0]
-        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime)
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
         : null,
       end: bookingEnd,
     };
+
+    console.log('bookingEnd ', bookingEnd);
+    console.log('request input', {
+      ledger: [...bookingLedger, ledgerEntry],
+    });
+
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
@@ -758,7 +727,7 @@ const updateBookingLedger = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'update-booking-ledger-failed', {});
+    log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
   }
 };
 
@@ -777,7 +746,6 @@ module.exports = {
   closeListingNotification,
   createBookingPayment,
   createCaregiverPayout,
-  generateBookingNumber,
   updateBookingEnd,
   makeReviewable,
   updateBookingLedger,

@@ -25,7 +25,6 @@ module.exports = queryEvents = () => {
     closeListingNotification,
     createBookingPayment,
     createCaregiverPayout,
-    generateBookingNumber,
     updateBookingEnd,
     makeReviewable,
     updateBookingLedger,
@@ -277,12 +276,15 @@ module.exports = queryEvents = () => {
         updateBookingEnd(transaction);
       }
 
-      if (lastTransition === 'transition/accept') {
-        generateBookingNumber(transaction);
-      }
-
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
+      }
+
+      if (
+        lastTransition === 'transition/cancel-charged-booking-provider' ||
+        lastTransition === 'transition/cancel-charged-booking-customer'
+      ) {
+        createCaregiverPayout(transaction);
       }
 
       if (

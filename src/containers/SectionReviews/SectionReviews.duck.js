@@ -6,6 +6,7 @@ import config from '../../config';
 import { denormalisedResponseEntities } from '../../util/data';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { updateUser } from '../../util/api';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 const { UUID } = sdkTypes;
 
@@ -120,6 +121,8 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
     const newPendingReviews = pendingReviews.filter(id => id !== listingId);
 
     await updateUser({ userId, metadata: { pendingReviews: newPendingReviews } });
+
+    dispatch(fetchCurrentUser());
   } catch (e) {
     log.error(e, 'update-user-pending-reviews-failed', { userId });
   }
