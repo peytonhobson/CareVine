@@ -6,11 +6,6 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_DECLINE_BOOKING,
   TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_REVIEW,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER,
@@ -22,7 +17,6 @@ import {
   TRANSITION_START,
   TRANSITION_CHARGE,
   TRANSITION_START_UPDATE_TIMES,
-  TRANSITION_MAKE_REVIEWABLE,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -32,6 +26,7 @@ import {
   updateListingMetadata,
   sendgridTemplateEmail,
   transitionPrivileged,
+  updateUser,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
@@ -521,7 +516,7 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       metadata: { ledger: newBookingLegder },
     });
 
-    const pendingPayouts = booking.provider.attributes.profile.metadata.pendingPayouts ?? [];
+    const pendingPayouts = booking.provider.attributes.profile.privateData.pendingPayouts ?? [];
 
     const newPendingPayouts = pendingPayouts.map(payout => {
       if (payout.txId === bookingId) {
@@ -541,7 +536,6 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
     });
 
     dispatch(disputeBookingSuccess());
-    return booking;
   } catch (e) {
     log.error(e, 'dispute-booking-failed', { bookingId });
     dispatch(disputeBookingError(storableError(e)));
