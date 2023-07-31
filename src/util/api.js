@@ -320,3 +320,7 @@ export const updateNotificationMetadata = body => {
 export const stripeCreateRefund = body => {
   return post('/api/stripe-create-refund', body);
 };
+
+export const updatePendingPayouts = body => {
+  return post('/api/update-pending-payouts', body);
+};
