@@ -24,7 +24,6 @@ const dryRun = process.argv[4] === '--dry';
 const main = async () => {
   try {
     const tx = await integrationSdk.transactions.show({ id: txId, include: ['provider'] });
-    const txId = tx.data.data.id.uuid;
 
     const providerId = tx.data.data.relationships.provider.data.id.uuid;
 
@@ -61,21 +60,14 @@ const main = async () => {
         reverse_transfer: true,
       });
 
-      await integrationSdk.transactions.updateMetadata({
-        id: txId,
-        metadata: {
-          lineItems: newLineItems,
-        },
-      });
-
-      const newAmount = newLineItems.reduce((acc, item) => acc + item.amount, 0);
+      const newAmount = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
       const newPendingPayouts = pendingPayouts.map(payout => {
         if (payout.txId === txId) {
           return {
             ...payout,
             openDispute: false,
-            amount: newAmount,
+            amount: newAmount * 100,
           };
         }
         return payout;
@@ -83,7 +75,7 @@ const main = async () => {
 
       await integrationSdk.users.updateProfile({
         id: provider.id.uuid,
-        metadata: {
+        privateData: {
           pendingPayouts: newPendingPayouts,
         },
       });
