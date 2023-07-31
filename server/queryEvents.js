@@ -26,6 +26,7 @@ module.exports = queryEvents = () => {
     createBookingPayment,
     createCaregiverPayout,
     updateBookingEnd,
+    updateNextWeekStart,
     makeReviewable,
     triggerNextBooking,
     updateBookingLedger,
@@ -273,6 +274,7 @@ module.exports = queryEvents = () => {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
       const metadata = transaction.attributes.metadata;
+      const hasNextBooking = metadata.bookingSchedule && !metadata.cancelAtPeriodEnd;
 
       if (lastTransition === 'transition/start') {
         updateBookingEnd(transaction);
@@ -300,6 +302,10 @@ module.exports = queryEvents = () => {
         makeReviewable(transaction);
         createCaregiverPayout(transaction);
         updateBookingLedger(transaction);
+      }
+
+      if (lastTransition === 'transition/complete') {
+        updateNextWeekStart(transaction);
       }
     }
 

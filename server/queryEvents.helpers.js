@@ -617,7 +617,7 @@ const findStartTimeFromLineItems = lineItems => {
   return startTime;
 };
 
-const updateBookingStart = async transaction => {
+const updateNextWeekStart = async transaction => {
   const { lineItems } = transaction.attributes.metadata;
 
   const bookingStart = findStartTimeFromLineItems(lineItems);
@@ -935,6 +935,7 @@ module.exports = {
   createBookingPayment,
   createCaregiverPayout,
   updateBookingEnd,
+  updateNextWeekStart,
   makeReviewable,
   triggerNextBooking,
   updateBookingLedger,
