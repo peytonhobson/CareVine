@@ -147,7 +147,6 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     log.error(e, 'initiate-order-failed', {
       listingId: orderParams.listingId.uuid,
     });
-    throw e;
   };
 
   const notificationId = uuidv4();
@@ -158,8 +157,10 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     isRead: false,
   };
 
+  let transactionResponse;
+
   try {
-    const response = await initiateTransaction({
+    transactionResponse = await initiateTransaction({
       bodyParams: {
         ...bodyParams,
         params: { ...orderParams, metadata: { notificationId, ...metadata } },
@@ -167,20 +168,24 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
       queryParams,
     });
 
+    handleSuccess(transactionResponse);
+  } catch (e) {
+    handleError(e);
+  }
+
+  try {
     await updateUserNotifications({
       userId: listing.author.id.uuid,
       newNotification: {
         ...newNotification,
         metadata: {
-          txId: response.data.data.id.uuid,
+          txId: transactionResponse.data.data.id.uuid,
           senderName: currentUserDisplayName,
         },
       },
     });
-
-    return handleSuccess(response);
   } catch (e) {
-    return handleError(e);
+    log.error(e, 'failed-to-send-request-notification', {});
   }
 };
 

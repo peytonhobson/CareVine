@@ -128,7 +128,7 @@ const CaregiverBookingCard = props => {
     () =>
       bookedDates?.some(date =>
         lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
-      ),
+      ) && !(acceptBookingSuccess || acceptBookingInProgress),
     [bookedDates, lineItems]
   );
 
@@ -157,9 +157,13 @@ const CaregiverBookingCard = props => {
           <Avatar user={customer} className={css.avatar} />
           <div>
             {isMobile ? (
-              <h3 style={{ margin: 0 }}>{senderListingTitle}</h3>
+              <h3 style={{ margin: 0 }}>
+                {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
+              </h3>
             ) : (
-              <h2 style={{ margin: 0 }}>{senderListingTitle}</h2>
+              <h2 style={{ margin: 0 }}>
+                {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
+              </h2>
             )}
           </div>
         </div>
