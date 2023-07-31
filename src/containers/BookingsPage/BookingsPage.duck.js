@@ -27,6 +27,7 @@ import {
   sendgridTemplateEmail,
   transitionPrivileged,
   updateUser,
+  updatePendingPayouts,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
@@ -516,23 +517,10 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       metadata: { ledger: newBookingLegder },
     });
 
-    const pendingPayouts = booking.provider.attributes.profile.privateData.pendingPayouts ?? [];
-
-    const newPendingPayouts = pendingPayouts.map(payout => {
-      if (payout.txId === bookingId) {
-        return {
-          ...payout,
-          openDispute: true,
-        };
-      }
-      return payout;
-    });
-
-    await updateUser({
+    await updatePendingPayouts({
       userId: booking.provider.id.uuid,
-      privateData: {
-        pendingPayouts: newPendingPayouts,
-      },
+      params: { openDispute: true },
+      txId: bookingId,
     });
 
     dispatch(disputeBookingSuccess());
