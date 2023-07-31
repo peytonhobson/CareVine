@@ -21,13 +21,17 @@ const defaultLocations = [
     },
   },
   {
-    id: 'default-seattle',
+    id: 'default-portland',
     predictionPlace: {
-      address: 'Seattle, Washington',
-      origin: { _sdkType: 'LatLng', lat: 47.603832, lng: -122.330062 },
+      address: 'Portland, Oregon',
+      origin: {
+        _sdkType: 'LatLng',
+        lat: 45.520247,
+        lng: -122.674195,
+      },
       bounds: new LatLngBounds(
-        new LatLng(47.7779392908564, -122.216605992108),
-        new LatLng(47.3403950185547, -122.441233019046)
+        new LatLng(45.858097, -122.453655),
+        new LatLng(45.424089, -122.919769)
       ),
     },
   },

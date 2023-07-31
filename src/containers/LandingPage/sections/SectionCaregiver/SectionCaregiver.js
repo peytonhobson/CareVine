@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { NamedLink } from '../../../../components';
-import tempImg from '../../../../assets/Magnify-BG.png';
+import caregiverImg from '../../../../assets/LandingPage-Caregiver.jpg';
 
 import css from './SectionCaregiver.module.css';
 
@@ -28,7 +28,7 @@ const SectionCaregiver = () => {
           </div>
         </div>
         <div className={css.caregiverSectionImageContainer}>
-          <img src={tempImg} className={css.caregiverSectionImage} />
+          <img src={caregiverImg} className={css.caregiverSectionImage} />
         </div>
       </div>
     </section>

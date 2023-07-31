@@ -54,16 +54,10 @@
   overflow-x: scroll;
   margin-top: 2rem;
   position: relative;
-  padding: 2rem 0 6rem 0;
+  padding: 2rem 0 0 0;
   max-width: 85vw;
   margin-inline: auto;
   min-height: 60vh;
-
-  @media (--viewportMedium) {
-    max-width: 100%;
-    justify-content: space-evenly;
-    padding: 1.5rem 0 6rem 0;
-  }
 }
 
 .blogTitle {
@@ -105,7 +99,6 @@
 
 .blogSection {
   background-color: #c6d9c6;
-  margin-bottom: 6rem;
   padding: 2rem 0;
 
   @media (--viewportMedium) {

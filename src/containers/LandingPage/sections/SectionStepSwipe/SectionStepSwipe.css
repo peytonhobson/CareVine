@@ -19,14 +19,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 35rem;
+  height: 37rem;
   max-width: calc(100vw - 4rem);
-  padding: 3rem 0;
+  padding: 0;
 
   @media (--viewportMedium) {
     max-width: auto;
     height: 30rem;
-    padding: 0;
   }
 
   @media (--viewportLarge) {
@@ -145,13 +144,11 @@
 }
 
 .contentTitle {
-  color: var(--matterColorLight);
   width: 100%;
   text-align: center;
   font-size: 2.5rem;
-  line-height: 2.5rem;
-  margin-top: 3rem;
-  margin-bottom: 0;
+  line-height: 3rem;
+  margin-bottom: 2.5rem;
 
   @media (--viewportMedium) {
     color: var(--matterColor);

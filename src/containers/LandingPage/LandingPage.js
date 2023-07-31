@@ -114,7 +114,7 @@ export const LandingPageComponent = props => {
             <SectionStepSwipe />
             <SectionCaregiver />
             {!isSsr && <SectionBlog />}
-            <SectionCity />
+            {/* <SectionCity /> */}
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
