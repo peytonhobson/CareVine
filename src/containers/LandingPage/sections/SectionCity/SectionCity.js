@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardMedia, CardActionArea } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import tempImg from '../../../../assets/Magnify-BG.png';
+import { NamedLink } from '../../../../components';
 
 import css from './SectionCity.module.css';
 
@@ -42,45 +43,51 @@ const SectionCity = () => {
           Available across the Country
         </h1>
         <div className={css.cityCardContainer}>
-          <Card className={classes.cityCard}>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                image={tempImg}
-                alt="Portland"
-                className={classes.cityImage}
-              />
-              <CardContent>
-                <h2 className={css.cityName}>Portland</h2>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-          <Card className={classes.cityCard}>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                image={tempImg}
-                alt="Miami"
-                className={classes.cityImage}
-              />
-              <CardContent>
-                <h2 className={css.cityName}>Miami</h2>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-          <Card className={classes.cityCard}>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                image={tempImg}
-                alt="Orlando"
-                className={classes.cityImage}
-              />
-              <CardContent>
-                <h2 className={css.cityName}>Orlando</h2>
-              </CardContent>
-            </CardActionArea>
-          </Card>
+          <NamedLink name="SearchPage" className={css.cityCard}>
+            <Card className={classes.cityCard}>
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  image={tempImg}
+                  alt="Portland"
+                  className={classes.cityImage}
+                />
+                <CardContent>
+                  <h2 className={css.cityName}>Portland</h2>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </NamedLink>
+          <NamedLink name="SearchPage" className={css.cityCard}>
+            <Card className={classes.cityCard}>
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  image={tempImg}
+                  alt="Miami"
+                  className={classes.cityImage}
+                />
+                <CardContent>
+                  <h2 className={css.cityName}>Miami</h2>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </NamedLink>
+          <NamedLink name="SearchPage" className={css.cityCard}>
+            <Card className={classes.cityCard}>
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  image={tempImg}
+                  alt="Orlando"
+                  className={classes.cityImage}
+                />
+                <CardContent>
+                  <h2 className={css.cityName}>Orlando</h2>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </NamedLink>
         </div>
       </div>
     </section>
