@@ -127,9 +127,14 @@
 
    {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
    :from :state/active,
+   :to :state/delivered}
+
+   {:name :transition/update-next-week-start,
+    :actor :actor.role/operator,
+    :actions
+    [{:name :action/update-booking :config {:type :time}}]
+   :from :state/delivered,
    :to :state/delivered}
 
   {:name :transition/start-repeat,
