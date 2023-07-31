@@ -59,18 +59,4 @@ const OwnListingLink = props => {
   );
 };
 
-OwnListingLink.defaultProps = {
-  className: null,
-  listing: null,
-  listingFetched: false,
-  children: null,
-};
-
-OwnListingLink.propTypes = {
-  className: string,
-  listing: propTypes.ownListing,
-  listingFetched: bool,
-  children: object,
-};
-
 export default OwnListingLink;

@@ -3,7 +3,7 @@ import { storableError } from '../util/errors';
 import * as log from '../util/log';
 import { types as sdkTypes } from '../util/sdkLoader';
 import { TRANSITION_ACCEPT_BOOKING, TRANSITION_DECLINE_BOOKING } from '../util/transaction';
-import { updateListingMetadata, updateNotificationMetadata } from '../util/api';
+import { updateListingMetadata, transitionPrivileged } from '../util/api';
 import { fetchCurrentUser } from './user.duck';
 import { denormalisedResponseEntities } from '../util/data';
 const { UUID } = sdkTypes;
@@ -27,6 +27,10 @@ export const TRANSITION_TRANSACTION_REQUEST = 'app/transactions/TRANSITION_TRANS
 export const TRANSITION_TRANSACTION_SUCCESS = 'app/transactions/TRANSITION_TRANSACTION_SUCCESS';
 export const TRANSITION_TRANSACTION_ERROR = 'app/transactions/TRANSITION_TRANSACTION_ERROR';
 
+export const ACCEPT_BOOKING_REQUEST = 'app/transactions/ACCEPT_BOOKING_REQUEST';
+export const ACCEPT_BOOKING_SUCCESS = 'app/transactions/ACCEPT_BOOKING_SUCCESS';
+export const ACCEPT_BOOKING_ERROR = 'app/transactions/ACCEPT_BOOKING_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -40,6 +44,8 @@ const initialState = {
   currentTransaction: null,
   transitionTransactionInProgress: false,
   transitionTransactionError: null,
+  acceptBookingInProgress: false,
+  acceptBookingError: null,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -102,6 +108,24 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         transitionTransactionError: payload,
       };
 
+    case ACCEPT_BOOKING_REQUEST:
+      return {
+        ...state,
+        acceptBookingInProgress: true,
+        acceptBookingError: null,
+      };
+    case ACCEPT_BOOKING_SUCCESS:
+      return {
+        ...state,
+        acceptBookingInProgress: false,
+      };
+    case ACCEPT_BOOKING_ERROR:
+      return {
+        ...state,
+        acceptBookingInProgress: false,
+        acceptBookingError: payload,
+      };
+
     default:
       return state;
   }
@@ -150,6 +174,18 @@ export const transitionTransactionSuccess = transaction => ({
 });
 export const transitionTransactionError = e => ({
   type: TRANSITION_TRANSACTION_ERROR,
+  payload: e,
+  error: true,
+});
+
+export const acceptBookingRequest = () => ({
+  type: ACCEPT_BOOKING_REQUEST,
+});
+export const acceptBookingSuccess = () => ({
+  type: ACCEPT_BOOKING_SUCCESS,
+});
+export const acceptBookingError = e => ({
+  type: ACCEPT_BOOKING_ERROR,
   payload: e,
   error: true,
 });
@@ -246,5 +282,69 @@ export const transitionTransaction = params => async (dispatch, getState, sdk) =
   } catch (e) {
     log.error(e, 'transition-transaction-failed');
     dispatch(transitionTransactionError(storableError(e)));
+  }
+};
+
+const generateBookingNumber = async (transaction, sdk) => {
+  const listingId = transaction.listing.id?.uuid;
+
+  try {
+    const fullListingResponse = await sdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    return { bookingNumber, bookingNumbers };
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
+  }
+};
+
+export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
+  dispatch(acceptBookingRequest());
+
+  const txId = transaction.id.uuid;
+  const listingId = transaction.listing.id.uuid;
+
+  try {
+    const { bookingNumber, bookingNumbers } = await generateBookingNumber(transaction, sdk);
+
+    await transitionPrivileged({
+      bodyParams: {
+        id: txId,
+        transition: TRANSITION_ACCEPT_BOOKING,
+        params: {
+          metadata: {
+            bookingNumber,
+          },
+        },
+      },
+    });
+
+    dispatch(fetchTransaction(txId));
+
+    const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
+    const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
+    const newBookedDates = [...bookedDates, ...bookingDates];
+
+    await updateListingMetadata({
+      listingId,
+      metadata: { bookedDates: newBookedDates, bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
+
+    dispatch(acceptBookingSuccess());
+    return;
+  } catch (e) {
+    log.error(e, 'accept-booking-failed', { txId });
+    dispatch(acceptBookingError(storableError(e)));
   }
 };

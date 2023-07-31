@@ -245,23 +245,4 @@ const TopbarMobileMenu = props => {
   );
 };
 
-TopbarMobileMenu.defaultProps = {
-  currentUser: null,
-  notificationCount: 0,
-  currentPage: null,
-  currentUserListing: null,
-  currentUserListingFetched: false,
-};
-
-TopbarMobileMenu.propTypes = {
-  isAuthenticated: bool.isRequired,
-  currentUserHasListings: bool.isRequired,
-  currentUserListing: propTypes.ownListing,
-  currentUserListingFetched: bool,
-  currentUser: propTypes.currentUser,
-  currentPage: string,
-  notificationCount: number,
-  onLogout: func.isRequired,
-};
-
 export default TopbarMobileMenu;

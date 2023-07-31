@@ -42,6 +42,9 @@ const NotificationNewBookingRequest = props => {
     onFetchTransaction,
     fetchTransactionInProgress,
     fetchTransactionError,
+    acceptBookingInProgress,
+    acceptBookingError,
+    onAcceptBooking,
   } = props;
 
   const { txId } = notification.metadata;
@@ -141,7 +144,7 @@ const NotificationNewBookingRequest = props => {
             hideRatesButton
             hideFees
           />
-          {transitionTransactionError && (
+          {(transitionTransactionError || acceptBookingError) && (
             <p className={css.error}>
               Something went wrong with accepting or declining the booking request. Please try
               again.
@@ -171,14 +174,8 @@ const NotificationNewBookingRequest = props => {
             ) : (
               <div className={css.acceptDeclineContainer}>
                 <Button
-                  onClick={() =>
-                    onTransitionTransaction({
-                      transaction: currentTransaction,
-                      transition: TRANSITION_ACCEPT_BOOKING,
-                      include: ['booking', 'customer', 'listing'],
-                    })
-                  }
-                  inProgress={transitionTransactionInProgress === TRANSITION_ACCEPT_BOOKING}
+                  onClick={() => onAcceptBooking(currentTransaction)}
+                  inProgress={acceptBookingInProgress}
                 >
                   Accept
                 </Button>

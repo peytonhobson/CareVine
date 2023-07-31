@@ -23,10 +23,26 @@ const dryRun = process.argv[4] === '--dry';
 
 const main = async () => {
   try {
-    const tx = await integrationSdk.transactions.show({ id: txId });
+    const tx = await integrationSdk.transactions.show({ id: txId, include: ['provider'] });
 
-    if (tx.data.data.attributes.lastTransition !== 'transition/dispute') {
-      console.log('Transaction is not in dispute state');
+    const providerId = tx.data.data.relationships.provider.data.id.uuid;
+
+    const provider = (
+      await integrationSdk.users.show({
+        id: providerId,
+      })
+    ).data.data;
+
+    const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
+    const pendingPayout = pendingPayouts.find(payout => payout.txId === txId);
+
+    if (!pendingPayout?.openDispute) {
+      console.log('\x1b[31m No open dispute found \x1b[0m');
+      return;
+    }
+
+    if (refundAmount > pendingPayout.amount) {
+      console.log('\x1b[31m Refund amount is greater than the amount of the transaction \x1b[0m');
       return;
     }
 
@@ -44,17 +60,24 @@ const main = async () => {
         reverse_transfer: true,
       });
 
-      await integrationSdk.transactions.updateMetadata({
-        id: txId,
-        metadata: {
-          lineItems: newLineItems,
-        },
+      const newAmount = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+      const newPendingPayouts = pendingPayouts.map(payout => {
+        if (payout.txId === txId) {
+          return {
+            ...payout,
+            openDispute: false,
+            amount: newAmount * 100,
+          };
+        }
+        return payout;
       });
 
-      await integrationSdk.transactions.transition({
-        id: txId,
-        transition: 'transition/resolve-dispute',
-        params: {},
+      await integrationSdk.users.updateProfile({
+        id: provider.id.uuid,
+        privateData: {
+          pendingPayouts: newPendingPayouts,
+        },
       });
 
       console.log('Refund successful');

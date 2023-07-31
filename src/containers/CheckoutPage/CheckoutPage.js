@@ -239,6 +239,11 @@ export class CheckoutPageComponent extends Component {
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+        2
+      ),
+      payout: parseFloat(payout).toFixed(2),
+      providerName: listing.author.attributes.profile.displayName,
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
