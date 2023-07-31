@@ -10,6 +10,16 @@ const isDev = process.env.REACT_APP_ENV === 'development';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const moment = require('moment');
 
+const weekdayMap = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
+};
+
 const createSlug = str => {
   let text = str
     .toString()
@@ -618,24 +628,30 @@ const findStartTimeFromLineItems = lineItems => {
 };
 
 const updateNextWeekStart = async transaction => {
-  const { lineItems } = transaction.attributes.metadata;
+  const { lineItems, bookingSchedule } = transaction.attributes.metadata;
 
-  const bookingStart = findStartTimeFromLineItems(lineItems);
-  const bookingEnd = moment(bookingEnd)
+  const thisWeekStart = findStartTimeFromLineItems(lineItems);
+  const nextWeekReference = moment(thisWeekStart).add(1, 'weeks');
+
+  const nextWeekStartDay = moment(nextWeekReference)
+    .weekday(weekdayMap[bookingSchedule[0].dayOfWeek])
+    .toDate();
+  const nextWeekStartTime = addTimeToStartOfDay(nextWeekStartDay, bookingSchedule[0].startTime);
+  const bookingEnd = moment(nextWeekStartTime)
     .add(1, 'hours')
     .toDate();
 
   try {
     await integrationSdk.transactions.transition({
       id: txId,
-      transition: 'transition/start-update-times',
+      transition: 'transition/update-next-week-start',
       params: {
-        bookingStart,
+        bookingStart: nextWeekStartTime,
         bookingEnd,
       },
     });
   } catch (e) {
-    log.error(e?.data?.errors, 'update-booking-end-failed', {});
+    log.error(e?.data?.errors, 'update-next-week-start-failed', {});
   }
 };
 
@@ -760,16 +776,6 @@ const updateBookingLedger = async transaction => {
   } catch (e) {
     log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
   }
-};
-
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
 };
 
 export const constructBookingMetadataRecurring = (
