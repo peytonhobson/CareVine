@@ -593,8 +593,45 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start-update-times',
       params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
+        bookingStart,
+        bookingEnd,
+      },
+    });
+  } catch (e) {
+    log.error(e?.data?.errors, 'update-booking-end-failed', {});
+  }
+};
+
+const findStartTimeFromLineItems = lineItems => {
+  if (!lineItems || lineItems.length === 0) return null;
+  const sortedLineItems = lineItems.sort((a, b) => {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  const firstDay = sortedLineItems[0] ?? { startTime: '12:00am' };
+  const additionalTime = convertTimeFrom12to24(firstDay.startTime).split(':')[0];
+  const startTime = moment(sortedLineItems[0].date)
+    .add(additionalTime, 'hours')
+    .toDate();
+
+  return startTime;
+};
+
+const updateBookingStart = async transaction => {
+  const { lineItems } = transaction.attributes.metadata;
+
+  const bookingStart = findStartTimeFromLineItems(lineItems);
+  const bookingEnd = moment(bookingEnd)
+    .add(1, 'hours')
+    .toDate();
+
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/start-update-times',
+      params: {
+        bookingStart,
+        bookingEnd,
       },
     });
   } catch (e) {

@@ -252,6 +252,14 @@
    :on :transition/decline-payment,
    :to :actor.role/provider,
    :template :payment-failed-provider}
+   {:name :notification/payment-failed-customer-repeat,
+   :on :transition/decline-payment-repeat,
+   :to :actor.role/customer,
+   :template :payment-failed-customer}
+   {:name :notification/payment-failed-provider-repeat
+   :on :transition/decline-payment-repeat,
+   :to :actor.role/provider,
+   :template :payment-failed-provider}
 
     ; Booking completed normally
     {:name :notification/booking-completed,
