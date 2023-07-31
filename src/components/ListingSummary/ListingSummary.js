@@ -7,7 +7,7 @@ import { compose } from 'redux';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
-import SectionReviews from '../../containers/ListingPage/SectionReviews';
+import SectionReviews from '../../containers/SectionReviews/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
 
@@ -49,8 +49,6 @@ const MIN_LENGTH_FOR_LONG_WORDS = 16;
 const ListingSummaryComponent = props => {
   const {
     listing,
-    currentUserListing,
-    params,
     intl,
     onContactUser,
     isOwnListing,
@@ -64,8 +62,6 @@ const ListingSummaryComponent = props => {
     isFromSearchPage,
     onGoBackToSearchResults,
     origin,
-    reviews,
-    fetchReviewsError,
     onManageDisableScrolling,
     onContinueBooking,
     authorDisplayName,
@@ -233,12 +229,7 @@ const ListingSummaryComponent = props => {
           </div>
         </div>
         {userType === CAREGIVER ? (
-          <SectionReviews
-            reviews={reviews}
-            fetchReviewsError={fetchReviewsError}
-            onManageDisableScrolling={onManageDisableScrolling}
-            providerDisplayName={displayName}
-          />
+          <SectionReviews providerDisplayName={displayName} listingId={listing?.id.uuid} />
         ) : null}
       </div>
       {!isOwnListing ? (

@@ -509,88 +509,40 @@ const createBookingPayment = async transaction => {
 };
 
 const createCaregiverPayout = async transaction => {
-  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
+  const { lineItems, paymentIntentId, stripeAccountId } = transaction.attributes.metadata;
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
   if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
-    const balance = await stripe.balance.retrieve({
-      stripeAccount: stripeAccountId,
+    const providerId = transaction.relationships.provider.data.id.uuid;
+
+    const providerResponse = await integrationSdk.users.show({
+      id: providerId,
     });
+    const provider = providerResponse.data.data;
 
-    const availableBalance = balance.available?.[0]?.amount;
+    const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
 
-    if (availableBalance > amount) {
-      await stripe.payouts.create(
-        {
-          amount,
-          currency: 'usd',
-        },
-        {
-          stripeAccount: stripeAccountId,
-        }
-      );
-    } else {
-      const providerId = transaction.relationships.provider.data.id.uuid;
-
-      const providerResponse = await integrationSdk.users.show({
-        id: providerId,
-      });
-      const provider = providerResponse.data.data;
-
-      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
-
-      await integrationSdk.users.updateProfile({
-        id: providerId,
-        privateData: {
-          hasPendingPayout: true,
-          pendingPayouts: [
-            ...pendingPayouts,
-            { amount, paymentIntentId, date: new Date().toISOString() },
-          ],
-        },
-      });
-    }
-  } catch (e) {
-    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
-  }
-};
-
-const generateBookingNumber = async transaction => {
-  const txId = transaction.id.uuid;
-  const { listing } = transaction.relationships;
-  const listingId = listing.data.id?.uuid;
-
-  try {
-    const fullListingResponse = await integrationSdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
-    await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata: {
-        bookingNumber,
+    await integrationSdk.users.updateProfile({
+      id: providerId,
+      privateData: {
+        hasPendingPayout: true,
+        pendingPayouts: [
+          ...pendingPayouts,
+          {
+            amount,
+            paymentIntentId,
+            date: new Date().toISOString(),
+            openDispute: false,
+            txId: transaction.id.uuid,
+          },
+        ],
       },
     });
   } catch (e) {
-    log.error(e, 'generate-booking-number-failed', {});
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
   }
 };
 
@@ -647,17 +599,26 @@ const updateBookingEnd = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'update-booking-end-failed', {});
+    log.error(e?.data?.errors, 'update-booking-end-failed', {});
   }
 };
 
 const makeReviewable = async transaction => {
-  const txId = transaction.id.uuid;
+  const customerId = transaction.relationships.customer.data.id.uuid;
+  const providerId = transaction.relationships.provider.data.id.uuid;
+  const listingId = transaction.relationships.listing.data.id.uuid;
 
   try {
+    const customerResponse = await integrationSdk.users.show({
+      id: customerId,
+    });
+
+    const customer = customerResponse.data.data;
+    const pendingReviews = customer.attributes.profile.metadata.pendingReviews ?? [];
+
     const transactionResponse = await integrationSdk.transactions.query({
-      customerId: transaction.relationships.customer.data.id.uuid,
-      providerId: transaction.relationships.provider.data.id.uuid,
+      customerId,
+      providerId,
       include: ['reviews'],
     });
 
@@ -665,15 +626,103 @@ const makeReviewable = async transaction => {
       tx => tx.relationships.reviews.data.length > 0
     );
 
-    if (reviews.length === 0) {
-      await integrationSdk.transactions.transition({
-        id: txId,
-        transition: 'transition/make-reviewable',
-        params: {},
-      });
-    }
+    if (pendingReviews.includes(listingId) || reviews.length !== 0) return;
+
+    await integrationSdk.users.updateProfile({
+      id: customerId,
+      metadata: {
+        pendingReviews: [...pendingReviews, listingId],
+      },
+    });
+
+    const { providerName } = transaction.attributes.metadata;
+
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: customerId,
+        templateName: 'customer-can-review',
+        templateData: {
+          marketplaceUrl: rootUrl,
+          listingId,
+          providerName,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
   } catch (e) {
-    log.error(e, 'make-reviewable-failed', {});
+    log.error(e?.data?.errors, 'make-reviewable-failed', {});
+  }
+};
+
+const addTimeToStartOfDay = (day, time) => {
+  const hours = moment(time, ['h:mm A']).format('HH');
+  return moment(day)
+    .add(hours, 'hours')
+    .toDate();
+};
+
+const updateBookingLedger = async transaction => {
+  const txId = transaction.id.uuid;
+
+  const {
+    lineItems,
+    paymentMethodType,
+    bookingRate,
+    paymentMethodId,
+    paymentIntentId,
+    refundAmount,
+  } = transaction.attributes.metadata;
+
+  const amount = parseFloat(
+    lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
+  ).toFixed(2);
+  const bookingFee = parseInt(Math.round(amount * 0.05));
+  const processingFee =
+    paymentMethodType === 'Bank Account'
+      ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
+      : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
+
+  try {
+    const transactionResponse = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['booking'],
+    });
+
+    const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
+    const booking = transactionResponse.data.included.find(i => i.type === 'booking');
+    const bookingEnd = booking.attributes.end;
+
+    const ledgerEntry = {
+      bookingRate,
+      paymentMethodId,
+      paymentMethodType,
+      bookingFee,
+      processingFee,
+      paymentIntentId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
+        2
+      ),
+      payout: parseFloat(amount).toFixed(2),
+      refundAmount: refundAmount ? refundAmount : null,
+      start: lineItems?.[0]
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
+        : null,
+      end: bookingEnd.toISOString(),
+    };
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        ledger: [...bookingLedger, ledgerEntry],
+      },
+    });
+  } catch (e) {
+    log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
   }
 };
 
@@ -692,7 +741,7 @@ module.exports = {
   closeListingNotification,
   createBookingPayment,
   createCaregiverPayout,
-  generateBookingNumber,
   updateBookingEnd,
   makeReviewable,
+  updateBookingLedger,
 };

@@ -263,6 +263,7 @@ export class CheckoutPageComponent extends Component {
         2
       ),
       payout: parseFloat(payout).toFixed(2),
+      providerName: listing.author.attributes.profile.displayName,
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);

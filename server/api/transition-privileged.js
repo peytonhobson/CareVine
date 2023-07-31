@@ -3,15 +3,12 @@ const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/s
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { isSpeculative, bodyParams } = req.body;
+  const { bodyParams } = req.body;
 
   // const { ...restParams } = bodyParams && bodyParams.params ? bodyParams.params : {};
 
   getTrustedSdk(req)
     .then(trustedSdk => {
-      if (isSpeculative) {
-        return trustedSdk.transactions.transitionSpeculative(bodyParams);
-      }
       return trustedSdk.transactions.transition(bodyParams);
     })
     .then(apiResponse => {

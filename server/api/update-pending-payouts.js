@@ -2,23 +2,31 @@ const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
-  const { userId, newNotification } = req.body;
+  const { userId, params, txId } = req.body;
 
   integrationSdk.users
     .show({
       id: userId,
     })
     .then(fetchedUser => {
-      const oldNotifications =
-        fetchedUser.data.data.attributes.profile.privateData.notifications || [];
+      const oldPendingPayouts =
+        fetchedUser.data.data.attributes.profile.privateData.pendingPayouts || [];
 
-      const newNotifications = [...oldNotifications, newNotification];
+      const newPendingPayouts = oldPendingPayouts.map(payout => {
+        if (payout.txId === txId) {
+          return {
+            ...payout,
+            ...params,
+          };
+        }
+        return payout;
+      });
 
       return integrationSdk.users.updateProfile(
         {
           id: userId,
           privateData: {
-            notifications: newNotifications,
+            pendingPayouts: newPendingPayouts,
           },
         },
         {
@@ -42,6 +50,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(e, 'update-user-notifications-failed', {});
+      log.error(e, 'update-pending-payout-failed', {});
     });
 };
