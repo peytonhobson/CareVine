@@ -542,7 +542,7 @@ const createCaregiverPayout = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'create-caregiver-payout-failed', { providerId });
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
   }
 };
 
@@ -599,7 +599,7 @@ const updateBookingEnd = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'update-booking-end-failed', {});
+    log.error(e?.data?.errors, 'update-booking-end-failed', {});
   }
 };
 
@@ -655,7 +655,7 @@ const makeReviewable = async transaction => {
       }
     );
   } catch (e) {
-    log.error(e, 'make-reviewable-failed', {});
+    log.error(e?.data?.errors, 'make-reviewable-failed', {});
   }
 };
 
@@ -712,13 +712,8 @@ const updateBookingLedger = async transaction => {
       start: lineItems?.[0]
         ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
         : null,
-      end: bookingEnd,
+      end: bookingEnd.toISOString(),
     };
-
-    console.log('bookingEnd ', bookingEnd);
-    console.log('request input', {
-      ledger: [...bookingLedger, ledgerEntry],
-    });
 
     await integrationSdk.transactions.updateMetadata({
       id: txId,
