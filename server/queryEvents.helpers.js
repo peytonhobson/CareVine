@@ -584,8 +584,8 @@ const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
-  const newBookingEnd = findEndTimeFromLineItems(lineItems);
-  const newBookingStart = moment(newBookingEnd)
+  const bookingEnd = findEndTimeFromLineItems(lineItems);
+  const bookingStart = moment(bookingEnd)
     .subtract(1, 'hours')
     .toDate();
 
@@ -594,8 +594,8 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start-update-times',
       params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
+        bookingStart,
+        bookingEnd,
       },
     });
   } catch (e) {
