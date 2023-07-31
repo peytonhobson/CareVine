@@ -71,46 +71,6 @@ export const TopbarContainerComponent = props => {
   );
 };
 
-TopbarContainerComponent.defaultProps = {
-  currentPage: null,
-  currentSearchParams: null,
-  currentUser: null,
-  currentUserHasOrders: null,
-  notificationCount: 0,
-  sendVerificationEmailError: null,
-  currentUserListing: null,
-  authScopes: null,
-  modalValue: null,
-};
-
-TopbarContainerComponent.propTypes = {
-  authInProgress: bool.isRequired,
-  currentPage: string,
-  currentSearchParams: object,
-  currentUser: propTypes.currentUser,
-  currentUserHasListings: bool.isRequired,
-  currentUserListingFetched: bool.isRequired,
-  currentUserListing: propTypes.ownListing,
-  currentUserHasOrders: bool,
-  isAuthenticated: bool.isRequired,
-  authScopes: array,
-  notificationCount: number,
-  onLogout: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  sendVerificationEmailInProgress: bool.isRequired,
-  sendVerificationEmailError: propTypes.error,
-  onResendVerificationEmail: func.isRequired,
-  onChangeModalValue: func.isRequired,
-  hasGenericError: bool.isRequired,
-  modalValue: string,
-
-  // from withRouter
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-  location: shape({ state: object }).isRequired,
-};
-
 const calculateUnreadMessages = (conversations, state) => {
   const currentUser = state.user.currentUser;
 

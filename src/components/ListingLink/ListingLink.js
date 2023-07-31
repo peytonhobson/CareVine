@@ -65,16 +65,5 @@ const ListingLink = props => {
     </NamedLink>
   );
 };
-ListingLink.defaultProps = {
-  className: null,
-  listing: null,
-  children: null,
-};
-
-ListingLink.propTypes = {
-  className: string,
-  listing: oneOfType([propTypes.listing, propTypes.ownListing]),
-  children: node,
-};
 
 export default ListingLink;

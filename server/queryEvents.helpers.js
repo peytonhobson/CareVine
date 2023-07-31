@@ -509,88 +509,40 @@ const createBookingPayment = async transaction => {
 };
 
 const createCaregiverPayout = async transaction => {
-  const { stripeAccountId, lineItems, paymentIntentId } = transaction.attributes.metadata;
+  const { lineItems, paymentIntentId, stripeAccountId } = transaction.attributes.metadata;
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
   if (!amount || amount === 0 || !paymentIntentId) return;
 
   try {
-    const balance = await stripe.balance.retrieve({
-      stripeAccount: stripeAccountId,
+    const providerId = transaction.relationships.provider.data.id.uuid;
+
+    const providerResponse = await integrationSdk.users.show({
+      id: providerId,
     });
+    const provider = providerResponse.data.data;
 
-    const availableBalance = balance.available?.[0]?.amount;
+    const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
 
-    if (availableBalance > amount) {
-      await stripe.payouts.create(
-        {
-          amount,
-          currency: 'usd',
-        },
-        {
-          stripeAccount: stripeAccountId,
-        }
-      );
-    } else {
-      const providerId = transaction.relationships.provider.data.id.uuid;
-
-      const providerResponse = await integrationSdk.users.show({
-        id: providerId,
-      });
-      const provider = providerResponse.data.data;
-
-      const pendingPayouts = provider.attributes.profile.privateData.pendingPayouts ?? [];
-
-      await integrationSdk.users.updateProfile({
-        id: providerId,
-        privateData: {
-          hasPendingPayout: true,
-          pendingPayouts: [
-            ...pendingPayouts,
-            { amount, paymentIntentId, date: new Date().toISOString() },
-          ],
-        },
-      });
-    }
-  } catch (e) {
-    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
-  }
-};
-
-const generateBookingNumber = async transaction => {
-  const txId = transaction.id.uuid;
-  const { listing } = transaction.relationships;
-  const listingId = listing.data.id?.uuid;
-
-  try {
-    const fullListingResponse = await integrationSdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    await integrationSdk.listings.update({
-      id: listingId,
-      metadata: { bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
-    await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata: {
-        bookingNumber,
+    await integrationSdk.users.updateProfile({
+      id: providerId,
+      privateData: {
+        hasPendingPayout: true,
+        pendingPayouts: [
+          ...pendingPayouts,
+          {
+            amount,
+            paymentIntentId,
+            date: new Date().toISOString(),
+            openDispute: false,
+            txId: transaction.id.uuid,
+          },
+        ],
       },
     });
   } catch (e) {
-    log.error(e, 'generate-booking-number-failed', {});
+    log.error(e, 'create-caregiver-payout-failed', { stripeAccountId });
   }
 };
 
@@ -636,16 +588,36 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .toDate();
 
-  return { bookingStart, bookingEnd };
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/start-update-times',
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+      },
+    });
+  } catch (e) {
+    log.error(e?.data?.errors, 'update-booking-end-failed', {});
+  }
 };
 
 const makeReviewable = async transaction => {
-  const txId = transaction.id.uuid;
+  const customerId = transaction.relationships.customer.data.id.uuid;
+  const providerId = transaction.relationships.provider.data.id.uuid;
+  const listingId = transaction.relationships.listing.data.id.uuid;
 
   try {
+    const customerResponse = await integrationSdk.users.show({
+      id: customerId,
+    });
+
+    const customer = customerResponse.data.data;
+    const pendingReviews = customer.attributes.profile.metadata.pendingReviews ?? [];
+
     const transactionResponse = await integrationSdk.transactions.query({
-      customerId: transaction.relationships.customer.data.id.uuid,
-      providerId: transaction.relationships.provider.data.id.uuid,
+      customerId,
+      providerId,
       include: ['reviews'],
     });
 
@@ -653,15 +625,260 @@ const makeReviewable = async transaction => {
       tx => tx.relationships.reviews.data.length > 0
     );
 
-    if (reviews.length === 0) {
-      await integrationSdk.transactions.transition({
-        id: txId,
-        transition: 'transition/make-reviewable',
-        params: {},
-      });
-    }
+    if (pendingReviews.includes(listingId) || reviews.length !== 0) return;
+
+    await integrationSdk.users.updateProfile({
+      id: customerId,
+      metadata: {
+        pendingReviews: [...pendingReviews, listingId],
+      },
+    });
+
+    const { providerName } = transaction.attributes.metadata;
+
+    await axios.post(
+      `${apiBaseUrl()}/api/sendgrid-template-email`,
+      {
+        receiverId: customerId,
+        templateName: 'customer-can-review',
+        templateData: {
+          marketplaceUrl: rootUrl,
+          listingId,
+          providerName,
+        },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
   } catch (e) {
-    log.error(e, 'make-reviewable-failed', {});
+    log.error(e?.data?.errors, 'make-reviewable-failed', {});
+  }
+};
+
+const addTimeToStartOfDay = (day, time) => {
+  const hours = moment(time, ['h:mm A']).format('HH');
+  return moment(day)
+    .add(hours, 'hours')
+    .toDate();
+};
+
+const updateBookingLedger = async transaction => {
+  const txId = transaction.id.uuid;
+
+  const {
+    lineItems,
+    paymentMethodType,
+    bookingRate,
+    paymentMethodId,
+    paymentIntentId,
+    refundAmount,
+  } = transaction.attributes.metadata;
+
+  const amount = parseFloat(
+    lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
+  ).toFixed(2);
+  const bookingFee = parseInt(Math.round(amount * 0.05));
+  const processingFee =
+    paymentMethodType === 'Bank Account'
+      ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
+      : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
+
+  try {
+    const transactionResponse = await integrationSdk.transactions.show({
+      id: txId,
+      include: ['booking'],
+    });
+
+    const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
+    const booking = transactionResponse.data.included.find(i => i.type === 'booking');
+    const bookingEnd = booking.attributes.end;
+
+    const ledgerEntry = {
+      bookingRate,
+      paymentMethodId,
+      paymentMethodType,
+      bookingFee,
+      processingFee,
+      paymentIntentId,
+      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
+        2
+      ),
+      payout: parseFloat(amount).toFixed(2),
+      refundAmount: refundAmount ? refundAmount : null,
+      start: lineItems?.[0]
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
+        : null,
+      end: bookingEnd.toISOString(),
+    };
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        ledger: [...bookingLedger, ledgerEntry],
+      },
+    });
+  } catch (e) {
+    log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
+  }
+};
+
+const weekdayMap = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
+};
+
+export const constructBookingMetadataRecurring = (
+  weekdays,
+  startDate,
+  endDate,
+  bookingRate,
+  paymentMethodType
+) => {
+  const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
+    const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+
+    return bookingDate >= startDate
+      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
+      : acc;
+  }, []);
+
+  const lineItems = filteredWeekdays.map(day => {
+    const { weekday, startTime, endTime } = day;
+
+    const hours = calculateTimeBetween(startTime, endTime);
+    const amount = parseFloat(hours * bookingRate).toFixed(2);
+    const isoDate = moment(startDate)
+      .weekday(weekdayMap[weekday])
+      .toISOString();
+
+    return {
+      code: 'line-item/booking',
+      startTime,
+      endTime,
+      seats: 1,
+      date: isoDate,
+      shortDate: moment(isoDate).format('MM/DD'),
+      hours,
+      amount,
+      bookingFee: parseFloat(amount * 0.05).toFixed(2),
+    };
+  });
+
+  const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+  const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
+  const processingFee = calculateProcessingFee(
+    payout,
+    bookingFee,
+    paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
+  );
+
+  return {
+    lineItems,
+    bookingFee,
+    processingFee,
+    totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+      2
+    ),
+    payout: parseFloat(payout).toFixed(2),
+    bookingSchedule: weekdays,
+    startDate: moment(startDate).toISOString(),
+    endDate: moment(endDate).toISOString(),
+    cancelAtPeriodEnd: false,
+  };
+};
+
+const findNewStartDate = (startDate, weekdays) => {
+  const day = moment(startDate).day();
+
+  if (weekdays[weekdayMap[day]]) {
+    return startDate;
+  }
+
+  const newStartDate = moment(startDate).add(1, 'days');
+  return findNewStartDate(newStartDate, weekdays);
+};
+
+const triggerNextBooking = async (transaction, transition) => {
+  const oldTxId = transaction.id.uuid;
+  const { listing } = transaction.relationships;
+  const listingId = listing.data.id?.uuid;
+
+  const oldMetadata = transaction.attributes.metadata;
+
+  const { bookingSchedule, startDate, endDate, bookingRate, paymentMethodType } = oldMetadata;
+  const startOfNextWeek = moment(startDate)
+    .add(1, 'weeks')
+    .startOf('isoWeek');
+  const newStartDate = findNewStartDate(startOfNextWeek, bookingSchedule);
+
+  const newMetadata = constructBookingMetadataRecurring(
+    bookingSchedule,
+    newStartDate,
+    endDate,
+    bookingRate,
+    paymentMethodType
+  );
+
+  const firstDay = Object.values(bookingSchedule)[0];
+  const hours = moment(firstDay.startTime, ['h:mm A']).format('HH');
+  const bookingStart = moment(newStartDate)
+    .add(hours, 'hours')
+    .toDate();
+  const bookingEnd = moment(bookingStart)
+    .add(1, 'hours')
+    .toDate();
+
+  const bodyParams = {
+    processAlias: config.bookingProcessAlias,
+    transition: 'transition/initial-repeat',
+    params: {
+      listingId,
+      seats: 1,
+      bookingStart,
+      bookingEnd,
+      metadata: {
+        ...oldMetadata,
+        ...newMetadata,
+      },
+    },
+  };
+
+  let newTransactionResponse;
+  try {
+    newTransactionResponse = await integrationSdk.transactions.initiate(bodyParams);
+  } catch (e) {
+    log.error(e, 'trigger-next-booking-failed', {});
+  }
+
+  try {
+    let updatedBookingTimes = {};
+    if (transition === 'transition/start-loop') {
+      updatedBookingTimes = updateBookingEnd(transaction);
+    }
+
+    const nextBookingId = newTransactionResponse?.data.data.id.uuid;
+
+    await integrationSdk.transaction.transition({
+      id: oldTxId,
+      transition,
+      params: {
+        ...updatedBookingTimes,
+        metadata: {
+          nextBookingId,
+        },
+      },
+    });
+  } catch (e) {
+    log.error(e, 'trigger-old-booking-transition-failed', {});
   }
 };
 
@@ -837,8 +1054,8 @@ module.exports = {
   closeListingNotification,
   createBookingPayment,
   createCaregiverPayout,
-  generateBookingNumber,
   updateBookingEnd,
   makeReviewable,
   triggerNextBooking,
+  updateBookingLedger,
 };

@@ -25,10 +25,10 @@ module.exports = queryEvents = () => {
     closeListingNotification,
     createBookingPayment,
     createCaregiverPayout,
-    generateBookingNumber,
     updateBookingEnd,
     makeReviewable,
     triggerNextBooking,
+    updateBookingLedger,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -275,13 +275,7 @@ module.exports = queryEvents = () => {
       const metadata = transaction.attributes.metadata;
 
       if (lastTransition === 'transition/start') {
-        if (!metadata.cancelAtPeriodEnd && metadata.bookingSchedule && !metadata.nextBookingId) {
-          triggerNextBooking(transaction, 'transition/start-loop');
-        }
-      }
-
-      if (lastTransition === 'transition/accept') {
-        generateBookingNumber(transaction);
+        updateBookingEnd(transaction);
       }
 
       if (lastTransition === 'transition/charge') {
@@ -292,20 +286,20 @@ module.exports = queryEvents = () => {
         }
       }
 
-      // If transition is dispute-resolved we need to first check if the dispute was resolved in favor of the caregiver
-      // If it was, we need to pay the caregiver the full amount,
-      // otherwise we need to use a script to refund the client X amount and then update the transaction by removing any refunded line items
-      // Line items are used to calculate caregiver payout
       if (
-        lastTransition === 'transition/pay-caregiver' ||
-        lastTransition === 'transition/resolve-dispute' ||
-        lastTransition === 'transition/cancel-pay-caregiver'
+        lastTransition === 'transition/cancel-charged-booking-provider' ||
+        lastTransition === 'transition/cancel-charged-booking-customer'
       ) {
         createCaregiverPayout(transaction);
+      }
 
-        if (lastTransition !== 'transition/cancel-pay-caregiver') {
-          makeReviewable(transaction);
-        }
+      if (
+        lastTransition === 'transition/complete' ||
+        lastTransition === 'transition/complete-canceled'
+      ) {
+        makeReviewable(transaction);
+        createCaregiverPayout(transaction);
+        updateBookingLedger(transaction);
       }
     }
 
