@@ -15,11 +15,8 @@
   margin: auto;
   width: 100%;
 
-  @media (--viewportMedium) {
-    flex-direction: row;
-  }
-
   @media (--viewportLarge) {
+    flex-direction: row;
     max-width: 75rem;
     width: auto;
   }
@@ -30,13 +27,8 @@
   border-radius: var(--borderRadius);
   padding: 3rem;
 
-  @media (--viewportMedium) {
-    max-width: 27rem;
-  }
-
   @media (--viewportLarge) {
     padding: 4rem 4rem 4rem 3rem;
-    max-width: 45rem;
   }
 }
 
@@ -44,12 +36,13 @@
   display: flex;
   width: 100%;
   min-height: 100%;
+  min-width: 40%;
 }
 
 .employerSectionImage {
   width: 100%;
-  aspect-ratio: 1/1 !important;
   border-radius: var(--borderRadius);
+  object-fit: contain;
 }
 
 .employerSectionTitle {
