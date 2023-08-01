@@ -765,6 +765,11 @@ const updateBookingLedger = async transaction => {
         ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
         : null,
       end: bookingEnd.toISOString(),
+      bookingSessions: lineItems.map(item => ({
+        date: item.date,
+        startTime: item.startTime,
+        endTime: item.endTime,
+      })),
     };
 
     await integrationSdk.transactions.updateMetadata({

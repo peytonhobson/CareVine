@@ -304,7 +304,7 @@ module.exports = queryEvents = () => {
         updateBookingLedger(transaction);
       }
 
-      if (lastTransition === 'transition/complete') {
+      if (lastTransition === 'transition/complete' && hasNextBooking) {
         updateNextWeekStart(transaction);
       }
     }
