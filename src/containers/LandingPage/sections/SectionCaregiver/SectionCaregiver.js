@@ -2,6 +2,7 @@ import React from 'react';
 
 import { NamedLink } from '../../../../components';
 import caregiverImg from '../../../../assets/LandingPage-Caregiver.jpg';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import css from './SectionCaregiver.module.css';
 
@@ -28,7 +29,11 @@ const SectionCaregiver = () => {
           </div>
         </div>
         <div className={css.caregiverSectionImageContainer}>
-          <img src={caregiverImg} className={css.caregiverSectionImage} />
+          <LazyLoadImage
+            className={css.caregiverSectionImage}
+            src={caregiverImg}
+            alt="Person smiling."
+          />
         </div>
       </div>
     </section>
