@@ -226,8 +226,8 @@ const BookingSummaryCard = props => {
       {itemType === 'recurring' ? (
         <>
           <div className={css.startEnd}>
-            <p>Start Date: {moment(startDate).format('MM/DD/YYYY')}</p>
-            {endDate ? <p>End Date: {moment(endDate).format('MM/DD/YYYY')}</p> : null}
+            <p>Start Date: {moment(startDate).format('MM/DD/YY')}</p>
+            {endDate ? <p>End Date: {moment(endDate).format('MM/DD/YY')}</p> : null}
           </div>
           <ButtonTabNavHorizontal
             className={css.tabNav}

@@ -6,14 +6,32 @@ import moment from 'moment';
 
 import css from './BookingCalendar.module.css';
 
-const isDayHighlighted = (bookedDates, date) =>
+const weekdayMap = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
+};
+
+const isDayHighlightedSingle = (bookedDates, date) =>
   bookedDates.map(d => d.getTime()).includes(date.getTime());
+
+const isDayHighlightedRecurring = (bookingSchedule, date) =>
+  Object.keys(bookingSchedule).some(
+    weekday => weekdayMap[weekday] === date.getDay() && bookingSchedule[weekday]?.length > 0
+  );
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const formatDay = (locale, date, bookedDates, noDisabled) => {
+const formatDay = (locale, date, bookedDates, noDisabled, bookingSchedule) => {
   const day = date.getDate();
-  const isHighlighted = isDayHighlighted(bookedDates, date);
+  const isHighlighted =
+    Object.keys(bookingSchedule)?.length > 0
+      ? isDayHighlightedRecurring(bookingSchedule, date)
+      : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
 
   if (isHighlighted) {
@@ -30,7 +48,7 @@ const formatDay = (locale, date, bookedDates, noDisabled) => {
 };
 
 export const BookingCalendar = props => {
-  const { bookedDates = [], noDisabled, children, className } = props;
+  const { bookedDates = [], bookingSchedule = {}, noDisabled, children, className } = props;
 
   const classes = classNames(css.root, className);
   const initialDate = bookedDates?.[0] || new Date();
@@ -38,8 +56,11 @@ export const BookingCalendar = props => {
   return (
     <div className={classes}>
       <Calendar
-        formatDay={(locale, date) => formatDay(locale, date, bookedDates, noDisabled)}
+        formatDay={(locale, date) =>
+          formatDay(locale, date, bookedDates, noDisabled, bookingSchedule)
+        }
         value={initialDate}
+        calendarType="Hebrew"
       />
       {children}
     </div>

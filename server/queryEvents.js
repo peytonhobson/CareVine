@@ -30,6 +30,7 @@ module.exports = queryEvents = () => {
     makeReviewable,
     triggerNextBooking,
     updateBookingLedger,
+    updateNextWeekMetadata,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -276,7 +277,7 @@ module.exports = queryEvents = () => {
       const metadata = transaction.attributes.metadata;
       const hasNextBooking = metadata.bookingSchedule && !metadata.cancelAtPeriodEnd;
 
-      if (lastTransition === 'transition/start') {
+      if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
         updateBookingEnd(transaction);
       }
 
@@ -306,6 +307,7 @@ module.exports = queryEvents = () => {
 
       if (lastTransition === 'transition/complete' && hasNextBooking) {
         updateNextWeekStart(transaction);
+        updateNextWeekMetadata(transaction);
       }
     }
 
