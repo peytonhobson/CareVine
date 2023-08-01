@@ -19,20 +19,26 @@ const weekdayMap = {
 const isDayHighlightedSingle = (bookedDates, date) =>
   bookedDates.map(d => d.getTime()).includes(date.getTime());
 
-const isDayHighlightedRecurring = (bookingSchedule, date) =>
+const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date) =>
   Object.keys(bookingSchedule).some(
-    weekday => weekdayMap[weekday] === date.getDay() && bookingSchedule[weekday]?.length > 0
+    weekday =>
+      weekdayMap[weekday] === date.getDay() &&
+      bookingSchedule[weekday]?.length > 0 &&
+      moment(startDate) <= date &&
+      (!endDate || moment(endDate) >= date)
   );
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const formatDay = (locale, date, bookedDates, noDisabled, bookingSchedule) => {
+const formatDay = (locale, date, bookedDates, noDisabled, bookingSchedule, startDate, endDate) => {
   const day = date.getDate();
   const isHighlighted =
     Object.keys(bookingSchedule)?.length > 0
-      ? isDayHighlightedRecurring(bookingSchedule, date)
+      ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date)
       : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
+
+  console.log(moment(startDate) <= date && (!endDate || moment(endDate) >= date));
 
   if (isHighlighted) {
     return (
@@ -48,7 +54,15 @@ const formatDay = (locale, date, bookedDates, noDisabled, bookingSchedule) => {
 };
 
 export const BookingCalendar = props => {
-  const { bookedDates = [], bookingSchedule = {}, noDisabled, children, className } = props;
+  const {
+    bookedDates = [],
+    bookingSchedule = {},
+    startDate,
+    endDate,
+    noDisabled,
+    children,
+    className,
+  } = props;
 
   const classes = classNames(css.root, className);
   const initialDate = bookedDates?.[0] || new Date();
@@ -57,7 +71,7 @@ export const BookingCalendar = props => {
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, bookedDates, noDisabled, bookingSchedule)
+          formatDay(locale, date, bookedDates, noDisabled, bookingSchedule, startDate, endDate)
         }
         value={initialDate}
         calendarType="Hebrew"

@@ -82,6 +82,8 @@ const CaregiverBookingCard = props => {
     senderListingTitle,
     bookingNumber,
     bookingSchedule,
+    startDate,
+    endDate,
   } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
@@ -288,6 +290,8 @@ const CaregiverBookingCard = props => {
           <BookingCalendar
             bookedDates={bookingDates}
             bookingSchedule={bookingSchedule}
+            startDate={startDate}
+            endDate={endDate}
             noDisabled
           />
         </Modal>

@@ -182,7 +182,7 @@ export const constructBookingMetadataRecurring = (
     payout: parseFloat(payout).toFixed(2),
     bookingSchedule: weekdays,
     startDate: moment(startDate).toISOString(),
-    endDate: moment(endDate).toISOString(),
+    endDate: endDate ? moment(endDate).toISOString() : null,
     cancelAtPeriodEnd: false,
   };
 };
