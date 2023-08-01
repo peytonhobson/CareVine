@@ -87,7 +87,7 @@ const SectionBlog = props => {
                   slug: blog.attributes.slug,
                 };
 
-                return <BlogCard {...blogCardProps} />;
+                return <BlogCard {...blogCardProps} key={blogCardProps.title} />;
               })}
             </div>
           </section>
