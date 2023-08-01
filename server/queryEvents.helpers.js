@@ -783,7 +783,7 @@ const updateBookingLedger = async transaction => {
   }
 };
 
-export const constructBookingMetadataRecurring = (
+const constructBookingMetadataRecurring = (
   weekdays,
   startDate,
   endDate,
@@ -793,7 +793,7 @@ export const constructBookingMetadataRecurring = (
   const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
     const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
 
-    return bookingDate >= startDate
+    return bookingDate >= startDate && bookingDate <= endDate
       ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
       : acc;
   }, []);
@@ -829,6 +829,10 @@ export const constructBookingMetadataRecurring = (
     paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
   );
 
+  const endOfWeek = moment(startDate)
+    .weekday(6)
+    .toISOString();
+
   return {
     lineItems,
     bookingFee,
@@ -837,96 +841,36 @@ export const constructBookingMetadataRecurring = (
       2
     ),
     payout: parseFloat(payout).toFixed(2),
-    bookingSchedule: weekdays,
-    startDate: moment(startDate).toISOString(),
-    endDate: moment(endDate).toISOString(),
-    cancelAtPeriodEnd: false,
+    cancelAtPeriodEnd: endDate <= endOfWeek,
   };
 };
 
-const findNewStartDate = (startDate, weekdays) => {
-  const day = moment(startDate).day();
-
-  if (weekdays[weekdayMap[day]]) {
-    return startDate;
-  }
-
-  const newStartDate = moment(startDate).add(1, 'days');
-  return findNewStartDate(newStartDate, weekdays);
-};
-
-const triggerNextBooking = async (transaction, transition) => {
-  const oldTxId = transaction.id.uuid;
-  const { listing } = transaction.relationships;
-  const listingId = listing.data.id?.uuid;
-
-  const oldMetadata = transaction.attributes.metadata;
-
-  const { bookingSchedule, startDate, endDate, bookingRate, paymentMethodType } = oldMetadata;
-  const startOfNextWeek = moment(startDate)
-    .add(1, 'weeks')
-    .startOf('isoWeek');
-  const newStartDate = findNewStartDate(startOfNextWeek, bookingSchedule);
+const updateNextWeekMetadata = async transaction => {
+  const {
+    bookingSchedule,
+    startDate,
+    bookingRate,
+    endDate,
+    paymentMethodType,
+  } = transaction.attributes.metadata;
 
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
-    newStartDate,
+    startDate,
     endDate,
     bookingRate,
     paymentMethodType
   );
 
-  const firstDay = Object.values(bookingSchedule)[0];
-  const hours = moment(firstDay.startTime, ['h:mm A']).format('HH');
-  const bookingStart = moment(newStartDate)
-    .add(hours, 'hours')
-    .toDate();
-  const bookingEnd = moment(bookingStart)
-    .add(1, 'hours')
-    .toDate();
-
-  const bodyParams = {
-    processAlias: config.bookingProcessAlias,
-    transition: 'transition/initial-repeat',
-    params: {
-      listingId,
-      seats: 1,
-      bookingStart,
-      bookingEnd,
+  try {
+    await integrationSdk.transactions.updateMetadata({
+      id: transaction.id.uuid,
       metadata: {
-        ...oldMetadata,
         ...newMetadata,
-      },
-    },
-  };
-
-  let newTransactionResponse;
-  try {
-    newTransactionResponse = await integrationSdk.transactions.initiate(bodyParams);
-  } catch (e) {
-    log.error(e, 'trigger-next-booking-failed', {});
-  }
-
-  try {
-    let updatedBookingTimes = {};
-    if (transition === 'transition/start-loop') {
-      updatedBookingTimes = updateBookingEnd(transaction);
-    }
-
-    const nextBookingId = newTransactionResponse?.data.data.id.uuid;
-
-    await integrationSdk.transaction.transition({
-      id: oldTxId,
-      transition,
-      params: {
-        ...updatedBookingTimes,
-        metadata: {
-          nextBookingId,
-        },
       },
     });
   } catch (e) {
-    log.error(e, 'trigger-old-booking-transition-failed', {});
+    log.error(e, 'update-next-week-line-items-failed', {});
   }
 };
 
@@ -948,6 +892,6 @@ module.exports = {
   updateBookingEnd,
   updateNextWeekStart,
   makeReviewable,
-  triggerNextBooking,
+  updateNextWeekMetadata,
   updateBookingLedger,
 };

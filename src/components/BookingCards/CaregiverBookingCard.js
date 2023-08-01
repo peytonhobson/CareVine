@@ -81,6 +81,7 @@ const CaregiverBookingCard = props => {
     paymentMethodType,
     senderListingTitle,
     bookingNumber,
+    bookingSchedule,
   } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
@@ -284,7 +285,11 @@ const CaregiverBookingCard = props => {
           <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
             Booking Calendar
           </p>
-          <BookingCalendar bookedDates={bookingDates} noDisabled />
+          <BookingCalendar
+            bookedDates={bookingDates}
+            bookingSchedule={bookingSchedule}
+            noDisabled
+          />
         </Modal>
       )}
       {isCancelModalOpen && (

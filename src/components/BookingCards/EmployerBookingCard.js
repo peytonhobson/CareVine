@@ -71,7 +71,13 @@ const EmployerBookingCard = props => {
 
   const bookingMetadata = booking.attributes.metadata;
   const lastTransition = booking.attributes.lastTransition;
-  const { bookingRate, lineItems, paymentMethodType, bookingNumber } = bookingMetadata;
+  const {
+    bookingRate,
+    lineItems,
+    paymentMethodType,
+    bookingNumber,
+    bookingSchedule,
+  } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -181,7 +187,9 @@ const EmployerBookingCard = props => {
       </div>
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
-          <h2 className={css.datesAndTimes}>Dates & Times</h2>
+          <h2 className={css.datesAndTimes}>
+            {bookingSchedule ? 'Weekly Schedule' : 'Dates & Times'}
+          </h2>
           <div className={css.dateTimes}>
             {bookingTimes
               ?.slice(
@@ -275,7 +283,11 @@ const EmployerBookingCard = props => {
           <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
             Booking Calendar
           </p>
-          <BookingCalendar bookedDates={bookingDates} noDisabled />
+          <BookingCalendar
+            bookedDates={bookingDates}
+            bookingSchedule={bookingSchedule}
+            noDisabled
+          />
         </Modal>
       )}
       {isCancelModalOpen && (
