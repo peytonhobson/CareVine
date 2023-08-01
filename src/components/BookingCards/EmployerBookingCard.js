@@ -77,6 +77,8 @@ const EmployerBookingCard = props => {
     paymentMethodType,
     bookingNumber,
     bookingSchedule,
+    startDate,
+    endDate,
   } = bookingMetadata;
 
   const handleChangeTimesPage = (e, page) => {
@@ -286,6 +288,8 @@ const EmployerBookingCard = props => {
           <BookingCalendar
             bookedDates={bookingDates}
             bookingSchedule={bookingSchedule}
+            startDate={startDate}
+            endDate={endDate}
             noDisabled
           />
         </Modal>
