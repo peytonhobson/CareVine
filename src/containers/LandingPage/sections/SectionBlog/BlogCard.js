@@ -46,7 +46,13 @@ const BlogCard = props => {
     <NamedLink name="BlogPostPage" params={{ slug: slug }} className={css.link}>
       <Card className={classes.card}>
         <CardActionArea className={classes.actionArea}>
-          <CardMedia className={classes.media} image={hero} title="Contemplative Reptile">
+          <CardMedia
+            className={classes.media}
+            image={hero}
+            title="Blog post image"
+            component="img"
+            loading="lazy"
+          >
             <CardContent className={classes.content}>
               <h2 className={css.blogTitle}>{title}</h2>
               {description && <p className={css.blogDescription}>{description}</p>}
