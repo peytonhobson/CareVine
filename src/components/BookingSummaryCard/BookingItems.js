@@ -3,18 +3,9 @@ import React from 'react';
 import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
-
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-};
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -80,7 +71,7 @@ const RefundBookingItem = props => {
 const RecurringBookingItem = props => {
   const { bookingRate, weekday, weekdayKey, startDate, showFullWeek } = props;
 
-  const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+  const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
   const format = showFullWeek ? 'dddd' : 'ddd, MMM Do';
   const formattedBookingDate = bookingDate.format(format);
 

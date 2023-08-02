@@ -17,10 +17,11 @@ import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import {
   formatFieldDateInput,
   parseFieldDateInput,
-  getAvailableStartDates,
-  getAvailableEndDates,
+  filterAvailableBookingEndDates,
+  filterAvailableBookingStartDates,
 } from '../../util/dates';
 import classNames from 'classnames';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './InitialBookingForm.module.css';
 
@@ -67,7 +68,7 @@ const InitialBookingFormComponent = props => (
       const { minPrice, maxPrice, availabilityPlan } = listing.attributes.publicData;
       const timezone = availabilityPlan.timezone;
       const middleRate = Number.parseFloat((minPrice + maxPrice) / 200).toFixed(0);
-      const bookedDates = listing.attributes.metadata.bookedDates ?? [];
+      const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
       const classes = classNames(css.root, className);
 
       const submitInProgress = updateInProgress;
@@ -123,18 +124,40 @@ const InitialBookingFormComponent = props => (
                   <h2>Select your dates:</h2>
                   <InfoTooltip
                     className={css.infoTooltip}
-                    title="You can book up to two weeks at a time."
+                    title={
+                      <p>
+                        You can book up to two weeks at a time for one-time bookings. If you need
+                        care for a longer period of time, please select the repeat weekly option or
+                        create multiple bookings.
+                      </p>
+                    }
                   />
                 </div>
-                <FieldDatePicker bookedDates={bookedDates} name="bookingDates" id="bookingDates">
+                <FieldDatePicker
+                  bookedDates={bookedDates}
+                  bookedDays={bookedDays}
+                  name="bookingDates"
+                  id="bookingDates"
+                >
                   <p className={css.bookingTimeText}>
-                    Caregivers can only be booked within a two-week period
+                    Caregivers can only be booked within a two-week period.
                   </p>
                 </FieldDatePicker>
               </>
             ) : (
               <>
-                <h2>When do you need this care?</h2>
+                <div className={css.selectDatesContainer}>
+                  <h2>When do you need this care?</h2>
+                  <InfoTooltip
+                    className={css.infoTooltip}
+                    title={
+                      <p>
+                        Blacked out dates indicate the caregiver has already been booked on those
+                        days.
+                      </p>
+                    }
+                  />
+                </div>
                 <div className={css.dateInputContainer}>
                   <FieldDateInput
                     className={css.fieldDateInput}
@@ -144,7 +167,7 @@ const InitialBookingFormComponent = props => (
                     placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                     format={formatFieldDateInput(timezone)}
                     parse={parseFieldDateInput(timezone)}
-                    isDayBlocked={getAvailableStartDates(endDay)}
+                    isDayBlocked={filterAvailableBookingStartDates(endDay, bookedDays, bookedDates)}
                     useMobileMargins
                     showErrorMessage={false}
                   />
@@ -157,7 +180,11 @@ const InitialBookingFormComponent = props => (
                       placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                       format={formatFieldDateInput(timezone)}
                       parse={parseFieldDateInput(timezone)}
-                      isDayBlocked={getAvailableEndDates(startDay, timezone)}
+                      isDayBlocked={filterAvailableBookingEndDates(
+                        startDay,
+                        bookedDays,
+                        bookedDates
+                      )}
                       useMobileMargins
                       showErrorMessage={false}
                       disabled={!startDate || !startDate.date}

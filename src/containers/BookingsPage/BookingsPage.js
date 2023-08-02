@@ -18,13 +18,13 @@ import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { EMPLOYER } from '../../util/constants';
 import {
-  acceptBooking,
   cancelBooking,
   declineBooking,
   disputeBooking,
   fetchBookings,
   setInitialState,
 } from './BookingsPage.duck';
+import { acceptBooking } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
 
@@ -206,14 +206,13 @@ const mapStateToProps = state => {
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
-    acceptBookingError,
-    acceptBookingInProgress,
-    acceptBookingSuccess,
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
   } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
+
+  const { acceptBookingError, acceptBookingInProgress, acceptBookingSuccess } = state.transactions;
 
   return {
     fetchBookingsInProgress,

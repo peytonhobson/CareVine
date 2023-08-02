@@ -14,7 +14,7 @@ const getEntries = (availabilityPlan, dayOfWeek) =>
   availabilityPlan?.entries?.filter(d => d.dayOfWeek === dayOfWeek);
 
 const Weekday = props => {
-  const { availabilityPlan, dayOfWeek, openEditModal } = props;
+  const { availabilityPlan, dayOfWeek, openEditModal, disabled: booked } = props;
   const hasEntry = findEntry(availabilityPlan, dayOfWeek);
 
   const dayOfWeekClasses = classNames(css.dayOfWeek, !openEditModal && css.viewOnly);
@@ -24,9 +24,10 @@ const Weekday = props => {
       className={classNames(
         css.weekDay,
         { [css.blockedWeekDay]: !hasEntry },
-        !openEditModal && css.viewOnly
+        !openEditModal && css.viewOnly,
+        { [css.bookedWeekDay]: booked }
       )}
-      onClick={() => openEditModal && openEditModal(true)}
+      onClick={() => openEditModal && !booked && openEditModal(true)}
       role="button"
     >
       <div className={dayOfWeekClasses}>
@@ -46,12 +47,13 @@ const Weekday = props => {
             })
           : null}
       </div>
+      {booked && <span className={css.booked}> Unavailable</span>}
     </div>
   );
 };
 
 const WeekPanel = props => {
-  const { className, availabilityPlan, openEditModal } = props;
+  const { className, availabilityPlan, openEditModal, disabledDays } = props;
 
   const classes = classNames(css.weekPanel, className);
 
@@ -64,6 +66,7 @@ const WeekPanel = props => {
             dayOfWeek={day}
             availabilityPlan={availabilityPlan}
             openEditModal={openEditModal}
+            disabled={disabledDays?.includes(day)}
           />
         );
       })}

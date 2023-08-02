@@ -6,7 +6,9 @@ import DateTimeSelect from './DateTimeSelect';
 import css from './EditBookingForm.module.css';
 
 const SectionOneTime = props => {
-  const { bookedDates, onSaveBookingDates, values, monthYearBookingDates } = props;
+  const { bookedDates, onSaveBookingDates, values, monthYearBookingDates, listing } = props;
+
+  const { bookedDays } = listing.attributes.metadata ?? [];
 
   return (
     <div className={css.datesTimesContainer}>
@@ -18,6 +20,7 @@ const SectionOneTime = props => {
           name="bookingDates"
           id="bookingDates"
           onChange={onSaveBookingDates}
+          bookedDays={bookedDays}
         >
           <p className={css.bookingTimeText}>
             Caregivers can only be booked within a two-week period

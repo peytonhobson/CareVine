@@ -3,18 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
 import moment from 'moment';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingCalendar.module.css';
-
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-};
 
 const isDayHighlightedSingle = (bookedDates, date) =>
   bookedDates.map(d => d.getTime()).includes(date.getTime());
@@ -22,7 +13,7 @@ const isDayHighlightedSingle = (bookedDates, date) =>
 const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date) =>
   Object.keys(bookingSchedule).some(
     weekday =>
-      weekdayMap[weekday] === date.getDay() &&
+      WEEKDAY_MAP[weekday] === date.getDay() &&
       bookingSchedule[weekday]?.length > 0 &&
       moment(startDate) <= date &&
       (!endDate || moment(endDate) >= date)

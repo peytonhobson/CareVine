@@ -3,6 +3,7 @@
 // and slows down the first paint.
 import moment from 'moment-timezone/builds/moment-timezone-with-data-10-year-range.min';
 import jstz from 'jstimezonedetect';
+import { WEEKDAY_MAP } from './constants';
 /**
  * Input names for the DateRangePicker from react-dates.
  */
@@ -894,4 +895,35 @@ export const getAvailableStartDates = endDate => day => {
     return false;
   }
   return true;
+};
+
+const TODAY = new Date();
+
+export const filterAvailableBookingStartDates = (endDate, bookedDays, bookedDates) => date => {
+  const day = date.day();
+  const realDate = date.startOf('day');
+  const isBookedDay = bookedDays.some(
+    d =>
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      (!d.endDate || realDate <= new Date(d.endDate)) &&
+      realDate >= new Date(d.startDate)
+  );
+
+  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
+
+  return (endDate && date > endDate) || isBookedDay || isBookedDate || realDate <= TODAY;
+};
+
+export const filterAvailableBookingEndDates = (startDate, bookedDays, bookedDates) => date => {
+  const day = date.day();
+  const realDate = date.startOf('day');
+  const isBookedDay = bookedDays.some(
+    d =>
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      (!d.endDate || realDate <= new Date(d.endDate)) &&
+      realDate >= new Date(d.startDate)
+  );
+  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
+
+  return date < startDate || isBookedDay || isBookedDate || realDate <= TODAY;
 };

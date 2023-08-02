@@ -187,7 +187,7 @@ const getEntryBoundaries = (values, dayOfWeek, intl, findStartHours) => index =>
 };
 
 const DailyPlan = props => {
-  const { dayOfWeek, values, intl, multipleTimesDisabled } = props;
+  const { dayOfWeek, values, intl, multipleTimesDisabled, disabledDays } = props;
   const getEntryStartTimes = getEntryBoundaries(values, dayOfWeek, intl, true);
   const getEntryEndTimes = getEntryBoundaries(values, dayOfWeek, intl, false);
 
@@ -203,102 +203,108 @@ const DailyPlan = props => {
     id: 'EditListingAvailabilityPlanForm.endTimePlaceholder',
   });
 
+  const isUnavailable = disabledDays.includes(dayOfWeek);
+
   return (
     <div className={classNames(css.weekDay, hasEntries ? css.hasEntries : null)}>
       <div className={css.dayOfWeek}>
         <FormattedMessage id={`EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`} />
       </div>
 
-      <FieldArray name={dayOfWeek}>
-        {({ fields }) => {
-          return (
-            <div className={css.timePicker}>
-              {fields.map((name, index) => {
-                // Pick available start hours
-                const pickUnreservedStartHours = h => !getEntryStartTimes(index).includes(h);
-                const availableStartHours = ALL_START_HOURS.filter(pickUnreservedStartHours);
+      {!isUnavailable ? (
+        <FieldArray name={dayOfWeek}>
+          {({ fields }) => {
+            return (
+              <div className={css.timePicker}>
+                {fields.map((name, index) => {
+                  // Pick available start hours
+                  const pickUnreservedStartHours = h => !getEntryStartTimes(index).includes(h);
+                  const availableStartHours = ALL_START_HOURS.filter(pickUnreservedStartHours);
 
-                // Pick available end hours
-                const pickUnreservedEndHours = h => !getEntryEndTimes(index).includes(h);
-                const availableEndHours = ALL_END_HOURS.filter(pickUnreservedEndHours);
+                  // Pick available end hours
+                  const pickUnreservedEndHours = h => !getEntryEndTimes(index).includes(h);
+                  const availableEndHours = ALL_END_HOURS.filter(pickUnreservedEndHours);
 
-                return (
-                  <div className={css.fieldWrapper} key={name}>
-                    <div className={css.formRow}>
-                      <div className={css.field}>
-                        <FieldSelect
-                          id={`${name}.startTime`}
-                          name={`${name}.startTime`}
-                          selectClassName={css.fieldSelect}
-                          initialValueSelected={index === 0 && fields.value[index].startTime}
-                        >
-                          {index !== 0 && (
-                            <option disabled value="">
-                              {startTimePlaceholder}
-                            </option>
-                          )}
-                          {filterStartHours(availableStartHours, values, dayOfWeek, index).map(
-                            s => (
+                  return (
+                    <div className={css.fieldWrapper} key={name}>
+                      <div className={css.formRow}>
+                        <div className={css.field}>
+                          <FieldSelect
+                            id={`${name}.startTime`}
+                            name={`${name}.startTime`}
+                            selectClassName={css.fieldSelect}
+                            initialValueSelected={index === 0 && fields.value[index].startTime}
+                          >
+                            {index !== 0 && (
+                              <option disabled value="">
+                                {startTimePlaceholder}
+                              </option>
+                            )}
+                            {filterStartHours(availableStartHours, values, dayOfWeek, index).map(
+                              s => (
+                                <option value={s} key={s}>
+                                  {s}
+                                </option>
+                              )
+                            )}
+                          </FieldSelect>
+                        </div>
+                        <span className={css.dashBetweenTimes}>-</span>
+                        <div className={css.field}>
+                          <FieldSelect
+                            id={`${name}.endTime`}
+                            name={`${name}.endTime`}
+                            selectClassName={css.fieldSelect}
+                            initialValueSelected={index === 0 && fields.value[index].endTime}
+                          >
+                            {index !== 0 && (
+                              <option disabled value="">
+                                {endTimePlaceholder}
+                              </option>
+                            )}
+                            {filterEndHours(availableEndHours, values, dayOfWeek, index).map(s => (
                               <option value={s} key={s}>
                                 {s}
                               </option>
-                            )
-                          )}
-                        </FieldSelect>
+                            ))}
+                          </FieldSelect>
+                        </div>
                       </div>
-                      <span className={css.dashBetweenTimes}>-</span>
-                      <div className={css.field}>
-                        <FieldSelect
-                          id={`${name}.endTime`}
-                          name={`${name}.endTime`}
-                          selectClassName={css.fieldSelect}
-                          initialValueSelected={index === 0 && fields.value[index].endTime}
-                        >
-                          {index !== 0 && (
-                            <option disabled value="">
-                              {endTimePlaceholder}
-                            </option>
-                          )}
-                          {filterEndHours(availableEndHours, values, dayOfWeek, index).map(s => (
-                            <option value={s} key={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </FieldSelect>
+                      <div
+                        className={css.fieldArrayRemove}
+                        onClick={() => fields.remove(index)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <IconClose rootClassName={css.closeIcon} />
                       </div>
                     </div>
-                    <div
-                      className={css.fieldArrayRemove}
-                      onClick={() => fields.remove(index)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <IconClose rootClassName={css.closeIcon} />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
 
-              {fields.length === 0 ? (
-                <InlineTextButton
-                  type="button"
-                  className={css.buttonSetHours}
-                  onClick={() => fields.push({ startTime: '8:00am', endTime: '5:00pm' })}
-                >
-                  <FormattedMessage id="EditListingAvailabilityPlanForm.setHours" />
-                </InlineTextButton>
-              ) : multipleTimesDisabled ? null : (
-                <InlineTextButton
-                  type="button"
-                  className={css.buttonAddNew}
-                  onClick={() => fields.push({ startTime: null, endTime: null })}
-                >
-                  <FormattedMessage id="EditListingAvailabilityPlanForm.addAnother" />
-                </InlineTextButton>
-              )}
-            </div>
-          );
-        }}
-      </FieldArray>
+                {fields.length === 0 ? (
+                  <InlineTextButton
+                    type="button"
+                    className={css.buttonSetHours}
+                    onClick={() => fields.push({ startTime: '8:00am', endTime: '5:00pm' })}
+                  >
+                    <FormattedMessage id="EditListingAvailabilityPlanForm.setHours" />
+                  </InlineTextButton>
+                ) : multipleTimesDisabled ? null : (
+                  <InlineTextButton
+                    type="button"
+                    className={css.buttonAddNew}
+                    onClick={() => fields.push({ startTime: null, endTime: null })}
+                  >
+                    <FormattedMessage id="EditListingAvailabilityPlanForm.addAnother" />
+                  </InlineTextButton>
+                )}
+              </div>
+            );
+          }}
+        </FieldArray>
+      ) : (
+        <div className={css.isUnavailable}>Unavailable</div>
+      )}
     </div>
   );
 };
