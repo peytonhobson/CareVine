@@ -66,3 +66,16 @@
     width: 12.5rem;
   }
 }
+
+.bookedWeekDay {
+  justify-content: space-between;
+  background-color: rgba(255, 99, 71, 0.4);
+
+  &:hover > .dayOfWeek {
+    color: var(--matterColorAnti) !important;
+  }
+
+  &:hover > .booked {
+    color: var(--matterColor) !important;
+  }
+}

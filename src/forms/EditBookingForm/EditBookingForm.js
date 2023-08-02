@@ -27,7 +27,7 @@ const CREDIT_CARD = 'Payment Card';
 
 const STORAGE_KEY = 'CheckoutPage';
 
-const weekdayMap = {
+const reverseWeekdayMap = {
   0: 'sun',
   1: 'mon',
   2: 'tue',
@@ -51,7 +51,7 @@ const checkValidBookingTimes = (bookingTimes, bookingDates) => {
 const findNewStartDate = (startDate, weekdays) => {
   const day = moment(startDate).day();
 
-  if (weekdays[weekdayMap[day]]) {
+  if (weekdays[reverseWeekdayMap[day]]) {
     return startDate;
   }
 
@@ -311,10 +311,8 @@ const EditBookingFormComponent = props => (
                   bookedDates={bookedDates}
                   onSaveBookingDates={handleSaveBookingDates}
                   values={values}
-                  goToPaymentError={goToPaymentError}
-                  onGoToPayment={handleGoToPayment}
-                  isLarge={isLarge}
                   monthYearBookingDates={monthYearBookingDates}
+                  listing={currentListing}
                 />
               ) : (
                 <SectionRecurring

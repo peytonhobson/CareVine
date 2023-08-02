@@ -83,7 +83,7 @@ const defaultProps = {
 
   // outside range -><- today ... today+available days -1 -><- outside range
   isOutsideRange: day => {
-    const endOfRange = config.dayCountAvailableForBooking - 1;
+    const endOfRange = 100;
     return (
       !isInclusivelyAfterDay(day, moment()) ||
       !isInclusivelyBeforeDay(day, moment().add(endOfRange, 'days'))

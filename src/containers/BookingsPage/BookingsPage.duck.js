@@ -144,10 +144,6 @@ export const DISPUTE_BOOKING_REQUEST = 'app/BookingsPage/DISPUTE_BOOKING_REQUEST
 export const DISPUTE_BOOKING_SUCCESS = 'app/BookingsPage/DISPUTE_BOOKING_SUCCESS';
 export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
 
-export const ACCEPT_BOOKING_REQUEST = 'app/BookingsPage/ACCEPT_BOOKING_REQUEST';
-export const ACCEPT_BOOKING_SUCCESS = 'app/BookingsPage/ACCEPT_BOOKING_SUCCESS';
-export const ACCEPT_BOOKING_ERROR = 'app/BookingsPage/ACCEPT_BOOKING_ERROR';
-
 export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST';
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
@@ -169,9 +165,6 @@ const initialState = {
   disputeBookingInProgress: false,
   disputeBookingError: null,
   disputeBookingSuccess: false,
-  acceptBookingError: null,
-  acceptBookingInProgress: false,
-  acceptBookingSuccess: false,
   declineBookingError: null,
   declineBookingInProgress: false,
   declineBookingSuccess: false,
@@ -213,18 +206,6 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, disputeBookingInProgress: false, disputeBookingSuccess: true };
     case DISPUTE_BOOKING_ERROR:
       return { ...state, disputeBookingInProgress: false, disputeBookingError: payload };
-
-    case ACCEPT_BOOKING_REQUEST:
-      return {
-        ...state,
-        acceptBookingInProgress: true,
-        acceptBookingError: null,
-        acceptBookingSuccess: false,
-      };
-    case ACCEPT_BOOKING_SUCCESS:
-      return { ...state, acceptBookingInProgress: false, acceptBookingSuccess: true };
-    case ACCEPT_BOOKING_ERROR:
-      return { ...state, acceptBookingInProgress: false, acceptBookingError: payload };
 
     case DECLINE_BOOKING_REQUEST:
       return {
@@ -272,14 +253,6 @@ export const disputeBookingRequest = () => ({ type: DISPUTE_BOOKING_REQUEST });
 export const disputeBookingSuccess = () => ({ type: DISPUTE_BOOKING_SUCCESS });
 export const disputeBookingError = e => ({
   type: DISPUTE_BOOKING_ERROR,
-  error: true,
-  payload: e,
-});
-
-export const acceptBookingRequest = () => ({ type: ACCEPT_BOOKING_REQUEST });
-export const acceptBookingSuccess = () => ({ type: ACCEPT_BOOKING_SUCCESS });
-export const acceptBookingError = e => ({
-  type: ACCEPT_BOOKING_ERROR,
   error: true,
   payload: e,
 });
@@ -558,68 +531,6 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
     });
   } catch (e) {
     log.error(e, 'dispute-booking-emails-failed', { bookingId });
-  }
-};
-
-const generateBookingNumber = async (transaction, sdk) => {
-  const listingId = transaction.listing.id?.uuid;
-
-  try {
-    const fullListingResponse = await sdk.listings.show({
-      id: listingId,
-      'fields.listing': ['metadata'],
-    });
-
-    const fullListing = fullListingResponse.data.data;
-    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
-
-    let bookingNumber = Math.floor(Math.random() * 100000000);
-
-    while (bookingNumbers.includes(bookingNumber)) {
-      bookingNumber = Math.floor(Math.random() * 100000000);
-    }
-
-    return { bookingNumber, bookingNumbers };
-  } catch (e) {
-    log.error(e, 'generate-booking-number-failed', {});
-  }
-};
-
-export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
-  dispatch(acceptBookingRequest());
-
-  const txId = transaction.id.uuid;
-  const listingId = transaction.listing.id.uuid;
-
-  try {
-    const { bookingNumber, bookingNumbers } = await generateBookingNumber(transaction, sdk);
-
-    await transitionPrivileged({
-      bodyParams: {
-        id: txId,
-        transition: TRANSITION_ACCEPT_BOOKING,
-        params: {
-          metadata: {
-            bookingNumber,
-          },
-        },
-      },
-    });
-
-    const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
-    const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
-    const newBookedDates = [...bookedDates, ...bookingDates];
-
-    await updateListingMetadata({
-      listingId,
-      metadata: { bookedDates: newBookedDates, bookingNumbers: [...bookingNumbers, bookingNumber] },
-    });
-
-    dispatch(acceptBookingSuccess());
-    return;
-  } catch (e) {
-    log.error(e, 'accept-booking-failed', { txId });
-    dispatch(acceptBookingError(storableError(e)));
   }
 };
 

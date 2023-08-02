@@ -2,20 +2,11 @@ import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
 import { addTimeToStartOfDay } from '../../util/dates';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 const BOOKING_FEE_PERCENTAGE = 0.05;
-
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-};
 
 export const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -57,7 +48,7 @@ export const findStartTimeFromBookingTimes = bookingTimes => {
 
 export const findStartTimeRecurring = (weekdays, startDate) => {
   const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-    const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+    const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
 
     return bookingDate >= startDate
       ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
@@ -134,7 +125,7 @@ export const constructBookingMetadataRecurring = (
   paymentMethodType
 ) => {
   const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-    const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+    const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
 
     return bookingDate >= startDate
       ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
@@ -147,7 +138,7 @@ export const constructBookingMetadataRecurring = (
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startDate)
-      .weekday(weekdayMap[weekday])
+      .weekday(WEEKDAY_MAP[weekday])
       .toISOString();
 
     return {

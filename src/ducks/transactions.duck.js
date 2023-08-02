@@ -46,6 +46,7 @@ const initialState = {
   transitionTransactionError: null,
   acceptBookingInProgress: false,
   acceptBookingError: null,
+  acceptBookingSuccess: null,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -118,6 +119,7 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
       return {
         ...state,
         acceptBookingInProgress: false,
+        acceptBookingSuccess: true,
       };
     case ACCEPT_BOOKING_ERROR:
       return {
@@ -332,13 +334,25 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
 
     dispatch(fetchTransaction(txId));
 
-    const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
-    const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
+    const {
+      bookingSchedule = {},
+      bookedDates = [],
+      lineItems = [],
+      startDate,
+      endDate,
+    } = transaction.attributes.metadata;
+    const txBookedDays = { days: Object.keys(bookingSchedule), startDate, endDate };
+    const currentBookedDays = transaction.listing.attributes.metadata.bookedDays ?? [];
+    const newBookedDays = [...currentBookedDays, txBookedDays];
+
+    const bookingDates = lineItems.map(lineItem => lineItem.date);
     const newBookedDates = [...bookedDates, ...bookingDates];
+
+    const newSchedule = startDate ? { bookedDays: newBookedDays } : { bookedDates: newBookedDates };
 
     await updateListingMetadata({
       listingId,
-      metadata: { bookedDates: newBookedDates, bookingNumbers: [...bookingNumbers, bookingNumber] },
+      metadata: { ...newSchedule, bookingNumbers: [...bookingNumbers, bookingNumber] },
     });
 
     dispatch(acceptBookingSuccess());

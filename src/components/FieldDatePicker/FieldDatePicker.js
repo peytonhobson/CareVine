@@ -4,6 +4,7 @@ import { Calendar } from 'react-calendar';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import moment from 'moment';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './FieldDatePicker.module.css';
 import { InlineTextButton } from '../Button/Button';
@@ -11,10 +12,27 @@ import { InlineTextButton } from '../Button/Button';
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
-  const booked = bookedDates.some(
+const isDayDisabled = (bookedDates, bookedDays, selectedDays, date, bufferDays) => {
+  const dateBooked = bookedDates.some(
     d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
   );
+
+  const dayBooked = bookedDays.some(d => {
+    const day = date.getDay();
+    const datedate = date.getDate();
+
+    if (datedate === 7 && day === 1) {
+      console.log('d', d);
+    }
+
+    const s = new Date(d.startDate);
+
+    return (
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      new Date(d.startDate) <= date &&
+      (!d.endDate || date <= new Date(d.endDate))
+    );
+  });
 
   const beforeBuffer =
     date.getTime() <
@@ -25,7 +43,7 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
       .getTime();
 
   if (selectedDays.length == 0) {
-    return booked || beforeBuffer;
+    return dateBooked || beforeBuffer || dayBooked;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -44,13 +62,15 @@ const isDayDisabled = (bookedDates, selectedDays, date, bufferDays) => {
   const isBeforeFirstSelectedDay = date.getTime() >= twoWeeksAfterFirstSelectedDay.getTime();
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
-  return booked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer;
+  return (
+    dateBooked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer || dayBooked
+  );
 };
 
-const formatDay = (locale, date, selectedDays, bookedDates, onClick, bufferDays) => {
+const formatDay = (locale, date, selectedDays, bookedDates, bookedDays, onClick, bufferDays) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled(bookedDates, selectedDays, date, bufferDays);
+  const isDisabled = isDayDisabled(bookedDates, bookedDays, selectedDays, date, bufferDays);
 
   if (isHighlighted) {
     return (
@@ -70,7 +90,7 @@ const formatDay = (locale, date, selectedDays, bookedDates, onClick, bufferDays)
 };
 
 export const FieldDatePickerComponent = props => {
-  const { bookedDates = [], input, children, className, bufferDays, onChange } = props;
+  const { bookedDates = [], bookedDays, input, children, className, bufferDays, onChange } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -110,10 +130,19 @@ export const FieldDatePickerComponent = props => {
       {children}
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, selectedDays, bookedDates, handleSelectDay, bufferDays)
+          formatDay(
+            locale,
+            date,
+            selectedDays,
+            bookedDates,
+            bookedDays,
+            handleSelectDay,
+            bufferDays
+          )
         }
         value={initialDate}
         view="month"
+        calendarType="Hebrew"
       />
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates

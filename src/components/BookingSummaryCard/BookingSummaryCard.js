@@ -15,19 +15,11 @@ import { convertTimeFrom12to24, calculateProcessingFee } from '../../util/data';
 import BookingItems from './BookingItems';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
+import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
 
 const TRANSACTION_FEE = 0.05;
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-};
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -127,7 +119,7 @@ const BookingSummaryCard = props => {
     if (!keys.length) return {};
 
     return Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-      const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+      const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
 
       return bookingDate >= startDate || showFullWeek
         ? { ...acc, [weekdayKey]: weekdays[weekdayKey] }

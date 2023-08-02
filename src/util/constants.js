@@ -79,3 +79,12 @@ export const NOTIFICATION_TYPE_NEW_MESSAGE = 'newMessage';
 export const NOTIFICATION_TYPE_BOOKING_REQUESTED = 'bookingRequested';
 
 export const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+export const WEEKDAY_MAP = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6,
+};

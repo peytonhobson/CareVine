@@ -188,8 +188,12 @@ export class CheckoutPageComponent extends Component {
 
     const weekdays = findWeekdays(values);
 
-    const startDate = startDateDate?.date;
-    const endDate = endDateDate?.date;
+    const startDate = moment(startDateDate?.date)
+      .startOf('day')
+      .toDate();
+    const endDate = moment(endDateDate?.date)
+      .startOf('day')
+      .toDate();
     const bookingRate = bookingRateArr[0];
     const { onInitiateOrder, currentUserListing, currentUser, listing } = this.props;
 

@@ -136,3 +136,9 @@
     padding-right: 60px;
   }
 }
+
+.isUnavailable {
+  padding-top: 8px;
+  width: 100%;
+  color: var(--failColor);
+}
