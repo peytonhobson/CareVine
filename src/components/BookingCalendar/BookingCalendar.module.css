@@ -167,6 +167,11 @@
       background-color: var(--marketplaceColor);
       color: var(--matterColorLight);
     }
+
+    & .unavailable {
+      background-color: var(--failColor);
+      color: var(--matterColorLight);
+    }
   }
 
   & :global(.react-calendar__tile:disabled) {

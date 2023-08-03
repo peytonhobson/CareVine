@@ -28,7 +28,6 @@ module.exports = queryEvents = () => {
     updateBookingEnd,
     updateNextWeekStart,
     makeReviewable,
-    triggerNextBooking,
     updateBookingLedger,
     updateNextWeekMetadata,
   } = require('./queryEvents.helpers');
@@ -283,10 +282,6 @@ module.exports = queryEvents = () => {
 
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
-
-        if (!metadata.cancelAtPeriodEnd && metadata.bookingSchedule) {
-          triggerNextBooking(transaction, 'transition/charge-loop');
-        }
       }
 
       if (

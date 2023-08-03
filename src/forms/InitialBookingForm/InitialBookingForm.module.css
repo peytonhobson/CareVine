@@ -60,12 +60,6 @@
   margin-block: 2rem;
 }
 
-.selectDatesContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .bookingTimeText {
   composes: marketplaceTinyFontStyles from global;
   font-weight: var(--fontWeightSemiBold);
@@ -79,39 +73,4 @@
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-}
-
-.dateInputContainer {
-  display: flex;
-  gap: 2rem;
-}
-
-.removeExceptionButton {
-  padding: 0 0.75rem 0 0.75rem;
-  border: 0;
-  cursor: pointer;
-  position: absolute;
-  bottom: 0.25rem;
-  right: 0.5rem;
-}
-
-.removeIcon {
-  width: 10px;
-  height: 10px;
-  stroke: var(--matterColorAnti);
-  fill: var(--matterColorAnti);
-
-  &:hover {
-    stroke: var(--matterColorDark);
-    fill: var(--matterColorDark);
-  }
-
-  @media (--viewportMedium) {
-    width: 12px;
-    height: 12px;
-  }
-}
-
-.endDateContainer {
-  position: relative;
 }

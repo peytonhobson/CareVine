@@ -105,6 +105,7 @@
 .dayOfWeek {
   width: 10rem;
   padding-top: 8px;
+  position: relative;
 }
 
 .timePicker {
@@ -141,4 +142,9 @@
   padding-top: 8px;
   width: 100%;
   color: var(--failColor);
+}
+
+.warning {
+  position: absolute;
+  left: -2.5rem;
 }

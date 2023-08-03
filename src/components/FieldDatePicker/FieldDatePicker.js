@@ -4,7 +4,7 @@ import { Calendar } from 'react-calendar';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import moment from 'moment';
-import { WEEKDAY_MAP } from '../../util/constants';
+import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 
 import css from './FieldDatePicker.module.css';
 import { InlineTextButton } from '../Button/Button';
@@ -12,28 +12,14 @@ import { InlineTextButton } from '../Button/Button';
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = (bookedDates, bookedDays, selectedDays, date, bufferDays) => {
-  const dateBooked = bookedDates.some(
-    d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
-  );
-
-  const dayBooked = bookedDays.some(d => {
-    const day = date.getDay();
-    const datedate = date.getDate();
-
-    if (datedate === 7 && day === 1) {
-      console.log('d', d);
-    }
-
-    const s = new Date(d.startDate);
-
-    return (
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      new Date(d.startDate) <= date &&
-      (!d.endDate || date <= new Date(d.endDate))
-    );
-  });
-
+const isDayDisabled = (
+  bookedDates,
+  bookedDays,
+  selectedDays,
+  date,
+  bufferDays,
+  currentBookedDays
+) => {
   const beforeBuffer =
     date.getTime() <
     moment()
@@ -42,8 +28,31 @@ const isDayDisabled = (bookedDates, bookedDays, selectedDays, date, bufferDays) 
       .toDate()
       .getTime();
 
+  let isCurrentBookedDay = false;
+  if (currentBookedDays) {
+    const afterStart = currentBookedDays.startDate <= date;
+    const beforeEnd = !currentBookedDays.endDate || date <= currentBookedDays.endDate;
+    const isSelectedWeekday = currentBookedDays.days.includes(WEEKDAYS[date.getDay()]);
+
+    isCurrentBookedDay = !afterStart || !beforeEnd || !isSelectedWeekday;
+  }
+
+  const dateBooked = bookedDates.some(
+    d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
+  );
+
+  const dayBooked = bookedDays.some(d => {
+    const day = date.getDay();
+
+    return (
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      new Date(d.startDate) <= date &&
+      (!d.endDate || date <= new Date(d.endDate))
+    );
+  });
+
   if (selectedDays.length == 0) {
-    return dateBooked || beforeBuffer || dayBooked;
+    return dateBooked || beforeBuffer || dayBooked || isCurrentBookedDay;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -63,18 +72,43 @@ const isDayDisabled = (bookedDates, bookedDays, selectedDays, date, bufferDays) 
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
   return (
-    dateBooked || isBeforeFirstSelectedDay || isAfterLastSelectedDay || beforeBuffer || dayBooked
+    dateBooked ||
+    isBeforeFirstSelectedDay ||
+    isAfterLastSelectedDay ||
+    beforeBuffer ||
+    dayBooked ||
+    isCurrentBookedDay
   );
 };
 
-const formatDay = (locale, date, selectedDays, bookedDates, bookedDays, onClick, bufferDays) => {
+const formatDay = (
+  locale,
+  date,
+  selectedDays,
+  bookedDates,
+  bookedDays,
+  onClick,
+  bufferDays,
+  currentBookedDays,
+  highlightedClassName
+) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled(bookedDates, bookedDays, selectedDays, date, bufferDays);
+  const isDisabled = isDayDisabled(
+    bookedDates,
+    bookedDays,
+    selectedDays,
+    date,
+    bufferDays,
+    currentBookedDays
+  );
 
   if (isHighlighted) {
     return (
-      <div className={classNames(css.day, css.highlighted)} onClick={() => onClick(date)}>
+      <div
+        className={classNames(css.day, highlightedClassName ?? css.highlighted)}
+        onClick={() => onClick(date)}
+      >
         <span>{day}</span>
       </div>
     );
@@ -90,7 +124,17 @@ const formatDay = (locale, date, selectedDays, bookedDates, bookedDays, onClick,
 };
 
 export const FieldDatePickerComponent = props => {
-  const { bookedDates = [], bookedDays, input, children, className, bufferDays, onChange } = props;
+  const {
+    bookedDates = [],
+    bookedDays = [],
+    input,
+    children,
+    className,
+    bufferDays,
+    onChange,
+    currentBookedDays,
+    highlightedClassName,
+  } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -137,7 +181,9 @@ export const FieldDatePickerComponent = props => {
             bookedDates,
             bookedDays,
             handleSelectDay,
-            bufferDays
+            bufferDays,
+            currentBookedDays,
+            highlightedClassName
           )
         }
         value={initialDate}

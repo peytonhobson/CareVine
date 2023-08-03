@@ -129,6 +129,7 @@ export class CheckoutPageComponent extends Component {
       weekdays,
       dateTimes,
       transaction,
+      exceptions,
       history,
     } = this.props;
 
@@ -138,9 +139,7 @@ export class CheckoutPageComponent extends Component {
     // Action is 'REPLACE' when user has directed through login/signup process
     const hasNavigatedThroughLink = history.action === 'PUSH' || history.action === 'REPLACE';
 
-    const hasDates = scheduleType === 'oneTime' ? bookingDates?.length > 0 : startDate;
-    const hasDataInProps =
-      !!(bookingRate && listing && scheduleType && hasDates) && hasNavigatedThroughLink;
+    const hasDataInProps = !!(bookingRate && listing && scheduleType) && hasNavigatedThroughLink;
     if (hasDataInProps) {
       // Store data only if data is passed through props and user has navigated through a link.
       storeData({
@@ -153,6 +152,7 @@ export class CheckoutPageComponent extends Component {
         endDate,
         weekdays,
         dateTimes,
+        exceptions,
         storageKey: STORAGE_KEY,
       });
     }
@@ -169,6 +169,7 @@ export class CheckoutPageComponent extends Component {
           endDate,
           weekdays,
           dateTimes,
+          exceptions,
         }
       : storedData(STORAGE_KEY);
 
@@ -287,6 +288,7 @@ export class CheckoutPageComponent extends Component {
       endDate,
       weekdays,
       dateTimes,
+      exceptions,
     } = this.state.pageData;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
@@ -396,7 +398,7 @@ export class CheckoutPageComponent extends Component {
             fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
             stripeCustomerFetched={stripeCustomerFetched}
             onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
-            initialValues={{ scheduleType, startDate, endDate, ...weekdays, dateTimes }}
+            initialValues={{ scheduleType, startDate, endDate, ...weekdays, dateTimes, exceptions }}
             storeData={storeData}
           />
         </div>

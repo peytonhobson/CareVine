@@ -43,6 +43,11 @@ const initialState = {
   endDate: null,
   weekdays: null,
   dateTimes: null,
+  exceptions: {
+    addedDays: [],
+    removedDays: [],
+    changedDays: [],
+  },
   initiateOrderError: null,
   initiateOrderInProgress: false,
   stripeCustomerFetched: false,
