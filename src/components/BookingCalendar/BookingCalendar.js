@@ -21,21 +21,6 @@ const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date) =>
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const overlapsBookingTime = (startDate, endDate, booking) => {
-  const bookingStart = new Date(booking.startDate);
-  const bookingEnd = new Date(booking.endDate);
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  return (
-    (start <= bookingStart && end >= bookingStart && !booking.endDate) ||
-    (start >= bookingStart && !booking.endDate) ||
-    (start >= bookingStart && start <= bookingEnd) ||
-    (end >= bookingStart && end <= bookingEnd) ||
-    (start <= bookingStart && end >= bookingEnd)
-  );
-};
-
 const isDayUnavailable = (bookingSchedule, startDate, endDate, unavailableDates, date) => {
   const { bookedDates = [], bookedDays = [] } = unavailableDates;
 
@@ -45,9 +30,8 @@ const isDayUnavailable = (bookingSchedule, startDate, endDate, unavailableDates,
 
   const bookedDay = bookedDays.some(booking => {
     return (
-      booking.days.includes(WEEKDAY_MAP[date.getDay()]) &&
+      booking.days.includes(WEEKDAYS[date.getDay()]) &&
       moment(booking.startDate).isSameOrBefore(date) &&
-      moment(start) &&
       moment(booking.endDate).isSameOrAfter(date)
     );
   });

@@ -383,6 +383,7 @@
 .recurringRoot {
   margin: auto;
   margin-top: 3rem;
+  padding-bottom: 5rem;
 
   max-width: 30rem;
 }
