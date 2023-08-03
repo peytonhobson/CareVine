@@ -73,6 +73,7 @@ export const storeData = ({
   weekdays,
   dateTimes,
   storageKey,
+  exceptions,
 }) => {
   if (window?.sessionStorage) {
     const data = {
@@ -85,6 +86,7 @@ export const storeData = ({
       endDate,
       weekdays,
       dateTimes,
+      exceptions,
       storedAt: new Date(),
     };
 
@@ -131,6 +133,7 @@ export const storedData = storageKey => {
       endDate,
       weekdays,
       dateTimes,
+      exceptions,
       storedAt,
     } = checkoutPageData ? JSON.parse(checkoutPageData, reviver) : {};
 
@@ -142,11 +145,7 @@ export const storedData = storageKey => {
     // resolve transaction as valid if it is missing
     const isTransactionValid = !!transaction ? isValidTransaction(transaction) : true;
 
-    const isStoredDataValid =
-      isFreshlySaved &&
-      (bookingDates?.length > 0 || startDate) &&
-      isValidListing(listing) &&
-      isTransactionValid;
+    const isStoredDataValid = isFreshlySaved && isValidListing(listing) && isTransactionValid;
 
     if (isStoredDataValid) {
       return {
@@ -159,6 +158,7 @@ export const storedData = storageKey => {
         endDate,
         weekdays,
         dateTimes,
+        exceptions,
       };
     }
   }

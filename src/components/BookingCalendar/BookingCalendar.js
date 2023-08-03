@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
 import moment from 'moment';
-import { WEEKDAY_MAP } from '../../util/constants';
+import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingCalendar.module.css';
 
@@ -21,17 +21,77 @@ const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date) =>
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const formatDay = (locale, date, bookedDates, noDisabled, bookingSchedule, startDate, endDate) => {
+const overlapsBookingTime = (startDate, endDate, booking) => {
+  const bookingStart = new Date(booking.startDate);
+  const bookingEnd = new Date(booking.endDate);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  return (
+    (start <= bookingStart && end >= bookingStart && !booking.endDate) ||
+    (start >= bookingStart && !booking.endDate) ||
+    (start >= bookingStart && start <= bookingEnd) ||
+    (end >= bookingStart && end <= bookingEnd) ||
+    (start <= bookingStart && end >= bookingEnd)
+  );
+};
+
+const isDayUnavailable = (bookingSchedule, startDate, endDate, unavailableDates, date) => {
+  const { bookedDates = [], bookedDays = [] } = unavailableDates;
+
+  const isAfterStartDate = moment(startDate).isSameOrBefore(date);
+  const isBeforeEndDate = !endDate || moment(endDate).isSameOrAfter(date);
+  const isInBookingSchedule = bookingSchedule[WEEKDAYS[date.getDay()]];
+
+  const bookedDay = bookedDays.some(booking => {
+    return (
+      booking.days.includes(WEEKDAY_MAP[date.getDay()]) &&
+      moment(booking.startDate).isSameOrBefore(date) &&
+      moment(start) &&
+      moment(booking.endDate).isSameOrAfter(date)
+    );
+  });
+
+  if (bookedDay && isAfterStartDate && isBeforeEndDate && isInBookingSchedule) return true;
+
+  const bookedDate = bookedDates.some(bookingDate => {
+    return moment(bookingDate).isSame(date);
+  });
+
+  return bookedDate && isAfterStartDate && isBeforeEndDate && isInBookingSchedule;
+};
+
+const formatDay = (
+  locale,
+  date,
+  bookedDates,
+  noDisabled,
+  bookingSchedule,
+  startDate,
+  endDate,
+  unavailableDates
+) => {
   const day = date.getDate();
   const isHighlighted =
     Object.keys(bookingSchedule)?.length > 0
       ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date)
       : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
+  const isUnavailable = isDayUnavailable(
+    bookingSchedule,
+    startDate,
+    endDate,
+    unavailableDates,
+    date
+  );
 
-  console.log(moment(startDate) <= date && (!endDate || moment(endDate) >= date));
-
-  if (isHighlighted) {
+  if (isUnavailable) {
+    return (
+      <div className={classNames(css.day, css.unavailable)}>
+        <span>{day}</span>
+      </div>
+    );
+  } else if (isHighlighted) {
     return (
       <div className={classNames(css.day, css.highlighted)}>
         <span>{day}</span>
@@ -51,6 +111,7 @@ export const BookingCalendar = props => {
     startDate,
     endDate,
     noDisabled,
+    unavailableDates = {},
     children,
     className,
   } = props;
@@ -62,7 +123,16 @@ export const BookingCalendar = props => {
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(locale, date, bookedDates, noDisabled, bookingSchedule, startDate, endDate)
+          formatDay(
+            locale,
+            date,
+            bookedDates,
+            noDisabled,
+            bookingSchedule,
+            startDate,
+            endDate,
+            unavailableDates
+          )
         }
         value={initialDate}
         calendarType="Hebrew"

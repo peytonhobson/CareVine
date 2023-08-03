@@ -1,67 +1,64 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
-import { DailyPlan, Modal, WeekPanel, FieldDateInput, IconClose, Button } from '../../components';
+import {
+  DailyPlan,
+  Modal,
+  WeekPanel,
+  FieldDateInput,
+  IconClose,
+  Button,
+  BookingExceptions,
+} from '../../components';
 import {
   formatFieldDateInput,
   parseFieldDateInput,
   filterAvailableBookingEndDates,
   filterAvailableBookingStartDates,
 } from '../../util/dates';
-import { useCheckMobileScreen } from '../../util/hooks';
-import { WEEKDAYS } from '../../util/constants';
+import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
+import { pick } from 'lodash';
 
 import css from './EditBookingForm.module.css';
 
 const TODAY = new Date();
-
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const overlapsBookingTime = (startDate, endDate, booking) => {
-  const bookingStart = new Date(booking.startDate);
-  const bookingEnd = new Date(booking.endDate);
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+const renderDayContents = (bookedDays, bookedDates) => (date, classes) => {
+  const realDate = date.startOf('day');
+  const day = date.day();
+  const isBookedDay = bookedDays?.some(
+    d =>
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      (!d.endDate || realDate <= new Date(d.endDate)) &&
+      realDate >= new Date(d.startDate)
+  );
+  const isBookedDate = bookedDates?.some(d => d === realDate.toISOString());
 
-  return (
-    (start <= bookingStart && end >= bookingStart && !booking.endDate) ||
-    (start >= bookingStart && !booking.endDate) ||
-    (start >= bookingStart && start <= bookingEnd) ||
-    (end >= bookingStart && end <= bookingEnd) ||
-    (start <= bookingStart && end >= bookingEnd)
+  const isBlocked = classes.has('blocked');
+
+  return isBookedDay || isBookedDate ? (
+    <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
+  ) : (
+    <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
   );
 };
 
-const getDisabledDays = (bookedDays = [], startDate, endDate, bookedDates = []) => {
-  const bookedDaysArr = bookedDays.reduce((acc, booking) => {
-    const overlaps = overlapsBookingTime(startDate, endDate, booking);
-
-    if (overlaps) {
-      return [...acc, ...booking.days];
-    }
-    return acc;
-  }, []);
-
-  const bookedDatesArr = bookedDates.reduce((acc, bookingDate) => {
-    const isBetween =
-      new Date(bookingDate) >= startDate && (!endDate || new Date(bookingDate) <= endDate);
-
-    if (isBetween) {
-      const dayOfWeek = WEEKDAYS[new Date(bookingDate).getDay()];
-      return [...acc, dayOfWeek];
-    }
-    return acc;
-  }, []);
-
-  return [...new Set([...bookedDaysArr, ...bookedDatesArr])];
-};
-
 const SectionRecurring = props => {
-  const { values, intl, onManageDisableScrolling, listing, onDeleteEndDate } = props;
+  const {
+    values,
+    intl,
+    onManageDisableScrolling,
+    listing,
+    onDeleteEndDate,
+    form,
+    unavailableDates,
+  } = props;
 
   const [isEditDatesModalOpen, setIsEditDatesModalOpen] = useState(false);
 
   const { startDate, endDate } = values;
+  const weekdays = pick(values, WEEKDAYS);
 
   const startDay = startDate?.date;
   const endDay = endDate?.date;
@@ -70,75 +67,99 @@ const SectionRecurring = props => {
 
   const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata;
 
-  const availabilityPlan = {
-    type: 'availability-plan/day',
-    timezone,
-    entries: WEEKDAYS.filter(w => values[w]?.[0]?.startTime).map(dayOfWeek => ({
-      dayOfWeek,
-      seats: 1,
-      startTime: values[dayOfWeek]?.[0]?.startTime ? values[dayOfWeek][0].startTime : null,
-      endTime: values[dayOfWeek]?.[0]?.endTime ? values[dayOfWeek][0].endTime : null,
-    })),
-  };
-
-  const disabledDays = useMemo(() => getDisabledDays(bookedDays, startDay, endDay, bookedDates), [
-    bookedDays,
-    startDay,
-    endDay,
-  ]);
+  useEffect(() => {
+    if (Object.keys(weekdays)?.length === 0) {
+      form.change('startDate', null);
+      form.change('endDate', null);
+    }
+  }, [Object.keys(weekdays)?.length]);
 
   return (
     <div className={css.recurringRoot}>
-      {disabledDays.length > 0 ? (
-        <p>
-          <strong className={css.warning}>Warning:</strong> The caregiver is unavailable on certain
-          days between your start and end date. If you would like to book on these days, please
-          select a different date range. You may also create a booking with another caregiver who
-          has availability during these days.
+      <h2>Which days do you need care?</h2>
+      <div className={css.week}>
+        {WEEKDAYS.map(w => {
+          return (
+            <DailyPlan
+              dayOfWeek={w}
+              key={w}
+              values={values}
+              intl={intl}
+              multipleTimesDisabled
+              disabledDays={unavailableDates}
+              className={css.dailyPlan}
+            />
+          );
+        })}
+      </div>
+      <div className={css.timeline}>
+        <h2>When should care start and end?</h2>
+        <p className={css.leaveEndDate}>
+          Leave end date blank if you want the booking to repeat indefinitely
         </p>
-      ) : null}
-      <div className={css.dateInputContainer}>
-        <FieldDateInput
-          className={css.fieldDateInput}
-          name="startDate"
-          id="startDate"
-          label="Start Date"
-          placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
-          format={formatFieldDateInput(timezone)}
-          parse={parseFieldDateInput(timezone)}
-          isDayBlocked={filterAvailableBookingStartDates(endDay, bookedDays, bookedDates)}
-          useMobileMargins
-          showErrorMessage={false}
-        />
-        <div className={css.endDateContainer}>
+        <div className={css.dateInputContainer}>
           <FieldDateInput
-            name="endDate"
-            id="endDate"
             className={css.fieldDateInput}
-            label="End Date • optional"
+            name="startDate"
+            id="startDate"
+            label="Start Date"
             placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
-            isDayBlocked={filterAvailableBookingEndDates(startDay, bookedDays, bookedDates)}
+            isDayBlocked={filterAvailableBookingStartDates(
+              endDay,
+              bookedDays,
+              bookedDates,
+              weekdays
+            )}
             useMobileMargins
             showErrorMessage={false}
-            disabled={!startDate || !startDate.date}
+            disabled={Object.keys(weekdays).length === 0}
+            renderDayContents={renderDayContents(bookedDays, bookedDates)}
           />
-          <button
-            className={css.removeExceptionButton}
-            onClick={() => onDeleteEndDate()}
-            type="button"
-          >
-            <IconClose size="normal" className={css.removeIcon} />
-          </button>
+          <div className={css.endDateContainer}>
+            <FieldDateInput
+              name="endDate"
+              id="endDate"
+              className={css.fieldDateInput}
+              label="End Date • optional"
+              placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
+              format={formatFieldDateInput(timezone)}
+              parse={parseFieldDateInput(timezone)}
+              isDayBlocked={filterAvailableBookingEndDates(
+                startDay,
+                bookedDays,
+                bookedDates,
+                weekdays
+              )}
+              useMobileMargins
+              showErrorMessage={false}
+              disabled={!startDate || !startDate.date}
+              renderDayContents={renderDayContents(bookedDays, bookedDates)}
+            />
+            <button
+              className={css.removeExceptionButton}
+              onClick={() => onDeleteEndDate()}
+              type="button"
+            >
+              <IconClose size="normal" className={css.removeIcon} />
+            </button>
+          </div>
         </div>
       </div>
-      <WeekPanel
-        openEditModal={() => setIsEditDatesModalOpen(true)}
-        className={css.weekPanel}
-        availabilityPlan={availabilityPlan}
-        disabledDays={disabledDays}
-      />
+      <div className={css.exceptions}>
+        <h2>Are there any exceptions to this schedule?</h2>
+        <BookingExceptions
+          bookedDates={bookedDates}
+          bookedDays={bookedDays}
+          values={values}
+          onManageDisableScrolling={onManageDisableScrolling}
+          intl={intl}
+          timezone={timezone}
+          form={form}
+        />
+      </div>
+
       <Modal
         id="EditRecurringDates"
         isOpen={isEditDatesModalOpen}
@@ -157,7 +178,7 @@ const SectionRecurring = props => {
                 values={values}
                 intl={intl}
                 multipleTimesDisabled
-                disabledDays={disabledDays}
+                disabledDays={unavailableDates}
               />
             );
           })}

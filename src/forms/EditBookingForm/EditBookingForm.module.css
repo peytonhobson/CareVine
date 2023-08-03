@@ -320,10 +320,9 @@
   height: auto;
 
   padding-top: 2rem;
-  margin-bottom: 2rem;
 
   @media (--viewportLarge) {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
   }
 }
 
@@ -339,7 +338,7 @@
     width: 100vw;
 
     @media (--viewportMedium) {
-      width: calc(200% + 24px);
+      width: 100%;
     }
   }
 }
@@ -409,4 +408,58 @@
 
 .warning {
   color: var(--attentionColor);
+}
+
+.timeline {
+  margin-bottom: 5rem;
+  & > h2 {
+    margin-bottom: 0;
+  }
+}
+
+.leaveEndDate {
+  composes: tinyNoMargin;
+  margin-bottom: 1rem;
+}
+
+.dailyPlan {
+  background-color: var(--matterColorNegative);
+
+  border-top: 1px solid var(--marketplaceColor) !important;
+  border-inline: 1px solid var(--marketplaceColor) !important;
+
+  &:first-of-type {
+    border-top-left-radius: var(--borderRadius);
+    border-top-right-radius: var(--borderRadius);
+  }
+
+  &:last-of-type {
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    border-bottom: 1px solid var(--marketplaceColor) !important;
+  }
+}
+
+.regularDay {
+  &:hover {
+    cursor: pointer;
+    background-color: var(--matterColorLight);
+    color: var(--marketplaceColor);
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.warningModalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+
+  & > button {
+    width: calc(50% - 1rem);
+  }
+}
+
+.warningCalendar {
+  margin: 2rem 0;
+  padding: 1rem;
 }

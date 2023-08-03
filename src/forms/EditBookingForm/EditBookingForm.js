@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
-import { Form, Button, NamedLink, ButtonTabNavHorizontal } from '../../components';
+import {
+  Form,
+  Button,
+  NamedLink,
+  ButtonTabNavHorizontal,
+  PrimaryButton,
+  Modal,
+  BookingCalendar,
+} from '../../components';
 import {
   isTransactionInitiateListingNotFoundError,
   isTransactionInitiateBookingTimeNotAvailableError,
@@ -19,6 +27,7 @@ import SectionRequest from './SectionRequest';
 import SectionPayment from './SectionPayment';
 import moment from 'moment';
 import { WEEKDAYS } from '../../util/constants';
+import WarningIcon from '@mui/icons-material/Warning';
 
 import css from './EditBookingForm.module.css';
 
@@ -35,6 +44,51 @@ const reverseWeekdayMap = {
   4: 'thu',
   5: 'fri',
   6: 'sat',
+};
+
+const overlapsBookingTime = (startDate, endDate, booking) => {
+  const bookingStart = new Date(booking.startDate);
+  const bookingEnd = new Date(booking.endDate);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  return (
+    (start <= bookingStart && end >= bookingStart && !booking.endDate) ||
+    (start >= bookingStart && !booking.endDate) ||
+    (start >= bookingStart && start <= bookingEnd) ||
+    (end >= bookingStart && end <= bookingEnd) ||
+    (start <= bookingStart && end >= bookingEnd)
+  );
+};
+
+const getUnavailableDays = (
+  bookedDays = [],
+  startDate,
+  endDate,
+  bookedDates = [],
+  weekdays = {}
+) => {
+  const bookedDaysArr = bookedDays.reduce((acc, booking) => {
+    const overlaps = overlapsBookingTime(startDate, endDate, booking);
+
+    if (overlaps) {
+      return [...acc, ...booking.days];
+    }
+    return acc;
+  }, []);
+
+  const bookedDatesArr = bookedDates.reduce((acc, bookingDate) => {
+    const isBetween =
+      new Date(bookingDate) >= startDate && (!endDate || new Date(bookingDate) <= endDate);
+
+    if (isBetween) {
+      const dayOfWeek = WEEKDAYS[new Date(bookingDate).getDay()];
+      return [...acc, dayOfWeek];
+    }
+    return acc;
+  }, []);
+
+  return [...new Set([...bookedDaysArr, ...bookedDatesArr])];
 };
 
 const checkValidBookingTimes = (bookingTimes, bookingDates) => {
@@ -66,6 +120,11 @@ const findWeekdays = values =>
     }
     return acc;
   }, {});
+
+const isSelectedWeekday = (weekdays, date) => {
+  const day = date.getDay();
+  return weekdays[reverseWeekdayMap[day]];
+};
 
 const EditBookingFormComponent = props => (
   <FinalForm
@@ -109,6 +168,7 @@ const EditBookingFormComponent = props => (
       const [selectedTab, setSelectedTab] = useState('Dates/Times');
       const [goToPaymentError, setGoToPaymentError] = useState(false);
       const [goToRequestError, setGoToRequestError] = useState(false);
+      const [isUnavailableWarningModalOpen, setIsUnavailableWarningModalOpen] = useState(false);
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
@@ -122,6 +182,7 @@ const EditBookingFormComponent = props => (
           endDate: values.endDate,
           weekdays: findWeekdays(values),
           dateTimes: values.dateTimes,
+          exceptions: values.exceptions,
           storageKey: STORAGE_KEY,
         };
 
@@ -146,6 +207,27 @@ const EditBookingFormComponent = props => (
             setGoToPaymentError('Please select at least one weekday.');
             return false;
           }
+
+          if (!values.startDate) {
+            setGoToPaymentError('Please select a start date.');
+            return false;
+          }
+
+          const weekdays = findWeekdays(values);
+
+          if (!isSelectedWeekday(weekdays, values.startDate.date)) {
+            setGoToPaymentError(
+              "Your selected start date doesn't fall on one of your selected weekdays. Please select a new start date."
+            );
+            return false;
+          }
+
+          if (values.endDate && !isSelectedWeekday(weekdays, values.endDate.date)) {
+            setGoToPaymentError(
+              "Your selected end date doesn't fall on one of your selected weekdays. Please select a new end date."
+            );
+            return false;
+          }
         }
         return true;
       };
@@ -161,28 +243,17 @@ const EditBookingFormComponent = props => (
       const handleGoToPayment = () => {
         if (!checkValidDates()) return;
 
-        if (values.startDate) {
-          const newStartDate = findNewStartDate(values.startDate.date, findWeekdays(values));
-          if (newStartDate !== values.startDate.date) {
-            form.change('startDate', { date: newStartDate });
-          }
+        if (unavailableDates.length > 0 && selectedTab === 'Dates/Times') {
+          setIsUnavailableWarningModalOpen(true);
+          return;
         }
 
-        storeFormData();
         setSelectedTab('Payment');
       };
 
       const handleGoToRequest = () => {
         if (!checkValidDates() || !checkvalidPayment()) return;
 
-        if (values.startDate) {
-          const newStartDate = findNewStartDate(values.startDate.date, findWeekdays(values));
-          if (newStartDate !== values.startDate.date) {
-            form.change('startDate', { date: newStartDate });
-          }
-        }
-
-        storeFormData();
         setSelectedTab('Request');
       };
 
@@ -218,6 +289,20 @@ const EditBookingFormComponent = props => (
         >
           <FormattedMessage id="CheckoutPage.errorlistingLinkText" />
         </NamedLink>
+      );
+
+      const { bookedDates, bookedDays } = currentListing.attributes.metadata;
+      const weekdays = useMemo(() => findWeekdays(values), [values]);
+      const unavailableDates = useMemo(
+        () =>
+          getUnavailableDays(
+            bookedDays,
+            values.startDate?.date,
+            values.endDate?.date,
+            bookedDates,
+            weekdays
+          ),
+        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
       );
 
       let initiateOrderErrorMessage = null;
@@ -288,7 +373,6 @@ const EditBookingFormComponent = props => (
         form.change('dateTimes', newDateTimes);
       };
 
-      const bookedDates = currentListing.attributes.metadata.bookedDates;
       const selectedPaymentMethodType =
         selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
@@ -322,6 +406,8 @@ const EditBookingFormComponent = props => (
                   listing={currentListing}
                   isLarge={isLarge}
                   onDeleteEndDate={() => form.change('endDate', null)}
+                  form={form}
+                  unavailableDates={unavailableDates}
                 />
               )}
               {!isLarge ? (
@@ -385,6 +471,7 @@ const EditBookingFormComponent = props => (
               onChange(e);
               setGoToPaymentError(null);
               setGoToRequestError(null);
+              storeFormData();
             }}
           />
           <ButtonTabNavHorizontal
@@ -395,6 +482,55 @@ const EditBookingFormComponent = props => (
             tabClassName={css.tab}
           />
           {tabContent}
+          {onManageDisableScrolling && isUnavailableWarningModalOpen ? (
+            <Modal
+              id="UnavailableWarningModal"
+              isOpen={isUnavailableWarningModalOpen}
+              onClose={() => setIsUnavailableWarningModalOpen(false)}
+              onManageDisableScrolling={onManageDisableScrolling}
+              usePortal
+            >
+              <p className={css.modalTitle}>
+                <WarningIcon color="warning" fontSize="large" />
+                Warning: Unavailable Dates During Booking
+              </p>
+              <p className={css.modalMessage}>
+                All dates highlighted in <span className={css.error}>red</span> below are
+                unavailable for booking during your selected dates.
+                <BookingCalendar
+                  bookingSchedule={weekdays}
+                  startDate={values.startDate?.date}
+                  endDate={values.endDate?.date}
+                  unavailableDates={{
+                    bookedDays,
+                    bookedDates,
+                  }}
+                  noDisabled
+                  className={css.warningCalendar}
+                />
+                You can either change your booking dates/days or continue with the knowledge that{' '}
+                {authorDisplayName} will not be booked to provide services on the above dates and
+                you will need to make other arrangements.
+              </p>
+              <div className={css.warningModalButtons}>
+                <Button
+                  className={css.modalButton}
+                  onClick={() => setIsUnavailableWarningModalOpen(false)}
+                >
+                  Change Dates
+                </Button>
+                <PrimaryButton
+                  className={css.modalButton}
+                  onClick={() => {
+                    setIsUnavailableWarningModalOpen(false);
+                    setSelectedTab('Payment');
+                  }}
+                >
+                  Continue
+                </PrimaryButton>
+              </div>
+            </Modal>
+          ) : null}
         </Form>
       );
     }}
