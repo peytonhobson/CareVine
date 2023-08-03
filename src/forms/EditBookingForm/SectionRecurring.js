@@ -93,7 +93,7 @@ const SectionRecurring = props => {
         })}
       </div>
       <div className={css.timeline}>
-        <h2>When should care start and end?</h2>
+        <h2>When do you need care?</h2>
         <p className={css.leaveEndDate}>
           Leave end date blank if you want the booking to repeat indefinitely
         </p>

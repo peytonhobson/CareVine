@@ -61,13 +61,7 @@ const overlapsBookingTime = (startDate, endDate, booking) => {
   );
 };
 
-const getUnavailableDays = (
-  bookedDays = [],
-  startDate,
-  endDate,
-  bookedDates = [],
-  weekdays = {}
-) => {
+const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = []) => {
   const bookedDaysArr = bookedDays.reduce((acc, booking) => {
     const overlaps = overlapsBookingTime(startDate, endDate, booking);
 
@@ -123,7 +117,7 @@ const findWeekdays = values =>
 
 const isSelectedWeekday = (weekdays, date) => {
   const day = date.getDay();
-  return weekdays[reverseWeekdayMap[day]];
+  return weekdays[WEEKDAYS[day]];
 };
 
 const EditBookingFormComponent = props => (
@@ -295,14 +289,8 @@ const EditBookingFormComponent = props => (
       const weekdays = useMemo(() => findWeekdays(values), [values]);
       const unavailableDates = useMemo(
         () =>
-          getUnavailableDays(
-            bookedDays,
-            values.startDate?.date,
-            values.endDate?.date,
-            bookedDates,
-            weekdays
-          ),
-        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
+          getUnavailableDays(bookedDays, values.startDate?.date, values.endDate?.date, bookedDates),
+        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates]
       );
 
       let initiateOrderErrorMessage = null;
@@ -495,8 +483,8 @@ const EditBookingFormComponent = props => (
                 Warning: Unavailable Dates During Booking
               </p>
               <p className={css.modalMessage}>
-                All dates highlighted in <span className={css.error}>red</span> below are
-                unavailable for booking during your selected dates.
+                The caregiver is unavailable for all dates highlighted in{' '}
+                <span className={css.error}>red</span> below.
                 <BookingCalendar
                   bookingSchedule={weekdays}
                   startDate={values.startDate?.date}
@@ -508,9 +496,9 @@ const EditBookingFormComponent = props => (
                   noDisabled
                   className={css.warningCalendar}
                 />
-                You can either change your booking dates/days or continue with the knowledge that{' '}
-                {authorDisplayName} will not be booked to provide services on the above dates and
-                you will need to make other arrangements.
+                By continuing, you are acknowledging that the caregiver is unavailable for the above
+                dates and you will need to make other arrangements. Alternatively you can change
+                your booking to accommodate the caregiver’s availability.
               </p>
               <div className={css.warningModalButtons}>
                 <Button
