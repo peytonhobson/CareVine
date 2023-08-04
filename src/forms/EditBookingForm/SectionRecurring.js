@@ -159,34 +159,6 @@ const SectionRecurring = props => {
           form={form}
         />
       </div>
-
-      <Modal
-        id="EditRecurringDates"
-        isOpen={isEditDatesModalOpen}
-        onClose={() => setIsEditDatesModalOpen(false)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        containerClassName={css.recurringModalContainer}
-        usePortal
-      >
-        <p className={css.modalTitle}>Edit Care Schedule</p>
-        <div className={css.week}>
-          {WEEKDAYS.map(w => {
-            return (
-              <DailyPlan
-                dayOfWeek={w}
-                key={w}
-                values={values}
-                intl={intl}
-                multipleTimesDisabled
-                disabledDays={unavailableDates}
-              />
-            );
-          })}
-        </div>
-        <Button className={css.saveWeekButton} onClick={() => setIsEditDatesModalOpen(false)}>
-          Save
-        </Button>
-      </Modal>
     </div>
   );
 };

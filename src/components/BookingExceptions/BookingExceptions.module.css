@@ -292,3 +292,12 @@
     height: auto;
   }
 }
+
+.regularDay {
+  &:hover {
+    cursor: pointer;
+    background-color: var(--matterColorLight);
+    color: var(--marketplaceColor);
+    padding: 0.25rem 0.5rem;
+  }
+}

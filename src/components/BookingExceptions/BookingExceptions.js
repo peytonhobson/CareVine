@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import { timestampToDate } from '../../util/dates';
@@ -21,9 +21,9 @@ import { DATE_TYPE_DATETIME } from '../../util/types';
 import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
 import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
+import { pick } from 'lodash';
 
 import css from './BookingExceptions.module.css';
-import { pick } from 'lodash';
 
 const sortExceptionsByDate = (a, b) => {
   return moment(a.date) - moment(b.date);
@@ -61,8 +61,16 @@ const filterAvailableAddExceptionDays = (
   );
 };
 
-const filterAvailableChangeExceptionDays = (startDate, endDate, weekdays, exceptions) => date => {
+const filterAvailableChangeExceptionDays = (
+  startDate,
+  endDate,
+  weekdays,
+  exceptions,
+  bookedDays,
+  bookedDates
+) => date => {
   const realDate = date.startOf('day');
+  const day = date.day();
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => e.date === date.toISOString());
@@ -71,7 +79,35 @@ const filterAvailableChangeExceptionDays = (startDate, endDate, weekdays, except
     startDate.date <= realDate &&
     (!endDate?.date || endDate.date >= realDate);
 
-  return isAlreadyException || !isAlreadySelected;
+  const isBookedDay = bookedDays.some(
+    d =>
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      (!d.endDate || realDate <= new Date(d.endDate)) &&
+      realDate >= new Date(d.startDate)
+  );
+  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
+
+  return isAlreadyException || !isAlreadySelected || isBookedDay || isBookedDate;
+};
+
+const renderChangeDayContents = (bookedDays, bookedDates) => (date, classes) => {
+  const realDate = date.startOf('day');
+  const day = date.day();
+  const isBookedDay = bookedDays?.some(
+    d =>
+      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
+      (!d.endDate || realDate <= new Date(d.endDate)) &&
+      realDate >= new Date(d.startDate)
+  );
+  const isBookedDate = bookedDates?.some(d => d === realDate.toISOString());
+
+  const isBlocked = classes.has('blocked');
+
+  return isBookedDay || isBookedDate ? (
+    <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
+  ) : (
+    <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
+  );
 };
 
 const TODAY = new Date();
@@ -99,9 +135,24 @@ const BookingExceptions = props => {
 
   const weekdays = pick(values, WEEKDAYS);
 
+  useEffect(() => {
+    //Remove all exceptions that fall outside of start and end date
+    const filterExceptions = e =>
+      new Date(e.date) >= startDate?.date && (!endDate?.date || new Date(e.date) <= endDate?.date);
+    const newExceptions = {
+      ...exceptions,
+      removedDays: exceptions.removedDays.filter(filterExceptions),
+      addedDays: exceptions.addedDays.filter(filterExceptions),
+      changedDays: exceptions.changedDays.filter(filterExceptions),
+    };
+
+    form.change('exceptions', newExceptions);
+  }, [startDate, endDate]);
+
   const [isAddDayModalOpen, setIsAddDayModalOpen] = useState(false);
   const [isRemoveDayModalOpen, setIsRemoveDayModalOpen] = useState(false);
   const [isChangeDayModalOpen, setIsChangeDayModalOpen] = useState(false);
+  const [isDateInputFocused, setIsDateInputFocused] = useState(false);
 
   const handleAddDate = () => {
     const newAddDateException = {
@@ -276,7 +327,7 @@ const BookingExceptions = props => {
           );
         })}
       </div>
-      {onManageDisableScrolling ? (
+      {onManageDisableScrolling && isAddDayModalOpen ? (
         <Modal
           id="AddDayException"
           isOpen={isAddDayModalOpen}
@@ -303,9 +354,11 @@ const BookingExceptions = props => {
             )}
             useMobileMargins
             showErrorMessage={false}
-            // renderDayContents={renderDayContents(bookedDays, bookedDates)}
+            renderDayContents={renderChangeDayContents(bookedDays, bookedDates)}
+            onFocus={() => setIsDateInputFocused(true)}
+            onBlur={() => setIsDateInputFocused(false)}
           />
-          {values.addDate ? (
+          {values.addDate && !isDateInputFocused ? (
             <div className={css.selectAddTimes}>
               <label>For what times?</label>
               <DailyPlan
@@ -328,7 +381,7 @@ const BookingExceptions = props => {
           </Button>
         </Modal>
       ) : null}
-      {onManageDisableScrolling ? (
+      {onManageDisableScrolling && isChangeDayModalOpen ? (
         <Modal
           id="ChangeDayException"
           isOpen={isChangeDayModalOpen}
@@ -349,13 +402,17 @@ const BookingExceptions = props => {
               startDate,
               endDate,
               weekdays,
-              exceptions
+              exceptions,
+              bookedDays,
+              bookedDates
             )}
             useMobileMargins
             showErrorMessage={false}
-            // renderDayContents={renderDayContents(bookedDays, bookedDates)}
+            renderDayContents={renderChangeDayContents(bookedDays, bookedDates)}
+            onFocus={() => setIsDateInputFocused(true)}
+            onBlur={() => setIsDateInputFocused(false)}
           />
-          {values.changeDate ? (
+          {values.changeDate && !isDateInputFocused ? (
             <div className={css.selectAddTimes}>
               <label>To what times?</label>
               <DailyPlan
@@ -378,7 +435,7 @@ const BookingExceptions = props => {
           </Button>
         </Modal>
       ) : null}
-      {onManageDisableScrolling ? (
+      {onManageDisableScrolling && isRemoveDayModalOpen ? (
         <Modal
           id="RemoveDayException"
           isOpen={isRemoveDayModalOpen}
@@ -393,7 +450,8 @@ const BookingExceptions = props => {
             name="removeDates"
             id="removeDates"
             highlightedClassName={css.highlightedRemoveDay}
-            bookedDates={sortedExceptions.map(exception => exception.date)}
+            bookedDates={sortedExceptions.map(exception => exception.date).concat(bookedDates)}
+            bookedDays={bookedDays}
           />
           <p className={css.daysToRemove}>Days To Remove From Booking</p>
           <ul className={css.removeDateList}>

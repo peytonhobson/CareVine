@@ -50,18 +50,18 @@ const overlapsBookingTime = (startDate, endDate, booking) => {
   const bookingStart = new Date(booking.startDate);
   const bookingEnd = new Date(booking.endDate);
   const start = new Date(startDate);
-  const end = new Date(endDate);
+  const end = endDate ? new Date(endDate) : null;
 
   return (
-    (start <= bookingStart && end >= bookingStart && !booking.endDate) ||
+    (start <= bookingStart && (!end || end >= bookingStart) && !booking.endDate) ||
     (start >= bookingStart && !booking.endDate) ||
     (start >= bookingStart && start <= bookingEnd) ||
-    (end >= bookingStart && end <= bookingEnd) ||
-    (start <= bookingStart && end >= bookingEnd)
+    (end >= bookingStart && (!end || end <= bookingEnd)) ||
+    (start <= bookingStart && (!end || end <= bookingEnd))
   );
 };
 
-const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = []) => {
+const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = [], weekdays) => {
   const bookedDaysArr = bookedDays.reduce((acc, booking) => {
     const overlaps = overlapsBookingTime(startDate, endDate, booking);
 
@@ -82,7 +82,11 @@ const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = [
     return acc;
   }, []);
 
-  return [...new Set([...bookedDaysArr, ...bookedDatesArr])];
+  const unavailableDays = [...new Set([...bookedDaysArr, ...bookedDatesArr])].filter(
+    w => weekdays[w]
+  );
+
+  return unavailableDays;
 };
 
 const checkValidBookingTimes = (bookingTimes, bookingDates) => {
@@ -289,8 +293,14 @@ const EditBookingFormComponent = props => (
       const weekdays = useMemo(() => findWeekdays(values), [values]);
       const unavailableDates = useMemo(
         () =>
-          getUnavailableDays(bookedDays, values.startDate?.date, values.endDate?.date, bookedDates),
-        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates]
+          getUnavailableDays(
+            bookedDays,
+            values.startDate?.date,
+            values.endDate?.date,
+            bookedDates,
+            weekdays
+          ),
+        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
       );
 
       let initiateOrderErrorMessage = null;
@@ -495,6 +505,7 @@ const EditBookingFormComponent = props => (
                   }}
                   noDisabled
                   className={css.warningCalendar}
+                  exceptions={values.exceptions}
                 />
                 By continuing, you are acknowledging that the caregiver is unavailable for the above
                 dates and you will need to make other arrangements. Alternatively you can change
