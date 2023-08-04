@@ -10,6 +10,7 @@ import { routeConfiguration } from '../..';
 import { createResourceLocatorString } from '../../util/routes';
 
 import backgroundImage from '../../assets/landing-background.jpg';
+import mobileImage from '../../assets/Landing-Mobile2.jpg';
 
 import css from './SectionHero.module.css';
 
@@ -54,14 +55,16 @@ const SectionHero = props => {
       const image = new Image();
 
       image.onload = () => {
-        heroRef.current.style.background = `url('${image.src}')`;
+        heroRef.current.style.background = ` url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
         heroRef.current.style.backgroundPosition = 'center';
         heroRef.current.style.backgroundSize = 'cover';
         setHeroLoaded(true);
       };
 
-      image.src = backgroundImage;
+      const isMobile = window && window.innerWidth < 768;
+
+      image.src = isMobile ? mobileImage : backgroundImage;
     }
   }, [heroRef?.current]);
 

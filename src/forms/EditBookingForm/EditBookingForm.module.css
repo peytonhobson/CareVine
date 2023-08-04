@@ -462,5 +462,5 @@
 
 .warningCalendar {
   margin: 2rem 0;
-  padding: 1rem;
+  padding: 1rem !important;
 }

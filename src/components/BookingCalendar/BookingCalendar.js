@@ -10,23 +10,35 @@ import css from './BookingCalendar.module.css';
 const isDayHighlightedSingle = (bookedDates, date) =>
   bookedDates.map(d => d.getTime()).includes(date.getTime());
 
-const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date) =>
-  Object.keys(bookingSchedule).some(
+const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, exceptions) =>
+  (Object.keys(bookingSchedule).some(
     weekday =>
       WEEKDAY_MAP[weekday] === date.getDay() &&
       bookingSchedule[weekday]?.length > 0 &&
       moment(startDate) <= date &&
       (!endDate || moment(endDate) >= date)
-  );
+  ) ||
+    exceptions?.addedDays?.some(d => moment(d.date).isSame(date))) &&
+  !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const isDayUnavailable = (bookingSchedule, startDate, endDate, unavailableDates, date) => {
+const isDayUnavailable = (
+  bookingSchedule,
+  startDate,
+  endDate,
+  unavailableDates,
+  date,
+  exceptions
+) => {
   const { bookedDates = [], bookedDays = [] } = unavailableDates;
 
   const isAfterStartDate = moment(startDate).isSameOrBefore(date);
   const isBeforeEndDate = !endDate || moment(endDate).isSameOrAfter(date);
-  const isInBookingSchedule = bookingSchedule[WEEKDAYS[date.getDay()]];
+  const isInBookingSchedule =
+    (bookingSchedule[WEEKDAYS[date.getDay()]] ||
+      exceptions?.addedDays?.some(d => moment(d.date).isSame(date))) &&
+    !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
   const bookedDay = bookedDays.some(booking => {
     return (
@@ -53,12 +65,13 @@ const formatDay = (
   bookingSchedule,
   startDate,
   endDate,
-  unavailableDates
+  unavailableDates,
+  exceptions
 ) => {
   const day = date.getDate();
   const isHighlighted =
     Object.keys(bookingSchedule)?.length > 0
-      ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date)
+      ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date, exceptions)
       : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
   const isUnavailable = isDayUnavailable(
@@ -66,7 +79,8 @@ const formatDay = (
     startDate,
     endDate,
     unavailableDates,
-    date
+    date,
+    exceptions
   );
 
   if (isUnavailable) {
@@ -98,9 +112,10 @@ export const BookingCalendar = props => {
     unavailableDates = {},
     children,
     className,
+    exceptions,
   } = props;
 
-  const classes = classNames(css.root, className);
+  const classes = classNames(className, css.root);
   const initialDate = bookedDates?.[0] || new Date();
 
   return (
@@ -115,7 +130,8 @@ export const BookingCalendar = props => {
             bookingSchedule,
             startDate,
             endDate,
-            unavailableDates
+            unavailableDates,
+            exceptions
           )
         }
         value={initialDate}
