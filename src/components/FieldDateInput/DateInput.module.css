@@ -6,6 +6,7 @@
   & :global(.SingleDatePicker) {
     display: block;
   }
+
   & :global(.SingleDatePicker_picker__directionLeft) {
     /* !important is added to top because react-dates uses inline style for height */
     /* Similar problem as in issue: https://github.com/airbnb/react-dates/issues/947 */

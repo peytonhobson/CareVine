@@ -22,6 +22,7 @@ import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
 import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { pick } from 'lodash';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BookingExceptions.module.css';
 
@@ -119,6 +120,8 @@ const MAX_EXCEPTIONS_COUNT = 100;
 const BookingExceptions = props => {
   const { bookedDates, bookedDays, values, onManageDisableScrolling, intl, timezone, form } = props;
 
+  const isMobile = useCheckMobileScreen();
+
   const {
     exceptions = {
       removedDays: [],
@@ -148,6 +151,25 @@ const BookingExceptions = props => {
 
     form.change('exceptions', newExceptions);
   }, [startDate, endDate]);
+
+  useEffect(() => {
+    //Remove all exceptions that interfere with weekdays
+    const weekdayKeys = Object.keys(weekdays);
+    const newExceptions = {
+      ...exceptions,
+      removedDays: exceptions.removedDays.filter(d =>
+        weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+      ),
+      addedDays: exceptions.addedDays.filter(
+        d => !weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+      ),
+      changedDays: exceptions.changedDays.filter(d =>
+        weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+      ),
+    };
+
+    form.change('exceptions', newExceptions);
+  }, [Object.keys(weekdays).length]);
 
   const [isAddDayModalOpen, setIsAddDayModalOpen] = useState(false);
   const [isRemoveDayModalOpen, setIsRemoveDayModalOpen] = useState(false);
@@ -331,8 +353,13 @@ const BookingExceptions = props => {
         <Modal
           id="AddDayException"
           isOpen={isAddDayModalOpen}
-          onClose={() => setIsAddDayModalOpen(false)}
+          onClose={() => {
+            form.change('addDate', null);
+            form.change('addDateTime', null);
+            setIsAddDayModalOpen(false);
+          }}
           onManageDisableScrolling={onManageDisableScrolling}
+          containerClassName={css.modalContent}
           usePortal
         >
           <p className={css.modalTitle}>Add a day to your booking</p>
@@ -366,7 +393,9 @@ const BookingExceptions = props => {
                 values={values}
                 intl={intl}
                 multipleTimesDisabled
-                customName={moment(values.addDate.date).format('dddd, MMMM Do')}
+                customName={moment(values.addDate.date).format(
+                  isMobile ? 'ddd, MMM Do' : 'dddd, MMMM Do'
+                )}
                 className={css.addedDailyPlan}
               />
             </div>
@@ -385,9 +414,14 @@ const BookingExceptions = props => {
         <Modal
           id="ChangeDayException"
           isOpen={isChangeDayModalOpen}
-          onClose={() => setIsChangeDayModalOpen(false)}
+          onClose={() => {
+            form.change('changeDate', null);
+            form.change('changeDateTime', null);
+            setIsChangeDayModalOpen(false);
+          }}
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
+          containerClassName={css.modalContent}
         >
           <p className={css.modalTitle}>Change a day in your booking</p>
           <FieldDateInput
@@ -420,7 +454,9 @@ const BookingExceptions = props => {
                 values={values}
                 intl={intl}
                 multipleTimesDisabled
-                customName={moment(values.changeDate.date).format('dddd, MMMM Do')}
+                customName={moment(values.changeDate.date).format(
+                  isMobile ? 'ddd, MMM Do' : 'dddd, MMMM Do'
+                )}
                 className={css.addedDailyPlan}
               />
             </div>
@@ -439,9 +475,13 @@ const BookingExceptions = props => {
         <Modal
           id="RemoveDayException"
           isOpen={isRemoveDayModalOpen}
-          onClose={() => setIsRemoveDayModalOpen(false)}
+          onClose={() => {
+            form.change('removeDates', null);
+            setIsRemoveDayModalOpen(false);
+          }}
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
+          contentClassName={css.modalContent}
         >
           <p className={css.modalTitle}>Remove day(s) from your booking</p>
           <FieldDatePicker

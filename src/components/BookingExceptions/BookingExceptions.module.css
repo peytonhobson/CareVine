@@ -128,31 +128,19 @@
 }
 
 .addExceptionButton {
-  width: 25%;
   padding: 0.5rem 1rem;
 }
 
 .exceptionButtonContainer {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .goToNextTabButton {
   margin-top: auto;
   margin-bottom: 24px;
   flex-shrink: 0;
-}
-
-.modalContainer {
-  composes: marketplaceModalBaseStyles from global;
-  min-height: 100vh;
-  height: 100%;
-
-  padding-left: 0;
-  padding-right: 0;
-
-  background-color: var(--matterColorBright);
 }
 
 .modalButton {
@@ -162,6 +150,11 @@
 /* Title of the modal */
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
+  padding-top: 4rem;
+
+  @media (--viewportMedium) {
+    padding-top: 0;
+  }
 }
 
 /* Paragraph for the Modal */
@@ -284,12 +277,6 @@
 
   .removeExceptionButton {
     padding: 6px 24px 0 24px;
-  }
-
-  .modalContainer {
-    flex-basis: 576px;
-    min-height: auto;
-    height: auto;
   }
 }
 
