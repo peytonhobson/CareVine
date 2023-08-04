@@ -22,7 +22,7 @@
     <!-- End Favicons -->
 
     <script type="text/javascript">
-      if("%NODE_ENV%" === "production") {
+
       window.$crisp=[];
       $crisp.push(["safe", true])
 
@@ -42,11 +42,13 @@
           window.$crisp.push(["set", "session:data", [[["firstUserMessageSent", true]]]])
           $crisp.push(["do", "message:show", ["text", "Thanks for the message! Please provide your email address so we can notify you when we respond."]]);
         }])
+
+        $crisp.push(["config", "availability:tooltip", [false]]);
       };
 
 
       window.CRISP_WEBSITE_ID="%REACT_APP_CRISP_WEBSITE_ID%";(function(){ d=document;s=d.createElement("script"); s.src="https://client.crisp.chat/l.js"; s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
-    }
+
     </script>
 
     <!--!link-->
