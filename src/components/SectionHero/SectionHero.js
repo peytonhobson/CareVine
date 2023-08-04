@@ -55,7 +55,7 @@ const SectionHero = props => {
       const image = new Image();
 
       image.onload = () => {
-        heroRef.current.style.background = ` url('${image.src}')`;
+        heroRef.current.style.background = `linear-gradient( rgba(0, 0, 0, 0.25), rgb(255, 255, 255, 0.2)), url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
         heroRef.current.style.backgroundPosition = 'center';
         heroRef.current.style.backgroundSize = 'cover';
