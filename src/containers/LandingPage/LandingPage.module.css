@@ -2,6 +2,7 @@
 
 .root {
   overflow-x: hidden;
+  background-color: var(--matterColorLight);
 }
 
 /* heroContainer gives the height for SectionHero */

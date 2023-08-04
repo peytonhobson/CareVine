@@ -103,7 +103,7 @@
 
   @media (--viewportMedium) {
     padding: 0;
-    background-color: var(--matterColorBright);
+    background-color: var(--matterColorLight);
     margin-bottom: 0;
   }
 }
