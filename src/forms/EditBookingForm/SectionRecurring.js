@@ -19,12 +19,13 @@ import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
 import { pick } from 'lodash';
 
 import css from './EditBookingForm.module.css';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const renderDayContents = (bookedDays, bookedDates) => (date, classes) => {
+const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes) => {
   const realDate = date.startOf('day');
   const day = date.day();
   const isBookedDay = bookedDays?.some(
@@ -36,6 +37,10 @@ const renderDayContents = (bookedDays, bookedDates) => (date, classes) => {
   const isBookedDate = bookedDates?.some(d => d === realDate.toISOString());
 
   const isBlocked = classes.has('blocked');
+
+  if (classes.has('selected') && isMobile) {
+    return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
+  }
 
   return isBookedDay || isBookedDate ? (
     <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
@@ -55,7 +60,7 @@ const SectionRecurring = props => {
     unavailableDates,
   } = props;
 
-  const [isEditDatesModalOpen, setIsEditDatesModalOpen] = useState(false);
+  const isMobile = useCheckMobileScreen();
 
   const { startDate, endDate } = values;
   const weekdays = pick(values, WEEKDAYS);
@@ -115,7 +120,8 @@ const SectionRecurring = props => {
             useMobileMargins
             showErrorMessage={false}
             disabled={Object.keys(weekdays).length === 0}
-            renderDayContents={renderDayContents(bookedDays, bookedDates)}
+            renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
+            withPortal={isMobile}
           />
           <div className={css.endDateContainer}>
             <FieldDateInput
@@ -135,7 +141,8 @@ const SectionRecurring = props => {
               useMobileMargins
               showErrorMessage={false}
               disabled={!startDate || !startDate.date}
-              renderDayContents={renderDayContents(bookedDays, bookedDates)}
+              renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
+              withPortal={isMobile}
             />
             <button
               className={css.removeExceptionButton}

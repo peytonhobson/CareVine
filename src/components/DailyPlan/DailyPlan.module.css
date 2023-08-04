@@ -46,6 +46,10 @@
   padding-bottom: 8px;
 }
 
+.fieldArrayRemove {
+  padding: 0.75rem 0.25rem 0 0;
+}
+
 .closeIcon {
   composes: marketplaceModalCloseIcon from global;
 
@@ -146,5 +150,12 @@
 
 .warning {
   position: absolute;
-  left: -2.5rem;
+
+  top: 2.2rem;
+  left: 0.25rem;
+
+  @media (--viewportMedium) {
+    left: -2.5rem;
+    top: auto;
+  }
 }
