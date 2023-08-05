@@ -81,7 +81,7 @@
 
 .heroMainTitle {
   composes: marketplaceHeroTitleFontStyles from global;
-  /* color: var(--marketplaceColorLight); */
+  /* color: var(--secondaryMarketplaceColor); */
   composes: animation;
   color: var(--matterColorLight);
   text-align: center;
@@ -227,7 +227,7 @@
   align-items: center;
   color: var(--matterColorBright);
   position: absolute;
-  top: 18%;
+  top: 30%;
   width: 90%;
   padding: 0 0 5rem 0;
   z-index: 1;

@@ -162,26 +162,28 @@ const SectionHero = props => {
               <br></br> For Your <br></br>{' '}
               <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
             </h1>
-            <div className={css.stepContainer}>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>1</h2>
-                <h4>
-                  Craft Your<br></br> Personal Profile
-                </h4>
+            {!isMobile && (
+              <div className={css.stepContainer}>
+                <div className={css.step}>
+                  <h2 className={css.stepIcon}>1</h2>
+                  <h4>
+                    Craft Your<br></br> Personal Profile
+                  </h4>
+                </div>
+                <div className={css.step}>
+                  <h2 className={css.stepIcon}>2</h2>
+                  <h4>
+                    Discover Your <br></br> Ideal Caregiver
+                  </h4>
+                </div>
+                <div className={css.step}>
+                  <h2 className={css.stepIcon}>3</h2>
+                  <h4>
+                    Book Your<br></br> Care
+                  </h4>
+                </div>
               </div>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>2</h2>
-                <h4>
-                  Discover Your <br></br> Ideal Caregiver
-                </h4>
-              </div>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>3</h2>
-                <h4>
-                  Book Your<br></br> Care
-                </h4>
-              </div>
-            </div>
+            )}
             <HeroSearchForm
               className={css.heroSearchForm}
               onSubmit={handleSearchSubmit}

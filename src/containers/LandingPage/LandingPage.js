@@ -26,6 +26,7 @@ import {
   SectionCaregiver,
   SectionCity,
   SectionBlog,
+  SectionMobileSteps,
 } from './sections';
 
 import shareImage from '../../assets/Background_Share_Image.png';
@@ -56,6 +57,7 @@ export const LandingPageComponent = props => {
   }, [externalPromo]);
 
   const isSsr = useIsSsr();
+  const isMobile = useCheckMobileScreen();
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -110,6 +112,7 @@ export const LandingPageComponent = props => {
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
           <div className={css.content} ref={contentRef}>
+            {isMobile && <SectionMobileSteps />}
             <SectionEmployer />
             <SectionStepSwipe />
             <SectionCaregiver />
