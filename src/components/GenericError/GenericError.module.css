@@ -34,7 +34,7 @@
 .genericErrorContent {
   padding: 16px 22px;
   border-radius: 4px;
-  background-color: var(--marketplaceColorLight);
+  background-color: var(--secondaryMarketplaceColor);
   border-radius: 4px;
 }
 

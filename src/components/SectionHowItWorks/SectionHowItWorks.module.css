@@ -21,7 +21,10 @@
 
 .authTitle {
   composes: marketplaceHeroTitleFontStyles from global;
-  background: -webkit-linear-gradient(var(--marketplaceColorLight) 20%, var(--marketplaceColor));
+  background: -webkit-linear-gradient(
+    var(--secondaryMarketplaceColor) 20%,
+    var(--marketplaceColor)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
