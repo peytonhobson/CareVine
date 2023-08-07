@@ -138,7 +138,7 @@
    :to :state/delivered}
 
   {:name :transition/start-repeat,
-   :at {:fn/timepoint [:time/booking-start]},
+   :at {:fn/ignore-if-past [{:fn/timepoint [:time/booking-start]}]},
    :actions
    [{:name :action/update-booking :config {:type :time}}],
    :from :state/delivered,

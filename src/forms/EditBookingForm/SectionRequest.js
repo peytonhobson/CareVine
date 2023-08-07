@@ -167,6 +167,9 @@ const SectionRequest = props => {
         formValues={values}
         form={form}
         subHeading={subHeading}
+        exceptions={values.exceptions}
+        bookedDays={bookedDays}
+        bookedDates={bookedDates}
       />
       <Modal
         id="WeeklyBillingDetails"
