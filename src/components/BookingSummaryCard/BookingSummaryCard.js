@@ -11,7 +11,11 @@ import {
 } from '../../components';
 import classNames from 'classnames';
 import { useMediaQuery } from '@mui/material';
-import { convertTimeFrom12to24, calculateProcessingFee } from '../../util/data';
+import {
+  convertTimeFrom12to24,
+  calculateProcessingFee,
+  findStartTimeFromLineItems,
+} from '../../util/data';
 import BookingItems from './BookingItems';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
@@ -177,19 +181,6 @@ const BookingSummaryCard = props => {
     ? subTotal
     : calculateTotalCost(subTotal, bookingFee, processingFee, refundAmount);
 
-  const recurringTabs = [
-    {
-      text: 'First Week',
-      selected: !showFullWeek,
-      onClick: () => setShowFullWeek(false),
-    },
-    {
-      text: 'Full Week',
-      selected: showFullWeek,
-      onClick: () => setShowFullWeek(true),
-    },
-  ];
-
   const minPrice = listing?.attributes?.publicData?.minPrice;
 
   return (
@@ -214,19 +205,6 @@ const BookingSummaryCard = props => {
             </span>
           </div>
         </div>
-      ) : null}
-      {itemType === 'recurring' ? (
-        <>
-          <div className={css.startEnd}>
-            <p>Start Date: {moment(startDate).format('MM/DD/YY')}</p>
-            {endDate ? <p>End Date: {moment(endDate).format('MM/DD/YY')}</p> : null}
-          </div>
-          <ButtonTabNavHorizontal
-            className={css.tabNav}
-            tabNavClassName={css.tabNav}
-            tabs={recurringTabs}
-          />
-        </>
       ) : null}
       <div className={css.summaryDetailsContainer}>
         <div className={css.detailsHeadings}>

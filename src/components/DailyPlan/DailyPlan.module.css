@@ -103,7 +103,7 @@
 }
 
 .hasEntries {
-  background-color: var(--matterColorLight);
+  background-color: var(--matterColorLight) !important;
 }
 
 .dayOfWeek {

@@ -227,7 +227,8 @@ export class CheckoutPageComponent extends Component {
             startDate,
             endDate,
             bookingRate,
-            this.state.selectedPaymentMethod.type
+            this.state.selectedPaymentMethod.type,
+            listing
           );
 
     const currentUserListingTitle = currentUserListing.attributes.title;

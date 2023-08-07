@@ -20,6 +20,7 @@ import { pick } from 'lodash';
 
 import css from './EditBookingForm.module.css';
 import { useCheckMobileScreen } from '../../util/hooks';
+import WeeklyBillingDetails from '../../components/WeeklyBillingDetails/WeeklyBillingDetails';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
