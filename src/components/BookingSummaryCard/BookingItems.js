@@ -3,7 +3,7 @@ import React from 'react';
 import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
-import { WEEKDAY_MAP } from '../../util/constants';
+import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
 
@@ -69,11 +69,10 @@ const RefundBookingItem = props => {
 };
 
 const RecurringBookingItem = props => {
-  const { bookingRate, weekday, weekdayKey, startDate, showFullWeek } = props;
+  const { bookingRate, weekday, weekdayKey, startDate } = props;
 
   const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
-  const format = showFullWeek ? 'dddd' : 'ddd, MMM Do';
-  const formattedBookingDate = bookingDate.format(format);
+  const formattedBookingDate = bookingDate.format('ddd, MMM Do');
 
   const { startTime, endTime } = weekday[0];
 
@@ -93,6 +92,7 @@ const RecurringBookingItem = props => {
   );
 };
 
+// Start date should be within week you're looking at, not actual booking start date
 const BookingItems = props => {
   const {
     bookingDates,
@@ -100,9 +100,11 @@ const BookingItems = props => {
     bookingRate,
     weekdays,
     startDate,
-    showFullWeek,
     itemType,
     lineItems,
+    exceptions,
+    bookedDays,
+    bookedDates,
   } = props;
 
   switch (itemType) {
@@ -128,8 +130,93 @@ const BookingItems = props => {
       ));
     }
     case 'recurring': {
-      return Object.keys(weekdays)?.map((weekdayKey, index) => {
-        const weekday = weekdays[weekdayKey];
+      const addedDays =
+        exceptions?.addedDays.filter(day =>
+          moment(day.date).isBetween(
+            moment(startDate).startOf('week'),
+            moment(startDate).endOf('week'),
+            'day',
+            '[]'
+          )
+        ) ?? [];
+      const removedDays =
+        exceptions?.removedDays.filter(day =>
+          moment(day.date).isBetween(
+            moment(startDate).startOf('week'),
+            moment(startDate).endOf('week'),
+            'day',
+            '[]'
+          )
+        ) ?? [];
+      const changedDays =
+        exceptions?.changedDays.filter(day =>
+          moment(day.date).isBetween(
+            moment(startDate).startOf('week'),
+            moment(startDate).endOf('week'),
+            'day',
+            '[]'
+          )
+        ) ?? [];
+
+      const weekdaysWithExceptions = Object.keys(weekdays).reduce((acc, weekdayKey) => {
+        const removedDay = removedDays.find(
+          day => WEEKDAYS[moment(day.date).weekday()] === weekdayKey
+        );
+        const isBookedDate = bookedDates.find(date =>
+          moment(startDate)
+            .weekday(WEEKDAY_MAP[weekdayKey])
+            .isSame(date, 'day')
+        );
+        const realDate = moment(startDate)
+          .weekday(WEEKDAY_MAP[weekdayKey])
+          .toDate();
+        const isBookedDay = bookedDays.some(
+          d =>
+            d.days.some(dd => WEEKDAY_MAP[dd] === moment(realDate).weekday()) &&
+            (!d.endDate || realDate <= moment(d.endDate)) &&
+            realDate >= moment(d.startDate)
+        );
+        if (removedDay || isBookedDate || isBookedDay) {
+          return acc;
+        }
+
+        const changedDay = changedDays.find(
+          day => WEEKDAYS[moment(day.date).weekday()] === weekdayKey
+        );
+        if (changedDay) {
+          return {
+            ...acc,
+            [weekdayKey]: [
+              {
+                startTime: changedDay.startTime,
+                endTime: changedDay.endTime,
+              },
+            ],
+          };
+        }
+
+        return {
+          ...acc,
+          [weekdayKey]: weekdays[weekdayKey],
+        };
+      }, {});
+
+      const weekdaysWithAddedDays = addedDays.reduce((acc, addedDay) => {
+        const weekdayKey = WEEKDAYS[moment(addedDay.date).weekday()];
+
+        return {
+          ...acc,
+          [weekdayKey]: [
+            {
+              startTime: addedDay.startTime,
+              endTime: addedDay.endTime,
+            },
+          ],
+        };
+      }, weekdaysWithExceptions);
+
+      return Object.keys(weekdaysWithAddedDays)?.map((weekdayKey, index) => {
+        const weekday = weekdaysWithAddedDays[weekdayKey];
 
         return (
           <RecurringBookingItem
@@ -137,7 +224,6 @@ const BookingItems = props => {
             weekdayKey={weekdayKey}
             bookingRate={bookingRate}
             startDate={startDate}
-            showFullWeek={showFullWeek}
             key={weekdayKey}
           />
         );
@@ -149,4 +235,4 @@ const BookingItems = props => {
   }
 };
 
-export default BookingItems;
+export default React.memo(BookingItems);

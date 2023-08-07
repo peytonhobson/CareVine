@@ -276,9 +276,9 @@ module.exports = queryEvents = () => {
       const metadata = transaction.attributes.metadata;
       const hasNextBooking = metadata.bookingSchedule && !metadata.cancelAtPeriodEnd;
 
-      if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
-        updateBookingEnd(transaction);
-      }
+      // if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
+      //   updateBookingEnd(transaction);
+      // }
 
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
@@ -291,19 +291,19 @@ module.exports = queryEvents = () => {
         createCaregiverPayout(transaction);
       }
 
-      if (
-        lastTransition === 'transition/complete' ||
-        lastTransition === 'transition/complete-canceled'
-      ) {
-        makeReviewable(transaction);
-        createCaregiverPayout(transaction);
-        updateBookingLedger(transaction);
-      }
+      // if (
+      //   lastTransition === 'transition/complete' ||
+      //   lastTransition === 'transition/complete-canceled'
+      // ) {
+      //   makeReviewable(transaction);
+      //   createCaregiverPayout(transaction);
+      //   updateBookingLedger(transaction);
+      // }
 
-      if (lastTransition === 'transition/complete' && hasNextBooking) {
-        updateNextWeekStart(transaction);
-        updateNextWeekMetadata(transaction);
-      }
+      // if (lastTransition === 'transition/complete' && hasNextBooking) {
+      //   updateNextWeekStart(transaction);
+      //   updateNextWeekMetadata(transaction);
+      // }
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

@@ -98,13 +98,15 @@ const BookingSummaryCard = props => {
     weekdays = [],
     startDate,
     endDate,
+    exceptions,
+    bookedDays,
+    bookedDates,
     lineItems: allLineItems,
   } = props;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const [showArrow, setShowArrow] = useState(false);
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
-  const [showFullWeek, setShowFullWeek] = useState(false);
 
   const heightRef = useRef(null);
 
@@ -125,11 +127,9 @@ const BookingSummaryCard = props => {
     return Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
       const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
 
-      return bookingDate >= startDate || showFullWeek
-        ? { ...acc, [weekdayKey]: weekdays[weekdayKey] }
-        : acc;
+      return bookingDate >= startDate ? { ...acc, [weekdayKey]: weekdays[weekdayKey] } : acc;
     }, {});
-  }, [weekdays, startDate, showFullWeek]);
+  }, [weekdays, startDate]);
 
   const cardRef = useCallback(node => {
     if (node !== null && window.innerWidth >= 1024) {
@@ -219,9 +219,11 @@ const BookingSummaryCard = props => {
             bookingRate={bookingRate}
             weekdays={filteredWeekdays}
             startDate={startDate}
-            showFullWeek={showFullWeek}
             itemType={itemType}
             lineItems={lineItems}
+            exceptions={exceptions}
+            bookedDays={bookedDays}
+            bookedDates={bookedDates}
           />
         </div>
         <div className={css.totalContainer}>
