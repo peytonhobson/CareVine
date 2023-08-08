@@ -445,8 +445,8 @@
       font-size: 1.9vw;
       line-height: 2rem;
       line-height: 1.9vw;
-      margin-bottom: 0.35rem;
-      margin-bottom: 0.35vw;
+      margin-bottom: 0.25rem;
+      margin-bottom: 0.25vw;
     }
   }
 
@@ -464,8 +464,8 @@
     }
 
     @media (--viewportLarge) {
-      font-size: 0.9rem;
-      font-size: 0.85vw;
+      font-size: 1rem;
+      font-size: 0.95vw;
       line-height: 1.1rem;
       line-height: 1.1vw;
     }
