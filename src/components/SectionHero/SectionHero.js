@@ -6,10 +6,9 @@ import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../.
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { HeroSearchForm } from '../../forms';
-import { routeConfiguration } from '../..';
-import { createResourceLocatorString } from '../../util/routes';
 
 import backgroundImage from '../../assets/landing-background.jpg';
+import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
 
@@ -61,7 +60,9 @@ const SectionHero = props => {
         setHeroLoaded(true);
       };
 
-      image.src = backgroundImage;
+      const isMobile = window.innerWidth < 768;
+
+      image.src = isMobile ? mobileBackgroundImage : backgroundImage;
     }
   }, [heroRef?.current]);
 
@@ -160,28 +161,30 @@ const SectionHero = props => {
               <br></br> For Your <br></br>{' '}
               <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
             </h1>
-            {!isMobile && (
-              <div className={css.stepContainer}>
-                <div className={css.step}>
-                  <h2 className={css.stepIcon}>1</h2>
-                  <h4>
-                    Craft Your<br></br> Personal Profile
-                  </h4>
-                </div>
-                <div className={css.step}>
-                  <h2 className={css.stepIcon}>2</h2>
-                  <h4>
-                    Discover Your <br></br> Ideal Caregiver
-                  </h4>
-                </div>
-                <div className={css.step}>
-                  <h2 className={css.stepIcon}>3</h2>
-                  <h4>
-                    Book Your<br></br> Care
-                  </h4>
+            <div className={css.stepContainer}>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>1</h2>
+                <div className={css.stepDescription}>
+                  <h2>Browse</h2>
+                  <p>from local caregivers that fit your needs</p>
                 </div>
               </div>
-            )}
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>2</h2>
+                <div className={css.stepDescription}>
+                  <h2>Select</h2>
+                  <p>the caregiver you want to hire</p>
+                </div>
+              </div>
+              <div className={css.step}>
+                <h2 className={css.stepIcon}>3</h2>
+                <div className={css.stepDescription}>
+                  <h2>Book</h2>
+                  <p>with our easy-to-use booking system</p>
+                </div>
+              </div>
+            </div>
+            <h2 className={css.inArea}>See Who's In Your Area</h2>
             <HeroSearchForm
               className={css.heroSearchForm}
               onSubmit={handleSearchSubmit}

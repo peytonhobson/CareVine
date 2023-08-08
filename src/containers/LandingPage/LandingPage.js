@@ -112,7 +112,7 @@ export const LandingPageComponent = props => {
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
           <div className={css.content} ref={contentRef}>
-            {isMobile && <SectionMobileSteps />}
+            {/* {isMobile && <SectionMobileSteps />} */}
             <SectionEmployer />
             <SectionStepSwipe />
             <SectionCaregiver />
