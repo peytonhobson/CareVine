@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
 import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
+import RecurringBookingSummaryCard from '../BookingSummaryCard/Recurring/RecurringBookingSummaryCard';
 
 import css from './WeeklyBillingDetails.module.css';
 
@@ -65,15 +66,20 @@ const formatDay = (
 
   const isHoveredWeek = isSameISOWeek(date, hoveredDate);
 
-  const beforeStartDate = moment(date).isBefore(startDate);
+  const beforeStartWeek = moment(date).isBefore(startDate, 'week');
+  const isSunday = moment(date).day() === 0;
+  const isSaturday = moment(date).day() === 6;
   const day = date.getDate();
 
   return (
     <div
       className={classNames(css.day, {
-        [css.highlighted]: !!isHoveredWeek && !beforeStartDate,
-        [css.inBookingSchedule]: !!inBookingSchedule,
-        [css.disabled]: !!beforeStartDate,
+        [css.highlighted]: isHoveredWeek && !beforeStartWeek,
+        [css.highlightable]: !beforeStartWeek,
+        [css.inBookingSchedule]: inBookingSchedule,
+        [css.disabled]: beforeStartWeek,
+        [css.sunday]: isSunday,
+        [css.saturday]: isSaturday,
       })}
       onMouseEnter={() => setHoveredDate(date)}
       onMouseLeave={() => setHoveredDate(null)}
@@ -92,36 +98,64 @@ export const WeeklyBillingDetails = props => {
     exceptions,
     startDate,
     endDate,
-    children,
     className,
+    currentAuthor,
+    bookingRate,
+    listing,
+    onManageDisableScrolling,
+    selectedPaymentMethodType,
   } = props;
 
   const classes = classNames(className, css.root);
   const initialDate = startDate ? new Date(startDate) : new Date();
 
   const [hoveredDate, setHoveredDate] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(false);
+
+  const handleClickDay = date => {
+    setSelectedWeek(moment(date).startOf('week'));
+  };
 
   return (
     <div className={classes}>
-      <Calendar
-        formatDay={(locale, date) =>
-          formatDay(
-            date,
-            bookedDates,
-            bookedDays,
-            bookingSchedule,
-            startDate,
-            endDate,
-            exceptions,
-            hoveredDate,
-            setHoveredDate
-          )
-        }
-        value={initialDate}
-        calendarType="Hebrew"
-        view="month"
-      />
-      {children}
+      {selectedWeek ? (
+        <RecurringBookingSummaryCard
+          currentAuthor={currentAuthor}
+          bookingRate={bookingRate}
+          listing={listing}
+          onManageDisableScrolling={onManageDisableScrolling}
+          selectedPaymentMethod={selectedPaymentMethodType}
+          subHeading="Weekly Billing Summary"
+          weekdays={bookingSchedule}
+          startDate={selectedWeek}
+          endDate={moment(selectedWeek).endOf('week')}
+          exceptions={exceptions}
+          bookedDays={bookedDays}
+          bookedDates={bookedDates}
+          hideWeeklyBillingDetails
+          className={css.summaryCard}
+        />
+      ) : (
+        <Calendar
+          formatDay={(_, date) =>
+            formatDay(
+              date,
+              bookedDates,
+              bookedDays,
+              bookingSchedule,
+              startDate,
+              endDate,
+              exceptions,
+              hoveredDate,
+              setHoveredDate
+            )
+          }
+          value={initialDate}
+          calendarType="Hebrew"
+          view="month"
+          onClickDay={handleClickDay}
+        />
+      )}
     </div>
   );
 };

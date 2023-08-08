@@ -132,7 +132,7 @@ const NotificationNewBookingRequest = props => {
           )}
         </div>
         <div className={css.bookingInfo}>
-          <BookingSummaryCard
+          {/* <BookingSummaryCard
             className={css.summaryCard}
             currentAuthor={currentUser}
             selectedBookingTimes={bookingTimes}
@@ -143,7 +143,7 @@ const NotificationNewBookingRequest = props => {
             hideAvatar
             hideRatesButton
             hideFees
-          />
+          /> */}
           {(transitionTransactionError || acceptBookingError) && (
             <p className={css.error}>
               Something went wrong with accepting or declining the booking request. Please try

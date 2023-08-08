@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import { PaymentMethods, Button, Modal } from '../../components';
+import { PaymentMethods, Button, Modal } from '../../../components';
 
-import css from './EditBookingForm.module.css';
+import css from '../EditBookingForm.module.css';
 
 const SectionPayment = props => {
   const {

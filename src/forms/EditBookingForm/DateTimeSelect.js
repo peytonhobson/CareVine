@@ -6,10 +6,10 @@ import { convertTimeFrom12to24 } from '../../util/data';
 import css from './EditBookingForm.module.css';
 
 const DateTimeSelect = props => {
-  const { monthYearBookingDate, values } = props;
+  const { date, values } = props;
 
-  const startTimeValue = values.dateTimes?.[monthYearBookingDate]?.startTime;
-  const endTimeValue = values.dateTimes?.[monthYearBookingDate]?.endTime;
+  const startTimeValue = values.dateTimes?.[date]?.startTime;
+  const endTimeValue = values.dateTimes?.[date]?.endTime;
   const integerStartTimeVal = startTimeValue
     ? Number.parseInt(convertTimeFrom12to24(startTimeValue).split(':')[0])
     : null;
@@ -18,21 +18,18 @@ const DateTimeSelect = props => {
     : 0;
 
   return (
-    <div className={css.dateContainer} key={monthYearBookingDate}>
-      <h3 className={css.date}>{monthYearBookingDate}</h3>
+    <div className={css.dateContainer} key={date}>
+      <h3 className={css.date}>{date}</h3>
       <div className={css.formRow}>
         <div className={css.field}>
-          <label
-            htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
-            className={css.timeSelectLabel}
-          >
+          <label htmlFor={`dateTimes.${date}.startTime`} className={css.timeSelectLabel}>
             Start Time
           </label>
           <FieldSelect
-            id={`dateTimes.${monthYearBookingDate}.startTime`}
-            name={`dateTimes.${monthYearBookingDate}.startTime`}
+            id={`dateTimes.${date}.startTime`}
+            name={`dateTimes.${date}.startTime`}
             selectClassName={css.timeSelect}
-            initialValueSelected={monthYearBookingDate.startTime}
+            initialValueSelected={date.startTime}
           >
             <option disabled value="">
               8:00am
@@ -53,15 +50,12 @@ const DateTimeSelect = props => {
         </div>
         <span className={css.dashBetweenTimes}>-</span>
         <div className={css.field}>
-          <label
-            htmlFor={`dateTimes.${monthYearBookingDate}.startTime`}
-            class={css.timeSelectLabel}
-          >
+          <label htmlFor={`dateTimes.${date}.startTime`} class={css.timeSelectLabel}>
             End Time
           </label>
           <FieldSelect
-            id={`dateTimes.${monthYearBookingDate}.endTime`}
-            name={`dateTimes.${monthYearBookingDate}.endTime`}
+            id={`dateTimes.${date}.endTime`}
+            name={`dateTimes.${date}.endTime`}
             selectClassName={css.timeSelect}
           >
             <option disabled value="">

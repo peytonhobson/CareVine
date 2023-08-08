@@ -255,7 +255,7 @@ const EmployerBookingCard = props => {
           usePortal
         >
           <p className={css.modalTitle}>Payment Summary</p>
-          <BookingSummaryCard
+          {/* <BookingSummaryCard
             className={css.bookingSummaryCard}
             authorDisplayName={providerDisplayName}
             currentAuthor={provider}
@@ -269,7 +269,7 @@ const EmployerBookingCard = props => {
             subHeading={<span className={css.bookingWith}>Payment Details</span>}
             refundAmount={refundAmount}
             hideRatesButton
-          />
+          /> */}
         </Modal>
       )}
       {isBookingCalendarModalOpen && (
@@ -321,11 +321,11 @@ const EmployerBookingCard = props => {
                 </li>
               </ul>
               <div>
-                <BookingSummaryCard
+                {/* <BookingSummaryCard
                   className={css.bookingSummaryCard}
                   lineItems={lineItems}
                   onManageDisableScrolling={onManageDisableScrolling}
-                />
+                /> */}
               </div>
             </>
           ) : (
