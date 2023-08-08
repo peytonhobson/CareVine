@@ -11,6 +11,7 @@ import backgroundImage from '../../assets/landing-background.jpg';
 import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
+import UnauthenticatedContainer from './UnauthenticatedContainer';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
@@ -155,58 +156,7 @@ const SectionHero = props => {
             ) : null}
           </div>
         ) : (
-          <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>
-              Find <span style={{ color: 'var(--marketplaceColor)' }}>Local Caregivers</span>
-              <br></br> For Your <br></br>{' '}
-              <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
-            </h1>
-            <div className={css.stepContainer}>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>1</h2>
-                <div className={css.stepDescription}>
-                  <h2>Browse</h2>
-                  <p>from local caregivers that fit your needs</p>
-                </div>
-              </div>
-              {/* {!isMobile && (
-                <IconArrowHead
-                  direction="right"
-                  className={css.stepArrow}
-                  height="2.5em"
-                  width="2.5em"
-                />
-              )} */}
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>2</h2>
-                <div className={css.stepDescription}>
-                  <h2>Select</h2>
-                  <p>the caregiver you want to hire</p>
-                </div>
-              </div>
-              {/* {!isMobile && (
-                <IconArrowHead
-                  direction="right"
-                  className={css.stepArrow}
-                  height="2.5em"
-                  width="2.5em"
-                />
-              )} */}
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>3</h2>
-                <div className={css.stepDescription}>
-                  <h2>Book</h2>
-                  <p>with our easy-to-use booking system</p>
-                </div>
-              </div>
-            </div>
-            <h2 className={css.inArea}>See Who's In Your Area</h2>
-            <HeroSearchForm
-              className={css.heroSearchForm}
-              onSubmit={handleSearchSubmit}
-              isMobile={isMobile}
-            />
-          </div>
+          <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
         )
       ) : null}
 

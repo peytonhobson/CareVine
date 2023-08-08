@@ -250,8 +250,8 @@
   }
 
   @media (--viewportLarge) {
-    max-width: 50vw;
-    padding-right: 5vw;
+    max-width: 51vw;
+    padding-right: 4vw;
   }
 
   @media (--viewportXLarge) {
@@ -273,13 +273,15 @@
   @media (--viewportMedium) {
     font-size: 3.5rem;
     line-height: 4rem;
+    margin-bottom: 5rem;
+    margin-bottom: 12vw;
   }
 
   @media (--viewportLarge) {
     font-size: 3.5vw;
     line-height: 4vw;
-    margin-bottom: 1.5rem;
-    margin-bottom: 1.5vw;
+    margin-bottom: 3rem;
+    margin-bottom: 3.25vw;
   }
   text-align: center;
 }
@@ -326,17 +328,28 @@
     justify-content: space-evenly;
     width: 100%;
     justify-items: center;
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     gap: 2em;
-    padding: 2rem;
+    padding: 0;
     margin-bottom: 1.5rem;
     margin-bottom: 5vw;
+    background-color: transparent;
   }
 
   @media (--viewportLarge) {
     padding: 0.5rem 1rem;
     margin-bottom: 1.5rem;
     margin-bottom: 1.5vw;
+  }
+}
+
+.desktopCard {
+  background-color: transparent;
+
+  @media (--viewportMedium) {
+    background-color: rgba(198, 205, 199, 0.6);
+    border-radius: var(--borderRadius);
+    padding: 2rem;
   }
 }
 
@@ -385,7 +398,8 @@
   padding: 2vw 0;
 
   @media (--viewportLarge) {
-    max-width: 13vw;
+    max-width: 15vw;
+    padding: 0;
     & > h4 {
       font-size: 1vw;
       line-height: 1.5vw;
