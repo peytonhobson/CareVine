@@ -272,6 +272,8 @@
   @media (--viewportLarge) {
     font-size: 3.5vw;
     line-height: 4vw;
+    margin-bottom: 1.5rem;
+    margin-bottom: 1.5vw;
   }
   text-align: center;
 }
@@ -309,6 +311,8 @@
   padding: 2rem 4rem;
   margin-bottom: 1rem;
   margin-bottom: 3.5vw;
+  composes: animation;
+  composes: heroSubTitleFEDelay;
 
   @media (--viewportMedium) {
     display: grid;
@@ -317,6 +321,15 @@
     justify-items: center;
     margin-top: 1rem;
     gap: 2em;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    margin-bottom: 5vw;
+  }
+
+  @media (--viewportLarge) {
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    margin-bottom: 1.5vw;
   }
 }
 
@@ -328,20 +341,30 @@
   height: 2.5rem;
   width: 2.5rem;
   min-width: 2.5rem;
-  /* height: 7.5vw;
+  height: 7.5vw;
   width: 7.5vw;
-  min-width: 7.5vw; */
+  min-width: 7.5vw;
   background-color: var(--marketplaceColor);
   border-radius: 100%;
   margin-right: 1rem;
   margin-block: 0;
+
+  @media (--viewportMedium) {
+    width: 5vw;
+    height: 5vw;
+    min-width: 5vw;
+    margin-right: 0.75rem;
+
+    font-size: 3vw;
+    line-height: 3vw;
+  }
 
   @media (--viewportLarge) {
     width: 3vw;
     height: 3vw;
     min-width: 3vw;
 
-    font-size: 1.35vw;
+    font-size: 1.75vw;
     line-height: 1.75vw;
   }
 }
@@ -369,12 +392,38 @@
   padding-top: 0.5rem;
   padding-top: 1.5vw;
 
+  @media (--viewportMedium) {
+    padding-top: 0.3rem;
+    padding-top: 0.6vw;
+  }
+
+  @media (--viewportLarge) {
+    padding-top: 0.3rem;
+    padding-top: 0.5vw;
+  }
+
   & > h2 {
     font-size: 1.75rem;
     font-size: 6vw;
     margin-top: 0;
     margin-bottom: 0.35rem;
     margin-bottom: 1.5vw;
+
+    @media (--viewportMedium) {
+      font-size: 2rem;
+      font-size: 4vw;
+      line-height: 2rem;
+      line-height: 4vw;
+    }
+
+    @media (--viewportLarge) {
+      font-size: 2rem;
+      font-size: 2.2vw;
+      line-height: 2rem;
+      line-height: 2.2vw;
+      margin-bottom: 0.35rem;
+      margin-bottom: 0.35vw;
+    }
   }
 
   & > p {
@@ -382,9 +431,30 @@
     line-height: 1rem;
     line-height: 3vw;
     margin: 0;
+
+    @media (--viewportMedium) {
+      font-size: 1rem;
+      font-size: 4vw;
+      line-height: 1.25rem;
+      line-height: 4vw;
+    }
+
+    @media (--viewportMedium) {
+      font-size: 0.9rem;
+      font-size: 1.1vw;
+      line-height: 1.1rem;
+      line-height: 1.2vw;
+    }
   }
 }
 
 .inArea {
   font-size: 4.5vw;
+
+  @media (--viewportLarge) {
+    font-size: 2.25rem;
+    line-height: 2.25rem;
+    font-size: 2.5vw;
+    line-height: 2.5vw;
+  }
 }
