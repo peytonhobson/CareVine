@@ -159,7 +159,8 @@ export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/Book
 export { default as BookingDateRangeLengthFilter } from './BookingDateRangeLengthFilter/BookingDateRangeLengthFilter';
 export { default as BookingPanel } from './BookingPanel/BookingPanel';
 export { default as PaymentMethods } from './PaymentMethods/PaymentMethods';
-export { default as BookingSummaryCard} from './BookingSummaryCard/BookingSummaryCard';
+export { default as SingleBookingSummaryCard } from './BookingSummaryCard/Single/SingleBookingSummaryCard';
+export { default as RecurringBookingSummaryCard } from './BookingSummaryCard/Recurring/RecurringBookingSummaryCard';
 export { default as BookingTimeInfo } from './BookingTimeInfo/BookingTimeInfo';
 export { default as CaregiverBookingCard} from './BookingCards/CaregiverBookingCard';
 export { default as CaregiverListingCard } from './CaregiverListingCard/CaregiverListingCard';
@@ -204,6 +205,7 @@ export { default as TransactionPanel } from './TransactionPanel/TransactionPanel
 export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export { default as WeekPanel } from './WeekPanel/WeekPanel';
+export { default as WeeklyBillingDetails } from './WeeklyBillingDetails/WeeklyBillingDetails';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

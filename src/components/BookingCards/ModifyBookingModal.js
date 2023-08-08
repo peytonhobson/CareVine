@@ -76,7 +76,7 @@ const ModifyBookingModal = props => {
             notified when the provider accepts or declines your request. If the provider declines or
             the request expires in 72 hours from now, the booking will remain as is.
           </p>
-          <BookingSummaryCard
+          {/* <BookingSummaryCard
             className={css.changeSummaryCard}
             authorDisplayName={providerDisplayName}
             currentAuthor={provider}
@@ -88,7 +88,7 @@ const ModifyBookingModal = props => {
             hideAvatar
             subHeading={<span className={css.bookingWith}>Modified Booking Summary</span>}
             hideRatesButton
-          />
+          /> */}
           <Button onClick={onSubmitRequest}>Request Booking Change</Button>
         </>
       )}

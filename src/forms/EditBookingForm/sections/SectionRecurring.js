@@ -1,26 +1,17 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
-import {
-  DailyPlan,
-  Modal,
-  WeekPanel,
-  FieldDateInput,
-  IconClose,
-  Button,
-  BookingExceptions,
-} from '../../components';
+import { DailyPlan, FieldDateInput, IconClose, BookingExceptions } from '../../../components';
 import {
   formatFieldDateInput,
   parseFieldDateInput,
   filterAvailableBookingEndDates,
   filterAvailableBookingStartDates,
-} from '../../util/dates';
-import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
+} from '../../../util/dates';
+import { WEEKDAYS, WEEKDAY_MAP } from '../../../util/constants';
 import { pick } from 'lodash';
+import { useCheckMobileScreen } from '../../../util/hooks';
 
-import css from './EditBookingForm.module.css';
-import { useCheckMobileScreen } from '../../util/hooks';
-import WeeklyBillingDetails from '../../components/WeeklyBillingDetails/WeeklyBillingDetails';
+import css from '../EditBookingForm.module.css';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:

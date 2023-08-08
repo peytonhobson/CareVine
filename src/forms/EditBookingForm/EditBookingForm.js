@@ -21,10 +21,7 @@ import {
 } from '../../util/errors';
 import { createSlug } from '../../util/urlHelpers';
 import { useMediaQuery } from '@mui/material';
-import SectionOneTime from './SectionOneTime';
-import SectionRecurring from './SectionRecurring';
-import SectionRequest from './SectionRequest';
-import SectionPayment from './SectionPayment';
+import { SectionOneTime, SectionRecurring, SectionRequest, SectionPayment } from './sections';
 import moment from 'moment';
 import { WEEKDAYS } from '../../util/constants';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -131,18 +128,10 @@ const EditBookingFormComponent = props => (
     render={formRenderProps => {
       const {
         className,
-        ready,
         handleSubmit,
-        pristine,
-        updated,
-        updateInProgress,
-        monthYearBookingDates,
-        onChange,
         values,
         form,
         onManageDisableScrolling,
-        bookingDates,
-        onSetState,
         authorDisplayName,
         defaultPaymentMethods,
         selectedPaymentMethod,
@@ -184,7 +173,6 @@ const EditBookingFormComponent = props => (
           storageKey: STORAGE_KEY,
         };
 
-        onSetState(saveParams);
         storeData(saveParams);
       };
 
@@ -223,6 +211,17 @@ const EditBookingFormComponent = props => (
           if (values.endDate && !isSelectedWeekday(weekdays, values.endDate.date)) {
             setGoToPaymentError(
               "Your selected end date doesn't fall on one of your selected weekdays. Please select a new end date."
+            );
+            return false;
+          }
+
+          if (
+            values.exceptions.removedDays.some(d =>
+              moment(d.date).isSame(values.startDate.date, 'day')
+            )
+          ) {
+            setGoToPaymentError(
+              'Your selected start date is also a day you removed. Please select a new start date or add the date back.'
             );
             return false;
           }
@@ -348,35 +347,10 @@ const EditBookingFormComponent = props => (
         );
       }
 
-      useEffect(() => {
-        form.change('bookingDates', bookingDates);
-      }, [JSON.stringify(bookingDates)]);
-
-      const handleSaveBookingDates = bd => {
-        onSetState({ bookingDates: bd });
-        const newMonthYearBookingDates = bd.map(
-          bookingDate =>
-            `${new Date(bookingDate).getMonth() + 1}/${new Date(bookingDate).getDate()}`
-        );
-
-        const newDateTimes = values.dateTimes
-          ? Object.keys(values.dateTimes)?.reduce((acc, monthYear) => {
-              if (newMonthYearBookingDates.includes(monthYear)) {
-                acc[monthYear] = values.dateTimes[monthYear];
-              }
-              return acc;
-            }, {})
-          : {};
-
-        form.change('dateTimes', newDateTimes);
-      };
-
       const selectedPaymentMethodType =
         selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
 
       const classes = classNames(css.root, className);
-      const submitInProgress = updateInProgress;
-      const submitReady = (updated && pristine) || ready;
 
       let tabContent = null;
       switch (selectedTab) {
@@ -391,10 +365,9 @@ const EditBookingFormComponent = props => (
               {values.scheduleType === 'oneTime' ? (
                 <SectionOneTime
                   bookedDates={bookedDates}
-                  onSaveBookingDates={handleSaveBookingDates}
                   values={values}
-                  monthYearBookingDates={monthYearBookingDates}
                   listing={currentListing}
+                  form={form}
                 />
               ) : (
                 <SectionRecurring
@@ -445,10 +418,9 @@ const EditBookingFormComponent = props => (
               currentAuthor={currentAuthor}
               currentListing={currentListing}
               values={values}
-              bookingDates={bookingDates}
+              bookingDates={values.bookingDates}
               bookingRate={bookingRate}
               onManageDisableScrolling={onManageDisableScrolling}
-              onSetState={onSetState}
               selectedPaymentMethodType={selectedPaymentMethodType}
               initiateOrderErrorMessage={initiateOrderErrorMessage}
               listingNotFoundErrorMessage={listingNotFoundErrorMessage}
@@ -466,7 +438,6 @@ const EditBookingFormComponent = props => (
         <Form className={classes} onSubmit={handleSubmit}>
           <FormSpy
             onChange={e => {
-              onChange(e);
               setGoToPaymentError(null);
               setGoToRequestError(null);
               storeFormData();

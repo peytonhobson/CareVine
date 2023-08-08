@@ -225,3 +225,32 @@
 .marketplaceColor {
   color: var(--marketplaceColor);
 }
+
+.weeklyBillingDetailsButton {
+  width: auto;
+  min-height: 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  @media (--viewportMedium) {
+    line-height: 1rem;
+  }
+}
+
+.recurringSubheading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.summaryDays {
+  margin-left: 1.5rem;
+}
+
+.startEndDates {
+  composes: marketplaceTinyFontStyles from global;
+  margin: 0;
+  color: var(--marketplaceColor);
+}

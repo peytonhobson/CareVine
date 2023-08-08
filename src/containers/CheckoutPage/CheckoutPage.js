@@ -52,7 +52,6 @@ export class CheckoutPageComponent extends Component {
       pageData: {},
       dataLoaded: false,
       submitting: false,
-      selectedBookingTimes: [],
       selectedPaymentMethod: null,
       showConfirmation: false,
       showBookingSummary: false,
@@ -61,7 +60,6 @@ export class CheckoutPageComponent extends Component {
 
     this.loadInitialData = this.loadInitialData.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleEditBookingFormChange = this.handleEditBookingFormChange.bind(this);
   }
 
   componentDidMount() {
@@ -251,14 +249,6 @@ export class CheckoutPageComponent extends Component {
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
   }
 
-  handleEditBookingFormChange = e => {
-    const { dateTimes } = e.values;
-
-    this.setState({
-      selectedBookingTimes: formatDateTimeValues(dateTimes || {}),
-    });
-  };
-
   render() {
     const {
       scrollingDisabled,
@@ -270,7 +260,6 @@ export class CheckoutPageComponent extends Component {
       stripeCustomerFetched,
       monthlyTimeSlots,
       onManageDisableScrolling,
-      onSetState,
       defaultPaymentFetched,
       defaultPaymentMethods,
       fetchDefaultPaymentError,
@@ -327,13 +316,6 @@ export class CheckoutPageComponent extends Component {
       return <NamedRedirect name="ListingPage" params={params} />;
     }
 
-    const monthYearBookingDates = bookingDates.map(bookingDate => {
-      const month = new Date(bookingDate).getMonth() + 1;
-      const day = new Date(bookingDate).getDate();
-
-      return `${month}/${day}`;
-    });
-
     const authorDisplayName = currentAuthor.attributes.profile.displayName;
 
     if (transaction) {
@@ -377,12 +359,8 @@ export class CheckoutPageComponent extends Component {
             className={css.editBookingForm}
             listing={currentListing}
             onSubmit={this.handleSubmit}
-            onChange={this.handleEditBookingFormChange}
-            monthYearBookingDates={monthYearBookingDates}
             monthlyTimeSlots={monthlyTimeSlots}
             onManageDisableScrolling={onManageDisableScrolling}
-            bookingDates={bookingDates.map(bookingDate => new Date(bookingDate))}
-            onSetState={onSetState}
             authorDisplayName={authorDisplayName}
             defaultPaymentMethods={defaultPaymentMethods}
             selectedPaymentMethod={this.state.selectedPaymentMethod}
@@ -399,7 +377,16 @@ export class CheckoutPageComponent extends Component {
             fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
             stripeCustomerFetched={stripeCustomerFetched}
             onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
-            initialValues={{ scheduleType, startDate, endDate, ...weekdays, dateTimes, exceptions }}
+            initialValues={{
+              scheduleType,
+              startDate,
+              endDate,
+              ...weekdays,
+              dateTimes,
+              exceptions,
+              bookingDates,
+              bookingRate,
+            }}
             storeData={storeData}
           />
         </div>
@@ -464,7 +451,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onSetState: values => dispatch(setStateValues(values)),
 });
 
 const CheckoutPage = compose(

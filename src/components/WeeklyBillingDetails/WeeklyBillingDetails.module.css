@@ -19,6 +19,7 @@
   justify-content: center;
   flex-wrap: wrap;
   padding: 0 1rem;
+  border-radius: var(--borderRadius);
 
   & :global(.selected-date) {
     margin: 0 auto;
@@ -153,6 +154,14 @@
       cursor: pointer;
     }
 
+    & .disabled {
+      color: var(--matterColorNegative);
+    }
+
+    & .highlightable {
+      background-color: var(--matterColorNegative);
+    }
+
     & .highlighted {
       background-color: var(--marketplaceColor);
       color: var(--matterColorLight);
@@ -162,8 +171,14 @@
       color: var(--successColor);
     }
 
-    & .disabled {
-      color: var(--matterColorNegative);
+    & .saturday {
+      border-top-right-radius: var(--borderRadius);
+      border-bottom-right-radius: var(--borderRadius);
+    }
+
+    & .sunday {
+      border-top-left-radius: var(--borderRadius);
+      border-bottom-left-radius: var(--borderRadius);
     }
   }
 
@@ -199,4 +214,9 @@
   & :global(.react-calendar__navigation__next-button) {
     font-size: 1.5rem;
   }
+}
+
+.summaryCard {
+  border: none;
+  border-radius: var(--borderRadius);
 }

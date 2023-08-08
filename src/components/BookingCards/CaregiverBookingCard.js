@@ -256,7 +256,7 @@ const CaregiverBookingCard = props => {
           usePortal
         >
           <p className={css.modalTitle}>Payment Summary</p>
-          <BookingSummaryCard
+          {/* <BookingSummaryCard
             className={css.bookingSummaryCard}
             authorDisplayName={customerDisplayName}
             currentAuthor={customer}
@@ -271,7 +271,7 @@ const CaregiverBookingCard = props => {
             refundAmount={refundAmount}
             hideRatesButton
             hideFees
-          />
+          /> */}
         </Modal>
       )}
       {isBookingCalendarModalOpen && (
@@ -346,7 +346,7 @@ const CaregiverBookingCard = props => {
           containerClassName={css.modalContainer}
         >
           <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
-          <BookingSummaryCard
+          {/* <BookingSummaryCard
             className={css.bookingSummaryCard}
             authorDisplayName={customerDisplayName}
             currentAuthor={customer}
@@ -360,7 +360,7 @@ const CaregiverBookingCard = props => {
             refundAmount={refundAmount}
             hideRatesButton
             hideFees
-          />
+          /> */}
           {acceptBookingError ? (
             <p className={css.error}>
               There was an issue accepting the booking request. Please try again.

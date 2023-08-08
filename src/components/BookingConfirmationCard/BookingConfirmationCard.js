@@ -40,7 +40,7 @@ const BookingConfirmationCard = props => {
         A notification has been sent to {authorDisplayName}. They have 72 hours or until the start
         of the booking to accept the request or it will expire.
       </h3>
-      <BookingSummaryCard
+      {/* <BookingSummaryCard
         className={css.summaryCard}
         authorDisplayName={authorDisplayName}
         currentAuthor={currentAuthor}
@@ -61,7 +61,7 @@ const BookingConfirmationCard = props => {
           </div>
         }
         hideRatesButton
-      />
+      /> */}
     </div>
   );
 };
