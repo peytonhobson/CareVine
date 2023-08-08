@@ -18,7 +18,7 @@ const UnauthenticatedContainer = props => {
       <h1 className={css.yourCare}>
         Find <span style={{ color: 'var(--marketplaceColor)' }}>Local Caregivers</span>
         <br></br> For Your <br></br>{' '}
-        <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
+        <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs
       </h1>
       <DesktopCard isMobile={isMobile}>
         <div className={css.stepContainer}>
