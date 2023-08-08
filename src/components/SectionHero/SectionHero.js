@@ -60,9 +60,9 @@ const SectionHero = props => {
         setHeroLoaded(true);
       };
 
-      const isMobile = window.innerWidth < 768;
+      const isLarge = window.innerWidth > 1024;
 
-      image.src = isMobile ? mobileBackgroundImage : backgroundImage;
+      image.src = isLarge ? backgroundImage : mobileBackgroundImage;
     }
   }, [heroRef?.current]);
 
@@ -169,6 +169,14 @@ const SectionHero = props => {
                   <p>from local caregivers that fit your needs</p>
                 </div>
               </div>
+              {/* {!isMobile && (
+                <IconArrowHead
+                  direction="right"
+                  className={css.stepArrow}
+                  height="2.5em"
+                  width="2.5em"
+                />
+              )} */}
               <div className={css.step}>
                 <h2 className={css.stepIcon}>2</h2>
                 <div className={css.stepDescription}>
@@ -176,6 +184,14 @@ const SectionHero = props => {
                   <p>the caregiver you want to hire</p>
                 </div>
               </div>
+              {/* {!isMobile && (
+                <IconArrowHead
+                  direction="right"
+                  className={css.stepArrow}
+                  height="2.5em"
+                  width="2.5em"
+                />
+              )} */}
               <div className={css.step}>
                 <h2 className={css.stepIcon}>3</h2>
                 <div className={css.stepDescription}>
