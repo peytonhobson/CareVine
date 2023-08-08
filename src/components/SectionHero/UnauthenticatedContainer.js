@@ -5,13 +5,13 @@ import { HeroSearchForm } from '../../forms';
 
 import css from './SectionHero.module.css';
 
+const DesktopCard = ({ children, isMobile }) =>
+  isMobile ? <>{children}</> : <div className={css.desktopCard}>{children}</div>;
+
 const UnauthenticatedContainer = props => {
   const { handleSearchSubmit } = props;
 
   const isMobile = useCheckMobileScreen();
-
-  const DesktopCard = ({ children }) =>
-    isMobile ? <>{children}</> : <div className={css.desktopCard}>{children}</div>;
 
   return (
     <div className={css.unAuthContainer}>
@@ -20,7 +20,7 @@ const UnauthenticatedContainer = props => {
         <br></br> For Your <br></br>{' '}
         <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
       </h1>
-      <DesktopCard>
+      <DesktopCard isMobile={isMobile}>
         <div className={css.stepContainer}>
           <div className={css.step}>
             <h2 className={css.stepIcon}>1</h2>
@@ -55,4 +55,4 @@ const UnauthenticatedContainer = props => {
   );
 };
 
-export default UnauthenticatedContainer;
+export default React.memo(UnauthenticatedContainer);
