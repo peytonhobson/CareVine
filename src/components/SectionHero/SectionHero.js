@@ -73,8 +73,6 @@ const SectionHero = props => {
     const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
     const origin = `${lat}%2C${lng}`;
 
-    console.log('values', values);
-
     history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
   };
 
