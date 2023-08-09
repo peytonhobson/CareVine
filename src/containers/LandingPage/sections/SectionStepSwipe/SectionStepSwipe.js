@@ -111,9 +111,9 @@ const SectionStepSwipe = ({ history }) => {
               <IconUserProfile width="4em" height="4em" />
               <h2 className="stepTitle">Create Your Personalized Profile</h2>
               <p className="stepSubText">
-                Become a part of the CareVine and create a profile that gives a basic description of
-                the care recipient’s needs. This also allows caregivers to find and contact you if
-                they think they would be a good fit.
+                Become a part of the CareVine platform by creating a profile highlighting the care
+                needs of you or your loved one. This profile will be visible to caregivers in your
+                area, allowing them to find and contact you if they think they would be a good fit.
               </p>
             </div>
           </div>
@@ -132,16 +132,17 @@ const SectionStepSwipe = ({ history }) => {
           <div className="step step3" ref={nodeRef3}>
             <div className="innerStep">
               <IconCalendarHeart width="3.5em" height="3.5em" />
-              <h2 className="stepTitle">Tackle the nitty-gritty</h2>
+              <h2 className="stepTitle">Start the Conversation</h2>
               <p className="stepSubText">
-                Send the caregiver a message and get to know them a little bit. Ask questions that
-                are important to you as well as more mundane things such as: ( ). If they seem like
-                a fit, we recommend conducting a thorough interview before you book for care. Our
-                interview guide can help guide you through this process and can be found{' '}
+                Send the caregiver a message to get to know them better. Ask questions that matter
+                to you, as well as more mundane things, such as how they handle emergencies or their
+                experience with using mobility aids. If they seem like a good fit, we recommend
+                conducting a comprehensive interview before booking care. You can find our interview
+                guide{' '}
                 <NamedLink name="BlogPostPage" params={{ slug: INTERVIEW_SLUG }}>
                   here
                 </NamedLink>
-                .
+                , which will assist you through this process.
               </p>
             </div>
           </div>
@@ -152,8 +153,8 @@ const SectionStepSwipe = ({ history }) => {
               <p className="stepSubText">
                 When you’ve found your perfect caregiver, use our hassle-free booking system to make
                 it official. The booking system allows you to request dates and times, send
-                payments, change or cancel bookings, as well as providing a convenient way to view
-                previous or future bookings.
+                payments, change or cancel bookings, and offers a convenient way to view previous or
+                future bookings.
               </p>
               <div className="stepButtonContainer">
                 <Button className="stepButton" onClick={handleCurrentLocation}>
