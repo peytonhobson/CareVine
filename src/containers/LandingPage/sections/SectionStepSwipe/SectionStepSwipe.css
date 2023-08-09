@@ -156,6 +156,10 @@
     font-size: 2.5rem;
     line-height: 3rem;
     width: auto;
+    margin-bottom: 2rem;
+  }
+
+  @media (--viewportLarge) {
     margin-bottom: 2.5rem;
   }
 }
