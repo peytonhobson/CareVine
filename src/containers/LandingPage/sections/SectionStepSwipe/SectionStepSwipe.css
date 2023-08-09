@@ -1,0 +1,161 @@
+@custom-media --viewportSmall (min-width: 550px);
+@custom-media --viewportMedium (min-width: 768px);
+@custom-media --viewportLarge (min-width: 1024px);
+@custom-media --viewportLargeWithPaddings (min-width: 1128px);
+@custom-media --viewportXLarge (min-width: 1921px);
+
+.stepsSection {
+  padding: 0 2rem 6rem 2rem;
+
+  @media (--viewportMedium) {
+    padding: 0 0 6rem 0;
+  }
+}
+
+.stepsSectionCard {
+  width: 100%;
+  border-radius: var(--borderRadius);
+  border: 1px solid var(--matterColorAnti);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 37rem;
+  max-width: calc(100vw - 4rem);
+  padding: 0;
+
+  @media (--viewportMedium) {
+    max-width: auto;
+    height: 30rem;
+  }
+
+  @media (--viewportLarge) {
+    height: 28rem;
+  }
+}
+
+.stepsContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step {
+  text-align: center;
+  padding: 3rem 0;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  -webkit-transition: left 500ms ease-in-out;
+  -moz-transition: left 500ms ease-in-out;
+  -ms-transition: left 500ms ease-in-out;
+  -o-transition: left 500ms ease-in-out;
+  transition: left 500ms ease-in-out;
+
+  position: absolute;
+  height: 35rem;
+
+  @media (--viewportMedium) {
+    padding: 0;
+    text-align: left;
+    height: 25rem;
+    align-items: flex-start;
+
+    & > h2 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    & > p {
+      line-height: 1.5rem;
+      font-size: 1rem;
+    }
+  }
+
+  @media (--viewportMedium) {
+    & > h2 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.innerStep {
+  width: calc(100vw - 14rem);
+  margin: auto;
+
+  @media (--viewportMedium) {
+    width: 28rem;
+  }
+
+  @media (--viewportLarge) {
+    width: 35rem;
+  }
+}
+
+.step1 {
+  left: 0;
+}
+
+.step2,
+.step3,
+.step4 {
+  left: 100vw;
+}
+
+.stepArrow {
+  margin: auto 0.5rem;
+  stroke-width: 0;
+  cursor: pointer;
+
+  @media (--viewportMedium) {
+    margin: auto 2rem;
+  }
+}
+
+.disabled {
+  fill: var(--matterColorNegative);
+}
+
+.stepButtonContainer {
+  width: 100%;
+  padding-top: 2rem;
+
+  & .stepButton {
+    width: auto;
+    padding: 0 2rem;
+    margin: 0 auto;
+  }
+
+  @media (--viewportMedium) {
+    padding-top: 0.5rem;
+
+    & .stepButton {
+      margin: 0;
+    }
+  }
+}
+
+.contentTitle {
+  width: 100%;
+  text-align: center;
+  font-size: 2.5rem;
+  line-height: 3rem;
+  margin-bottom: 2.5rem;
+
+  @media (--viewportMedium) {
+    color: var(--matterColor);
+    font-size: 2.5rem;
+    line-height: 3rem;
+    width: auto;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+  }
+}

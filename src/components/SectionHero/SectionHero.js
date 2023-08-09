@@ -6,12 +6,12 @@ import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../.
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { HeroSearchForm } from '../../forms';
-import { routeConfiguration } from '../..';
-import { createResourceLocatorString } from '../../util/routes';
 
 import backgroundImage from '../../assets/landing-background.jpg';
+import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
+import UnauthenticatedContainer from './UnauthenticatedContainer';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
@@ -56,12 +56,14 @@ const SectionHero = props => {
       image.onload = () => {
         heroRef.current.style.background = `url('${image.src}')`;
         heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        heroRef.current.style.backgroundPosition = '50%';
+        heroRef.current.style.backgroundPosition = 'center';
         heroRef.current.style.backgroundSize = 'cover';
         setHeroLoaded(true);
       };
 
-      image.src = backgroundImage;
+      const isLarge = window.innerWidth > 1024;
+
+      image.src = isLarge ? backgroundImage : mobileBackgroundImage;
     }
   }, [heroRef?.current]);
 
@@ -154,33 +156,18 @@ const SectionHero = props => {
             ) : null}
           </div>
         ) : (
-          <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>
-              <span style={{ whiteSpace: 'nowrap' }}>No Agency.</span>{' '}
-              <span style={{ whiteSpace: 'nowrap' }}>No Problem.</span>
-            </h1>
-            <h2 className={css.perfectCaregiver}>
-              <div className={css.subPerfectCaregiver}>
-                Private, independent, and experienced caregivers without the agency fees.{' '}
-              </div>
-              <div className={css.subPerfectCaregiver}>Find yours.</div>
-            </h2>
-            <HeroSearchForm
-              className={css.heroSearchForm}
-              onSubmit={handleSearchSubmit}
-              isMobile={isMobile}
-            />
-          </div>
+          <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
         )
       ) : null}
 
-      {!isMobile && showLearnMore && (
-        <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+      <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+        {showLearnMore && (
           <InlineTextButton className={css.learnMoreButton}>
-            Learn More <IconArrowHead direction="down" className={css.arrowHead} />
+            Learn More{' '}
+            <IconArrowHead direction="down" className={css.arrowHead} height="1em" width="1em" />
           </InlineTextButton>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

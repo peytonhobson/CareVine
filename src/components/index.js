@@ -45,8 +45,11 @@ export {
     IconSocialMediaTwitter,
     IconSpinner,
     IconSuccess,
+    IconUserProfile,
+    IconCaregiver,
     IconVerticalDots,
     IconWallet,
+    IconCalendarHeart,
 } from './Icons';
 // Other independent components
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
@@ -231,7 +234,6 @@ export { default as InboxItem } from './InboxItem/InboxItem'
 export { default as LayoutWrapperAccountSettingsSideNav } from './LayoutWrapperAccountSettingsSideNav/LayoutWrapperAccountSettingsSideNav';
 export { default as ListingAvailabilityPanel } from './ListingAvailabilityPanel/ListingAvailabilityPanel';
 export { default as ListingBioPanel } from './ListingBioPanel/ListingBioPanel';
-export { default as ListingRecommendationsPanel } from './ListingRecommendationsPanel/ListingRecommendationsPanel';
 export { default as ListingServicesPanel } from './ListingServicesPanel/ListingServicesPanel';
 export { default as ListingSummary } from './ListingSummary/ListingSummary';
 export { default as LoadableComponentErrorBoundary } from './LoadableComponentErrorBoundary/LoadableComponentErrorBoundary'

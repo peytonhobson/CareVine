@@ -33,3 +33,6 @@ export { default as IconGift } from './IconGift/IconGift';
 export { default as IconEnvelopes } from './IconEnvelopes/IconEnvelopes';
 export { default as IconSocialMediaPinterest } from './IconSocialMediaPinterest/IconSocialMediaPinterest';
 export { default as IconEmail } from './IconEmail/IconEmail';
+export { default as IconUserProfile } from './IconUserProfile/IconUserProfile';
+export { default as IconCaregiver } from './IconCaregiver/IconCaregiver';
+export { default as IconCalendarHeart } from './IconCalendarHeart/IconCalendarHeart';

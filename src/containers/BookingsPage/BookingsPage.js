@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import {
   Page,
@@ -23,14 +24,15 @@ import {
   disputeBooking,
   fetchBookings,
   setInitialState,
-  submitReview,
 } from './BookingsPage.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
+import qs from 'qs';
 
 import css from './BookingsPage.module.css';
 
 const BookingsPage = props => {
   const [selectedTab, setSelectedTab] = useState('Requests');
+  const [initialBookingsFetched, setInitialBookingsFetched] = useState(false);
 
   const {
     bookings,
@@ -59,17 +61,42 @@ const BookingsPage = props => {
     onFetchBookings,
     onResetInitialState,
     currentUserListing,
-    onSubmitReview,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
     onFetchCurrentUserListing,
+    history,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
   const bookedDates = currentUserListing?.attributes.metadata.bookedDates;
+  const totalBookings =
+    bookings?.requests.length +
+    bookings?.upcoming.length +
+    bookings?.active.length +
+    bookings?.past.length;
+
+  const searchString = qs.parse(history.location.search, {
+    ignoreQueryPrefix: true,
+  });
+
+  useEffect(() => {
+    if (searchString?.tab) {
+      setSelectedTab(searchString.tab);
+    }
+
+    if (searchString?.bookingId && initialBookingsFetched) {
+      const element = document.getElementById(searchString.bookingId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [searchString?.tab, searchString?.bookingId, initialBookingsFetched]);
+
+  useEffect(() => {
+    if (!initialBookingsFetched && totalBookings > 0) {
+      setInitialBookingsFetched(true);
+    }
+  }, [totalBookings]);
 
   const cardProps = {
     currentUser,
@@ -93,10 +120,6 @@ const BookingsPage = props => {
     onFetchBookings,
     onResetInitialState,
     bookedDates,
-    onSubmitReview,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
     onFetchCurrentUserListing,
   };
 
@@ -154,7 +177,9 @@ const BookingsPage = props => {
             {bookings[selectedTab.toLowerCase()].length > 0 ? (
               <section className={css.cardSection}>
                 {bookings[selectedTab.toLowerCase()].map(b => (
-                  <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+                  <span id={b.id.uuid}>
+                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+                  </span>
                 ))}
               </section>
             ) : (
@@ -187,9 +212,6 @@ const mapStateToProps = state => {
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
   } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
 
@@ -212,9 +234,6 @@ const mapStateToProps = state => {
     declineBookingInProgress,
     declineBookingSuccess,
     currentUserListing,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
   };
 };
 
@@ -226,8 +245,7 @@ const mapDispatchToProps = {
   onDeclineBooking: declineBooking,
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
-  onSubmitReview: submitReview,
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(BookingsPage);
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

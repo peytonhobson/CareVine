@@ -1,0 +1,82 @@
+@import '../../../../styles/customMediaQueries.css';
+
+.employerSection {
+  padding: 0rem 2rem 6rem 2rem;
+
+  @media (--viewportMedium) {
+    padding: 0 0 6rem 0;
+  }
+}
+
+.employerSectionContent {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column-reverse;
+  margin: auto;
+  width: 100%;
+
+  @media (--viewportLarge) {
+    flex-direction: row;
+    max-width: 75rem;
+    width: auto;
+  }
+}
+
+.employerSectionCard {
+  background-color: rgb(235, 235, 235);
+  border-radius: var(--borderRadius);
+  padding: 3rem;
+
+  @media (--viewportLarge) {
+    padding: 4rem 4rem 4rem 3rem;
+  }
+}
+
+.employerSectionImageContainer {
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  min-width: 40%;
+}
+
+.employerSectionImage {
+  width: 100%;
+  border-radius: var(--borderRadius);
+  object-fit: contain;
+}
+
+.employerSectionTitle {
+  font-size: 1.75rem;
+  line-height: 2rem;
+  /* margin-top + n * line-height + margin-bottom => x * 6px */
+  margin-top: 1.313rem;
+  margin-bottom: 1.063rem;
+
+  @media (--viewportMedium) {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    /* margin-top + n * line-height + margin-bottom => x * 8px */
+    margin-top: 1.313rem;
+    margin-bottom: 1.188rem;
+  }
+}
+
+.getStartedLinkContainer {
+  margin-top: 2rem;
+}
+
+.getStartedButton {
+  composes: button buttonBorders buttonColors h2 from global;
+  color: var(--matterColorLight);
+  text-align: center;
+  border-radius: 0.675rem;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  @media (--viewportMedium) {
+    display: block;
+    max-width: 20rem;
+  }
+}

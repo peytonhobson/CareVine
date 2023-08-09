@@ -7,22 +7,27 @@
   height: var(--topbarHeightDesktop);
   display: flex;
   position: relative;
-  margin: 2rem auto 0;
+  margin: 0 auto 0;
   color: var(--matterColor);
 }
 
 .desktopInputRoot {
   height: var(--topbarHeightDesktop);
   background-color: var(--matterColorLight);
-  width: 40rem;
-  margin: 2rem auto 0;
+  width: 100%;
+  margin: 0 auto 0;
   display: flex;
   position: relative;
   color: var(--matterColor);
+
+  @media (--viewportLarge) {
+    height: clamp(2rem, 5vw, 4.5rem);
+  }
 }
 
 .mobileIcon {
   padding: 11px 0 17px 0;
+  margin: auto;
 
   /* Borders */
   border-bottom-width: var(--borderRadiusMobileSearch);
@@ -64,12 +69,12 @@
 }
 
 .desktopIcon {
-  height: var(--topbarHeightDesktop);
   border: none;
-  padding-top: 3px;
+  margin: auto;
+  border-radius: var(--topbarHeightDesktop);
 
   display: flex;
-  width: 24px;
+  width: 1.5rem;
   align-self: stretch;
   background-color: var(--matterColorLight);
 }
@@ -115,16 +120,26 @@
     margin-bottom: 0;
     font-weight: var(--fontWeightSemiBold);
   }
+
+  @media (--viewportLarge) {
+    height: clamp(2rem, 5vw, 4.5rem);
+    font-size: clamp(0.75rem, 1vw, 1rem);
+  }
 }
 
 .desktopRoot {
   padding: 0 1rem;
-  border-radius: 3px;
+  border-radius: var(--topbarHeightDesktop);
+
+  @media (--viewportLarge) {
+    height: clamp(2rem, 5vw, 4.5rem);
+    border-radius: clamp(2rem, 5vw, 4.5rem);
+  }
 }
 
 .mobileRoot {
   padding: 0 1.5rem;
-  border-radius: 3px;
+  border-radius: var(--topbarHeightDesktop);
 }
 
 .mobilePredictions {
@@ -135,10 +150,9 @@
   padding: 1rem 0;
   padding-bottom: var(--locationAutocompleteBottomPadding);
   background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
+  border-radius: var(--borderRadius);
 
   & > ul > li {
     padding: 0.25rem 1rem;
@@ -154,18 +168,34 @@
 
 .desktopPredictions {
   position: absolute;
-  width: 100%;
-  padding-bottom: var(--locationAutocompleteBottomPadding);
+  width: calc(100% - var(--borderRadius) * 2);
   top: 50px;
-  left: 0;
+  left: var(--borderRadius);
   background-color: var(--marketplaceColor);
-  border-bottom-left-radius: var(--borderRadius);
-  border-bottom-right-radius: var(--borderRadius);
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
+  border-radius: var(--borderRadius);
 
   margin-top: calc(
     var(--topbarHeightDesktop) - var(--TopbarSearchForm_inputHeight) +
       var(--TopbarSearchForm_bottomBorder)
   );
+
+  @media (--viewportLarge) {
+    margin-top: calc(
+      clamp(2rem, 5vw, 4.5rem) - var(--TopbarSearchForm_inputHeight) +
+        var(--TopbarSearchForm_bottomBorder)
+    );
+
+    & > ul > li {
+      font-size: clamp(0.5rem, 1vw, 1rem);
+      line-height: clamp(0.75rem, 1.5vw, 1.5rem);
+      padding: clamp(0.5rem 1rem, 0.75vw 2vw, 1rem 3rem);
+    }
+
+    & > ul > li > span {
+      font-size: clamp(0.5rem, 1vw, 1rem);
+      line-height: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+  }
 }

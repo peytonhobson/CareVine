@@ -1,1 +1,1 @@
-CareVine Booking Confirmed
+Booking with {{transaction.customer.display-name}} Confirmed!

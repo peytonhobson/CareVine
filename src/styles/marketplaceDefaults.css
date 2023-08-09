@@ -17,7 +17,7 @@
   /* ================ Colors ================ */
 
   --marketplaceColor: #6ba0b6;
-  --marketplaceColorLight: #74ad8a;
+  --marketplaceColorLight: #a6c6d3;
   --marketplaceColorDark: #2f5260;
 
   --secondaryMarketplaceColor: #77a08a;
@@ -91,7 +91,8 @@
 
   /* ================ Border radius ================ */
 
-  --borderRadius: 0.125rem;
+  --borderRadius: 1.5rem;
+  --borderRadiusButton: 0.5rem;
   --borderRadiusMobileSearch: 0.188rem;
 
   /* ================ Transition styles ================ */
@@ -147,7 +148,7 @@
 
   /* ================ SectionHero ================ */
 
-  --SectionHero_desktopTitleMaxWidth: 35rem;
+  --SectionHero_desktopTitleMaxWidth: 25vw;
 
   /* ================ TabNav ================ */
   --TabNav_linkWidth: 15rem;
@@ -598,6 +599,13 @@ textarea {
     padding-top: 1.563rem;
     padding-bottom: 1.438rem;
   }
+
+  @media (--viewportLarge) {
+    font-size: 5rem;
+    font-size: 5vw;
+    line-height: 5rem;
+    line-height: 5.5vw;
+  }
 }
 
 /* ================ Other fonts ================ */
@@ -781,14 +789,14 @@ textarea {
 /* Default button has no borders */
 .buttonBorders {
   border: none;
-  border-radius: var(--borderRadius);
+  border-radius: var(--borderRadiusButton);
 }
 /* Secondary button has clear borders */
 .buttonBordersSecondary {
   border-width: 1px;
   border-style: solid;
   border-color: var(--matterColorNegative);
-  border-radius: var(--borderRadius);
+  border-radius: var(--borderRadiusButton);
 }
 .buttonBordersSecondary:hover,
 .buttonBordersSecondary:focus {

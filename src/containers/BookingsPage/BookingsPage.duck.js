@@ -1,16 +1,11 @@
 import { CAREGIVER } from '../../util/constants';
-import { denormalisedResponseEntities, findEndTimeFromLineItems } from '../../util/data';
+import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_DECLINE_BOOKING,
   TRANSITION_COMPLETE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_REVIEW,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER,
@@ -29,6 +24,10 @@ import {
   updateTransactionMetadata,
   sendgridStandardEmail,
   updateListingMetadata,
+  sendgridTemplateEmail,
+  transitionPrivileged,
+  updateUser,
+  updatePendingPayouts,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
@@ -40,15 +39,7 @@ const upcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE
 
 const activeBookingTransitions = [TRANSITION_START, TRANSITION_START_UPDATE_TIMES];
 
-const pastBookingTransitions = [
-  TRANSITION_COMPLETE,
-  TRANSITION_COMPLETE_CANCELED,
-  TRANSITION_DISPUTE,
-  TRANSITION_RESOLVE_DISPUTE,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_EXPIRE_REVIEW_PERIOD,
-  TRANSITION_REVIEW,
-];
+const pastBookingTransitions = [TRANSITION_COMPLETE, TRANSITION_COMPLETE_CANCELED];
 
 const cancelBookingTransitions = {
   employer: {
@@ -66,18 +57,19 @@ const cancelBookingTransitions = {
 };
 
 const mapLineItemsForCancellationCustomer = lineItems => {
-  // Half the amount of the line item if it is within 72 hours of the start time.
-  // Remove line items that are more than 72 hours away.
+  // Half the amount of the line item if it is within 48 hours of the start time.
+  // Remove line items that are more than 48 hours away.
   // This is to create the correct amount for caregiver payout
   return lineItems
     .map(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      const isWithin72Hours =
-        startTime - moment().toDate() < 72 * 36e5 && startTime > moment().toDate();
-      if (isWithin72Hours) {
+      const isWithin48Hours =
+        startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+      if (isWithin48Hours) {
         return {
           ...lineItem,
-          amount: lineItem.amount / 2,
+          amount: parseFloat(lineItem.amount / 2).toFixed(2),
+          isFifty: true,
         };
       }
 
@@ -85,7 +77,7 @@ const mapLineItemsForCancellationCustomer = lineItems => {
     })
     .filter(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return startTime - moment().toDate() < 72 * 36e5;
+      return startTime - moment().toDate() < 48 * 36e5;
     });
 };
 
@@ -94,6 +86,27 @@ const mapLineItemsForCancellationProvider = lineItems => {
   return lineItems.filter(lineItem => {
     const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
     return startTime < moment().toDate();
+  });
+};
+
+const mapRefundItems = (lineItems, isCaregiver) => {
+  return lineItems.map(lineItem => {
+    const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+    const isWithin48Hours =
+      startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+    const isFifty = isWithin48Hours && !isCaregiver;
+
+    const base = isFifty
+      ? parseFloat(lineItem.amount / 2).toFixed(2)
+      : parseFloat(lineItem.amount).toFixed(2);
+    const bookingFee = parseFloat(base * 0.05).toFixed(2);
+    return {
+      isFifty,
+      base,
+      bookingFee,
+      amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+      date: moment(lineItem.date).format('MM/DD'),
+    };
   });
 };
 
@@ -139,10 +152,6 @@ export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
-export const SUBMIT_REVIEW_REQUEST = 'app/BookingsPage/SUBMIT_REVIEW_REQUEST';
-export const SUBMIT_REVIEW_SUCCESS = 'app/BookingsPage/SUBMIT_REVIEW_SUCCESS';
-export const SUBMIT_REVIEW_ERROR = 'app/BookingsPage/SUBMIT_REVIEW_ERROR';
-
 // ================ Reducer ================ //
 
 const initialState = {
@@ -166,9 +175,6 @@ const initialState = {
   declineBookingError: null,
   declineBookingInProgress: false,
   declineBookingSuccess: false,
-  submitReviewInProgress: false,
-  submitReviewError: null,
-  reviewSubmitted: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -232,18 +238,6 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
     case DECLINE_BOOKING_ERROR:
       return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
-    case SUBMIT_REVIEW_REQUEST:
-      return {
-        ...state,
-        submitReviewInProgress: true,
-        submitReviewError: null,
-        reviewSubmitted: false,
-      };
-    case SUBMIT_REVIEW_SUCCESS:
-      return { ...state, submitReviewInProgress: false, reviewSubmitted: true };
-    case SUBMIT_REVIEW_ERROR:
-      return { ...state, submitReviewInProgress: false, submitReviewError: payload };
-
     default:
       return state;
   }
@@ -298,14 +292,6 @@ export const declineBookingError = e => ({
   payload: e,
 });
 
-export const submitReviewRequest = () => ({ type: SUBMIT_REVIEW_REQUEST });
-export const submitReviewSuccess = () => ({ type: SUBMIT_REVIEW_SUCCESS });
-export const submitReviewError = e => ({
-  type: SUBMIT_REVIEW_ERROR,
-  error: true,
-  payload: e,
-});
-
 /* ================ Thunks ================ */
 
 export const fetchBookings = () => async (dispatch, getState, sdk) => {
@@ -344,11 +330,6 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
         TRANSITION_START_UPDATE_TIMES,
         TRANSITION_COMPLETE,
         TRANSITION_COMPLETE_CANCELED,
-        TRANSITION_DISPUTE,
-        TRANSITION_RESOLVE_DISPUTE,
-        TRANSITION_PAY_CAREGIVER,
-        TRANSITION_EXPIRE_REVIEW_PERIOD,
-        TRANSITION_REVIEW,
       ],
     });
 
@@ -377,14 +358,19 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const cancelBooking = (booking, refundAmount) => async (dispatch, getState, sdk) => {
+export const cancelBooking = booking => async (dispatch, getState, sdk) => {
   dispatch(cancelBookingRequest());
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
   const bookingId = booking.id.uuid;
   const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
   const listingId = booking.listing.id.uuid;
-  const totalAmount = lineItems.reduce((acc, curr) => acc + curr.amount, 0) * 100;
+  const totalAmount = lineItems.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) * 100;
+
+  const refundItems = mapRefundItems(lineItems, userType === CAREGIVER);
+  const refundAmount = parseInt(
+    refundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+  );
 
   const lastTransition = booking.attributes.lastTransition;
   let bookingState = null;
@@ -414,6 +400,10 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
   const transition = cancelBookingTransitions[userType][bookingState];
 
   try {
+    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
+      throw new Error('Missing payment intent id');
+    }
+
     if (paymentIntentId && refundAmount > 0) {
       const applicationFeeRefund = parseInt(
         (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
@@ -428,21 +418,30 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
       const newLineItems = isCaregiver
         ? mapLineItemsForCancellationProvider(lineItems)
         : mapLineItemsForCancellationCustomer(lineItems);
-      const payout = newLineItems.reduce((acc, item) => acc + item.amount, 0);
+      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
       // Update line items so caregiver is paid out correct amount after refund
       await updateTransactionMetadata({
         txId: bookingId,
         metadata: {
           lineItems: newLineItems,
-          refundAmount: parseFloat((refundAmount + applicationFeeRefund) / 100).toFixed(2),
-          payout,
+          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
+          payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
+          refundItems,
+          bookingFeeRefundAmount: parseFloat(applicationFeeRefund / 100).toFixed(2),
+          totalRefund: parseFloat(refundAmount / 100 + applicationFeeRefund / 100).toFixed(2),
         },
       });
-    }
-
-    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
-      throw new Error('Missing payment intent id');
+    } else {
+      await updateTransactionMetadata({
+        txId: bookingId,
+        metadata: {
+          lineItems: [],
+          refundAmount: 0,
+          payout: 0,
+          refundItems: [],
+        },
+      });
     }
 
     // Create new booking end so cancel-active goes to delivered after transitioning
@@ -475,6 +474,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
         const newBookedDates = bookedDates.filter(
           date => !bookingDates.includes(date) || new Date(date) < new Date()
         );
+
         await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
       } catch (e) {
         log.error(e, 'update-caregiver-booking-dates-failed', {});
@@ -487,6 +487,7 @@ export const cancelBooking = (booking, refundAmount) => async (dispatch, getStat
     return bookingResponse;
   } catch (e) {
     log.error(e, 'cancel-booking-failed', { transition, bookingId });
+    dispatch(fetchBookings());
     dispatch(cancelBookingError(storableError(e)));
   }
 };
@@ -495,13 +496,40 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
   dispatch(disputeBookingRequest());
 
   const bookingId = booking.id.uuid;
+  const bookingLedger = booking.attributes.metadata.ledger ?? [];
+  const latestLedger = bookingLedger.length > 0 ? bookingLedger[bookingLedger.length - 1] : null;
+
+  if (!latestLedger) return;
+
+  const newBookingLegder = bookingLedger.map((ledger, index) => {
+    if (index === bookingLedger.length - 1) {
+      return {
+        ...latestLedger,
+        dispute: { date: Date.now(), disputeReason },
+      };
+    }
+    return ledger;
+  });
 
   try {
     await updateTransactionMetadata({
       txId: bookingId,
-      metadata: { disputeReason },
+      metadata: { ledger: newBookingLegder },
     });
 
+    await updatePendingPayouts({
+      userId: booking.provider.id.uuid,
+      params: { openDispute: true },
+      txId: bookingId,
+    });
+
+    dispatch(disputeBookingSuccess());
+  } catch (e) {
+    log.error(e, 'dispute-booking-failed', { bookingId });
+    dispatch(disputeBookingError(storableError(e)));
+  }
+
+  try {
     await sendgridStandardEmail({
       fromEmail: 'admin-notification@carevine-mail.us',
       receiverEmail: 'peyton.hobson@carevine.us',
@@ -510,17 +538,50 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       txId: ${bookingId}<br>`,
     });
 
-    await sdk.transactions.transition({
-      id: bookingId,
-      transition: TRANSITION_DISPUTE,
-      params: {},
+    await sendgridTemplateEmail({
+      receiverId: booking.customer.id.uuid,
+      templateData: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        providerName: booking.provider.attributes.profile.displayName,
+        bookingId: bookingId,
+      },
+      templateName: 'dispute-in-review',
     });
 
-    dispatch(disputeBookingSuccess());
-    return booking;
+    await sendgridTemplateEmail({
+      receiverId: booking.provider.id.uuid,
+      templateData: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        customerName: booking.customer.attributes.profile.displayName,
+      },
+      templateName: 'customer-disputed',
+    });
   } catch (e) {
-    log.error(e, 'dispute-booking-failed', { bookingId });
-    dispatch(disputeBookingError(storableError(e)));
+    log.error(e, 'dispute-booking-emails-failed', { bookingId });
+  }
+};
+
+const generateBookingNumber = async (transaction, sdk) => {
+  const listingId = transaction.listing.id?.uuid;
+
+  try {
+    const fullListingResponse = await sdk.listings.show({
+      id: listingId,
+      'fields.listing': ['metadata'],
+    });
+
+    const fullListing = fullListingResponse.data.data;
+    const bookingNumbers = fullListing.attributes.metadata.bookingNumbers ?? [];
+
+    let bookingNumber = Math.floor(Math.random() * 100000000);
+
+    while (bookingNumbers.includes(bookingNumber)) {
+      bookingNumber = Math.floor(Math.random() * 100000000);
+    }
+
+    return { bookingNumber, bookingNumbers };
+  } catch (e) {
+    log.error(e, 'generate-booking-number-failed', {});
   }
 };
 
@@ -528,24 +589,31 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
   dispatch(acceptBookingRequest());
 
   const txId = transaction.id.uuid;
-  const { lineItems } = transaction.attributes.metadata;
   const listingId = transaction.listing.id.uuid;
-  const newBookingEnd = findEndTimeFromLineItems(lineItems);
-  const newBookingStart = moment(newBookingEnd)
-    .subtract(1, 'hours')
-    .toDate();
 
   try {
-    await sdk.transactions.transition({
-      id: txId,
-      transition: TRANSITION_ACCEPT_BOOKING,
+    const { bookingNumber, bookingNumbers } = await generateBookingNumber(transaction, sdk);
+
+    await transitionPrivileged({
+      bodyParams: {
+        id: txId,
+        transition: TRANSITION_ACCEPT_BOOKING,
+        params: {
+          metadata: {
+            bookingNumber,
+          },
+        },
+      },
     });
 
     const bookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
     const bookingDates = transaction.attributes.metadata.lineItems.map(lineItem => lineItem.date);
     const newBookedDates = [...bookedDates, ...bookingDates];
 
-    await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
+    await updateListingMetadata({
+      listingId,
+      metadata: { bookedDates: newBookedDates, bookingNumbers: [...bookingNumbers, bookingNumber] },
+    });
 
     dispatch(acceptBookingSuccess());
     return;
@@ -572,26 +640,6 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });
     dispatch(declineBookingError(storableError(e)));
-  }
-};
-
-export const submitReview = (tx, reviewRating, reviewContent) => async (
-  dispatch,
-  getState,
-  sdk
-) => {
-  dispatch(submitReviewRequest());
-
-  const txId = tx.id.uuid;
-  const params = { reviewRating, reviewContent };
-
-  try {
-    await sdk.transactions.transition({ id: txId, transition: TRANSITION_REVIEW, params });
-
-    dispatch(submitReviewSuccess());
-  } catch (e) {
-    log.error(e, 'review-submission-failed', { txId });
-    dispatch(submitReviewError(storableError(e)));
   }
 };
 

@@ -7,7 +7,7 @@ import { compose } from 'redux';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { calculateDistanceBetweenOrigins } from '../../util/maps';
 import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
-import SectionReviews from '../../containers/ListingPage/SectionReviews';
+import SectionReviews from '../../containers/SectionReviews/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
 
@@ -49,8 +49,6 @@ const MIN_LENGTH_FOR_LONG_WORDS = 16;
 const ListingSummaryComponent = props => {
   const {
     listing,
-    currentUserListing,
-    params,
     intl,
     onContactUser,
     isOwnListing,
@@ -64,8 +62,6 @@ const ListingSummaryComponent = props => {
     isFromSearchPage,
     onGoBackToSearchResults,
     origin,
-    reviews,
-    fetchReviewsError,
     onManageDisableScrolling,
     onContinueBooking,
     authorDisplayName,
@@ -81,6 +77,9 @@ const ListingSummaryComponent = props => {
   const { minPrice, maxPrice, location } = publicData;
   const authorMetadata = author?.attributes?.profile?.metadata;
   const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
+
+  const thisUserHasStripeAccount =
+    hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
 
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
@@ -119,6 +118,8 @@ const ListingSummaryComponent = props => {
   const listingUserType = listing.attributes.metadata.listingType;
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
+
+  const canOpenListing = userType !== CAREGIVER || backgroundCheckSubscription?.status === 'active';
 
   return (
     <div className={css.root}>
@@ -228,12 +229,7 @@ const ListingSummaryComponent = props => {
           </div>
         </div>
         {userType === CAREGIVER ? (
-          <SectionReviews
-            reviews={reviews}
-            fetchReviewsError={fetchReviewsError}
-            onManageDisableScrolling={onManageDisableScrolling}
-            providerDisplayName={displayName}
-          />
+          <SectionReviews providerDisplayName={displayName} listingId={listing?.id.uuid} />
         ) : null}
       </div>
       {!isOwnListing ? (
@@ -245,7 +241,7 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {(hasStripeAccount || authorWhiteListed) && isLarge ? (
+          {(thisUserHasStripeAccount || authorWhiteListed) && isLarge ? (
             <Button
               className={css.button}
               onClick={() => setIsBookingModalOpen(true)}
@@ -266,7 +262,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.closeListing" />
             </Button>
-          ) : (
+          ) : canOpenListing ? (
             <Button
               className={css.button}
               onClick={() => onOpenListing(listing.id.uuid)}
@@ -275,7 +271,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.openListing" />
             </Button>
-          )}
+          ) : null}
           <Button className={css.button} onClick={onShowListingPreview}>
             <FormattedMessage id="ListingSummary.viewPreview" />
           </Button>

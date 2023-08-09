@@ -43,6 +43,9 @@ const SectionCard = forwardRef((props, ref) => {
     minHeight: '10rem',
     marginInline: isMobile ? '1rem' : '0',
     padding: '1rem',
+    '&.MuiPaper-rounded': {
+      borderRadius: 'var(--borderRadius)',
+    },
     ...cardStyles,
   }));
 

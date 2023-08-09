@@ -19,7 +19,11 @@ import {
   TRANSITION_CHARGE,
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../../util/transaction';
-import { userDisplayNameAsString, findEndTimeFromLineItems } from '../../../util/data';
+import {
+  userDisplayNameAsString,
+  findEndTimeFromLineItems,
+  findStartTimeFromLineItems,
+} from '../../../util/data';
 
 import css from './NotificationTemplates.module.css';
 
@@ -38,6 +42,9 @@ const NotificationNewBookingRequest = props => {
     onFetchTransaction,
     fetchTransactionInProgress,
     fetchTransactionError,
+    acceptBookingInProgress,
+    acceptBookingError,
+    onAcceptBooking,
   } = props;
 
   const { txId } = notification.metadata;
@@ -49,9 +56,9 @@ const NotificationNewBookingRequest = props => {
 
   const senderName = userDisplayNameAsString(customer);
 
-  const newBookingEnd = findEndTimeFromLineItems(lineItems);
-  const newBookingStart = moment(newBookingEnd)
-    .subtract(1, 'hours')
+  const bookingStart = findStartTimeFromLineItems(lineItems);
+  const bookingEnd = moment(bookingStart)
+    .add(1, 'hours')
     .toDate();
 
   useEffect(() => {
@@ -138,7 +145,7 @@ const NotificationNewBookingRequest = props => {
             hideFees
             displayOnMobile={!isLarge}
           />
-          {transitionTransactionError && (
+          {(transitionTransactionError || acceptBookingError) && (
             <p className={css.error}>
               Something went wrong with accepting or declining the booking request. Please try
               again.
@@ -168,16 +175,8 @@ const NotificationNewBookingRequest = props => {
             ) : (
               <div className={css.acceptDeclineContainer}>
                 <Button
-                  onClick={() =>
-                    onTransitionTransaction({
-                      transaction: currentTransaction,
-                      transition: TRANSITION_ACCEPT_BOOKING,
-                      include: ['booking', 'customer', 'listing'],
-                      bookingStart: newBookingStart,
-                      bookingEnd: newBookingEnd,
-                    })
-                  }
-                  inProgress={transitionTransactionInProgress === TRANSITION_ACCEPT_BOOKING}
+                  onClick={() => onAcceptBooking(currentTransaction)}
+                  inProgress={acceptBookingInProgress}
                 >
                   Accept
                 </Button>

@@ -50,6 +50,7 @@ export const TRANSITION_COMPLETE = 'transition/complete';
 export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
 export const TRANSITION_DISPUTE = 'transition/dispute';
 export const TRANSITION_RESOLVE_DISPUTE = 'transition/resolve-dispute';
+export const TRANSITION_MAKE_REVIEWABLE = 'transition/make-reviewable';
 export const TRANSITION_REVIEW = 'transition/review';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
@@ -84,6 +85,7 @@ export const STATE_ACTIVE = 'active';
 export const STATE_DELIVERED = 'delivered';
 export const STATE_PAID_OUT = 'paid-out';
 export const STATE_DISPUTE_REVIEW = 'dispute-review';
+export const STATE_REVIEWABLE = 'reviewable';
 export const STATE_REVIEWED = 'reviewed';
 export const STATE_PAYMENT_FAILED = 'payment-failed';
 export const STATE_ACTIVE_CANCELED = 'active-canceled';
@@ -194,6 +196,11 @@ const stateDescription = {
       },
     },
     [STATE_PAID_OUT]: {
+      on: {
+        [TRANSITION_MAKE_REVIEWABLE]: STATE_REVIEWABLE,
+      },
+    },
+    [STATE_REVIEWABLE]: {
       on: {
         [TRANSITION_REVIEW]: STATE_REVIEWED,
         [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,

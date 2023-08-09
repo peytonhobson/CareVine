@@ -10,20 +10,17 @@ import {
   CancelButton,
   Button,
   UserDisplayName,
-  ReviewModal,
 } from '..';
 import {
   TRANSITION_COMPLETE,
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_PAY_CAREGIVER,
-  TRANSITION_RESOLVE_DISPUTE,
   TRANSITION_CHARGE,
   TRANSITION_START,
   TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
-import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
+import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -54,7 +51,6 @@ const EmployerBookingCard = props => {
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const {
     booking,
@@ -70,10 +66,6 @@ const EmployerBookingCard = props => {
     intl,
     onFetchBookings,
     onResetInitialState,
-    onSubmitReview,
-    submitReviewInProgress,
-    submitReviewError,
-    reviewSubmitted,
   } = props;
 
   const { provider } = booking;
@@ -86,20 +78,14 @@ const EmployerBookingCard = props => {
     setBookingTimesPage(page);
   };
 
-  const handleCancelBooking = () => {
-    const refundAmount =
-      lastTransition === TRANSITION_ACCEPT_BOOKING ? 0 : calculateRefundAmount(lineItems);
-    onCancelBooking(booking, refundAmount);
-  };
-
   const handleDisputeBooking = values => {
     const { disputeReason } = values;
     onDisputeBooking(booking, disputeReason);
   };
 
-  const handleReviewSubmit = values => {
-    const { reviewRating, reviewContent } = values;
-    onSubmitReview(booking, reviewRating, reviewContent);
+  const handleModalOpen = modalOpenFunc => {
+    onFetchBookings();
+    modalOpenFunc(true);
   };
 
   const handleModalClose = modalCloseFunc => {
@@ -127,7 +113,17 @@ const EmployerBookingCard = props => {
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const listing = booking?.listing;
-  const isComplete = lastTransition === TRANSITION_COMPLETE;
+
+  const bookingLedger = booking?.attributes.metadata.ledger ?? [];
+
+  const hasCurrentDispute =
+    bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
+  const isDisputable =
+    bookingLedger.length > 0 &&
+    bookingLedger[bookingLedger.length - 1].end &&
+    Date.now() - new Date(bookingLedger[bookingLedger.length - 1].end) < 48 * 36e5 &&
+    !hasCurrentDispute;
+
   const disputeInReview = lastTransition === TRANSITION_DISPUTE;
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
@@ -135,9 +131,6 @@ const EmployerBookingCard = props => {
   const isActive =
     lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
-  const isReviewable =
-    booking?.attributes.lastTransition === TRANSITION_PAY_CAREGIVER ||
-    booking?.attributes.lastTransition === TRANSITION_RESOLVE_DISPUTE;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -168,21 +161,22 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
-          {isComplete && (
-            <Button className={css.changeButton} onClick={() => setIsDisputeModalOpen(true)}>
+          {isDisputable && (
+            <Button
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsDisputeModalOpen)}
+            >
               Dispute
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Dispute In Review</h3>}
           {showCancel && (
-            <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
+            <CancelButton
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsCancelModalOpen)}
+            >
               Cancel
             </CancelButton>
-          )}
-          {isReviewable && (
-            <Button className={css.changeButton} onClick={() => setIsReviewModalOpen(true)}>
-              Review
-            </Button>
           )}
         </div>
       </div>
@@ -227,7 +221,10 @@ const EmployerBookingCard = props => {
           </div>
         </div>
         <div className={css.viewContainer}>
-          <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
+          <Button
+            className={css.viewButton}
+            onClick={() => handleModalOpen(setIsPaymentDetailsModalOpen)}
+          >
             Payment Details
           </Button>
           <SecondaryButton
@@ -295,10 +292,10 @@ const EmployerBookingCard = props => {
             </p>
             <ul className={css.refundList}>
               <li className={css.refundListItem}>
-                100% refund for booked times canceled more than 72 hours in advance
+                100% refund for booked times canceled more than 48 hours in advance
               </li>
               <li className={css.refundListItem}>
-                50% refund for booked times canceled less than 72 hours in advance
+                50% refund for booked times canceled less than 48 hours in advance
               </li>
             </ul>
             <div>
@@ -324,7 +321,7 @@ const EmployerBookingCard = props => {
           </Button>
           <CancelButton
             inProgress={cancelBookingInProgress}
-            onClick={handleCancelBooking}
+            onClick={() => onCancelBooking(booking)}
             className={css.modalButton}
             ready={cancelBookingSuccess}
             disabled={cancelBookingSuccess || cancelBookingInProgress}
@@ -354,17 +351,6 @@ const EmployerBookingCard = props => {
           disputeBookingSuccess={disputeBookingSuccess}
         />
       </Modal>
-      <ReviewModal
-        id={`ReviewOrderModal.${booking.id.uuid}`}
-        isOpen={isReviewModalOpen}
-        onCloseModal={() => handleModalClose(setIsReviewModalOpen)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        onSubmitReview={handleReviewSubmit}
-        revieweeName={providerDisplayName}
-        reviewSent={reviewSubmitted}
-        sendReviewInProgress={submitReviewInProgress}
-        sendReviewError={submitReviewError}
-      />
     </div>
   );
 };

@@ -33,9 +33,10 @@
   {:name :transition/accept,
    :actor :actor.role/provider,
    :actions
-   [{:name :action/accept-booking}],
+   [{:name :action/accept-booking}, {:name :action/privileged-update-metadata}],
    :from :state/booking-requested,
-   :to :state/accepted}
+   :to :state/accepted,
+   :privileged? true}
 
    {:name :transition/cancel-accepted-booking-customer,
    :actions
@@ -65,7 +66,7 @@
 
    {:name :transition/charge,
    :at
-   {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P3D"]}]},
+   {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]},
    :from :state/accepted,
    :to :state/charged}
    {:name :transition/cancel-charged-booking-customer,
@@ -100,13 +101,6 @@
    :from :state/active,
    :to :state/active}
 
-   {:name :transition/cancel-pay-caregiver,
-   :at
-   {:fn/plus
-    [{:fn/timepoint [:time/first-entered-state :state/canceled]} {:fn/period ["P2D"]}]},
-   :from :state/canceled,
-   :to :state/canceled-paid-out}
-
    {:name :transition/cancel-active-booking-customer,
    :actions
    [{:name :action/update-booking :config {:type :time}}],
@@ -135,39 +129,7 @@
    :at {:fn/timepoint [:time/booking-end]},
    :from :state/active,
    :to :state/delivered}
-
-   {:name :transition/pay-caregiver,
-   :at
-   {:fn/plus
-    [{:fn/timepoint [:time/first-entered-state :state/delivered]} {:fn/period ["P2D"]}]},
-   :from :state/delivered,
-   :to :state/paid-out}
-
-   {:name :transition/dispute,
-   :actor :actor.role/customer,
-   :from :state/delivered,
-   :to :state/dispute-review}
-
-  {:name :transition/resolve-dispute,
-    :actor :actor.role/operator,
-   :from :state/dispute-review,
-   :to :state/paid-out}
-
-   {:name :transition/review,
-   :actor :actor.role/customer,
-   :actions
-   [{:name :action/post-review-by-customer}
-    {:name :action/publish-reviews}],
-   :from :state/paid-out,
-   :to :state/reviewed}
-
-   {:name :transition/expire-review-period,
-   :at
-   {:fn/plus
-    [{:fn/timepoint [:time/first-entered-state :state/paid-out]} {:fn/period ["P7D"]}]},
-   :from :state/paid-out,
-   :to :state/reviewed}
-   ],
+],
  :notifications
  [
    ; Customer created new booking request
@@ -284,40 +246,12 @@
    :to :actor.role/provider,
    :template :booking-completed-provider}
 
-    ; Customer submitted dispute
-   {:name :notification/dispute-in-review,
-   :on :transition/dispute,
-   :to :actor.role/customer,
-   :template :dispute-in-review}
-   {:name :notification/customer-disputed,
-   :on :transition/dispute,
-   :to :actor.role/provider,
-   :template :customer-disputed}
-
-    ; Dispute resolved. We will personally send dispute emails, but this lets the customer know they can now review the caregiver.
-   {:name :notification/customer-can-review-dispute,
-    :on :transition/resolve-dispute,
-    :to :actor.role/customer,
-    :template :customer-can-review}
-
-    ; Caregiver paid out as normal
-    {:name :notification/customer-can-review,
-    :on :transition/pay-caregiver,
-    :to :actor.role/customer,
-    :template :customer-can-review}
-
-    ; Customer reviewed caregiver
-    {:name :notification/customer-reviewed,
-    :on :transition/review,
-    :to :actor.role/provider,
-    :template :customer-reviewed}
-
     {:name :notification/booking-reminder-customer
     :on :transition/charge,
     :to :actor.role/customer,
     :template :booking-reminder-customer,
     :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
 
     {:name :notification/booking-reminder-provider
@@ -325,6 +259,6 @@
     :to :actor.role/provider,
     :template :booking-reminder-provider,
     :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]}]}
+    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
     }
 ]}

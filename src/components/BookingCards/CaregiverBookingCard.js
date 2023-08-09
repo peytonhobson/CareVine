@@ -19,7 +19,7 @@ import {
   TRANSITION_START,
   TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
-import { convertTimeFrom12to24, calculateRefundAmount } from '../../util/data';
+import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,9 +87,9 @@ const CaregiverBookingCard = props => {
     setBookingTimesPage(page);
   };
 
-  const handleCancelBooking = () => {
-    const refundAmount = calculateRefundAmount(lineItems, true);
-    onCancelBooking(booking, refundAmount);
+  const handleModalOpen = modalOpenFunc => {
+    onFetchBookings();
+    modalOpenFunc(true);
   };
 
   const handleModalClose = modalCloseFunc => {
@@ -128,7 +128,7 @@ const CaregiverBookingCard = props => {
     () =>
       bookedDates?.some(date =>
         lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
-      ),
+      ) && !(acceptBookingSuccess || acceptBookingInProgress),
     [bookedDates, lineItems]
   );
 
@@ -157,21 +157,31 @@ const CaregiverBookingCard = props => {
           <Avatar user={customer} className={css.avatar} />
           <div>
             {isMobile ? (
-              <h3 style={{ margin: 0 }}>{senderListingTitle}</h3>
+              <h3 style={{ margin: 0 }}>
+                {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
+              </h3>
             ) : (
-              <h2 style={{ margin: 0 }}>{senderListingTitle}</h2>
+              <h2 style={{ margin: 0 }}>
+                {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
+              </h2>
             )}
           </div>
         </div>
         <div className={css.changeButtonsContainer}>
           {isRequest && (
-            <Button className={css.changeButton} onClick={() => setIsRespondModalOpen(true)}>
+            <Button
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsRespondModalOpen)}
+            >
               Respond
             </Button>
           )}
           {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
           {showCancel && (
-            <CancelButton className={css.changeButton} onClick={() => setIsCancelModalOpen(true)}>
+            <CancelButton
+              className={css.changeButton}
+              onClick={() => handleModalOpen(setIsCancelModalOpen)}
+            >
               Cancel
             </CancelButton>
           )}
@@ -218,12 +228,15 @@ const CaregiverBookingCard = props => {
           </div>
         </div>
         <div className={css.viewContainer}>
-          <Button className={css.viewButton} onClick={() => setIsPaymentDetailsModalOpen(true)}>
+          <Button
+            className={css.viewButton}
+            onClick={() => handleModalOpen(setIsPaymentDetailsModalOpen)}
+          >
             Payment Details
           </Button>
           <SecondaryButton
             className={css.viewButton}
-            onClick={() => setIsBookingCalendarModalOpen(true)}
+            onClick={() => handleModalOpen(setIsBookingCalendarModalOpen)}
           >
             View Calendar
           </SecondaryButton>
@@ -280,6 +293,10 @@ const CaregiverBookingCard = props => {
         containerClassName={css.modalContainer}
       >
         <p className={css.modalTitle}>Cancel Booking with {customerDisplayName}</p>
+        <p className={css.modalMessage}>
+          If you cancel the booking now, {customerDisplayName} will be fully refunded for any
+          booking times not completed. Your search ranking may also be affected.
+        </p>
         {cancelBookingError ? (
           <p className={css.modalError}>
             There was an error cancelling your booking. Please try again.
@@ -294,7 +311,7 @@ const CaregiverBookingCard = props => {
           </Button>
           <CancelButton
             inProgress={cancelBookingInProgress}
-            onClick={handleCancelBooking}
+            onClick={() => onCancelBooking(booking)}
             className={css.modalButton}
             ready={cancelBookingSuccess}
             disabled={cancelBookingSuccess || cancelBookingInProgress}
