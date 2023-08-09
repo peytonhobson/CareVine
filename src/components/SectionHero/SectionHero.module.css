@@ -263,6 +263,8 @@
 .yourCare {
   font-size: 2.5rem;
   line-height: 3rem;
+  font-size: 8.5vw;
+  line-height: 10vw;
   letter-spacing: -0.7px;
   font-weight: var(--fontWeightSemiBold);
   composes: animation;
