@@ -80,3 +80,7 @@
     max-width: 20rem;
   }
 }
+
+.marketplaceColor {
+  color: var(--marketplaceColor);
+}
