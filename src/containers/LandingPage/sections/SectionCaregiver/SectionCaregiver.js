@@ -18,9 +18,8 @@ const SectionCaregiver = ({ isMobile }) => {
           </h2>
           <span>
             Set your rates, choose your hours, and handpick clients near you. Connect with seniors
-            in need of care, secure more job opportunities, and keep more of your pay without
-            middlemen taking a cut. Experience a caregiving career with more freedom and flexibility
-            at CareVine.
+            in need of care, secure more job opportunities, and get paid in full, directly.
+            Experience a caregiving career with more freedom and flexibility at CareVine.
           </span>
           <div className={css.getStartedLinkContainer}>
             <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
