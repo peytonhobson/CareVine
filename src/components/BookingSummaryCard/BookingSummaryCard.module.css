@@ -254,3 +254,23 @@
   margin: 0;
   color: var(--marketplaceColor);
 }
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+
+  padding-top: 3rem;
+
+  @media (--viewportLarge) {
+    padding-top: 0;
+  }
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.weeklyBillingDetails {
+  padding-top: 2rem;
+}

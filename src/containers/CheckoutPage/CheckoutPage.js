@@ -183,6 +183,7 @@ export class CheckoutPageComponent extends Component {
       endDate: endDateDate,
       bookingRate: bookingRateArr,
       scheduleType,
+      exceptions,
     } = values;
 
     const weekdays = findWeekdays(values);
@@ -194,7 +195,9 @@ export class CheckoutPageComponent extends Component {
       .startOf('day')
       .toDate();
     const bookingRate = bookingRateArr[0];
-    const { onInitiateOrder, currentUserListing, currentUser, listing } = this.props;
+    const { onInitiateOrder, currentUserListing, currentUser } = this.props;
+
+    const { listing } = this.state.pageData;
 
     const listingId = listing.id;
 
@@ -244,6 +247,7 @@ export class CheckoutPageComponent extends Component {
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
       providerName: listing.author.attributes.profile.displayName,
+      exceptions,
     };
 
     onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
@@ -302,7 +306,7 @@ export class CheckoutPageComponent extends Component {
 
     const isOwnListing = currentAuthor?.id?.uuid === currentUser?.id?.uuid;
 
-    const hasRequiredData = !!(currentListing.id && currentAuthor.id);
+    const hasRequiredData = !!(currentListing.id?.uuid && currentAuthor.id?.uuid);
     const canShowPage = hasRequiredData && !isOwnListing;
     const shouldRedirect = !isLoading && !canShowPage;
 

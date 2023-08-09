@@ -217,6 +217,30 @@
 }
 
 .summaryCard {
-  border: none;
-  border-radius: var(--borderRadius);
+  border: none !important;
+  border-radius: var(--borderRadius) !important;
+  width: 100%;
+  height: auto;
+  overflow-y: auto !important;
+  margin-bottom: 0.5rem;
+}
+
+.goBackButton {
+  composes: marketplaceModalCloseStyles from global;
+  position: static;
+  padding: 1rem 0 1rem 0.75rem;
+  margin-right: auto;
+}
+
+.goBackText {
+  composes: marketplaceModalCloseText from global;
+  color: var(--matterColorAnti);
+}
+
+.arrowIcon {
+  composes: marketplaceModalCloseIcon from global;
+  margin-right: 0.5rem;
+  stroke-width: 3px;
+  margin-left: 0;
+  fill: var(--matterColorAnti);
 }

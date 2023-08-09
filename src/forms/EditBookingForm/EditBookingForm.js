@@ -141,7 +141,6 @@ const EditBookingFormComponent = props => (
         currentListing,
         listingTitle,
         currentAuthor,
-        bookingRate,
         showPaymentForm,
         defaultPaymentFetched,
         fetchDefaultPaymentError,
@@ -161,7 +160,7 @@ const EditBookingFormComponent = props => (
 
       const storeFormData = () => {
         const saveParams = {
-          bookingRate: values.bookingRate?.[0] || bookingRate,
+          bookingRate: values.bookingRate,
           bookingDates: values.bookingDates,
           listing: currentListing,
           scheduleType: values.scheduleType,
@@ -419,7 +418,6 @@ const EditBookingFormComponent = props => (
               currentListing={currentListing}
               values={values}
               bookingDates={values.bookingDates}
-              bookingRate={bookingRate}
               onManageDisableScrolling={onManageDisableScrolling}
               selectedPaymentMethodType={selectedPaymentMethodType}
               initiateOrderErrorMessage={initiateOrderErrorMessage}
