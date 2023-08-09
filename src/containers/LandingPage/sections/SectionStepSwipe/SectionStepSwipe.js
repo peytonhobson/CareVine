@@ -18,7 +18,6 @@ import { useMediaQuery } from '@mui/material';
 const INTERVIEW_SLUG = 'the-art-of-interviewing-how-to-hire-the-perfect-caregiver-for-private-care';
 
 import './SectionStepSwipe.css';
-import css from 'styled-jsx/css';
 
 const SectionStepSwipe = ({ history }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -96,7 +95,7 @@ const SectionStepSwipe = ({ history }) => {
 
   return (
     <section className="stepsSection">
-      <h2 className="contentTitle">Your Roadmap to Finding the Perfect Caregiver</h2>
+      <h2 className="contentTitle">How it Works</h2>
       <div className="stepsSectionCard card1">
         <IconArrowHead
           direction="left"
@@ -125,7 +124,7 @@ const SectionStepSwipe = ({ history }) => {
                 Browse the CareVine network of caregivers in your area to find the right one for
                 you. CareVine’s platform automatically sorts caregivers based on the information in
                 your profile, giving you the best matches at the top. You can also add additional
-                filters and sort based off your preferences.
+                filters and sort based off of your preferences.
               </p>
             </div>
           </div>
