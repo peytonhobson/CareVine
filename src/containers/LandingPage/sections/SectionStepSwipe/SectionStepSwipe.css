@@ -148,14 +148,14 @@
   text-align: center;
   font-size: 2.5rem;
   line-height: 3rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  margin-top: 0;
 
   @media (--viewportMedium) {
     color: var(--matterColor);
     font-size: 2.5rem;
     line-height: 3rem;
     width: auto;
-    margin-top: 0;
     margin-bottom: 2.5rem;
   }
 }
