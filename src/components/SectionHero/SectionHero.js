@@ -6,13 +6,12 @@ import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../.
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { HeroSearchForm } from '../../forms';
-import { routeConfiguration } from '../..';
-import { createResourceLocatorString } from '../../util/routes';
 
 import backgroundImage from '../../assets/landing-background.jpg';
-import mobileImage from '../../assets/Landing-Mobile2.jpg';
+import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
+import UnauthenticatedContainer from './UnauthenticatedContainer';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
@@ -62,9 +61,9 @@ const SectionHero = props => {
         setHeroLoaded(true);
       };
 
-      const isMobile = window && window.innerWidth < 768;
+      const isLarge = window.innerWidth > 1024;
 
-      image.src = isMobile ? mobileImage : backgroundImage;
+      image.src = isLarge ? backgroundImage : mobileBackgroundImage;
     }
   }, [heroRef?.current]);
 
@@ -75,8 +74,6 @@ const SectionHero = props => {
     const lat = parseFloat(parseFloat(valOrigin.lat).toFixed(5));
     const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
     const origin = `${lat}%2C${lng}`;
-
-    console.log('values', values);
 
     history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
   };
@@ -159,38 +156,7 @@ const SectionHero = props => {
             ) : null}
           </div>
         ) : (
-          <div className={css.unAuthContainer}>
-            <h1 className={css.yourCare}>
-              Find <span style={{ color: 'var(--marketplaceColor)' }}>Local Caregivers</span>
-              <br></br> For Your <br></br>{' '}
-              <span style={{ color: 'var(--marketplaceColor)' }}>Home Care</span> Needs.
-            </h1>
-            <div className={css.stepContainer}>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>1</h2>
-                <h4>
-                  Craft Your<br></br> Personal Profile
-                </h4>
-              </div>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>2</h2>
-                <h4>
-                  Discover Your <br></br> Ideal Caregiver
-                </h4>
-              </div>
-              <div className={css.step}>
-                <h2 className={css.stepIcon}>3</h2>
-                <h4>
-                  Book Your<br></br> Care
-                </h4>
-              </div>
-            </div>
-            <HeroSearchForm
-              className={css.heroSearchForm}
-              onSubmit={handleSearchSubmit}
-              isMobile={isMobile}
-            />
-          </div>
+          <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
         )
       ) : null}
 

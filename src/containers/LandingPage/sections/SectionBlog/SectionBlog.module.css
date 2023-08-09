@@ -98,7 +98,7 @@
 }
 
 .blogSection {
-  background-color: #c6d9c6;
+  background-color: var(--marketplaceColorLight);
   padding: 2rem 0;
 
   @media (--viewportMedium) {
