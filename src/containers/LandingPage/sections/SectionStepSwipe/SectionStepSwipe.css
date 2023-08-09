@@ -8,7 +8,7 @@
   padding: 0 2rem 6rem 2rem;
 
   @media (--viewportMedium) {
-    padding: 0 0 6rem 0;
+    padding: 0 0 7rem 0;
   }
 }
 
