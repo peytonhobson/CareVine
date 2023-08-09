@@ -219,6 +219,6 @@
 
   @media (--viewportMedium) {
     max-width: 75rem;
-    padding: 6rem 2rem;
+    padding: 0 2rem;
   }
 }
