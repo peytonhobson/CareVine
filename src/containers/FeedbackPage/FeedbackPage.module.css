@@ -12,7 +12,7 @@
   text-align: center;
   background: -webkit-linear-gradient(
     90deg,
-    var(--marketplaceColorLight) 50%,
+    var(--secondaryMarketplaceColor) 50%,
     var(--marketplaceColor)
   );
   -webkit-background-clip: text;

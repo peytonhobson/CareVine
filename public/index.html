@@ -28,12 +28,6 @@
       $crisp.push(["safe", true])
 
       window.CRISP_READY_TRIGGER = function() {
-        if (!window.$crisp.get("session:data", "firstMessage")) {
-            setTimeout(() => {
-              window.$crisp.push(["do", "message:show", ["text", "Hi! If you have any questions, we are here to help."]]);
-              window.$crisp.push(["set", "session:data", [[["firstMessage", true]]]])
-            }, 3000)
-        }
 
         $crisp.push(["on", "message:sent", () => {
           if(window.$crisp.get("session:data", "firstUserMessageSent")) {
