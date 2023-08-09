@@ -62,7 +62,6 @@ const SectionRequest = props => {
     currentAuthor,
     currentListing,
     values,
-    bookingRate,
     onManageDisableScrolling,
     selectedPaymentMethodType,
     initiateOrderErrorMessage,
@@ -87,7 +86,7 @@ const SectionRequest = props => {
         {values.scheduleType === 'recurring' ? (
           <div style={{ marginBottom: '2rem' }}>
             <h2 style={{ marginBottom: '1rem' }}>
-              Booking Summary &nbsp;
+              Booking Summary{' '}
               <span className={css.startEndDates}>
                 ({moment(values.startDate?.date).format('dddd, MMM DD')} -{' '}
                 {values.endDate?.date
@@ -164,7 +163,8 @@ const SectionRequest = props => {
           subHeading="First Week Booking"
           weekdays={weekdays}
           startDate={values.startDate?.date}
-          endDate={endOfFirstWeek}
+          weekEndDate={endOfFirstWeek}
+          bookingEndDate={values.endDate?.date}
           exceptions={values.exceptions}
           bookedDays={bookedDays}
           bookedDates={bookedDates}

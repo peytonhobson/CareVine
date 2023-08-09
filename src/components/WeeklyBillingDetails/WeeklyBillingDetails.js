@@ -4,7 +4,7 @@ import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
 import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
-import RecurringBookingSummaryCard from '../BookingSummaryCard/Recurring/RecurringBookingSummaryCard';
+import { Button, IconArrowHead, RecurringBookingSummaryCard } from '..';
 
 import css from './WeeklyBillingDetails.module.css';
 
@@ -119,22 +119,34 @@ export const WeeklyBillingDetails = props => {
   return (
     <div className={classes}>
       {selectedWeek ? (
-        <RecurringBookingSummaryCard
-          currentAuthor={currentAuthor}
-          bookingRate={bookingRate}
-          listing={listing}
-          onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethodType}
-          subHeading="Weekly Billing Summary"
-          weekdays={bookingSchedule}
-          startDate={selectedWeek}
-          endDate={moment(selectedWeek).endOf('week')}
-          exceptions={exceptions}
-          bookedDays={bookedDays}
-          bookedDates={bookedDates}
-          hideWeeklyBillingDetails
-          className={css.summaryCard}
-        />
+        <>
+          <Button
+            onClick={() => setSelectedWeek(null)}
+            rootClassName={css.goBackButton}
+            type="button"
+          >
+            <IconArrowHead rootClassName={css.arrowIcon} direction="left" size="small" />
+            <span className={css.goBackText}>Go Back</span>
+          </Button>
+          <RecurringBookingSummaryCard
+            currentAuthor={currentAuthor}
+            bookingRate={bookingRate}
+            listing={listing}
+            onManageDisableScrolling={onManageDisableScrolling}
+            selectedPaymentMethod={selectedPaymentMethodType}
+            subHeading="Billing Details"
+            weekdays={bookingSchedule}
+            startDate={selectedWeek}
+            weekEndDate={moment(selectedWeek).endOf('week')}
+            exceptions={exceptions}
+            bookedDays={bookedDays}
+            bookedDates={bookedDates}
+            hideWeeklyBillingDetails
+            className={css.summaryCard}
+            hideRatesButton
+            hideAvatar
+          />
+        </>
       ) : (
         <Calendar
           formatDay={(_, date) =>

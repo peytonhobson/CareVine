@@ -6,6 +6,7 @@ import moment from 'moment';
 import { WEEKDAY_MAP, WEEKDAYS } from '../../../util/constants';
 import RecurringBookingItem from './RecurringBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
+import ChangeRatesModal from '../ChangeRatesModal';
 
 import css from '../BookingSummaryCard.module.css';
 
@@ -122,7 +123,8 @@ const RecurringBookingSummaryCard = props => {
     refundAmount,
     weekdays = [],
     startDate,
-    endDate,
+    weekEndDate,
+    bookingEndDate,
     exceptions = {
       addedDays: [],
       removedDays: [],
@@ -203,7 +205,7 @@ const RecurringBookingSummaryCard = props => {
           )}
         </span>
         <p className={css.startEndDates}>
-          {moment(startDate).format('ddd, MMM DD')} - {moment(endDate).format('ddd, MMM DD')}
+          {moment(startDate).format('ddd, MMM DD')} - {moment(weekEndDate).format('ddd, MMM DD')}
         </p>
       </>
     ) : null;
@@ -299,19 +301,25 @@ const RecurringBookingSummaryCard = props => {
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
         >
-          <WeeklyBillingDetails
-            bookedDates={bookedDates}
-            bookedDays={bookedDays}
-            bookingSchedule={weekdays}
-            exceptions={exceptions}
-            startDate={startDate}
-            endDate={endDate}
-            currentAuthor={currentAuthor}
-            bookingRate={bookingRate}
-            listing={listing}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethodType={selectedPaymentMethod.type}
-          />
+          <p className={css.modalTitle}>Weekly Billing Breakdown</p>
+          <p className={css.modalMessage}>
+            Click any week in your booking to view the billing details for that week.
+          </p>
+          <div className={css.weeklyBillingDetails}>
+            <WeeklyBillingDetails
+              bookedDates={bookedDates}
+              bookedDays={bookedDays}
+              bookingSchedule={weekdays}
+              exceptions={exceptions}
+              startDate={startDate}
+              endDate={bookingEndDate}
+              currentAuthor={currentAuthor}
+              bookingRate={bookingRate}
+              listing={listing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              selectedPaymentMethodType={selectedPaymentMethod.type}
+            />
+          </div>
         </Modal>
       ) : null}
     </BookingSummaryCard>
