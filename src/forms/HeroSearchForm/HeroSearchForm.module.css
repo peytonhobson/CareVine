@@ -26,7 +26,7 @@
 }
 
 .mobileIcon {
-  padding: 11px 0 17px 0;
+  padding: 14px 0 14px 0;
   margin: auto;
 
   /* Borders */
@@ -50,7 +50,7 @@
 
   /* Layout */
   margin: auto 0;
-  padding: 4px 13px 10px 13px;
+  padding: 0.438rem 0.813rem 0.438rem 0.813rem;
   line-height: unset;
 
   /* Borders */
@@ -123,7 +123,7 @@
 
   @media (--viewportLarge) {
     height: clamp(2rem, 5vw, 4.5rem);
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.75rem, 1.1vw, 1.25rem);
   }
 }
 
