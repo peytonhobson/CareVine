@@ -13,7 +13,7 @@
     margin-left: 0;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 24px;
   }
 }
@@ -48,7 +48,7 @@
     color: var(--matterColorDark);
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-weight: var(--fontWeightSemiBold);
     font-size: 20px;
     line-height: 24px;
@@ -72,7 +72,7 @@
   border-bottom-color: var(--matterColorDark);
   color: var(--matterColorDark);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: var(--TabNav_linkWidth);
     background-image: url("data:image/svg+xml;utf8,<svg width='4' height='32' viewBox='0 0 4 32' xmlns='http://www.w3.org/2000/svg'><path d='M0 0h4v32H0z' fill='%23000' fill-rule='evenodd'/></svg>");
     background-position: right center;

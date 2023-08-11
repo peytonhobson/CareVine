@@ -20,7 +20,7 @@
   /* When side nav is shown as a column, Topbar's box-shadow should be visible */
   z-index: calc(var(--zIndexTopbar) - 1);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-direction: row;
     justify-content: center;
   }
@@ -34,7 +34,7 @@
 
   padding: 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 112px 36px 82px 59px;
     background-color: var(--matterColorLight);
     border-left-width: 1px;

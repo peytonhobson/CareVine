@@ -12,7 +12,7 @@
   justify-content: space-evenly;
   gap: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: space-evenly;
     gap: 1rem;
   }
@@ -27,7 +27,7 @@
     0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   border: 1px solid var(--matterColorNegative);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 12rem;
     padding: 1rem;
     margin-block: 1rem;
@@ -79,7 +79,7 @@
     cursor: default;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 4.5rem;
   }
 }
@@ -105,7 +105,7 @@
   text-align: center;
   padding-block: 0.25rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-block: 0;
   }
 }
@@ -114,7 +114,7 @@
   margin-bottom: 2rem;
   max-width: 20rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 1rem auto;
   }
 }
@@ -138,7 +138,7 @@
   padding: 0 2.5rem;
   margin: 3rem 0 0 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     /* TODO this is ugly overwrite to fix unconsistent font styles */
     padding: 0;
   }
@@ -147,7 +147,7 @@
 .sendAMessage {
   margin-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 5rem;
   }
 }
@@ -156,7 +156,7 @@
   display: inline;
   margin-right: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }

@@ -22,7 +22,7 @@
   composes: row;
   justify-content: space-between;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: flex-start;
   }
 }
@@ -63,7 +63,7 @@
   margin-bottom: 24px;
   flex-shrink: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     width: 241px;
     margin-top: 60px;
@@ -83,7 +83,7 @@
   flex-wrap: wrap;
   width: calc(50% - 1.5rem);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: calc(33% - 1.5rem);
     margin: auto;
   }
@@ -103,7 +103,7 @@
 .ssn {
   width: calc(100% - 5rem);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 3.5rem;
   }
 }

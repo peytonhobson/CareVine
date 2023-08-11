@@ -7,7 +7,7 @@
 .stepsSection {
   padding: 0 2rem 6rem 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0 0 7rem 0;
   }
 }
@@ -23,12 +23,12 @@
   max-width: calc(100vw - 4rem);
   padding: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: auto;
     height: 30rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: 28rem;
   }
 }
@@ -62,7 +62,7 @@
   position: absolute;
   height: 35rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
     text-align: left;
     height: 25rem;
@@ -80,7 +80,7 @@
     }
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     & > h2 {
       margin-bottom: 0;
     }
@@ -91,11 +91,11 @@
   width: calc(100vw - 14rem);
   margin: auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 28rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: 35rem;
   }
 }
@@ -115,7 +115,7 @@
   stroke-width: 0;
   cursor: pointer;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: auto 2rem;
   }
 }
@@ -134,7 +134,7 @@
     margin: 0 auto;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 0.5rem;
 
     & .stepButton {
@@ -151,7 +151,7 @@
   margin-bottom: 2rem;
   margin-top: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     color: var(--matterColor);
     font-size: 2.5rem;
     line-height: 3rem;
@@ -159,7 +159,7 @@
     margin-bottom: 2rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 2.5rem;
   }
 }

@@ -3,7 +3,7 @@
 .fieldContainer {
   margin-bottom: 3rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-block: 1rem;
   }
 }
@@ -12,7 +12,7 @@
   width: 100%;
   text-align: center;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 0.5rem;
     margin-top: 0;
   }

@@ -3,7 +3,7 @@
 .caregiverSection {
   padding: 0rem 2rem 6rem 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0 0 7rem 0;
   }
 }
@@ -15,7 +15,7 @@
   margin: auto;
   width: 100%;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 75rem;
     width: auto;
     flex-direction: row;
@@ -27,7 +27,7 @@
   border-radius: var(--borderRadius);
   padding: 3rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 4rem 4rem 4rem 3rem;
   }
 }
@@ -52,7 +52,7 @@
   margin-top: 1.313rem;
   margin-bottom: 1.063rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 2.25rem;
     line-height: 2.5rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -75,7 +75,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     max-width: 20rem;
   }

@@ -21,7 +21,7 @@
   /* shadows */
   box-shadow: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
@@ -30,7 +30,7 @@
 .mobileTopbar {
   box-shadow: none;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     box-shadow: var(--boxShadowLight);
   }
 }

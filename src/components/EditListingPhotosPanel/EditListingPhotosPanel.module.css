@@ -20,7 +20,7 @@
   margin-bottom: 36px;
   padding: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 34px;
     padding: 0;
@@ -43,7 +43,7 @@
 .title {
   margin-bottom: 19px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 38px;
     padding: 1px 0 7px 0;
   }

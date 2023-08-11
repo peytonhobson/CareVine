@@ -11,7 +11,7 @@
     margin-bottom: 0;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 39px;
   }
 }
@@ -42,7 +42,7 @@
   margin-bottom: 0px;
   color: var(--matterColorAnti);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 9px;
   }
 }
@@ -55,7 +55,7 @@
   margin: 0 7px;
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: inline;
   }
 }
@@ -65,7 +65,7 @@
   margin-top: 3px;
   margin-bottom: 9px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
@@ -76,7 +76,7 @@
   position: relative;
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: inline;
   }
 }

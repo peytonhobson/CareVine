@@ -156,7 +156,7 @@
     "translate": "node scripts/translations.js",
     "build:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
     "watch:css": "postcss src/assets/tailwind.css -o src/assets/main.css",
-    "watch-tailwind": "npx tailwindcss - output ./src/styles/tailwind.css - watch"
+    "watch-tailwind": "npx tailwindcss -i ./src/styles/input.css -o ./src/styles/tailwind.css --watch"
   },
   "browserslist": {
     "production": [

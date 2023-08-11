@@ -17,7 +17,7 @@
 .thumbnail {
   margin: 24px 0 0 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: calc(50% - 12px);
     margin: 0 24px 24px 0;
 
@@ -42,7 +42,7 @@
     clear: both;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: calc(50% - 12px);
     margin: 0 0 24px 0;
   }
@@ -71,7 +71,7 @@
   /* Colors */
   background-color: var(--matterColorLight);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     background-color: var(--matterColorBright);
   }
 
@@ -103,7 +103,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-weight: var(--fontWeightSemiBold);
     margin-top: 0;
     margin-bottom: 0;
@@ -117,7 +117,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -140,7 +140,7 @@
   margin-top: 24px;
   margin-bottom: 60px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -155,7 +155,7 @@
   margin-top: 4rem;
   margin-bottom: 2rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     width: 15rem;
     margin-top: 4rem;
@@ -208,7 +208,7 @@
   position: relative;
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
     height: var(--ProfileSettingsForm_avatarSizeDesktop);
     border-radius: calc(var(--ProfileSettingsForm_avatarSizeDesktop) / 2);
@@ -240,7 +240,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     /* Position: under */
     bottom: -10px;
     right: auto;
@@ -268,7 +268,7 @@
   margin-top: 1.125rem;
   margin-bottom: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 2.75rem;
     margin-bottom: 1.25rem;
   }
@@ -278,7 +278,7 @@
   margin-top: 1.125rem;
   margin-bottom: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 2.75rem;
     margin-bottom: 3.25rem;
   }
@@ -287,7 +287,7 @@
 .colorAvatar {
   width: var(--ProfileSettingsForm_avatarSize) !important;
   height: var(--ProfileSettingsForm_avatarSize) !important;
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
     height: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
   }
@@ -300,7 +300,7 @@
 
 .label {
   width: var(--ProfileSettingsForm_avatarSize);
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
   }
 }
@@ -323,7 +323,7 @@
   border-radius: calc(var(--ProfileSettingsForm_avatarSize) / 2);
   cursor: pointer;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
     height: var(--ProfileSettingsForm_avatarSizeDesktop);
     border-radius: calc(var(--ProfileSettingsForm_avatarSizeDesktop) / 2);
@@ -344,14 +344,14 @@
 }
 
 .avatarPlaceholderTextMobile {
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
 .avatarPlaceholderText {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     max-width: 130px;
     text-align: center;
@@ -373,7 +373,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 8px;
     padding-top: 4px;
@@ -389,7 +389,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 3rem;
     padding-top: 6px;
@@ -406,7 +406,7 @@
   padding-top: 3px;
   padding-bottom: 3px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 24px;
     padding-top: 4px;
@@ -414,7 +414,7 @@
     text-align: center;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     text-align: left;
   }
 }
@@ -427,11 +427,11 @@
   display: flex;
   flex-wrap: nowrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: center;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     justify-content: flex-start;
   }
 }

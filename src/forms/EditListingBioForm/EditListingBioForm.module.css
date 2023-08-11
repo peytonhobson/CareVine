@@ -12,7 +12,7 @@
 
   padding-top: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 2px;
   }
 }
@@ -24,7 +24,7 @@
 .formMargins {
   margin-bottom: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 32px;
   }
 }
@@ -57,7 +57,7 @@
   margin-bottom: 2rem;
   flex-shrink: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     width: 15rem;
   }
@@ -69,7 +69,7 @@
 
   margin-top: 4rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }

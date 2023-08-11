@@ -94,7 +94,7 @@
 .notFoundError {
   margin: 11px 0 12px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 10px 0 12px 0;
   }
 }

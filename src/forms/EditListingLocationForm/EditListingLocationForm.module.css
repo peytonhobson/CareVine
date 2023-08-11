@@ -10,7 +10,7 @@
   flex: 1;
   flex-direction: column;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 2px;
   }
 }
@@ -18,7 +18,7 @@
 .formMargins {
   margin-bottom: 2.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 3rem;
   }
 }
@@ -39,7 +39,7 @@
 .addSubtractField {
   margin-top: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 1rem;
   }
 }
@@ -64,7 +64,7 @@
     line-height: normal;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 40px;
   }
 }
@@ -85,7 +85,7 @@
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     top: 40px;
   }
 
@@ -104,7 +104,7 @@
   flex-shrink: 0;
   margin-bottom: 0.75rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 1rem;
   }
 }
@@ -114,7 +114,7 @@
 
   margin-top: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -123,7 +123,7 @@
   margin-top: 5rem;
   margin-bottom: 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     width: 241px;
     margin-top: 50px;
