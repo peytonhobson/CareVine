@@ -182,7 +182,7 @@
   display: inline-block;
 }
 
-@media (--viewportSmall) {
+@media screen(sm) {
   .paymentMethodPlaceholderDesktop {
     display: inline-block;
   }

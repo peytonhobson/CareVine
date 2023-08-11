@@ -3,9 +3,8 @@
 .fieldContainer {
   margin-bottom: 4rem;
 
-  & > h2 {
-    width: 100%;
-    text-align: center;
+  @media screen(lg) {
+    margin-block: 1rem;
   }
 }
 
@@ -14,7 +13,8 @@
   text-align: center;
   margin-bottom: 1rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
+    margin-bottom: 0.5rem;
     margin-top: 0;
   }
 }

@@ -17,7 +17,7 @@
     margin-left: 0;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 24px;
   }
 }
@@ -50,7 +50,7 @@
     color: var(--marketplaceColor);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-bottom-width: 4px;
     padding: 16px 10px 14px 10px;
   }

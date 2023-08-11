@@ -13,13 +13,14 @@ const SectionEmployer = () => {
         <div className={css.employerSectionCard}>
           <h2 className={css.employerSectionTitle}>
             Your Care, In Your Hands:<br></br>
-            Find the Perfect Caregiver for You
+            Find the Perfect<br></br> Caregiver for{' '}
+            <span className={css.marketplaceColor}>You</span>
           </h2>
           <span>
-            Discover the seamless solution to finding the perfect caregiver. Tailor your care
-            experience by selecting professionals that fit your needs, budget, and location. Our
-            user-friendly platform eliminates the middleman, empowering you to take control of your
-            care journey. Accessible to all, CareVine puts the power in your hands.
+            Find the right caregiver easily. Tailor your care experience by selecting professionals
+            that fit your needs, budget, and location. With CareVine, you can connect directly with
+            professionals, skipping the hassle and extra fees of middlemen. Simple, direct, and made
+            for everyone. Take control of your care with CareVine.
           </span>
           <div className={css.getStartedLinkContainer}>
             <NamedLink name="SignupPage" className={css.getStartedButton}>

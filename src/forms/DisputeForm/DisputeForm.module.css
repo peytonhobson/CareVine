@@ -9,7 +9,7 @@
   flex-wrap: wrap;
   overflow-x: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 32rem;
   }
 }
@@ -24,7 +24,7 @@
   color: var(--failColor);
   margin-top: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -34,7 +34,7 @@
   width: 100%;
   display: block;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
     margin-top: 2rem;
   }

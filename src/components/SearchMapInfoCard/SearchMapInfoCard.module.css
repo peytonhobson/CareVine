@@ -50,7 +50,7 @@
   transition: var(--transitionStyleButton);
 
   /* Overwrite dimensions from font styles */
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -119,7 +119,7 @@
   margin-bottom: 0;
 
   /* Overwrite dimensions from font styles */
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }

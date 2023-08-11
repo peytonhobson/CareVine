@@ -4,7 +4,7 @@
   composes: marketplaceModalBaseStyles from global;
   padding-top: 70px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 567px;
   }
 }

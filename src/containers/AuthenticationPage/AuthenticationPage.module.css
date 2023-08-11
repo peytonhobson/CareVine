@@ -3,7 +3,7 @@
 .layoutWrapperMain {
   height: calc(100vh - var(--topbarHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
@@ -22,7 +22,7 @@
   composes: marketplaceModalRootStyles from global;
   padding: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
@@ -46,7 +46,7 @@
 /* ================ Tabs & Form ================ */
 
 .tabs {
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 6px;
   }
 }
@@ -56,7 +56,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -64,7 +64,7 @@
 .form {
   margin-top: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 30px;
     padding-top: 2px;
   }
@@ -81,7 +81,7 @@
   flex-grow: 0;
   flex-basis: 260px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 330px;
     margin-top: 30px;
     padding-top: 2px;
@@ -99,7 +99,7 @@
   flex-grow: 0;
   flex-basis: 340px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 410px;
     margin-top: 30px;
     padding-top: 2px;
@@ -119,7 +119,7 @@
   width: 100%;
   padding-top: 40px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 604px;
     padding-top: 11px;
   }
@@ -129,7 +129,7 @@
   composes: h1 from global;
   margin: 0 0 19px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 19px 0;
   }
 }
@@ -139,7 +139,7 @@
 .hideOnMobile {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
   }
 }
@@ -195,7 +195,7 @@
   /* Align the icon and rest of the content in the modal. Sign & Login doesn't use an icon, maybe we should add one? */
   margin-top: 47px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -217,7 +217,7 @@
   padding-top: 16px;
   color: var(--matterColorDark);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 6px;
   }
 }
@@ -234,7 +234,7 @@
 
 .socialButtonWrapper {
   margin-bottom: 6px;
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 8px;
   }
 }
@@ -258,7 +258,7 @@
   }
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .socialButtonsOr {
     height: 34px;
     margin: 15px 0;

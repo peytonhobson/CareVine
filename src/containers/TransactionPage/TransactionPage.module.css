@@ -28,7 +28,7 @@
 .footer {
   display: none;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: block;
   }
 }

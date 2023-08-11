@@ -12,7 +12,7 @@
 
   padding-top: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 2px;
   }
 }
@@ -24,7 +24,7 @@
 .formMargins {
   margin-bottom: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 32px;
   }
 }
@@ -37,7 +37,7 @@
   & > label {
     font-size: 0.875rem;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       font-size: 1rem;
     }
   }
@@ -48,7 +48,7 @@
   margin-bottom: 24px;
   flex-shrink: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     /* margin-top: 100px; */
   }
@@ -83,7 +83,7 @@
   font-size: 2.25rem;
   line-height: 2.25rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     line-height: 2.5rem;
     letter-spacing: -0.9px;
@@ -98,7 +98,7 @@
   font-size: 1.25rem;
   line-height: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 1.25rem;
   }
@@ -107,7 +107,7 @@
 .quizTitle {
   width: 100%;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 0;
     padding: 1px 0 7px 0;
   }
@@ -125,7 +125,7 @@
   justify-content: center;
   min-width: 5.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 8rem;
   }
 }

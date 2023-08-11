@@ -3,7 +3,7 @@
 .root {
   margin-top: auto;
   margin-top: 48px;
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 72px;
   }
 }
@@ -18,10 +18,10 @@
   /* Border */
   border-bottom-color: var(--attentionColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 35px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: 38px;
     padding: 6px 0 14px 0;
   }
@@ -51,7 +51,7 @@
   padding-top: 8px;
   padding-bottom: 0px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 26px 0;
   }
 }
@@ -63,7 +63,7 @@
   padding-top: 3px;
   padding-bottom: 2px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 26px 0;
   }
 }
@@ -71,10 +71,10 @@
 .paymentLabel {
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 2px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 4px;
   }
 }
@@ -86,10 +86,10 @@
   padding-top: 4px;
   padding-bottom: 4px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 41px 0 26px 0;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 40px 0 26px 0;
   }
 }
@@ -97,7 +97,7 @@
 .messageLabel {
   margin: 0 0 5px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 6px 0;
   }
 }
@@ -113,7 +113,7 @@
 .submitContainer {
   margin-top: auto;
   margin-top: 48px;
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 72px;
   }
 }
@@ -129,10 +129,10 @@
 .submitButton {
   margin-top: 22px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 26px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 17px;
   }
 }
@@ -178,10 +178,10 @@
 .submitButton {
   margin-top: 22px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 26px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 17px;
   }
 }

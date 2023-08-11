@@ -3,7 +3,7 @@
 .root {
   margin-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
