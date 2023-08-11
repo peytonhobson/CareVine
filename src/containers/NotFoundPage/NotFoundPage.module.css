@@ -17,7 +17,7 @@
   margin-top: 60px;
   margin-bottom: 60px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 10vh;
   }
 }
@@ -28,7 +28,7 @@
   color: var(--marketplaceColor);
   margin: 1px 0 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -38,7 +38,7 @@
   text-align: center;
   margin-top: 16px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 22px;
   }
 }
@@ -47,7 +47,7 @@
   text-align: center;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 24px;
     margin-bottom: 0;
   }
@@ -61,7 +61,7 @@
   border-bottom: 4px solid var(--marketplaceColor);
   box-shadow: var(--boxShadowNotFoundPageSearch);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 64px;
   }
 }

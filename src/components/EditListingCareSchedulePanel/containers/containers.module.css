@@ -54,7 +54,7 @@
     border-bottom: solid 1px var(--matterColorNegative);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 50%;
   }
 }
@@ -154,14 +154,14 @@
   margin-bottom: 4rem;
   margin-top: 2.5rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     margin-bottom: 1.5rem;
     margin-top: 2rem;
   }
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .sectionHeader {
     padding-top: 3px;
     padding-bottom: 3px;

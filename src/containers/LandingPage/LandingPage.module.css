@@ -16,7 +16,7 @@
   padding: 0;
   height: calc(100vh - var(--topbarHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
@@ -25,7 +25,7 @@
   flex-grow: 1;
   justify-content: flex-end;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     justify-content: center;
   }
 }
@@ -41,7 +41,7 @@
 
 /* Square corners for the last section if it's even */
 .section:nth-of-type(2n):last-of-type {
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-radius: 4px 4px 0 0;
   }
 }
@@ -49,7 +49,7 @@
 /* Every other section has a light background */
 .section:nth-of-type(2n) {
   background-color: var(--matterColorLight);
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-radius: 4px;
   }
 }
@@ -58,19 +58,19 @@
   margin: var(--LandingPage_sectionMarginTop) 24px 51px 24px;
   min-height: 90vh;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 100%;
     min-height: calc(100vh - var(--topbarHeightDesktop));
     margin: var(--LandingPage_sectionMarginTopMedium) 24px 60px 24px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 75rem;
     padding: 0 2.25rem 0 2.25rem;
     margin: var(--LandingPage_sectionMarginTopLarge) auto 93px auto;
   }
 
-  @media (--viewportXLarge) {
+  @media screen(xl) {
     max-width: 75rem;
     padding: 0;
   }
@@ -93,13 +93,13 @@
   position: relative;
   top: calc(-1 * var(--LandingPage_sectionMarginTop));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 192px;
     height: 8px;
     top: calc(-1 * var(--LandingPage_sectionMarginTopMedium));
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     top: calc(-1 * var(--LandingPage_sectionMarginTopLarge));
   }
 }
@@ -114,7 +114,7 @@
   composes: marketplaceModalTitleStyles from global;
   padding-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 0;
   }
 }
@@ -141,7 +141,7 @@
   -webkit-overflow-scrolling: touch;
   background-color: rgba(0, 0, 0, 0.4);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     align-items: flex-start;
     padding: 0;
     background-image: none;
@@ -165,7 +165,7 @@
 
   height: 60%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 576px;
     flex-grow: 0;
     min-height: auto;
@@ -184,7 +184,7 @@
   font-size: 1rem;
   line-height: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 2rem;
   }
@@ -216,7 +216,7 @@
   flex-direction: column;
   margin: auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 75rem;
     padding: 0 2rem;
   }

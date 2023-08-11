@@ -19,7 +19,7 @@
   background-clip: text;
   -webkit-text-fill-color: transparent;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 80px;
     line-height: 80px;
     letter-spacing: -1.5px;
@@ -37,7 +37,7 @@
 
   height: calc(100vh - var(--topbarHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: calc(100vh - var(--topbarHeightDesktop));
   }
 }
@@ -73,7 +73,7 @@
     margin-top: 2rem;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-inline: 0;
   }
 }

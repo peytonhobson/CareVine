@@ -13,7 +13,7 @@
   background-color: var(--matterColorLight);
   box-shadow: var(--boxShadow);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 109px 0 82px 36px;
     flex-direction: column;
     justify-content: flex-start;
@@ -34,12 +34,12 @@
   min-height: 48px;
   padding-top: 2px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-height: 56px;
     padding-top: 10px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     min-height: auto;
     flex-direction: column;
     margin-top: 24px;
@@ -57,7 +57,7 @@
     margin-left: 0;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 0;
   }
 }

@@ -11,7 +11,7 @@
 .sectionContainer {
   margin-bottom: 35px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 56px;
   }
 }
@@ -23,7 +23,7 @@
   margin-top: 0;
   margin-bottom: 13px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 16px;
     padding-top: 4px;
@@ -93,7 +93,7 @@
   margin-bottom: 12px;
   text-align: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 16px;
   }
 }
@@ -174,7 +174,7 @@
 .accountOpenerWrapper {
   margin-bottom: 35px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 56px;
   }
 }
@@ -191,7 +191,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 6px;
@@ -203,7 +203,7 @@
 .additionalPersonsWrapper {
   margin-bottom: 35px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 56px;
   }
 }
@@ -224,7 +224,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 6px;

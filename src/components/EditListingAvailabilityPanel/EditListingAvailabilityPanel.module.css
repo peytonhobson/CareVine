@@ -216,7 +216,7 @@
   margin-bottom: 0;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .root {
     padding: 11px 24px 0 24px;
   }
@@ -295,7 +295,7 @@
   }
 }
 
-@media (--viewportLarge) {
+@media screen(lg) {
   .title {
     margin-bottom: 38px;
     padding: 1px 0 7px 0;
@@ -306,7 +306,7 @@
     margin-bottom: 2rem;
     flex-shrink: 0;
 
-    @media (--viewportLarge) {
+    @media screen(lg) {
       display: inline-block;
       max-width: 15rem;
     }

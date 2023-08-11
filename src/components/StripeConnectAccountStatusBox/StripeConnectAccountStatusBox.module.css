@@ -15,7 +15,7 @@
   border-radius: 4px;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .verificiationBox {
     flex-wrap: nowrap;
   }
@@ -28,7 +28,7 @@
   margin-bottom: 16px;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .verificiationBoxTextWrapper {
     margin-bottom: 0px;
   }

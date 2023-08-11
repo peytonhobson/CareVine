@@ -35,7 +35,7 @@
   overflow-y: hidden;
   max-height: calc(85vh - var(--topbarHeight) - 12rem);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-height: calc(100vh - var(--topbarHeightDesktop) - 12rem);
   }
 }
@@ -45,7 +45,7 @@
   color: var(--matterColorAnti);
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -66,7 +66,7 @@
     width: 0 !important;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-left: none;
   }
 }
@@ -79,7 +79,7 @@
   padding-top: 2rem;
   border-top: 1px solid var(--matterColorNegative);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 6rem;
     align-items: center;
     padding-top: 0;

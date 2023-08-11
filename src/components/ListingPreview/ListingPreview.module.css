@@ -9,7 +9,7 @@
   flex-wrap: wrap;
   padding: 3rem 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }

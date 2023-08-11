@@ -26,7 +26,7 @@
 .mobileMargins {
   width: calc(100% - 48px);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 100%;
     margin: 0;
   }

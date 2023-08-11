@@ -28,7 +28,7 @@
   padding-inline: 3rem;
   margin-top: 15%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 30rem;
     padding-inline: 0;
     margin-top: 3%;
@@ -51,7 +51,7 @@
   min-height: 0;
   padding: 0.75rem 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-height: 3rem;
   }
 }
@@ -94,7 +94,7 @@
     color: var(--matterColor);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
@@ -115,13 +115,13 @@
     color: var(--matterColorLight);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
 
 .deviceType {
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 4rem;
   }
   padding-top: 4.376rem;

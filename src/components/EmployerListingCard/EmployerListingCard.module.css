@@ -16,7 +16,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 22rem;
   }
 }
@@ -27,7 +27,7 @@
   flex-direction: row;
   margin-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -40,7 +40,7 @@
   text-align: center;
   margin-bottom: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -96,7 +96,7 @@
   margin: 0 0 0.5rem 0;
   padding: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0.5rem;
     margin-bottom: 0;
     width: 100%;
@@ -112,7 +112,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -152,7 +152,7 @@
   margin-top: 0.5rem;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     composes: h2 from global;
     text-align: left;
     width: 100%;
@@ -180,7 +180,7 @@
   font-size: 1.125rem;
   line-height: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 1rem;
   }
 }
@@ -193,7 +193,7 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: grid;
     grid-template-columns: 65% 30%;
     column-gap: 2rem;
@@ -219,7 +219,7 @@
   margin: auto;
   padding: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 10rem;
     height: 10rem;
   }
@@ -229,7 +229,7 @@
   font-size: 2.5rem;
   font-weight: var(--fontWeightSemiBold);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 5rem;
   }
 }
@@ -240,7 +240,7 @@
   margin-top: 1.5rem;
   justify-content: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-left: 11rem;
     justify-content: flex-start;
   }
@@ -284,7 +284,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 1rem;
     padding: 0;
     flex-direction: row;
@@ -319,7 +319,7 @@
   width: 100%;
   text-align: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0.5rem;
     margin-bottom: 0.75rem;
     width: auto;

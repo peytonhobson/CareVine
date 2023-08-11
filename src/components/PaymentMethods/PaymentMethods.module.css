@@ -12,7 +12,7 @@
   width: 100%;
   margin-bottom: 1rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     /* padding: 128px 0 82px 36px; */
     /* flex-direction: column; */
     overflow-x: auto;
@@ -37,7 +37,7 @@
     padding-right: 24px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 0;
 
     &:first-child {

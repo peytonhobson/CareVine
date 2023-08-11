@@ -10,7 +10,7 @@
     margin-top: 12px;
     margin-bottom: 12px;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       font-weight: var(--fontWeightMedium);
       /* margin-top + n * line-height + margin-bottom => x * 8px */
       margin-top: 17px;
@@ -21,7 +21,7 @@
     /* Adjust heading margins to work with the reduced body font size */
     margin: 29px 0 13px 0;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       margin: 32px 0 0 0;
     }
   }
@@ -32,7 +32,7 @@
   margin-top: 0;
   margin-bottom: 55px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 54px;
   }

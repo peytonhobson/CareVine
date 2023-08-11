@@ -18,13 +18,13 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     font-weight: 600;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: 1px;
   }
 }
@@ -55,7 +55,7 @@
     outline: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-bottom-width: 3px;
   }
 }
@@ -94,7 +94,7 @@
     transition: all 0.15s ease-out;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 100%;
     margin: 0;
 

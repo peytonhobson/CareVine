@@ -1,12 +1,12 @@
 @import '../../styles/customMediaQueries.css';
 
 .content {
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 32px auto 0 auto;
     max-width: 564px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 0;
   }
 }
@@ -20,7 +20,7 @@
   margin-top: 8px;
   margin-bottom: 19px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 36px;
   }
 }
