@@ -1,10 +1,18 @@
 @import '../../../../styles/customMediaQueries.css';
 
 .employerSection {
-  padding: 0rem 2rem 6rem 2rem;
+  padding: 3rem 2rem 6rem 2rem;
 
-  @media (--viewportMedium) {
-    padding: 0 0 6rem 0;
+  @media screen(md) {
+    padding: 3rem 0 7rem 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media screen(lg) {
+    padding: 7rem 0;
   }
 }
 
@@ -15,7 +23,7 @@
   margin: auto;
   width: 100%;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-direction: row;
     max-width: 75rem;
     width: auto;
@@ -27,7 +35,7 @@
   border-radius: var(--borderRadius);
   padding: 3rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 4rem 4rem 4rem 3rem;
   }
 }
@@ -52,7 +60,7 @@
   margin-top: 1.313rem;
   margin-bottom: 1.063rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 2.25rem;
     line-height: 2.5rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -75,8 +83,12 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     max-width: 20rem;
   }
+}
+
+.marketplaceColor {
+  color: var(--marketplaceColor);
 }

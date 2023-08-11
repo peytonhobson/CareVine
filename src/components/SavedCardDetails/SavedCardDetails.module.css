@@ -25,7 +25,7 @@
   display: inline-block;
 }
 
-@media (--viewportSmall) {
+@media screen(sm) {
   .paymentMethodPlaceholderDesktop {
     display: inline-block;
   }
@@ -50,7 +50,7 @@
   margin-top: 0;
   margin-bottom: 0.1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0.125rem;
   }
 }

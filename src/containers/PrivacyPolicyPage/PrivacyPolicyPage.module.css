@@ -3,13 +3,13 @@
 .heading {
   margin: 5px 0 18px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 8px 0 24px 0;
   }
 }
 
 .content {
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 563px;
   }
 }

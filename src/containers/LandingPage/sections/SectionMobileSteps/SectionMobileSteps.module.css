@@ -1,7 +1,7 @@
 .root {
   padding: 0 2rem 6rem 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0 0 6rem 0;
   }
 }

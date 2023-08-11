@@ -20,13 +20,13 @@
   position: relative;
   color: var(--matterColor);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: clamp(2rem, 5vw, 4.5rem);
   }
 }
 
 .mobileIcon {
-  padding: 11px 0 17px 0;
+  padding: 14px 0 14px 0;
   margin: auto;
 
   /* Borders */
@@ -50,7 +50,7 @@
 
   /* Layout */
   margin: auto 0;
-  padding: 4px 13px 10px 13px;
+  padding: 0.438rem 0.813rem 0.438rem 0.813rem;
   line-height: unset;
 
   /* Borders */
@@ -115,15 +115,15 @@
 
   margin-top: 0;
   margin-bottom: 0;
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     font-weight: var(--fontWeightSemiBold);
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: clamp(2rem, 5vw, 4.5rem);
-    font-size: clamp(0.75rem, 1vw, 1rem);
+    font-size: clamp(0.75rem, 1.1vw, 1.25rem);
   }
 }
 
@@ -131,7 +131,7 @@
   padding: 0 1rem;
   border-radius: var(--topbarHeightDesktop);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: clamp(2rem, 5vw, 4.5rem);
     border-radius: clamp(2rem, 5vw, 4.5rem);
   }
@@ -181,7 +181,7 @@
       var(--TopbarSearchForm_bottomBorder)
   );
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: calc(
       clamp(2rem, 5vw, 4.5rem) - var(--TopbarSearchForm_inputHeight) +
         var(--TopbarSearchForm_bottomBorder)

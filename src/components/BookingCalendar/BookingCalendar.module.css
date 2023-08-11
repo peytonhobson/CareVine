@@ -51,7 +51,7 @@
   }
 
   & :global(.react-calendar--doubleView) {
-    @media (--viewportMedium) {
+    @media screen(md) {
       width: 700px;
     }
   }

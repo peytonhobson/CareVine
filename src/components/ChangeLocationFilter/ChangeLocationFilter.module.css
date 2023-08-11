@@ -30,7 +30,7 @@
     line-height: normal;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 40px;
   }
 }
@@ -51,7 +51,7 @@
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     top: 40px;
   }
 
@@ -70,7 +70,7 @@
   flex-shrink: 0;
   margin-bottom: 12px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 16px;
   }
 }

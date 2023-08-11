@@ -9,7 +9,7 @@
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-left: 3.75rem;
     padding-right: 3.75rem;
   }
@@ -18,7 +18,7 @@
 .heading {
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 0.625rem;
   }
 }
@@ -45,7 +45,7 @@
   flex-direction: column;
   margin-bottom: 12px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 40px;
   }
 }
@@ -63,7 +63,7 @@
   padding: 0;
   margin-top: 1.875rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-wrap: nowrap;
     padding: 0;
     margin-top: 1.5rem;
@@ -80,7 +80,7 @@
     margin-top: 0.75rem;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 50%;
     margin-inline: 1.25rem;
 
@@ -106,7 +106,7 @@
   & :global(.SingleDatePicker_picker__directionLeft) {
     width: 100vw;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       width: calc(200% + 24px);
     }
   }
@@ -129,7 +129,7 @@
     height: 12px;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-left: 0;
     margin-right: 0;
 
@@ -154,7 +154,7 @@
     width: 12px;
     height: 12px;
   }
-  @media (--viewportMedium) {
+  @media screen(md) {
     &::after {
       left: 0;
       bottom: 17px;
@@ -172,7 +172,7 @@
     fill: var(--matterColorDark);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 6px 26px 0 12px;
   }
 }
@@ -183,7 +183,7 @@
   stroke: var(--matterColorAnti);
   fill: var(--matterColorAnti);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 12px;
     height: 12px;
   }
@@ -197,7 +197,7 @@
   background-size: 10px 6px;
   border-bottom-width: 2px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     border-bottom-width: 3px;
   }
 }
@@ -219,7 +219,7 @@
   /* Mobile phones introduce bottom-bar, for which we need to give 96px vertical space */
   padding-bottom: 96px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: 0;
   }
 }

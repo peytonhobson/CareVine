@@ -3,7 +3,7 @@
 .formMargins {
   margin-bottom: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 32px;
   }
 }
@@ -20,7 +20,7 @@
 }
 
 .twoColumns {
-  @media (--viewportMedium) {
+  @media screen(md) {
     columns: 2;
   }
 }
@@ -31,7 +31,7 @@
   /* Fix broken multi-column layout in Chrome */
   page-break-inside: avoid;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 4px 0;
   }
 }
@@ -55,7 +55,7 @@
   stroke: var(--matterColorAnti);
   fill: var(--matterColorAnti);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 10px;
     height: 10px;
   }
@@ -71,7 +71,7 @@
     fill: var(--matterColorDark);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0 14px 0 2px;
   }
 }

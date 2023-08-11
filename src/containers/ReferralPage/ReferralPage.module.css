@@ -5,7 +5,7 @@
   padding-bottom: 2rem;
   min-height: calc(100vh - var(--topbarHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
     padding-inline: 0;
   }
@@ -25,7 +25,7 @@
   margin-inline: auto;
   width: 90vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 45rem;
   }
 }
@@ -38,7 +38,7 @@
   border-radius: 0.5rem;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: grid;
     grid-auto-flow: column;
   }
@@ -49,7 +49,7 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-right: 4rem;
     justify-content: flex-start;
   }
@@ -61,7 +61,7 @@
   margin-block: 0;
   padding-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 0;
   }
 }
@@ -79,7 +79,7 @@
   padding: 0 3rem;
   margin-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -115,7 +115,7 @@
 }
 
 .referralAccordionContainer {
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 2rem;
@@ -125,7 +125,7 @@
 .creditGiftContainer {
   display: flex;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-direction: column;
     padding-right: 2rem;
   }
@@ -138,7 +138,7 @@
   padding-block: 1rem;
   margin-top: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -260,7 +260,7 @@
   min-height: 100vh;
   height: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-grow: 0;
     min-height: auto;
     height: auto;
@@ -276,7 +276,7 @@
 .modalContent {
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: auto;
   }
 }

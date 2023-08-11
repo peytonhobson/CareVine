@@ -44,7 +44,7 @@
   gap: 1.5rem;
   padding-inline: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-right: 1.5rem;
   }
 }
@@ -139,7 +139,7 @@
   display: flex;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: center;
   }
 }

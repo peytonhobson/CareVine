@@ -114,7 +114,7 @@ export const LandingPageComponent = props => {
           <div className={css.content} ref={contentRef}>
             <SectionEmployer />
             <SectionStepSwipe />
-            <SectionCaregiver />
+            <SectionCaregiver isMobile={isMobile} />
             {!isSsr && <SectionBlog />}
           </div>
         </LayoutWrapperMain>

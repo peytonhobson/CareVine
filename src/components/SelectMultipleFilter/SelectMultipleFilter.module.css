@@ -6,7 +6,7 @@
 }
 
 .twoColumns {
-  @media (--viewportMedium) {
+  @media screen(md) {
     columns: 2;
     column-gap: 3rem;
   }
@@ -71,7 +71,7 @@
   /* Fix broken multi-column layout in Chrome */
   page-break-inside: avoid;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 4px 0;
   }
 }

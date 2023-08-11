@@ -7,7 +7,7 @@
 }
 
 .topbar {
-  @media (--viewportMedium) {
+  @media screen(md) {
     position: fixed;
     top: 0;
     left: 0;
@@ -23,7 +23,7 @@
   display: flex;
   justify-content: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     position: relative;
     padding-top: var(--topbarHeightDesktop);
     min-height: calc(100vh - var(--topbarHeightDesktop));
@@ -37,7 +37,7 @@
   padding: 2px 0 0 0;
   align-items: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 18px 0 0 0;
     /**
      * .container is using flexbox,
@@ -46,7 +46,7 @@
     flex-basis: 90%;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-basis: 100%;
     padding: 23px 0 0 0;
   }
@@ -66,14 +66,14 @@
 .searchFiltersPrimary {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: flex;
     padding: 0 24px;
     margin-bottom: 21px;
     width: 75%;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 36px;
   }
 }
@@ -81,7 +81,7 @@
 .searchFiltersMobile {
   padding: 16px 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
@@ -93,7 +93,7 @@
   width: 60rem;
   padding: 0 24px 24px 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 36px 36px 36px;
   }
 }
@@ -114,7 +114,7 @@
 }
 
 .mapPanel {
-  @media (--viewportMedium) {
+  @media screen(md) {
     /**
      * .container is using flexbox,
      * This specifies that mapPanel is taking 34% from the viewport width
@@ -126,7 +126,7 @@
     height: 100%;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-basis: 37.5%;
   }
 }
@@ -157,7 +157,7 @@
   width: 100vw;
   height: 100vh;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     /* Map is fixed so that it doesn't scroll along search results */
     position: fixed;
     top: var(--topbarHeightDesktop);
@@ -168,7 +168,7 @@
     height: calc(100vh - var(--topbarHeightDesktop));
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: 37.5vw;
   }
 }

@@ -4,7 +4,7 @@
   padding-block: 1.25rem;
   padding-left: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-left: 0;
   }
 }
@@ -132,7 +132,7 @@
   background-color: var(--matterColorBright);
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .sectionHeader {
     padding-top: 3px;
     padding-bottom: 3px;

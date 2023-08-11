@@ -50,7 +50,7 @@
   }
 
   & :global(.react-calendar--doubleView) {
-    @media (--viewportMedium) {
+    @media screen(md) {
       width: 700px;
     }
   }
@@ -160,7 +160,7 @@
       margin-inline: 0.3rem;
       cursor: pointer;
 
-      @media (--viewportLarge) {
+      @media screen(lg) {
         &:hover {
           background-color: var(--marketplaceColor);
           color: var(--matterColorLight);
