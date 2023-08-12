@@ -27,7 +27,8 @@ const edit = filePath => {
     .replaceAll('@media (--viewportMedium)', '@media screen(md)')
     .replaceAll('@media (--viewportSmall)', '@media screen(sm)')
     .replaceAll('@media (--viewportXLarge)', '@media screen(xl)')
-    .replaceAll('@media (--viewportLargeWithPadding)', '@media screen(lgwp)');
+    .replaceAll('@media (--viewportLargeWithPaddings)', '@media screen(lgwp)')
+    .replaceAll("@import '../../styles/customMediaQueries.css';", '');
   fs.writeFileSync(filePath, newContent, { encoding: 'utf-8' });
   console.log(`Edited file: ${filePath}`);
 };

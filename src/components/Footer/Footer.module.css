@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   position: relative;
@@ -106,7 +106,7 @@
     flex-basis: 240px;
     margin-right: 57px;
   }
-  @media (--viewportLargeWithPaddings) {
+  @media screen(lgwp) {
     flex-basis: 250px;
     margin-right: 12px;
   }
