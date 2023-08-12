@@ -31,6 +31,7 @@ import {
 
 import shareImage from '../../assets/Background_Share_Image.png';
 import css from './LandingPage.module.css';
+import { useMediaQuery } from '@mui/material';
 
 export const LandingPageComponent = props => {
   const {
@@ -58,6 +59,7 @@ export const LandingPageComponent = props => {
 
   const isSsr = useIsSsr();
   const isMobile = useCheckMobileScreen();
+  const isLarge = useMediaQuery('(min-width:1024px)');
 
   // Schema for search engines (helps them to understand what this page is about)
   // http://schema.org
@@ -70,11 +72,14 @@ export const LandingPageComponent = props => {
   const userType = currentUser?.attributes.profile.metadata.userType;
 
   const contentRef = useRef(null);
+  const employerRef = useRef(null);
 
   const scrollToContent = () => {
-    if (contentRef.current) {
+    if (contentRef.current && !isLarge) {
       const elementHeight = contentRef.current.offsetTop;
       window.scrollTo({ top: elementHeight, behavior: 'smooth' });
+    } else if (employerRef.current) {
+      employerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 
@@ -112,7 +117,9 @@ export const LandingPageComponent = props => {
           </div>
           <div id="how-it-works" className={css.anchorDiv}></div>
           <div className={css.content} ref={contentRef}>
-            <SectionEmployer />
+            <span ref={employerRef}>
+              <SectionEmployer />
+            </span>
             <SectionStepSwipe />
             <SectionCaregiver isMobile={isMobile} />
             {!isSsr && <SectionBlog />}
