@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .avatar {
   width: 4rem;
@@ -6,7 +6,7 @@
   border-radius: 50%;
   margin-right: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 3rem;
   }
 }
@@ -34,7 +34,7 @@
   border-bottom: solid 1px rgba(0, 0, 0, 0.12);
   color: var(--matterColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 5rem;
   }
 
@@ -109,7 +109,7 @@
   flex-wrap: nowrap;
   line-height: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1.5rem;
   }
 }
@@ -129,7 +129,7 @@
   font-weight: var(--fontWeightSemiBold);
   text-decoration: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1.25rem;
   }
 
@@ -144,7 +144,7 @@
   white-space: nowrap;
   text-decoration: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 0.75rem;
   }
 }
@@ -160,7 +160,7 @@
   margin-top: 0.5rem;
   text-decoration: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 0.75rem;
     margin-top: 0rem;
   }
@@ -178,7 +178,7 @@
     background-color: rgba(0, 0, 0, 0.04);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     right: 1rem;
     top: 1.8rem;
   }
@@ -200,7 +200,7 @@
 
   opacity: 1;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     right: 3.5rem;
     top: 0.3rem;
     width: 0.75rem;
@@ -230,7 +230,7 @@
   display: flex;
   justify-content: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     left: -11rem !important;
   }
 }

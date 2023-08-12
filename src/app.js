@@ -23,6 +23,7 @@ import { getInitialState } from 'graphql-hooks-ssr';
 
 // Flex template application uses English translations as default translations.
 import defaultMessages from './translations/en.json';
+import './styles/tailwind.css';
 
 // import './styles/build.css';
 

@@ -3,7 +3,7 @@
 .citySection {
   padding: 0 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
@@ -22,7 +22,7 @@
   flex-direction: column;
   margin-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-direction: row;
     justify-content: space-evenly;
     gap: 1.5rem;
@@ -42,7 +42,7 @@
   margin-top: 3rem;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     color: var(--matterColor);
     font-size: 2.5rem;
     line-height: 3rem;

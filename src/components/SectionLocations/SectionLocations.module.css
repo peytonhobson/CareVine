@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .title {
   composes: h1 from global;
@@ -12,7 +12,7 @@
   flex-direction: column;
   margin-top: 0px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-direction: row;
     margin-top: 33px;
   }
@@ -27,20 +27,20 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
 
 .location {
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-right: 40px;
     margin-bottom: 0;
   }
 }
 
 .location:last-of-type {
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-right: 0;
   }
 }
@@ -62,7 +62,7 @@
 .aspectWrapper {
   padding-bottom: calc(6 / 13 * 100%); /* 13:6 Aspect Ratio */
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: calc(2 / 3 * 100%); /* 3:2 Aspect Ratio */
   }
 }
@@ -86,7 +86,7 @@
   margin-top: 15px;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 21px;
   }
 }

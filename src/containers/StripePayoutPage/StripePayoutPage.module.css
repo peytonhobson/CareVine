@@ -1,15 +1,15 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .content {
   min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 32px auto 0 auto;
     width: 100%;
     max-width: 564px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 0;
   }
 }
@@ -24,7 +24,7 @@
   margin-top: 8px;
   margin-bottom: 19px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 47px;
   }
 }

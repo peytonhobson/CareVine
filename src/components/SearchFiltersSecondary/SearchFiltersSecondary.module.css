@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   flex-grow: 1;
@@ -7,7 +7,7 @@
   justify-content: space-between;
   background-color: var(--matterColorBright);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: 4rem;
   }
 }
@@ -44,7 +44,7 @@
     cursor: pointer;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 16px;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 10px;
@@ -80,7 +80,7 @@
   padding: 16px 0;
   box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-direction: row;
     padding: 16px 24px;
   }

@@ -1,9 +1,9 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   margin-top: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 32px;
   }
 }
@@ -12,7 +12,7 @@
   padding: 0;
   margin-bottom: 36px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
     margin-bottom: 56px;
   }
@@ -27,7 +27,7 @@
   padding-top: 3px;
   padding-bottom: 3px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 24px;
     padding-top: 4px;
@@ -38,7 +38,7 @@
 .lastSection {
   margin-bottom: 69px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 111px;
 
     & .sectionTitle {
@@ -55,7 +55,7 @@
   margin-top: 18px;
   margin-bottom: 18px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 44px;
     margin-bottom: 20px;
   }
@@ -63,7 +63,7 @@
 
 .label {
   width: var(--ProfileSettingsForm_avatarSize);
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
   }
 }
@@ -85,7 +85,7 @@
   border-radius: calc(var(--ProfileSettingsForm_avatarSize) / 2);
   cursor: pointer;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
     height: var(--ProfileSettingsForm_avatarSizeDesktop);
     border-radius: calc(var(--ProfileSettingsForm_avatarSizeDesktop) / 2);
@@ -106,14 +106,14 @@
 }
 
 .avatarPlaceholderTextMobile {
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
 .avatarPlaceholderText {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     max-width: 130px;
     text-align: center;
@@ -134,7 +134,7 @@
   margin-top: 18px;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 22px;
     margin-bottom: 2px;
   }
@@ -170,7 +170,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     /* Position: under */
     bottom: -10px;
     right: auto;
@@ -200,7 +200,7 @@
   position: relative;
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: var(--ProfileSettingsForm_avatarSizeDesktop);
     height: var(--ProfileSettingsForm_avatarSizeDesktop);
     border-radius: calc(var(--ProfileSettingsForm_avatarSizeDesktop) / 2);
@@ -246,7 +246,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 8px;
     padding-top: 4px;
@@ -262,7 +262,7 @@
   padding-top: 5px;
   padding-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 6px;
@@ -275,7 +275,7 @@
   justify-content: space-between;
   margin-top: 12px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 24px;
   }
 }
@@ -292,7 +292,7 @@
   color: var(--matterColorAnti);
   margin-top: 11px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 16px;
   }
 }

@@ -1,11 +1,11 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   composes: marketplaceModalFormRootStyles from global;
 
   justify-content: flex-start;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: space-between;
   }
 }
@@ -15,7 +15,7 @@
   justify-content: space-between;
   margin-top: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 32px;
   }
 }

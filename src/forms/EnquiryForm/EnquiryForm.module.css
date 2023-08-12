@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -10,7 +10,7 @@
   flex-wrap: wrap;
   overflow-x: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-height: 25rem;
     min-width: 32rem;
   }
@@ -19,7 +19,7 @@
 .icon {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     margin-bottom: 36px;
   }
@@ -35,7 +35,7 @@
   color: var(--failColor);
   margin-top: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -45,7 +45,7 @@
   justify-content: space-between;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -53,7 +53,7 @@
 .heading {
   max-width: 80%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 25rem;
   }
 }
@@ -82,7 +82,7 @@
   width: 100%;
   display: block;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
     margin-top: 4rem;
   }

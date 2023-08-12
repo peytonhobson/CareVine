@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
 }
@@ -8,7 +8,7 @@
   bottom: 1px;
   margin-right: 5px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     bottom: 2px;
   }
 }

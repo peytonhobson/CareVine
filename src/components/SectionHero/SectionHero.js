@@ -12,6 +12,7 @@ import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
 import UnauthenticatedContainer from './UnauthenticatedContainer';
+import { useMediaQuery } from '@mui/material';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
@@ -19,8 +20,10 @@ const SectionHero = props => {
   const [heroLoaded, setHeroLoaded] = useState(false);
 
   const isMobile = useCheckMobileScreen();
+  const isLarge = useMediaQuery('(min-width:1024px)');
 
   const heroRef = useRef(null);
+  const imageRef = useRef(null);
 
   const {
     rootClassName,
@@ -61,11 +64,18 @@ const SectionHero = props => {
         setHeroLoaded(true);
       };
 
-      const isLarge = window.innerWidth > 1024;
-
       image.src = isLarge ? backgroundImage : mobileBackgroundImage;
+      imageRef.current = image;
     }
   }, [heroRef?.current]);
+
+  useEffect(() => {
+    if (imageRef?.current) {
+      const isLarge = window.innerWidth > 1024;
+
+      imageRef.current.src = isLarge ? backgroundImage : mobileBackgroundImage;
+    }
+  }, [imageRef?.current, isLarge]);
 
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;

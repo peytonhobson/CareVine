@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   flex-grow: 1;
@@ -18,7 +18,7 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 40vw;
   }
 }
@@ -50,7 +50,7 @@
     color: var(--matterColor);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
@@ -71,7 +71,7 @@
     color: var(--matterColorLight);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }

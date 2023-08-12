@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   padding-block: 2rem;
@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: flex;
     justify-content: space-evenly;
     flex-direction: row;
@@ -34,7 +34,7 @@
 .goldBadge {
   margin-left: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-left: 1rem;
     margin-top: 0.25rem;
   }
@@ -54,7 +54,7 @@
   justify-content: space-evenly;
   align-items: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 3rem;
   }
 }
@@ -68,7 +68,7 @@
 
   border: 2px solid var(--marketplaceColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-inline: 5rem;
   }
 }
@@ -88,12 +88,12 @@
   height: 5rem;
   margin: auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 7rem;
     height: 7rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: 10rem;
     height: 10rem;
   }
@@ -103,11 +103,11 @@
   font-size: 2.5rem;
   font-weight: var(--fontWeightSemiBold);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 3.5rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 5rem;
   }
 }
@@ -122,7 +122,7 @@
   margin-top: 0.2rem;
   margin-left: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-left: 1rem;
     justify-content: flex-start;
   }
@@ -138,7 +138,7 @@
   margin-top: 1rem;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
     margin-right: 2rem;
@@ -154,7 +154,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -171,7 +171,7 @@
   /* Remove default margins from font */
   margin: 0;
 
-  /* @media (--viewportMedium) {
+  /* @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   } */
@@ -190,14 +190,14 @@
   /* Remove default margins from font */
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1.313rem;
     line-height: 1.5rem;
   }
 }
 
 .locations {
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
   }
 }
@@ -207,7 +207,7 @@
   flex-wrap: nowrap;
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
   }
 }
@@ -229,7 +229,7 @@
   position: static;
   padding: 0 0 2rem 1rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 0 2rem 0;
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .channelHeader {
   position: relative;
@@ -16,7 +16,7 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   background-color: #ffffff;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0 1rem 0 1.25rem;
     justify-content: flex-start;
   }
@@ -44,7 +44,7 @@
   height: 2.5em;
   border-radius: 50%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 3.5rem;
     height: 3.5rem;
   }
@@ -53,7 +53,7 @@
 .avatarInitials {
   font-size: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1.5rem;
   }
 }
@@ -67,12 +67,12 @@
   font-size: 1.25rem;
   line-height: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1.75rem;
     line-height: 2rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 2.5rem;
     line-height: 3rem;
   }
@@ -81,7 +81,7 @@
 .headerLeft {
   margin-right: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-right: 3rem;
   }
 }
@@ -118,7 +118,7 @@
   transition: all var(--transitionStyleButton);
   cursor: pointer;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0.75rem 1.5rem;
   }
 }

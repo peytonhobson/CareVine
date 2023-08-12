@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   flex-grow: 1;
@@ -115,7 +115,7 @@
   color: var(--failColor);
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .root {
     padding: 11px 24px 0 24px;
   }
@@ -194,7 +194,7 @@
   }
 }
 
-@media (--viewportLarge) {
+@media screen(lg) {
   .title {
     margin-bottom: 38px;
     padding: 1px 0 7px 0;
@@ -262,7 +262,7 @@
   flex-grow: 1;
   flex-direction: row;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 3px 0 5px 0;
     margin: 0 0 72px 0;
   }

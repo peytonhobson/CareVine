@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   /* Adding empty .root class to enforce className overwrite */
@@ -63,7 +63,7 @@
   margin-right: 0.5rem;
   padding-bottom: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: 0;
   }
 }

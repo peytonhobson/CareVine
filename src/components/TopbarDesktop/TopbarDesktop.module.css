@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 /* Desktop */
 .root {
@@ -19,7 +19,7 @@
   /* shadows */
   box-shadow: var(--boxShadowLight);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 1.5rem 0 0;
   }
 }
@@ -34,7 +34,7 @@
   padding: 1rem 1.5rem 1.313rem 1.5rem;
   height: 100%;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 1rem 2.25rem 1.313rem 2.25rem;
   }
 }
@@ -56,7 +56,7 @@
   padding-left: 1.5rem;
   height: var(--topbarHeightDesktop);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding-left: 2.125rem;
   }
 }
@@ -85,7 +85,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 16px;
     margin-top: 0;
     margin-bottom: 0;
@@ -145,7 +145,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     margin-top: 0;
     margin-bottom: 0;
@@ -340,7 +340,7 @@
     }
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -389,7 +389,7 @@
     }
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 16px;
     margin-top: 20px;
     margin-bottom: 0;

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   padding: 1.25rem 0 0 0;
@@ -13,7 +13,7 @@
   justify-content: center;
   margin-top: 4rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 2rem;
   }
 }
@@ -43,7 +43,7 @@
     color: var(--matterColor);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 8rem;
     height: 5rem;
     font-size: 1rem;
@@ -83,7 +83,7 @@
     color: var(--matterColorLight);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 8rem;
     height: 5rem;
     font-size: 1rem;
@@ -111,7 +111,7 @@
 .submitButton {
   margin-bottom: 4rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     margin-bottom: 1.5rem;
   }
@@ -166,7 +166,7 @@
   width: 100%;
   margin-top: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }

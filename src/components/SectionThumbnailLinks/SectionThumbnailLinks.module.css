@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
 }
@@ -7,7 +7,7 @@
   composes: h1 from global;
   margin: 0 0 18px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 23px 0;
   }
 }
@@ -15,7 +15,7 @@
 .subHeading {
   margin: 0 0 57px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 0 57px 0;
   }
 }
@@ -26,7 +26,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-direction: row;
   }
 }
@@ -46,7 +46,7 @@
 }
 
 .link2Columns {
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: calc(50% - 20px);
 
     /* First row should not have top margin */
@@ -58,7 +58,7 @@
 }
 
 .link3Columns {
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: calc(33.333% - 20px);
 
     /* First row should not have top margin */
@@ -85,7 +85,7 @@
 .aspectWrapper {
   padding-bottom: calc(6 / 13 * 100%); /* 13:6 Aspect Ratio */
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: calc(2 / 3 * 100%); /* 3:2 Aspect Ratio */
   }
 }
@@ -109,7 +109,7 @@
   margin-top: 15px;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 21px;
   }
 }

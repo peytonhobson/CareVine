@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .coverEverything {
   position: absolute;
@@ -41,7 +41,7 @@
   margin-bottom: 0;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .overlayContent {
     margin-top: 0;
     margin-bottom: 0;

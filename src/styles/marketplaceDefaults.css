@@ -232,7 +232,7 @@ h1,
   margin-top: 1.125rem;
   margin-bottom: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 2.5rem;
     font-weight: var(--fontWeightSemiBold);
     line-height: 3rem;
@@ -252,7 +252,7 @@ h2,
   margin-top: 1.313rem;
   margin-bottom: 1.063rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 2rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 1.313rem;
@@ -269,7 +269,7 @@ h3,
   margin-top: 1rem;
   margin-bottom: 0.875rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -286,7 +286,7 @@ h4,
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightMedium);
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 1.063rem;
@@ -304,7 +304,7 @@ h5,
   margin-top: 0.625rem;
   margin-bottom: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 0.625rem;
@@ -323,7 +323,7 @@ h6,
   margin-top: 0.625rem;
   margin-bottom: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 0.625rem;
@@ -343,7 +343,7 @@ pre,
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 2rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -362,7 +362,7 @@ li,
   letter-spacing: -0.006rem;
   /* No margins for default font */
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 2rem;
   }
@@ -390,7 +390,7 @@ label {
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightSemiBold);
     line-height: 1.5rem;
     margin-top: 0;
@@ -415,7 +415,7 @@ textarea {
   letter-spacing: -0.006rem;
   /* No margins for default font */
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 2rem;
   }
@@ -448,7 +448,7 @@ select {
   cursor: pointer;
   transition: border-bottom-color var(--transitionStyle);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0.25rem 0 0.125rem 0;
   }
 }
@@ -481,7 +481,7 @@ input,
 
   transition: border-bottom-color var(--transitionStyle);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0.25rem 0 0.125rem 0;
   }
 }
@@ -507,7 +507,7 @@ textarea {
 
   transition: border-color var(--transitionStyle);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0.25rem 0 0.125rem 0;
   }
 }
@@ -537,7 +537,7 @@ textarea {
     padding: 0 0 10px 0;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 4px 0 10px 0;
   }
 }
@@ -591,7 +591,7 @@ textarea {
   margin-top: 1.563rem;
   margin-bottom: 0.875rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 5rem;
     line-height: 5rem;
     letter-spacing: 0rem;
@@ -600,7 +600,7 @@ textarea {
     padding-bottom: 1.438rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 5rem;
     font-size: 5vw;
     line-height: 5rem;
@@ -620,7 +620,7 @@ textarea {
   margin-bottom: 0.531rem;
   -webkit-font-smoothing: subpixel-antialiased;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 0.656rem;
@@ -641,7 +641,7 @@ textarea {
   font-size: 0.75rem;
   line-height: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightMedium);
     font-size: 0.75rem;
     line-height: 1.5rem;
@@ -654,7 +654,7 @@ textarea {
   font-size: 1rem;
   line-height: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1rem;
     line-height: 1.5rem;
   }
@@ -666,7 +666,7 @@ textarea {
   font-size: 0.813rem;
   line-height: 1.125rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightMedium);
     font-size: 0.813rem;
     line-height: 1.25rem;
@@ -695,7 +695,7 @@ textarea {
   line-height: 1.5rem;
   letter-spacing: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-weight: var(--fontWeightSemiBold);
     font-size: 1.25rem;
     line-height: 1.5rem;
@@ -749,7 +749,7 @@ textarea {
   transition: all var(--transitionStyleButton);
   cursor: pointer;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 1.25rem 0 1.25rem 0;
     min-height: 4.063rem;
   }
@@ -855,7 +855,7 @@ textarea {
   /* AuthenticationPage's root uses flexbox */
   display: flex;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: center;
     align-items: flex-start;
   }
@@ -884,7 +884,7 @@ textarea {
   border-radius: var(--borderRadius);
   border-bottom: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 30rem;
     flex-grow: 0;
     /* min-height: 568px; */
@@ -910,7 +910,7 @@ textarea {
   background-color: var(--matterColorLight);
   border-radius: var(--borderRadius);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 30rem;
     flex-grow: 0;
     height: 100%;
@@ -928,7 +928,7 @@ textarea {
   letter-spacing: -0.5px;
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightSemiBold);
     line-height: 2.5rem;
     letter-spacing: -0.9px;
@@ -940,7 +940,7 @@ textarea {
 .marketplaceModalParagraphStyles {
   margin: 1.125rem 0 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 1.5rem 0 0 0;
   }
 }
@@ -951,7 +951,7 @@ textarea {
   margin-top: 3.75rem;
   align-self: stretch;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 6rem;
   }
 }
@@ -961,7 +961,7 @@ textarea {
   margin-top: -1.5rem;
   padding-bottom: 0.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-bottom: 0;
   }
 }
@@ -977,7 +977,7 @@ textarea {
   color: var(--matterColorAnti);
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     margin: 0;
   }
@@ -994,7 +994,7 @@ textarea {
   color: var(--matterColor);
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     margin: 0;
   }
@@ -1021,7 +1021,7 @@ textarea {
   margin: 0;
   border: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 1.688rem 1.875rem;
     position: absolute;
   }
@@ -1050,7 +1050,7 @@ textarea {
   height: 48px;
   margin-bottom: 12px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: 64px;
     margin-bottom: 23px;
   }
@@ -1066,7 +1066,7 @@ textarea {
 
   margin: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
     margin: 0;
   }
@@ -1081,7 +1081,7 @@ textarea {
 
   box-sizing: content-box;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0.125rem;
   }
 }
@@ -1095,7 +1095,7 @@ textarea {
   margin-top: 1.5rem;
   color: var(--failColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightMedium);
     /* margin-top + n * line-height + margin-bottom => x * 8px */
     margin-top: 1.063rem;
@@ -1108,7 +1108,7 @@ textarea {
   viewport height is small */
   margin-top: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 2rem;
   }
 }

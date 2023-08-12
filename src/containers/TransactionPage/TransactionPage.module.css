@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -28,7 +28,7 @@
 .footer {
   display: none;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: block;
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   transition: min-width 1.5s ease-out;
@@ -10,7 +10,7 @@
 }
 
 .root.single {
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 350px;
 
     & .leftColumnContainer {
@@ -20,7 +20,7 @@
 }
 
 .root.double {
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: grid;
     grid-template-columns: 2;
     column-gap: var(--modalPaddingMediumInline);
@@ -48,7 +48,7 @@
   width: 100%;
   text-align: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     height: auto;
     padding-top: 0;
   }
@@ -74,7 +74,7 @@
   height: 100%;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 0;
     min-height: auto;
     height: auto;

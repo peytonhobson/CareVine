@@ -19,7 +19,7 @@
 
   background-color: var(--matterColorBright);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 35rem;
   }
 }
@@ -83,7 +83,7 @@
   margin-top: 12px;
   margin-bottom: 12px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 14px;
     line-height: 28px;
     /* margin-top + n * line-height + margin-bottom => x * 8px */

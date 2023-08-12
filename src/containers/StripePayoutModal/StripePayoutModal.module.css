@@ -1,7 +1,7 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .modalPayoutDetailsWrapper {
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 604px;
     padding-top: 11px;
   }
@@ -13,7 +13,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     flex-wrap: nowrap;
   }
@@ -27,7 +27,7 @@
   margin: auto;
   margin-top: 1.5rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }

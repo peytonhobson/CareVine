@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   margin: 0;
@@ -12,7 +12,7 @@
 }
 
 .twoColumns {
-  @media (--viewportMedium) {
+  @media screen(md) {
     columns: 2;
   }
 }
@@ -23,7 +23,7 @@
   /* Fix broken multi-column layout in Chrome */
   page-break-inside: avoid;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 4px 0;
   }
 }

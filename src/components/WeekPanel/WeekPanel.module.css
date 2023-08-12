@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .weekPanel {
   display: flex;
@@ -22,7 +22,7 @@
   flex-direction: row;
   padding: 24px 24px 23px 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: flex-start;
   }
 }
@@ -45,7 +45,7 @@
   display: block;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .weekDay {
     padding-top: 22px;
     padding-bottom: 25px;

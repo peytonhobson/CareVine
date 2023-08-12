@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
 }
@@ -15,7 +15,7 @@
   margin-top: 11px;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 14px;
     margin-bottom: 1px;
   }
@@ -25,7 +25,7 @@
   margin-bottom: 46px;
   padding-top: 6px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 56px;
     padding-top: 0;
   }
@@ -34,7 +34,7 @@
 .phone {
   margin-top: 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 32px;
   }
 }
@@ -88,7 +88,7 @@
   cursor: pointer;
   white-space: nowrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -108,7 +108,7 @@
   margin-top: 0;
   margin-bottom: 13px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 16px;
     padding-top: 4px;
@@ -120,7 +120,7 @@
   margin-top: 0;
   margin-bottom: 37px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 48px;
   }
 }
@@ -128,7 +128,7 @@
 .bottomWrapper {
   margin-top: 46px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 96px;
   }
 }
@@ -141,7 +141,7 @@
   width: 100%;
   margin: 24px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 24px 0;
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
 }
@@ -6,7 +6,7 @@
 .tabs {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: flex;
     justify-content: flex-end;
     height: 55px;
@@ -14,7 +14,7 @@
     padding: 13px 24px 0 24px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 36px;
   }
 }
@@ -29,7 +29,7 @@
     margin-left: 0;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 24px;
   }
 }
@@ -38,11 +38,11 @@
   width: 100%;
   margin: 24px auto 0 auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 48px auto 0 auto;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 80px auto 0 auto;
     max-width: 62.5vw;
   }
@@ -51,11 +51,11 @@
 .title {
   margin: 0 24px 24px 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 24px 48px 24px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 0 36px 48px 36px;
   }
 }
@@ -63,13 +63,13 @@
 .listingCards {
   padding: 0 24px 96px 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 36px 36px 36px;
   }
 }
@@ -78,7 +78,7 @@
   margin-bottom: 36px;
   flex-basis: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     /**
      * resultPanel: 62.5vw from 1024px = 640px
      * panelPaddings: - 2*36px = 72px
@@ -95,7 +95,7 @@
     margin-right: 24px;
   }
 
-  @media (--viewportXLarge) {
+  @media screen(xl) {
     /**
      * resultPanelWidthRatio = 0.625 aka 62.5%
      *
@@ -128,7 +128,7 @@
 }
 
 .listingCard:nth-of-type(3n) {
-  @media (--viewportXLarge) {
+  @media screen(xl) {
     margin-right: 0;
   }
 }
@@ -137,7 +137,7 @@
   /* margin-top: auto; pushes pagination to the end of the page. */
   margin: auto 24px 0 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: auto 36px 0 36px;
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   /* Dimensions */
@@ -13,7 +13,7 @@
 
   padding-top: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 2px;
   }
 }
@@ -21,7 +21,7 @@
 .features {
   margin-bottom: 24px !important;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 32px !important;
   }
 }
@@ -39,7 +39,7 @@
 .formMargins {
   margin-bottom: 24px !important;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 32px !important;
   }
 }
@@ -61,7 +61,7 @@
   margin-bottom: 2rem;
   flex-shrink: 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: inline-block;
     width: 241px;
     /* margin-top: 100px; */

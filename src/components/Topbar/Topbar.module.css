@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   width: 100%;
@@ -25,7 +25,7 @@
   /* shadows */
   box-shadow: var(--boxShadow);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: none;
   }
 }
@@ -122,7 +122,7 @@
 .desktop {
   display: none;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
   }
 }
@@ -157,7 +157,7 @@
   composes: marketplaceModalInMobileBaseStyles from global;
   padding: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-basis: 576px;
   }
 }

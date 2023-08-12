@@ -1,9 +1,9 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .layoutWrapperMain {
   min-height: calc(100vh - var(--topbarHeight));
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
   }
 }

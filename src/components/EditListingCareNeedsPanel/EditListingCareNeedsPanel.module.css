@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   flex-grow: 1;
@@ -16,7 +16,7 @@
 .title {
   margin-bottom: 19px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 38px;
     padding: 1px 0 7px 0;
   }

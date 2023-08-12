@@ -21,7 +21,7 @@
   /* Place on top of everything */
   z-index: var(--zIndexGenericError);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     top: calc(var(--topbarHeightDesktop) + 15px);
   }
 }
@@ -44,7 +44,7 @@
   margin: 0;
   color: var(--matterColorLight);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }

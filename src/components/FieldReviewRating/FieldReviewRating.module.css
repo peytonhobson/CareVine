@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .ratingFieldSet {
   border: none;
@@ -15,7 +15,7 @@
     margin-top: 16px;
     margin-bottom: 14px;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       /* margin-top + n * line-height + margin-bottom => x * 8px */
       margin-top: 16px;
       margin-bottom: 16px;

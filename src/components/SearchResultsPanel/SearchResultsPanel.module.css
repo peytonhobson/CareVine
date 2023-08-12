@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -14,11 +14,11 @@
   justify-content: center;
   width: 100vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 80rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 2.25rem 6rem 2.25rem;
   }
 }
@@ -29,7 +29,7 @@
   background-color: var(--matterColorLight);
   padding: 0 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0 36px;
   }
 }

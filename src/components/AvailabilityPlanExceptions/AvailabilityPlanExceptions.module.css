@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .sectionHeader {
   display: flex;
@@ -128,7 +128,7 @@
   color: var(--failColor);
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .sectionHeader {
     padding-top: 3px;
     padding-bottom: 3px;

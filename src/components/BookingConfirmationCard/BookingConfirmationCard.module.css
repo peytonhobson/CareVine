@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -7,7 +7,7 @@
   align-items: center;
   max-width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 40rem;
     flex-wrap: wrap;
     flex-direction: row;
@@ -46,7 +46,7 @@
   border: 1px solid var(--matterColorNegative);
   border-radius: 2px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     min-width: 30rem;
   }
 

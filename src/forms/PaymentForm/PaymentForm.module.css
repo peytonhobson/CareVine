@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -9,7 +9,7 @@
   flex-wrap: wrap;
   transition-delay: 1.5s;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 350px;
     margin-top: 0;
   }
@@ -50,7 +50,7 @@
   text-align: center;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-weight: var(--fontWeightSemiBold);
     font-size: 20px;
     line-height: 40px;
@@ -89,7 +89,7 @@
   width: 100%;
   margin-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }

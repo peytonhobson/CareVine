@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .calendar {
   /* background-color: var(--marketplaceColor); */
@@ -59,7 +59,7 @@
   -webkit-font-smoothing: subpixel-antialiased;
   color: var(--matterColorLight);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 0.75rem;
     font-size: 1.25vw;
     /* margin-top + n * line-height + margin-bottom => x * 8px */
@@ -67,7 +67,7 @@
     margin-bottom: 0.844em;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     line-height: 1.125em;
     font-size: 0.75vw;
     /* margin-top + n * line-height + margin-bottom => x * 8px */

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -7,7 +7,7 @@
   max-width: 80vw;
   margin: auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: auto;
   }
 }
@@ -52,7 +52,7 @@
   justify-content: center;
   flex-wrap: wrap;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 30rem;
   }
 }
@@ -61,7 +61,7 @@
   margin-top: 18px;
   margin-bottom: 18px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 21px;
     margin-bottom: 18px;
   }
@@ -70,7 +70,7 @@
 .stepText {
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     text-align: left;
     max-width: 30rem;
   }
@@ -80,7 +80,7 @@
   max-width: 80vw;
   border: 1px solid var(--marketplaceColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-height: 15rem;
     max-width: auto;
   }
@@ -89,7 +89,7 @@
 .employerListingImage {
   max-width: 80vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 30rem;
   }
 }
@@ -97,7 +97,7 @@
 .caregiverListingImage {
   max-width: 80vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-height: 30rem;
   }
 }
@@ -106,7 +106,7 @@
   border: 1px solid var(--marketplaceColor);
   max-width: 80vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 30rem;
   }
 }
@@ -127,7 +127,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     width: 20rem;
   }

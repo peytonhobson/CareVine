@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   width: 100%;
@@ -30,7 +30,7 @@
   padding-bottom: 24px;
 
   margin-bottom: 0;
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 0;
   }
 }

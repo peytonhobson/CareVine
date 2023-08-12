@@ -1,11 +1,11 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   width: 100%;
   padding-inline: 3rem;
   margin-top: 15%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 40rem;
     padding-inline: 0;
     margin-top: 3%;
@@ -13,7 +13,7 @@
 }
 
 .email {
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 50%;
   }
 }
@@ -48,7 +48,7 @@
 .characterLabel {
   display: block;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: inline;
   }
 }

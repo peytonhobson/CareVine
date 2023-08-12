@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .pageTitle {
   text-align: center;
@@ -9,7 +9,7 @@
   max-width: 1056px;
   margin: 24px auto;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: calc(100% - 72px);
     margin: 72px auto;
   }
@@ -28,7 +28,7 @@
   flex-wrap: wrap;
   justify-content: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     flex-wrap: nowrap;
   }
 }
@@ -36,7 +36,7 @@
 .contentSide {
   font-style: italic;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 193px;
     margin-right: 103px;
     margin-top: 8px;
@@ -46,7 +46,7 @@
 .contentMain {
   width: 90%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 650px;
   }
 }

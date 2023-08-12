@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 /* Animation for the hero elements */
 
@@ -35,7 +35,7 @@
   width: 100%;
   height: 50vh;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     position: relative;
   }
   /* Text positioning is done with paddings */
@@ -55,7 +55,7 @@
   align-items: center !important;
   justify-content: flex-end;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     justify-content: center !important;
   }
 }
@@ -67,11 +67,11 @@
   top: 35%;
   z-index: 1;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     top: 25%;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: auto;
     margin-right: 15vw;
     position: static;
@@ -86,7 +86,7 @@
   color: var(--matterColorLight);
   text-align: center;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     padding-bottom: 0;
     text-align: left;
@@ -105,13 +105,13 @@
   font-weight: normal;
   text-align: center;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: var(--SectionHero_desktopTitleMaxWidth);
     margin: 0 0 2rem 0;
     text-align: left;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 1.25rem;
     font-size: 1.25vw;
     line-height: 1.5rem;
@@ -130,7 +130,7 @@
 .heroButtonContainer {
   display: flex;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 30em;
   }
 }
@@ -139,12 +139,12 @@
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
   composes: animation;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 25rem;
     margin: auto;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: auto;
     width: 16.25rem;
     width: 15vw;
@@ -177,7 +177,7 @@
   composes: animation;
   composes: heroMainTitleFEDelay;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-inline: 0;
   }
 }
@@ -202,7 +202,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 1.15rem;
     font-size: 1vw;
     line-height: 1.5rem;
@@ -240,7 +240,7 @@
   padding: 0 0 5rem 0;
   z-index: 1;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-left: auto;
     margin-block: auto;
     position: static;
@@ -249,12 +249,12 @@
     max-width: 55rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 51vw;
     padding-right: 4vw;
   }
 
-  @media (--viewportXLarge) {
+  @media screen(xl) {
     max-width: 55rem;
     padding-right: 10rem;
   }
@@ -272,14 +272,14 @@
   margin-bottom: 2rem;
   margin-bottom: 7vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 3.5rem;
     line-height: 4rem;
     margin-bottom: 5rem;
     margin-bottom: 12vw;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 3.5vw;
     line-height: 4vw;
     margin-bottom: 3rem;
@@ -300,7 +300,7 @@
   composes: animation;
   composes: heroSubTitleFEDelay;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 1.5rem;
     line-height: 2.5rem;
     letter-spacing: -1px;
@@ -324,7 +324,7 @@
   composes: animation;
   composes: heroSubTitleFEDelay;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -338,7 +338,7 @@
     background-color: transparent;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: 0.5rem 1rem;
     margin-bottom: 1.5rem;
     margin-bottom: 1.5vw;
@@ -348,7 +348,7 @@
 .desktopCard {
   background-color: transparent;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     background-color: rgba(198, 205, 199, 0.6);
     border-radius: var(--borderRadius);
     padding: 2rem;
@@ -371,7 +371,7 @@
   margin-right: 1rem;
   margin-block: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     width: 4.5vw;
     height: 4.5vw;
     min-width: 4.5vw;
@@ -381,7 +381,7 @@
     line-height: 2.75vw;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     width: 2.5vw;
     height: 2.5vw;
     min-width: 2.5vw;
@@ -399,7 +399,7 @@
   padding: 0.5rem 0;
   padding: 2vw 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 15vw;
     padding: 0;
     & > h4 {
@@ -416,12 +416,12 @@
   padding-top: 0.3rem;
   padding-top: 1.1vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 0.35rem;
     padding-top: 0.7vw;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding-top: 0.3rem;
     padding-top: 0.3vw;
   }
@@ -433,7 +433,7 @@
     margin-bottom: 0.35rem;
     margin-bottom: 1.5vw;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       font-size: 1.75rem;
       font-size: 3.25vw;
       line-height: 1.75rem;
@@ -442,7 +442,7 @@
       margin-bottom: 0.45vw;
     }
 
-    @media (--viewportLarge) {
+    @media screen(lg) {
       font-size: 2rem;
       font-size: 1.9vw;
       line-height: 2rem;
@@ -458,14 +458,14 @@
     line-height: 3vw;
     margin: 0;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       font-size: 0.85rem;
       font-size: 1.6vw;
       line-height: 1rem;
       line-height: 1.8vw;
     }
 
-    @media (--viewportLarge) {
+    @media screen(lg) {
       font-size: 1rem;
       font-size: 0.95vw;
       line-height: 1.1rem;
@@ -477,7 +477,7 @@
 .inArea {
   font-size: 4.5vw;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     font-size: 2.25rem;
     line-height: 2.25rem;
     font-size: 2.5vw;

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -21,7 +21,7 @@
 
   background-color: var(--matterColorBright);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 8px;
   }
 }

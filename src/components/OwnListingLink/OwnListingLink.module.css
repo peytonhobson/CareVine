@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .defaultLinkStyle {
   composes: a from global;

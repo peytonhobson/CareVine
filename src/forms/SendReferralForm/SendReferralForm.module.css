@@ -1,9 +1,9 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   padding: 0 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }

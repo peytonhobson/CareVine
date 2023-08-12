@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   /* Expand to the available space */
@@ -25,7 +25,7 @@
   /* shadows */
   box-shadow: var(--boxShadow);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: var(--topbarHeightDesktop);
     justify-content: center;
   }
@@ -38,7 +38,7 @@
     fill: var(--marketplaceColor);
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: none;
   }
 }
@@ -48,7 +48,7 @@
   width: auto;
   height: 27px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: block;
   }
 }
@@ -59,7 +59,7 @@
   margin-top: 60px;
   margin-bottom: 60px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 10vh;
   }
 }
@@ -70,7 +70,7 @@
   color: var(--marketplaceColor);
   margin: 1px 0 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -80,7 +80,7 @@
   text-align: center;
   margin-top: 16px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 22px;
   }
 }
@@ -89,7 +89,7 @@
   text-align: center;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 24px;
     margin-bottom: 0;
   }

@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 /* Dummy Topbar */
 
@@ -18,7 +18,7 @@
   /* shadows */
   box-shadow: var(--boxShadow);
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     height: var(--topbarHeightDesktop);
     justify-content: center;
   }
@@ -28,7 +28,7 @@
   display: flex;
   padding: calc((var(--topbarHeight) - var(--CheckoutPage_logoHeight)) / 2) 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding: calc((var(--topbarHeightDesktop) - var(--CheckoutPage_logoHeightDesktop)) / 2) 36px;
   }
 }
@@ -36,7 +36,7 @@
 .logoMobile {
   display: block;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: none;
   }
 }
@@ -46,7 +46,7 @@
   width: auto;
   height: 27px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: block;
   }
 }
@@ -64,7 +64,7 @@
   flex-direction: column;
   padding: 2rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
@@ -81,7 +81,7 @@
   flex-direction: column;
   padding: 2rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     flex-grow: 1;
     padding: 0;
     width: 150rem;
@@ -94,7 +94,7 @@
   padding-bottom: 66.6667%; /* 3:2 Aspect Ratio */
   background-color: var(--matterColorNegative); /* Loading BG color */
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: none;
   }
 }
@@ -108,7 +108,7 @@
   right: 0;
   width: 100%;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     border-radius: 2px 2px 0 0;
   }
 }
@@ -124,7 +124,7 @@
   /* Layout */
   display: block;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-left: 48px;
   }
 }
@@ -150,13 +150,13 @@
   font-size: 2.5rem;
   font-weight: var(--fontWeightSemiBold);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     font-size: 3rem;
   }
 }
 
 .avatarMobile {
-  @media (--viewportLarge) {
+  @media screen(lg) {
     display: none;
   }
 }
@@ -166,12 +166,12 @@
   margin-bottom: 34px;
   padding: 0 24px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 27px;
     margin-bottom: 30px;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 0px;
     margin-bottom: 54px;
     padding: 0;
@@ -187,7 +187,7 @@
   margin-top: 0;
   margin-bottom: 7px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 5px;
   }
@@ -201,7 +201,7 @@
   margin-top: 0;
   margin-bottom: 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -211,10 +211,10 @@
   padding: 0 24px;
   margin-bottom: 37px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 38px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     /* we don't show price breakdown since it will be visible within 2nd column (detailsContainerDesktop) */
     display: none;
   }
@@ -227,11 +227,11 @@
   margin-top: 0;
   margin-bottom: 14px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 18px;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 0;
     margin-bottom: 14px;
   }
@@ -244,11 +244,11 @@
   margin-bottom: 35px;
   margin-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 1.5rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-top: 2rem;
     padding: 0;
   }
@@ -258,7 +258,7 @@
 .notFoundError {
   margin: 11px 0 12px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 10px 0 12px 0;
   }
 }
@@ -273,7 +273,7 @@
   color: var(--failColor);
   margin: 19px 0 1px 0;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 28px 48px 0 48px;
   }
 }
@@ -295,7 +295,7 @@
   /* Layout spacing */
   margin: 5px 24px 25px 24px;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin: 37px 48px 26px 48px;
   }
 }
@@ -324,7 +324,7 @@
   width: 100%;
   height: 100vh;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
   }
 }
@@ -336,7 +336,7 @@
   justify-content: center;
   margin: 0 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0;
   }
 }
@@ -365,7 +365,7 @@
   align-items: center;
   justify-content: center;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 30rem;
   }
 }

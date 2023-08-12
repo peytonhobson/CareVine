@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   margin: 0;
@@ -14,7 +14,7 @@
   /* Clearfix */
   composes: clearfix from global;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 17px;
   }
 
@@ -30,11 +30,11 @@
 
   max-width: 80vw;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 20rem;
   }
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     max-width: 27rem;
   }
 }
@@ -52,7 +52,7 @@
   flex-shrink: 0;
   margin: 0px 12px 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0px 12px 0 0;
   }
 }
@@ -91,7 +91,7 @@
   margin: 11px 0 0 0;
   color: var(--matterColorAnti);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 6px 0 0 0;
   }
 }
@@ -106,7 +106,7 @@
   /* Clearfix */
   composes: clearfix from global;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 16px;
   }
 
@@ -120,7 +120,7 @@
   flex-direction: row;
   padding: 3px 0 2px 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
   }
 }
@@ -135,7 +135,7 @@
   color: var(--matterColorAnti);
   margin: 7px 0 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: -1px 0 1px 0;
   }
 }
@@ -150,7 +150,7 @@
   white-space: pre-line;
   margin: 8px 0 0 0;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-width: 500px;
     margin: 7px 0 0 0;
   }
@@ -160,7 +160,7 @@
   display: block;
   margin-top: 4px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 5px 0;
   }
 }
@@ -176,7 +176,7 @@
   text-align: center;
   margin-bottom: 1px;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 0;
   }
 }

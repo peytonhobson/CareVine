@@ -1,16 +1,16 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .sectionReviews {
   padding: 0 24px;
   margin-bottom: 5px;
   max-width: 30rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 0;
     width: 20rem;
     max-width: auto;
   }
-  @media (--viewportLarge) {
+  @media screen(lg) {
     margin-bottom: 3px;
   }
 }
@@ -22,7 +22,7 @@
   margin-bottom: 0;
   margin-top: 3rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -54,7 +54,7 @@
   padding-top: 5rem;
   background-color: var(--matterColorBright);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 3rem;
   }
 }

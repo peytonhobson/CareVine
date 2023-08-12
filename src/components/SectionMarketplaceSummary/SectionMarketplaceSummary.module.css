@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -6,7 +6,7 @@
   flex-wrap: wrap;
   padding-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 2rem;
   }
 }
@@ -18,7 +18,7 @@
   flex-wrap: wrap-reverse;
   margin-top: 2rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: grid;
     grid-template-columns: 1fr 1fr;
     margin-top: 3rem;
@@ -29,7 +29,7 @@
   padding-inline: 2.5rem;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-right: 4rem;
     padding-left: 0;
     margin: auto;
@@ -52,7 +52,7 @@
   padding-inline: 2.5rem;
   margin-top: 1rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-inline: 0;
     margin-top: 0;
     max-width: 100%;
@@ -66,7 +66,7 @@
   object-fit: cover;
   max-width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     max-height: 23rem;
   }
 }
@@ -85,7 +85,7 @@
   margin-top: 3rem;
   width: 100%;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-inline: 0;
   }
 }
@@ -99,7 +99,7 @@
     text-decoration: none;
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     display: block;
     max-width: 20rem;
   }

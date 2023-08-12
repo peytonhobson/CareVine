@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   /* Fixed on top of everything */
@@ -20,7 +20,7 @@
   color: var(--matterColorNegative);
 
   /* Cover Topbar on desktop */
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding: 8px 0;
   }
 }
@@ -61,7 +61,7 @@
     transition: var(--transitionStyleButton);
   }
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin: 0 24px;
   }
 }
