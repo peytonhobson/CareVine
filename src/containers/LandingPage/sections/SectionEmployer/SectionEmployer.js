@@ -16,12 +16,13 @@ const SectionEmployer = () => {
             Find the Perfect<br></br> Caregiver for{' '}
             <span className={css.marketplaceColor}>You</span>
           </h2>
-          <span>
-            Find the right caregiver easily. Tailor your care experience by selecting professionals
-            that fit your needs, budget, and location. With CareVine, you can connect directly with
-            professionals, skipping the hassle and extra fees of middlemen. Simple, direct, and made
-            for everyone. Take control of your care with CareVine.
-          </span>
+          <p>
+            Finding high quality in-home care shouldn't be difficult. CareVine makes it all a bit
+            easier. From the search, to scheduling through payment. Our platform eliminates the
+            middleman of traditional caregiving agencies, putting the tools in your hands to find
+            and manage care that fits your needs, budget and location.
+          </p>
+          <p>Communicate with, book and pay caregivers directly on CareVine!</p>
           <div className={css.getStartedLinkContainer}>
             <NamedLink name="SignupPage" className={css.getStartedButton}>
               Get Started
