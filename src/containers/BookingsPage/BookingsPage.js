@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -13,6 +13,7 @@ import {
   EmployerBookingCard,
   CaregiverBookingCard,
   ButtonTabNavHorizontal,
+  DraftBookingCard,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
@@ -30,8 +31,15 @@ import qs from 'qs';
 
 import css from './BookingsPage.module.css';
 
+const sortDrafts = (a, b) => {
+  const aDate = new Date(a.createdAt);
+  const bDate = new Date(b.createdAt);
+
+  return bDate - aDate;
+};
+
 const BookingsPage = props => {
-  const [selectedTab, setSelectedTab] = useState('Requests');
+  const [selectedTab, setSelectedTab] = useState('Drafts');
   const [initialBookingsFetched, setInitialBookingsFetched] = useState(false);
 
   const {
@@ -69,11 +77,12 @@ const BookingsPage = props => {
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
   const bookedDates = currentUserListing?.attributes.metadata.bookedDates;
-  const totalBookings =
-    bookings?.requests.length +
-    bookings?.upcoming.length +
-    bookings?.active.length +
-    bookings?.past.length;
+  const totalBookings = bookings?.requests.length + bookings?.bookings.length;
+  const bookingDrafts = currentUser?.attributes?.profile?.privateData?.bookingDrafts || [];
+
+  const sortedBookingDrafts = useMemo(() => {
+    return bookingDrafts.sort(sortDrafts);
+  }, [bookingDrafts]);
 
   const searchString = qs.parse(history.location.search, {
     ignoreQueryPrefix: true,
@@ -123,28 +132,73 @@ const BookingsPage = props => {
     onFetchCurrentUserListing,
   };
 
+  const draftTabMaybe =
+    userType === EMPLOYER
+      ? [
+          {
+            text: 'Drafts',
+            selected: 'Drafts' === selectedTab,
+            onClick: () => setSelectedTab('Drafts'),
+          },
+        ]
+      : [];
+
   const tabs = [
+    ...draftTabMaybe,
     {
       text: 'Requests',
       selected: 'Requests' === selectedTab,
       onClick: () => setSelectedTab('Requests'),
     },
     {
-      text: 'Upcoming',
-      selected: 'Upcoming' === selectedTab,
-      onClick: () => setSelectedTab('Upcoming'),
-    },
-    {
-      text: 'Active',
-      selected: 'Active' === selectedTab,
-      onClick: () => setSelectedTab('Active'),
-    },
-    {
-      text: 'Past',
-      selected: 'Past' === selectedTab,
-      onClick: () => setSelectedTab('Past'),
+      text: 'Bookings',
+      selected: 'Bookings' === selectedTab,
+      onClick: () => setSelectedTab('Bookings'),
     },
   ];
+
+  let cardSection = null;
+  switch (selectedTab) {
+    case 'Drafts':
+      cardSection =
+        sortedBookingDrafts.length > 0 ? (
+          sortedBookingDrafts.map(draft => (
+            <span id={draft.id}>
+              <DraftBookingCard {...cardProps} key={draft.id} draft={draft} />
+            </span>
+          ))
+        ) : (
+          <h2>No Booking Drafts</h2>
+        );
+
+      break;
+    case 'Requests':
+      cardSection =
+        bookings.requests.length > 0 ? (
+          bookings.requests.map(b => (
+            <span id={b.id.uuid}>
+              <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+            </span>
+          ))
+        ) : (
+          <h2>No Requested Bookings</h2>
+        );
+      break;
+    case 'Bookings':
+      cardSection =
+        bookings.bookings.length > 0 ? (
+          bookings.bookings.map(b => (
+            <span id={b.id.uuid}>
+              <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+            </span>
+          ))
+        ) : (
+          <h2>No Bookings</h2>
+        );
+      break;
+    default:
+      cardSection = null;
+  }
 
   return (
     // TODO: Update schema
@@ -174,17 +228,7 @@ const BookingsPage = props => {
               tabClassName={css.tab}
             />
 
-            {bookings[selectedTab.toLowerCase()].length > 0 ? (
-              <section className={css.cardSection}>
-                {bookings[selectedTab.toLowerCase()].map(b => (
-                  <span id={b.id.uuid}>
-                    <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
-                  </span>
-                ))}
-              </section>
-            ) : (
-              <h2>No {selectedTab.replace('Requests', 'Requested')} Bookings</h2>
-            )}
+            <section className={css.cardSection}>{cardSection}</section>
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>

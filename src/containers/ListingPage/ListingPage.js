@@ -56,7 +56,7 @@ import {
   sendMessage,
   closeListing,
   openListing,
-  fetchTimeSlots,
+  createBookingDraft,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
@@ -80,51 +80,50 @@ export class ListingPageComponent extends Component {
     this.goBackToSearchResults = this.goBackToSearchResults.bind(this);
   }
 
-  handleBookingSubmit(values) {
+  async handleBookingSubmit(values) {
     const {
       history,
       getListing,
       params,
       callSetInitialValues,
       onInitializeCardPaymentData,
+      onCreateBookingDraft,
     } = this.props;
     const listingId = new UUID(params.id);
     const listing = getListing(listingId);
 
-    const { bookingDates, rate: bookingRate, scheduleType, startDate, endDate } = values;
-
-    const initialValues = {
-      listing,
-      bookingRate: bookingRate?.length > 0 ? bookingRate[0] : null,
-      bookingDates,
-      scheduleType,
-      startDate,
-      endDate,
-    };
-
-    const saveToSessionStorage = !this.props.currentUser;
-
+    const { rate: bookingRate, scheduleType } = values;
     const routes = routeConfiguration();
-    // Customize checkout page state with current listing and selected bookingDates
-    const { setInitialValues: checkoutSetInitialValues } = findRouteByRouteName(
-      'CheckoutPage',
-      routes
-    );
-
-    callSetInitialValues(checkoutSetInitialValues, initialValues, saveToSessionStorage);
 
     // Clear previous Stripe errors from store if there is any
     onInitializeCardPaymentData();
 
+    try {
+      const bookingDraftId = await onCreateBookingDraft(listing.id.uuid, {
+        bookingRate: bookingRate?.[0],
+        scheduleType,
+        providerDisplayName: userDisplayNameAsString(listing.author),
+        providerProfileImage: listing.author.profileImage,
+        providerDefaultAvatar: listing.author.attributes.profile.publicData.defaultAvatar,
+      });
+
+      history.push(
+        createResourceLocatorString(
+          'CheckoutPage',
+          routes,
+          {
+            id: listing.id.uuid,
+            slug: createSlug(listing.attributes.title),
+            draftId: bookingDraftId,
+          },
+          {}
+        )
+      );
+    } catch (e) {
+      // Handled by duck
+    }
+
     // Redirect to CheckoutPage
-    history.push(
-      createResourceLocatorString(
-        'CheckoutPage',
-        routes,
-        { id: listing.id.uuid, slug: createSlug(listing.attributes.title) },
-        {}
-      )
-    );
   }
 
   onContactUser() {
@@ -236,14 +235,13 @@ export class ListingPageComponent extends Component {
       openListingError,
       onOpenListing,
       origin,
-      onFetchTimeSlots,
-      monthlyTimeSlots,
       hasStripeAccount,
       hasStripeAccountInProgress,
       hasStripeAccountError,
       fetchReviewsError,
-      fetchReviewsInProgress,
       reviews,
+      createBookingDraftError,
+      createBookingDraftInProgress,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -440,6 +438,8 @@ export class ListingPageComponent extends Component {
                       hasStripeAccount={hasStripeAccount}
                       hasStripeAccountInProgress={hasStripeAccountInProgress}
                       hasStripeAccountError={hasStripeAccountError}
+                      createBookingDraftError={createBookingDraftError}
+                      createBookingDraftInProgress={createBookingDraftInProgress}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -494,46 +494,11 @@ export class ListingPageComponent extends Component {
 
 ListingPageComponent.defaultProps = {
   unitType: config.bookingUnitType,
-  currentUser: null,
-  enquiryModalOpenForListingId: null,
-  showListingError: null,
-  sendEnquiryError: null,
   filterConfig: config.custom.filters,
 };
 
 ListingPageComponent.propTypes = {
-  // from withRouter
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-  location: shape({
-    search: string,
-  }).isRequired,
-
   unitType: propTypes.bookingUnitType,
-  // from injectIntl
-  intl: intlShape.isRequired,
-
-  params: shape({
-    id: string.isRequired,
-    slug: string,
-    variant: oneOf([LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT]),
-  }).isRequired,
-
-  isAuthenticated: bool.isRequired,
-  currentUser: propTypes.currentUser,
-  getListing: func.isRequired,
-  getOwnListing: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  scrollingDisabled: bool.isRequired,
-  showListingError: propTypes.error,
-  callSetInitialValues: func.isRequired,
-  reviews: arrayOf(propTypes.review),
-  fetchReviewsError: propTypes.error,
-  sendEnquiryInProgress: bool.isRequired,
-  sendEnquiryError: propTypes.error,
-  onSendEnquiry: func.isRequired,
-  onInitializeCardPaymentData: func.isRequired,
   filterConfig: array,
 };
 
@@ -553,10 +518,11 @@ const mapStateToProps = state => {
     openListingInProgress,
     openListingError,
     origin,
-    monthlyTimeSlots,
     fetchReviewsError,
     fetchReviewsInProgress,
     reviews,
+    createBookingDraftError,
+    createBookingDraftInProgress,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -597,13 +563,14 @@ const mapStateToProps = state => {
     openListingInProgress,
     openListingError,
     origin,
-    monthlyTimeSlots,
     hasStripeAccount,
     hasStripeAccountInProgress,
     hasStripeAccountError,
     fetchReviewsError,
     fetchReviewsInProgress,
     reviews,
+    createBookingDraftError,
+    createBookingDraftInProgress,
   };
 };
 
@@ -619,8 +586,8 @@ const mapDispatchToProps = dispatch => ({
   onCloseListing: listingId => dispatch(closeListing(listingId)),
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
-  onFetchTimeSlots: (listingId, start, end, timeZone) =>
-    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+  onCreateBookingDraft: (listingId, bookingData) =>
+    dispatch(createBookingDraft(listingId, bookingData)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

@@ -253,6 +253,6 @@ export { default as TermsOfService } from './TermsOfService/TermsOfService';
 export { default as Topbar } from './Topbar/Topbar';
 export { default as TopbarDesktop } from './TopbarDesktop/TopbarDesktop';
 export { default as TopbarMobileMenu } from './TopbarMobileMenu/TopbarMobileMenu';
-export { default as UserMessagePreview } from './UserMessagePreview/UserMessagePreview'
 export { default as WeekCalendar } from './WeekCalendar/WeekCalendar'
 export { default as BookingExceptions } from './BookingExceptions/BookingExceptions'
+export { default as DraftBookingCard } from './BookingCards/DraftBookingCard'

@@ -3,32 +3,11 @@ import React, { useState } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm } from 'react-final-form';
 
-import {
-  Button,
-  Form,
-  FieldRangeSlider,
-  FieldDatePicker,
-  InfoTooltip,
-  FieldButtonGroup,
-  FieldDateInput,
-  IconClose,
-} from '../../components';
-import { FormattedMessage, injectIntl } from '../../util/reactIntl';
-import {
-  formatFieldDateInput,
-  parseFieldDateInput,
-  filterAvailableBookingEndDates,
-  filterAvailableBookingStartDates,
-} from '../../util/dates';
+import { Button, Form, FieldRangeSlider, FieldButtonGroup } from '../../components';
+import { injectIntl } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './InitialBookingForm.module.css';
-
-const TODAY = new Date();
-
-// Date formatting used for placeholder texts:
-const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
 const buttonGroupOptions = [
   {
@@ -56,6 +35,8 @@ const InitialBookingFormComponent = props => (
         updateInProgress,
         values,
         className,
+        createBookingDraftError,
+        createBookingDraftInProgress,
         form,
       } = formRenderProps;
 
@@ -65,7 +46,7 @@ const InitialBookingFormComponent = props => (
       const middleRate = Number.parseFloat((minPrice + maxPrice) / 200).toFixed(0);
       const classes = classNames(css.root, className);
 
-      const submitInProgress = updateInProgress;
+      const submitInProgress = updateInProgress || createBookingDraftInProgress;
       const submitReady = updated || ready;
       const submitDisabled = invalid || disabled || submitInProgress || !scheduleType;
 
@@ -101,7 +82,12 @@ const InitialBookingFormComponent = props => (
               options={buttonGroupOptions}
             />
           </div>
-
+          {createBookingDraftError ? (
+            <p className="text-error">
+              Failed to create a booking draft. Please try again. If the issue persists, please
+              contact support.
+            </p>
+          ) : null}
           <Button
             className={css.submitButton}
             disabled={submitDisabled}

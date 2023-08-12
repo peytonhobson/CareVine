@@ -15,15 +15,8 @@ import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
 
+import { initiateOrder, stripeCustomer, updateBookingDraft } from './CheckoutPage.duck';
 import {
-  initiateOrder,
-  setStateValues,
-  stripeCustomer,
-  setInitialValues,
-} from './CheckoutPage.duck';
-import { storeData, storedData } from './CheckoutPageSessionHelpers';
-import {
-  formatDateTimeValues,
   findStartTimeFromBookingTimes,
   constructBookingMetadataOneTime,
   constructBookingMetadataRecurring,
@@ -58,14 +51,7 @@ export class CheckoutPageComponent extends Component {
     };
     this.stripe = null;
 
-    this.loadInitialData = this.loadInitialData.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  componentDidMount() {
-    if (window) {
-      this.loadInitialData();
-    }
   }
 
   componentDidUpdate(prevProps) {
@@ -98,80 +84,6 @@ export class CheckoutPageComponent extends Component {
     if (this.state.pageData.transaction && !transaction && !this.state.showBookingSummary) {
       this.setState({ showBookingSummary: true });
     }
-  }
-
-  /**
-   * Load initial data for the page
-   *
-   * Since the data for the checkout is not passed in the URL (there
-   * might be lots of options in the future), we must pass in the data
-   * some other way. Currently the ListingPage sets the initial data
-   * for the CheckoutPage's Redux store.
-   *
-   * For some cases (e.g. a refresh in the CheckoutPage), the Redux
-   * store is empty. To handle that case, we store the received data
-   * to window.sessionStorage and read it from there if no props from
-   * the store exist.
-   *
-   * This function also sets of fetching the speculative transaction
-   * based on this initial data.
-   */
-  loadInitialData() {
-    const {
-      bookingRate,
-      bookingDates = [],
-      listing,
-      scheduleType,
-      startDate,
-      endDate,
-      weekdays,
-      dateTimes,
-      transaction,
-      exceptions,
-      history,
-    } = this.props;
-
-    // Browser's back navigation should not rewrite data in session store.
-    // Action is 'POP' on both history.back() and page refresh cases.
-    // Action is 'PUSH' when user has directed through a link
-    // Action is 'REPLACE' when user has directed through login/signup process
-    const hasNavigatedThroughLink = history.action === 'PUSH' || history.action === 'REPLACE';
-
-    const hasDataInProps = !!(bookingRate && listing && scheduleType) && hasNavigatedThroughLink;
-    if (hasDataInProps) {
-      // Store data only if data is passed through props and user has navigated through a link.
-      storeData({
-        bookingRate,
-        bookingDates,
-        listing,
-        transaction,
-        scheduleType,
-        startDate,
-        endDate,
-        weekdays,
-        dateTimes,
-        exceptions,
-        storageKey: STORAGE_KEY,
-      });
-    }
-
-    // NOTE: stored data can be empty if user has already successfully completed transaction.
-    const pageData = hasDataInProps
-      ? {
-          bookingRate,
-          bookingDates,
-          listing,
-          transaction,
-          scheduleType,
-          startDate,
-          endDate,
-          weekdays,
-          dateTimes,
-          exceptions,
-        }
-      : storedData(STORAGE_KEY);
-
-    this.setState({ pageData: pageData || {}, dataLoaded: true });
   }
 
   handleSubmit(values) {
@@ -268,22 +180,30 @@ export class CheckoutPageComponent extends Component {
       defaultPaymentMethods,
       fetchDefaultPaymentError,
       fetchDefaultPaymentInProgress,
+      onUpdateBookingDraft,
+      listing,
+      updateBookingDraftInProgress,
     } = this.props;
 
-    const isLoading = !this.state.dataLoaded;
-
+    const bookingDrafts = currentUser?.attributes.profile.privateData.bookingDrafts || [];
+    const bookingDraft = bookingDrafts.find(draft => draft.id === params.draftId) || {};
     const {
-      listing,
       bookingDates = [],
       bookingRate,
       transaction,
       scheduleType,
       startDate,
       endDate,
-      weekdays,
+      bookingSchedule = {},
       dateTimes,
-      exceptions,
-    } = this.state.pageData;
+      exceptions = {
+        addedDays: [],
+        removedDays: [],
+        changedDays: [],
+      },
+    } = bookingDraft?.attributes || {};
+
+    const isLoading = !listing || !bookingDraft;
     const currentListing = ensureListing(listing);
     const currentAuthor = ensureUser(currentListing.author);
 
@@ -302,22 +222,6 @@ export class CheckoutPageComponent extends Component {
 
     if (isLoading) {
       return <Page {...pageProps}>{topbar}</Page>;
-    }
-
-    const isOwnListing = currentAuthor?.id?.uuid === currentUser?.id?.uuid;
-
-    const hasRequiredData = !!(currentListing.id?.uuid && currentAuthor.id?.uuid);
-    const canShowPage = hasRequiredData && !isOwnListing;
-    const shouldRedirect = !isLoading && !canShowPage;
-
-    // Redirect back to ListingPage if data is missing.
-    // Redirection must happen before any data format error is thrown (e.g. wrong currency)
-    if (shouldRedirect) {
-      // eslint-disable-next-line no-console
-      console.error('Missing or invalid data for checkout, redirecting back to listing page.', {
-        listing,
-      });
-      return <NamedRedirect name="ListingPage" params={params} />;
     }
 
     const authorDisplayName = currentAuthor.attributes.profile.displayName;
@@ -353,7 +257,7 @@ export class CheckoutPageComponent extends Component {
       );
     }
 
-    const showPaymentForm = !!(currentUser && hasRequiredData && currentListing);
+    const showPaymentForm = !!(currentUser && currentListing);
 
     return (
       <Page {...pageProps}>
@@ -383,15 +287,18 @@ export class CheckoutPageComponent extends Component {
             onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
             initialValues={{
               scheduleType,
-              startDate,
-              endDate,
-              ...weekdays,
+              startDate: startDate ? { date: new Date(startDate) } : null,
+              endDate: endDate ? { date: new Date(endDate) } : null,
+              ...bookingSchedule,
               dateTimes,
               exceptions,
               bookingDates,
               bookingRate,
             }}
-            storeData={storeData}
+            initialValuesEqual={() => true}
+            onUpdateBookingDraft={params => onUpdateBookingDraft(params, bookingDraft.id)}
+            updateBookingDraftInProgress={updateBookingDraftInProgress}
+            keepDirtyOnReinitialize
           />
         </div>
       </Page>
@@ -400,20 +307,13 @@ export class CheckoutPageComponent extends Component {
 }
 
 const mapStateToProps = state => {
-  const { monthlyTimeSlots } = state.ListingPage;
   const {
     listing,
-    bookingRate,
-    bookingDates,
     stripeCustomerFetched,
     transaction,
     initiateOrderError,
     initiateOrderInProgress,
-    startDate,
-    endDate,
-    scheduleType,
-    weekdays,
-    dateTimes,
+    updateBookingDraftInProgress,
   } = state.CheckoutPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -427,67 +327,32 @@ const mapStateToProps = state => {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
     stripeCustomerFetched,
-    bookingRate,
-    bookingDates,
     transaction,
     listing,
     initiateOrderError,
     initiateOrderInProgress,
-    monthlyTimeSlots,
     defaultPaymentFetched,
     defaultPaymentMethods,
     fetchDefaultPaymentError,
     fetchDefaultPaymentInProgress,
     currentUserListing,
-    startDate,
-    endDate,
-    scheduleType,
-    weekdays,
-    dateTimes,
+    updateBookingDraftInProgress,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  fetchStripeCustomer: () => dispatch(stripeCustomer()),
-  onInitiateOrder: (params, metadata, listing) =>
-    dispatch(initiateOrder(params, metadata, listing)),
-  onSavePaymentMethod: (stripeCustomer, stripePaymentMethodId) =>
-    dispatch(createCreditCard(stripeCustomer, stripePaymentMethodId)),
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-});
+const mapDispatchToProps = {
+  fetchStripeCustomer: stripeCustomer,
+  onInitiateOrder: initiateOrder,
+  onSavePaymentMethod: createCreditCard,
+  onManageDisableScrolling: manageDisableScrolling,
+  onUpdateBookingDraft: updateBookingDraft,
+};
 
 const CheckoutPage = compose(
   withRouter,
   connect(mapStateToProps, mapDispatchToProps),
   injectIntl
 )(CheckoutPageComponent);
-
-CheckoutPage.setInitialValues = (initialValues, saveToSessionStorage = false) => {
-  if (saveToSessionStorage) {
-    const {
-      listing,
-      bookingRate,
-      bookingDates,
-      scheduleType,
-      startDate,
-      endDate,
-      weekdays,
-    } = initialValues;
-    storeData({
-      bookingRate,
-      bookingDates,
-      listing,
-      scheduleType,
-      startDate,
-      endDate,
-      weekdays,
-      storageKey: STORAGE_KEY,
-    });
-  }
-
-  return setInitialValues(initialValues);
-};
 
 CheckoutPage.displayName = 'CheckoutPage';
 

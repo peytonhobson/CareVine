@@ -20,6 +20,8 @@ const BookingContainer = props => {
     onBookingModalClose,
     onBookingModalOpen,
     authorWhiteListed,
+    createBookingDraftError,
+    createBookingDraftInProgress,
   } = props;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
@@ -78,7 +80,13 @@ const BookingContainer = props => {
           />
           <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
         </div>
-        <InitialBookingForm className={css.bookingForm} listing={listing} onSubmit={onSubmit} />
+        <InitialBookingForm
+          className={css.bookingForm}
+          listing={listing}
+          onSubmit={onSubmit}
+          createBookingDraftError={createBookingDraftError}
+          createBookingDraftInProgress={createBookingDraftInProgress}
+        />
       </Modal>
     </>
   );

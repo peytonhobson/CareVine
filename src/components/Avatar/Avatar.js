@@ -10,10 +10,6 @@ import {
   userAbbreviatedName,
 } from '../../util/data';
 import { ResponsiveImage, IconBannedUser, NamedLink } from '../../components/';
-import DefaultAvatar1 from '../../assets/Dava1.png';
-import DefaultAvatar2 from '../../assets/Dava2.png';
-import DefaultAvatar3 from '../../assets/Dava3.png';
-import DefaultAvatar4 from '../../assets/Dava4.png';
 
 import css from './Avatar.module.css';
 import { createSlug } from '../../util/urlHelpers';
