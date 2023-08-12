@@ -10,7 +10,7 @@
 
   min-height: calc(100vh - var(--topbarHeight));
 
-  @media screen(md) {
+  @media screen(lg) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
 
     display: grid;
@@ -23,7 +23,7 @@
 .descriptionContainer {
   padding: 2.5rem 2rem;
 
-  @media screen(md) {
+  @media screen(lg) {
     padding: 0 0 0 6rem;
   }
 }
@@ -33,6 +33,12 @@
   font-weight: var(--fontWeightSemiBold);
   line-height: 3rem;
   letter-spacing: -0.063rem;
+  text-align: center;
+  width: 100%;
+
+  @media screen(md) {
+    text-align: left !important;
+  }
 }
 
 .description {
@@ -52,7 +58,7 @@
   justify-content: center;
   align-items: center;
 
-  @media screen(md) {
+  @media screen(lg) {
     padding: 0 5rem 2rem 10rem;
   }
 }
@@ -62,12 +68,12 @@
   margin-top: 5rem;
   box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
     0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  border-radius: var(--borderRadius);
 
-  @media screen(md) {
+  @media screen(lg) {
     width: 35rem;
     height: 35rem;
     margin-top: 0;
-    border-radius: 2rem;
   }
 }
 
@@ -83,7 +89,7 @@
   padding: 2rem;
   margin-top: 5rem;
 
-  @media screen(md) {
+  @media screen(lg) {
     margin-top: 0;
     width: 35rem;
   }
@@ -93,7 +99,7 @@
   width: 100%;
   visibility: hidden;
 
-  @media screen(md) {
+  @media screen(lg) {
     width: 35rem;
     height: 35rem;
   }
@@ -102,7 +108,7 @@
 .firstImage {
   width: 100%;
 
-  @media screen(md) {
+  @media screen(lg) {
     width: 35rem;
     height: 35rem;
     box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14),
@@ -133,7 +139,7 @@
     }
   }
 
-  @media screen(md) {
+  @media screen(lg) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
 
     display: grid;
@@ -160,7 +166,7 @@
     }
   }
 
-  @media screen(md) {
+  @media screen(lg) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
 
     display: grid;
@@ -187,7 +193,7 @@
     }
   }
 
-  @media screen(md) {
+  @media screen(lg) {
     min-height: calc(100vh - var(--topbarHeightDesktop));
 
     display: grid;
@@ -199,7 +205,7 @@
   margin: auto;
   padding: 2.5rem 2rem;
 
-  @media screen(md) {
+  @media screen(lg) {
     padding: 0 6rem 0 0;
   }
 }
@@ -209,7 +215,7 @@
   justify-content: center;
   align-items: center;
 
-  @media screen(md) {
+  @media screen(lg) {
     padding: 0 10rem 2rem 5rem;
   }
 }
@@ -224,7 +230,7 @@
     0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   border-radius: 2rem;
 
-  @media screen(md) {
+  @media screen(lg) {
     width: 35rem;
     margin-top: 0;
   }
