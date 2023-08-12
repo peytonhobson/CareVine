@@ -104,7 +104,7 @@ const routeConfiguration = () => {
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
     },
     {
-      path: '/l/:slug/:id/checkout',
+      path: '/l/:slug/:id/checkout/:draftId',
       name: 'CheckoutPage',
       auth: true,
       component: CheckoutPage,

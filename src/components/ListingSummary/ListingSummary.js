@@ -68,6 +68,8 @@ const ListingSummaryComponent = props => {
     hasStripeAccount,
     hasStripeAccountInProgress,
     hasStripeAccountError,
+    createBookingDraftError,
+    createBookingDraftInProgress,
   } = props;
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
@@ -290,6 +292,8 @@ const ListingSummaryComponent = props => {
           onBookingModalClose={() => setIsBookingModalOpen(false)}
           onBookingModalOpen={() => setIsBookingModalOpen(true)}
           authorWhiteListed={authorWhiteListed}
+          createBookingDraftError={createBookingDraftError}
+          createBookingDraftInProgress={createBookingDraftInProgress}
         />
       ) : null}
     </div>

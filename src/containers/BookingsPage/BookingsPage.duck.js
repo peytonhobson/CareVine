@@ -33,13 +33,16 @@ import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 
-const requestBookingTransitions = [TRANSITION_REQUEST_BOOKING];
+const requestTransitions = [TRANSITION_REQUEST_BOOKING];
 
-const upcomingBookingTransitions = [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE];
-
-const activeBookingTransitions = [TRANSITION_START, TRANSITION_START_UPDATE_TIMES];
-
-const pastBookingTransitions = [TRANSITION_COMPLETE, TRANSITION_COMPLETE_CANCELED];
+const bookingTransitions = [
+  TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_CHARGE,
+  TRANSITION_START,
+  TRANSITION_START_UPDATE_TIMES,
+  TRANSITION_COMPLETE,
+  TRANSITION_COMPLETE_CANCELED,
+];
 
 const cancelBookingTransitions = {
   employer: {
@@ -155,9 +158,7 @@ const initialState = {
   fetchBookingsError: null,
   bookings: {
     requests: [],
-    upcoming: [],
-    active: [],
-    past: [],
+    bookings: [],
   },
   cancelBookingInProgress: false,
   cancelBookingError: null,
@@ -310,16 +311,10 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
 
     const sortedBookings = {
       requests: denormalizedBookings.filter(b =>
-        requestBookingTransitions.includes(b.attributes.lastTransition)
+        requestTransitions.includes(b.attributes.lastTransition)
       ),
-      active: denormalizedBookings.filter(b =>
-        activeBookingTransitions.includes(b.attributes.lastTransition)
-      ),
-      upcoming: denormalizedBookings.filter(b =>
-        upcomingBookingTransitions.includes(b.attributes.lastTransition)
-      ),
-      past: denormalizedBookings.filter(b =>
-        pastBookingTransitions.includes(b.attributes.lastTransition)
+      bookings: denormalizedBookings.filter(b =>
+        bookingTransitions.includes(b.attributes.lastTransition)
       ),
     };
 

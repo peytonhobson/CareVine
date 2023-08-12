@@ -60,6 +60,10 @@ export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUES
 export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
 export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
 
+export const CREATE_BOOKING_DRAFT_REQUEST = 'app/ListingPage/CREATE_BOOKING_DRAFT_REQUEST';
+export const CREATE_BOOKING_DRAFT_SUCCESS = 'app/ListingPage/CREATE_BOOKING_DRAFT_SUCCESS';
+export const CREATE_BOOKING_DRAFT_ERROR = 'app/ListingPage/CREATE_BOOKING_DRAFT_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -77,14 +81,8 @@ const initialState = {
   openListingInProgress: false,
   openListingError: null,
   origin: null,
-  timeSlots: null,
-  monthlyTimeSlots: {
-    // '2019-12': {
-    //   timeSlots: [],
-    //   fetchTimeSlotsError: null,
-    //   fetchTimeSlotsInProgress: null,
-    // },
-  },
+  createBookingDraftInProgress: false,
+  createBookingDraftError: null,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -147,41 +145,12 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case OPEN_LISTING_ERROR:
       return { ...state, openListingInProgress: false, openListingError: payload };
 
-    case FETCH_TIME_SLOTS_REQUEST: {
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [payload]: {
-          ...state.monthlyTimeSlots[payload],
-          fetchTimeSlotsError: null,
-          fetchTimeSlotsInProgress: true,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_SUCCESS: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          timeSlots: payload.timeSlots,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_ERROR: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          fetchTimeSlotsError: payload.error,
-        },
-      };
-      return { ...state, monthlyTimeSlots };
-    }
+    case CREATE_BOOKING_DRAFT_REQUEST:
+      return { ...state, createBookingDraftInProgress: true, createBookingDraftError: null };
+    case CREATE_BOOKING_DRAFT_SUCCESS:
+      return { ...state, createBookingDraftInProgress: false };
+    case CREATE_BOOKING_DRAFT_ERROR:
+      return { ...state, createBookingDraftInProgress: false, createBookingDraftError: payload };
 
     default:
       return state;
@@ -242,18 +211,12 @@ export const openListingRequest = () => ({ type: OPEN_LISTING_REQUEST });
 export const openListingSuccess = () => ({ type: OPEN_LISTING_SUCCESS });
 export const openListingError = e => ({ type: OPEN_LISTING_ERROR, error: true, payload: e });
 
-export const fetchTimeSlotsRequest = monthId => ({
-  type: FETCH_TIME_SLOTS_REQUEST,
-  payload: monthId,
-});
-export const fetchTimeSlotsSuccess = (monthId, timeSlots) => ({
-  type: FETCH_TIME_SLOTS_SUCCESS,
-  payload: { timeSlots, monthId },
-});
-export const fetchTimeSlotsError = (monthId, error) => ({
-  type: FETCH_TIME_SLOTS_ERROR,
+export const createBookingDraftRequest = () => ({ type: CREATE_BOOKING_DRAFT_REQUEST });
+export const createBookingDraftSuccess = () => ({ type: CREATE_BOOKING_DRAFT_SUCCESS });
+export const createBookingDraftError = e => ({
+  type: CREATE_BOOKING_DRAFT_ERROR,
   error: true,
-  payload: { monthId, error },
+  payload: e,
 });
 
 // ================ Thunks ================ //
@@ -428,55 +391,39 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
-const timeSlotsRequest = params => (dispatch, getState, sdk) => {
-  return sdk.timeslots.query(params).then(response => {
-    return denormalisedResponseEntities(response);
-  });
-};
+export const createBookingDraft = (listingId, bookingData) => async (dispatch, getState, sdk) => {
+  dispatch(createBookingDraftRequest());
 
-export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, getState, sdk) => {
-  const monthId = monthIdStringInTimeZone(start, timeZone);
+  const currentUser = getState().user.currentUser;
+  const { bookingDrafts = [] } = currentUser.attributes.profile.privateData || {};
 
-  dispatch(fetchTimeSlotsRequest(monthId));
-
-  // The maximum pagination page size for timeSlots is 500
-  const extraParams = {
-    per_page: 500,
-    page: 1,
+  const draftId = uuidv4();
+  const newBookingDraft = {
+    id: draftId,
+    type: 'bookingDraft',
+    createdAt: new Date().getTime(),
+    attributes: {
+      listingId,
+      ...bookingData,
+    },
   };
 
-  return dispatch(timeSlotsRequest({ listingId, start, end, ...extraParams }))
-    .then(timeSlots => {
-      dispatch(fetchTimeSlotsSuccess(monthId, timeSlots));
-    })
-    .catch(e => {
-      dispatch(fetchTimeSlotsError(monthId, storableError(e)));
+  const newBookingDrafts = [...bookingDrafts, newBookingDraft];
+
+  try {
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        bookingDrafts: newBookingDrafts,
+      },
     });
-};
 
-const fetchMonthlyTimeSlots = (dispatch, listing) => {
-  const hasWindow = typeof window !== 'undefined';
-  const attributes = listing.attributes;
-  // Listing could be ownListing entity too, so we just check if attributes key exists
-  const hasTimeZone =
-    attributes && attributes.availabilityPlan && attributes.availabilityPlan.timezone;
-
-  // Fetch time-zones on client side only.
-  if (hasWindow && listing.id && hasTimeZone) {
-    const tz = listing.attributes.availabilityPlan.timezone;
-    const nextBoundary = findNextBoundary(tz, new Date());
-
-    const nextMonth = nextMonthFn(nextBoundary, tz);
-    const nextAfterNextMonth = nextMonthFn(nextMonth, tz);
-
-    return Promise.all([
-      dispatch(fetchTimeSlots(listing.id, nextBoundary, nextMonth, tz)),
-      dispatch(fetchTimeSlots(listing.id, nextMonth, nextAfterNextMonth, tz)),
-    ]);
+    dispatch(createBookingDraftSuccess());
+    return draftId;
+  } catch (e) {
+    log.error(e, 'create-booking-draft-failed', { listingId });
+    dispatch(createBookingDraftError(storableError(e)));
+    throw e;
   }
-
-  // By default return an empty array
-  return Promise.all([]);
 };
 
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
@@ -506,7 +453,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
       // Fetch timeSlots.
       // This can happen parallel to loadData.
       // We are not interested to return them from loadData call.
-      fetchMonthlyTimeSlots(dispatch, listing);
       dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
     }
     return responses;

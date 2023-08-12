@@ -3,6 +3,7 @@ module.exports = {
   content: [
     './src/containers/**/*.{html,js}',
     './src/components/**/*.{html,js}',
+    './src/forms/**/*.{html,js}',
     './public/index.html',
   ],
   corePlugins: {

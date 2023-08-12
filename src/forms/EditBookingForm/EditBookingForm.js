@@ -148,7 +148,8 @@ const EditBookingFormComponent = props => (
         stripeCustomerFetched,
         onChangePaymentMethod,
         intl,
-        storeData,
+        onUpdateBookingDraft,
+        updateBookingDraftInProgress,
       } = formRenderProps;
 
       const [selectedTab, setSelectedTab] = useState('Dates/Times');
@@ -158,21 +159,22 @@ const EditBookingFormComponent = props => (
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
-      const storeFormData = () => {
+      const updateDraft = newValues => {
+        const bookingSchedule = findWeekdays(newValues);
         const saveParams = {
-          bookingRate: values.bookingRate,
-          bookingDates: values.bookingDates,
-          listing: currentListing,
-          scheduleType: values.scheduleType,
-          startDate: values.startDate,
-          endDate: values.endDate,
-          weekdays: findWeekdays(values),
-          dateTimes: values.dateTimes,
-          exceptions: values.exceptions,
-          storageKey: STORAGE_KEY,
+          bookingRate: newValues.bookingRate,
+          bookingDates: newValues.bookingDates,
+          scheduleType: newValues.scheduleType,
+          startDate: newValues.startDate?.date.getTime(),
+          endDate: newValues.endDate?.date.getTime(),
+          bookingSchedule,
+          dateTimes: newValues.dateTimes,
+          exceptions: newValues.exceptions,
         };
 
-        storeData(saveParams);
+        if (!Object.keys(bookingSchedule).length && !values.bookingDates?.length) return;
+
+        onUpdateBookingDraft(saveParams);
       };
 
       const checkValidDates = () => {
@@ -438,7 +440,12 @@ const EditBookingFormComponent = props => (
             onChange={e => {
               setGoToPaymentError(null);
               setGoToRequestError(null);
-              storeFormData();
+              if (
+                !updateBookingDraftInProgress &&
+                JSON.stringify(e.values) !== JSON.stringify(values)
+              ) {
+                updateDraft(e.values);
+              }
             }}
           />
           <ButtonTabNavHorizontal

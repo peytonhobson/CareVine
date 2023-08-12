@@ -5,7 +5,6 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
 import * as log from '../../util/log';
-import { storeData } from './CheckoutPageSessionHelpers';
 import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
 import {
   setInitialValues as setInitialValuesForPaymentMethods,
@@ -14,8 +13,9 @@ import {
 import { NOTIFICATION_TYPE_BOOKING_REQUESTED } from '../../util/constants';
 import { v4 as uuidv4 } from 'uuid';
 import { updateUserNotifications } from '../../util/api';
+import { types as sdkTypes } from '../../util/sdkLoader';
 
-const STORAGE_KEY = 'CheckoutPage';
+const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
 
@@ -31,26 +31,25 @@ export const STRIPE_CUSTOMER_REQUEST = 'app/CheckoutPage/STRIPE_CUSTOMER_REQUEST
 export const STRIPE_CUSTOMER_SUCCESS = 'app/CheckoutPage/STRIPE_CUSTOMER_SUCCESS';
 export const STRIPE_CUSTOMER_ERROR = 'app/CheckoutPage/STRIPE_CUSTOMER_ERROR';
 
+export const UPDATE_BOOKING_DRAFT_REQUEST = 'app/CheckoutPage/UPDATE_BOOKING_DRAFT_REQUEST';
+export const UPDATE_BOOKING_DRAFT_SUCCESS = 'app/CheckoutPage/UPDATE_BOOKING_DRAFT_SUCCESS';
+export const UPDATE_BOOKING_DRAFT_ERROR = 'app/CheckoutPage/UPDATE_BOOKING_DRAFT_ERROR';
+
+export const SHOW_LISTING_REQUEST = 'app/CheckoutPage/SHOW_LISTING_REQUEST';
+export const SHOW_LISTING_SUCCESS = 'app/CheckoutPage/SHOW_LISTING_SUCCESS';
+export const SHOW_LISTING_ERROR = 'app/CheckoutPage/SHOW_LISTING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
   listing: null,
-  bookingRate: null,
-  bookingDates: null,
+  showListingInProgress: false,
+  showListingError: null,
   transaction: null,
-  scheduleType: null,
-  startDate: null,
-  endDate: null,
-  weekdays: null,
-  dateTimes: null,
-  exceptions: {
-    addedDays: [],
-    removedDays: [],
-    changedDays: [],
-  },
   initiateOrderError: null,
   initiateOrderInProgress: false,
   stripeCustomerFetched: false,
+  updateBookingDraftInProgress: false,
 };
 
 export default function checkoutPageReducer(state = initialState, action = {}) {
@@ -77,6 +76,20 @@ export default function checkoutPageReducer(state = initialState, action = {}) {
     case STRIPE_CUSTOMER_ERROR:
       console.error(payload); // eslint-disable-line no-console
       return { ...state, stripeCustomerFetchError: payload };
+
+    case UPDATE_BOOKING_DRAFT_REQUEST:
+      return { ...state, updateBookingDraftInProgress: true, updateBookingDraftError: null };
+    case UPDATE_BOOKING_DRAFT_SUCCESS:
+      return { ...state, updateBookingDraftInProgress: false };
+    case UPDATE_BOOKING_DRAFT_ERROR:
+      return { ...state, updateBookingDraftInProgress: false, updateBookingDraftError: payload };
+
+    case SHOW_LISTING_REQUEST:
+      return { ...state, showListingInProgress: true, showListingError: null };
+    case SHOW_LISTING_SUCCESS:
+      return { ...state, showListingInProgress: false, listing: payload };
+    case SHOW_LISTING_ERROR:
+      return { ...state, showListingInProgress: false, showListingError: payload };
 
     default:
       return state;
@@ -118,6 +131,25 @@ export const stripeCustomerError = e => ({
   payload: e,
 });
 
+const updateBookingDraftRequest = () => ({ type: UPDATE_BOOKING_DRAFT_REQUEST });
+const updateBookingDraftSuccess = () => ({ type: UPDATE_BOOKING_DRAFT_SUCCESS });
+const updateBookingDraftError = e => ({
+  type: UPDATE_BOOKING_DRAFT_ERROR,
+  error: true,
+  payload: e,
+});
+
+const showListingRequest = () => ({ type: SHOW_LISTING_REQUEST });
+const showListingSuccess = response => ({
+  type: SHOW_LISTING_SUCCESS,
+  payload: response,
+});
+const showListingError = e => ({
+  type: SHOW_LISTING_ERROR,
+  error: true,
+  payload: e,
+});
+
 /* ================ Thunks ================ */
 
 export const initiateOrder = (orderParams, metadata, listing) => async (
@@ -143,12 +175,6 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     const order = entities[0];
     dispatch(initiateOrderSuccess(order));
     dispatch(fetchCurrentUserHasOrdersSuccess(true));
-
-    const bookingRate = order.attributes.metadata.bookingRate;
-    const bookingDates = order.attributes.metadata.lineItems.map(l => new Date(l.date));
-
-    storeData(bookingRate, bookingDates, listing, order, STORAGE_KEY);
-
     return order;
   };
 
@@ -213,13 +239,82 @@ export const stripeCustomer = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const loadData = () => (dispatch, getState, sdk) => {
+export const updateBookingDraft = (bookingData, draftId) => async (dispatch, getState, sdk) => {
+  dispatch(updateBookingDraftRequest());
+
+  const currentUser = getState().user.currentUser;
+  if (!currentUser) return;
+
+  const { bookingDrafts = [] } = currentUser.attributes.profile.privateData || [];
+
+  const bookingDraft = bookingDrafts.find(draft => draft.id === draftId);
+
+  if (!bookingDraft) return;
+
+  const updatedBookingDraft = {
+    ...bookingDraft,
+    attributes: {
+      ...bookingDraft.attributes,
+      ...bookingData,
+    },
+  };
+
+  const updatedBookingDrafts = bookingDrafts.map(draft =>
+    draft.id === draftId ? updatedBookingDraft : draft
+  );
+
+  try {
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        bookingDrafts: updatedBookingDrafts,
+      },
+    });
+
+    // Buffer to not create conflicts in the state
+    setTimeout(() => {
+      dispatch(updateBookingDraftSuccess());
+    }, 500);
+  } catch (e) {
+    dispatch(updateBookingDraftError(storableError(e)));
+  }
+};
+
+export const showListing = listingId => async (dispatch, getState, sdk) => {
+  dispatch(showListingRequest(listingId));
+  const params = {
+    id: listingId,
+    include: ['author', 'author.profileImage'],
+    'fields.image': [
+      // Avatars
+      'variants.square-small',
+      'variants.square-small2x',
+    ],
+  };
+
+  try {
+    const listingResponse = await sdk.listings.show(params);
+
+    const listing = denormalisedResponseEntities(listingResponse)[0];
+
+    dispatch(showListingSuccess(listing));
+  } catch (e) {
+    log.error(e, 'show-listing-failed', { listingId });
+    dispatch(showListingError(storableError(e)));
+  }
+};
+
+export const loadData = (params, search) => (dispatch, getState, sdk) => {
   dispatch(setInitialValuesForPaymentMethods());
 
-  return dispatch(stripeCustomer()).then(() => {
-    const stripeCustomer = getState().user.currentUser.stripeCustomer;
-    if (stripeCustomer) {
-      return dispatch(fetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId));
+  const listingId = new UUID(params.id);
+  const draftId = params.draftId;
+
+  return Promise.all([dispatch(stripeCustomer()), dispatch(showListing(listingId)), dispatch]).then(
+    () => {
+      const stripeCustomer = getState().user.currentUser.stripeCustomer;
+      if (stripeCustomer) {
+        return dispatch(fetchDefaultPayment(stripeCustomer.attributes.stripeCustomerId));
+      }
     }
-  });
+  );
 };
