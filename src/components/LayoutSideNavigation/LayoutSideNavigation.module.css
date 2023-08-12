@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .root {
   display: flex;
@@ -42,7 +42,7 @@
     border-left-color: var(--matterColorNegative);
   }
 
-  @media (--viewportLargeWithPaddings) {
+  @media screen(lgwp) {
     padding: 112px calc((100% - 1056px) / 2) 82px 59px;
   }
 }

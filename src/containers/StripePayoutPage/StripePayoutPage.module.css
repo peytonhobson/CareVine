@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .content {
   min-height: calc(100vh - var(--topbarHeight) - var(--userNavHeight));

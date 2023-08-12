@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .nav {
   /* Layout */
@@ -30,7 +30,7 @@
     border-bottom: 2px solid var(--matterColorNegative);
   }
 
-  @media (--viewportLargeWithPaddings) {
+  @media screen(lgwp) {
     /* padding: 128px 0 82px calc((100% - 1056px) / 2); */
   }
 }
