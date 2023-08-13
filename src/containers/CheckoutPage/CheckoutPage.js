@@ -183,6 +183,7 @@ export class CheckoutPageComponent extends Component {
       onUpdateBookingDraft,
       listing,
       updateBookingDraftInProgress,
+      history,
     } = this.props;
 
     const bookingDrafts = currentUser?.attributes.profile.privateData.bookingDrafts || [];
@@ -263,43 +264,45 @@ export class CheckoutPageComponent extends Component {
       <Page {...pageProps}>
         {topbar}
         <div className={css.contentContainer}>
-          <EditBookingForm
-            className={css.editBookingForm}
-            listing={currentListing}
-            onSubmit={this.handleSubmit}
-            monthlyTimeSlots={monthlyTimeSlots}
-            onManageDisableScrolling={onManageDisableScrolling}
-            authorDisplayName={authorDisplayName}
-            defaultPaymentMethods={defaultPaymentMethods}
-            selectedPaymentMethod={this.state.selectedPaymentMethod}
-            initiateOrderInProgress={initiateOrderInProgress}
-            initiateOrderError={initiateOrderError}
-            transaction={transaction}
-            currentListing={currentListing}
-            listingTitle={listingTitle}
-            currentAuthor={currentAuthor}
-            bookingRate={bookingRate}
-            showPaymentForm={showPaymentForm}
-            defaultPaymentFetched={defaultPaymentFetched}
-            fetchDefaultPaymentError={fetchDefaultPaymentError}
-            fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-            stripeCustomerFetched={stripeCustomerFetched}
-            onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
-            initialValues={{
-              scheduleType,
-              startDate: startDate ? { date: new Date(startDate) } : null,
-              endDate: endDate ? { date: new Date(endDate) } : null,
-              ...bookingSchedule,
-              dateTimes,
-              exceptions,
-              bookingDates,
-              bookingRate,
-            }}
-            initialValuesEqual={() => true}
-            onUpdateBookingDraft={params => onUpdateBookingDraft(params, bookingDraft.id)}
-            updateBookingDraftInProgress={updateBookingDraftInProgress}
-            keepDirtyOnReinitialize
-          />
+          {scheduleType ? (
+            <EditBookingForm
+              className={css.editBookingForm}
+              listing={currentListing}
+              onSubmit={this.handleSubmit}
+              monthlyTimeSlots={monthlyTimeSlots}
+              onManageDisableScrolling={onManageDisableScrolling}
+              authorDisplayName={authorDisplayName}
+              defaultPaymentMethods={defaultPaymentMethods}
+              selectedPaymentMethod={this.state.selectedPaymentMethod}
+              initiateOrderInProgress={initiateOrderInProgress}
+              initiateOrderError={initiateOrderError}
+              transaction={transaction}
+              currentListing={currentListing}
+              listingTitle={listingTitle}
+              currentAuthor={currentAuthor}
+              bookingRate={bookingRate}
+              showPaymentForm={showPaymentForm}
+              defaultPaymentFetched={defaultPaymentFetched}
+              fetchDefaultPaymentError={fetchDefaultPaymentError}
+              fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
+              stripeCustomerFetched={stripeCustomerFetched}
+              onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
+              initialValues={{
+                scheduleType,
+                startDate: startDate ? { date: new Date(startDate) } : null,
+                endDate: endDate ? { date: new Date(endDate) } : null,
+                ...bookingSchedule,
+                dateTimes,
+                exceptions,
+                bookingDates,
+                bookingRate,
+              }}
+              initialValuesEqual={() => true}
+              onUpdateBookingDraft={params => onUpdateBookingDraft(params, bookingDraft.id)}
+              updateBookingDraftInProgress={updateBookingDraftInProgress}
+              history={history}
+            />
+          ) : null}
         </div>
       </Page>
     );

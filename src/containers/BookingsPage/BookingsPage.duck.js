@@ -32,6 +32,7 @@ import {
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 const requestTransitions = [TRANSITION_REQUEST_BOOKING];
 
@@ -151,6 +152,8 @@ export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
+export const REMOVE_OLD_DRAFTS = 'app/BookingsPage/REMOVE_OLD_DRAFTS';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -220,6 +223,11 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
     case DECLINE_BOOKING_ERROR:
       return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
+    case REMOVE_OLD_DRAFTS:
+      return {
+        ...state,
+      };
+
     default:
       return state;
   }
@@ -265,6 +273,8 @@ export const declineBookingError = e => ({
   error: true,
   payload: e,
 });
+
+export const removeOldDrafts = () => ({ type: REMOVE_OLD_DRAFTS });
 
 /* ================ Thunks ================ */
 
@@ -546,6 +556,32 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });
     dispatch(declineBookingError(storableError(e)));
+  }
+};
+
+export const removeDrafts = () => async (dispatch, getState, sdk) => {
+  const currentUser = getState().user.currentUser;
+  if (!currentUser) return;
+
+  const { bookingDrafts = [] } = currentUser.attributes.profile.privateData;
+
+  // Remove any drafts older than 48 hours
+  const newBookingDrafts = bookingDrafts.filter(
+    draft => new Date(draft.createdAt) > new Date() - 48 * 36e5
+  );
+
+  if (newBookingDrafts.length === bookingDrafts.length) return;
+
+  try {
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        bookingDrafts: newBookingDrafts,
+      },
+    });
+
+    dispatch(fetchCurrentUser());
+  } catch (e) {
+    log.error(e, 'remove-drafts-failed', {});
   }
 };
 

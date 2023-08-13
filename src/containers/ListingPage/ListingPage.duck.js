@@ -12,15 +12,9 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  updateUserNotifications,
-  transactionLineItems,
-  fetchHasStripeAccount,
-} from '../../util/api';
+import { updateUserNotifications } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
-import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
-import { denormalisedResponseEntities } from '../../util/data';
 import { hasStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 
 const { UUID } = sdkTypes;
@@ -408,7 +402,7 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
     },
   };
 
-  const newBookingDrafts = [...bookingDrafts, newBookingDraft];
+  const newBookingDrafts = [newBookingDraft, ...bookingDrafts];
 
   try {
     await sdk.currentUser.updateProfile({
@@ -416,6 +410,8 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
         bookingDrafts: newBookingDrafts,
       },
     });
+
+    await dispatch(fetchCurrentUser());
 
     dispatch(createBookingDraftSuccess());
     return draftId;
