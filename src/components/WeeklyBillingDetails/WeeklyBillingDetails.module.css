@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .blocked {
   color: var(--matterColorLight) !important;
@@ -51,7 +51,7 @@
   }
 
   & :global(.react-calendar--doubleView) {
-    @media (--viewportMedium) {
+    @media screen(md) {
       width: 700px;
     }
   }

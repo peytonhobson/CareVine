@@ -1,10 +1,10 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .buttonAddNew {
   composes: h5 from global;
   color: var(--matterColor);
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     margin-bottom: 6px;
   }
 }
@@ -136,7 +136,7 @@
   padding-left: 1rem;
   padding-right: 1rem;
 
-  @media (--viewportSmall) {
+  @media screen(sm) {
     padding-left: 60px;
     padding-right: 60px;
   }
@@ -154,7 +154,7 @@
   top: 2.2rem;
   left: 0.25rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     left: -2.5rem;
     top: auto;
   }
