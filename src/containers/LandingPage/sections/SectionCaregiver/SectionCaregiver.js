@@ -16,11 +16,15 @@ const SectionCaregiver = ({ isMobile }) => {
             Caregiving Freedom:<br></br>
             Your Journey,{isMobile ? <br></br> : null} Your Way
           </h2>
-          <span>
-            Set your rates, choose your hours, and handpick clients near you. Connect with seniors
-            in need of care, secure more job opportunities, and get paid in full, directly.
-            Experience a caregiving career with more freedom and flexibility at CareVine.
-          </span>
+          <p>
+            We believe you provide your best care when your needs are met. Who better to know those
+            than you? At CareVine you set your rates, schedule, and handpick clients.
+          </p>
+          <p>
+            Connect with those in need of care, secure more job opportunities, and get paid in full,
+            directly. Experience a more fulfilling caregiving career with freedom and flexibility at
+            CareVine.
+          </p>
           <div className={css.getStartedLinkContainer}>
             <NamedLink name="ForCaregiversPage" className={css.getStartedButton}>
               Learn More

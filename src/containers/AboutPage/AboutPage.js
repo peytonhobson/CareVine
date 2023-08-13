@@ -8,11 +8,10 @@ import {
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
-  ExternalLink,
 } from '../../components';
 
 import css from './AboutPage.module.css';
-import image from './about-us-background_1056x690.jpeg';
+import image from '../../assets/about-us.jpg';
 
 const AboutPage = () => {
   const { siteTwitterHandle, siteFacebookPage } = config;

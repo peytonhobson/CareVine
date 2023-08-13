@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 /* Booking form inside modalContainer needs special handling */
 /* since "inMobile" breakpoint is actually --viewportLarge */
