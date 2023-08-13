@@ -259,9 +259,12 @@ export const updateBookingDraft = (bookingData, draftId) => async (dispatch, get
     },
   };
 
-  const updatedBookingDrafts = bookingDrafts.map(draft =>
-    draft.id === draftId ? updatedBookingDraft : draft
-  );
+  const { bookingSchedule, dateTimes } = bookingData;
+  const isEmptyDraft = !Object.keys(bookingSchedule).length && !dateTimes;
+
+  const updatedBookingDrafts = isEmptyDraft
+    ? bookingDrafts.filter(draft => draft.id !== draftId)
+    : bookingDrafts.map(draft => (draft.id === draftId ? updatedBookingDraft : draft));
 
   try {
     await sdk.currentUser.updateProfile({
@@ -270,10 +273,7 @@ export const updateBookingDraft = (bookingData, draftId) => async (dispatch, get
       },
     });
 
-    // Buffer to not create conflicts in the state
-    setTimeout(() => {
-      dispatch(updateBookingDraftSuccess());
-    }, 500);
+    dispatch(updateBookingDraftSuccess());
   } catch (e) {
     dispatch(updateBookingDraftError(storableError(e)));
   }
@@ -307,7 +307,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   dispatch(setInitialValuesForPaymentMethods());
 
   const listingId = new UUID(params.id);
-  const draftId = params.draftId;
 
   return Promise.all([dispatch(stripeCustomer()), dispatch(showListing(listingId)), dispatch]).then(
     () => {

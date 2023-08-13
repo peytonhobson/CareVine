@@ -3,18 +3,25 @@ import React, { useState } from 'react';
 import { Avatar, NamedLink } from '..';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
-import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
+import moment from 'moment';
+import { WEEKDAYS } from '../../util/constants';
 
 import css from './BookingCards.module.css';
 
-const CREDIT_CARD = 'Payment Card';
-const BANK_ACCOUNT = 'Bank Account';
-const TRANSACTION_FEE = 0.05;
+const fullWeekdayMap = {
+  mon: 'Monday',
+  tue: 'Tuesday',
+  wed: 'Wednesday',
+  thu: 'Thursday',
+  fri: 'Friday',
+  sat: 'Saturday',
+  sun: 'Sunday',
+};
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
@@ -33,18 +40,17 @@ const DraftBookingCard = props => {
   const draftId = draft.id;
   const {
     providerDisplayName,
-    bookingRate,
-    bookingDates,
     scheduleType,
     startDate,
     endDate,
-    bookingSchedule,
+    bookingSchedule = {},
     dateTimes,
-    exceptions,
     providerDefaultAvatar,
     providerProfileImage,
     listingId,
   } = draft.attributes;
+  const bookingScheduleKeys = WEEKDAYS.filter(w => bookingSchedule[w]);
+  const dateTimesKeys = dateTimes ? Object.keys(dateTimes) : [];
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -69,10 +75,9 @@ const DraftBookingCard = props => {
     },
   };
 
-  const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
 
-  const timesToDisplay = isMobile ? 3 : 5;
+  const timesToDisplay = isMobile ? 2 : 4;
 
   const TablePagination = styled(MuiTablePagination)`
     ${isMobile
@@ -86,11 +91,14 @@ const DraftBookingCard = props => {
       : ''}
   `;
 
+  const previewTimeCount =
+    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : dateTimesKeys?.length;
+
   let timeTitle = null;
 
-  if (scheduleType === 'recurring') {
+  if (scheduleType === 'recurring' && bookingScheduleKeys.length > 0) {
     timeTitle = 'Weekly Schedule';
-  } else {
+  } else if (scheduleType === 'oneTime' && dateTimesKeys?.length > 0) {
     timeTitle = 'Dates & Times';
   }
 
@@ -117,31 +125,58 @@ const DraftBookingCard = props => {
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
           {timeTitle ? <h2 className={css.datesAndTimes}>{timeTitle}</h2> : null}
+          {startDate ? (
+            <p class="text-primary mt-0 mb-2 text-sm">
+              {moment(startDate).format('ddd, MMM DD')} -{' '}
+              {endDate ? moment(startDate).format('ddd, MMM DD') : 'No End Date'}
+            </p>
+          ) : null}
           <div className={css.dateTimes}>
-            {/* {bookingTimes
-              ?.slice(
-                bookingTimesPage * timesToDisplay,
-                bookingTimesPage * timesToDisplay + timesToDisplay
-              )
-              .map(({ date, startTime, endTime }) => {
-                return (
-                  <div className={css.bookingTime} key={uuidv4()}>
-                    <h3 className={css.summaryDate}>{date}</h3>
-                    <span className={css.summaryTimes}>
-                      {startTime} - {endTime}
-                    </span>
-                    <p className={css.tinyNoMargin}>
-                      ({calculateBookingDayHours(startTime, endTime)} hours)
-                    </p>
-                  </div>
-                );
-              })} */}
+            {scheduleType === 'recurring'
+              ? bookingScheduleKeys
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(weekday => {
+                    const { startTime, endTime } = bookingSchedule[weekday][0];
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{fullWeekdayMap[weekday]}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })
+              : dateTimesKeys
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(timeKey => {
+                    const { startTime, endTime } = dateTimes[timeKey];
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{timeKey}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })}
           </div>
-          {/* <div className={css.tablePagination}>
-            {bookingTimes?.length > timesToDisplay ? (
+          <div className={css.tablePagination}>
+            {previewTimeCount > timesToDisplay ? (
               <TablePagination
                 component="div"
-                count={bookingTimes?.length}
+                count={previewTimeCount}
                 page={bookingTimesPage}
                 onPageChange={handleChangeTimesPage}
                 rowsPerPage={timesToDisplay}
@@ -152,7 +187,7 @@ const DraftBookingCard = props => {
                 rowsPerPageOptions={[]}
               />
             ) : null}
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@
   padding: 1rem;
   max-width: calc(100vw - 2rem);
   border-radius: var(--borderRadius);
+  width: 100%;
 }
 
 .avatar {
@@ -57,11 +58,14 @@
 
 .dateTimesContainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  flex-shrink: 1;
 }
 
 .datesAndTimes {
   width: 100%;
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
 }
 
 .dateTimes {

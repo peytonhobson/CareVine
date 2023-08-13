@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { injectIntl, FormattedMessage } from '../../util/reactIntl';
@@ -150,6 +150,7 @@ const EditBookingFormComponent = props => (
         intl,
         onUpdateBookingDraft,
         updateBookingDraftInProgress,
+        history,
       } = formRenderProps;
 
       const [selectedTab, setSelectedTab] = useState('Dates/Times');
@@ -159,23 +160,40 @@ const EditBookingFormComponent = props => (
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
-      const updateDraft = newValues => {
-        const bookingSchedule = findWeekdays(newValues);
-        const saveParams = {
-          bookingRate: newValues.bookingRate,
-          bookingDates: newValues.bookingDates,
-          scheduleType: newValues.scheduleType,
-          startDate: newValues.startDate?.date.getTime(),
-          endDate: newValues.endDate?.date.getTime(),
-          bookingSchedule,
-          dateTimes: newValues.dateTimes,
-          exceptions: newValues.exceptions,
-        };
+      const updateDraft = e => {
+        e?.preventDefault();
+        const vals = form.getState().values;
 
-        if (!Object.keys(bookingSchedule).length && !values.bookingDates?.length) return;
+        const bookingSchedule = findWeekdays(vals);
+        const saveParams = {
+          bookingRate: vals.bookingRate,
+          scheduleType: vals.scheduleType,
+          startDate: vals.startDate?.date.getTime(),
+          endDate: vals.endDate?.date.getTime(),
+          bookingSchedule,
+          dateTimes: vals.dateTimes,
+          exceptions: vals.exceptions,
+        };
 
         onUpdateBookingDraft(saveParams);
       };
+
+      useEffect(() => {
+        const unlisten = history.listen(() => {
+          updateDraft();
+        });
+
+        return () => {
+          unlisten();
+        };
+      }, [history]);
+
+      useEffect(() => {
+        window.addEventListener('beforeunload', updateDraft);
+        return () => {
+          window.removeEventListener('beforeunload', updateDraft);
+        };
+      }, []);
 
       const checkValidDates = () => {
         if (values.scheduleType === 'oneTime') {
@@ -440,12 +458,6 @@ const EditBookingFormComponent = props => (
             onChange={e => {
               setGoToPaymentError(null);
               setGoToRequestError(null);
-              if (
-                !updateBookingDraftInProgress &&
-                JSON.stringify(e.values) !== JSON.stringify(values)
-              ) {
-                updateDraft(e.values);
-              }
             }}
           />
           <ButtonTabNavHorizontal

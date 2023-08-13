@@ -24,6 +24,7 @@ import {
   disputeBooking,
   fetchBookings,
   setInitialState,
+  removeDrafts,
 } from './BookingsPage.duck';
 import { acceptBooking } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
@@ -71,6 +72,7 @@ const BookingsPage = props => {
     currentUserListing,
     onFetchCurrentUserListing,
     history,
+    onRemoveDrafts,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -87,6 +89,12 @@ const BookingsPage = props => {
   const searchString = qs.parse(history.location.search, {
     ignoreQueryPrefix: true,
   });
+
+  useEffect(() => {
+    if (currentUser.id?.uuid) {
+      onRemoveDrafts();
+    }
+  }, [currentUser.id?.uuid]);
 
   useEffect(() => {
     if (searchString?.tab) {
@@ -163,8 +171,8 @@ const BookingsPage = props => {
       cardSection =
         sortedBookingDrafts.length > 0 ? (
           sortedBookingDrafts.map(draft => (
-            <span id={draft.id}>
-              <DraftBookingCard {...cardProps} key={draft.id} draft={draft} />
+            <span id={draft.id} key={draft.id}>
+              <DraftBookingCard {...cardProps} draft={draft} />
             </span>
           ))
         ) : (
@@ -176,8 +184,8 @@ const BookingsPage = props => {
       cardSection =
         bookings.requests.length > 0 ? (
           bookings.requests.map(b => (
-            <span id={b.id.uuid}>
-              <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+            <span id={b.id.uuid} key={draft.id}>
+              <CardComponent {...cardProps} booking={b} />
             </span>
           ))
         ) : (
@@ -188,8 +196,8 @@ const BookingsPage = props => {
       cardSection =
         bookings.bookings.length > 0 ? (
           bookings.bookings.map(b => (
-            <span id={b.id.uuid}>
-              <CardComponent {...cardProps} key={b.id.uuid} booking={b} />
+            <span id={b.id.uuid} style={{ display: 'flex' }} key={draft.id}>
+              <CardComponent {...cardProps} booking={b} />
             </span>
           ))
         ) : (
@@ -289,6 +297,7 @@ const mapDispatchToProps = {
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
+  onRemoveDrafts: removeDrafts,
 };
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsPage);
