@@ -1,4 +1,4 @@
-@import '../../styles/customMediaQueries.css';
+
 
 .sectionHeader {
   display: flex;
@@ -27,7 +27,7 @@
   & :global(.SingleDatePicker_picker__directionLeft) {
     width: 100vw;
 
-    @media (--viewportMedium) {
+    @media screen(md) {
       width: 50%;
     }
   }
@@ -152,7 +152,7 @@
   composes: marketplaceModalTitleStyles from global;
   padding-top: 4rem;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     padding-top: 0;
   }
 }
@@ -236,7 +236,7 @@
   margin-left: 2rem;
 }
 
-@media (--viewportMedium) {
+@media screen(md) {
   .sectionHeader {
     padding-top: 3px;
     padding-bottom: 3px;

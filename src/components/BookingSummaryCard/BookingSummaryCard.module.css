@@ -234,7 +234,7 @@
   line-height: 1.125rem;
   -webkit-font-smoothing: subpixel-antialiased;
 
-  @media (--viewportMedium) {
+  @media screen(md) {
     line-height: 1rem;
   }
 }
@@ -261,7 +261,7 @@
 
   padding-top: 3rem;
 
-  @media (--viewportLarge) {
+  @media screen(lg) {
     padding-top: 0;
   }
 }
