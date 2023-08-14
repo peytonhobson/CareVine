@@ -55,6 +55,9 @@ export const TRANSITION_REVIEW = 'transition/review';
 export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
 export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver';
+export const TRANSITION_UPDATE_NEXT_WEEK_START = 'transition/update-next-week-start';
+export const TRANSITION_START_REPEAT = 'transition/start-repeat';
+export const TRANSITION_DECLINE_PAYMENT_REPEAT = 'transition/decline-payment-repeat';
 
 /**
  * Actors
@@ -93,7 +96,6 @@ export const STATE_CANCELED_PAID_OUT = 'canceled-paid-out';
 export const STATE_REQUEST_CANCELED = 'request-canceled';
 
 const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
-const STATE_PAYMENT_CONFIRMED = 'payment-confirmed';
 const STATE_PAYMENT_REQUESTED = 'payment-requested';
 
 /**
@@ -155,7 +157,6 @@ const stateDescription = {
         [TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER]: STATE_CANCELED,
         [TRANSITION_CANCEL_ACCEPTED_BOOKING_OPERATOR]: STATE_CANCELED,
         [TRANSITION_CHARGE]: STATE_CHARGED,
-        [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
       },
     },
     [STATE_CHARGED]: {
@@ -164,6 +165,7 @@ const stateDescription = {
         [TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER]: STATE_CANCELED,
         [TRANSITION_CANCEL_CHARGED_BOOKING_OPERATOR]: STATE_CANCELED,
         [TRANSITION_START]: STATE_ACTIVE,
+        [TRANSITION_DECLINE_PAYMENT]: STATE_PAYMENT_FAILED,
       },
     },
     [STATE_ACTIVE]: {
@@ -172,11 +174,7 @@ const stateDescription = {
         [TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER]: STATE_ACTIVE_CANCELED,
         [TRANSITION_CANCEL_ACTIVE_BOOKING_OPERATOR]: STATE_ACTIVE_CANCELED,
         [TRANSITION_COMPLETE]: STATE_DELIVERED,
-      },
-    },
-    [STATE_CANCELED]: {
-      on: {
-        [TRANSITION_CANCEL_PAY_CAREGIVER]: STATE_CANCELED_PAID_OUT,
+        [TRANSITION_START_UPDATE_TIMES]: STATE_ACTIVE,
       },
     },
     [STATE_ACTIVE_CANCELED]: {
@@ -186,31 +184,15 @@ const stateDescription = {
     },
     [STATE_DELIVERED]: {
       on: {
-        [TRANSITION_PAY_CAREGIVER]: STATE_PAID_OUT,
-        [TRANSITION_DISPUTE]: STATE_DISPUTE_REVIEW,
-      },
-    },
-    [STATE_DISPUTE_REVIEW]: {
-      on: {
-        [TRANSITION_RESOLVE_DISPUTE]: STATE_PAID_OUT,
-      },
-    },
-    [STATE_PAID_OUT]: {
-      on: {
-        [TRANSITION_MAKE_REVIEWABLE]: STATE_REVIEWABLE,
-      },
-    },
-    [STATE_REVIEWABLE]: {
-      on: {
-        [TRANSITION_REVIEW]: STATE_REVIEWED,
-        [TRANSITION_EXPIRE_REVIEW_PERIOD]: STATE_REVIEWED,
+        [TRANSITION_UPDATE_NEXT_WEEK_START]: STATE_DELIVERED,
+        [TRANSITION_DECLINE_PAYMENT_REPEAT]: STATE_PAYMENT_FAILED,
+        [TRANSITION_START_REPEAT]: STATE_ACTIVE,
       },
     },
     [STATE_DECLINED]: { type: 'final' },
-    [STATE_REVIEWED]: { type: 'final' },
     [STATE_PAYMENT_FAILED]: { type: 'final' },
-    [STATE_CANCELED_PAID_OUT]: { type: 'final' },
     [STATE_REQUEST_CANCELED]: { type: 'final' },
+    [STATE_CANCELED]: { type: 'final' },
   },
 };
 

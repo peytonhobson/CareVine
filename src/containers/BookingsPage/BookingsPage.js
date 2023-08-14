@@ -184,7 +184,7 @@ const BookingsPage = props => {
       cardSection =
         bookings.requests.length > 0 ? (
           bookings.requests.map(b => (
-            <span id={b.id.uuid} key={draft.id}>
+            <span id={b.id.uuid} key={b.id.uuid}>
               <CardComponent {...cardProps} booking={b} />
             </span>
           ))
@@ -196,7 +196,7 @@ const BookingsPage = props => {
       cardSection =
         bookings.bookings.length > 0 ? (
           bookings.bookings.map(b => (
-            <span id={b.id.uuid} style={{ display: 'flex' }} key={draft.id}>
+            <span id={b.id.uuid} style={{ display: 'flex' }} key={b.id.uuid}>
               <CardComponent {...cardProps} booking={b} />
             </span>
           ))
