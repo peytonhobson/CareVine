@@ -1,5 +1,3 @@
-
-
 /* Dummy Topbar */
 
 .topbar {
@@ -323,6 +321,7 @@
   justify-content: center;
   width: 100%;
   height: 100vh;
+  margin-bottom: 3rem;
 
   @media screen(md) {
     margin-top: 0;
