@@ -565,9 +565,11 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
 
   const { bookingDrafts = [] } = currentUser.attributes.profile.privateData;
 
-  // Remove any drafts older than 48 hours
+  // Remove any drafts older than 48 hours or don't have selected dates
   const newBookingDrafts = bookingDrafts.filter(
-    draft => new Date(draft.createdAt) > new Date() - 48 * 36e5
+    draft =>
+      new Date(draft.createdAt) > new Date() - 48 * 36e5 &&
+      (Object.keys(draft.attributes?.bookingSchedule || {}).length || draft.attributes?.dateTimes)
   );
 
   if (newBookingDrafts.length === bookingDrafts.length) return;

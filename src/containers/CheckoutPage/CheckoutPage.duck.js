@@ -152,7 +152,7 @@ const showListingError = e => ({
 
 /* ================ Thunks ================ */
 
-export const initiateOrder = (orderParams, metadata, listing) => async (
+export const initiateOrder = (orderParams, metadata, listing, draftId) => async (
   dispatch,
   getState,
   sdk
@@ -222,6 +222,21 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
     });
   } catch (e) {
     log.error(e, 'failed-to-send-request-notification', {});
+  }
+
+  const bookingDrafts =
+    getState().user.currentUser.attributes.profile.privateData.bookingDrafts || [];
+
+  const updatedBookingDrafts = bookingDrafts.filter(draft => draft.id !== draftId);
+
+  try {
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        bookingDrafts: updatedBookingDrafts,
+      },
+    });
+  } catch (e) {
+    log.error(e, 'failed-to-update-booking-drafts', {});
   }
 };
 

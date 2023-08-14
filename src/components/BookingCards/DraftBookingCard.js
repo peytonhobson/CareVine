@@ -9,19 +9,9 @@ import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
 import moment from 'moment';
-import { WEEKDAYS } from '../../util/constants';
+import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingCards.module.css';
-
-const fullWeekdayMap = {
-  mon: 'Monday',
-  tue: 'Tuesday',
-  wed: 'Wednesday',
-  thu: 'Thursday',
-  fri: 'Friday',
-  sat: 'Saturday',
-  sun: 'Sunday',
-};
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
@@ -128,7 +118,7 @@ const DraftBookingCard = props => {
           {startDate ? (
             <p class="text-primary mt-0 mb-2 text-sm">
               {moment(startDate).format('ddd, MMM DD')} -{' '}
-              {endDate ? moment(startDate).format('ddd, MMM DD') : 'No End Date'}
+              {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
             </p>
           ) : null}
           <div className={css.dateTimes}>
@@ -142,7 +132,7 @@ const DraftBookingCard = props => {
                     const { startTime, endTime } = bookingSchedule[weekday][0];
                     return (
                       <div className={css.bookingTime} key={uuidv4()}>
-                        <h3 className={css.summaryDate}>{fullWeekdayMap[weekday]}</h3>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
                         <span className={css.summaryTimes}>
                           {startTime} - {endTime}
                         </span>
