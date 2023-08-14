@@ -63,13 +63,16 @@ const reduceWeekdays = (
   bookedDates,
   insideExceptions,
   startDate,
+  endDate,
   weekdays
 ) => {
   const realDate = moment(startDate)
     .weekday(WEEKDAY_MAP[weekdayKey])
     .toDate();
+  const isPastEndDate = endDate ? moment(realDate).isAfter(endDate) : false;
 
-  const isAfterToday = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]) >= startDate;
+  const isAfterStartDate =
+    moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]) >= moment(startDate).startOf('day');
   const isBookedDate = bookedDates.find(date =>
     moment(startDate)
       .weekday(WEEKDAY_MAP[weekdayKey])
@@ -85,7 +88,7 @@ const reduceWeekdays = (
     moment(d.date).isSame(realDate, 'day')
   );
 
-  if (isRemovedDay || isBookedDate || isBookedDay) {
+  if (isRemovedDay || isBookedDate || isBookedDay || isPastEndDate) {
     return acc;
   }
 
@@ -104,7 +107,7 @@ const reduceWeekdays = (
     };
   }
 
-  return isAfterToday ? { ...acc, [weekdayKey]: weekdays[weekdayKey] } : acc;
+  return isAfterStartDate ? { ...acc, [weekdayKey]: weekdays[weekdayKey] } : acc;
 };
 
 const RecurringBookingSummaryCard = props => {
@@ -134,6 +137,7 @@ const RecurringBookingSummaryCard = props => {
     bookedDates,
     bookingRate,
     hideWeeklyBillingDetails,
+    avatarText,
   } = props;
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
@@ -158,6 +162,7 @@ const RecurringBookingSummaryCard = props => {
           bookedDates,
           insideExceptions,
           startDate,
+          bookingEndDate,
           weekdays
         ),
       {}
@@ -216,6 +221,7 @@ const RecurringBookingSummaryCard = props => {
       className={className}
       hideAvatar={hideAvatar}
       subHeading={cardHeading}
+      avatarText={avatarText}
     >
       <div className={css.bookingTimes}>
         {Object.keys(filteredWeekdays)?.map((weekdayKey, index) => {

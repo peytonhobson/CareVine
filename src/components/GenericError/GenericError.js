@@ -33,8 +33,4 @@ const GenericError = props => {
   );
 };
 
-GenericError.propTypes = {
-  show: bool.isRequired,
-};
-
 export default GenericError;

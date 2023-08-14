@@ -88,3 +88,12 @@ export const WEEKDAY_MAP = {
   fri: 5,
   sat: 6,
 };
+export const FULL_WEEKDAY_MAP = {
+  mon: 'Monday',
+  tue: 'Tuesday',
+  wed: 'Wednesday',
+  thu: 'Thursday',
+  fri: 'Friday',
+  sat: 'Saturday',
+  sun: 'Sunday',
+};

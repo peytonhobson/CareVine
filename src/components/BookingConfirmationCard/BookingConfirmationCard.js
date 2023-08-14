@@ -12,18 +12,16 @@ const CREDIT_CARD = 'Payment Card';
 const getEndOfFirstWeek = (startDate, weekdays) => {
   if (!startDate) return null;
 
-  const start = moment(startDate);
-
   const lastDay = Object.keys(weekdays).reduce((acc, curr) => {
     const day = WEEKDAY_MAP[curr];
 
-    const date = start.weekday(day);
+    const date = moment(startDate).weekday(day);
 
     if (date.isAfter(acc)) {
       return date;
     }
     return acc;
-  }, start);
+  }, startDate);
 
   return lastDay;
 };
@@ -74,20 +72,18 @@ const BookingConfirmationCard = props => {
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
           selectedPaymentMethod={paymentMethodType}
-          subHeading={
-            <div className={css.subHeading}>
-              <Avatar user={currentAuthor} disableProfileLink className={css.avatar} />
-              <span className={css.bookingWith}>
-                First Week with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
-              </span>
-            </div>
-          }
+          subHeading=""
           weekdays={bookingSchedule}
           startDate={startDate}
           weekEndDate={endOfFirstWeek}
           exceptions={exceptions}
           bookedDays={providerBookedDays}
           bookedDates={providerBookedDates}
+          avatarText={
+            <h2 className={css.bookingWith}>
+              First Week with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
+            </h2>
+          }
         />
       ) : (
         <SingleBookingSummaryCard

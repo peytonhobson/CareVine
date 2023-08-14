@@ -4,14 +4,12 @@ import {
   Avatar,
   SecondaryButton,
   Modal,
-  BookingSummaryCard,
   BookingCalendar,
   CancelButton,
   Button,
   UserDisplayName,
 } from '..';
 import {
-  TRANSITION_COMPLETE,
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
@@ -21,13 +19,14 @@ import {
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
-import { useMediaQuery } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { DisputeForm } from '../../forms';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
+import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
+import moment from 'moment';
 
 import css from './BookingCards.module.css';
 
@@ -80,6 +79,8 @@ const EmployerBookingCard = props => {
     startDate,
     endDate,
   } = bookingMetadata;
+  const bookingScheduleKeys = bookingSchedule ? WEEKDAYS.filter(w => bookingSchedule[w]) : [];
+  const scheduleType = bookingSchedule ? 'recurring' : 'oneTime';
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -139,10 +140,11 @@ const EmployerBookingCard = props => {
     lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
 
-  const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
 
   const timesToDisplay = isMobile ? 1 : 3;
+  const previewTimeCount =
+    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : bookingTimes?.length;
 
   const TablePagination = styled(MuiTablePagination)`
     ${isMobile
@@ -192,31 +194,57 @@ const EmployerBookingCard = props => {
           <h2 className={css.datesAndTimes}>
             {bookingSchedule ? 'Weekly Schedule' : 'Dates & Times'}
           </h2>
+          {startDate ? (
+            <p class="text-primary mt-0 mb-2 text-sm">
+              {moment(startDate).format('ddd, MMM DD')} -{' '}
+              {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
+            </p>
+          ) : null}
           <div className={css.dateTimes}>
-            {bookingTimes
-              ?.slice(
-                bookingTimesPage * timesToDisplay,
-                bookingTimesPage * timesToDisplay + timesToDisplay
-              )
-              .map(({ date, startTime, endTime }) => {
-                return (
-                  <div className={css.bookingTime} key={uuidv4()}>
-                    <h3 className={css.summaryDate}>{date}</h3>
-                    <span className={css.summaryTimes}>
-                      {startTime} - {endTime}
-                    </span>
-                    <p className={css.tinyNoMargin}>
-                      ({calculateBookingDayHours(startTime, endTime)} hours)
-                    </p>
-                  </div>
-                );
-              })}
+            {scheduleType === 'recurring'
+              ? bookingScheduleKeys
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(weekday => {
+                    const { startTime, endTime } = bookingSchedule[weekday][0];
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })
+              : bookingTimes
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(({ date, startTime, endTime }) => {
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{date}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })}
           </div>
           <div className={css.tablePagination}>
-            {bookingTimes?.length > timesToDisplay ? (
+            {previewTimeCount > timesToDisplay ? (
               <TablePagination
                 component="div"
-                count={bookingTimes?.length}
+                count={previewTimeCount}
                 page={bookingTimesPage}
                 onPageChange={handleChangeTimesPage}
                 rowsPerPage={timesToDisplay}

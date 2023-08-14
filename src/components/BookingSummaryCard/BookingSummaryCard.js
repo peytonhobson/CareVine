@@ -7,7 +7,7 @@ import { useMediaQuery } from '@mui/material';
 import css from './BookingSummaryCard.module.css';
 
 const BookingSummaryCard = props => {
-  const { currentAuthor, className, hideAvatar, subHeading, children } = props;
+  const { currentAuthor, className, hideAvatar, subHeading, children, avatarText } = props;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const [showArrow, setShowArrow] = useState(false);
@@ -59,9 +59,11 @@ const BookingSummaryCard = props => {
             initialsClassName={css.cardAvatarInitials}
           />
           <div>
-            <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
-              Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
-            </span>
+            {avatarText || (
+              <span className={!isLarge ? css.bookAuthorMobile : css.bookAuthor}>
+                Book <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
+              </span>
+            )}
           </div>
         </div>
       ) : null}

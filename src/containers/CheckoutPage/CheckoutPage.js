@@ -10,12 +10,18 @@ import {
   Page,
   IconConfirm,
   BookingConfirmationCard,
+  GenericError,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
 
-import { initiateOrder, stripeCustomer, updateBookingDraft } from './CheckoutPage.duck';
+import {
+  initiateOrder,
+  stripeCustomer,
+  updateBookingDraft,
+  setInitialValues,
+} from './CheckoutPage.duck';
 import {
   findStartTimeFromBookingTimes,
   constructBookingMetadataOneTime,
@@ -26,8 +32,6 @@ import { WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 
 import css from './CheckoutPage.module.css';
-
-const STORAGE_KEY = 'CheckoutPage';
 
 const findWeekdays = values =>
   WEEKDAYS.reduce((acc, key) => {
@@ -52,6 +56,10 @@ export class CheckoutPageComponent extends Component {
     this.stripe = null;
 
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentWillUnmount() {
+    this.props.onSetInitialValues();
   }
 
   componentDidUpdate(prevProps) {
@@ -93,7 +101,7 @@ export class CheckoutPageComponent extends Component {
       bookingDates,
       startDate: startDateDate,
       endDate: endDateDate,
-      bookingRate: bookingRateArr,
+      bookingRate,
       scheduleType,
       exceptions,
     } = values;
@@ -103,13 +111,12 @@ export class CheckoutPageComponent extends Component {
     const startDate = moment(startDateDate?.date)
       .startOf('day')
       .toDate();
-    const endDate = moment(endDateDate?.date)
-      .startOf('day')
-      .toDate();
-    const bookingRate = bookingRateArr[0];
-    const { onInitiateOrder, currentUserListing, currentUser } = this.props;
-
-    const { listing } = this.state.pageData;
+    const endDate = endDateDate?.date
+      ? moment(endDateDate.date)
+          .startOf('day')
+          .toDate()
+      : null;
+    const { onInitiateOrder, currentUserListing, currentUser, listing, params } = this.props;
 
     const listingId = listing.id;
 
@@ -162,7 +169,7 @@ export class CheckoutPageComponent extends Component {
       exceptions,
     };
 
-    onInitiateOrder(orderParams, metadata, listing, listing.author.id.uuid);
+    onInitiateOrder(orderParams, metadata, listing, params.draftId);
   }
 
   render() {
@@ -184,14 +191,24 @@ export class CheckoutPageComponent extends Component {
       listing,
       updateBookingDraftInProgress,
       history,
+      showListingError,
+      transaction,
     } = this.props;
 
     const bookingDrafts = currentUser?.attributes.profile.privateData.bookingDrafts || [];
     const bookingDraft = bookingDrafts.find(draft => draft.id === params.draftId) || {};
+
+    if (currentUser?.id?.uuid && !bookingDraft.id && !transaction) {
+      return listing?.id?.uuid ? (
+        <NamedRedirect name="ListingPage" params={{ slug: 'title', id: listing.id.uuid }} />
+      ) : (
+        <NamedRedirect name="LandingPage" />
+      );
+    }
+
     const {
       bookingDates = [],
       bookingRate,
-      transaction,
       scheduleType,
       startDate,
       endDate,
@@ -264,7 +281,7 @@ export class CheckoutPageComponent extends Component {
       <Page {...pageProps}>
         {topbar}
         <div className={css.contentContainer}>
-          {scheduleType ? (
+          {scheduleType && listing.id?.uuid ? (
             <EditBookingForm
               className={css.editBookingForm}
               listing={currentListing}
@@ -304,6 +321,10 @@ export class CheckoutPageComponent extends Component {
             />
           ) : null}
         </div>
+        <GenericError
+          show={showListingError}
+          errorText={`Failed to load ${authorDisplayName}'s data. Please try reloading the page`}
+        />
       </Page>
     );
   }
@@ -317,6 +338,7 @@ const mapStateToProps = state => {
     initiateOrderError,
     initiateOrderInProgress,
     updateBookingDraftInProgress,
+    showListingError,
   } = state.CheckoutPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -340,6 +362,7 @@ const mapStateToProps = state => {
     fetchDefaultPaymentInProgress,
     currentUserListing,
     updateBookingDraftInProgress,
+    showListingError,
   };
 };
 
@@ -349,6 +372,7 @@ const mapDispatchToProps = {
   onSavePaymentMethod: createCreditCard,
   onManageDisableScrolling: manageDisableScrolling,
   onUpdateBookingDraft: updateBookingDraft,
+  onSetInitialValues: setInitialValues,
 };
 
 const CheckoutPage = compose(
