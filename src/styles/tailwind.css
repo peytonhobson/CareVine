@@ -120,9 +120,9 @@
   }
 }
 
-@media (min-width: 1921px) {
+@media (min-width: 1536px) {
   .container {
-    max-width: 1921px
+    max-width: 1536px
   }
 }
 
