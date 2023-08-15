@@ -336,7 +336,7 @@ export const CaregiverListingCardComponent = props => {
                   styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={
                     <ul>
-                      {providedServices?.slice(3, providedServices?.length).map(service => (
+                      {providedServices?.slice(2, providedServices?.length).map(service => (
                         <li>{servicesMap.get(service).split('/')[0]}</li>
                       ))}
                     </ul>
@@ -345,7 +345,7 @@ export const CaregiverListingCardComponent = props => {
                     <p className={css.serviceCardItem}>
                       <FormattedMessage
                         id="CaregiverListingCard.additionalCareTypes"
-                        values={{ count: providedServices.length - 3 }}
+                        values={{ count: providedServices.length - 2 }}
                       />
                     </p>
                   }
