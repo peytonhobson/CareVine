@@ -171,7 +171,7 @@ export const CaregiverListingCardComponent = props => {
   const borderProps = {
     border: '3px solid var(--marketplaceColor)',
   };
-  const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
+  const cardClasses = useStyles(borderProps);
 
   const originString = `${origin?.lat}%2C${origin?.lng}`;
 
