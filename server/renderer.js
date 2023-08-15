@@ -153,7 +153,7 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
           cookie_flags: 'SameSite=None;Secure',
         });
       </script>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-11166061356"></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=${googleConversionId}"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
