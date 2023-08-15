@@ -100,6 +100,7 @@ const EditListingPricingPanel = props => {
       updated={panelUpdated}
       updateInProgress={updateInProgress}
       fetchErrors={errors}
+      initialValuesEqual={() => true}
     />
   );
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { arrayOf, bool, func, shape, string } from 'prop-types';
 import { compose } from 'redux';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -119,7 +119,7 @@ const EditListingJobDescriptionFormComponent = props => (
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
-      const submitReady = (updated && pristine) || ready;
+      const submitReady = updated || ready;
       const submitDisabled =
         invalid || disabled || submitInProgress || generateJobDescriptionInProgress;
 

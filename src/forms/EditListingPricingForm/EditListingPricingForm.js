@@ -40,7 +40,7 @@ export const EditListingPricingFormComponent = props => (
       const formValues = form.getState().values;
 
       const classes = classNames(css.root, className);
-      const submitReady = (updated && pristine) || ready;
+      const submitReady = updated || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress;
       const { updateListingError, showListingsError } = fetchErrors || {};
@@ -63,7 +63,7 @@ export const EditListingPricingFormComponent = props => (
             min={10}
             max={50}
             step={1}
-            handles={[15, 25]}
+            handles={formValues.rates}
             noHandleLabels
           />
           {updateListingError ? (
