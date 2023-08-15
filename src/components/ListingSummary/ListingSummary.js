@@ -42,6 +42,7 @@ const whiteListedCaregiverIds = [
   '6480d22c-ebb4-481a-bc0f-ee50c2a3ff64',
   '6480d9e0-2cd6-4fcf-8d46-9df242c7e497',
   '6480e2ea-aa0b-4c7b-84b1-711755cb6ee4',
+  '64d6844f-aa14-4446-baa6-e071fde9a299',
 ];
 
 const MIN_LENGTH_FOR_LONG_WORDS = 16;
