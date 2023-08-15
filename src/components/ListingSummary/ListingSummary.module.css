@@ -1,5 +1,3 @@
-
-
 .root {
   padding-block: 2rem;
   display: flex;
@@ -205,6 +203,7 @@
 .location {
   display: flex;
   flex-wrap: nowrap;
+  white-space: nowrap;
   margin: 0;
 
   @media screen(md) {
