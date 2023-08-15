@@ -99,6 +99,7 @@ const EditListingBioPanel = props => {
         generateBioInProgress={generateBioInProgress}
         generateBioError={generateBioError}
         onManageDisableScrolling={onManageDisableScrolling}
+        initialValuesEqual={() => true}
         {...rest}
       />
       <Modal

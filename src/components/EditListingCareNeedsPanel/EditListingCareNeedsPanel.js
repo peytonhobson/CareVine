@@ -126,6 +126,7 @@ const EditListingCareTypesPanel = props => {
         name="careTypes"
         label={careTypesFeaturesLabel}
         required={true}
+        initialValuesEqual={() => true}
       />
     </div>
   );

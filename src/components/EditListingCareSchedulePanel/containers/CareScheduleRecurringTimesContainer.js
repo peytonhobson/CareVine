@@ -250,6 +250,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
             inProgress={updateInProgress}
             fetchErrors={errors}
             showErrors={showErrors}
+            initialValuesEqual={() => true}
           />
         </Modal>
       ) : null}

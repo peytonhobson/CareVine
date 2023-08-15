@@ -214,6 +214,8 @@ const EditListingCareRecipientDetailsPanel = props => {
         required={true}
         onSubmit={handleSubmit}
         careRecipients={careRecipients}
+        initialValuesEqual={() => true}
+        keepDirtyOnReinitialize
       />
       {onManageDisableScrolling && isCareRecipientFormVisible ? (
         <Modal
