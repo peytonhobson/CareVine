@@ -115,12 +115,6 @@ const EditListingAvailabilityPanel = props => {
     updateInProgress,
     errors,
     panelUpdated,
-    fetchExceptionsInProgress,
-    availabilityExceptions,
-    addExceptionError,
-    addExceptionInProgress,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
   } = props;
 
   const currentListing = ensureOwnListing(listing);
@@ -298,35 +292,12 @@ const EditListingAvailabilityPanel = props => {
             inProgress={updateInProgress}
             fetchErrors={errors}
             currentListing={currentListing}
+            initialValuesEqual={() => true}
           />
         </Modal>
       ) : null}
     </main>
   );
-};
-
-EditListingAvailabilityPanel.defaultProps = {
-  className: null,
-  rootClassName: null,
-  listing: null,
-  availabilityExceptions: [],
-};
-
-EditListingAvailabilityPanel.propTypes = {
-  className: string,
-  rootClassName: string,
-
-  // We cannot use propTypes.listing since the listing might be a draft.
-  listing: object,
-  disabled: bool.isRequired,
-  ready: bool.isRequired,
-  availabilityExceptions: arrayOf(propTypes.availabilityException),
-  onSubmit: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onNextTab: func.isRequired,
-  submitButtonText: string.isRequired,
-  updateInProgress: bool.isRequired,
-  errors: object.isRequired,
 };
 
 export default EditListingAvailabilityPanel;

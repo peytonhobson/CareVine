@@ -87,7 +87,7 @@ const EditListingCareRecipientDetailsFormComponent = props => (
 
       const classes = classNames(css.root, className);
       const submitInProgress = updateInProgress;
-      const submitReady = (updated && pristine) || ready;
+      const submitReady = updated || ready;
       const submitDisabled = invalid || disabled || submitInProgress;
 
       return (

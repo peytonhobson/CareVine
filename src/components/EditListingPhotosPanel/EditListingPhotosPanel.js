@@ -124,6 +124,7 @@ class EditListingPhotosPanel extends Component {
           uploadInProgress={uploadInProgress}
           image={image}
           isNewListingFlow={isNewListingFlow}
+          initialValuesEqual={() => true}
         />
       </div>
     );

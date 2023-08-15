@@ -130,6 +130,7 @@ const EditListingAdditionalDetailsPanel = props => {
 
           onSubmit(updatedValues);
         }}
+        initialValuesEqual={() => true}
       />
     </div>
   );

@@ -171,7 +171,7 @@ export const CaregiverListingCardComponent = props => {
   const borderProps = {
     border: '3px solid var(--marketplaceColor)',
   };
-  const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
+  const cardClasses = useStyles(borderProps);
 
   const originString = `${origin?.lat}%2C${origin?.lng}`;
 
@@ -226,12 +226,12 @@ export const CaregiverListingCardComponent = props => {
                 />
               </h3>
             </div>
-            {!isMobile && (
+            {!isMobile && reviewsCount ? (
               <div className={css.ratingsContainer}>
                 <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
                 <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
               </div>
-            )}
+            ) : null}
           </div>
         </div>
         <div className={css.mainInfo}>
@@ -319,12 +319,12 @@ export const CaregiverListingCardComponent = props => {
                 </div>
               )}
             </div>
-            {isMobile && (
+            {isMobile && reviewsCount ? (
               <div className={css.ratingsContainer}>
                 <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
                 <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
               </div>
-            )}
+            ) : null}
           </div>
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>

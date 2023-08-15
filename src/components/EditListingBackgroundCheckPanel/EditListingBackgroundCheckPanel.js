@@ -598,6 +598,7 @@ const EditListingBackgroundCheckPanel = props => {
             authenticateUserAccessCode={authenticateUserAccessCode}
             onSubmit={handleSubmit}
             saveActionMsg="Submit"
+            initialValuesEqual={() => true}
           />
         </div>
       );
@@ -614,6 +615,7 @@ const EditListingBackgroundCheckPanel = props => {
             update
             getIdentityProofQuizError={getIdentityProofQuizError}
             updateUserSubmitted={updateUserSubmitted}
+            initialValuesEqual={() => true}
           />
         </div>
       );

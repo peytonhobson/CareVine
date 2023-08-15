@@ -300,58 +300,6 @@ export const EditListingPageComponent = props => {
   }
 };
 
-EditListingPageComponent.defaultProps = {
-  createStripeAccountError: null,
-  fetchStripeAccountError: null,
-  getAccountLinkError: null,
-  getAccountLinkInProgress: null,
-  stripeAccountFetched: null,
-  currentUser: null,
-  stripeAccount: null,
-  currentUserHasOrders: null,
-  listing: null,
-  listingDraft: null,
-  notificationCount: 0,
-  sendVerificationEmailError: null,
-};
-
-EditListingPageComponent.propTypes = {
-  createStripeAccountError: propTypes.error,
-  fetchStripeAccountError: propTypes.error,
-  getAccountLinkError: propTypes.error,
-  getAccountLinkInProgress: bool,
-  updateStripeAccountError: propTypes.error,
-  currentUser: propTypes.currentUser,
-  getOwnListing: func.isRequired,
-  onAddAvailabilityException: func.isRequired,
-  onDeleteAvailabilityException: func.isRequired,
-  onCreateListingDraft: func.isRequired,
-  onPublishListingDraft: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onUpdateListing: func.isRequired,
-  onChange: func.isRequired,
-  page: object.isRequired,
-  params: shape({
-    id: string.isRequired,
-    slug: string.isRequired,
-    type: oneOf(LISTING_PAGE_PARAM_TYPES).isRequired,
-    tab: string.isRequired,
-    form: string,
-    returnURLType: oneOf(STRIPE_ONBOARDING_RETURN_URL_TYPES),
-  }).isRequired,
-  stripeAccountFetched: bool,
-  stripeAccount: object,
-  scrollingDisabled: bool.isRequired,
-
-  /* from withRouter */
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-
-  /* from injectIntl */
-  intl: intlShape.isRequired,
-};
-
 const mapStateToProps = state => {
   const page = state.EditListingPage;
   const { image, uploadInProgress, uploadImageError } = state.ProfileSettingsPage;
