@@ -136,6 +136,7 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   const googleAnalyticsId = process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
   // Add Google Analytics script if correct id exists (it should start with 'G-' prefix)
   const hasGoogleAnalyticsv4Id = googleAnalyticsId?.indexOf('G-') === 0;
+  const googleConversionId = process.env.REACT_APP_GOOGLE_CONVERSION_ID;
 
   // Google Analytics: gtag.js
   // NOTE: FTW is a single-page application (SPA).
@@ -151,6 +152,14 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
         gtag('config', '${googleAnalyticsId}', {
           cookie_flags: 'SameSite=None;Secure',
         });
+      </script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-11166061356"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '${googleConversionId}');
       </script>
     `;
   const googleAnalyticsScript = hasGoogleAnalyticsv4Id ? gtagScripts : '';
