@@ -98,15 +98,6 @@ const EditBookingFormComponent = props => (
 
       const isLarge = useMediaQuery('(min-width:1024px)');
 
-      // {
-      //   invalidPaymentMethodError && (
-      //     <p className={css.error}>
-      //       You must add or select a payment method before requesting to book. You will not be
-      //       charged for the booking until the caregiver accepts.
-      //     </p>
-      //   );
-      // }
-
       const handleGoToPayment = () => {
         if (values.bookingDates.length === 0) {
           setGoToPaymentError('Please select at least one booking date.');
@@ -119,6 +110,7 @@ const EditBookingFormComponent = props => (
         }
 
         setSelectedTab('Payment');
+        window.scrollTo(0, 0);
       };
 
       const handleGoToRequest = () => {
@@ -128,6 +120,7 @@ const EditBookingFormComponent = props => (
         }
 
         setSelectedTab('Request');
+        window.scrollTo(0, 0);
       };
 
       const tabs = [
