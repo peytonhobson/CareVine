@@ -49,7 +49,7 @@ const SectionStepSwipe = ({ history }) => {
         const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
         const origin = `${lat}%2C${lng}`;
 
-        history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
+        history.push(`s?origin=${origin}&distance=30&listingType=caregiver&sort=relevant`);
       })
       .catch(e => {
         // eslint-disable-next-line no-console
