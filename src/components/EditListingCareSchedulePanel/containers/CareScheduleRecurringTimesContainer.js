@@ -172,14 +172,6 @@ const CareScheduleRecurringTimesContainerComponent = props => {
     },
   };
 
-  const handleSaveAvailabilityException = exception => {
-    dispatch({ type: ADD_AVAILABILITY_EXCEPTION, payload: exception });
-  };
-
-  const handleDeleteException = start => {
-    dispatch({ type: DELETE_AVAILABILITY_EXCEPTION, payload: start });
-  };
-
   const onStartDateChange = date => {
     dispatch({ type: SET_START_DATE, payload: date });
   };
@@ -205,21 +197,20 @@ const CareScheduleRecurringTimesContainerComponent = props => {
         />
       </div>
       <section className={css.section}>
-        <header className={css.sectionHeader}>
-          <h2 className={css.sectionTitle}>
-            <FormattedMessage id="CareScheduleRecurringTimesContainer.defaultScheduleTitle" />
-          </h2>
-          <InlineTextButton
-            className={css.editPlanButton}
-            onClick={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
-          >
-            <IconEdit className={css.editPlanIcon} />{' '}
-            <FormattedMessage id="CareScheduleRecurringTimesContainer.edit" />
-          </InlineTextButton>
-        </header>
-        <WeekPanel
+        <EditListingAvailabilityPlanForm
+          formId="EditListingCareScheduleForm"
+          listingTitle={currentListing.attributes.title}
           availabilityPlan={state.careSchedule}
-          openEditModal={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: true })}
+          weekdays={WEEKDAYS}
+          onChange={handleCareScheduleSubmit}
+          initialValues={initialValues}
+          inProgress={updateInProgress}
+          fetchErrors={errors}
+          showErrors={showErrors}
+          initialValuesEqual={() => true}
+          hideScheduleTypes
+          className={css.recurringPlanForm}
+          hideSubmit
         />
       </section>
       <Button
@@ -231,29 +222,6 @@ const CareScheduleRecurringTimesContainerComponent = props => {
       >
         {submitButtonText}
       </Button>
-      {onManageDisableScrolling ? (
-        <Modal
-          id="EditCareSchedule"
-          isOpen={state.isEditPlanModalOpen}
-          onClose={() => dispatch({ type: SET_IS_EDIT_PLAN_MODAL_OPEN, payload: false })}
-          onManageDisableScrolling={onManageDisableScrolling}
-          containerClassName={css.modalContainer}
-          usePortal
-        >
-          <EditListingAvailabilityPlanForm
-            formId="EditListingCareScheduleForm"
-            listingTitle={currentListing.attributes.title}
-            availabilityPlan={state.careSchedule}
-            weekdays={WEEKDAYS}
-            onSubmit={handleCareScheduleSubmit}
-            initialValues={initialValues}
-            inProgress={updateInProgress}
-            fetchErrors={errors}
-            showErrors={showErrors}
-            initialValuesEqual={() => true}
-          />
-        </Modal>
-      ) : null}
     </>
   );
 };

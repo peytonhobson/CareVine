@@ -1,0 +1,161 @@
+
+
+.buttonAddNew {
+  composes: h5 from global;
+  color: var(--matterColor);
+
+  @media screen(md) {
+    margin-bottom: 6px;
+  }
+}
+
+.buttonSetHours {
+  padding-top: 8px;
+}
+
+.fieldSelect {
+  composes: marketplaceTabNavHorizontalFontStyles from global;
+
+  background: none;
+  padding-right: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  width: 3.75rem;
+
+  &:select {
+    margin-right: 0;
+  }
+
+  & > option {
+    color: var(--matterColor);
+  }
+  & > option:disabled {
+    color: var(--matterColorAnti);
+  }
+
+  &:disabled {
+    border-bottom-color: var(--matterColorNegative);
+    color: var(--matterColorNegative);
+    cursor: default;
+  }
+}
+
+.dashBetweenTimes {
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 8px;
+}
+
+.fieldArrayRemove {
+  padding: 0.75rem 0.25rem 0 0;
+}
+
+.closeIcon {
+  composes: marketplaceModalCloseIcon from global;
+
+  stroke: none;
+  fill: var(--matterColorAnti);
+
+  &:hover {
+    fill: var(--matterColor);
+  }
+
+  /* align icon with the select fields */
+  padding: 2px 0 11px;
+}
+
+.formRow {
+  /* This container uses flexbox layout */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  /* parent aka fieldWrapper is flexbox, this container takes all available space */
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+
+  z-index: 1;
+}
+
+.fieldWrapper {
+  /* This container uses flexbox layout */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* parent aka root is flexbox, this container takes all available space */
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  padding-bottom: 6px;
+
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 41px;
+    left: 0;
+    width: 100%;
+    border-bottom: 1px solid var(--matterColorNegative);
+    z-index: 0;
+  }
+}
+
+.hasEntries {
+  background-color: var(--matterColorLight) !important;
+}
+
+.dayOfWeek {
+  width: 10rem;
+  padding-top: 8px;
+  position: relative;
+}
+
+.timePicker {
+  width: 100%;
+}
+
+.weekDay {
+  composes: marketplaceTabNavHorizontalFontStyles from global;
+
+  /* Layout */
+  display: flex;
+  flex-direction: row;
+  padding-top: 4px;
+  padding-bottom: 19px;
+  border-top: solid 1px var(--matterColorNegative);
+
+  &:last-child {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
+
+.weekDay,
+.hasEntries {
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  @media screen(sm) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+
+.isUnavailable {
+  padding-top: 8px;
+  width: 100%;
+  color: var(--failColor);
+}
+
+.warning {
+  position: absolute;
+
+  top: 2.2rem;
+  left: 0.25rem;
+
+  @media screen(md) {
+    left: -2.5rem;
+    top: auto;
+  }
+}
