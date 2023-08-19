@@ -1,5 +1,3 @@
-
-
 .root {
   flex-grow: 1;
   width: 100%;
@@ -214,6 +212,11 @@
   width: 100%;
   text-align: center;
   margin-bottom: 0;
+}
+
+.availabilityPlanCard {
+  border: 1px solid var(--matterColorNegative);
+  border-radius: var(--borderRadius);
 }
 
 @media screen(md) {

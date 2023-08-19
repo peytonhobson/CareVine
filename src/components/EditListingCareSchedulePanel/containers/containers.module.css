@@ -243,3 +243,7 @@
   text-align: center;
   margin-bottom: 0;
 }
+
+.recurringPlanForm {
+  align-items: center;
+}
