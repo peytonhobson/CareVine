@@ -8,6 +8,11 @@ import {
   CancelButton,
   Button,
   UserDisplayName,
+  Menu,
+  MenuLabel,
+  MenuContent,
+  MenuItem,
+  InlineTextButton,
 } from '..';
 import {
   TRANSITION_DISPUTE,
@@ -27,6 +32,8 @@ import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
 import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
 import moment from 'moment';
+import MenuIcon from '../ManageListingCard/MenuIcon';
+import classNames from 'classnames';
 
 import css from './BookingCards.module.css';
 
@@ -139,6 +146,7 @@ const EmployerBookingCard = props => {
   const isActive =
     lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
+  const showMenu = showCancel || isDisputable;
 
   const isMobile = useCheckMobileScreen();
 
@@ -158,36 +166,74 @@ const EmployerBookingCard = props => {
       : ''}
   `;
 
+  const menuItems = (
+    <>
+      <MenuItem key="dispute">
+        {isDisputable && (
+          <InlineTextButton
+            rootClassName={css.menuItem}
+            onClick={() => handleModalOpen(setIsDisputeModalOpen)}
+          >
+            <span className={css.menuItemBorder} />
+            Dispute
+          </InlineTextButton>
+        )}
+      </MenuItem>
+      <MenuItem key="cancel">
+        {showCancel && (
+          <InlineTextButton
+            rootClassName={classNames(css.menuItem, 'text-error')}
+            onClick={() => handleModalOpen(setIsCancelModalOpen)}
+          >
+            <span className={css.menuItemBorder} />
+            Cancel
+          </InlineTextButton>
+        )}
+      </MenuItem>
+    </>
+  );
+
   return (
     <div className={css.bookingCard}>
       {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
         <div className={css.bookingTitle}>
           <Avatar user={provider} listing={listing} className={css.avatar} />
-          <div>
-            <h2 style={{ margin: 0 }}>Booking with </h2>
-            <h2 style={{ margin: 0 }}>{providerDisplayName}</h2>
-          </div>
+          <h2 className={css.title}>
+            Booking with <span className="whitespace-nowrap">{providerDisplayName}</span>
+          </h2>
         </div>
-        <div className={css.changeButtonsContainer}>
-          {isDisputable && (
-            <Button
-              className={css.changeButton}
-              onClick={() => handleModalOpen(setIsDisputeModalOpen)}
-            >
-              Dispute
-            </Button>
-          )}
-          {disputeInReview && <h3 className={css.error}>Dispute In Review</h3>}
-          {showCancel && (
-            <CancelButton
-              className={css.changeButton}
-              onClick={() => handleModalOpen(setIsCancelModalOpen)}
-            >
-              Cancel
-            </CancelButton>
-          )}
-        </div>
+        {showMenu ? (
+          <Menu className={css.menu}>
+            <MenuLabel className={css.menuLabel} isOpenClassName={css.profileMenuIsOpen}>
+              <MenuIcon height={isMobile ? '1.75em' : '1.25em'} width="2.25em" />
+            </MenuLabel>
+            <MenuContent className={css.menuContent} style={{ right: isMobile }}>
+              <MenuItem key="dispute">
+                {isDisputable && (
+                  <InlineTextButton
+                    rootClassName={css.menuItem}
+                    onClick={() => handleModalOpen(setIsDisputeModalOpen)}
+                  >
+                    <span className={css.menuItemBorder} />
+                    Dispute
+                  </InlineTextButton>
+                )}
+              </MenuItem>
+              <MenuItem key="cancel">
+                {showCancel && (
+                  <InlineTextButton
+                    rootClassName={classNames(css.menuItem, 'text-error', css.cancelMenuItem)}
+                    onClick={() => handleModalOpen(setIsCancelModalOpen)}
+                  >
+                    <span className={css.menuItemBorder} />
+                    Cancel
+                  </InlineTextButton>
+                )}
+              </MenuItem>
+            </MenuContent>
+          </Menu>
+        ) : null}
       </div>
       <div className={css.body}>
         <div className={css.dateTimesContainer}>

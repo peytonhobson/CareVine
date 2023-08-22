@@ -1,12 +1,10 @@
-
-
 .bookingCard {
   box-shadow: var(--boxShadowCard);
   background-color: var(--matterColorLight);
   display: flex;
   flex-grow: 1;
   flex-wrap: wrap;
-  padding: 1rem;
+  padding: 1rem 1.5rem 1rem 1rem;
   max-width: calc(100vw - 2rem);
   border-radius: var(--borderRadius);
   width: 100%;
@@ -38,6 +36,12 @@
 .bookingTitle {
   display: flex;
   align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.9rem;
 }
 
 .changeButtonsContainer {
@@ -128,7 +132,6 @@
   width: 100%;
   flex-direction: column;
   gap: 1rem;
-  padding-right: 1.5rem;
   padding-top: 3rem;
 }
 
@@ -252,7 +255,6 @@
   margin-top: 0;
   text-align: end;
   width: 100%;
-  margin-right: 1.5rem;
 }
 
 .continueButton {
@@ -261,4 +263,82 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.menuLabel {
+  height: auto;
+
+  &:hover {
+    background-color: var(--matterColorNegative);
+  }
+}
+
+.menuItemBorder {
+  position: absolute;
+  top: 0.125rem;
+  left: 0px;
+  height: calc(100% - 0.25rem);
+  width: 0;
+  transition: width var(--transitionStyleButton);
+}
+
+.menuContent {
+  max-width: 10rem;
+  left: -7.75rem !important;
+}
+
+.menuItem {
+  display: inline;
+
+  /* Text size should be inherited */
+  text-decoration: none;
+
+  /* Font is specific to this component */
+  font-weight: var(--fontWeightMedium);
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  letter-spacing: 0;
+
+  /* Dimensions */
+  position: relative;
+  min-width: 10rem;
+  max-width: 10rem;
+  margin: 0;
+  padding: 0.75rem 1.5rem;
+
+  /* Layout details */
+  color: var(--marketplaceColor);
+  text-align: left;
+  white-space: nowrap;
+  transition: var(--transitionStyleButton);
+
+  /* Borders */
+  border: none;
+  border-bottom: 1px solid var(--matterColorNegative);
+
+  &:hover {
+    cursor: pointer;
+    color: var(--matterColorDark);
+    text-decoration: none;
+
+    & .menuItemBorder {
+      height: 100%;
+      width: 0.375rem;
+      top: 0;
+      background-color: var(--marketplaceColor);
+    }
+  }
+
+  @media screen(md) {
+    line-height: 16px;
+    margin-bottom: 0;
+  }
+}
+
+.cancelMenuItem:hover {
+  color: var(--failColor);
+
+  & .menuItemBorder {
+    background-color: var(--failColor);
+  }
 }

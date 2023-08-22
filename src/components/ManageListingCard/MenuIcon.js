@@ -5,14 +5,14 @@ import classNames from 'classnames';
 import css from './ManageListingCard.module.css';
 
 const MenuIcon = props => {
-  const { className, isActive } = props;
+  const { className, isActive, width, height } = props;
   const classes = classNames(css.menuIcon, className);
   const filter = isActive ? '' : 'url(#a)';
   return (
     <svg
       className={classes}
-      width="26"
-      height="12"
+      width={width || 26}
+      height={height || 12}
       viewBox="0 0 26 12"
       xmlns="http://www.w3.org/2000/svg"
     >
