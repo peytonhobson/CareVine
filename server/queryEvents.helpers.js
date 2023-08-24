@@ -493,7 +493,7 @@ const createBookingPayment = async transaction => {
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
-        chargedLineItems: lineItems,
+        chargedLineItems: [{ paymentIntentId, lineItems }],
       },
     });
   } catch (e) {
@@ -786,7 +786,9 @@ const updateBookingLedger = async transaction => {
         ledger: [...bookingLedger, ledgerEntry],
 
         // Remove current line items from charged ones because they are now in ledger
-        chargedLineItems: chargedLineItems.filter(c => !lineItems.find(l => l.date === c.date)),
+        chargedLineItems: chargedLineItems.filter(
+          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
+        ),
       },
     });
   } catch (e) {
