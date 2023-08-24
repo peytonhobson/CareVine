@@ -489,6 +489,13 @@ const createBookingPayment = async transaction => {
     });
 
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+
+    await integrationSdk.transactions.updateMetadata({
+      id: txId,
+      metadata: {
+        chargedLineItems: lineItems,
+      },
+    });
   } catch (e) {
     try {
       await integrationSdk.transactions.transition({
@@ -728,6 +735,7 @@ const updateBookingLedger = async transaction => {
     paymentMethodId,
     paymentIntentId,
     refundAmount,
+    chargedLineItems,
   } = transaction.attributes.metadata;
 
   const amount = parseFloat(
@@ -776,6 +784,9 @@ const updateBookingLedger = async transaction => {
       id: txId,
       metadata: {
         ledger: [...bookingLedger, ledgerEntry],
+
+        // Remove current line items from charged ones because they are now in ledger
+        chargedLineItems: chargedLineItems.filter(c => !lineItems.find(l => l.date === c.date)),
       },
     });
   } catch (e) {

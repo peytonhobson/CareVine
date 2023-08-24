@@ -235,11 +235,6 @@
   color: rgb(107 160 182 / var(--tw-text-opacity))
 }
 
-.text-error-light {
-  --tw-text-opacity: 1;
-  color: rgb(255 240 240 / var(--tw-text-opacity))
-}
-
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale
