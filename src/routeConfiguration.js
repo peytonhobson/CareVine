@@ -39,6 +39,7 @@ const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "Subscripti
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
+const EmployersInfoPage = loadable(() => import(/* webpackChunkName: "EmployersInfoPage" */ './containers/EmployersInfoPage/EmployersInfoPage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -214,6 +215,11 @@ const routeConfiguration = () => {
       authPage: 'LoginPage',
       component: NotificationsPage,
       loadData: pageDataLoadingAPI.NotificationsPage.loadData,
+    },
+    {
+      path: '/employers-info',
+      name: 'EmployersInfoPage',
+      component: EmployersInfoPage,
     },
     {
       path: '/referrals',

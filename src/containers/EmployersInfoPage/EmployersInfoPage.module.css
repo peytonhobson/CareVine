@@ -1,0 +1,65 @@
+.hero {
+  height: 100vh;
+}
+
+.hasSectionDivider {
+  padding-bottom: 6vw;
+  z-index: 7;
+  height: 100vh;
+}
+
+.hasSectionDivider .backgroundPauseButton {
+  bottom: calc(14px + 6vw);
+}
+
+.hasSectionDivider .sectionDividerSvgClip {
+  display: block;
+}
+
+.hasSectionDivider.backgroundWidthInset:not(.contentCollection):not(.gallerySection):not(.userItemsListSection) {
+  padding-bottom: calc(var(--sqs-site-gutter) + 6vw);
+}
+
+.hasSectionDivider.backgroundWidthInset:not(.contentCollection):not(.gallerySection):not(.userItemsListSection)
+  .section-background {
+  bottom: calc(var(--sqs-site-gutter) + 6vw);
+}
+
+.hasSectionDivider .sectionDividerBlock {
+  height: 6vw;
+}
+
+.sectionDividerDisplay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.sectionDividerDisplay svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sectionDividerBlock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  visibility: hidden;
+}
+
+.sectionDividerStroke {
+  stroke: var(--marketplaceColor);
+  stroke-width: 0;
+  stroke-dasharray: 0;
+  stroke-linecap: square;
+  fill: white;
+}

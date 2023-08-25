@@ -309,7 +309,7 @@ const TopbarDesktop = props => {
   ) : null;
 
   const postListing = isAuthenticatedOrJustHydrated ? null : (
-    <NamedLink name="SignupPage" className={css.postButtonLink}>
+    <NamedLink name="EmployersInfoPage" className={css.postButtonLink}>
       + Post a Job
     </NamedLink>
   );
