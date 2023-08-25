@@ -1,5 +1,3 @@
-
-
 .layoutWrapperMain {
   height: calc(100vh - var(--topbarHeight));
 
@@ -28,13 +26,17 @@
 }
 
 .hidden {
-  opacity: 0;
-  transition: opacity 0.5s ease-in;
+  @media screen(md) {
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+  }
 }
 
 .show {
-  opacity: 1;
-  transition: opacity 0.5s ease-in;
+  @media screen(md) {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+  }
 }
 
 .content {
