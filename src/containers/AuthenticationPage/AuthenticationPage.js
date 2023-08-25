@@ -85,9 +85,11 @@ export class AuthenticationPageComponent extends Component {
       const image = new Image();
 
       image.onload = () => {
+        const isMobile = window.innerWidth < 768;
+
         if (this.heroRef?.current) {
-          this.heroRef.current.style.background = `url('${backgroundImage}')`;
-          this.heroRef.current.style.backgroundColor = 'var(--matterColor)';
+          this.heroRef.current.style.background = !isMobile ? `url('${backgroundImage}')` : null;
+          this.heroRef.current.style.backgroundColor = 'var(--marketplaceColor)';
           this.heroRef.current.style.backgroundPosition = 'center center';
           this.heroRef.current.style.backgroundSize = 'cover';
           this.setState({ heroLoaded: true });
