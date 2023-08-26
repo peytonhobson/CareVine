@@ -19,6 +19,7 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 import css from './EmployersInfoPage.module.css';
 
@@ -268,16 +269,22 @@ const EmployersInfoPage = props => {
               </div>
             </div>
 
-            <Card className={classes.card}>
-              <CardMedia
-                component="video"
-                image={isMobile ? mobileVideo : desktopVideo}
-                alt="Live from space album cover"
-                controls={false}
-                autoPlay
-                className={classes.cardMedia}
-              />
-            </Card>
+            <LazyLoadComponent>
+              <Card className={classes.card}>
+                <CardMedia
+                  component="video"
+                  image={
+                    isMobile
+                      ? 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-mobile.mp4'
+                      : 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4'
+                  }
+                  alt="Booking Demo Video."
+                  controls={false}
+                  autoPlay
+                  className={classes.cardMedia}
+                />
+              </Card>
+            </LazyLoadComponent>
           </section>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>

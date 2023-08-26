@@ -154,19 +154,6 @@
   position: sticky
 }
 
-.m-auto {
-  margin: auto
-}
-
-.m-10 {
-  margin: 2.5rem
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto
-}
-
 .block {
   display: block
 }
@@ -183,20 +170,12 @@
   display: flex
 }
 
-.inline-flex {
-  display: inline-flex
-}
-
 .grid {
   display: grid
 }
 
 .hidden {
   display: none
-}
-
-.flex-shrink {
-  flex-shrink: 1
 }
 
 .grow {
@@ -209,10 +188,6 @@
 
 .resize {
   resize: both
-}
-
-.flex-col {
-  flex-direction: column
 }
 
 .truncate {
