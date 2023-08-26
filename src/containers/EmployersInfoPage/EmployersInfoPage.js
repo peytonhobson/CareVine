@@ -9,6 +9,7 @@ import {
   Footer,
   NamedLink,
   PrimaryButton,
+  IconSpinner,
 } from '../../components';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { TopbarContainer } from '../../containers';
@@ -30,21 +31,17 @@ const useStyles = makeStyles(theme => ({
   card: {
     borderRadius: 'var(--borderRadius) !important',
     margin: 'auto',
-    maxHeight: '80vh;',
+    height: '80vh;',
     aspectRatio: 1.474,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     //theme small
     [theme.breakpoints.down('md')]: {
-      aspectRatio: 'auto',
-      maxHeight: 'none',
-      margin: '2rem',
+      aspectRatio: '3 / 4',
+      height: 'auto',
+      margin: '0 2rem',
     },
-  },
-  cardMedia: {
-    backgroundSize: 'contain !important',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center',
-    objectFit: 'contain',
-    borderRadius: 'var(--borderRadius) !important',
   },
 }));
 
@@ -57,6 +54,8 @@ const EmployersInfoPage = props => {
   const scribbleRef2 = React.useRef(null);
   const bookingsRef = React.useRef(null);
   const scribbleRef3 = React.useRef(null);
+
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   const isMobile = useCheckMobileScreen();
   const classes = useStyles();
@@ -269,17 +268,20 @@ const EmployersInfoPage = props => {
 
             <LazyLoadComponent>
               <Card className={classes.card}>
-                <CardMedia
-                  component="video"
-                  image={
+                {videoLoaded ? null : <IconSpinner className={css.demoSpinner} />}
+                <video
+                  autoPlay
+                  muted
+                  className={css.demo}
+                  src={
                     isMobile
                       ? 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-mobile.mp4'
                       : 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4'
                   }
-                  alt="Booking Demo Video."
-                  controls={false}
-                  autoPlay
-                  className={classes.cardMedia}
+                  onLoadedData={() => setVideoLoaded(true)}
+                  style={{
+                    display: videoLoaded ? 'flex' : 'none',
+                  }}
                 />
               </Card>
             </LazyLoadComponent>
