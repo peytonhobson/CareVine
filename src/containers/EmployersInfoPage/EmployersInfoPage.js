@@ -25,8 +25,6 @@ import css from './EmployersInfoPage.module.css';
 
 import landingImage from '../../assets/about-us.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
-import desktopVideo from '../../assets/booking-demo-desktop.mp4';
-import mobileVideo from '../../assets/booking-demo-mobile.mp4';
 
 const useStyles = makeStyles(theme => ({
   card: {
