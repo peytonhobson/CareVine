@@ -132,7 +132,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   const customFontSrc = fontSrc.concat('*.crisp.chat');
   const customDefaultSrc = defaultSrc.concat[
     self,
-    '*.carevine-videos.s3.us-west-2.amazonaws.com,
+    '*.carevine-videos.s3.us-west-2.amazonaws.com',
   ];
 
   const customDirectives = {
