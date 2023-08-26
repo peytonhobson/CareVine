@@ -110,6 +110,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     frameSrc = [self],
     styleSrc = [self],
     fontSrc = [self],
+    defaultSrc = [self],
   } = defaultDirectives;
   // concat web socket url
   const customConnectSrc = connectSrc
@@ -129,6 +130,10 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
   const customStyleSrc = styleSrc.concat('*.crisp.chat');
   const customFontSrc = fontSrc.concat('*.crisp.chat');
+  const customDefaultSrc = defaultSrc.concat[
+    self,
+    'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4',
+  ];
 
   const customDirectives = {
     connectSrc: customConnectSrc,
@@ -137,6 +142,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     frameSrc: customFrameSrc,
     styleSrc: customStyleSrc,
     fontSrc: customFontSrc,
+    defaultSrc: customDefaultSrc,
   };
 
   // ================ END CUSTOM CSP URLs ================ //
