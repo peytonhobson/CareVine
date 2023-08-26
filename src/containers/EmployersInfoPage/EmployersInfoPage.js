@@ -14,13 +14,40 @@ import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck
 import { TopbarContainer } from '../../containers';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import classNames from 'classnames';
 import { useCheckMobileScreen } from '../../util/hooks';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import { makeStyles } from '@material-ui/core';
+import classNames from 'classnames';
 
 import css from './EmployersInfoPage.module.css';
 
 import landingImage from '../../assets/about-us.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
+import desktopVideo from '../../assets/booking-demo-desktop.mp4';
+import mobileVideo from '../../assets/booking-demo-mobile.mp4';
+
+const useStyles = makeStyles(theme => ({
+  card: {
+    borderRadius: 'var(--borderRadius) !important',
+    margin: 'auto',
+    maxHeight: '80vh;',
+    aspectRatio: 1.474,
+    //theme small
+    [theme.breakpoints.down('md')]: {
+      aspectRatio: 'auto',
+      maxHeight: 'none',
+      margin: '2rem',
+    },
+  },
+  cardMedia: {
+    backgroundSize: 'contain !important',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'contain',
+    borderRadius: 'var(--borderRadius) !important',
+  },
+}));
 
 const EmployersInfoPage = props => {
   const { scrollingDisabled } = props;
@@ -33,6 +60,7 @@ const EmployersInfoPage = props => {
   const scribbleRef3 = React.useRef(null);
 
   const isMobile = useCheckMobileScreen();
+  const classes = useStyles();
 
   const positionScribble = (reference, scribble) => {
     if (reference.current && scribble.current) {
@@ -150,7 +178,7 @@ const EmployersInfoPage = props => {
               ) : null}
               <div className={css.contentSide}>
                 <div>
-                  <h2>
+                  <h2 className={css.contentTitle}>
                     Book the right care for <span ref={yourselfRef}>you</span>
                   </h2>
                   <div className={css.scribble} ref={scribbleRef}>
@@ -181,7 +209,7 @@ const EmployersInfoPage = props => {
             <div className={css.contentWrapper}>
               <div className={css.contentSide}>
                 <div>
-                  <h2>
+                  <h2 className={css.contentTitle}>
                     Background Checks to <span ref={ensureRef}>ensure</span> safety
                   </h2>
 
@@ -219,23 +247,37 @@ const EmployersInfoPage = props => {
             </div>
           </section>
           <section className={css.bookingsSection}>
-            <div className={css.contentSide} style={{ maxWidth: 'none' }}>
+            <div className="relative">
               <div>
-                <h2 className="text-center">
+                <h2
+                  className={classNames(css.contentTitle, 'text-center')}
+                  style={{ margin: isMobile ? '0 0 2rem 0' : '0 0 4rem 0' }}
+                >
                   Bookings to <span ref={bookingsRef}>simplify</span> the process
                 </h2>
-                <div className={css.scribble} ref={scribbleRef3}>
-                  <svg viewBox="0 0 277 80">
-                    <path
-                      d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
-                      vector-effect="non-scaling-stroke"
-                      stroke-dasharray="886"
-                      stroke-dashoffset="1772"
-                    ></path>
-                  </svg>
-                </div>
+              </div>
+              <div className={css.scribble} ref={scribbleRef3}>
+                <svg viewBox="0 0 277 80">
+                  <path
+                    d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
+                    vector-effect="non-scaling-stroke"
+                    stroke-dasharray="886"
+                    stroke-dashoffset="1772"
+                  ></path>
+                </svg>
               </div>
             </div>
+
+            <Card className={classes.card}>
+              <CardMedia
+                component="video"
+                image={isMobile ? mobileVideo : desktopVideo}
+                alt="Live from space album cover"
+                controls={false}
+                autoPlay
+                className={classes.cardMedia}
+              />
+            </Card>
           </section>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
