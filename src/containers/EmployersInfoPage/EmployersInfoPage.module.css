@@ -11,7 +11,7 @@
   position: relative;
 
   @media screen(lg) {
-    min-height: 93vh;
+    min-height: 85vh;
   }
 }
 
