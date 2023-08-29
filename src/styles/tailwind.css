@@ -190,6 +190,14 @@
   resize: both
 }
 
+.items-center {
+  align-items: center
+}
+
+.justify-center {
+  justify-content: center
+}
+
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -204,8 +212,18 @@
   border-width: 1px
 }
 
+.px-8 {
+  padding-left: 2rem;
+  padding-right: 2rem
+}
+
 .text-center {
   text-align: center
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1
 }
 
 .italic {
@@ -235,4 +253,11 @@
 
 .ease-in {
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1)
+}
+
+@media (min-width: 768px) {
+  .md\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px
+  }
 }

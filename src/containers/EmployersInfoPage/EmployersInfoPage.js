@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import {
   Page,
@@ -22,9 +22,11 @@ import { makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
+import ContactSection from './ContactSection';
+
 import css from './EmployersInfoPage.module.css';
 
-import landingImage from '../../assets/about-us.jpg';
+import landingImage from '../../assets/employers-info-hero.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
 
 const useStyles = makeStyles(theme => ({
@@ -36,11 +38,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    //theme small
     [theme.breakpoints.down('md')]: {
-      aspectRatio: '3 / 4',
-      height: 'auto',
       margin: '0 2rem',
+      aspectRatio: '0.747',
+      height: 'auto',
     },
   },
 }));
@@ -48,12 +49,14 @@ const useStyles = makeStyles(theme => ({
 const EmployersInfoPage = props => {
   const { scrollingDisabled } = props;
 
-  const yourselfRef = React.useRef(null);
-  const scribbleRef = React.useRef(null);
-  const ensureRef = React.useRef(null);
-  const scribbleRef2 = React.useRef(null);
-  const bookingsRef = React.useRef(null);
-  const scribbleRef3 = React.useRef(null);
+  const yourselfRef = useRef(null);
+  const scribbleRef = useRef(null);
+  const ensureRef = useRef(null);
+  const scribbleRef2 = useRef(null);
+  const superiorRef = useRef(null);
+  const scribbleRef3 = useRef(null);
+  const bookingsRef = useRef(null);
+  const scribbleRef4 = useRef(null);
 
   const [videoLoaded, setVideoLoaded] = useState(false);
 
@@ -95,6 +98,7 @@ const EmployersInfoPage = props => {
     };
   }, [yourselfRef?.current, scribbleRef?.current, ensureRef?.current, scribbleRef2?.current]);
 
+  // TODO: Schema
   return (
     <Page
       className={css.root}
@@ -132,8 +136,7 @@ const EmployersInfoPage = props => {
             <div className={css.sectionContent}>
               <div>
                 <h1>
-                  Find Local Caregivers<br></br>
-                  For Your Home
+                  Browse Caregivers,<br></br> Find Tailored Matches
                 </h1>
               </div>
             </div>
@@ -177,38 +180,40 @@ const EmployersInfoPage = props => {
               <div className={css.contentSide}>
                 <div>
                   <h2 className={css.contentTitle}>
-                    Book the right care for <span ref={yourselfRef}>you</span>
+                    Discover Care Customized to <span ref={yourselfRef}>you</span>
                   </h2>
                   <div className={css.scribble} ref={scribbleRef}>
                     <svg viewBox="0 0 277 19">
                       <path
                         d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
                         vectorEffect="non-scaling-stroke"
-                        strokeDasharray="886"
-                        strokeDashoffset="1772"
+                        strokeDasharray="1000"
+                        strokeDashoffset="2500"
                       ></path>
                     </svg>
                   </div>
                 </div>
                 {isMobile ? (
                   <div className={css.contentMain}>
+                    {/* TODO: Change alt */}
                     <img className={css.landingImage} src={landingImage} alt="About Us" />
                   </div>
                 ) : null}
                 <p>
-                  We are a local company that provides a platform for families to find local
-                  caregivers for their home care needs. We are not a franchise or a large
-                  corporation. We are a local company that is here to help you find the right
-                  caregiver for your family.
+                  Experience a care solution that's tailored to you. Unlike agencies, CareVine's
+                  open marketplace allows you to select caregivers who align perfectly with your
+                  needs. You have the control to define and refine your care preferences. It's not
+                  just about browsing caregivers; it's about making informed choices for your
+                  personalized care journey.
                 </p>
-                <PrimaryButton className={css.learnMoreButton}>Learn More</PrimaryButton>
+                <PrimaryButton className={css.learnMoreButton}>Get Started</PrimaryButton>
               </div>
             </div>
             <div className={css.contentWrapper}>
               <div className={css.contentSide}>
                 <div>
                   <h2 className={css.contentTitle}>
-                    Background Checks to <span ref={ensureRef}>ensure</span> safety
+                    <span ref={ensureRef}>Secure</span> Choices with Rigorous Verification
                   </h2>
 
                   <div className={css.scribble} ref={scribbleRef2}>
@@ -224,24 +229,64 @@ const EmployersInfoPage = props => {
                 </div>
                 {isMobile ? (
                   <div className={css.contentMain}>
+                    {/* TODO: Change alt */}
                     <img className={css.landingImage} src={backgroundCheckImage} alt="About Us" />
                   </div>
                 ) : null}
                 <p>
-                  We are a local company that provides a platform for families to find local
-                  caregivers for their home care needs. We are not a franchise or a large
-                  corporation. We are a local company that is here to help you find the right
-                  caregiver for your family.
+                  At CareVine, the safety and trust of our commmunity are paramount. Every caregiver
+                  listed on our platform undergoes a rigorous background check, ensuring they meet
+                  the highest standards of integrity and professionalism. Through identity
+                  verification and criminal records checks, our meticulous approach ensures that
+                  when you choose a caregiver from CareVine, you're choosing with confidence and
+                  peace of mind.
                 </p>
-
-                <PrimaryButton className={css.learnMoreButton}>Learn More</PrimaryButton>
               </div>
               {!isMobile ? (
                 <div className={css.contentMain}>
                   <img className={css.landingImage} src={backgroundCheckImage} alt="About Us" />
                 </div>
               ) : null}
-              <div className={css.contentDivider}></div>
+            </div>
+            <div className={css.contentWrapper}>
+              {!isMobile ? (
+                <div className={css.contentMain}>
+                  <img className={css.landingImage} src={landingImage} alt="About Us" />
+                </div>
+              ) : null}
+              <div className={css.contentSide}>
+                <div>
+                  <h2 className={css.contentTitle}>
+                    Better Rates,<br></br>
+                    <span ref={superiorRef}>Superior</span> Care
+                  </h2>
+                  <div className={css.scribble} ref={scribbleRef3}>
+                    <svg viewBox="0 0 277 19">
+                      <path
+                        d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
+                        vectorEffect="non-scaling-stroke"
+                        strokeDasharray="1000"
+                        strokeDashoffset="2500"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                {isMobile ? (
+                  <div className={css.contentMain}>
+                    {/* TODO: Change alt */}
+                    <img className={css.landingImage} src={landingImage} alt="About Us" />
+                  </div>
+                ) : null}
+                <p>
+                  Choosing a caregiver through our marketplace empowers you to take control of both
+                  the quality of care and the associated costs. By self-selecting a caregiver, you
+                  bypass traditional agencies and their associated overheads. Without these
+                  middlemen, the process becomes more transparent, direct, and cost-effective. This
+                  not only results in better rates but also ensures that the caregiver receives a
+                  fair compensation. In essence, you get superior care, all while enjoying
+                  significant savings.
+                </p>
+              </div>
             </div>
           </section>
           <section className={css.bookingsSection}>
@@ -251,11 +296,11 @@ const EmployersInfoPage = props => {
                   className={classNames(css.contentTitle, 'text-center')}
                   style={{ margin: isMobile ? '0 0 2rem 0' : '0 0 4rem 0' }}
                 >
-                  Bookings to <span ref={bookingsRef}>simplify</span> the process
+                  Bookings & Billing Made <span ref={bookingsRef}>Seamless</span>
                 </h2>
               </div>
-              <div className={css.scribble} ref={scribbleRef3}>
-                <svg viewBox="0 0 277 80">
+              <div className={css.scribble} ref={scribbleRef4}>
+                <svg viewBox="0 0 277 90">
                   <path
                     d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
                     vector-effect="non-scaling-stroke"
@@ -266,26 +311,39 @@ const EmployersInfoPage = props => {
               </div>
             </div>
 
-            <LazyLoadComponent>
-              <Card className={classes.card}>
-                {videoLoaded ? null : <IconSpinner className={css.demoSpinner} />}
-                <video
-                  autoPlay
-                  muted
-                  className={css.demo}
-                  src={
-                    isMobile
-                      ? 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-mobile.mp4'
-                      : 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4'
-                  }
-                  onLoadedData={() => setVideoLoaded(true)}
-                  style={{
-                    display: videoLoaded ? 'flex' : 'none',
-                  }}
-                />
-              </Card>
-            </LazyLoadComponent>
+            <div>
+              <LazyLoadComponent>
+                <Card className={classes.card}>
+                  {videoLoaded ? null : <IconSpinner className={css.demoSpinner} />}
+                  <video
+                    autoPlay
+                    muted
+                    playsInline
+                    className={css.demo}
+                    src={
+                      isMobile
+                        ? 'https://carevine-videos.s3.us-west-2.amazonaws.com/mobile-no-zoom.mp4'
+                        : 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4'
+                    }
+                    onLoadedData={() => setVideoLoaded(true)}
+                    style={{
+                      display: videoLoaded ? 'flex' : 'none',
+                    }}
+                  />
+                </Card>
+              </LazyLoadComponent>
+            </div>
           </section>
+          <ContactSection
+            title={
+              <h2
+                className="text-6xl text-center"
+                style={{ margin: isMobile ? '0 0 2rem 0' : '0 0 4rem 0' }}
+              >
+                Have Questions? Contact us.
+              </h2>
+            }
+          />
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
           <Footer />
