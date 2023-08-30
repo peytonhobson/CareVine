@@ -1,13 +1,24 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media screen(md) {
+    width: auto;
+  }
+}
+
 .row {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   width: 100%;
-  gap: 7rem;
   padding-bottom: 3rem;
+  gap: 3rem;
 
   @media screen(md) {
     flex-direction: row;
+    gap: 7rem;
   }
 }
 

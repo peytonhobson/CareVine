@@ -10,15 +10,14 @@ import {
   NamedLink,
   PrimaryButton,
   IconSpinner,
+  InlineTextButton,
 } from '../../components';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { TopbarContainer } from '../../containers';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { useCheckMobileScreen } from '../../util/hooks';
 import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, useMediaQuery } from '@material-ui/core';
 import classNames from 'classnames';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
@@ -40,6 +39,10 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     [theme.breakpoints.down('md')]: {
       margin: '0 2rem',
+      height: 'auto',
+    },
+    [theme.breakpoints.down('sm')]: {
+      margin: '0 2rem',
       aspectRatio: '0.747',
       height: 'auto',
     },
@@ -57,11 +60,17 @@ const EmployersInfoPage = props => {
   const scribbleRef3 = useRef(null);
   const bookingsRef = useRef(null);
   const scribbleRef4 = useRef(null);
+  const contentRef = useRef(null);
 
   const [videoLoaded, setVideoLoaded] = useState(false);
 
-  const isMobile = useCheckMobileScreen();
+  const isMobile = useMediaQuery('(max-width: 1024px)');
+  const isMobileSmall = useMediaQuery('(max-width: 768px)');
   const classes = useStyles();
+
+  const handleLearnMoreClick = () => {
+    contentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const positionScribble = (reference, scribble) => {
     if (reference.current && scribble.current) {
@@ -84,17 +93,20 @@ const EmployersInfoPage = props => {
   useEffect(() => {
     window.addEventListener('resize', () => positionScribble(yourselfRef, scribbleRef));
     window.addEventListener('resize', () => positionScribble(ensureRef, scribbleRef2));
-    window.addEventListener('resize', () => positionScribble(bookingsRef, scribbleRef3));
+    window.addEventListener('resize', () => positionScribble(superiorRef, scribbleRef3));
+    window.addEventListener('resize', () => positionScribble(bookingsRef, scribbleRef4));
 
     // Call handler right away so state gets updated with initial window size
     positionScribble(yourselfRef, scribbleRef);
     positionScribble(ensureRef, scribbleRef2);
-    positionScribble(bookingsRef, scribbleRef3);
+    positionScribble(superiorRef, scribbleRef3);
+    positionScribble(bookingsRef, scribbleRef4);
     // Remove event listener on cleanup
     return () => {
       window.removeEventListener('resize', () => positionScribble(yourselfRef, scribbleRef));
       window.removeEventListener('resize', () => positionScribble(ensureRef, scribbleRef2));
-      window.removeEventListener('resize', () => positionScribble(bookingsRef, scribbleRef3));
+      window.removeEventListener('resize', () => positionScribble(superiorRef, scribbleRef3));
+      window.removeEventListener('resize', () => positionScribble(bookingsRef, scribbleRef4));
     };
   }, [yourselfRef?.current, scribbleRef?.current, ensureRef?.current, scribbleRef2?.current]);
 
@@ -138,6 +150,9 @@ const EmployersInfoPage = props => {
                 <h1>
                   Browse Caregivers,<br></br> Find Tailored Matches
                 </h1>
+                <InlineTextButton className={css.inlineHeroButton} onClick={handleLearnMoreClick}>
+                  Learn More
+                </InlineTextButton>
               </div>
             </div>
             <div
@@ -170,7 +185,7 @@ const EmployersInfoPage = props => {
               </svg>
             </div>
           </section>
-          <section className={css.contentSection}>
+          <section className={css.contentSection} ref={contentRef}>
             <div className={css.contentWrapper}>
               {!isMobile ? (
                 <div className={css.contentMain}>
@@ -180,7 +195,7 @@ const EmployersInfoPage = props => {
               <div className={css.contentSide}>
                 <div>
                   <h2 className={css.contentTitle}>
-                    Discover Care Customized to <span ref={yourselfRef}>you</span>
+                    Discover Care Customized to <span ref={yourselfRef}>You</span>
                   </h2>
                   <div className={css.scribble} ref={scribbleRef}>
                     <svg viewBox="0 0 277 19">
@@ -261,12 +276,12 @@ const EmployersInfoPage = props => {
                     <span ref={superiorRef}>Superior</span> Care
                   </h2>
                   <div className={css.scribble} ref={scribbleRef3}>
-                    <svg viewBox="0 0 277 19">
+                    <svg viewBox="0 0 277 90">
                       <path
                         d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
                         vectorEffect="non-scaling-stroke"
-                        strokeDasharray="1000"
-                        strokeDashoffset="2500"
+                        stroke-dasharray="886"
+                        stroke-dashoffset="1772"
                       ></path>
                     </svg>
                   </div>
@@ -300,7 +315,7 @@ const EmployersInfoPage = props => {
                 </h2>
               </div>
               <div className={css.scribble} ref={scribbleRef4}>
-                <svg viewBox="0 0 277 90">
+                <svg viewBox="0 0 277 90" class="!stroke-primary">
                   <path
                     d="M 0,84.48 c 21.375,-0.43200000000000216 99.75,-3.167999999999992 142.5,-2.8800000000000097 c 42.75,0.2879999999999967 138.22500000000002,4.800000000000011 142.5,4.800000000000011 c 4.274999999999977,0 -75.525,-5.52000000000001 -114,-4.800000000000011 c -38.474999999999994,0.7199999999999989 -138.225,8.447999999999993 -142.5,9.599999999999994 c -4.274999999999999,1.152000000000001 84.075,-1.9199999999999875 114,-1.9199999999999875 c 29.92500000000001,0 85.5,0.9119999999999919 85.5,1.9199999999999875 c 0,1.0079999999999956 -64.125,4.0800000000000125 -85.5,4.800000000000011 c -21.375,0.7199999999999989 -48.45,0 -57,0"
                     vector-effect="non-scaling-stroke"
@@ -321,7 +336,7 @@ const EmployersInfoPage = props => {
                     playsInline
                     className={css.demo}
                     src={
-                      isMobile
+                      isMobileSmall
                         ? 'https://carevine-videos.s3.us-west-2.amazonaws.com/mobile-no-zoom.mp4'
                         : 'https://carevine-videos.s3.us-west-2.amazonaws.com/booking-demo-desktop.mp4'
                     }

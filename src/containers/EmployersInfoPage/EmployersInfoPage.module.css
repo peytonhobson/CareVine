@@ -85,6 +85,11 @@
   }
 }
 
+.inlineHeroButton {
+  text-decoration: underline;
+  padding-left: 0.25rem;
+}
+
 .sectionDividerDisplay {
   position: absolute;
   top: 0;
@@ -171,8 +176,14 @@
 
   & > p {
     margin: 2rem 0;
-    font-size: 1.2rem;
+
+    font-size: calc(1vw + 0.5rem);
     line-height: 1.8em;
+
+    @media screen(lg) {
+      font-size: calc(0.75vw + 0.25rem);
+      line-height: 1.8em;
+    }
   }
 
   @media screen(lg) {
@@ -182,14 +193,16 @@
 
 .contentTitle {
   white-space: pre-wrap;
+
   margin-bottom: 2rem;
 
   font-size: calc(3 * calc(0.015 * min(100vh, 900px)) + 1rem);
   line-height: calc(1.4em * (1 + (1 - 4) / 25));
 
   @media screen(lg) {
-    font-size: calc(3 * 1.2vw + 1rem);
+    font-size: calc(3 * 1.2vw + 0.5rem);
     line-height: 1.4em;
+    margin-top: 0;
   }
 }
 
@@ -232,8 +245,9 @@
 
 .learnMoreButton {
   width: auto;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem;
   min-width: 15rem;
+  min-height: 0;
 }
 
 .bookingsSection {
@@ -257,7 +271,9 @@
 }
 
 .contactSectionForm {
-  max-width: 60rem;
+  @media screen(lg) {
+    max-width: 60rem;
+  }
 }
 
 .contactSectionRoot {
