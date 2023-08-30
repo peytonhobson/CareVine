@@ -13,7 +13,7 @@ import {
 
 import css from './ContactUsForm.module.css';
 
-const MESSAGE_MIN_LENGTH = 100;
+const MESSAGE_MIN_LENGTH = 50;
 const MESSAGE_MAX_LENGTH = 1000;
 
 const ContactUsForm = props => (

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { Form, Button, FieldTextInput, PrimaryButton } from '../../components';
 import {
   required,
@@ -14,7 +14,7 @@ import classNames from 'classnames';
 
 import css from './ContactSectionForm.module.css';
 
-const MESSAGE_MIN_LENGTH = 100;
+const MESSAGE_MIN_LENGTH = 50;
 const MESSAGE_MAX_LENGTH = 1000;
 
 const ContactSectionForm = props => (
@@ -23,23 +23,16 @@ const ContactSectionForm = props => (
     render={formRenderProps => {
       const {
         handleSubmit,
-        invalid,
-        pristine,
-        ready,
         sendContactEmailInProgress,
         sendContactEmailError,
+        sendContactEmailSuccess,
+        onChange,
         className,
       } = formRenderProps;
 
-      const messageLabel = (
-        <span>
-          What do you want to tell us?{' '}
-          <span className={css.characterLabel}>(100-1000 characters)</span>
-        </span>
-      );
-
       const submitInProgress = sendContactEmailInProgress;
-      const submitDisabled = invalid || pristine || submitInProgress;
+
+      console.log(sendContactEmailError);
 
       const maxLength1000Message = maxLength(
         'Message cannot be greater than 1000 characters',
@@ -52,6 +45,7 @@ const ContactSectionForm = props => (
 
       return (
         <Form className={classNames(css.root, className)} onSubmit={handleSubmit}>
+          <FormSpy subscription={{ values: true }} onChange={onChange} />
           <div className={css.row}>
             <FieldTextInput
               inputRootClass={css.textInput}
@@ -89,12 +83,18 @@ const ContactSectionForm = props => (
             characterCount
           />
           {sendContactEmailError ? (
-            <p className={css.error}>
+            <p className="text-error">
               <FormattedMessage id="ContactUsPage.sendContactEmailError" />
             </p>
           ) : null}
           <div className={css.buttonContainer}>
-            <PrimaryButton className={css.submitButton} type="submit" inProgress={submitInProgress}>
+            <PrimaryButton
+              className={css.submitButton}
+              type="submit"
+              inProgress={submitInProgress}
+              disabled={sendContactEmailSuccess}
+              ready={sendContactEmailSuccess}
+            >
               Send
             </PrimaryButton>
           </div>

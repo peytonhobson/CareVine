@@ -8,7 +8,7 @@ module.exports = (req, res) => {
 
   if (isDev) {
     res
-      .status(200)
+      .status(500)
       .set('Content-Type', 'application/transit+json')
       .send(
         serialize({
@@ -28,8 +28,6 @@ module.exports = (req, res) => {
     subject,
     html,
   };
-
-  console.log(msg);
 
   return sgMail
     .send(msg)
