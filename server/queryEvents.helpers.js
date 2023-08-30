@@ -243,7 +243,10 @@ const updateUserListingApproved = async event => {
       authorId: userId,
     });
 
-    const userListingId = res.data.data[0].id?.uuid;
+    const userListingId = res.data.data?.[0]?.id?.uuid;
+
+    if (!userListingId) return;
+
     listingState = res.data.data[0].attributes.state;
 
     if (listingState === 'pendingApproval') {
