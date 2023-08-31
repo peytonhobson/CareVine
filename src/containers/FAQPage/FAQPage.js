@@ -38,11 +38,6 @@ const useStyles = makeStyles(theme => ({
       fontSize: '3em',
     },
   },
-  contentWrapper: {
-    maxWidth: '100rem',
-    margin: '0 auto',
-    backgroundColor: 'var(--matterColorLight)',
-  },
   category: {
     padding: '2rem 0',
     borderTop: '1px solid var(--matterColor)',
@@ -54,6 +49,8 @@ const useStyles = makeStyles(theme => ({
 
 const FAQPage = props => {
   const { scrollingDisabled } = props;
+
+  const [openAccordion, setOpenAccordion] = useState(null);
 
   const classes = useStyles();
 
@@ -160,16 +157,28 @@ const FAQPage = props => {
               <h1 className="text-8xl">FAQ</h1>
             </Box>
           </Box>
-          <Box className={classes.contentWrapper}>
+          <section className={css.contentWrapper}>
             {categories.map(category => (
               <Box className={classes.category}>
                 <h2 className={css.categoryTitle}>{category.title}</h2>
                 {category.questions.map(question => (
-                  <FAQAccordion summary={question.question} details={question.answer} />
+                  <FAQAccordion
+                    summary={question.question}
+                    details={question.answer}
+                    isOpen={openAccordion === question.question}
+                    onChange={(event, isExpanded) => {
+                      console.log(event);
+                      if (isExpanded) {
+                        setOpenAccordion(question.question);
+                      } else if (!isExpanded && openAccordion === question.question) {
+                        setOpenAccordion(null);
+                      }
+                    }}
+                  />
                 ))}
               </Box>
             ))}
-          </Box>
+          </section>
         </LayoutWrapperMain>
       </LayoutSingleColumn>
       <LayoutWrapperFooter>
