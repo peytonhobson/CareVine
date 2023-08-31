@@ -20,6 +20,8 @@ const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDe
 const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
+const EmployersInfoPage = loadable(() => import(/* webpackChunkName: "EmployersInfoPage" */ './containers/EmployersInfoPage/EmployersInfoPage'));
+const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ './containers/FAQPage/FAQPage'));
 const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
 const ForCaregiversPage = loadable(() => import(/* webpackChunkName: "ForCaregiversPage" */ './containers/ForCaregiversPage/ForCaregiversPage'));
 const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPage/InboxPage'))
@@ -39,7 +41,6 @@ const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "Subscripti
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
-const EmployersInfoPage = loadable(() => import(/* webpackChunkName: "EmployersInfoPage" */ './containers/EmployersInfoPage/EmployersInfoPage'));
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -111,6 +112,11 @@ const routeConfiguration = () => {
       component: CheckoutPage,
       setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
       loadData: pageDataLoadingAPI.CheckoutPage.loadData,
+    },
+    {
+      path: '/faq',
+      name: 'FAQPage',
+      component: FAQPage,
     },
     {
       path: '/feedback',

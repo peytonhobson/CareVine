@@ -217,6 +217,11 @@
   line-height: 1
 }
 
+.text-8xl {
+  font-size: 6rem;
+  line-height: 1
+}
+
 .italic {
   font-style: italic
 }
@@ -254,4 +259,8 @@
 
 .ease-in {
   transition-timing-function: cubic-bezier(0.4, 0, 1, 1)
+}
+
+.ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
 }

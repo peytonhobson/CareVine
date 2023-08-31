@@ -1,0 +1,7 @@
+.root {
+  background-color: var(--matterColorLight);
+}
+
+.header {
+  composes: marketplaceHeroTitleFontStyles from global;
+}

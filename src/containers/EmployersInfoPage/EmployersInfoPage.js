@@ -128,7 +128,8 @@ const EmployersInfoPage = props => {
     >
       <LayoutWrapperTopbar>
         <TopbarContainer
-          currentPage="ForCaregiversPage"
+          // TODO: May need to change
+          currentPage="EmployersInfoPage"
           desktopClassName={css.topbarDesktop}
           mobileClassName={css.topbarMobile}
         />
