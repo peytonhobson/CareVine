@@ -230,9 +230,9 @@
     top: 0;
     left: 0;
     overflow: visible;
-    stroke: hsla(0, 0%, 100%, 1);
+    stroke: var(--matterColorLight);
     stroke-width: 0.05em;
-    stroke-width: max(1px, 0.05em);
+    stroke-width: max(1px, 0.075em);
     stroke-linecap: square;
     stroke-linejoin: bevel;
     fill: none;
