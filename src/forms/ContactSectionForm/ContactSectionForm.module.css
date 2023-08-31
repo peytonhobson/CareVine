@@ -39,7 +39,8 @@
   }
 
   &:focus {
-    border-color: var(--matterColor);
+    outline: 2px solid var(--matterColor) !important;
+    outline-offset: 0.35rem;
   }
 }
 

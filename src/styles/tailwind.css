@@ -204,14 +204,6 @@
   border-width: 1px
 }
 
-.fill-primary {
-  fill: #6ba0b6
-}
-
-.stroke-primary {
-  stroke: #6ba0b6
-}
-
 .\!stroke-primary {
   stroke: #6ba0b6 !important
 }
