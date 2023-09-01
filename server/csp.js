@@ -126,7 +126,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.facebook.net')
     .concat('www.google.com')
     .concat('*.googlesyndication.com')
-    .concat('*.crisp.chat');
+    .concat('*.crisp.chat')
+    .concat('*.doubleclick.net');
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
   const customStyleSrc = styleSrc.concat('*.crisp.chat');
   const customFontSrc = fontSrc.concat('*.crisp.chat');
