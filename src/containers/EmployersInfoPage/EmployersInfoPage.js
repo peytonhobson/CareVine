@@ -7,10 +7,10 @@ import {
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
-  NamedLink,
   PrimaryButton,
   IconSpinner,
   InlineTextButton,
+  ContactSection,
 } from '../../components';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { TopbarContainer } from '../../containers';
@@ -20,8 +20,6 @@ import Card from '@mui/material/Card';
 import { makeStyles, useMediaQuery } from '@material-ui/core';
 import classNames from 'classnames';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
-
-import ContactSection from './ContactSection';
 
 import css from './EmployersInfoPage.module.css';
 
@@ -128,7 +126,8 @@ const EmployersInfoPage = props => {
     >
       <LayoutWrapperTopbar>
         <TopbarContainer
-          currentPage="ForCaregiversPage"
+          // TODO: May need to change
+          currentPage="EmployersInfoPage"
           desktopClassName={css.topbarDesktop}
           mobileClassName={css.topbarMobile}
         />

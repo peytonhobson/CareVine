@@ -3,6 +3,8 @@ const { integrationSdk, handleError, serialize } = require('../../api-util/sdk')
 const log = require('../../log');
 const isDev = process.env.NODE_ENV === 'development';
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const SENDGRID_TEMPLATE_IDS = {
   'listing-approved': 'd-8b99728fb8784ec3a28e16708abfcffc',
   'listing-closed': 'd-023abb2594c24fc4a2f10f48a4a2e904',
@@ -45,7 +47,6 @@ module.exports = (req, res) => {
       const user = userResponse?.data?.data;
       const receiverEmail = user?.attributes?.email;
 
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         from: 'CareVine@carevine-mail.us',
         personalizations: [
