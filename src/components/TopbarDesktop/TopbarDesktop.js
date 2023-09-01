@@ -309,7 +309,7 @@ const TopbarDesktop = props => {
   ) : null;
 
   const whyCareVine = isAuthenticatedOrJustHydrated ? null : (
-    <NamedLink name="EmployersInfoPage" className={css.whyCareVineLink}>
+    <NamedLink name="WhyPrivateCarePage" className={css.whyCareVineLink}>
       Why Private Care?
     </NamedLink>
   );

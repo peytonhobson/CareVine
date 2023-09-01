@@ -20,7 +20,7 @@ const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDe
 const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
-const EmployersInfoPage = loadable(() => import(/* webpackChunkName: "EmployersInfoPage" */ './containers/EmployersInfoPage/EmployersInfoPage'));
+const WhyPrivateCarePage = loadable(() => import(/* webpackChunkName: "WhyPrivateCarePage" */ './containers/WhyPrivateCarePage/WhyPrivateCarePage'));
 const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ './containers/FAQPage/FAQPage'));
 const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
 const ForCaregiversPage = loadable(() => import(/* webpackChunkName: "ForCaregiversPage" */ './containers/ForCaregiversPage/ForCaregiversPage'));
@@ -223,9 +223,9 @@ const routeConfiguration = () => {
       loadData: pageDataLoadingAPI.NotificationsPage.loadData,
     },
     {
-      path: '/employers-info',
-      name: 'EmployersInfoPage',
-      component: EmployersInfoPage,
+      path: '/why-private-care',
+      name: 'WhyPrivateCarePage',
+      component: WhyPrivateCarePage,
     },
     {
       path: '/referrals',

@@ -75,7 +75,7 @@ const TopbarMobileMenu = props => {
     ) : null;
 
     const whyCareVine = !isAuthenticated ? (
-      <NamedLink name="EmployersInfoPage" className={css.infoPageLink}>
+      <NamedLink name="WhyPrivateCarePage" className={css.infoPageLink}>
         Why Private Care?
       </NamedLink>
     ) : null;

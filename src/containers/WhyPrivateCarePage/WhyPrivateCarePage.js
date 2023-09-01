@@ -13,7 +13,7 @@ import {
   ContactSection,
 } from '../../components';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
-import { TopbarContainer } from '../../containers';
+import { TopbarContainer } from '..';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Card from '@mui/material/Card';
@@ -21,7 +21,7 @@ import { makeStyles, useMediaQuery } from '@material-ui/core';
 import classNames from 'classnames';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
-import css from './EmployersInfoPage.module.css';
+import css from './WhyPrivateCarePage.module.css';
 
 import landingImage from '../../assets/employers-info-hero.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   card: {
     borderRadius: 'var(--borderRadius) !important',
     margin: 'auto',
-    height: '80vh;',
+    height: '60vh;',
     aspectRatio: 1.474,
     display: 'flex',
     justifyContent: 'center',
@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const EmployersInfoPage = props => {
+const WhyPrivateCarePage = props => {
   const { scrollingDisabled } = props;
 
   const yourselfRef = useRef(null);
@@ -127,7 +127,7 @@ const EmployersInfoPage = props => {
       <LayoutWrapperTopbar>
         <TopbarContainer
           // TODO: May need to change
-          currentPage="EmployersInfoPage"
+          currentPage="WhyPrivateCarePage"
           desktopClassName={css.topbarDesktop}
           mobileClassName={css.topbarMobile}
         />
@@ -389,4 +389,4 @@ const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(EmployersInfoPage);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(WhyPrivateCarePage);
