@@ -20,6 +20,7 @@ import Card from '@mui/material/Card';
 import { makeStyles, useMediaQuery } from '@material-ui/core';
 import classNames from 'classnames';
 import { LazyLoadComponent } from 'react-lazy-load-image-component';
+import config from '../../config';
 
 import css from './WhyPrivateCarePage.module.css';
 
