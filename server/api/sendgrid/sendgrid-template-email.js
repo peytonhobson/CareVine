@@ -26,20 +26,20 @@ const SENDGRID_TEMPLATE_IDS = {
 module.exports = (req, res) => {
   const { receiverId, templateData, templateName } = req.body;
 
-  // if (isDev) {
-  //   res
-  //     .status(200)
-  //     .set('Content-Type', 'application/transit+json')
-  //     .send(
-  //       serialize({
-  //         data: {
-  //           message: 'Emails are not sent in development mode',
-  //         },
-  //       })
-  //     )
-  //     .end();
-  //   return;
-  // }
+  if (isDev) {
+    res
+      .status(200)
+      .set('Content-Type', 'application/transit+json')
+      .send(
+        serialize({
+          data: {
+            message: 'Emails are not sent in development mode',
+          },
+        })
+      )
+      .end();
+    return;
+  }
 
   integrationSdk.users
     .show({ id: receiverId })
