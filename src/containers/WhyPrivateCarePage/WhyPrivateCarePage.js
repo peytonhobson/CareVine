@@ -28,6 +28,11 @@ import landingImage from '../../assets/employers-info-hero.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
 import shareImage from '../../assets/Background_Share_Image.png';
 
+const schemaTitle = 'Private Care for Seniors: Quality, Trust, and Personalization';
+const schemaDescription =
+  'Why choose private care for seniors? Discover the advantages of personalized, in-home caregiving through our platform.';
+const schemaImage = `${config.canonicalRootURL}${shareImage}`;
+
 const useStyles = makeStyles(theme => ({
   card: {
     borderRadius: 'var(--borderRadius) !important',
@@ -109,11 +114,6 @@ const WhyPrivateCarePage = props => {
       window.removeEventListener('resize', () => positionScribble(bookingsRef, scribbleRef4));
     };
   }, [yourselfRef?.current, scribbleRef?.current, ensureRef?.current, scribbleRef2?.current]);
-
-  const schemaTitle = 'Private Care for Seniors: Quality, Trust, and Personalization';
-  const schemaDescription =
-    'Why choose private care for seniors? Discover the advantages of personalized, in-home caregiving through our platform.';
-  const schemaImage = `${config.canonicalRootURL}${shareImage}`;
 
   return (
     <Page
