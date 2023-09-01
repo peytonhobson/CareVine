@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
@@ -32,7 +32,7 @@ const ContactSectionForm = props => (
 
       const submitInProgress = sendContactEmailInProgress;
 
-      console.log(sendContactEmailError);
+      const [isSubmitted, setIsSubmitted] = useState(false);
 
       const maxLength1000Message = maxLength(
         'Message cannot be greater than 1000 characters',
@@ -44,8 +44,20 @@ const ContactSectionForm = props => (
       );
 
       return (
-        <Form className={classNames(css.root, className)} onSubmit={handleSubmit}>
-          <FormSpy subscription={{ values: true }} onChange={onChange} />
+        <Form
+          className={classNames(css.root, className)}
+          onSubmit={e => {
+            setIsSubmitted(true);
+            handleSubmit(e);
+          }}
+        >
+          <FormSpy
+            subscription={{ values: true }}
+            onChange={() => {
+              onChange();
+              setIsSubmitted(false);
+            }}
+          />
           <div className={css.row}>
             <FieldTextInput
               inputRootClass={css.textInput}
@@ -54,6 +66,7 @@ const ContactSectionForm = props => (
               name="name"
               placeholder="Name"
               validate={required('Name is required')}
+              showError={isSubmitted}
             />
             <FieldTextInput
               inputRootClass={css.textInput}
@@ -65,6 +78,7 @@ const ContactSectionForm = props => (
                 required('Email is required'),
                 emailFormatValid('Please provide a valid email address')
               )}
+              showError={isSubmitted}
             />
           </div>
           <FieldTextInput
@@ -81,6 +95,7 @@ const ContactSectionForm = props => (
               minLength50Message
             )}
             characterCount
+            showError={isSubmitted}
           />
           {sendContactEmailError ? (
             <p className="text-error">
