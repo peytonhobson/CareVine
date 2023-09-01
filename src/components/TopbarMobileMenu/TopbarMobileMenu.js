@@ -69,14 +69,14 @@ const TopbarMobileMenu = props => {
     );
 
     const forCaregivers = !isAuthenticated ? (
-      <NamedLink name="ForCaregiversPage" className={css.infoPageLink}>
+      <NamedLink name="ForCaregiversPage" className={css.loginLink}>
         For Caregivers
       </NamedLink>
     ) : null;
 
     const whyCareVine = !isAuthenticated ? (
       <NamedLink name="EmployersInfoPage" className={css.infoPageLink}>
-        Why CareVine?
+        Why Private Care?
       </NamedLink>
     ) : null;
 
@@ -89,8 +89,6 @@ const TopbarMobileMenu = props => {
               values={{ lineBreak: <br />, signupOrLogin }}
             />
           </div>
-          {login}
-          {signup}
           {forCaregivers}
           {whyCareVine}
         </div>

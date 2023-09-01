@@ -335,6 +335,7 @@ const EmployersInfoPage = props => {
                     autoPlay
                     muted
                     playsInline
+                    controls
                     className={css.demo}
                     src={
                       isMobileSmall
