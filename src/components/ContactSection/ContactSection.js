@@ -4,7 +4,7 @@ import { ContactSectionForm } from '../../forms';
 import classNames from 'classnames';
 import { sendgridStandardEmail } from '../../util/api';
 
-import css from './EmployersInfoPage.module.css';
+import css from './ContactSection.module.css';
 
 const ContactSection = props => {
   const { className, rootClassName, title } = props;
@@ -13,7 +13,7 @@ const ContactSection = props => {
   const [sendContactEmailError, setSendContactEmailError] = useState(false);
   const [sendContactEmailSuccess, setSendContactEmailSuccess] = useState(false);
 
-  const classes = classNames(rootClassName || css.contactSectionRoot, className);
+  const classes = classNames(rootClassName || css.root, className);
 
   const handleSubmit = async values => {
     setSendContactEmailInProgress(true);
@@ -40,7 +40,7 @@ const ContactSection = props => {
       {title}
       <ContactSectionForm
         onSubmit={handleSubmit}
-        className={css.contactSectionForm}
+        className={css.form}
         onChange={() => setSendContactEmailError(false)}
         sendContactEmailInProgress={sendContactEmailInProgress}
         sendContactEmailError={sendContactEmailError}

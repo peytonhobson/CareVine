@@ -8,9 +8,10 @@ import {
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
+  ContactSection,
 } from '../../components';
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
-import { Box } from '@material-ui/core';
+import { Box, useMediaQuery } from '@material-ui/core';
 import FAQAccordion from './FAQAccordion';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
 import { compose } from 'redux';
@@ -19,6 +20,7 @@ import { connect } from 'react-redux';
 import css from './FAQPage.module.css';
 
 import blogBackground from '../../assets/blog-background.jpg';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 const useStyles = makeStyles(theme => ({
   hero: {
@@ -51,6 +53,8 @@ const FAQPage = props => {
   const { scrollingDisabled } = props;
 
   const [openAccordion, setOpenAccordion] = useState(null);
+
+  const isMobile = useMediaQuery('(max-width:1024px)');
 
   const classes = useStyles();
 
@@ -179,6 +183,16 @@ const FAQPage = props => {
               </Box>
             ))}
           </section>
+          <ContactSection
+            title={
+              <h2
+                className="text-6xl text-center"
+                style={{ margin: isMobile ? '0 0 2rem 0' : '0 0 4rem 0' }}
+              >
+                Have more questions?
+              </h2>
+            }
+          />
         </LayoutWrapperMain>
       </LayoutSingleColumn>
       <LayoutWrapperFooter>

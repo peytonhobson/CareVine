@@ -3,6 +3,8 @@ const { integrationSdk, handleError, serialize } = require('../../api-util/sdk')
 const log = require('../../log');
 const isDev = process.env.NODE_ENV === 'development';
 
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 module.exports = (req, res) => {
   const { fromEmail, receiverEmail, subject, html } = req.body;
 
@@ -21,7 +23,6 @@ module.exports = (req, res) => {
     return;
   }
 
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
     from: fromEmail ?? 'CareVine@carevine-mail.us',
     to: receiverEmail,

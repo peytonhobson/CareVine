@@ -213,6 +213,7 @@ export {default as DailyPlan} from './DailyPlan/DailyPlan';
 export { default as Accordion } from './Accordion/Accordion';
 export { default as BlogCard} from './BlogCard/BlogCard'
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
+export { default as ContactSection } from './ContactSection/ContactSection';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
 export { default as EditListingBackgroundCheckPanel} from './EditListingBackgroundCheckPanel/EditListingBackgroundCheckPanel';

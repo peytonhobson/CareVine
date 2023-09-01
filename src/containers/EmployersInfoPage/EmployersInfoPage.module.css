@@ -269,18 +269,3 @@
   height: 8em;
   width: 8em;
 }
-
-.contactSectionForm {
-  @media screen(lg) {
-    max-width: 60rem;
-  }
-}
-
-.contactSectionRoot {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 5vmax 2rem;
-  background-color: var(--marketplaceColorLight);
-}
