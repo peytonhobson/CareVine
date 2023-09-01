@@ -25,6 +25,7 @@ import css from './WhyPrivateCarePage.module.css';
 
 import landingImage from '../../assets/employers-info-hero.jpg';
 import backgroundCheckImage from '../../assets/Magnify-BG.png';
+import shareImage from '../../assets/Background_Share_Image.png';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -108,25 +109,28 @@ const WhyPrivateCarePage = props => {
     };
   }, [yourselfRef?.current, scribbleRef?.current, ensureRef?.current, scribbleRef2?.current]);
 
-  // TODO: Schema
+  const schemaTitle = 'Private Care for Seniors: Quality, Trust, and Personalization';
+  const schemaDescription =
+    'Why choose private care for seniors? Discover the advantages of personalized, in-home caregiving through our platform.';
+  const schemaImage = `${config.canonicalRootURL}${shareImage}`;
+
   return (
     <Page
       className={css.root}
       scrollingDisabled={scrollingDisabled}
       contentType="website"
-      // description={schemaDescription}
-      // title={schemaTitle}
+      description={schemaDescription}
+      title={schemaTitle}
       schema={{
         '@context': 'http://schema.org',
         '@type': 'WebPage',
-        // description: schemaDescription,
-        // name: schemaTitle,
-        // image: [schemaImage],
+        description: schemaDescription,
+        name: schemaTitle,
+        image: [schemaImage],
       }}
     >
       <LayoutWrapperTopbar>
         <TopbarContainer
-          // TODO: May need to change
           currentPage="WhyPrivateCarePage"
           desktopClassName={css.topbarDesktop}
           mobileClassName={css.topbarMobile}
