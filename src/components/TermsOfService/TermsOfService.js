@@ -683,7 +683,7 @@ const TermsOfService = props => {
           </p>
         </li>
         <li>
-          <h1>15. Consent to Elecronic Communication</h1>
+          <h1>15. Consent to Electronic Communication</h1>
           <p>
             By using CareVine's platform and services, you consent to receive electronic
             communications from us, including emails, text messages, push notifications, or other

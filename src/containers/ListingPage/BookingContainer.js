@@ -27,6 +27,10 @@ const BookingContainer = props => {
   const authorId = listing.author?.id.uuid;
   const authorHasStripeAccount =
     (hasStripeAccount.userId === authorId && hasStripeAccount.data) || authorWhiteListed;
+  const authorMetadata = listing?.author?.attributes?.profile?.metadata;
+  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+  const hasActiveSubscription = backgroundCheckSubscription?.status === 'active';
+  const showBookingButton = authorHasStripeAccount && hasActiveSubscription;
 
   return (
     <>
@@ -36,7 +40,7 @@ const BookingContainer = props => {
             <p className={css.startingRateText}>Starting Rate</p>
             <p className={css.startingRate}>${minPrice / 100}</p>
           </div>
-          {authorHasStripeAccount ? (
+          {showBookingButton ? (
             <Button className={css.availabilityButton} onClick={onBookingModalOpen}>
               Book Now
             </Button>

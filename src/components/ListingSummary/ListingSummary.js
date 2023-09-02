@@ -69,20 +69,45 @@ const ListingSummaryComponent = props => {
     hasStripeAccount,
     hasStripeAccountInProgress,
     hasStripeAccountError,
+    currentUser,
   } = props;
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
 
+  const authorMetadata = listing?.author?.attributes?.profile?.metadata;
+  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+
+  const handleClickMessage = () => {
+    if (!currentUser.id?.uuid) {
+      return;
+    }
+
+    const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
+    const backgroundCheckApproved =
+      currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved;
+
+    if (currentUserType === CAREGIVER && !backgroundCheckApproved) {
+      // TODO: Create modal to tell user they need background check or use current
+      // onChangeModalValue()
+      return;
+    }
+
+    if (currentUserType === CAREGIVER && !backgroundCheckSubscription) {
+      // TODO: Create modal to tell user they need background check subscription
+      // onChangeModalValue()
+      return;
+    }
+
+    onContactUser();
+  };
+
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
   const { minPrice, maxPrice, location } = publicData;
-  const authorMetadata = author?.attributes?.profile?.metadata;
   const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
 
   const thisUserHasStripeAccount =
     hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
-
-  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const hasPremiumSubscription =
     SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
@@ -120,7 +145,9 @@ const ListingSummaryComponent = props => {
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const canOpenListing = userType !== CAREGIVER || backgroundCheckSubscription?.status === 'active';
+  const hasActiveSubscription = backgroundCheckSubscription?.status === 'active';
+  const showBookingButton =
+    (thisUserHasStripeAccount || authorWhiteListed) && hasActiveSubscription;
 
   return (
     <div className={css.root}>
@@ -237,12 +264,12 @@ const ListingSummaryComponent = props => {
         <div className={css.buttonContainer}>
           <Button
             className={css.button}
-            onClick={onContactUser}
+            onClick={handleClickMessage}
             disabled={fetchExistingConversationInProgress}
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {(thisUserHasStripeAccount || authorWhiteListed) && isLarge ? (
+          {showBookingButton && isLarge ? (
             <Button
               className={css.button}
               onClick={() => setIsBookingModalOpen(true)}
@@ -263,7 +290,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.closeListing" />
             </Button>
-          ) : canOpenListing ? (
+          ) : (
             <Button
               className={css.button}
               onClick={() => onOpenListing(listing.id.uuid)}
@@ -272,7 +299,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.openListing" />
             </Button>
-          ) : null}
+          )}
           <Button className={css.button} onClick={onShowListingPreview}>
             <FormattedMessage id="ListingSummary.viewPreview" />
           </Button>

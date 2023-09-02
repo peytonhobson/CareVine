@@ -30,6 +30,8 @@ const MissingRequirementsReminder = props => {
   const state = currentUserListing?.attributes?.state;
   const isDraft = state === LISTING_STATE_DRAFT;
   const listingType = isDraft ? LISTING_PAGE_PARAM_TYPE_DRAFT : LISTING_PAGE_PARAM_TYPE_EDIT;
+  const listingComplete =
+    state === 'published' || state === 'closed' || state === 'pendingApproval';
 
   return (
     <div className={className}>
@@ -67,6 +69,19 @@ const MissingRequirementsReminder = props => {
             </span>
             {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED ? (
               <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
+            ) : (
+              <NamedLink name="LandingPage">
+                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
+              </NamedLink>
+            )}
+          </li>
+          <li
+            className={css.requirementsListItem}
+            onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
+          >
+            <span className={css.listCircle}>{listingComplete && <IconCheckmark />}</span>
+            {listingComplete ? (
+              <span>Finish Creating Your Listing</span>
             ) : !!currentUserListing ? (
               <NamedLink
                 name="EditListingPage"
@@ -74,15 +89,13 @@ const MissingRequirementsReminder = props => {
                   id: listingId,
                   slug: createSlug(title),
                   type: listingType,
-                  tab: 'background-check',
+                  tab: 'profile-picture',
                 }}
               >
-                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
+                Finish Creating Your Listing
               </NamedLink>
             ) : (
-              <NamedLink name="NewListingPage">
-                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
-              </NamedLink>
+              <NamedLink name="NewListingPage">Finish Creating Your Listing</NamedLink>
             )}
           </li>
         </ul>
