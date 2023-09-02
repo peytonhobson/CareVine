@@ -74,10 +74,11 @@ const main = async () => {
         profilePicture:
           'https://sharetribe.imgix.net/644806ee-acbc-40b2-bfbb-b116f6b16b03/64f0cc9e-09aa-4697-9c0e-28cb5565daa9?auto=format&crop=edges&fit=crop&h=240&w=240&s=9e8b38f74d2f512daaa72d6de0911342 240w',
         name: author.attributes.profile.displayName,
-        description: listing.attributes.description.substring(0, 140) + '...',
+        description: listing.attributes.description.substring(0, 200) + '...',
         listingId,
         distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
         location: `${listing.attributes.publicData.location.city}, ${listing.attributes.publicData.location.state}`,
+        firstLetterOfName: author.attributes.profile.displayName.substring(0, 1),
       },
     }));
 
@@ -90,18 +91,22 @@ const main = async () => {
         group_id: 42912,
       },
       personalizations: emails,
+      // personalizations: emails.slice(0, 1).map(e => ({
+      //   ...e,
+      //   to: 'peyton.hobson1@gmail.com',
+      // })),
     };
 
     console.log(msg.personalizations);
 
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   } catch (err) {
     console.log(err);
   }
