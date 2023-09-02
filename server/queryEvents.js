@@ -93,7 +93,7 @@ module.exports = queryEvents = () => {
     });
 
     try {
-      const response = await client.send(command);
+      await client.send(command);
     } catch (err) {
       log.error(err);
     }

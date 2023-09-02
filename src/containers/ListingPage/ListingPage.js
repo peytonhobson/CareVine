@@ -443,6 +443,7 @@ export class ListingPageComponent extends Component {
                       hasStripeAccount={hasStripeAccount}
                       hasStripeAccountInProgress={hasStripeAccountInProgress}
                       hasStripeAccountError={hasStripeAccountError}
+                      currentUser={currentUser}
                     />
                     <ListingTabs
                       currentUser={currentUser}
