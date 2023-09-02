@@ -10,6 +10,7 @@ import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/const
 import SectionReviews from '../../containers/SectionReviews/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
+import { getMissingInfoModalValue } from '../../util/data';
 
 import css from './ListingSummary.module.css';
 
@@ -70,6 +71,9 @@ const ListingSummaryComponent = props => {
     hasStripeAccountInProgress,
     hasStripeAccountError,
     currentUser,
+    currentUserListing,
+    onChangeModalValue,
+    history,
   } = props;
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
@@ -78,27 +82,35 @@ const ListingSummaryComponent = props => {
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
 
   const handleClickMessage = () => {
-    if (!currentUser.id?.uuid) {
+    if (!currentUser?.id.uuid) {
+      history.push('/signup');
       return;
     }
 
-    const currentUserType = currentUser?.attributes?.profile?.metadata?.userType;
-    const backgroundCheckApproved =
-      currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved;
+    const missingInfoModalValue = getMissingInfoModalValue(currentUser, currentUserListing);
 
-    if (currentUserType === CAREGIVER && !backgroundCheckApproved) {
-      // TODO: Create modal to tell user they need background check or use current
-      // onChangeModalValue()
-      return;
-    }
-
-    if (currentUserType === CAREGIVER && !backgroundCheckSubscription) {
-      // TODO: Create modal to tell user they need background check subscription
-      // onChangeModalValue()
+    if (missingInfoModalValue) {
+      onChangeModalValue(missingInfoModalValue);
       return;
     }
 
     onContactUser();
+  };
+
+  const handleClickBook = () => {
+    if (!currentUser?.id.uuid) {
+      history.push('/signup');
+      return;
+    }
+
+    const missingInfoModalValue = getMissingInfoModalValue(currentUser);
+
+    if (missingInfoModalValue) {
+      onChangeModalValue(missingInfoModalValue);
+      return;
+    }
+
+    setIsBookingModalOpen(true);
   };
 
   const { publicData, geolocation, title } = listing.attributes;
@@ -272,7 +284,7 @@ const ListingSummaryComponent = props => {
           {showBookingButton && isLarge ? (
             <Button
               className={css.button}
-              onClick={() => setIsBookingModalOpen(true)}
+              onClick={handleClickBook}
               disabled={fetchExistingConversationInProgress}
             >
               Book Now
@@ -316,7 +328,7 @@ const ListingSummaryComponent = props => {
           hasStripeAccountError={hasStripeAccountError}
           isBookingModalOpen={isBookingModalOpen}
           onBookingModalClose={() => setIsBookingModalOpen(false)}
-          onBookingModalOpen={() => setIsBookingModalOpen(true)}
+          onBookingModalOpen={handleClickBook}
           authorWhiteListed={authorWhiteListed}
         />
       ) : null}

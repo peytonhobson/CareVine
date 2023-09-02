@@ -204,6 +204,7 @@ class CaregiverEditListingWizard extends Component {
       onChangeMissingInfoModal,
       history,
       onFetchCurrentUserHasListings,
+      currentUserListing,
     } = this.props;
 
     const stripeConnected = !!currentUser.stripeAccount?.id;
@@ -217,12 +218,11 @@ class CaregiverEditListingWizard extends Component {
 
     onPublishListingDraft(id);
 
-    if (
-      currentUser &&
-      !currentUser.attributes.emailVerified &&
-      !history.location.pathname.includes('create-profile')
-    ) {
-      onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
+    const backgroundCheckApproved =
+      currentUser?.attributes.profile.metadata.backgroundCheckApproved;
+
+    if (!backgroundCheckApproved && !history.location.pathname.includes('create-profile')) {
+      onChangeMissingInfoModal(getMissingInfoModalValue(currentUser, currentUserListing));
       onFetchCurrentUserHasListings();
     } else if (requirementsMissing || !stripeConnected) {
       this.setState({

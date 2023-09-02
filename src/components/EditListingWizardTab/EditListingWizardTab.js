@@ -10,7 +10,7 @@ import {
   EditListingCaregiverDetailsPanel,
   EditListingCareNeedsPanel,
   EditListingCareRecipientDetailsPanel,
-  EditListingCareSchedulePanels,
+  EditListingCareSchedulePanel,
   EditListingExperiencePanel,
   EditListingJobDescriptionPanel,
   EditListingLocationPanel,

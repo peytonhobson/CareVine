@@ -69,8 +69,12 @@ const MissingRequirementsReminder = props => {
             </span>
             {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED ? (
               <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
+            ) : !!currentUserListing ? (
+              <NamedLink name="BackgroundCheckPage">
+                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
+              </NamedLink>
             ) : (
-              <NamedLink name="LandingPage">
+              <NamedLink name="NewListingPage">
                 <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
               </NamedLink>
             )}
