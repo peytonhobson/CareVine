@@ -120,7 +120,7 @@ const SectionHero = props => {
 
   return (
     <div className={classes} ref={heroRef}>
-      {/* {currentUserFetched ? (
+      {currentUserFetched ? (
         currentUser ? (
           <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>
             <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
@@ -165,10 +165,10 @@ const SectionHero = props => {
               )
             ) : null}
           </div>
-        ) : ( */}
-      <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
-      {/* ) */}
-      {/* ) : null} */}
+        ) : (
+          <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
+        )
+      ) : null}
 
       <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
         {showLearnMore && (
