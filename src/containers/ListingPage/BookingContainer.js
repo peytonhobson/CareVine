@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import classNames from 'classnames';
-import { TextareaAutosize, useMediaQuery } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import { InitialBookingForm } from '../../forms';
 import { Button, Modal, Avatar, IconSpinner } from '../../components';
+import { SUBSCRIPTION_ACTIVE_TYPES } from '../../util/constants';
 
 import css from './ListingPage.module.css';
 
@@ -29,7 +29,9 @@ const BookingContainer = props => {
     (hasStripeAccount.userId === authorId && hasStripeAccount.data) || authorWhiteListed;
   const authorMetadata = listing?.author?.attributes?.profile?.metadata;
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
-  const hasActiveSubscription = backgroundCheckSubscription?.status === 'active';
+  const hasActiveSubscription = SUBSCRIPTION_ACTIVE_TYPES.includes(
+    backgroundCheckSubscription?.status
+  );
   const showBookingButton = authorHasStripeAccount && hasActiveSubscription;
 
   return (
