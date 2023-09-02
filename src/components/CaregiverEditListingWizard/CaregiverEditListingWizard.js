@@ -27,7 +27,6 @@ import EditListingWizardTab, {
   ADDITIONAL_DETAILS,
   LOCATION,
   PRICING,
-  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
 import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
@@ -53,7 +52,6 @@ export const TABS = [
   EXPERIENCE,
   ADDITIONAL_DETAILS,
   BIO,
-  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 ];
 
@@ -76,8 +74,6 @@ const tabLabel = (intl, tab) => {
     key = 'CaregiverEditListingWizard.tabLabelPricing';
   } else if (tab === AVAILABILITY) {
     key = 'CaregiverEditListingWizard.tabLabelAvailability';
-  } else if (tab === BACKGROUND_CHECK) {
-    key = 'CaregiverEditListingWizard.tabLabelBackgroundCheck';
   } else if (tab === PROFILE_PICTURE) {
     key = 'CaregiverEditListingWizard.tabLabelPhotos';
   }
@@ -97,8 +93,6 @@ const tabCompleted = (tab, listing, user) => {
   const { description, geolocation, publicData, availabilityPlan } = listing.attributes;
   const images = listing.images;
 
-  const backgroundCheckApproved = user.attributes.profile.metadata.backgroundCheckApproved;
-
   switch (tab) {
     case SERVICES:
       return !!publicData.careTypes;
@@ -114,8 +108,6 @@ const tabCompleted = (tab, listing, user) => {
       return !!(publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
       return !!publicData.availabilityPlan;
-    case BACKGROUND_CHECK:
-      return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:
@@ -180,24 +172,10 @@ class CaregiverEditListingWizard extends Component {
   }
 
   componentDidMount() {
-    const { stripeOnboardingReturnURL, params, currentUser } = this.props;
-
-    const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
-      params.type
-    );
+    const { stripeOnboardingReturnURL, params } = this.props;
 
     if (stripeOnboardingReturnURL != null && !this.showPayoutDetails) {
       this.setState({ showPayoutDetails: true });
-    }
-
-    const backgroundCheckApprovedStatus =
-      currentUser.attributes.profile.metadata.backgroundCheckApproved?.status;
-
-    if (!isNewListingFlow && backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED) {
-      const index = TABS.indexOf(BACKGROUND_CHECK);
-      if (index > -1) {
-        TABS.splice(index, 1);
-      }
     }
   }
 

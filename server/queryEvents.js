@@ -154,14 +154,7 @@ module.exports = queryEvents = () => {
       const prevBackgroundCheckSubscription =
         previousValuesProfile?.metadata?.backgroundCheckSubscription;
 
-      const openListing =
-        metadata?.userType === CAREGIVER
-          ? activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
-            emailVerified &&
-            ((prevBackgroundCheckSubscription?.status &&
-              !activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status)) ||
-              (prevEmailVerified !== undefined && !prevEmailVerified))
-          : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
+      const openListing = prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
 
       // If user meets requirements to open listing and didn't previously, approve listing
       if (openListing) {
@@ -214,19 +207,6 @@ module.exports = queryEvents = () => {
           const userId = event.attributes.resource?.id?.uuid;
           sendQuizFailedEmail(userId);
         }
-      }
-
-      const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
-
-      // Close user listing if background check subscription is cancelled and they don't have a subscription schedule
-      if (
-        !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
-        activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status) &&
-        !backgroundCheckSubscriptionSchedule
-      ) {
-        const userId = event?.attributes?.resource?.id?.uuid;
-
-        closeListing(userId);
       }
 
       if (
