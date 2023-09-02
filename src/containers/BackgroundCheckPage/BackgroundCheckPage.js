@@ -729,6 +729,7 @@ const BackgroundCheckPage = props => {
         <LayoutWrapperAccountSettingsSideNav
           currentTab="BackgroundCheckPage"
           currentUser={currentUser}
+          currentUserListing={listing}
         />
         <LayoutWrapperMain className={css.root}>
           {content}
