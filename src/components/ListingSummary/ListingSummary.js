@@ -157,7 +157,9 @@ const ListingSummaryComponent = props => {
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const hasActiveSubscription = backgroundCheckSubscription?.status === 'active';
+  const hasActiveSubscription = SUBSCRIPTION_ACTIVE_TYPES.includes(
+    backgroundCheckSubscription?.status
+  );
   const showBookingButton =
     (thisUserHasStripeAccount || authorWhiteListed) && hasActiveSubscription;
 
