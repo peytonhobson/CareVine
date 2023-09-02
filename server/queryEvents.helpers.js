@@ -216,12 +216,8 @@ const updateListingApproveListing = async event => {
     });
 
     const user = res?.data?.data;
-    const metadata = user?.attributes?.profile?.metadata;
-    const openListing =
-      metadata?.userType === CAREGIVER
-        ? activeSubscriptionTypes.includes(metadata?.backgroundCheckSubscription?.status) &&
-          user?.attributes?.emailVerified
-        : user?.attributes?.emailVerified;
+    const openListing = user?.attributes?.emailVerified;
+
     if (openListing) {
       const listingId = event.attributes.resource.id?.uuid;
 

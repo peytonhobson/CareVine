@@ -1,24 +1,16 @@
 import React from 'react';
-import { array, arrayOf, bool, func, object, oneOf, shape, string } from 'prop-types';
 
-import { propTypes } from '../../util/types';
-import { intlShape } from '../../util/reactIntl';
 import routeConfiguration from '../../routeConfiguration';
-import {
-  LISTING_PAGE_PARAM_TYPE_DRAFT,
-  LISTING_PAGE_PARAM_TYPE_NEW,
-  LISTING_PAGE_PARAM_TYPES,
-} from '../../util/urlHelpers';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   EditListingAdditionalDetailsPanel,
   EditListingAvailabilityPanel,
-  EditListingBackgroundCheckPanel,
   EditListingBioPanel,
   EditListingCaregiverDetailsPanel,
   EditListingCareNeedsPanel,
   EditListingCareRecipientDetailsPanel,
-  EditListingCareSchedulePanel,
+  EditListingCareSchedulePanels,
   EditListingExperiencePanel,
   EditListingJobDescriptionPanel,
   EditListingLocationPanel,
@@ -41,7 +33,6 @@ export const LOCATION = 'location';
 export const PRICING = 'pricing';
 export const PROFILE_PICTURE = 'profile-picture';
 export const CARE_RECIPIENT = 'care-recipient';
-export const BACKGROUND_CHECK = 'background-check';
 export const CAREGIVER_PREFERENCES = 'caregiver-preferences';
 export const JOB_DESCRIPTION = 'job-description';
 
@@ -60,7 +51,6 @@ export const SUPPORTED_TABS = [
   PROFILE_PICTURE,
   CARE_RECIPIENT,
   CAREGIVER_PREFERENCES,
-  BACKGROUND_CHECK,
   JOB_DESCRIPTION,
 ];
 
@@ -362,20 +352,6 @@ const EditListingWizardTab = props => {
           onNextTab={() =>
             redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
-        />
-      );
-    }
-    case BACKGROUND_CHECK: {
-      const submitButtonTranslationKey = 'EditListingWizard.saveNewBackgroundCheck';
-
-      return (
-        <EditListingBackgroundCheckPanel
-          {...panelProps(BACKGROUND_CHECK)}
-          onNextTab={() =>
-            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
-          }
-          onUpdateProfile={onUpdateProfile}
-          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
         />
       );
     }
