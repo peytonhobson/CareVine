@@ -134,9 +134,19 @@ const LayoutWrapperAccountSettingsSideNavComponent = props => {
     },
   };
 
+  const backgroundCheckTab = {
+    text: 'Background Check',
+    selected: currentTab === 'BackgroundCheckPage',
+    id: 'BackgroundCheckPageTab',
+    linkProps: {
+      name: 'BackgroundCheckPage',
+    },
+  };
+
   if (userType === CAREGIVER) {
     tabs.push(subscriptionsTab);
     tabs.push(payoutTab);
+    tabs.push(backgroundCheckTab);
   } else {
     tabs.push(paymentMethodsTab);
   }

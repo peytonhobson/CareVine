@@ -239,14 +239,13 @@ export class ListingPageComponent extends Component {
       openListingError,
       onOpenListing,
       origin,
-      onFetchTimeSlots,
-      monthlyTimeSlots,
       hasStripeAccount,
       hasStripeAccountInProgress,
       hasStripeAccountError,
       fetchReviewsError,
-      fetchReviewsInProgress,
       reviews,
+      onChangeModalValue,
+      history,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -444,6 +443,8 @@ export class ListingPageComponent extends Component {
                       hasStripeAccountInProgress={hasStripeAccountInProgress}
                       hasStripeAccountError={hasStripeAccountError}
                       currentUser={currentUser}
+                      onChangeModalValue={onChangeModalValue}
+                      history={history}
                     />
                     <ListingTabs
                       currentUser={currentUser}

@@ -239,22 +239,4 @@ const IdentityProofFormComponent = props => (
   />
 );
 
-IdentityProofFormComponent.defaultProps = { className: null, fetchErrors: null };
-
-IdentityProofFormComponent.propTypes = {
-  className: string,
-  intl: intlShape.isRequired,
-  onSubmit: func.isRequired,
-  saveActionMsg: string.isRequired,
-  disabled: bool.isRequired,
-  ready: bool.isRequired,
-  updated: bool.isRequired,
-  updateInProgress: bool.isRequired,
-  fetchErrors: shape({
-    createListingDraftError: propTypes.error,
-    showListingsError: propTypes.error,
-    updateListingError: propTypes.error,
-  }),
-};
-
 export default compose(injectIntl)(IdentityProofFormComponent);
