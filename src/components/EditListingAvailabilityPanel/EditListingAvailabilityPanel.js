@@ -102,6 +102,7 @@ const EditListingAvailabilityPanel = props => {
     updateInProgress,
     errors,
     panelUpdated,
+    submitButtonText,
   } = props;
 
   const currentListing = ensureOwnListing(listing);
@@ -188,6 +189,7 @@ const EditListingAvailabilityPanel = props => {
           currentListing={currentListing}
           initialValuesEqual={() => true}
           updated={panelUpdated}
+          submitButtonText={submitButtonText}
         />
       </section>
 

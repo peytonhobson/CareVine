@@ -180,91 +180,6 @@ const closeListingNotification = async userId => {
   }
 };
 
-const closeListing = async userId => {
-  let listing;
-
-  try {
-    const res = await integrationSdk.listings.query({ authorId: userId });
-    listing = res?.data?.data?.length > 0 && res.data.data[0];
-  } catch (e) {
-    log.error(e, 'listing-closed-query-failed', {});
-  }
-
-  if (listing?.attributes?.state === 'published') {
-    try {
-      await integrationSdk.listings.close(
-        {
-          id: listing.id?.uuid,
-        },
-        {
-          expand: true,
-        }
-      );
-    } catch (e) {
-      log.error(e, 'listing-closed-failed', {});
-    }
-  }
-};
-
-const updateListingApproveListing = async event => {
-  const userId = event.attributes.resource.relationships?.author?.data?.id?.uuid;
-
-  try {
-    const res = await integrationSdk.users.show({
-      id: userId,
-      include: ['stripeAccount'],
-    });
-
-    const user = res?.data?.data;
-    const metadata = user?.attributes?.profile?.metadata;
-    const openListing =
-      metadata?.userType === CAREGIVER
-        ? activeSubscriptionTypes.includes(metadata?.backgroundCheckSubscription?.status) &&
-          user?.attributes?.emailVerified
-        : user?.attributes?.emailVerified;
-    if (openListing) {
-      const listingId = event.attributes.resource.id?.uuid;
-
-      await integrationSdk.listings.approve({
-        id: listingId,
-      });
-    }
-  } catch (e) {
-    log.error(e, 'listing-update-approved-failed', {});
-  }
-};
-
-const updateUserListingApproved = async event => {
-  let listingState = null;
-  const userId = event.attributes.resource.id?.uuid;
-
-  try {
-    const res = await integrationSdk.listings.query({
-      authorId: userId,
-    });
-
-    const userListingId = res.data.data?.[0]?.id?.uuid;
-
-    if (!userListingId) return;
-
-    listingState = res.data.data[0].attributes.state;
-
-    if (listingState === 'pendingApproval') {
-      await integrationSdk.listings.approve({
-        id: userListingId,
-      });
-    }
-
-    if (listingState === 'closed') {
-      await integrationSdk.listings.open({
-        id: userListingId,
-      });
-    }
-  } catch (e) {
-    log.error(e, 'user-update-approved-failed', {});
-  }
-};
-
 const enrollUserTCM = async (event, userAccessCode) => {
   try {
     await axios.post(
@@ -730,10 +645,7 @@ const updateBookingLedger = async transaction => {
 };
 
 module.exports = {
-  updateUserListingApproved,
   approveListingNotification,
-  closeListing,
-  updateListingApproveListing,
   enrollUserTCM,
   deEnrollUserTCM,
   cancelSubscription,

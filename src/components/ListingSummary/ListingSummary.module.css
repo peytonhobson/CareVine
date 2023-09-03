@@ -245,3 +245,8 @@
   margin-left: 0;
   fill: var(--matterColorAnti);
 }
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
+}

@@ -208,6 +208,15 @@
   font-style: italic
 }
 
+.text-error {
+  --tw-text-opacity: 1;
+  color: rgb(255 0 0 / var(--tw-text-opacity))
+}
+
+.underline {
+  text-decoration-line: underline
+}
+
 .outline {
   outline-style: solid
 }
