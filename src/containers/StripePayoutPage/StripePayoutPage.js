@@ -30,6 +30,7 @@ import { TopbarContainer } from '..';
 import { savePayoutDetails } from './StripePayoutPage.duck';
 
 import css from './StripePayoutPage.module.css';
+import { EMPLOYER } from '../../util/constants';
 
 const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
 const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
@@ -100,6 +101,11 @@ export const StripePayoutPageComponent = props => {
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const currentUserLoaded = !!ensuredCurrentUser.id;
   const stripeConnected = currentUserLoaded && !!stripeAccount && !!stripeAccount.id;
+
+  const currentUserType = ensuredCurrentUser.attributes.profile.metadata.userType;
+  if (currentUserType === EMPLOYER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
 
   const title = intl.formatMessage({ id: 'StripePayoutPage.title' });
 

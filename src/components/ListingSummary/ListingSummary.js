@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead } from '..';
+import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead, Modal } from '..';
 import { formatPrice, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { compose } from 'redux';
@@ -11,6 +11,7 @@ import SectionReviews from '../../containers/SectionReviews/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
 import { getMissingInfoModalValue } from '../../util/data';
+import NotifyForPaymentContainer from '../../containers/StripePaymentModal/NotifyForPaymentContainer';
 
 import css from './ListingSummary.module.css';
 
@@ -74,12 +75,24 @@ const ListingSummaryComponent = props => {
     currentUserListing,
     onChangeModalValue,
     history,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
+    onSendNotifyForBooking,
+    sendNotifyForBookingError,
   } = props;
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
+  const [isNotifyStripAccountModalOpen, setIsNotifyStripAccountModalOpen] = React.useState(false);
 
-  const authorMetadata = listing?.author?.attributes?.profile?.metadata;
+  const { publicData, geolocation, title } = listing.attributes;
+  const { author } = listing;
+  const { minPrice, maxPrice, location } = publicData;
+
+  const authorMetadata = author?.attributes?.profile?.metadata;
   const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+  const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
+  const thisUserHasStripeAccount =
+    hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
 
   const handleClickMessage = () => {
     if (!currentUser?.id.uuid) {
@@ -110,16 +123,13 @@ const ListingSummaryComponent = props => {
       return;
     }
 
+    if (!thisUserHasStripeAccount && !authorWhiteListed) {
+      setIsNotifyStripAccountModalOpen(true);
+      return;
+    }
+
     setIsBookingModalOpen(true);
   };
-
-  const { publicData, geolocation, title } = listing.attributes;
-  const { author } = listing;
-  const { minPrice, maxPrice, location } = publicData;
-  const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
-
-  const thisUserHasStripeAccount =
-    hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
 
   const hasPremiumSubscription =
     SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
@@ -160,8 +170,6 @@ const ListingSummaryComponent = props => {
   const hasActiveSubscription = SUBSCRIPTION_ACTIVE_TYPES.includes(
     backgroundCheckSubscription?.status
   );
-  const showBookingButton =
-    (thisUserHasStripeAccount || authorWhiteListed) && hasActiveSubscription;
 
   return (
     <div className={css.root}>
@@ -283,11 +291,11 @@ const ListingSummaryComponent = props => {
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {showBookingButton && isLarge ? (
+          {hasActiveSubscription && isLarge ? (
             <Button
               className={css.button}
               onClick={handleClickBook}
-              disabled={fetchExistingConversationInProgress}
+              disabled={hasStripeAccount?.userId !== author.id.uuid}
             >
               Book Now
             </Button>
@@ -319,6 +327,27 @@ const ListingSummaryComponent = props => {
           </Button>
         </div>
       )}
+      {isNotifyStripAccountModalOpen ? (
+        <Modal
+          containerClassName={css.modalContainer}
+          id="notifyForBookingModal"
+          isOpen={isNotifyStripAccountModalOpen}
+          onClose={() => setIsNotifyStripAccountModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+        >
+          <NotifyForPaymentContainer
+            currentUser={currentUser}
+            intl={intl}
+            onSendNotifyForPayment={onSendNotifyForBooking}
+            provider={author}
+            providerListing={listing}
+            sendNotifyForPaymentInProgress={sendNotifyForBookingInProgress}
+            sendNotifyForPaymentSuccess={sendNotifyForBookingSuccess}
+            sendNotifyForPaymentError={sendNotifyForBookingError}
+          />
+        </Modal>
+      ) : null}
       {hasBooking ? (
         <BookingContainer
           listing={listing}

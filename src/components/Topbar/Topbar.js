@@ -273,9 +273,7 @@ class TopbarComponent extends Component {
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}
           currentUser={currentUser}
-          currentUserHasListings={currentUserHasListings}
           currentUserListing={currentUserListing}
-          currentUserHasOrders={currentUserHasOrders}
           location={location}
           onManageDisableScrolling={onManageDisableScrolling}
           onResendVerificationEmail={onResendVerificationEmail}

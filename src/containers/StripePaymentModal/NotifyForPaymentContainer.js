@@ -7,12 +7,12 @@ import { FormattedMessage } from '../../util/reactIntl';
 import css from './StripePaymentModal.module.css';
 import classNames from 'classnames';
 
-const checkIfNotifiedInLastDay = (currentUser, otherUserId) => {
-  const sentNotificationsForPayment =
-    currentUser.attributes.profile.privateData?.sentNotificationsForPayment || [];
+const checkIfNotifiedInLastDay = (currentUser, listingId) => {
+  const sentNotificationsForBooking =
+    currentUser.attributes.profile.privateData?.sentNotificationsForBooking || [];
 
   const withinLastDay =
-    sentNotificationsForPayment.find(notification => notification.userId === otherUserId)
+    sentNotificationsForBooking.find(notification => notification.listingId === listingId)
       ?.createdAt >
     Date.now() - 24 * 60 * 60 * 1000;
 
@@ -28,15 +28,16 @@ const NotifyForPaymentContainer = props => {
     providerListing,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
+    sendNotifyForPaymentError,
   } = props;
 
   const providerName = userDisplayNameAsString(provider);
 
   const handleNotifyForPayment = () => {
-    onSendNotifyForPayment(currentUser, provider, providerListing);
+    onSendNotifyForPayment(providerListing);
   };
 
-  const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, provider.id.uuid);
+  const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, providerListing?.id.uuid);
 
   const notifyButtonDisabled =
     !currentUser ||
@@ -60,16 +61,17 @@ const NotifyForPaymentContainer = props => {
         rootClassName={css.userPreviewRoot}
       />
       <p className={css.noPayoutMessage}>
-        <FormattedMessage
-          id="NotifyForPaymentContainer.providerMissingStripeAccountText"
-          values={{ providerName }}
-        />
+        {providerName} hasn't set up their payment details, so you won't be able to book them yet.
+      </p>
+      <p className={css.noPayoutMessage}>
+        Click the button below to notify {providerName} that you're interested in booking them.
       </p>
       {notifiedInLastDay && (
         <p className={css.notifyDisabledMessage}>
           <FormattedMessage id="NotifyForPaymentContainer.notifyDisabledMessage" />
         </p>
       )}
+      {sendNotifyForPaymentError && <p className="text-error">Failed to send request.</p>}
       <div className={css.notifyButtonWrapper}>
         <Button
           disabled={notifyButtonDisabled}
@@ -77,7 +79,7 @@ const NotifyForPaymentContainer = props => {
           onClick={handleNotifyForPayment}
           ready={sendNotifyForPaymentSuccess}
         >
-          {notifyProviderMessage}
+          Request to Book
         </Button>
       </div>
     </div>

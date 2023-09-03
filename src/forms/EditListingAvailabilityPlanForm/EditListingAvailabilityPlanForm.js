@@ -121,6 +121,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
           hideScheduleTypes,
           onChange,
           hideSubmit,
+          submitButtonText,
         } = fieldRenderProps;
 
         const classes = classNames(rootClassName || css.root, className);
@@ -196,7 +197,9 @@ const EditListingAvailabilityPlanFormComponent = props => {
                 className={css.submitButton}
                 ready={submitReady}
               >
-                <FormattedMessage id="EditListingAvailabilityPlanForm.saveSchedule" />
+                {submitButtonText || (
+                  <FormattedMessage id="EditListingAvailabilityPlanForm.saveSchedule" />
+                )}
               </Button>
             ) : null}
           </Form>

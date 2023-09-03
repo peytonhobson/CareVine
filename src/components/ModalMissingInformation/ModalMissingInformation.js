@@ -12,6 +12,7 @@ import {
   MISSING_REQUIREMENTS,
   EMAIL_VERIFICATION,
   PAYMENT_DETAILS,
+  MISSING_REQUIREMENTS_INITIAL,
 } from '../../util/constants';
 
 import EmailReminder from './EmailReminder';
@@ -68,6 +69,17 @@ class ModalMissingInformation extends Component {
             className={classes}
             currentUser={currentUser}
             onChangeModalValue={onChangeModalValue}
+          />
+        );
+      } else if (modalValue === MISSING_REQUIREMENTS_INITIAL) {
+        content = (
+          <MissingRequirementsReminder
+            className={classes}
+            currentUser={currentUser}
+            onChangeModalValue={onChangeModalValue}
+            currentUserListing={currentUserListing}
+            modalText="If you would like to do this another time, you can click the LATER button in the top right corner to start exploring CareVine."
+            modalTitle="A few more steps to get you started"
           />
         );
       } else if (modalValue === MISSING_REQUIREMENTS) {

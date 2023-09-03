@@ -42,7 +42,7 @@ const BookingContainer = props => {
             <p className={css.startingRateText}>Starting Rate</p>
             <p className={css.startingRate}>${minPrice / 100}</p>
           </div>
-          {showBookingButton ? (
+          {hasActiveSubscription ? (
             <Button className={css.availabilityButton} onClick={onBookingModalOpen}>
               Book Now
             </Button>
