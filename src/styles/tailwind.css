@@ -208,6 +208,10 @@
   font-style: italic
 }
 
+.underline {
+  text-decoration-line: underline
+}
+
 .outline {
   outline-style: solid
 }

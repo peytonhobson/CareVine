@@ -531,6 +531,7 @@ const SubscriptionsPageComponent = props => {
           <LayoutWrapperAccountSettingsSideNav
             currentTab="SubscriptionsPage"
             currentUser={ensuredCurrentUser}
+            currentUserListing={currentUserListing}
           />
           <LayoutWrapperMain>
             <div className={css.content}>
