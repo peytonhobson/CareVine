@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
-import { Button } from '..';
+import { Button } from '../../components';
 import {
   PROMO_CODES,
   CAREVINE_GOLD_PRICE_ID,
@@ -10,7 +10,7 @@ import {
 } from '../../util/constants';
 import moment from 'moment';
 
-import css from './EditListingBackgroundCheckPanel.module.css';
+import css from './BackgroundCheckPage.module.css';
 
 const BASIC = 'basic';
 const GOLD = 'gold';

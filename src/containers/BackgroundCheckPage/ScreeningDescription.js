@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
 
-import css from './EditListingBackgroundCheckPanel.module.css';
+import css from './BackgroundCheckPage.module.css';
 
 const BASIC = 'basic';
 const GOLD = 'gold';
@@ -37,6 +37,7 @@ const ScreeningDescription = props => {
     width: isMobile ? '95%' : '48.5%',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    borderRadius: 'var(--borderRadius)',
   }));
 
   const CardActions = styled(props => <MuiCardActions {...props} />)(({ theme }) => ({
@@ -52,7 +53,7 @@ const ScreeningDescription = props => {
     fontFamily: 'var(--fontFamily)',
     fontWeight: 'var(--fontWeightSemiBold)',
     fontSize: 'var(--fontSizeBase)',
-    borderRadius: 'var(--borderRadiusBase)',
+    borderRadius: 'var(--borderRadiusButton)',
     paddingBlock: '1rem',
     marginTop: 'auto',
     '&:hover': {
@@ -87,13 +88,13 @@ const ScreeningDescription = props => {
   const goldButtonProps = {
     background:
       'linear-gradient(90deg, rgba(191, 149, 63, 1) 0%, rgba(203, 168, 75, 1) 3.06%, rgba(230, 210, 102, 1) 10.46%, rgba(246, 236, 118, 1) 16.27%, rgba(252, 246, 124, 1) 19.74%, rgba(224, 203, 91, 1) 33.88%, rgba(179, 135, 40, 1) 57.3%, rgba(188, 149, 50, 1) 61.6%, rgba(212, 185, 78, 1) 69.69%, rgba(250, 242, 121, 1) 80.6%, rgba(252, 246, 124, 1) 81.26%, rgba(249, 241, 120, 1) 84.27%, rgba(240, 228, 110, 1) 87.68%, rgba(225, 205, 93, 1) 91.29%, rgba(205, 173, 69, 1) 95.03%, rgba(179, 133, 38, 1) 98.85%, rgba(170, 119, 28, 1) 100%) !important',
-    borderRadius: 'var(--borderRadius)',
+    borderRadius: 'var(--borderRadiusButton)',
     hoverFilter: 'brightness(70%)',
   };
   const greyButtonProps = {
     backgroundColor: 'var(--matterColorAnti) !important',
     hoverBackgroundColor: 'var(--matterColor) !important',
-    borderRadius: 'var(--borderRadius)',
+    borderRadius: 'var(--borderRadiusButton)',
   };
   const goldButtonClasses = useStyles(goldButtonProps);
   const greyButtonClasses = useStyles(greyButtonProps);
