@@ -87,6 +87,7 @@ export const ContactDetailsPageComponent = props => {
         <LayoutWrapperAccountSettingsSideNav
           currentTab="ContactDetailsPage"
           currentUser={currentUser}
+          currentUserListing={currentUserListing}
         />
         <LayoutWrapperMain>
           <div className={css.content}>

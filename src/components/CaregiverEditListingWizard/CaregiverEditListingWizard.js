@@ -11,12 +11,9 @@ import {
   LISTING_PAGE_PARAM_TYPE_NEW,
   LISTING_PAGE_PARAM_TYPES,
 } from '../../util/urlHelpers';
-import { getMissingInfoModalValue } from '../../util/data';
-import { getStripeConnectAccountLink } from '../../ducks/stripeConnectAccount.duck';
 
-import { NamedRedirect, Tabs } from '..';
-import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
-import StripePayoutModal from '../../containers/StripePayoutModal/StripePayoutModal';
+import { NamedRedirect, Tabs, ModalMissingInformation } from '..';
+import { BACKGROUND_CHECK_APPROVED, MISSING_REQUIREMENTS_INITIAL } from '../../util/constants';
 import { stripeCustomer } from '../../containers/PaymentMethodsPage/PaymentMethodsPage.duck.js';
 
 import EditListingWizardTab, {
@@ -27,10 +24,8 @@ import EditListingWizardTab, {
   ADDITIONAL_DETAILS,
   LOCATION,
   PRICING,
-  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 } from '../EditListingWizardTab/EditListingWizardTab';
-import stripeLogo from '../../assets/stripe-wordmark-blurple.png';
 import {
   requestAddAvailabilityException,
   requestDeleteAvailabilityException,
@@ -53,7 +48,6 @@ export const TABS = [
   EXPERIENCE,
   ADDITIONAL_DETAILS,
   BIO,
-  BACKGROUND_CHECK,
   PROFILE_PICTURE,
 ];
 
@@ -76,8 +70,6 @@ const tabLabel = (intl, tab) => {
     key = 'CaregiverEditListingWizard.tabLabelPricing';
   } else if (tab === AVAILABILITY) {
     key = 'CaregiverEditListingWizard.tabLabelAvailability';
-  } else if (tab === BACKGROUND_CHECK) {
-    key = 'CaregiverEditListingWizard.tabLabelBackgroundCheck';
   } else if (tab === PROFILE_PICTURE) {
     key = 'CaregiverEditListingWizard.tabLabelPhotos';
   }
@@ -97,8 +89,6 @@ const tabCompleted = (tab, listing, user) => {
   const { description, geolocation, publicData, availabilityPlan } = listing.attributes;
   const images = listing.images;
 
-  const backgroundCheckApproved = user.attributes.profile.metadata.backgroundCheckApproved;
-
   switch (tab) {
     case SERVICES:
       return !!publicData.careTypes;
@@ -114,8 +104,6 @@ const tabCompleted = (tab, listing, user) => {
       return !!(publicData.minPrice && publicData.maxPrice);
     case AVAILABILITY:
       return !!publicData.availabilityPlan;
-    case BACKGROUND_CHECK:
-      return !!(backgroundCheckApproved?.status === BACKGROUND_CHECK_APPROVED);
     case PROFILE_PICTURE:
       return images && images.length > 0;
     default:
@@ -151,16 +139,6 @@ const scrollToTab = (tabPrefix, tabId) => {
   }
 };
 
-// Get attribute: stripeAccountData
-const getStripeAccountData = stripeAccount => stripeAccount.attributes.stripeAccountData || null;
-
-// Check if there's requirements on selected type: 'past_due', 'currently_due' etc.
-const hasRequirements = (stripeAccountData, requirementType) =>
-  stripeAccountData != null &&
-  stripeAccountData.requirements &&
-  Array.isArray(stripeAccountData.requirements[requirementType]) &&
-  stripeAccountData.requirements[requirementType].length > 0;
-
 // Create a new or edit listing through CaregiverEditListingWizard
 class CaregiverEditListingWizard extends Component {
   constructor(props) {
@@ -173,6 +151,7 @@ class CaregiverEditListingWizard extends Component {
       draftId: null,
       showPayoutDetails: false,
       portalRoot: null,
+      missingInformationModalValue: null,
     };
     this.handleCreateFlowTabScrolling = this.handleCreateFlowTabScrolling.bind(this);
     this.handlePublishListing = this.handlePublishListing.bind(this);
@@ -180,24 +159,21 @@ class CaregiverEditListingWizard extends Component {
   }
 
   componentDidMount() {
-    const { stripeOnboardingReturnURL, params, currentUser } = this.props;
-
-    const isNewListingFlow = [LISTING_PAGE_PARAM_TYPE_NEW, LISTING_PAGE_PARAM_TYPE_DRAFT].includes(
-      params.type
-    );
+    const { stripeOnboardingReturnURL, params } = this.props;
 
     if (stripeOnboardingReturnURL != null && !this.showPayoutDetails) {
       this.setState({ showPayoutDetails: true });
     }
+  }
 
-    const backgroundCheckApprovedStatus =
-      currentUser.attributes.profile.metadata.backgroundCheckApproved?.status;
+  componentDidUpdate(prevProps, prevState) {
+    const { history } = this.props;
 
-    if (!isNewListingFlow && backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED) {
-      const index = TABS.indexOf(BACKGROUND_CHECK);
-      if (index > -1) {
-        TABS.splice(index, 1);
-      }
+    if (
+      prevState.missingInformationModalValue === MISSING_REQUIREMENTS_INITIAL &&
+      this.state.missingInformationModalValue === null
+    ) {
+      history.push('/');
     }
   }
 
@@ -222,37 +198,26 @@ class CaregiverEditListingWizard extends Component {
     const {
       onPublishListingDraft,
       currentUser,
-      stripeAccount,
       onChangeMissingInfoModal,
       history,
       onFetchCurrentUserHasListings,
     } = this.props;
 
-    const stripeConnected = !!currentUser.stripeAccount?.id;
-
-    const stripeAccountData = stripeConnected ? getStripeAccountData(stripeAccount) : null;
-
-    const requirementsMissing =
-      stripeAccount &&
-      (hasRequirements(stripeAccountData, 'past_due') ||
-        hasRequirements(stripeAccountData, 'currently_due'));
-
     onPublishListingDraft(id);
 
-    if (
-      currentUser &&
-      !currentUser.attributes.emailVerified &&
-      !history.location.pathname.includes('create-profile')
-    ) {
-      onChangeMissingInfoModal(getMissingInfoModalValue(currentUser));
+    const backgroundCheckApproved =
+      currentUser?.attributes.profile.metadata.backgroundCheckApproved?.status ===
+      BACKGROUND_CHECK_APPROVED;
+    const emailVerified = currentUser?.attributes.emailVerified;
+
+    if (!backgroundCheckApproved) {
+      this.setState({ missingInformationModalValue: MISSING_REQUIREMENTS_INITIAL });
       onFetchCurrentUserHasListings();
-    } else if (requirementsMissing || !stripeConnected) {
-      this.setState({
-        draftId: id,
-        showPayoutDetails: true,
-      });
-    } else if (history.location.pathname.includes('create-profile')) {
+    } else if (!emailVerified) {
       history.push('/signup');
+      onFetchCurrentUserHasListings();
+    } else {
+      history.push('/');
       onFetchCurrentUserHasListings();
     }
   }
@@ -376,11 +341,21 @@ class CaregiverEditListingWizard extends Component {
             );
           })}
         </Tabs>
-
-        <StripePayoutModal
-          isOpen={this.state.showPayoutDetails}
-          onClose={this.handlePayoutModalClose}
-          params={params}
+        <ModalMissingInformation
+          id="MissingInformationReminder"
+          containerClassName={css.missingInformationModal}
+          currentUser={currentUser}
+          currentUserListing={{
+            ...currentListing,
+            attributes: {
+              ...currentListing.attributes,
+              state: 'published',
+            },
+          }}
+          location={location}
+          onManageDisableScrolling={onManageDisableScrolling}
+          modalValue={this.state.missingInformationModalValue}
+          onChangeModalValue={value => this.setState({ missingInformationModalValue: value })}
         />
       </div>
     );
