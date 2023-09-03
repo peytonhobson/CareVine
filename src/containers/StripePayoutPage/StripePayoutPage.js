@@ -157,6 +157,7 @@ export const StripePayoutPageComponent = props => {
         <LayoutWrapperAccountSettingsSideNav
           currentTab="StripePayoutPage"
           currentUser={currentUser}
+          currentUserListing={currentUserListing}
         />
         <LayoutWrapperMain>
           <div className={css.content}>

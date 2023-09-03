@@ -16,7 +16,7 @@ const MissingRequirementsReminder = props => {
 
   const backgroundCheckApprovedStatus =
     currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
-  const emailVerified = currentUser && currentUser.attributes.emailVerified;
+  const emailVerified = !!currentUser.attributes.emailVerified;
 
   const closeModalOnLinkClick = value => {
     if (!value) {
@@ -33,76 +33,105 @@ const MissingRequirementsReminder = props => {
   const listingComplete =
     state === 'published' || state === 'closed' || state === 'pendingApproval';
 
+  const completedItems = {
+    emailVerified,
+    backgroundCheck: backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED,
+    listingComplete,
+  };
+  const noCompletedItems = Object.values(completedItems).every(item => item !== true);
+
   return (
     <div className={className}>
-      <p className={css.modalTitle}>
-        <FormattedMessage id="ModalMissingInformation.missingRequirementsTitle" />
-      </p>
+      <p className={css.modalTitle}>It's not you, it's us...</p>
       <p className={css.modalMessage}>
-        <FormattedMessage id="ModalMissingInformation.closeToMessagingText" />
-      </p>
-      <p className={css.modalMessage}>
-        <FormattedMessage id="ModalMissingInformation.pleaseCompleteText" />
+        To ensure the safety of everyone on our platform, we need you to complete the following
+        steps by clicking on the links in blue.
       </p>
 
       <div className={css.requirementsBottomWrapper}>
-        <ul className={css.requirementsList}>
-          <li
-            className={css.requirementsListItem}
-            onClick={() => closeModalOnLinkClick(emailVerified)}
-          >
-            <span className={css.listCircle}>{emailVerified && <IconCheckmark />}</span>
-            {emailVerified ? (
-              <FormattedMessage id="ModalMissingInformation.verifyEmail" />
-            ) : (
-              <NamedLink name="SignupPage">
-                <FormattedMessage id="ModalMissingInformation.verifyEmail" />
-              </NamedLink>
-            )}
-          </li>
-          <li
-            className={css.requirementsListItem}
-            onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
-          >
-            <span className={css.listCircle}>
-              {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED && <IconCheckmark />}
-            </span>
-            {backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED ? (
-              <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
-            ) : !!currentUserListing ? (
-              <NamedLink name="BackgroundCheckPage">
-                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
-              </NamedLink>
-            ) : (
-              <NamedLink name="NewListingPage">
-                <FormattedMessage id="ModalMissingInformation.completeBackgroundCheck" />
-              </NamedLink>
-            )}
-          </li>
-          <li
-            className={css.requirementsListItem}
-            onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
-          >
-            <span className={css.listCircle}>{listingComplete && <IconCheckmark />}</span>
-            {listingComplete ? (
-              <span>Finish Creating Your Listing</span>
-            ) : !!currentUserListing ? (
-              <NamedLink
-                name="EditListingPage"
-                params={{
-                  id: listingId,
-                  slug: createSlug(title),
-                  type: listingType,
-                  tab: 'profile-picture',
-                }}
+        {!noCompletedItems ? (
+          <div>
+            <p className="underline">Complete</p>
+            <ul className={css.requirementsList}>
+              {completedItems.emailVerified ? (
+                <li className={css.requirementsListItem}>
+                  <span className={css.listCircle}>
+                    <IconCheckmark />
+                  </span>
+                  Email Verified
+                </li>
+              ) : null}
+              {completedItems.backgroundCheck ? (
+                <li className={css.requirementsListItem}>
+                  <span className={css.listCircle}>
+                    <IconCheckmark />
+                  </span>
+                  Background Check
+                </li>
+              ) : null}
+              {completedItems.listingComplete ? (
+                <li className={css.requirementsListItem}>
+                  <span className={css.listCircle}>
+                    <IconCheckmark />
+                  </span>
+                  <span>Listing Complete</span>
+                </li>
+              ) : null}
+            </ul>
+          </div>
+        ) : null}
+        <div>
+          <p className="underline">To Do</p>
+          <ul className={css.requirementsList}>
+            {!completedItems.emailVerified ? (
+              <li
+                className={css.requirementsListItem}
+                onClick={() => closeModalOnLinkClick(emailVerified)}
               >
-                Finish Creating Your Listing
-              </NamedLink>
-            ) : (
-              <NamedLink name="NewListingPage">Finish Creating Your Listing</NamedLink>
-            )}
-          </li>
-        </ul>
+                <span className={css.listCircle} />
+                <NamedLink name="SignupPage">
+                  <FormattedMessage id="ModalMissingInformation.verifyEmail" />
+                </NamedLink>
+              </li>
+            ) : null}
+            {!completedItems.backgroundCheck ? (
+              <li
+                className={css.requirementsListItem}
+                onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
+              >
+                <span className={css.listCircle} />
+                {!!currentUserListing ? (
+                  <NamedLink name="BackgroundCheckPage">Complete Your Background Check</NamedLink>
+                ) : (
+                  <NamedLink name="NewListingPage">Complete Your Background Check</NamedLink>
+                )}
+              </li>
+            ) : null}
+            {!completedItems.listingComplete ? (
+              <li
+                className={css.requirementsListItem}
+                onClick={() => closeModalOnLinkClick(listingComplete)}
+              >
+                <span className={css.listCircle} />
+                {!!currentUserListing ? (
+                  <NamedLink
+                    name="EditListingPage"
+                    params={{
+                      id: listingId,
+                      slug: createSlug(title),
+                      type: listingType,
+                      tab: 'profile-picture',
+                    }}
+                  >
+                    Finish Creating Your Listing
+                  </NamedLink>
+                ) : (
+                  <NamedLink name="NewListingPage">Finish Creating Your Listing</NamedLink>
+                )}
+              </li>
+            ) : null}
+          </ul>
+        </div>
       </div>
     </div>
   );

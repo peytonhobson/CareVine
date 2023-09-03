@@ -72,6 +72,7 @@ export const PasswordChangePageComponent = props => {
         <LayoutWrapperAccountSettingsSideNav
           currentTab="PasswordChangePage"
           currentUser={currentUser}
+          currentUserListing={currentUserListing}
         />
         <LayoutWrapperMain>
           <div className={css.content}>
