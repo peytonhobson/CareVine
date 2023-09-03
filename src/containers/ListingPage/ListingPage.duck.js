@@ -4,7 +4,7 @@ import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
-import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
+import { TRANSITION_INITIAL_MESSAGE, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
@@ -12,15 +12,11 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  updateUserNotifications,
-  transactionLineItems,
-  fetchHasStripeAccount,
-} from '../../util/api';
+import { updateUserNotifications, updateUser } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
-import { denormalisedResponseEntities } from '../../util/data';
+import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { hasStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 
 const { UUID } = sdkTypes;
@@ -60,6 +56,10 @@ export const FETCH_TIME_SLOTS_REQUEST = 'app/ListingPage/FETCH_TIME_SLOTS_REQUES
 export const FETCH_TIME_SLOTS_SUCCESS = 'app/ListingPage/FETCH_TIME_SLOTS_SUCCESS';
 export const FETCH_TIME_SLOTS_ERROR = 'app/ListingPage/FETCH_TIME_SLOTS_ERROR';
 
+export const SEND_NOTIFY_FOR_BOOKING_REQUEST = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_REQUEST';
+export const SEND_NOTIFY_FOR_BOOKING_SUCCESS = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_SUCCESS';
+export const SEND_NOTIFY_FOR_BOOKING_ERROR = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -77,14 +77,9 @@ const initialState = {
   openListingInProgress: false,
   openListingError: null,
   origin: null,
-  timeSlots: null,
-  monthlyTimeSlots: {
-    // '2019-12': {
-    //   timeSlots: [],
-    //   fetchTimeSlotsError: null,
-    //   fetchTimeSlotsInProgress: null,
-    // },
-  },
+  sendNotifyForBookingError: null,
+  sendNotifyForBookingInProgress: false,
+  sendNotifyForBookingSuccess: false,
 };
 
 const listingPageReducer = (state = initialState, action = {}) => {
@@ -147,41 +142,24 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case OPEN_LISTING_ERROR:
       return { ...state, openListingInProgress: false, openListingError: payload };
 
-    case FETCH_TIME_SLOTS_REQUEST: {
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [payload]: {
-          ...state.monthlyTimeSlots[payload],
-          fetchTimeSlotsError: null,
-          fetchTimeSlotsInProgress: true,
-        },
+    case SEND_NOTIFY_FOR_BOOKING_REQUEST:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: true,
+        sendNotifyForBookingError: null,
       };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_SUCCESS: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          timeSlots: payload.timeSlots,
-        },
+    case SEND_NOTIFY_FOR_BOOKING_SUCCESS:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: false,
+        sendNotifyForBookingSuccess: true,
       };
-      return { ...state, monthlyTimeSlots };
-    }
-    case FETCH_TIME_SLOTS_ERROR: {
-      const monthId = payload.monthId;
-      const monthlyTimeSlots = {
-        ...state.monthlyTimeSlots,
-        [monthId]: {
-          ...state.monthlyTimeSlots[monthId],
-          fetchTimeSlotsInProgress: false,
-          fetchTimeSlotsError: payload.error,
-        },
+    case SEND_NOTIFY_FOR_BOOKING_ERROR:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: false,
+        sendNotifyForBookingError: payload,
       };
-      return { ...state, monthlyTimeSlots };
-    }
 
     default:
       return state;
@@ -242,18 +220,16 @@ export const openListingRequest = () => ({ type: OPEN_LISTING_REQUEST });
 export const openListingSuccess = () => ({ type: OPEN_LISTING_SUCCESS });
 export const openListingError = e => ({ type: OPEN_LISTING_ERROR, error: true, payload: e });
 
-export const fetchTimeSlotsRequest = monthId => ({
-  type: FETCH_TIME_SLOTS_REQUEST,
-  payload: monthId,
+export const sendNotifyForBookingRequest = () => ({
+  type: SEND_NOTIFY_FOR_BOOKING_REQUEST,
 });
-export const fetchTimeSlotsSuccess = (monthId, timeSlots) => ({
-  type: FETCH_TIME_SLOTS_SUCCESS,
-  payload: { timeSlots, monthId },
+export const sendNotifyForBookingSuccess = () => ({
+  type: SEND_NOTIFY_FOR_BOOKING_SUCCESS,
 });
-export const fetchTimeSlotsError = (monthId, error) => ({
-  type: FETCH_TIME_SLOTS_ERROR,
+export const sendNotifyForBookingError = e => ({
+  type: SEND_NOTIFY_FOR_BOOKING_ERROR,
   error: true,
-  payload: { monthId, error },
+  payload: e,
 });
 
 // ================ Thunks ================ //
@@ -434,49 +410,46 @@ const timeSlotsRequest = params => (dispatch, getState, sdk) => {
   });
 };
 
-export const fetchTimeSlots = (listingId, start, end, timeZone) => (dispatch, getState, sdk) => {
-  const monthId = monthIdStringInTimeZone(start, timeZone);
+export const notifyForBooking = listing => async (dispatch, getState, sdk) => {
+  dispatch(sendNotifyForBookingRequest());
 
-  dispatch(fetchTimeSlotsRequest(monthId));
+  const sentNotificationsForBooking =
+    getState().user.currentUser.attributes.profile.privateData.sentNotificationsForBooking || [];
 
-  // The maximum pagination page size for timeSlots is 500
-  const extraParams = {
-    per_page: 500,
-    page: 1,
-  };
+  try {
+    const listingId = listing?.id?.uuid;
 
-  return dispatch(timeSlotsRequest({ listingId, start, end, ...extraParams }))
-    .then(timeSlots => {
-      dispatch(fetchTimeSlotsSuccess(monthId, timeSlots));
-    })
-    .catch(e => {
-      dispatch(fetchTimeSlotsError(monthId, storableError(e)));
+    const bodyParams = {
+      transition: TRANSITION_NOTIFY_FOR_PAYMENT,
+      processAlias: config.singleActionProcessAlias,
+      params: {
+        listingId,
+      },
+    };
+
+    await sdk.transactions.initiate(bodyParams);
+
+    const previouslyNotified = sentNotificationsForBooking.find(s => s.listingId === listingId);
+    const newNotifications = previouslyNotified
+      ? sentNotificationsForBooking.map(s => {
+          if (s.listingId === listingId) {
+            return { listingId, createdAt: new Date().getTime() };
+          }
+          return s;
+        })
+      : [...sentNotificationsForBooking, { listingId, createdAt: new Date().getTime() }];
+
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        sentNotificationsForBooking: newNotifications,
+      },
     });
-};
 
-const fetchMonthlyTimeSlots = (dispatch, listing) => {
-  const hasWindow = typeof window !== 'undefined';
-  const attributes = listing.attributes;
-  // Listing could be ownListing entity too, so we just check if attributes key exists
-  const hasTimeZone =
-    attributes && attributes.availabilityPlan && attributes.availabilityPlan.timezone;
-
-  // Fetch time-zones on client side only.
-  if (hasWindow && listing.id && hasTimeZone) {
-    const tz = listing.attributes.availabilityPlan.timezone;
-    const nextBoundary = findNextBoundary(tz, new Date());
-
-    const nextMonth = nextMonthFn(nextBoundary, tz);
-    const nextAfterNextMonth = nextMonthFn(nextMonth, tz);
-
-    return Promise.all([
-      dispatch(fetchTimeSlots(listing.id, nextBoundary, nextMonth, tz)),
-      dispatch(fetchTimeSlots(listing.id, nextMonth, nextAfterNextMonth, tz)),
-    ]);
+    dispatch(sendNotifyForBookingSuccess());
+  } catch (e) {
+    log.error(e, 'send-notify-for-Booking-failed');
+    dispatch(sendNotifyForBookingError(e));
   }
-
-  // By default return an empty array
-  return Promise.all([]);
 };
 
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
@@ -503,10 +476,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     if (responses[0] && responses[0].data && responses[0].data.data) {
       const listing = responses[0].data.data;
 
-      // Fetch timeSlots.
-      // This can happen parallel to loadData.
-      // We are not interested to return them from loadData call.
-      fetchMonthlyTimeSlots(dispatch, listing);
       dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
     }
     return responses;

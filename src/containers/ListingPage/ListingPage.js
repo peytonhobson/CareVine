@@ -59,10 +59,8 @@ import {
   sendMessage,
   closeListing,
   openListing,
-  fetchTimeSlots,
-  fetchReviews,
+  notifyForBooking,
 } from './ListingPage.duck';
-import BookingContainer from './BookingContainer';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './ListingPage.module.css';
@@ -246,6 +244,10 @@ export class ListingPageComponent extends Component {
       reviews,
       onChangeModalValue,
       history,
+      sendNotifyForBookingError,
+      sendNotifyForBookingInProgress,
+      sendNotifyForBookingSuccess,
+      onSendNotifyForBooking,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -445,6 +447,10 @@ export class ListingPageComponent extends Component {
                       currentUser={currentUser}
                       onChangeModalValue={onChangeModalValue}
                       history={history}
+                      sendNotifyForBookingError={sendNotifyForBookingError}
+                      sendNotifyForBookingInProgress={sendNotifyForBookingInProgress}
+                      sendNotifyForBookingSuccess={sendNotifyForBookingSuccess}
+                      onSendNotifyForBooking={onSendNotifyForBooking}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -562,6 +568,9 @@ const mapStateToProps = state => {
     fetchReviewsError,
     fetchReviewsInProgress,
     reviews,
+    sendNotifyForBookingError,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -609,6 +618,9 @@ const mapStateToProps = state => {
     fetchReviewsError,
     fetchReviewsInProgress,
     reviews,
+    sendNotifyForBookingError,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
   };
 };
 
@@ -624,8 +636,7 @@ const mapDispatchToProps = dispatch => ({
   onCloseListing: listingId => dispatch(closeListing(listingId)),
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
-  onFetchTimeSlots: (listingId, start, end, timeZone) =>
-    dispatch(fetchTimeSlots(listingId, start, end, timeZone)),
+  onSendNotifyForBooking: listing => dispatch(notifyForBooking(listing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

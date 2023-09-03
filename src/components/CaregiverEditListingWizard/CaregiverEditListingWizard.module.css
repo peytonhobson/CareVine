@@ -1,5 +1,3 @@
-
-
 .root {
   /* Layout */
   width: 100%;
@@ -163,4 +161,9 @@
 
 .closeIcon {
   composes: marketplaceModalCloseIcon from global;
+}
+
+.missingInformationModal {
+  composes: marketplaceModalBaseStyles from global;
+  padding-top: 70px;
 }

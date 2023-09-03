@@ -12,7 +12,14 @@ import { BACKGROUND_CHECK_APPROVED } from '../../util/constants';
 import css from './ModalMissingInformation.module.css';
 
 const MissingRequirementsReminder = props => {
-  const { className, currentUser, onChangeModalValue, currentUserListing } = props;
+  const {
+    className,
+    currentUser,
+    onChangeModalValue,
+    currentUserListing,
+    modalText,
+    modalTitle,
+  } = props;
 
   const backgroundCheckApprovedStatus =
     currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
@@ -42,11 +49,13 @@ const MissingRequirementsReminder = props => {
 
   return (
     <div className={className}>
-      <p className={css.modalTitle}>It's not you, it's us...</p>
+      <p className={css.modalTitle}>{modalTitle ? modalTitle : "It's not you, it's us..."}</p>
       <p className={css.modalMessage}>
-        To ensure the safety of everyone on our platform, we need you to complete the following
-        steps by clicking on the links in blue.
+        To be able to send messages and access your inbox, we need you to complete the following
+        steps by clicking on the links in blue. These help to ensure the safety of everyone on our
+        platform.
       </p>
+      <p className={css.modalMessage}>{modalText}</p>
 
       <div className={css.requirementsBottomWrapper}>
         {!noCompletedItems ? (
@@ -89,7 +98,7 @@ const MissingRequirementsReminder = props => {
                 onClick={() => closeModalOnLinkClick(emailVerified)}
               >
                 <span className={css.listCircle} />
-                <NamedLink name="SignupPage">
+                <NamedLink name="SignupPage" target="_blank">
                   <FormattedMessage id="ModalMissingInformation.verifyEmail" />
                 </NamedLink>
               </li>
@@ -101,9 +110,13 @@ const MissingRequirementsReminder = props => {
               >
                 <span className={css.listCircle} />
                 {!!currentUserListing ? (
-                  <NamedLink name="BackgroundCheckPage">Complete Your Background Check</NamedLink>
+                  <NamedLink name="BackgroundCheckPage" target="_blank">
+                    Complete Your Background Check
+                  </NamedLink>
                 ) : (
-                  <NamedLink name="NewListingPage">Complete Your Background Check</NamedLink>
+                  <NamedLink name="NewListingPage" target="_blank">
+                    Complete Your Background Check
+                  </NamedLink>
                 )}
               </li>
             ) : null}
@@ -122,11 +135,14 @@ const MissingRequirementsReminder = props => {
                       type: listingType,
                       tab: 'profile-picture',
                     }}
+                    target="_blank"
                   >
                     Finish Creating Your Listing
                   </NamedLink>
                 ) : (
-                  <NamedLink name="NewListingPage">Finish Creating Your Listing</NamedLink>
+                  <NamedLink name="NewListingPage" target="_blank">
+                    Finish Creating Your Listing
+                  </NamedLink>
                 )}
               </li>
             ) : null}
