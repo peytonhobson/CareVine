@@ -54,17 +54,20 @@ const TermsOfService = props => {
                   </p>
                 </li>
                 <li>
-                  We use Stripe, Inc.'s payment processing service, enabling Care Searchers to pay
-                  Providers via credit card, debit card, or ACH bank transfer. Providers using this
-                  service agree to the{' '}
-                  <a href="https://stripe.com/connect/account-terms">
-                    Stripe Connected Account Agreement
-                  </a>
-                  , including <a href="https://stripe.com/terms">Stripe Terms of Service</a>.
-                  Providers must provide accurate information to CareVine.us and authorize us to
-                  share it and transaction information with Stripe. CareVine.us is not liable for
-                  payments made through the service and all payments are non-refundable. Providers
-                  using this service may qualify for benefits under a CareVine.us-operated program.
+                  <p>
+                    We use Stripe, Inc.'s payment processing service, enabling Care Searchers to pay
+                    Providers via credit card, debit card, or ACH bank transfer. Providers using
+                    this service agree to the{' '}
+                    <a href="https://stripe.com/connect/account-terms">
+                      Stripe Connected Account Agreement
+                    </a>
+                    , including <a href="https://stripe.com/terms">Stripe Terms of Service</a>.
+                    Providers must provide accurate information to CareVine.us and authorize us to
+                    share it and transaction information with Stripe. CareVine.us is not liable for
+                    payments made through the service and all payments are non-refundable. Providers
+                    using this service may qualify for benefits under a CareVine.us-operated
+                    program.
+                  </p>
                 </li>
               </ol>
             </li>
