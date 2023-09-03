@@ -201,7 +201,9 @@ const TopbarMobileMenu = props => {
         ) : (
           <span
             className={classNames(css.inbox, currentPageClass('InboxPage'))}
-            onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
+            onClick={() =>
+              onChangeModalValue(getMissingInfoModalValue(currentUser, currentUserListing))
+            }
           >
             <FormattedMessage id="TopbarMobileMenu.inboxLink" />
             {unreadMessagesBadge}
