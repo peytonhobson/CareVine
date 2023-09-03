@@ -78,7 +78,13 @@ class ModalMissingInformation extends Component {
             currentUser={currentUser}
             onChangeModalValue={onChangeModalValue}
             currentUserListing={currentUserListing}
-            modalText="If you would like to do this another time, you can click the LATER button in the top right corner to start exploring CareVine."
+            modalText={
+              <span>
+                If you would like to do this another time, you can click the LATER button in the top
+                right corner to start exploring CareVine. You can complete your background check
+                later by going to Account Settings.
+              </span>
+            }
             modalTitle="A few more steps to get you started"
           />
         );

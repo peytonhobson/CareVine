@@ -166,4 +166,8 @@
 .missingInformationModal {
   composes: marketplaceModalBaseStyles from global;
   padding-top: 70px;
+
+  @media screen(md) {
+    flex-basis: 40rem;
+  }
 }

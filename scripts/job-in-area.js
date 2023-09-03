@@ -23,6 +23,9 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   // for local testing and development.
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const main = async () => {
   try {
     const res = await integrationSdk.listings.show({
@@ -39,6 +42,9 @@ const main = async () => {
       'limit.images': 1,
     });
     const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small2x']?.url;
 
     const response = await integrationSdk.listings.query({
       meta_listingType: 'caregiver',
@@ -71,8 +77,7 @@ const main = async () => {
       to: u.data.data.attributes.email,
       dynamic_template_data: {
         marketplaceUrl: 'https://carevine.us',
-        profilePicture:
-          'https://sharetribe.imgix.net/644806ee-acbc-40b2-bfbb-b116f6b16b03/64f0cc9e-09aa-4697-9c0e-28cb5565daa9?auto=format&crop=edges&fit=crop&h=240&w=240&s=9e8b38f74d2f512daaa72d6de0911342 240w',
+        profilePicture,
         name: author.attributes.profile.displayName,
         description: listing.attributes.description.substring(0, 140) + '...',
         listingId,
@@ -81,8 +86,6 @@ const main = async () => {
       },
     }));
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
     const msg = {
       from: 'CareVine@carevine-mail.us',
       template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
@@ -90,6 +93,12 @@ const main = async () => {
         group_id: 42912,
       },
       personalizations: emails,
+      // personalizations: emails.slice(0, 1).map(e => {
+      //   return {
+      //     ...e,
+      //     to: 'peyton.hobson1@gmail.com',
+      //   };
+      // }),
     };
 
     console.log(msg.personalizations);
