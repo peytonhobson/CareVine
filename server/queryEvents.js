@@ -11,9 +11,6 @@ module.exports = queryEvents = () => {
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const activeSubscriptionTypes = ['active', 'trialing'];
   const {
-    closeListing,
-    updateListingApproveListing,
-    updateUserListingApproved,
     enrollUserTCM,
     deEnrollUserTCM,
     cancelSubscription,
@@ -93,7 +90,7 @@ module.exports = queryEvents = () => {
     });
 
     try {
-      const response = await client.send(command);
+      await client.send(command);
     } catch (err) {
       log.error(err);
     }
@@ -120,15 +117,6 @@ module.exports = queryEvents = () => {
       const newListingState = event.attributes.resource.attributes?.state;
       const listingId = event.attributes.resource.id.uuid;
 
-      // Approve listing if they meet requirements when listing is published
-      if (
-        prevListingState &&
-        prevListingState === 'draft' &&
-        newListingState === 'pendingApproval'
-      ) {
-        updateListingApproveListing(event);
-      }
-
       if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
         approveListingNotification(userId, listingId);
@@ -147,27 +135,8 @@ module.exports = queryEvents = () => {
       const privateData = currentAttributes?.profile?.privateData;
       const previousValuesProfile = previousValues?.attributes?.profile;
 
-      const prevEmailVerified = previousValues?.attributes?.emailVerified;
-      const emailVerified = event?.attributes?.resource?.attributes?.emailVerified;
       const backgroundCheckApprovedStatus = metadata?.backgroundCheckApproved?.status;
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
-      const prevBackgroundCheckSubscription =
-        previousValuesProfile?.metadata?.backgroundCheckSubscription;
-
-      const openListing =
-        metadata?.userType === CAREGIVER
-          ? activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
-            emailVerified &&
-            ((prevBackgroundCheckSubscription?.status &&
-              !activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status)) ||
-              (prevEmailVerified !== undefined && !prevEmailVerified))
-          : prevEmailVerified !== undefined && !prevEmailVerified && emailVerified;
-
-      // If user meets requirements to open listing and didn't previously, approve listing
-      if (openListing) {
-        console.log(openListing);
-        updateUserListingApproved(event);
-      }
 
       const tcmEnrolled = privateData?.tcmEnrolled;
 
@@ -214,19 +183,6 @@ module.exports = queryEvents = () => {
           const userId = event.attributes.resource?.id?.uuid;
           sendQuizFailedEmail(userId);
         }
-      }
-
-      const backgroundCheckSubscriptionSchedule = privateData?.backgroundCheckSubscriptionSchedule;
-
-      // Close user listing if background check subscription is cancelled and they don't have a subscription schedule
-      if (
-        !activeSubscriptionTypes.includes(backgroundCheckSubscription?.status) &&
-        activeSubscriptionTypes.includes(prevBackgroundCheckSubscription?.status) &&
-        !backgroundCheckSubscriptionSchedule
-      ) {
-        const userId = event?.attributes?.resource?.id?.uuid;
-
-        closeListing(userId);
       }
 
       if (

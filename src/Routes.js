@@ -119,6 +119,7 @@ class RouteComponentRenderer extends Component {
       location,
       staticContext,
       currentUser,
+      currentUserListing,
       isAuthenticated,
       fetchCurrentUserInProgress,
     } = this.props;
@@ -140,7 +141,9 @@ class RouteComponentRenderer extends Component {
 
     const isInboxPage = route.name === 'InboxPage' || route.name === 'InboxPageWithId';
     if (isInboxPage && !canShow && currentUser) {
-      this.props.dispatch(changeModalValue(getMissingInfoModalValue(currentUser)));
+      this.props.dispatch(
+        changeModalValue(getMissingInfoModalValue(currentUser, currentUserListing))
+      );
     }
 
     return canShow ? (
@@ -175,9 +178,15 @@ RouteComponentRenderer.propTypes = {
 
 const mapStateToProps = state => {
   const { isAuthenticated, logoutInProgress } = state.Auth;
-  const { currentUser } = state.user;
+  const { currentUser, currentUserListing } = state.user;
   const { fetchCurrentUserInProgress } = state.user;
-  return { isAuthenticated, logoutInProgress, currentUser, fetchCurrentUserInProgress };
+  return {
+    isAuthenticated,
+    logoutInProgress,
+    currentUser,
+    currentUserListing,
+    fetchCurrentUserInProgress,
+  };
 };
 
 const RouteComponentContainer = compose(connect(mapStateToProps))(RouteComponentRenderer);

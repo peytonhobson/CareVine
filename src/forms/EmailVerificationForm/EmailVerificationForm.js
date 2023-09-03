@@ -74,16 +74,6 @@ const EmailVerificationFormComponent = props => (
             <h1 className={css.modalTitle}>
               <FormattedMessage id="EmailVerificationForm.successTitle" values={{ name }} />
             </h1>
-
-            <p className={css.modalMessage}>
-              <FormattedMessage id="EmailVerificationForm.successText" />
-            </p>
-          </div>
-
-          <div className={css.bottomWrapper}>
-            <NamedLink className={css.submitButton} name="LandingPage">
-              <FormattedMessage id="EmailVerificationForm.successButtonText" />
-            </NamedLink>
           </div>
         </div>
       );
@@ -103,12 +93,6 @@ const EmailVerificationFormComponent = props => (
                 values={{ email: currentEmail, breakline: <br /> }}
               />
             </p>
-          </div>
-
-          <div className={css.bottomWrapper}>
-            <NamedLink className={css.submitButton} name="LandingPage">
-              <FormattedMessage id="EmailVerificationForm.successButtonText" />
-            </NamedLink>
           </div>
         </div>
       );
