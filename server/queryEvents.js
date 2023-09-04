@@ -134,7 +134,8 @@ module.exports = queryEvents = () => {
       if (
         prevListingState === 'draft' &&
         newListingState === 'published' &&
-        listingType === 'employer'
+        listingType === 'employer' &&
+        isProd
       ) {
         sendNewJobInAreaEmail(listing);
       }
@@ -142,7 +143,8 @@ module.exports = queryEvents = () => {
       if (
         prevListingState === 'draft' &&
         newListingState === 'published' &&
-        listingType === 'caregiver'
+        listingType === 'caregiver' &&
+        isProd
       ) {
         sendNewCaregiverInAreaEmail(listing);
       }
