@@ -1,6 +1,5 @@
 require('dotenv').config();
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
-var crypto = require('crypto');
 const { point, distance } = require('@turf/turf');
 const sgMail = require('@sendgrid/mail');
 
