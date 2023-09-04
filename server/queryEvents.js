@@ -25,6 +25,7 @@ module.exports = queryEvents = () => {
     updateBookingEnd,
     makeReviewable,
     updateBookingLedger,
+    sendNewJobInAreaEmail,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -116,6 +117,7 @@ module.exports = queryEvents = () => {
       const prevListingState = event.attributes.previousValues.attributes.state;
       const newListingState = event.attributes.resource.attributes?.state;
       const listingId = event.attributes.resource.id.uuid;
+      const listingType = event.attributes.resource.attributes?.metadata?.listingType;
 
       if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
@@ -125,6 +127,14 @@ module.exports = queryEvents = () => {
       if (prevListingState && prevListingState === 'published' && newListingState === 'closed') {
         const userId = event.attributes.resource.relationships.author.data.id.uuid;
         closeListingNotification(userId);
+      }
+
+      if (
+        prevListingState === 'draft' &&
+        newListingState === 'published' &&
+        listingType === 'employer'
+      ) {
+        sendNewJobInAreaEmail(listingId);
       }
     }
 
