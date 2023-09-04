@@ -155,8 +155,12 @@ const ListingSummaryComponent = props => {
 
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
+  const currentGeolocation = currentUserListing?.attributes?.geolocation;
+  const distanceToUse = currentGeolocation ?? origin;
   const distanceFromLocation =
-    geolocation && origin ? calculateDistanceBetweenOrigins(origin, geolocation) : '0.00';
+    geolocation && distanceToUse
+      ? calculateDistanceBetweenOrigins(distanceToUse, geolocation)
+      : '0.00';
   const backgroundCheckTitle = (
     <p>
       <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
@@ -266,15 +270,22 @@ const ListingSummaryComponent = props => {
             )}
             <div
               className={css.locations}
-              style={{ color: userType !== CAREGIVER && 'var(--marketplaceColor)' }}
+              style={{
+                color: userType !== CAREGIVER && 'var(--marketplaceColor)',
+                alignItems: !distanceToUse ? 'flex-start' : null,
+              }}
             >
-              <h3 className={css.location}>{location.city}</h3>
               <h3 className={css.location}>
-                <FormattedMessage
-                  id={'CaregiverListingCard.distance'}
-                  values={{ distance: distanceFromLocation }}
-                />
+                {location.city}, {location.state}
               </h3>
+              {distanceToUse ? (
+                <h3 className={css.location}>
+                  <FormattedMessage
+                    id="CaregiverListingCard.distance"
+                    values={{ distance: distanceFromLocation }}
+                  />
+                </h3>
+              ) : null}
             </div>
           </div>
         </div>
