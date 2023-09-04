@@ -489,7 +489,7 @@ const BackgroundCheckPage = props => {
     ]
   );
 
-  const address = listing.attributes.privateData.address;
+  const address = currentListing.attributes.privateData.address;
   const initialValues = {
     firstName,
     lastName,
