@@ -35,7 +35,7 @@ const main = async () => {
     const authorResponse = await integrationSdk.users.show({
       id: listing.relationships.author.data.id.uuid,
       include: ['profileImage'],
-      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+      'fields.image': ['variants.email-variant&imageVariant.email-variant=w:130;h:130;fit:scale'],
       'limit.images': 1,
     });
     const author = authorResponse.data.data;
