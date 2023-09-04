@@ -8,7 +8,11 @@ const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { point, distance } = require('@turf/turf');
+const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const createSlug = str => {
   let text = str
@@ -644,6 +648,161 @@ const updateBookingLedger = async transaction => {
   }
 };
 
+const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
+  const options = { units: 'miles' };
+  const point1 = point([latlng1.lng, latlng1.lat]);
+  const point2 = point([latlng2.lng, latlng2.lat]);
+  return Number.parseFloat(distance(point1, point2, options)).toFixed(2);
+};
+
+const sendNewJobInAreaEmail = async listing => {
+  try {
+    const listingId = listing.id.uuid;
+
+    const authorResponse = await integrationSdk.users.show({
+      id: listing.relationships.author.data.id.uuid,
+      include: ['profileImage'],
+      'fields.image': ['variants.square-small'],
+      'limit.images': 1,
+    });
+    const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small']?.url;
+
+    const response = await integrationSdk.listings.query({
+      meta_listingType: 'caregiver',
+      include: ['author', 'author.profileImage'],
+    });
+
+    const listings = response.data.data;
+
+    const geolocation = listing?.attributes?.geolocation;
+
+    const authors = listings
+      .filter(l => {
+        const { geolocation: cGeolocation } = l?.attributes;
+        return cGeolocation
+          ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
+          : false;
+      })
+      .map(l => ({
+        id: l.relationships.author.data.id.uuid,
+        distance: calculateDistanceBetweenOrigins(geolocation, l?.attributes?.geolocation),
+      }));
+
+    const userResponse = await Promise.all(
+      authors.map(async author => {
+        return await integrationSdk.users.show({ id: author.id });
+      })
+    );
+
+    const { city, state } = listing.attributes.publicData.location;
+    const { displayName, abbreviatedName } = author.attributes.profile;
+
+    const emails = userResponse.map(u => ({
+      to: u.data.data.attributes.email,
+      dynamic_template_data: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        profilePicture,
+        name: displayName,
+        description: listing.attributes.description.substring(0, 140) + '...',
+        listingId,
+        distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
+        location: `${city}, ${state}`,
+        abbreviatedName,
+      },
+    }));
+
+    const msg = {
+      from: 'CareVine@carevine-mail.us',
+      template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
+      asm: {
+        group_id: 42912,
+      },
+      personalizations: emails,
+    };
+
+    await sgMail.sendMultiple(msg);
+  } catch (err) {
+    log.error(err?.data?.errors, 'send-new-job-in-area-email-failed', {});
+  }
+};
+
+const sendNewCaregiverInAreaEmail = async listing => {
+  try {
+    const listingId = listing.id.uuid;
+
+    const authorResponse = await integrationSdk.users.show({
+      id: listing.relationships.author.data.id.uuid,
+      include: ['profileImage'],
+      'fields.image': ['variants.square-small'],
+      'limit.images': 1,
+    });
+    const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small']?.url;
+
+    const response = await integrationSdk.listings.query({
+      meta_listingType: 'employer',
+      include: ['author', 'author.profileImage'],
+    });
+
+    const listings = response.data.data;
+
+    const geolocation = listing?.attributes?.geolocation;
+
+    const authors = listings
+      .filter(l => {
+        const { geolocation: cGeolocation } = l?.attributes;
+        return cGeolocation
+          ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
+          : false;
+      })
+      .map(l => ({
+        id: l.relationships.author.data.id.uuid,
+        distance: calculateDistanceBetweenOrigins(geolocation, l?.attributes?.geolocation),
+      }));
+
+    const userResponse = await Promise.all(
+      authors.map(async author => {
+        return await integrationSdk.users.show({ id: author.id });
+      })
+    );
+
+    const { city, state } = listing.attributes.publicData.location;
+    const { displayName, abbreviatedName } = author.attributes.profile;
+
+    const emails = userResponse.map(u => ({
+      to: u.data.data.attributes.email,
+      dynamic_template_data: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        profilePicture,
+        name: displayName,
+        description: listing.attributes.description.substring(0, 140) + '...',
+        listingId,
+        distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
+        location: `${city}, ${state}`,
+        abbreviatedName,
+      },
+    }));
+
+    const msg = {
+      from: 'CareVine@carevine-mail.us',
+      template_id: 'd-20bf043d40624d0aace5806466edb50b',
+      asm: {
+        group_id: 42912,
+      },
+      personalizations: emails,
+    };
+
+    await sgMail.sendMultiple(msg);
+  } catch (err) {
+    log.error(err?.data?.errors, 'send-new-caregiver-in-area-email-failed', {});
+  }
+};
+
 module.exports = {
   approveListingNotification,
   enrollUserTCM,
@@ -659,4 +818,6 @@ module.exports = {
   updateBookingEnd,
   makeReviewable,
   updateBookingLedger,
+  sendNewJobInAreaEmail,
+  sendNewCaregiverInAreaEmail,
 };

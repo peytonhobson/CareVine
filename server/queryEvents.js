@@ -25,6 +25,8 @@ module.exports = queryEvents = () => {
     updateBookingEnd,
     makeReviewable,
     updateBookingLedger,
+    sendNewJobInAreaEmail,
+    sendNewCaregiverInAreaEmail,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -113,18 +115,38 @@ module.exports = queryEvents = () => {
     const eventType = event.attributes.eventType;
 
     if (eventType === 'listing/updated') {
+      const listing = event.attributes.resource;
       const prevListingState = event.attributes.previousValues.attributes.state;
-      const newListingState = event.attributes.resource.attributes?.state;
-      const listingId = event.attributes.resource.id.uuid;
+      const newListingState = listing.attributes?.state;
+      const listingId = listing.id.uuid;
+      const listingType = listing.attributes?.metadata?.listingType;
 
       if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
-        const userId = event.attributes.resource.relationships.author.data.id.uuid;
+        const userId = listing.relationships.author.data.id.uuid;
         approveListingNotification(userId, listingId);
       }
 
       if (prevListingState && prevListingState === 'published' && newListingState === 'closed') {
-        const userId = event.attributes.resource.relationships.author.data.id.uuid;
+        const userId = listing.relationships.author.data.id.uuid;
         closeListingNotification(userId);
+      }
+
+      if (
+        prevListingState === 'draft' &&
+        newListingState === 'published' &&
+        listingType === 'employer' &&
+        isProd
+      ) {
+        sendNewJobInAreaEmail(listing);
+      }
+
+      if (
+        prevListingState === 'draft' &&
+        newListingState === 'published' &&
+        listingType === 'caregiver' &&
+        isProd
+      ) {
+        sendNewCaregiverInAreaEmail(listing);
       }
     }
 
