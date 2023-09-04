@@ -1,6 +1,7 @@
 import { chain } from 'lodash';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { updateUser } from '../../util/api';
+import { CAREGIVER } from '../../util/constants';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 
@@ -54,7 +55,10 @@ export const updateUserType = userType => (dispatch, getState, sdk) => {
 
   const userId = getState().user?.currentUser?.id?.uuid;
 
-  return updateUser({ userId, metadata: { userType } })
+  return updateUser({
+    userId,
+    metadata: { userType, inviteFriendsReminderReceived: userType === CAREGIVER ? false : null },
+  })
     .then(res => {
       dispatch(updateUserTypeSuccess(userType));
       dispatch(fetchCurrentUser());
