@@ -322,7 +322,7 @@ const BackgroundCheckPage = props => {
       onCreateSubscription(
         stripeCustomerId,
         backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-        currentUser?.id.uuid,
+        currentUser?.id?.uuid,
         {
           default_payment_method: createdPaymentMethod,
           trial_end: moment()
@@ -338,11 +338,11 @@ const BackgroundCheckPage = props => {
     if (
       verifyIdentityProofQuizError?.status === 400 &&
       authenticateUserAccessCode &&
-      currentUser?.id.uuid
+      currentUser?.id?.uuid
     ) {
-      onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser?.id.uuid);
+      onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser?.id?.uuid);
     }
-  }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser?.id.uuid]);
+  }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser?.id?.uuid]);
 
   // Submit user form (create of update) for authenticate user
   const handleSubmit = values => {
@@ -385,7 +385,7 @@ const BackgroundCheckPage = props => {
     };
 
     if (stage === CREATE_USER) {
-      onAuthenticateCreateUser(userInfo, currentUser?.id.uuid).then(() =>
+      onAuthenticateCreateUser(userInfo, currentUser?.id?.uuid).then(() =>
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
       );
     } else if (stage === UPDATE_USER) {
@@ -399,7 +399,7 @@ const BackgroundCheckPage = props => {
   // Submit authenticate consent
   const handleConsentSubmit = values => {
     const fullName = privateData?.authenticateFullName;
-    const userId = currentUser?.id.uuid;
+    const userId = currentUser?.id?.uuid;
     onAuthenticateSubmitConsent(authenticateUserAccessCode, fullName, userId).then(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     });
@@ -407,7 +407,7 @@ const BackgroundCheckPage = props => {
 
   // This creates payment or setup intent, depending on if user is using promo code
   const handleCardSubmit = (stripe, elements) => {
-    const userId = currentUser?.id.uuid;
+    const userId = currentUser?.id?.uuid;
     const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
     const params = {
       stripe,
@@ -480,7 +480,13 @@ const BackgroundCheckPage = props => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     },
-    [setStage, setBackgroundCheckType, onCreateSubscription, stripeCustomerId, currentUser?.id.uuid]
+    [
+      setStage,
+      setBackgroundCheckType,
+      onCreateSubscription,
+      stripeCustomerId,
+      currentUser?.id?.uuid,
+    ]
   );
 
   const address = listing.attributes.privateData.address;
