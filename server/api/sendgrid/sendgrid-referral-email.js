@@ -26,7 +26,10 @@ module.exports = async (req, res) => {
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   const msg = {
-    from: 'CareVine@carevine-mail.us',
+    from: {
+      email: 'CareVine@carevine-mail.us',
+      name: 'CareVine',
+    },
     personalizations: [
       {
         to: [
