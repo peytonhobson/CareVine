@@ -717,7 +717,10 @@ const sendNewJobInAreaEmail = async listing => {
     }));
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
       template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
       asm: {
         group_id: 42912,
@@ -793,7 +796,10 @@ const sendNewCaregiverInAreaEmail = async listing => {
     }));
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
       template_id: 'd-20bf043d40624d0aace5806466edb50b',
       asm: {
         group_id: 42912,

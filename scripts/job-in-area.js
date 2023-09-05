@@ -86,7 +86,10 @@ const main = async () => {
     }));
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
       template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
       asm: {
         group_id: 42912,
