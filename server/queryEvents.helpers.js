@@ -677,6 +677,8 @@ const sendNewJobInAreaEmail = async listing => {
 
     const listings = response.data.data;
 
+    if (!listings.length) return;
+
     const geolocation = listing?.attributes?.geolocation;
 
     const authors = listings
@@ -750,6 +752,8 @@ const sendNewCaregiverInAreaEmail = async listing => {
     });
 
     const listings = response.data.data;
+
+    if (!listings.length) return;
 
     const geolocation = listing?.attributes?.geolocation;
 
