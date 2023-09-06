@@ -10,10 +10,6 @@
     height: 100%;
     padding: 0 3rem;
   }
-
-  @media screen(lg) {
-    padding: 0 15rem;
-  }
 }
 
 .title {
@@ -36,7 +32,7 @@
   width: 100%;
   text-align: center;
   margin-top: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 5rem;
 }
 
 .linkButton {
