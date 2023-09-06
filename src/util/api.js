@@ -309,8 +309,8 @@ export const stripeRetrieveUpcomingInvoice = body => {
   return post('/api/stripe-retrieve-upcoming-invoice', body);
 };
 
-export const initiateTransaction = body => {
-  return post('/api/initiate-transaction', body);
+export const initiateBooking = body => {
+  return post('/api/initiate-booking', body);
 };
 
 export const updateNotificationMetadata = body => {
@@ -323,4 +323,8 @@ export const stripeCreateRefund = body => {
 
 export const updatePendingPayouts = body => {
   return post('/api/update-pending-payouts', body);
+};
+
+export const initiatePrivilegedTransaction = body => {
+  return post('/api/initiate-privileged-transaction', body);
 };
