@@ -202,6 +202,7 @@ const EditListingJobDescriptionPanel = props => {
         }}
         generateJobDescriptionInProgress={generateJobDescriptionInProgress}
         generateJobDescriptionError={generateJobDescriptionError}
+        generatedJobDescription={generatedJobDescription}
       />
       <Modal
         id="JDGenerationExplanation"
