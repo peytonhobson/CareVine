@@ -48,7 +48,7 @@ import css from './AuthenticationPage.module.css';
 import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
 import backgroundImage from '../../assets/login-background.jpg';
 
-const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1);
+const capitalizeFirstLetter = str => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 export class AuthenticationPageComponent extends Component {
   constructor(props) {

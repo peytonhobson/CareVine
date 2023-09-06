@@ -48,7 +48,10 @@ module.exports = (req, res) => {
       const receiverEmail = user?.attributes?.email;
 
       const msg = {
-        from: 'CareVine@carevine-mail.us',
+        from: {
+          email: 'CareVine@carevine-mail.us',
+          name: 'CareVine',
+        },
         personalizations: [
           {
             to: [

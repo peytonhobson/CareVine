@@ -216,7 +216,6 @@ export { default as CaregiverEditListingWizard } from './CaregiverEditListingWiz
 export { default as ContactSection } from './ContactSection/ContactSection';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
-export { default as EditListingBackgroundCheckPanel} from './EditListingBackgroundCheckPanel/EditListingBackgroundCheckPanel';
 export { default as EditListingBioPanel } from './EditListingBioPanel/EditListingBioPanel';
 export { default as EditListingCaregiverDetailsPanel } from './EditListingCaregiverDetailsPanel/EditListingCaregiverDetailsPanel';
 export { default as EditListingCareNeedsPanel } from './EditListingCareNeedsPanel/EditListingCareNeedsPanel';

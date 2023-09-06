@@ -1,9 +1,24 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import classNames from 'classnames';
-import { Modal, IconConfirm, Button, IconClose, IconSpinner } from '../';
-import { ensureOwnListing } from '../../util/data';
+import {
+  Modal,
+  IconConfirm,
+  Button,
+  IconClose,
+  IconSpinner,
+  NamedRedirect,
+  LayoutSideNavigation,
+  LayoutWrapperMain,
+  LayoutWrapperAccountSettingsSideNav,
+  LayoutWrapperTopbar,
+  LayoutWrapperFooter,
+  Footer,
+  Page,
+  UserNav,
+} from '../../components';
+import { TopbarContainer } from '../../containers';
+import { ensureCurrentUser, ensureOwnListing } from '../../util/data';
 import { LISTING_STATE_DRAFT } from '../../util/types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -15,9 +30,9 @@ import {
 import moment from 'moment';
 import config from '../../config';
 import ScreeningDescription from './ScreeningDescription';
+import PaymentInfo from './PaymentInfo';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import PaymentInfo from './PaymentInfo';
 import {
   CAREVINE_GOLD_PRICE_ID,
   CAREVINE_BASIC_PRICE_ID,
@@ -26,6 +41,7 @@ import {
   BACKGROUND_CHECK_REJECTED,
   BACKGROUND_CHECK_PENDING,
   SUBSCRIPTION_ACTIVE_TYPES,
+  EMPLOYER,
 } from '../../util/constants';
 import {
   authenticateCreateUser,
@@ -49,8 +65,9 @@ import { fetchCurrentUser } from '../../ducks/user.duck';
 import { claimReferral } from '../../containers/ReferralPage/ReferralPage.duck';
 import { useCheckMobileScreen } from '../../util/hooks';
 import parser from 'parse-address';
+import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/UI.duck';
 
-import css from './EditListingBackgroundCheckPanel.module.css';
+import css from './BackgroundCheckPage.module.css';
 
 const stripePromise = loadStripe(config.stripe.publishableKey);
 
@@ -70,10 +87,18 @@ const MAX_QUIZ_ATTEMPTS = 3;
 const BASIC = 'basic';
 const GOLD = 'gold';
 
-const EditListingBackgroundCheckPanel = props => {
+const BackgroundCheckPage = props => {
   const {
-    authenticate,
-    className,
+    authenticate7YearHistoryError,
+    authenticate7YearHistoryInProgress,
+    authenticateCreateUserError,
+    authenticateCreateUserInProgress,
+    authenticateGenerateCriminalBackgroundError,
+    authenticateGenerateCriminalBackgroundInProgress,
+    authenticateSubmitConsentError,
+    authenticateSubmitConsentInProgress,
+    authenticateUpdateUserError,
+    authenticateUpdateUserInProgress,
     confirmSetupIntentError,
     confirmSetupIntentInProgress,
     createdPaymentMethod,
@@ -84,39 +109,44 @@ const EditListingBackgroundCheckPanel = props => {
     createSetupIntentInProgress,
     createSubscriptionError,
     createSubscriptionInProgress,
-    currentUser,
-    disabled,
-    errors,
+    getAuthenticateTestResultError,
+    getAuthenticateTestResultInProgress,
+    getIdentityProofQuizError,
+    getIdentityProofQuizInProgress,
+    identityProofQuizData,
     intl,
     listing,
+    onAddQuizAttempt,
     onAuthenticateCreateUser,
     onAuthenticateSubmitConsent,
     onAuthenticateUpdateUser,
-    onChange,
+    onClaimReferral,
     onConfirmSetupIntent,
     onCreatePayment,
     onCreateSetupIntent,
     onCreateSubscription,
+    onFetchCurrentUser,
     onGenerateCriminalBackground,
     onGet7YearHistory,
     onGetAuthenticateTestResult,
     onGetIdentityProofQuiz,
     onManageDisableScrolling,
-    onNextTab,
-    onVerifyIdentityProofQuiz,
-    panelUpdated,
-    ready,
-    rootClassName,
-    setupIntent,
-    submitButtonText,
-    subscription,
-    updateInProgress,
-    onFetchCurrentUser,
-    onAddQuizAttempt,
     onUpdateCustomerCreditBalance,
-    onClaimReferral,
-    onUpdateSubscription,
+    onVerifyIdentityProofQuiz,
+    scrollingDisabled,
+    setupIntent,
+    subscription,
+    user,
+    verifyIdentityProofQuizError,
+    verifyIdentityProofQuizFailure,
+    verifyIdentityProofQuizInProgress,
   } = props;
+
+  const currentUser = ensureCurrentUser(user);
+
+  if (currentUser?.id?.uuid && currentUser.attributes.profile.metadata.userType === EMPLOYER) {
+    return <NamedRedirect name="LandingPage" />;
+  }
 
   const isMobile = useCheckMobileScreen();
 
@@ -183,34 +213,12 @@ const EditListingBackgroundCheckPanel = props => {
     },
   };
 
-  const {
-    authenticateCreateUserError,
-    authenticateCreateUserInProgress,
-    authenticateUpdateUserError,
-    authenticateUpdateUserInProgress,
-    authenticateSubmitConsentInProgress,
-    authenticateSubmitConsentError,
-    verifyIdentityProofQuizInProgress,
-    verifyIdentityProofQuizError,
-    getIdentityProofQuizInProgress,
-    getIdentityProofQuizError,
-    authenticate7YearHistoryError,
-    authenticate7YearHistoryInProgress,
-    authenticateGenerateCriminalBackgroundError,
-    authenticateGenerateCriminalBackgroundInProgress,
-    getAuthenticateTestResultError,
-    getAuthenticateTestResultInProgress,
-    verifyIdentityProofQuizFailure,
-    identityProofQuiz: identityProofQuizData,
-  } = authenticate;
-
   const [stage, setStage] = useState(INITIAL);
   const [backgroundCheckType, setBackgroundCheckType] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
   const [setupIntentClientSecret, setSetupIntentClientSecret] = useState(null);
   const [updateUserSubmitted, setUpdateUserSubmitted] = useState(false);
 
-  const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureOwnListing(listing);
   const {
     profile: { firstName, lastName, metadata, privateData },
@@ -314,7 +322,7 @@ const EditListingBackgroundCheckPanel = props => {
       onCreateSubscription(
         stripeCustomerId,
         backgroundCheckType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-        currentUser.id?.uuid,
+        currentUser?.id?.uuid,
         {
           default_payment_method: createdPaymentMethod,
           trial_end: moment()
@@ -330,11 +338,11 @@ const EditListingBackgroundCheckPanel = props => {
     if (
       verifyIdentityProofQuizError?.status === 400 &&
       authenticateUserAccessCode &&
-      currentUser.id.uuid
+      currentUser?.id?.uuid
     ) {
-      onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser.id.uuid);
+      onGetIdentityProofQuiz(authenticateUserAccessCode, currentUser?.id?.uuid);
     }
-  }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser.id.uuid]);
+  }, [verifyIdentityProofQuizError, authenticateUserAccessCode, currentUser?.id?.uuid]);
 
   // Submit user form (create of update) for authenticate user
   const handleSubmit = values => {
@@ -377,7 +385,7 @@ const EditListingBackgroundCheckPanel = props => {
     };
 
     if (stage === CREATE_USER) {
-      onAuthenticateCreateUser(userInfo, currentUser.id.uuid).then(() =>
+      onAuthenticateCreateUser(userInfo, currentUser?.id?.uuid).then(() =>
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
       );
     } else if (stage === UPDATE_USER) {
@@ -391,7 +399,7 @@ const EditListingBackgroundCheckPanel = props => {
   // Submit authenticate consent
   const handleConsentSubmit = values => {
     const fullName = privateData?.authenticateFullName;
-    const userId = currentUser.id.uuid;
+    const userId = currentUser?.id?.uuid;
     onAuthenticateSubmitConsent(authenticateUserAccessCode, fullName, userId).then(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     });
@@ -399,7 +407,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   // This creates payment or setup intent, depending on if user is using promo code
   const handleCardSubmit = (stripe, elements) => {
-    const userId = currentUser.id.uuid;
+    const userId = currentUser?.id?.uuid;
     const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
     const params = {
       stripe,
@@ -436,21 +444,21 @@ const EditListingBackgroundCheckPanel = props => {
       onVerifyIdentityProofQuiz(
         IDMSessionId,
         authenticateUserAccessCode,
-        currentUser.id?.uuid,
+        currentUser?.id?.uuid,
         answers,
         currentAttempts
       ).then(() => {
         form.restart();
       });
     } else if (!authenticateCriminalBackgroundGenerated) {
-      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGenerateCriminalBackground(authenticateUserAccessCode, currentUser?.id?.uuid);
     } else if (!authenticateUserTestResult) {
-      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGetAuthenticateTestResult(authenticateUserAccessCode, currentUser?.id?.uuid);
     } else if (
       !authenticate7YearHistory &&
       authenticateUserTestResult?.backgroundCheck?.hasCriminalRecord
     ) {
-      onGet7YearHistory(authenticateUserAccessCode, currentUser.id?.uuid);
+      onGet7YearHistory(authenticateUserAccessCode, currentUser?.id?.uuid);
     }
   };
 
@@ -462,7 +470,7 @@ const EditListingBackgroundCheckPanel = props => {
       onCreateSubscription(
         stripeCustomerId,
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
-        currentUser.id?.uuid,
+        currentUser?.id?.uuid,
         {
           coupon: bcType === BASIC ? null : CAREVINE_8_OFF_3_MONTHS_COUPON,
           proration_behavior: 'none',
@@ -472,10 +480,16 @@ const EditListingBackgroundCheckPanel = props => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       });
     },
-    [setStage, setBackgroundCheckType, onCreateSubscription, stripeCustomerId, currentUser.id.uuid]
+    [
+      setStage,
+      setBackgroundCheckType,
+      onCreateSubscription,
+      stripeCustomerId,
+      currentUser?.id?.uuid,
+    ]
   );
 
-  const address = listing.attributes.privateData.address;
+  const address = currentListing.attributes.privateData.address;
   const initialValues = {
     firstName,
     lastName,
@@ -488,14 +502,7 @@ const EditListingBackgroundCheckPanel = props => {
 
   const formProps = {
     className: css.form,
-    onChange,
-    disabled,
     initialValues,
-    ready,
-    updated: panelUpdated,
-    updateInProgress,
-    fetchErrors: errors,
-    intl,
   };
 
   let content = null;
@@ -646,7 +653,7 @@ const EditListingBackgroundCheckPanel = props => {
             identityProofQuizAttempts={identityProofQuizAttempts}
             identityProofQuizVerification={identityProofQuizVerification}
             authenticateUserAccessCode={authenticateUserAccessCode}
-            currentUserId={currentUser.id?.uuid}
+            currentUserId={currentUser?.id?.uuid}
             onGetIdentityProofQuiz={onGetIdentityProofQuiz}
             getIdentityProofQuizInProgress={getIdentityProofQuizInProgress}
             onManageDisableScrolling={onManageDisableScrolling}
@@ -674,14 +681,7 @@ const EditListingBackgroundCheckPanel = props => {
           <div className={css.iconContainer}>
             <IconConfirm className={css.confirmIcon} />
           </div>
-          <p className={css.confirmationText}>
-            Your background check is complete. You can now finish your profile.
-          </p>
-          {!isPublished && (
-            <Button className={css.goToNextTabButton} onClick={onNextTab}>
-              {submitButtonText}
-            </Button>
-          )}
+          <p className={css.confirmationText}>Your background check is complete.</p>
         </div>
       );
       break;
@@ -721,32 +721,73 @@ const EditListingBackgroundCheckPanel = props => {
   }
 
   return (
-    <div className={classes}>
-      {content}
-      <Modal
-        id="EditListingBackgroundCheckPanel.consentModal"
-        isOpen={stage === SUBMIT_CONSENT}
-        onClose={() => {}}
-        onManageDisableScrolling={onManageDisableScrolling}
-        containerClassName={css.consentModal}
-        noClose
-        usePortal
-      >
-        <ConsentModalForm
-          onSubmit={handleConsentSubmit}
+    //   TODO: Make title
+    <Page title="" scrollingDisabled={scrollingDisabled}>
+      <LayoutSideNavigation>
+        <LayoutWrapperTopbar>
+          <TopbarContainer
+            currentPage="BackgroundCheckPage"
+            desktopClassName={css.desktopTopbar}
+            mobileClassName={css.mobileTopbar}
+          />
+          <UserNav selectedPageName="BackgroundCheckPage" listing={listing} />
+        </LayoutWrapperTopbar>
+        <LayoutWrapperAccountSettingsSideNav
+          currentTab="BackgroundCheckPage"
           currentUser={currentUser}
-          onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
-          authenticateSubmitConsentInProgress={authenticateSubmitConsentInProgress}
-          authenticateSubmitConsentError={authenticateSubmitConsentError}
+          currentUserListing={listing}
         />
-      </Modal>
-    </div>
+        <LayoutWrapperMain className={css.root}>
+          {content}
+          <Modal
+            id="EditListingBackgroundCheckPanel.consentModal"
+            isOpen={stage === SUBMIT_CONSENT}
+            onClose={() => {}}
+            onManageDisableScrolling={onManageDisableScrolling}
+            containerClassName={css.consentModal}
+            noClose
+            usePortal
+          >
+            <ConsentModalForm
+              onSubmit={handleConsentSubmit}
+              currentUser={currentUser}
+              onAuthenticateSubmitConsent={onAuthenticateSubmitConsent}
+              authenticateSubmitConsentInProgress={authenticateSubmitConsentInProgress}
+              authenticateSubmitConsentError={authenticateSubmitConsentError}
+            />
+          </Modal>
+        </LayoutWrapperMain>
+        <LayoutWrapperFooter>
+          <Footer />
+        </LayoutWrapperFooter>
+      </LayoutSideNavigation>
+    </Page>
   );
 };
 
 const mapStateToProps = state => {
-  const authenticate = state.Authenticate;
+  const {
+    authenticateCreateUserError,
+    authenticateCreateUserInProgress,
+    authenticateUpdateUserError,
+    authenticateUpdateUserInProgress,
+    authenticateSubmitConsentInProgress,
+    authenticateSubmitConsentError,
+    verifyIdentityProofQuizInProgress,
+    verifyIdentityProofQuizError,
+    getIdentityProofQuizInProgress,
+    getIdentityProofQuizError,
+    authenticate7YearHistoryError,
+    authenticate7YearHistoryInProgress,
+    authenticateGenerateCriminalBackgroundError,
+    authenticateGenerateCriminalBackgroundInProgress,
+    getAuthenticateTestResultError,
+    getAuthenticateTestResultInProgress,
+    verifyIdentityProofQuizFailure,
+    identityProofQuiz: identityProofQuizData,
+  } = state.Authenticate;
 
+  const { currentUser, currentUserListing } = state.user;
   const { updateStripeAccountError } = state.stripeConnectAccount;
 
   const {
@@ -770,22 +811,42 @@ const mapStateToProps = state => {
   } = state.paymentMethods;
 
   return {
-    authenticate,
+    authenticate7YearHistoryError,
+    authenticate7YearHistoryInProgress,
+    authenticateCreateUserError,
+    authenticateCreateUserInProgress,
+    authenticateGenerateCriminalBackgroundError,
+    authenticateGenerateCriminalBackgroundInProgress,
+    authenticateSubmitConsentError,
+    authenticateSubmitConsentInProgress,
+    authenticateUpdateUserError,
+    authenticateUpdateUserInProgress,
+    confirmSetupIntentError,
+    confirmSetupIntentInProgress,
+    createdPaymentMethod,
     createPaymentError,
     createPaymentInProgress,
     createPaymentSuccess,
+    createSetupIntentError,
+    createSetupIntentInProgress,
     createSubscriptionError,
     createSubscriptionInProgress,
+    getAuthenticateTestResultError,
+    getAuthenticateTestResultInProgress,
+    getIdentityProofQuizError,
+    getIdentityProofQuizInProgress,
+    identityProofQuiz: identityProofQuizData,
+    listing: currentUserListing,
+    scrollingDisabled: isScrollingDisabled(state),
+    setupIntent,
     subscription,
     updateStripeAccountError,
     updateSubscriptionError,
     updateSubscriptionInProgress,
-    setupIntent,
-    createSetupIntentInProgress,
-    createSetupIntentError,
-    confirmSetupIntentInProgress,
-    confirmSetupIntentError,
-    createdPaymentMethod,
+    user: currentUser,
+    verifyIdentityProofQuizError,
+    verifyIdentityProofQuizFailure,
+    verifyIdentityProofQuizInProgress,
   };
 };
 
@@ -807,8 +868,10 @@ const mapDispatchToProps = {
   onAddQuizAttempt: addQuizAttempt,
   onUpdateCustomerCreditBalance: updateCustomerCreditBalance,
   onClaimReferral: claimReferral,
+  onManageDisableScrolling: manageDisableScrolling,
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  EditListingBackgroundCheckPanel
-);
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  injectIntl
+)(BackgroundCheckPage);

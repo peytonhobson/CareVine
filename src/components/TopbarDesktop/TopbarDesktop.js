@@ -111,7 +111,9 @@ const TopbarDesktop = props => {
     ) : (
       <span
         className={classNames(css.regularLink, css.inboxLink)}
-        onClick={() => onChangeModalValue(getMissingInfoModalValue(currentUser))}
+        onClick={() =>
+          onChangeModalValue(getMissingInfoModalValue(currentUser, currentUserListing))
+        }
       >
         <span className={css.linkText}>
           <FormattedMessage id="TopbarDesktop.inbox" />

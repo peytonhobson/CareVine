@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead } from '..';
+import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead, Modal } from '..';
 import { formatPrice, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { compose } from 'redux';
@@ -10,6 +10,8 @@ import { CAREGIVER, EMPLOYER, SUBSCRIPTION_ACTIVE_TYPES } from '../../util/const
 import SectionReviews from '../../containers/SectionReviews/SectionReviews';
 import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
+import { getMissingInfoModalValue } from '../../util/data';
+import NotifyForPaymentContainer from '../../containers/StripePaymentModal/NotifyForPaymentContainer';
 
 import css from './ListingSummary.module.css';
 
@@ -69,20 +71,65 @@ const ListingSummaryComponent = props => {
     hasStripeAccount,
     hasStripeAccountInProgress,
     hasStripeAccountError,
+    currentUser,
+    currentUserListing,
+    onChangeModalValue,
+    history,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
+    onSendNotifyForBooking,
+    sendNotifyForBookingError,
   } = props;
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
+  const [isNotifyStripAccountModalOpen, setIsNotifyStripAccountModalOpen] = React.useState(false);
 
   const { publicData, geolocation, title } = listing.attributes;
   const { author } = listing;
   const { minPrice, maxPrice, location } = publicData;
-  const authorMetadata = author?.attributes?.profile?.metadata;
-  const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
 
+  const authorMetadata = author?.attributes?.profile?.metadata;
+  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+  const authorWhiteListed = whiteListedCaregiverIds.includes(author.id.uuid);
   const thisUserHasStripeAccount =
     hasStripeAccount?.data && hasStripeAccount?.userId === author.id.uuid;
 
-  const backgroundCheckSubscription = authorMetadata?.backgroundCheckSubscription;
+  const handleClickMessage = () => {
+    if (!currentUser?.id.uuid) {
+      history.push('/signup');
+      return;
+    }
+
+    const missingInfoModalValue = getMissingInfoModalValue(currentUser, currentUserListing);
+
+    if (missingInfoModalValue) {
+      onChangeModalValue(missingInfoModalValue);
+      return;
+    }
+
+    onContactUser();
+  };
+
+  const handleClickBook = () => {
+    if (!currentUser?.id.uuid) {
+      history.push('/signup');
+      return;
+    }
+
+    const missingInfoModalValue = getMissingInfoModalValue(currentUser);
+
+    if (missingInfoModalValue) {
+      onChangeModalValue(missingInfoModalValue);
+      return;
+    }
+
+    if (!thisUserHasStripeAccount && !authorWhiteListed) {
+      setIsNotifyStripAccountModalOpen(true);
+      return;
+    }
+
+    setIsBookingModalOpen(true);
+  };
 
   const hasPremiumSubscription =
     SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
@@ -108,8 +155,12 @@ const ListingSummaryComponent = props => {
 
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
+  const currentGeolocation = currentUserListing?.attributes?.geolocation;
+  const distanceToUse = currentGeolocation ?? origin;
   const distanceFromLocation =
-    geolocation && origin ? calculateDistanceBetweenOrigins(origin, geolocation) : '0.00';
+    geolocation && distanceToUse
+      ? calculateDistanceBetweenOrigins(distanceToUse, geolocation)
+      : '0.00';
   const backgroundCheckTitle = (
     <p>
       <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
@@ -120,7 +171,9 @@ const ListingSummaryComponent = props => {
   const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const canOpenListing = userType !== CAREGIVER || backgroundCheckSubscription?.status === 'active';
+  const hasActiveSubscription = SUBSCRIPTION_ACTIVE_TYPES.includes(
+    backgroundCheckSubscription?.status
+  );
 
   return (
     <div className={css.root}>
@@ -217,15 +270,22 @@ const ListingSummaryComponent = props => {
             )}
             <div
               className={css.locations}
-              style={{ color: userType !== CAREGIVER && 'var(--marketplaceColor)' }}
+              style={{
+                color: userType !== CAREGIVER && 'var(--marketplaceColor)',
+                alignItems: !distanceToUse ? 'flex-start' : null,
+              }}
             >
-              <h3 className={css.location}>{location.city}</h3>
               <h3 className={css.location}>
-                <FormattedMessage
-                  id={'CaregiverListingCard.distance'}
-                  values={{ distance: distanceFromLocation }}
-                />
+                {location.city}, {location.state}
               </h3>
+              {distanceToUse ? (
+                <h3 className={css.location}>
+                  <FormattedMessage
+                    id="CaregiverListingCard.distance"
+                    values={{ distance: distanceFromLocation }}
+                  />
+                </h3>
+              ) : null}
             </div>
           </div>
         </div>
@@ -237,16 +297,16 @@ const ListingSummaryComponent = props => {
         <div className={css.buttonContainer}>
           <Button
             className={css.button}
-            onClick={onContactUser}
+            onClick={handleClickMessage}
             disabled={fetchExistingConversationInProgress}
           >
             <FormattedMessage id="ListingSummary.message" />
           </Button>
-          {(thisUserHasStripeAccount || authorWhiteListed) && isLarge ? (
+          {hasActiveSubscription && isLarge ? (
             <Button
               className={css.button}
-              onClick={() => setIsBookingModalOpen(true)}
-              disabled={fetchExistingConversationInProgress}
+              onClick={handleClickBook}
+              disabled={hasStripeAccount?.userId !== author.id.uuid}
             >
               Book Now
             </Button>
@@ -263,7 +323,7 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.closeListing" />
             </Button>
-          ) : canOpenListing ? (
+          ) : (
             <Button
               className={css.button}
               onClick={() => onOpenListing(listing.id.uuid)}
@@ -272,12 +332,33 @@ const ListingSummaryComponent = props => {
             >
               <FormattedMessage id="ListingSummary.openListing" />
             </Button>
-          ) : null}
+          )}
           <Button className={css.button} onClick={onShowListingPreview}>
             <FormattedMessage id="ListingSummary.viewPreview" />
           </Button>
         </div>
       )}
+      {isNotifyStripAccountModalOpen ? (
+        <Modal
+          containerClassName={css.modalContainer}
+          id="notifyForBookingModal"
+          isOpen={isNotifyStripAccountModalOpen}
+          onClose={() => setIsNotifyStripAccountModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+        >
+          <NotifyForPaymentContainer
+            currentUser={currentUser}
+            intl={intl}
+            onSendNotifyForPayment={onSendNotifyForBooking}
+            provider={author}
+            providerListing={listing}
+            sendNotifyForPaymentInProgress={sendNotifyForBookingInProgress}
+            sendNotifyForPaymentSuccess={sendNotifyForBookingSuccess}
+            sendNotifyForPaymentError={sendNotifyForBookingError}
+          />
+        </Modal>
+      ) : null}
       {hasBooking ? (
         <BookingContainer
           listing={listing}
@@ -289,7 +370,7 @@ const ListingSummaryComponent = props => {
           hasStripeAccountError={hasStripeAccountError}
           isBookingModalOpen={isBookingModalOpen}
           onBookingModalClose={() => setIsBookingModalOpen(false)}
-          onBookingModalOpen={() => setIsBookingModalOpen(true)}
+          onBookingModalOpen={handleClickBook}
           authorWhiteListed={authorWhiteListed}
         />
       ) : null}

@@ -24,7 +24,10 @@ module.exports = (req, res) => {
   }
 
   const msg = {
-    from: fromEmail ?? 'CareVine@carevine-mail.us',
+    from: {
+      email: fromEmail ?? 'CareVine@carevine-mail.us',
+      name: 'CareVine',
+    },
     to: receiverEmail,
     subject,
     html,

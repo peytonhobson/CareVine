@@ -12,6 +12,7 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 
 const AboutPage = loadable(() => import(/* webpackChunkName: "AboutPage" */ './containers/AboutPage/AboutPage'));
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ './containers/AuthenticationPage/AuthenticationPage'));
+const BackgroundCheckPage = loadable(() => import(/* webpackChunkName: "BackgroundCheckPage" */ './containers/BackgroundCheckPage/BackgroundCheckPage'));
 const BlogHomePage = loadable(() => import(/* webpackChunkName: "BlogPage" */ './containers/BlogHomePage/BlogHomePage'));
 const BlogPostPage = loadable(() => import(/* webpackChunkName: "BlogPostPage" */ './containers/BlogPostPage/BlogPostPage'));
 const BookingsPage = loadable(() => import(/* webpackChunkName: "BookingsPage" */ './containers/BookingsPage/BookingsPage'));
@@ -75,6 +76,13 @@ const routeConfiguration = () => {
       path: '/about',
       name: 'AboutPage',
       component: AboutPage,
+    },
+
+    {
+      path: '/background-check',
+      name: 'BackgroundCheckPage',
+      component: BackgroundCheckPage,
+      auth: true,
     },
     {
       path: '/blog',

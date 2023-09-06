@@ -1,5 +1,6 @@
 require('dotenv').config();
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+var crypto = require('crypto');
 const { point, distance } = require('@turf/turf');
 const sgMail = require('@sendgrid/mail');
 
@@ -22,9 +23,6 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   // for local testing and development.
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
 const main = async () => {
   try {
     const res = await integrationSdk.listings.show({
@@ -37,16 +35,13 @@ const main = async () => {
     const authorResponse = await integrationSdk.users.show({
       id: listing.relationships.author.data.id.uuid,
       include: ['profileImage'],
-      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+      'fields.image': ['variants.email-variant&imageVariant.email-variant=w:130;h:130;fit:scale'],
       'limit.images': 1,
     });
     const author = authorResponse.data.data;
 
-    const profilePicture =
-      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small2x']?.url;
-
     const response = await integrationSdk.listings.query({
-      meta_listingType: 'caregiver',
+      meta_listingType: 'employer',
       include: ['author', 'author.profileImage'],
     });
 
@@ -76,32 +71,32 @@ const main = async () => {
       to: u.data.data.attributes.email,
       dynamic_template_data: {
         marketplaceUrl: 'https://carevine.us',
-        profilePicture,
+        profilePicture:
+          'https://sharetribe.imgix.net/644806ee-acbc-40b2-bfbb-b116f6b16b03/64efd338-6b54-4f69-bb95-a4026c067b30?auto=format&crop=edges&fit=crop&h=240&w=240&s=ee095ea41af0b36cff665c2214293e9d',
         name: author.attributes.profile.displayName,
-        description: listing.attributes.description.substring(0, 200) + '...',
+        description: listing.attributes.description.substring(0, 140) + '...',
         listingId,
         distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
         location: `${listing.attributes.publicData.location.city}, ${listing.attributes.publicData.location.state}`,
-        firstLetterOfName: author.attributes.profile.displayName.substring(0, 1),
       },
     }));
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
       from: {
         email: 'CareVine@carevine-mail.us',
         name: 'CareVine',
       },
-      template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
+      template_id: 'd-20bf043d40624d0aace5806466edb50b',
       asm: {
         group_id: 42912,
       },
-      personalizations: emails,
-      // personalizations: emails.slice(0, 1).map(e => {
-      //   return {
-      //     ...e,
-      //     to: 'peyton.hobson1@gmail.com',
-      //   };
-      // }),
+      // personalizations: emails,
+      personalizations: emails.slice(0, 1).map(e => ({
+        ...e,
+        to: 'peyton.hobson1@gmail.com',
+      })),
     };
 
     console.log(msg.personalizations);
@@ -115,7 +110,7 @@ const main = async () => {
         console.log(error?.response?.body?.errors);
       });
   } catch (err) {
-    console.log(err);
+    console.log(err.data.errors);
   }
 };
 
