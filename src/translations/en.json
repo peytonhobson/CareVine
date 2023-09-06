@@ -406,6 +406,7 @@
   "EditListingJobDescriptionPanel.createListingTitle": "Create your {jobDescription}",
   "EditListingJobDescriptionPanel.jobDescription": "Job Description",
   "EditListingJobDescriptionPanel.title": "Edit your {jobDescription}",
+  "EditListingJobDescriptionForm.sameJobDescriptionError": "Whoops! You forgot to change the job description match your specific care needs. Please update the job description to reflect your unique needs.",
   "EditListingLocationForm.address": "Address (Only your city and state will be shown publicly)",
   "EditListingLocationForm.addressNotRecognized": "We didn't recognize this location. Please try another location.",
   "EditListingLocationForm.addressPlaceholder": "12345",
