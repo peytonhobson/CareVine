@@ -68,17 +68,57 @@ const FAQPage = props => {
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is CareVine',
+          question: 'How Does CareVine Work?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is CareVin',
+          question: 'How is CareVine different from traditional caregiving agencies?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+      ],
+    },
+    {
+      title: 'For Care Seekers',
+      questions: [
+        {
+          question: 'How do I create a profile?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is CareVi',
+          question: 'How do I find the right caregiver for my needs?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How do I communicate with potential caregivers?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+      ],
+    },
+    {
+      title: 'For Caregivers',
+      questions: [
+        {
+          question: 'How do I join CareVine as a caregiver?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How do I get paid on the platform?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'What are the benefits of joining CareVine as a caregiver?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How do background checks work for caregivers?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
@@ -88,47 +128,77 @@ const FAQPage = props => {
       title: 'Bookings',
       questions: [
         {
-          question: 'What is CareV',
+          question: 'What is the booking process?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is Care',
+          question: 'Can I set up a recurring booking with a caregiver?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is Car',
+          question: 'How does the payment system work?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is Ca',
+          question: 'What fees are associated with the booking process?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How do refunds work?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How far out in the future can I book a caregiver?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
       ],
     },
     {
-      title: 'Miscellaneous',
+      title: 'Safety and Trust',
       questions: [
         {
-          question: 'What is C',
+          question: 'How does CareVine ensure the safety of its users?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What is ',
+          question: 'What is the process for background checks?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What i',
+          question: 'How can I trust the caregivers on the platform?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
         {
-          question: 'What',
+          question: 'Are all caregivers on CareVine background checked?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+      ],
+    },
+    {
+      title: 'About CareVine',
+      questions: [
+        {
+          question: 'What is the mission of CareVine?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How was CareVine started?',
+          answer:
+            'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
+        },
+        {
+          question: 'How can I contact CareVine?',
           answer:
             'CareVine is a platform that connects caregivers and care seekers. Caregivers can create a profile and list their services, and care seekers can search for caregivers and book services.',
         },
@@ -171,7 +241,6 @@ const FAQPage = props => {
                     details={question.answer}
                     isOpen={openAccordion === question.question}
                     onChange={(event, isExpanded) => {
-                      console.log(event);
                       if (isExpanded) {
                         setOpenAccordion(question.question);
                       } else if (!isExpanded && openAccordion === question.question) {
