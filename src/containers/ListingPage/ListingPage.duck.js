@@ -424,12 +424,6 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
-const timeSlotsRequest = params => (dispatch, getState, sdk) => {
-  return sdk.timeslots.query(params).then(response => {
-    return denormalisedResponseEntities(response);
-  });
-};
-
 export const createBookingDraft = (listingId, bookingData) => async (dispatch, getState, sdk) => {
   dispatch(createBookingDraftRequest());
 
