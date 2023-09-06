@@ -7,7 +7,6 @@
   flex-direction: column;
 
   @media screen(md) {
-    height: 100%;
     padding: 0 3rem;
   }
 }
