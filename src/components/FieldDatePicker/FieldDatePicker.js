@@ -23,7 +23,7 @@ const isDayDisabled = (
   const beforeBuffer =
     date.getTime() <
     moment()
-      .add(bufferDays ?? 0, 'days')
+      .add(bufferDays ?? 1, 'days')
       .startOf('day')
       .toDate()
       .getTime();

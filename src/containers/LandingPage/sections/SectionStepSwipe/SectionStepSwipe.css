@@ -10,6 +10,14 @@
   @media screen(md) {
     padding: 0 0 7rem 0;
   }
+
+  @media screen(lg) {
+    padding: 0 0 15vh 0;
+  }
+
+  @media screen(xl) {
+    padding: 0 0 20vh 0;
+  }
 }
 
 .stepsSectionCard {

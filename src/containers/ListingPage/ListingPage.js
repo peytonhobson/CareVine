@@ -56,6 +56,7 @@ import {
   sendMessage,
   closeListing,
   openListing,
+  notifyForBooking,
   createBookingDraft,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
@@ -242,6 +243,12 @@ export class ListingPageComponent extends Component {
       reviews,
       createBookingDraftError,
       createBookingDraftInProgress,
+      onChangeModalValue,
+      history,
+      sendNotifyForBookingError,
+      sendNotifyForBookingInProgress,
+      sendNotifyForBookingSuccess,
+      onSendNotifyForBooking,
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
@@ -440,6 +447,13 @@ export class ListingPageComponent extends Component {
                       hasStripeAccountError={hasStripeAccountError}
                       createBookingDraftError={createBookingDraftError}
                       createBookingDraftInProgress={createBookingDraftInProgress}
+                      currentUser={currentUser}
+                      onChangeModalValue={onChangeModalValue}
+                      history={history}
+                      sendNotifyForBookingError={sendNotifyForBookingError}
+                      sendNotifyForBookingInProgress={sendNotifyForBookingInProgress}
+                      sendNotifyForBookingSuccess={sendNotifyForBookingSuccess}
+                      onSendNotifyForBooking={onSendNotifyForBooking}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -523,6 +537,9 @@ const mapStateToProps = state => {
     reviews,
     createBookingDraftError,
     createBookingDraftInProgress,
+    sendNotifyForBookingError,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
   } = state.ListingPage;
   const { currentUser, currentUserListing } = state.user;
   const {
@@ -571,6 +588,9 @@ const mapStateToProps = state => {
     reviews,
     createBookingDraftError,
     createBookingDraftInProgress,
+    sendNotifyForBookingError,
+    sendNotifyForBookingInProgress,
+    sendNotifyForBookingSuccess,
   };
 };
 
@@ -588,6 +608,7 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onCreateBookingDraft: (listingId, bookingData) =>
     dispatch(createBookingDraft(listingId, bookingData)),
+  onSendNotifyForBooking: listing => dispatch(notifyForBooking(listing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

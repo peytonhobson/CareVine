@@ -1,6 +1,5 @@
 require('dotenv').config();
 const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
-var crypto = require('crypto');
 const { point, distance } = require('@turf/turf');
 const sgMail = require('@sendgrid/mail');
 
@@ -10,6 +9,8 @@ const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
   const point2 = point([latlng2.lng, latlng2.lat]);
   return Number.parseFloat(distance(point1, point2, options)).toFixed(2);
 };
+
+const listingId = process.argv[2];
 
 const integrationSdk = flexIntegrationSdk.createInstance({
   // These two env vars need to be set in the `.env` file.
@@ -21,67 +22,97 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   // for local testing and development.
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const main = async () => {
   try {
     const res = await integrationSdk.listings.show({
-      id: '648e1eeb-e21f-45ab-8c14-545f028957da',
+      id: listingId,
+      include: ['author'],
     });
 
     const listing = res.data.data;
 
+    const authorResponse = await integrationSdk.users.show({
+      id: listing.relationships.author.data.id.uuid,
+      include: ['profileImage'],
+      'fields.image': ['variants.square-small', 'variants.square-small2x'],
+      'limit.images': 1,
+    });
+    const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small2x']?.url;
+
     const response = await integrationSdk.listings.query({
       meta_listingType: 'caregiver',
-      include: ['author'],
+      include: ['author', 'author.profileImage'],
     });
 
     const listings = response.data.data;
 
     const geolocation = listing?.attributes?.geolocation;
 
-    const authorIds = listings
+    const authors = listings
       .filter(l => {
         const { geolocation: cGeolocation } = l?.attributes;
         return cGeolocation
           ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
           : false;
       })
-      .map(l => l.relationships.author.data.id.uuid);
+      .map(l => ({
+        id: l.relationships.author.data.id.uuid,
+        distance: calculateDistanceBetweenOrigins(geolocation, l?.attributes?.geolocation),
+      }));
 
     const userResponse = await Promise.all(
-      authorIds.map(async id => {
-        return await integrationSdk.users.show({ id });
+      authors.map(async author => {
+        return await integrationSdk.users.show({ id: author.id });
       })
     );
 
     const emails = userResponse.map(u => ({
       to: u.data.data.attributes.email,
       dynamic_template_data: {
-        listingTitle: listing.attributes.title,
         marketplaceUrl: 'https://carevine.us',
+        profilePicture,
+        name: author.attributes.profile.displayName,
+        description: listing.attributes.description.substring(0, 140) + '...',
+        listingId,
+        distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
+        location: `${listing.attributes.publicData.location.city}, ${listing.attributes.publicData.location.state}`,
       },
     }));
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
     const msg = {
-      from: 'CareVine@carevine-mail.us',
-      template_id: 'd-4440656b0a504f3d9e5d2c2311dbc888',
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
+      template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
       asm: {
         group_id: 42912,
       },
       personalizations: emails,
+      // personalizations: emails.slice(0, 1).map(e => {
+      //   return {
+      //     ...e,
+      //     to: 'peyton.hobson1@gmail.com',
+      //   };
+      // }),
     };
 
-    console.log(emails);
+    console.log(msg.personalizations);
 
-    sgMail
-      .sendMultiple(msg)
-      .then(() => {
-        console.log('Emails sent successfully');
-      })
-      .catch(error => {
-        console.log(error?.response?.body?.errors);
-      });
+    // sgMail
+    //   .sendMultiple(msg)
+    //   .then(() => {
+    //     console.log('Emails sent successfully');
+    //   })
+    //   .catch(error => {
+    //     console.log(error?.response?.body?.errors);
+    //   });
   } catch (err) {
     console.log(err);
   }

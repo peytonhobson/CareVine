@@ -8,7 +8,11 @@ const activeSubscriptionTypes = ['active', 'trialing'];
 const AUTHENTICATE_API_KEY = process.env.AUTHENTICATE_API_KEY;
 const isDev = process.env.REACT_APP_ENV === 'development';
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { point, distance } = require('@turf/turf');
+const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const weekdayMap = {
   sun: 0,
@@ -187,88 +191,6 @@ const closeListingNotification = async userId => {
     );
   } catch (e) {
     log.error(e, 'listing-closed-notifications-failed', {});
-  }
-};
-
-const closeListing = async userId => {
-  let listing;
-
-  try {
-    const res = await integrationSdk.listings.query({ authorId: userId });
-    listing = res?.data?.data?.length > 0 && res.data.data[0];
-  } catch (e) {
-    log.error(e, 'listing-closed-query-failed', {});
-  }
-
-  if (listing?.attributes?.state === 'published') {
-    try {
-      await integrationSdk.listings.close(
-        {
-          id: listing.id?.uuid,
-        },
-        {
-          expand: true,
-        }
-      );
-    } catch (e) {
-      log.error(e, 'listing-closed-failed', {});
-    }
-  }
-};
-
-const updateListingApproveListing = async event => {
-  const userId = event.attributes.resource.relationships?.author?.data?.id?.uuid;
-
-  try {
-    const res = await integrationSdk.users.show({
-      id: userId,
-      include: ['stripeAccount'],
-    });
-
-    const user = res?.data?.data;
-    const metadata = user?.attributes?.profile?.metadata;
-    const openListing =
-      metadata?.userType === CAREGIVER
-        ? activeSubscriptionTypes.includes(metadata?.backgroundCheckSubscription?.status) &&
-          user?.attributes?.emailVerified
-        : user?.attributes?.emailVerified;
-    if (openListing) {
-      const listingId = event.attributes.resource.id?.uuid;
-
-      await integrationSdk.listings.approve({
-        id: listingId,
-      });
-    }
-  } catch (e) {
-    log.error(e, 'listing-update-approved-failed', {});
-  }
-};
-
-const updateUserListingApproved = async event => {
-  let listingState = null;
-  const userId = event.attributes.resource.id?.uuid;
-
-  try {
-    const res = await integrationSdk.listings.query({
-      authorId: userId,
-    });
-
-    const userListingId = res.data.data[0].id?.uuid;
-    listingState = res.data.data[0].attributes.state;
-
-    if (listingState === 'pendingApproval') {
-      await integrationSdk.listings.approve({
-        id: userListingId,
-      });
-    }
-
-    if (listingState === 'closed') {
-      await integrationSdk.listings.open({
-        id: userListingId,
-      });
-    }
-  } catch (e) {
-    log.error(e, 'user-update-approved-failed', {});
   }
 };
 
@@ -887,11 +809,173 @@ const updateNextWeekMetadata = async transaction => {
   }
 };
 
+const calculateDistanceBetweenOrigins = (latlng1, latlng2) => {
+  const options = { units: 'miles' };
+  const point1 = point([latlng1.lng, latlng1.lat]);
+  const point2 = point([latlng2.lng, latlng2.lat]);
+  return Number.parseFloat(distance(point1, point2, options)).toFixed(2);
+};
+
+const sendNewJobInAreaEmail = async listing => {
+  try {
+    const listingId = listing.id.uuid;
+
+    const authorResponse = await integrationSdk.users.show({
+      id: listing.relationships.author.data.id.uuid,
+      include: ['profileImage'],
+      'fields.image': ['variants.square-small'],
+      'limit.images': 1,
+    });
+    const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small']?.url;
+
+    const response = await integrationSdk.listings.query({
+      meta_listingType: 'caregiver',
+      include: ['author', 'author.profileImage'],
+    });
+
+    const listings = response.data.data;
+
+    if (!listings.length) return;
+
+    const geolocation = listing?.attributes?.geolocation;
+
+    const authors = listings
+      .filter(l => {
+        const { geolocation: cGeolocation } = l?.attributes;
+        return cGeolocation
+          ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
+          : false;
+      })
+      .map(l => ({
+        id: l.relationships.author.data.id.uuid,
+        distance: calculateDistanceBetweenOrigins(geolocation, l?.attributes?.geolocation),
+      }));
+
+    const userResponse = await Promise.all(
+      authors.map(async author => {
+        return await integrationSdk.users.show({ id: author.id });
+      })
+    );
+
+    const { city, state } = listing.attributes.publicData.location;
+    const { displayName, abbreviatedName } = author.attributes.profile;
+
+    const emails = userResponse.map(u => ({
+      to: u.data.data.attributes.email,
+      dynamic_template_data: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        profilePicture,
+        name: displayName,
+        description: listing.attributes.description.substring(0, 140) + '...',
+        listingId,
+        distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
+        location: `${city}, ${state}`,
+        abbreviatedName,
+      },
+    }));
+
+    const msg = {
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
+      template_id: 'd-28579166f80a41c4b04b07a02dbc05d4',
+      asm: {
+        group_id: 42912,
+      },
+      personalizations: emails,
+    };
+
+    await sgMail.sendMultiple(msg);
+  } catch (err) {
+    log.error(err?.data?.errors, 'send-new-job-in-area-email-failed', {});
+  }
+};
+
+const sendNewCaregiverInAreaEmail = async listing => {
+  try {
+    const listingId = listing.id.uuid;
+
+    const authorResponse = await integrationSdk.users.show({
+      id: listing.relationships.author.data.id.uuid,
+      include: ['profileImage'],
+      'fields.image': ['variants.square-small'],
+      'limit.images': 1,
+    });
+    const author = authorResponse.data.data;
+
+    const profilePicture =
+      authorResponse.data?.included?.[0]?.attributes?.variants?.['square-small']?.url;
+
+    const response = await integrationSdk.listings.query({
+      meta_listingType: 'employer',
+      include: ['author', 'author.profileImage'],
+    });
+
+    const listings = response.data.data;
+
+    if (!listings.length) return;
+
+    const geolocation = listing?.attributes?.geolocation;
+
+    const authors = listings
+      .filter(l => {
+        const { geolocation: cGeolocation } = l?.attributes;
+        return cGeolocation
+          ? calculateDistanceBetweenOrigins(geolocation, cGeolocation) <= 20
+          : false;
+      })
+      .map(l => ({
+        id: l.relationships.author.data.id.uuid,
+        distance: calculateDistanceBetweenOrigins(geolocation, l?.attributes?.geolocation),
+      }));
+
+    const userResponse = await Promise.all(
+      authors.map(async author => {
+        return await integrationSdk.users.show({ id: author.id });
+      })
+    );
+
+    const { city, state } = listing.attributes.publicData.location;
+    const { displayName, abbreviatedName } = author.attributes.profile;
+
+    const emails = userResponse.map(u => ({
+      to: u.data.data.attributes.email,
+      dynamic_template_data: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+        profilePicture,
+        name: displayName,
+        description: listing.attributes.description.substring(0, 140) + '...',
+        listingId,
+        distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
+        location: `${city}, ${state}`,
+        abbreviatedName,
+      },
+    }));
+
+    const msg = {
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
+      template_id: 'd-20bf043d40624d0aace5806466edb50b',
+      asm: {
+        group_id: 42912,
+      },
+      personalizations: emails,
+    };
+
+    await sgMail.sendMultiple(msg);
+  } catch (err) {
+    log.error(err?.data?.errors, 'send-new-caregiver-in-area-email-failed', {});
+  }
+};
+
 module.exports = {
-  updateUserListingApproved,
   approveListingNotification,
-  closeListing,
-  updateListingApproveListing,
   enrollUserTCM,
   deEnrollUserTCM,
   cancelSubscription,
@@ -905,6 +989,7 @@ module.exports = {
   updateBookingEnd,
   updateNextWeekStart,
   makeReviewable,
-  updateNextWeekMetadata,
   updateBookingLedger,
+  sendNewJobInAreaEmail,
+  sendNewCaregiverInAreaEmail,
 };

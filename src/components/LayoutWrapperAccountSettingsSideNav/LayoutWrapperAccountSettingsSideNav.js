@@ -59,7 +59,7 @@ const scrollToTab = (currentTab, scrollLeft, setScrollLeft) => {
 const LayoutWrapperAccountSettingsSideNavComponent = props => {
   const [scrollLeft, setScrollLeft] = useGlobalState('scrollLeft');
   useEffect(() => {
-    const { currentTab, viewport, currentUser } = props;
+    const { currentTab, viewport } = props;
 
     const { width } = viewport;
     const hasViewport = width > 0;
@@ -81,12 +81,9 @@ const LayoutWrapperAccountSettingsSideNavComponent = props => {
     };
   });
 
-  const { currentTab, currentUser } = props;
+  const { currentTab, currentUser, currentUserListing } = props;
 
-  const userType =
-    currentUser &&
-    currentUser.attributes.profile.metadata &&
-    currentUser.attributes.profile.metadata.userType;
+  const userType = currentUser?.attributes.profile.metadata.userType;
 
   const tabs = [
     {
@@ -134,9 +131,21 @@ const LayoutWrapperAccountSettingsSideNavComponent = props => {
     },
   };
 
+  const backgroundCheckTab = {
+    text: 'Background Check',
+    selected: currentTab === 'BackgroundCheckPage',
+    id: 'BackgroundCheckPageTab',
+    linkProps: {
+      name: 'BackgroundCheckPage',
+    },
+  };
+
   if (userType === CAREGIVER) {
     tabs.push(subscriptionsTab);
     tabs.push(payoutTab);
+    if (currentUserListing) {
+      tabs.push(backgroundCheckTab);
+    }
   } else {
     tabs.push(paymentMethodsTab);
   }

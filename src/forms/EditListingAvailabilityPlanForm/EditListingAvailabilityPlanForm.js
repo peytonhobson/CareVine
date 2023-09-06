@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { bool, object, string } from 'prop-types';
 import { compose } from 'redux';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
-import { Form, PrimaryButton, DailyPlan } from '../../components';
+import { Form, DailyPlan, Button, FieldCheckboxGroup, PrimaryButton } from '../../components';
+import { findOptionsForSelectFilter } from '../../util/search';
+import config from '../../config';
+import { required } from '../../util/validators';
 
 import css from './EditListingAvailabilityPlanForm.module.css';
 
@@ -71,12 +74,16 @@ const EditListingAvailabilityPlanFormComponent = props => {
           handleSubmit,
           inProgress,
           intl,
-          listingTitle,
           rootClassName,
           showErrors,
           values,
           weekdays,
-          currentListing,
+          ready,
+          updated,
+          hideScheduleTypes,
+          onChange,
+          hideSubmit,
+          submitButtonText,
         } = fieldRenderProps;
 
         const classes = classNames(rootClassName || css.root, className);
@@ -85,38 +92,78 @@ const EditListingAvailabilityPlanFormComponent = props => {
         const { updateListingError } = fetchErrors || {};
 
         const submitDisabled = submitInProgress;
+        const submitReady = updated || ready;
+
+        const checkboxLabel = intl.formatMessage({ id: 'AvailabilityTypeForm.checkboxLabel' });
+
+        const typeOptions = findOptionsForSelectFilter('scheduleTypes', filterConfig);
 
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
+            <FormSpy
+              onChange={e => {
+                if (onChange) {
+                  onChange(e.values);
+                }
+              }}
+            />
+            {!hideScheduleTypes ? (
+              <FieldCheckboxGroup
+                className={css.features}
+                id="scheduleTypes"
+                name="scheduleTypes"
+                options={typeOptions}
+                label={checkboxLabel}
+                required
+                inline
+                validate={required('Please select at least one schedule type.')}
+              />
+            ) : null}
             <h2 className={css.heading}>
               <FormattedMessage id="EditListingAvailabilityPlanForm.title" />
             </h2>
             <div className={css.week}>
               {weekdays.map(w => {
-                return <DailyPlan dayOfWeek={w} key={w} values={values} intl={intl} />;
+                return (
+                  <DailyPlan
+                    dayOfWeek={w}
+                    key={w}
+                    values={values}
+                    intl={intl}
+                    className={css.dailyPlan}
+                  />
+                );
               })}
             </div>
 
-            <div className={css.submitButton}>
-              {updateListingError && showErrors ? (
-                <p className={css.error}>
-                  <FormattedMessage id="EditListingAvailabilityPlanForm.updateFailed" />
-                </p>
-              ) : null}
-              {showEmptyError ? (
-                <p className={css.error}>
-                  <FormattedMessage id="EditListingAvailabilityPlanForm.emptyError" />
-                </p>
-              ) : null}
-              {showUnfinishedError ? (
-                <p className={css.error}>
-                  <FormattedMessage id="EditListingAvailabilityPlanForm.unfinishedError" />
-                </p>
-              ) : null}
-              <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-                <FormattedMessage id="EditListingAvailabilityPlanForm.saveSchedule" />
-              </PrimaryButton>
-            </div>
+            {updateListingError && showErrors ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingAvailabilityPlanForm.updateFailed" />
+              </p>
+            ) : null}
+            {showEmptyError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingAvailabilityPlanForm.emptyError" />
+              </p>
+            ) : null}
+            {showUnfinishedError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingAvailabilityPlanForm.unfinishedError" />
+              </p>
+            ) : null}
+            {!hideSubmit ? (
+              <Button
+                type="submit"
+                inProgress={submitInProgress}
+                disabled={submitDisabled}
+                className={css.submitButton}
+                ready={submitReady}
+              >
+                {submitButtonText || (
+                  <FormattedMessage id="EditListingAvailabilityPlanForm.saveSchedule" />
+                )}
+              </Button>
+            ) : null}
           </Form>
         );
       }}

@@ -246,6 +246,7 @@ const EditBookingFormComponent = props => (
           }
         }
         return true;
+        window.scrollTo(0, 0);
       };
 
       const checkvalidPayment = () => {
@@ -271,6 +272,7 @@ const EditBookingFormComponent = props => (
         if (!checkValidDates() || !checkvalidPayment()) return;
 
         setSelectedTab('Request');
+        window.scrollTo(0, 0);
       };
 
       const tabs = [

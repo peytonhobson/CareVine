@@ -1,19 +1,11 @@
 import React from 'react';
-import { array, arrayOf, bool, func, object, oneOf, shape, string } from 'prop-types';
 
-import { propTypes } from '../../util/types';
-import { intlShape } from '../../util/reactIntl';
 import routeConfiguration from '../../routeConfiguration';
-import {
-  LISTING_PAGE_PARAM_TYPE_DRAFT,
-  LISTING_PAGE_PARAM_TYPE_NEW,
-  LISTING_PAGE_PARAM_TYPES,
-} from '../../util/urlHelpers';
+import { LISTING_PAGE_PARAM_TYPE_DRAFT, LISTING_PAGE_PARAM_TYPE_NEW } from '../../util/urlHelpers';
 import { createResourceLocatorString } from '../../util/routes';
 import {
   EditListingAdditionalDetailsPanel,
   EditListingAvailabilityPanel,
-  EditListingBackgroundCheckPanel,
   EditListingBioPanel,
   EditListingCaregiverDetailsPanel,
   EditListingCareNeedsPanel,
@@ -41,7 +33,6 @@ export const LOCATION = 'location';
 export const PRICING = 'pricing';
 export const PROFILE_PICTURE = 'profile-picture';
 export const CARE_RECIPIENT = 'care-recipient';
-export const BACKGROUND_CHECK = 'background-check';
 export const CAREGIVER_PREFERENCES = 'caregiver-preferences';
 export const JOB_DESCRIPTION = 'job-description';
 
@@ -60,7 +51,6 @@ export const SUPPORTED_TABS = [
   PROFILE_PICTURE,
   CARE_RECIPIENT,
   CAREGIVER_PREFERENCES,
-  BACKGROUND_CHECK,
   JOB_DESCRIPTION,
 ];
 
@@ -218,7 +208,7 @@ const EditListingWizardTab = props => {
           {...panelProps(CARE_TYPE)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(CARE_TYPE, values);
           }}
         />
       );
@@ -246,7 +236,7 @@ const EditListingWizardTab = props => {
           {...panelProps(BIO)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(BIO, values);
           }}
           onGenerateBio={onGenerateBio}
           generateBioInProgress={generateBioInProgress}
@@ -264,7 +254,7 @@ const EditListingWizardTab = props => {
           {...panelProps(EXPERIENCE)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(EXPERIENCE, values);
           }}
         />
       );
@@ -278,7 +268,7 @@ const EditListingWizardTab = props => {
           {...panelProps(ADDITIONAL_DETAILS)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(ADDITIONAL_DETAILS, values);
           }}
         />
       );
@@ -297,7 +287,7 @@ const EditListingWizardTab = props => {
           {...panelProps(LOCATION)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(LOCATION, values);
           }}
         />
       );
@@ -316,7 +306,7 @@ const EditListingWizardTab = props => {
           {...panelProps(PRICING)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(PRICING, values);
           }}
         />
       );
@@ -332,7 +322,7 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             // We want to return the Promise to the form,
             // so that it doesn't close its modal if an error is thrown.
-            return onCompleteEditListingWizardTab(tab, values, true);
+            return onCompleteEditListingWizardTab(CARE_SCHEDULE, values, true);
           }}
           onNextTab={() =>
             redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
@@ -357,25 +347,11 @@ const EditListingWizardTab = props => {
           onSubmit={values => {
             // We want to return the Promise to the form,
             // so that it doesn't close its modal if an error is thrown.
-            return onCompleteEditListingWizardTab(tab, values, true);
+            return onCompleteEditListingWizardTab(AVAILABILITY, values, true);
           }}
           onNextTab={() =>
             redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
           }
-        />
-      );
-    }
-    case BACKGROUND_CHECK: {
-      const submitButtonTranslationKey = 'EditListingWizard.saveNewBackgroundCheck';
-
-      return (
-        <EditListingBackgroundCheckPanel
-          {...panelProps(BACKGROUND_CHECK)}
-          onNextTab={() =>
-            redirectAfterDraftUpdate(currentListing.id?.uuid, params, tab, marketplaceTabs, history)
-          }
-          onUpdateProfile={onUpdateProfile}
-          submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
         />
       );
     }
@@ -392,7 +368,7 @@ const EditListingWizardTab = props => {
           onImageUpload={onImageUpload}
           onRemoveImage={onRemoveImage}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(PROFILE_PICTURE, values);
           }}
           onUpdateImageOrder={onUpdateImageOrder}
           onProfileImageUpload={onProfileImageUpload}
@@ -413,7 +389,7 @@ const EditListingWizardTab = props => {
           {...panelProps(CARE_RECIPIENT)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(CARE_RECIPIENT, values);
           }}
           onManageDisableScrolling={onManageDisableScrolling}
         />
@@ -429,7 +405,7 @@ const EditListingWizardTab = props => {
           {...panelProps(CAREGIVER_PREFERENCES)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(CAREGIVER_PREFERENCES, values);
           }}
         />
       );
@@ -444,7 +420,7 @@ const EditListingWizardTab = props => {
           {...panelProps(JOB_DESCRIPTION)}
           submitButtonText={intl.formatMessage({ id: submitButtonTranslationKey })}
           onSubmit={values => {
-            onCompleteEditListingWizardTab(tab, values);
+            onCompleteEditListingWizardTab(JOB_DESCRIPTION, values);
           }}
           generateJobDescriptionInProgress={generateJobDescriptionInProgress}
           generateJobDescriptionError={generateJobDescriptionError}
@@ -456,63 +432,6 @@ const EditListingWizardTab = props => {
     default:
       return null;
   }
-};
-
-EditListingWizardTab.defaultProps = {
-  listing: null,
-  updatedTab: null,
-  availabilityExceptions: [],
-  pageName: 'EditListingPage',
-};
-
-EditListingWizardTab.propTypes = {
-  params: shape({
-    id: string.isRequired,
-    slug: string.isRequired,
-    type: oneOf(LISTING_PAGE_PARAM_TYPES).isRequired,
-    tab: oneOf(SUPPORTED_TABS).isRequired,
-  }).isRequired,
-  availabilityExceptions: arrayOf(propTypes.availabilityException),
-  errors: shape({
-    createListingDraftError: object,
-    publishListingError: object,
-    updateListingError: object,
-    showListingsError: object,
-    uploadImageError: object,
-    fetchExceptionsError: object,
-    addExceptionError: object,
-    deleteExceptionError: object,
-  }).isRequired,
-  fetchInProgress: bool.isRequired,
-  newListingPublished: bool.isRequired,
-  history: shape({
-    push: func.isRequired,
-    replace: func.isRequired,
-  }).isRequired,
-  pageName: string,
-
-  // We cannot use propTypes.listing since the listing might be a draft.
-  listing: shape({
-    attributes: shape({
-      publicData: object,
-      description: string,
-      geolocation: object,
-      pricing: object,
-      title: string,
-    }),
-    images: array,
-  }),
-
-  handleCreateFlowTabScrolling: func.isRequired,
-  handlePublishListing: func.isRequired,
-  onUpdateListing: func.isRequired,
-  onCreateListingDraft: func.isRequired,
-  onChange: func.isRequired,
-  updatedTab: string,
-  updateInProgress: bool.isRequired,
-
-  intl: intlShape.isRequired,
-  profileImage: object,
 };
 
 export default EditListingWizardTab;

@@ -47,6 +47,8 @@ const EditListingBioPanel = props => {
     }
   }, [generatedBio]);
 
+  console.log();
+
   const initialValues = { description: hasDescription ? description : generatedBio };
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;

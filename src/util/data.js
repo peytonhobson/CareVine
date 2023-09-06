@@ -458,19 +458,21 @@ export const userCanMessage = currentUser => {
     : emailVerified;
 };
 
-export const getMissingInfoModalValue = currentUser => {
-  const userType = currentUser && currentUser.attributes.profile.metadata.userType;
-  const emailVerified = currentUser && currentUser.attributes.emailVerified;
+export const getMissingInfoModalValue = (currentUser, currentUserListing) => {
+  const userType = currentUser?.attributes.profile.metadata.userType;
+  const emailVerified = currentUser?.attributes.emailVerified;
   const backgroundCheckApprovedStatus =
-    currentUser?.attributes?.profile?.metadata?.backgroundCheckApproved?.status;
+    currentUser?.attributes?.profile.metadata.backgroundCheckApproved?.status;
   const backgroundCheckSubscription =
-    currentUser?.attributes?.profile?.metadata?.backgroundCheckSubscription;
+    currentUser?.attributes?.profile.metadata.backgroundCheckSubscription;
+  const listingState = currentUserListing?.attributes?.state;
 
   const canMessage =
     userType === CAREGIVER
       ? emailVerified &&
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
-        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status)
+        SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
+        (listingState === 'published' || listingState === 'closed')
       : emailVerified;
 
   if (!canMessage) {

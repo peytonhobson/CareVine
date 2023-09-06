@@ -44,10 +44,11 @@ const SectionReviews = props => {
     </h2>
   );
 
+  const reviewCount = reviews?.length || 0;
   const pendingReviews = currentUser?.attributes.profile.metadata.pendingReviews || [];
   const canWriteReview = pendingReviews.includes(listingId);
 
-  const previewReview = reviews?.length > 0 ? reviews[0] : null;
+  const previewReview = reviewCount ? reviews[0] : null;
   const shortenedReviews = previewReview
     ? [
         {
@@ -60,7 +61,7 @@ const SectionReviews = props => {
       ]
     : [];
 
-  return (
+  return reviewCount ? (
     <div className={css.sectionReviews}>
       <h2 className={css.reviewsHeading}>
         <FormattedMessage id="ListingPage.reviewsHeading" values={{ count: reviews?.length }} />
@@ -105,7 +106,7 @@ const SectionReviews = props => {
         sendReviewError={submitReviewError}
       />
     </div>
-  );
+  ) : null;
 };
 
 const mapStateToProps = state => {
