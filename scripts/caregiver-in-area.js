@@ -84,16 +84,19 @@ const main = async () => {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
-      from: 'CareVine@carevine-mail.us',
+      from: {
+        email: 'CareVine@carevine-mail.us',
+        name: 'CareVine',
+      },
       template_id: 'd-20bf043d40624d0aace5806466edb50b',
       asm: {
         group_id: 42912,
       },
-      personalizations: emails,
-      // personalizations: emails.slice(0, 1).map(e => ({
-      //   ...e,
-      //   to: 'peyton.hobson1@gmail.com',
-      // })),
+      // personalizations: emails,
+      personalizations: emails.slice(0, 1).map(e => ({
+        ...e,
+        to: 'peyton.hobson1@gmail.com',
+      })),
     };
 
     console.log(msg.personalizations);
@@ -107,7 +110,7 @@ const main = async () => {
         console.log(error?.response?.body?.errors);
       });
   } catch (err) {
-    console.log(err);
+    console.log(err.data.errors);
   }
 };
 
