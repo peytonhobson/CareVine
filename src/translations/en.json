@@ -326,6 +326,7 @@
   "EditListingBioForm.titlePlaceholder": "Bio title (optional)",
   "EditListingBioForm.titleRequired": "You need to add a name.",
   "EditListingBioForm.generateBioFailed": "Failed to generate bio. Either reload the page to try again or create your own.",
+  "EditListingBioForm.sameBioError": "Whoops! You forgot to change your bio to match your specific talents. Make sure to edit the generated one to reflect your unique skills.",
   "EditListingBioForm.updateFailed": "Failed to update. Please try again.",
   "EditListingCaregiverDetailsForm.additionalInfoLabel": "Additional information • optional",
   "EditListingCaregiverDetailsForm.caregiverDetailsLabel": "Describe your ideal caregiver • optional",
