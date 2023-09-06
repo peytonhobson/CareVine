@@ -2,8 +2,10 @@
  :transitions
  [{:name :transition/initial-message,
    :actor :actor.role/customer,
-   :actions [{:name :action/update-protected-data},],
-   :to :state/messaging},
+   :actions [{:name :action/privileged-update-metadata}],
+   :to :state/messaging
+   :privileged? true
+   },
    {:name :transition/customer-delete-conversation,
    :actor :actor.role/customer,
    :actions [],
