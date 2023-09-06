@@ -166,33 +166,6 @@ const EmployerBookingCard = props => {
       : ''}
   `;
 
-  const menuItems = (
-    <>
-      <MenuItem key="dispute">
-        {isDisputable && (
-          <InlineTextButton
-            rootClassName={css.menuItem}
-            onClick={() => handleModalOpen(setIsDisputeModalOpen)}
-          >
-            <span className={css.menuItemBorder} />
-            Dispute
-          </InlineTextButton>
-        )}
-      </MenuItem>
-      <MenuItem key="cancel">
-        {showCancel && (
-          <InlineTextButton
-            rootClassName={classNames(css.menuItem, 'text-error')}
-            onClick={() => handleModalOpen(setIsCancelModalOpen)}
-          >
-            <span className={css.menuItemBorder} />
-            Cancel
-          </InlineTextButton>
-        )}
-      </MenuItem>
-    </>
-  );
-
   return (
     <div className={css.bookingCard}>
       {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
