@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { arrayOf, bool, func, object, string } from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../util/reactIntl';
 import { ensureOwnListing, convertTimeFrom12to24, convertTimeFrom24to12 } from '../../util/data';
 import { getDefaultTimeZoneOnBrowser, timestampToDate } from '../../util/dates';
-import { LISTING_STATE_DRAFT, DATE_TYPE_DATETIME, propTypes } from '../../util/types';
-import {
-  Button,
-  IconEdit,
-  InlineTextButton,
-  Modal,
-  AvailabilityPlanExceptions,
-  WeekPanel,
-} from '../../components';
+import { LISTING_STATE_DRAFT } from '../../util/types';
 import { EditListingAvailabilityPlanForm } from '../../forms';
-import AvailabilityTypeForm from './AvailabilityTypeForm';
 import zipcodeToTimezone from 'zipcode-to-timezone';
 import { WEEKDAYS } from '../../util/constants';
 
@@ -57,12 +47,13 @@ const createEntryDayGroups = (entries = {}) =>
     };
   }, {});
 
-const createInitialValues = availabilityPlan => {
+const createInitialValues = (availabilityPlan, scheduleTypes) => {
   const { timezone, entries } = availabilityPlan || {};
   const tz = timezone || defaultTimeZone();
   return {
     timezone: tz,
     ...createEntryDayGroups(entries),
+    scheduleTypes,
   };
 };
 
@@ -105,15 +96,12 @@ const EditListingAvailabilityPanel = props => {
     className,
     rootClassName,
     listing,
-    disabled,
-    ready,
     onSubmit,
-    onManageDisableScrolling,
     onNextTab,
-    submitButtonText,
     updateInProgress,
     errors,
     panelUpdated,
+    submitButtonText,
   } = props;
 
   const currentListing = ensureOwnListing(listing);
@@ -123,49 +111,21 @@ const EditListingAvailabilityPanel = props => {
     entries: [],
   };
   const publicData = currentListing.attributes.publicData;
-  const savedAvailabilityPlan = publicData.availabilityPlan;
+  const availabilityPlan = publicData?.availabilityPlan || defaultAvailabilityPlan;
+  const scheduleTypes = publicData?.scheduleTypes || [];
 
-  const savedSelectedAvailabilityTypes = publicData?.scheduleTypes;
-
-  // Hooks
-  const [isEditPlanModalOpen, setIsEditPlanModalOpen] = useState(false);
-  const [valuesFromLastSubmit, setValuesFromLastSubmit] = useState(null);
-  const [selectedAvailabilityTypes, setSelectedAvailabilityTypes] = useState(
-    savedSelectedAvailabilityTypes || []
-  );
-  const [availabilityPlan, setAvailabilityPlan] = useState(
-    savedAvailabilityPlan || defaultAvailabilityPlan
-  );
   const [showNoEntriesError, setShowNoEntriesError] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
-  const submitDisabled =
-    selectedAvailabilityTypes.length === 0 ||
-    (!valuesFromLastSubmit && selectedAvailabilityTypes === savedSelectedAvailabilityTypes);
-  const submitInProgress = updateInProgress;
-  const submitReady = ready || panelUpdated;
+  const initialValues = createInitialValues(availabilityPlan, scheduleTypes);
 
-  const initialValues = valuesFromLastSubmit
-    ? valuesFromLastSubmit
-    : createInitialValues(availabilityPlan);
+  const handleSubmit = values => {
+    const submittedAvailabilityPlan = createAvailabilityPlan(values, currentListing);
+    const { scheduleTypes } = values;
 
-  const handleAvailabilityPlanSubmit = values => {
-    setValuesFromLastSubmit(values);
-    setShowNoEntriesError(false);
-
-    setAvailabilityPlan(createAvailabilityPlan(values, currentListing));
-
-    setIsEditPlanModalOpen(false);
-  };
-
-  const handleSubmit = () => {
-    if (selectedAvailabilityTypes.length === 0) {
-      return;
-    }
-
-    if (availabilityPlan.entries.length === 0) {
+    if (submittedAvailabilityPlan.entries.length === 0) {
       setShowNoEntriesError(true);
       return;
     }
@@ -174,8 +134,8 @@ const EditListingAvailabilityPanel = props => {
     return onSubmit({
       availabilityPlan: createOpenAvailabilityPlan(currentListing),
       publicData: {
-        availabilityPlan,
-        scheduleTypes: selectedAvailabilityTypes,
+        availabilityPlan: submittedAvailabilityPlan,
+        scheduleTypes,
       },
     })
       .then(() => {
@@ -187,13 +147,6 @@ const EditListingAvailabilityPanel = props => {
         // Don't close modal if there was an error
       });
   };
-
-  const handleAvailabilityTypeChange = values => {
-    // sessionStorage.setItem(, 'value');
-    setSelectedAvailabilityTypes(values.scheduleTypes);
-  };
-
-  const availabilityTypeFormInitialValues = { scheduleTypes: savedSelectedAvailabilityTypes };
 
   return (
     <main className={classes}>
@@ -223,28 +176,19 @@ const EditListingAvailabilityPanel = props => {
         )}
       </h1>
 
-      <AvailabilityTypeForm
-        onSubmit={() => {}}
-        onChange={handleAvailabilityTypeChange}
-        initialValues={availabilityTypeFormInitialValues}
-      />
-
       <section className={css.section}>
-        <header className={css.sectionHeader}>
-          <h2 className={css.sectionTitle}>
-            <FormattedMessage id="EditListingAvailabilityPanel.defaultScheduleTitle" />
-          </h2>
-          <InlineTextButton
-            className={css.editPlanButton}
-            onClick={() => setIsEditPlanModalOpen(true)}
-          >
-            <IconEdit className={css.editPlanIcon} />{' '}
-            <FormattedMessage id="EditListingAvailabilityPanel.edit" />
-          </InlineTextButton>
-        </header>
-        <WeekPanel
-          availabilityPlan={availabilityPlan}
-          openEditModal={() => setIsEditPlanModalOpen(true)}
+        <EditListingAvailabilityPlanForm
+          formId="EditListingAvailabilityPlanForm"
+          listingTitle={currentListing.attributes.title}
+          weekdays={WEEKDAYS}
+          onSubmit={handleSubmit}
+          initialValues={initialValues}
+          inProgress={updateInProgress}
+          fetchErrors={errors}
+          currentListing={currentListing}
+          initialValuesEqual={() => true}
+          updated={panelUpdated}
+          submitButtonText={submitButtonText}
         />
       </section>
 
@@ -263,63 +207,8 @@ const EditListingAvailabilityPanel = props => {
           <FormattedMessage id="EditListingAvailabilityPanel.noEntriesError" />
         </p>
       ) : null}
-
-      <Button
-        className={css.goToNextTabButton}
-        onClick={handleSubmit}
-        disabled={submitDisabled}
-        inProgress={submitInProgress}
-        ready={submitReady}
-      >
-        {submitButtonText}
-      </Button>
-      {onManageDisableScrolling ? (
-        <Modal
-          id="EditAvailabilityPlan"
-          isOpen={isEditPlanModalOpen}
-          onClose={() => setIsEditPlanModalOpen(false)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          containerClassName={css.modalContainer}
-          usePortal
-        >
-          <EditListingAvailabilityPlanForm
-            formId="EditListingAvailabilityPlanForm"
-            listingTitle={currentListing.attributes.title}
-            weekdays={WEEKDAYS}
-            onSubmit={handleAvailabilityPlanSubmit}
-            initialValues={initialValues}
-            inProgress={updateInProgress}
-            fetchErrors={errors}
-            currentListing={currentListing}
-          />
-        </Modal>
-      ) : null}
     </main>
   );
-};
-
-EditListingAvailabilityPanel.defaultProps = {
-  className: null,
-  rootClassName: null,
-  listing: null,
-  availabilityExceptions: [],
-};
-
-EditListingAvailabilityPanel.propTypes = {
-  className: string,
-  rootClassName: string,
-
-  // We cannot use propTypes.listing since the listing might be a draft.
-  listing: object,
-  disabled: bool.isRequired,
-  ready: bool.isRequired,
-  availabilityExceptions: arrayOf(propTypes.availabilityException),
-  onSubmit: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onNextTab: func.isRequired,
-  submitButtonText: string.isRequired,
-  updateInProgress: bool.isRequired,
-  errors: object.isRequired,
 };
 
 export default EditListingAvailabilityPanel;

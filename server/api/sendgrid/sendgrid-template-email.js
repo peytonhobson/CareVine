@@ -24,20 +24,20 @@ const SENDGRID_TEMPLATE_IDS = {
 module.exports = (req, res) => {
   const { receiverId, templateData, templateName } = req.body;
 
-  // if (isDev) {
-  //   res
-  //     .status(200)
-  //     .set('Content-Type', 'application/transit+json')
-  //     .send(
-  //       serialize({
-  //         data: {
-  //           message: 'Emails are not sent in development mode',
-  //         },
-  //       })
-  //     )
-  //     .end();
-  //   return;
-  // }
+  if (isDev) {
+    res
+      .status(200)
+      .set('Content-Type', 'application/transit+json')
+      .send(
+        serialize({
+          data: {
+            message: 'Emails are not sent in development mode',
+          },
+        })
+      )
+      .end();
+    return;
+  }
 
   integrationSdk.users
     .show({ id: receiverId })
@@ -47,7 +47,10 @@ module.exports = (req, res) => {
 
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
-        from: 'CareVine@carevine-mail.us',
+        from: {
+          email: 'CareVine@carevine-mail.us',
+          name: 'CareVine',
+        },
         personalizations: [
           {
             to: [

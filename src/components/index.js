@@ -206,6 +206,7 @@ export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export { default as WeekPanel } from './WeekPanel/WeekPanel';
 export { default as WeeklyBillingDetails } from './WeeklyBillingDetails/WeeklyBillingDetails';
+export {default as DailyPlan} from './DailyPlan/DailyPlan';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //
@@ -216,7 +217,6 @@ export { default as BlogCard} from './BlogCard/BlogCard'
 export { default as CaregiverEditListingWizard } from './CaregiverEditListingWizard/CaregiverEditListingWizard';
 export { default as EditListingAdditionalDetailsPanel } from './EditListingAdditionalDetailsPanel/EditListingAdditionalDetailsPanel';
 export { default as EditListingAvailabilityPanel } from './EditListingAvailabilityPanel/EditListingAvailabilityPanel';
-export { default as EditListingBackgroundCheckPanel} from './EditListingBackgroundCheckPanel/EditListingBackgroundCheckPanel';
 export { default as EditListingBioPanel } from './EditListingBioPanel/EditListingBioPanel';
 export { default as EditListingCaregiverDetailsPanel } from './EditListingCaregiverDetailsPanel/EditListingCaregiverDetailsPanel';
 export { default as EditListingCareNeedsPanel } from './EditListingCareNeedsPanel/EditListingCareNeedsPanel';

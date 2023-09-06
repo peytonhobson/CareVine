@@ -85,7 +85,7 @@ const EditListingBioFormComponent = props => (
       ) : null;
 
       const classes = classNames(css.root, className);
-      const submitReady = (updated && pristine) || ready;
+      const submitReady = updated || ready;
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress || generateBioInProgress;
 

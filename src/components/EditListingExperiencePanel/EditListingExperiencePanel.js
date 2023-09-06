@@ -96,6 +96,7 @@ const EditListingExperiencePanel = props => {
           onSubmit(updatedValues);
         }}
         name="experience"
+        initialValuesEqual={() => true}
       />
     </div>
   );

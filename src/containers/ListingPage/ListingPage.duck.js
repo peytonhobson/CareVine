@@ -4,7 +4,7 @@ import { types as sdkTypes } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import * as log from '../../util/log';
-import { TRANSITION_INITIAL_MESSAGE } from '../../util/transaction';
+import { TRANSITION_INITIAL_MESSAGE, TRANSITION_NOTIFY_FOR_PAYMENT } from '../../util/transaction';
 import {
   LISTING_PAGE_DRAFT_VARIANT,
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
@@ -12,9 +12,12 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
+import { updateUserNotifications, updateUser } from '../../util/api';
 import { updateUserNotifications } from '../../util/api';
 import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
+import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
+import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
 import { hasStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 
 const { UUID } = sdkTypes;
@@ -58,6 +61,10 @@ export const CREATE_BOOKING_DRAFT_REQUEST = 'app/ListingPage/CREATE_BOOKING_DRAF
 export const CREATE_BOOKING_DRAFT_SUCCESS = 'app/ListingPage/CREATE_BOOKING_DRAFT_SUCCESS';
 export const CREATE_BOOKING_DRAFT_ERROR = 'app/ListingPage/CREATE_BOOKING_DRAFT_ERROR';
 
+export const SEND_NOTIFY_FOR_BOOKING_REQUEST = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_REQUEST';
+export const SEND_NOTIFY_FOR_BOOKING_SUCCESS = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_SUCCESS';
+export const SEND_NOTIFY_FOR_BOOKING_ERROR = 'app/ListingPage/SEND_NOTIFY_FOR_BOOKING_ERROR';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -75,6 +82,9 @@ const initialState = {
   openListingInProgress: false,
   openListingError: null,
   origin: null,
+  sendNotifyForBookingError: null,
+  sendNotifyForBookingInProgress: false,
+  sendNotifyForBookingSuccess: false,
   createBookingDraftInProgress: false,
   createBookingDraftError: null,
 };
@@ -139,6 +149,24 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case OPEN_LISTING_ERROR:
       return { ...state, openListingInProgress: false, openListingError: payload };
 
+    case SEND_NOTIFY_FOR_BOOKING_REQUEST:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: true,
+        sendNotifyForBookingError: null,
+      };
+    case SEND_NOTIFY_FOR_BOOKING_SUCCESS:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: false,
+        sendNotifyForBookingSuccess: true,
+      };
+    case SEND_NOTIFY_FOR_BOOKING_ERROR:
+      return {
+        ...state,
+        sendNotifyForBookingInProgress: false,
+        sendNotifyForBookingError: payload,
+      };
     case CREATE_BOOKING_DRAFT_REQUEST:
       return { ...state, createBookingDraftInProgress: true, createBookingDraftError: null };
     case CREATE_BOOKING_DRAFT_SUCCESS:
@@ -205,6 +233,17 @@ export const openListingRequest = () => ({ type: OPEN_LISTING_REQUEST });
 export const openListingSuccess = () => ({ type: OPEN_LISTING_SUCCESS });
 export const openListingError = e => ({ type: OPEN_LISTING_ERROR, error: true, payload: e });
 
+export const sendNotifyForBookingRequest = () => ({
+  type: SEND_NOTIFY_FOR_BOOKING_REQUEST,
+});
+export const sendNotifyForBookingSuccess = () => ({
+  type: SEND_NOTIFY_FOR_BOOKING_SUCCESS,
+});
+export const sendNotifyForBookingError = e => ({
+  type: SEND_NOTIFY_FOR_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
 export const createBookingDraftRequest = () => ({ type: CREATE_BOOKING_DRAFT_REQUEST });
 export const createBookingDraftSuccess = () => ({ type: CREATE_BOOKING_DRAFT_SUCCESS });
 export const createBookingDraftError = e => ({
@@ -385,6 +424,12 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
+const timeSlotsRequest = params => (dispatch, getState, sdk) => {
+  return sdk.timeslots.query(params).then(response => {
+    return denormalisedResponseEntities(response);
+  });
+};
+
 export const createBookingDraft = (listingId, bookingData) => async (dispatch, getState, sdk) => {
   dispatch(createBookingDraftRequest());
 
@@ -422,6 +467,48 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
   }
 };
 
+export const notifyForBooking = listing => async (dispatch, getState, sdk) => {
+  dispatch(sendNotifyForBookingRequest());
+
+  const sentNotificationsForBooking =
+    getState().user.currentUser.attributes.profile.privateData.sentNotificationsForBooking || [];
+
+  try {
+    const listingId = listing?.id?.uuid;
+
+    const bodyParams = {
+      transition: TRANSITION_NOTIFY_FOR_PAYMENT,
+      processAlias: config.singleActionProcessAlias,
+      params: {
+        listingId,
+      },
+    };
+
+    await sdk.transactions.initiate(bodyParams);
+
+    const previouslyNotified = sentNotificationsForBooking.find(s => s.listingId === listingId);
+    const newNotifications = previouslyNotified
+      ? sentNotificationsForBooking.map(s => {
+          if (s.listingId === listingId) {
+            return { listingId, createdAt: new Date().getTime() };
+          }
+          return s;
+        })
+      : [...sentNotificationsForBooking, { listingId, createdAt: new Date().getTime() }];
+
+    await sdk.currentUser.updateProfile({
+      privateData: {
+        sentNotificationsForBooking: newNotifications,
+      },
+    });
+
+    dispatch(sendNotifyForBookingSuccess());
+  } catch (e) {
+    log.error(e, 'send-notify-for-Booking-failed');
+    dispatch(sendNotifyForBookingError(e));
+  }
+};
+
 export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const listingId = new UUID(params.id);
 
@@ -446,9 +533,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     if (responses[0] && responses[0].data && responses[0].data.data) {
       const listing = responses[0].data.data;
 
-      // Fetch timeSlots.
-      // This can happen parallel to loadData.
-      // We are not interested to return them from loadData call.
       dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
     }
     return responses;

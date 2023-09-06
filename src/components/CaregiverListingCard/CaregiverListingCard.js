@@ -171,7 +171,7 @@ export const CaregiverListingCardComponent = props => {
   const borderProps = {
     border: '3px solid var(--marketplaceColor)',
   };
-  const cardClasses = hasPremiumSubscription ? useStyles(borderProps) : null;
+  const cardClasses = useStyles(borderProps);
 
   const originString = `${origin?.lat}%2C${origin?.lng}`;
 
@@ -226,12 +226,12 @@ export const CaregiverListingCardComponent = props => {
                 />
               </h3>
             </div>
-            {!isMobile && (
+            {!isMobile && reviewsCount ? (
               <div className={css.ratingsContainer}>
                 <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
                 <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
               </div>
-            )}
+            ) : null}
           </div>
         </div>
         <div className={css.mainInfo}>
@@ -319,12 +319,12 @@ export const CaregiverListingCardComponent = props => {
                 </div>
               )}
             </div>
-            {isMobile && (
+            {isMobile && reviewsCount ? (
               <div className={css.ratingsContainer}>
                 <h3 className={css.reviewsHeading}>Reviews ({reviewsCount})</h3>
                 <ReviewRating rating={averageRating} reviewStarClassName={css.reviewStar} />
               </div>
-            )}
+            ) : null}
           </div>
           <div className={css.providedServices}>
             <div className={css.serviceCardList}>
@@ -336,7 +336,7 @@ export const CaregiverListingCardComponent = props => {
                   styles={{ paddingInline: 0, color: 'var(--matterColor)', marginLeft: '0.7rem' }}
                   title={
                     <ul>
-                      {providedServices?.slice(3, providedServices?.length).map(service => (
+                      {providedServices?.slice(2, providedServices?.length).map(service => (
                         <li>{servicesMap.get(service).split('/')[0]}</li>
                       ))}
                     </ul>
@@ -345,7 +345,7 @@ export const CaregiverListingCardComponent = props => {
                     <p className={css.serviceCardItem}>
                       <FormattedMessage
                         id="CaregiverListingCard.additionalCareTypes"
-                        values={{ count: providedServices.length - 3 }}
+                        values={{ count: providedServices.length - 2 }}
                       />
                     </p>
                   }
