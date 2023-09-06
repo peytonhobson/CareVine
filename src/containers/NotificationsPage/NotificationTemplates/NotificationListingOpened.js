@@ -2,7 +2,6 @@ import React from 'react';
 import { createSlug } from '../../../util/urlHelpers';
 
 import { makeStyles } from '@material-ui/core/styles';
-
 import Card from '@material-ui/core/Card';
 import { NamedLink } from '../../../components';
 import { userDisplayNameAsString } from '../../../util/data';
