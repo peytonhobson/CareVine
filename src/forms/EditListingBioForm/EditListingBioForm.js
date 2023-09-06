@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { arrayOf, bool, func, shape, string } from 'prop-types';
 import { compose } from 'redux';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
@@ -39,9 +39,11 @@ const EditListingBioFormComponent = props => (
         onManageDisableScrolling,
         generateBioInProgress,
         generateBioError,
+        generatedBio,
       } = formRenderProps;
 
       const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
+      const [sameBioError, setSameBioError] = useState(false);
 
       const descriptionMessage = intl.formatMessage({
         id: 'EditListingBioForm.description',
@@ -89,9 +91,29 @@ const EditListingBioFormComponent = props => (
       const submitInProgress = updateInProgress;
       const submitDisabled = invalid || disabled || submitInProgress || generateBioInProgress;
 
+      const onSubmit = e => {
+        e.preventDefault();
+
+        // If the user has not edited the bio, we don't want to update the listing
+        if (generatedBio === formRenderProps.values.description) {
+          setSameBioError(true);
+          return;
+        }
+
+        handleSubmit(e);
+      };
+
       return (
         <>
-          <Form className={classes} onSubmit={handleSubmit}>
+          <Form className={classes} onSubmit={onSubmit}>
+            <FormSpy
+              onChange={() => {
+                if (sameBioError) {
+                  setSameBioError(false);
+                }
+              }}
+              subscription={{ values: true }}
+            />
             {errorMessageShowListing}
 
             {generateBioInProgress ? (
@@ -125,6 +147,11 @@ const EditListingBioFormComponent = props => (
             {generateBioError ? (
               <p className={css.error}>
                 <FormattedMessage id="EditListingBioForm.generateBioFailed" />
+              </p>
+            ) : null}
+            {sameBioError ? (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingBioForm.sameBioError" />
               </p>
             ) : null}
             {errorMessageUpdateListing}
