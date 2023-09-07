@@ -12,8 +12,6 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 'var(--borderRadius)',
     transition: 'all 0.2s ease-in 0s !important',
     padding: '3rem',
-    minWidth: 0,
-    overflow: 'visible',
     [theme.breakpoints.up('md')]: {
       maxWidth: '35rem',
     },
