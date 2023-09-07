@@ -62,7 +62,8 @@ const updateTransactionMetadata = require('./api/update-transaction-metadata');
 const sendgridReferralEmail = require('./api/sendgrid/sendgrid-referral-email');
 const updateUserReferrals = require('./api/update-user-referrals');
 const stripeRetrieveUpcomingInvoice = require('./api/stripe/stripe-retrieve-upcoming-invoice');
-const initiateTransaction = require('./api/initiate-transaction');
+const initiateBooking = require('./api/initiate-booking');
+const initiatePrivilegedTransaction = require('./api/initiate-privileged-transaction');
 const updateNotificationMetadata = require('./api/update-notification-metadata');
 const updatePendingPayouts = require('./api/update-pending-payouts');
 
@@ -145,10 +146,11 @@ router.post('/fetch-stripe-customer', fetchStripeCustomer);
 router.post('/update-user-referrals', updateUserReferrals);
 router.post('/stripe-fetch-subscription', fetchStripeSubscription);
 router.post('/stripe-retrieve-upcoming-invoice', stripeRetrieveUpcomingInvoice);
-router.post('/initiate-transaction', initiateTransaction);
+router.post('/initiate-booking', initiateBooking);
 router.post('/update-notification-metadata', updateNotificationMetadata);
 router.post('/stripe-create-refund', stripeCreateRefund);
 router.post('/update-pending-payouts', updatePendingPayouts);
+router.post('/initiate-privileged-transaction', initiatePrivilegedTransaction);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

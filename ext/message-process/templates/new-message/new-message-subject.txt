@@ -1,1 +1,1 @@
-New Message on CareVine from {{transaction.customer.display-name}}
+New Message from {{transaction.customer.display-name}}
