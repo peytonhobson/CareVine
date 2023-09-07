@@ -19,6 +19,8 @@ import {
   NamedLink,
   InlineTextButton,
 } from '../../components';
+import Cropper, { ReactCropperElement } from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 
 import css from './EditListingPhotosForm.module.css';
 
@@ -28,9 +30,10 @@ const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to lo
 export class EditListingPhotosFormComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { uploadDelay: false };
+    this.state = { uploadDelay: false, previewImage: null };
     this.submittedImage = null;
     this.uploadDelayTimeoutId = null;
+    this.cropperRef = React.createRef();
   }
 
   componentDidUpdate(prevProps) {
@@ -133,11 +136,12 @@ export class EditListingPhotosFormComponent extends Component {
 
           const hasUploadError = !!uploadImageError && !uploadInProgress;
           const errorClasses = classNames({ [css.avatarUploadError]: hasUploadError });
-          const transientUserProfileImage = profileImage.uploadedImage || currentUser.profileImage;
+          const transientUserProfileImage =
+            this.cropperRef.current?.src || currentUser.profileImage;
           const transientUser = { ...currentUser, profileImage: transientUserProfileImage };
 
           // Ensure that file exists if imageFromFile is used
-          const fileExists = !!profileImage.file;
+          const fileExists = this.cropperRef.current?.src;
           const fileuploadInProgress = uploadInProgress && fileExists;
           const delayAfterUpload = profileImage.imageId && this.state.uploadDelay;
           const imageFromFile =
@@ -147,7 +151,7 @@ export class EditListingPhotosFormComponent extends Component {
                 className={errorClasses}
                 rootClassName={css.uploadingImage}
                 aspectRatioClassName={css.squareAspectRatio}
-                file={profileImage.file}
+                file={this.cropperRef.current?.src}
               >
                 {uploadingOverlay}
               </ImageFromFile>
@@ -170,7 +174,7 @@ export class EditListingPhotosFormComponent extends Component {
             ) : null;
 
           const chooseAvatarLabel =
-            profileImage.imageId || fileuploadInProgress ? (
+            this.state.previewImage || fileuploadInProgress ? (
               <div className={css.avatarContainer}>
                 {imageFromFile}
                 {avatarComponent}
@@ -269,14 +273,18 @@ export class EditListingPhotosFormComponent extends Component {
                   const { accept, id, input, label, disabled, uploadImageError } = fieldProps;
                   const { name, type } = input;
                   const onChange = e => {
-                    const file = e.target.files[0];
-                    form.change(`profileImage`, file);
-                    form.blur(`profileImage`);
-                    if (file != null) {
-                      const tempId = `${file.name}_${Date.now()}`;
-                      onProfileImageUpload({ id: tempId, file });
-                      this.submittedImage = file;
+                    e.preventDefault();
+                    let files;
+                    if (e.dataTransfer) {
+                      files = e.dataTransfer.files;
+                    } else if (e.target) {
+                      files = e.target.files;
                     }
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      this.setState({ previewImage: reader.result });
+                    };
+                    reader.readAsDataURL(files[0]);
                   };
 
                   let error = null;
@@ -295,11 +303,40 @@ export class EditListingPhotosFormComponent extends Component {
                     );
                   }
 
+                  const onCrop = () => {
+                    const cropper = this.cropperRef.current?.cropper;
+                    console.log(cropper.getCroppedCanvas().toDataURL());
+                  };
+
                   return (
                     <div className={css.uploadAvatarWrapper}>
-                      <label className={css.label} htmlFor={id}>
-                        {label}
-                      </label>
+                      {this.state.previewImage ? (
+                        <>
+                          <Cropper
+                            className={css.cropper}
+                            src={this.state.previewImage}
+                            initialAspectRatio={1}
+                            zoomTo={0.25}
+                            viewMode={1}
+                            minCropBoxHeight={10}
+                            minCropBoxWidth={10}
+                            background={false}
+                            responsive={true}
+                            autoCropArea={1}
+                            checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
+                            guides={true}
+                            cropBoxResizable={false}
+                            ref={this.cropperRef}
+                            preview=".img-preview"
+                          />
+                          <div className={classNames(css.imgPreview, 'img-preview')}></div>
+                        </>
+                      ) : (
+                        <label className={css.label} htmlFor={id}>
+                          {label}
+                        </label>
+                      )}
+
                       <input
                         accept={accept}
                         id={id}

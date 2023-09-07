@@ -154,10 +154,6 @@
   position: sticky
 }
 
-.mb-8 {
-  margin-bottom: 2rem
-}
-
 .\!mb-8 {
   margin-bottom: 2rem !important
 }
@@ -216,19 +212,14 @@
   font-style: italic
 }
 
-.text-error {
-  --tw-text-opacity: 1;
-  color: rgb(255 0 0 / var(--tw-text-opacity))
-}
-
-.text-secondary {
-  --tw-text-opacity: 1;
-  color: rgb(119 160 138 / var(--tw-text-opacity))
-}
-
 .\!text-secondary {
   --tw-text-opacity: 1 !important;
   color: rgb(119 160 138 / var(--tw-text-opacity)) !important
+}
+
+.text-error {
+  --tw-text-opacity: 1;
+  color: rgb(255 0 0 / var(--tw-text-opacity))
 }
 
 .underline {
