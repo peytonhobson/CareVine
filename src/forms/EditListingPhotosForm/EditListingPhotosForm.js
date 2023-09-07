@@ -3,23 +3,19 @@ import { array, bool, func, shape, string, object } from 'prop-types';
 import { compose } from 'redux';
 import { Form as FinalForm, Field } from 'react-final-form';
 import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
-import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
-import { nonEmptyArray, composeValidators, requiredChecked } from '../../util/validators';
 import { isUploadImageOverLimitError } from '../../util/errors';
 import {
   Button,
+  CancelButton,
   Form,
-  ValidationError,
   IconSpinner,
   Avatar,
   ImageFromFile,
-  FieldCheckbox,
-  NamedLink,
-  InlineTextButton,
+  Modal,
 } from '../../components';
-import Cropper, { ReactCropperElement } from 'react-cropper';
+import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 
 import css from './EditListingPhotosForm.module.css';
@@ -27,10 +23,27 @@ import css from './EditListingPhotosForm.module.css';
 const ACCEPT_IMAGES = 'image/*';
 const UPLOAD_CHANGE_DELAY = 2000; // Show spinner so that browser has time to load img srcset
 
+const dataURLtoFile = (dataurl, filename) => {
+  var arr = dataurl.split(','),
+    mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[1]),
+    n = bstr.length,
+    u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+};
+
 export class EditListingPhotosFormComponent extends Component {
   constructor(props) {
     super(props);
-    this.state = { uploadDelay: false, previewImage: null };
+    this.state = {
+      uploadDelay: false,
+      previewImage: null,
+      imageTooLargeError: false,
+      incorrectFileTypeError: false,
+    };
     this.submittedImage = null;
     this.uploadDelayTimeoutId = null;
     this.cropperRef = React.createRef();
@@ -77,7 +90,10 @@ export class EditListingPhotosFormComponent extends Component {
             isNewListingFlow,
             onChangeAvatar,
             selectedAvatar,
+            onManageDisableScrolling,
           } = formRenderProps;
+
+          const isMobile = window.innerWidth < 768;
 
           const { publishListingError, showListingsError, updateListingError, uploadImageError } =
             fetchErrors || {};
@@ -87,13 +103,13 @@ export class EditListingPhotosFormComponent extends Component {
 
           if (uploadOverLimit) {
             uploadImageFailed = (
-              <p className={css.error}>
+              <p className={css.uploadError}>
                 <FormattedMessage id="EditListingPhotosForm.imageUploadFailed.uploadOverLimit" />
               </p>
             );
           } else if (uploadImageError) {
             uploadImageFailed = (
-              <p className={css.error}>
+              <p className={css.uploadError}>
                 <FormattedMessage id="EditListingPhotosForm.imageUploadFailed.uploadFailed" />
               </p>
             );
@@ -115,7 +131,7 @@ export class EditListingPhotosFormComponent extends Component {
 
           // imgs can contain added images (with temp ids) and submitted images with uniq ids.
 
-          const submitReady = ((updated && pristine) || ready) && !publishListingFailed;
+          const submitReady = (updated || ready) && !publishListingFailed;
           const submitInProgress = updateInProgress;
           const submitDisabled =
             invalid ||
@@ -136,12 +152,11 @@ export class EditListingPhotosFormComponent extends Component {
 
           const hasUploadError = !!uploadImageError && !uploadInProgress;
           const errorClasses = classNames({ [css.avatarUploadError]: hasUploadError });
-          const transientUserProfileImage =
-            this.cropperRef.current?.src || currentUser.profileImage;
+          const transientUserProfileImage = profileImage.uploadedImage || currentUser.profileImage;
           const transientUser = { ...currentUser, profileImage: transientUserProfileImage };
 
           // Ensure that file exists if imageFromFile is used
-          const fileExists = this.cropperRef.current?.src;
+          const fileExists = !!profileImage.file;
           const fileuploadInProgress = uploadInProgress && fileExists;
           const delayAfterUpload = profileImage.imageId && this.state.uploadDelay;
           const imageFromFile =
@@ -151,7 +166,7 @@ export class EditListingPhotosFormComponent extends Component {
                 className={errorClasses}
                 rootClassName={css.uploadingImage}
                 aspectRatioClassName={css.squareAspectRatio}
-                file={this.cropperRef.current?.src}
+                file={profileImage.file}
               >
                 {uploadingOverlay}
               </ImageFromFile>
@@ -164,7 +179,7 @@ export class EditListingPhotosFormComponent extends Component {
             [css.avatarInvisible]: this.state.uploadDelay,
           });
           const avatarComponent =
-            !fileuploadInProgress && profileImage.imageId ? (
+            !fileuploadInProgress && (profileImage.imageId || profileImage?.id?.uuid) ? (
               <Avatar
                 className={avatarClasses}
                 renderSizes="(max-width: 767px) 96px, 240px"
@@ -174,7 +189,7 @@ export class EditListingPhotosFormComponent extends Component {
             ) : null;
 
           const chooseAvatarLabel =
-            this.state.previewImage || fileuploadInProgress ? (
+            transientUserProfileImage || fileuploadInProgress ? (
               <div className={css.avatarContainer}>
                 {imageFromFile}
                 {avatarComponent}
@@ -183,14 +198,28 @@ export class EditListingPhotosFormComponent extends Component {
                 </div>
               </div>
             ) : (
-              <div className={css.avatarPlaceholder}>
-                <div className={css.avatarPlaceholderText}>
-                  <FormattedMessage id="ProfileSettingsForm.addYourProfilePicture" />
+              <>
+                <div className={css.avatarPlaceholder}>
+                  <div className={css.avatarPlaceholderText}>
+                    <FormattedMessage id="ProfileSettingsForm.addYourProfilePicture" />
+                  </div>
+                  <div className={css.avatarPlaceholderTextMobile}>
+                    <FormattedMessage id="ProfileSettingsForm.addYourProfilePictureMobile" />
+                  </div>
                 </div>
-                <div className={css.avatarPlaceholderTextMobile}>
-                  <FormattedMessage id="ProfileSettingsForm.addYourProfilePictureMobile" />
-                </div>
-              </div>
+                {this.state.imageTooLargeError ? (
+                  <p className={css.uploadError}>
+                    The file size of the image is too large. Please try uploading another image that
+                    is less than 10 MB.
+                  </p>
+                ) : null}
+                {this.state.incorrectFileTypeError ? (
+                  <p className={css.uploadError}>
+                    The file type of the image is incorrect. Please try uploading another image that
+                    is a JPG, PNG, or GIF.
+                  </p>
+                ) : null}
+              </>
             );
 
           const AvatarButton = props => {
@@ -274,17 +303,34 @@ export class EditListingPhotosFormComponent extends Component {
                   const { name, type } = input;
                   const onChange = e => {
                     e.preventDefault();
+
+                    this.setState({ imageTooLargeError: false, incorrectFileTypeError: false });
+
+                    e.target.files[0];
+
                     let files;
                     if (e.dataTransfer) {
                       files = e.dataTransfer.files;
                     } else if (e.target) {
                       files = e.target.files;
                     }
+                    const fileSize = files[0].size;
+                    if (fileSize > 1024 * 1024 * 10) {
+                      this.setState({ imageTooLargeError: true });
+                      return;
+                    }
+
+                    if (!['image/gif', 'image/jpeg', 'image/png'].includes(files[0].type)) {
+                      this.setState({ incorrectFileTypeError: true });
+                      return;
+                    }
+
                     const reader = new FileReader();
                     reader.onload = () => {
                       this.setState({ previewImage: reader.result });
                     };
                     reader.readAsDataURL(files[0]);
+                    this.setState({ croppingModalOpen: true });
                   };
 
                   let error = null;
@@ -303,39 +349,11 @@ export class EditListingPhotosFormComponent extends Component {
                     );
                   }
 
-                  const onCrop = () => {
-                    const cropper = this.cropperRef.current?.cropper;
-                    console.log(cropper.getCroppedCanvas().toDataURL());
-                  };
-
                   return (
                     <div className={css.uploadAvatarWrapper}>
-                      {this.state.previewImage ? (
-                        <>
-                          <Cropper
-                            className={css.cropper}
-                            src={this.state.previewImage}
-                            initialAspectRatio={1}
-                            zoomTo={0.25}
-                            viewMode={1}
-                            minCropBoxHeight={10}
-                            minCropBoxWidth={10}
-                            background={false}
-                            responsive={true}
-                            autoCropArea={1}
-                            checkOrientation={false} // https://github.com/fengyuanchen/cropperjs/issues/671
-                            guides={true}
-                            cropBoxResizable={false}
-                            ref={this.cropperRef}
-                            preview=".img-preview"
-                          />
-                          <div className={classNames(css.imgPreview, 'img-preview')}></div>
-                        </>
-                      ) : (
-                        <label className={css.label} htmlFor={id}>
-                          {label}
-                        </label>
-                      )}
+                      <label className={css.label} htmlFor={id}>
+                        {label}
+                      </label>
 
                       <input
                         accept={accept}
@@ -423,6 +441,63 @@ export class EditListingPhotosFormComponent extends Component {
               >
                 {saveActionMsg}
               </Button>
+              <Modal
+                id="EditListingPhotosForm.CroppingModal"
+                isOpen={this.state.croppingModalOpen}
+                onClose={() => this.setState({ croppingModalOpen: false })}
+                onManageDisableScrolling={onManageDisableScrolling}
+                usePortal
+              >
+                <div className="w-full flex flex-col items-center !justify-start gap-8 md:gap-4 pt-16 md:pt-0">
+                  <p className={css.modalTitle}>Crop Your Profile Picture</p>
+                  <Cropper
+                    className={css.cropper}
+                    src={this.state.previewImage}
+                    initialAspectRatio={1}
+                    viewMode={1}
+                    background={false}
+                    responsive={true}
+                    cropBoxResizable={false}
+                    cropBoxMovable={false}
+                    ref={this.cropperRef}
+                    preview=".img-preview"
+                    dragMode="move"
+                  />
+                  <div className={classNames(css.imgPreview, 'img-preview')}></div>
+                  <div className="flex gap-4 w-full">
+                    <CancelButton
+                      className={css.cancelButton}
+                      onClick={() => this.setState({ croppingModalOpen: false })}
+                      type="button"
+                    >
+                      Cancel
+                    </CancelButton>
+                    <Button
+                      className={css.saveButton}
+                      type="button"
+                      onClick={() => {
+                        const croppedImage = this.cropperRef.current?.cropper
+                          ?.getCroppedCanvas()
+                          .toDataURL();
+
+                        const file = dataURLtoFile(croppedImage, 'profileImage.png');
+
+                        form.change(`profileImage`, file);
+                        form.blur(`profileImage`);
+                        if (file != null) {
+                          const tempId = `${file.name}_${Date.now()}`;
+                          onProfileImageUpload({ id: tempId, file });
+                          this.submittedImage = file;
+                        }
+
+                        this.setState({ croppingModalOpen: false });
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              </Modal>
             </Form>
           );
         }}
