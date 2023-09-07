@@ -47,8 +47,6 @@ const EditListingBioPanel = props => {
     }
   }, [generatedBio]);
 
-  console.log();
-
   const initialValues = { description: hasDescription ? description : generatedBio };
 
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
@@ -101,6 +99,7 @@ const EditListingBioPanel = props => {
         generateBioInProgress={generateBioInProgress}
         generateBioError={generateBioError}
         onManageDisableScrolling={onManageDisableScrolling}
+        generatedBio={generatedBio}
         {...rest}
       />
       <Modal

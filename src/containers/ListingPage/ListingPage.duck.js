@@ -12,9 +12,11 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import { updateUserNotifications, updateUser } from '../../util/api';
-import { updateUserNotifications } from '../../util/api';
-import { NOTIFICATION_TYPE_NEW_MESSAGE } from '../../util/constants';
+import { updateUserNotifications, updateUser, initiatePrivilegedTransaction } from '../../util/api';
+import {
+  NOTIFICATION_TYPE_NEW_MESSAGE,
+  NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
+} from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
 import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
 import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
@@ -288,14 +290,16 @@ export const sendEnquiry = (listing, message, history, routes) => async (
 
   const listingId = listing.id.uuid;
 
+  const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+
   const bodyParams = {
     transition: TRANSITION_INITIAL_MESSAGE,
     processAlias: config.messageProcessAlias,
-    params: { listingId },
+    params: { listingId, metadata: { message: previewMessage } },
   };
 
   try {
-    const response = await sdk.transactions.initiate(bodyParams);
+    const response = await initiatePrivilegedTransaction({ bodyParams });
 
     const transactionId = response.data.data.id;
 
@@ -314,6 +318,7 @@ export const sendEnquiry = (listing, message, history, routes) => async (
       metadata: {
         senderName,
         conversationId: transactionId.uuid,
+        previewMessage,
       },
     };
     const otherUserId = listing.author.id.uuid;
@@ -464,8 +469,30 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
 export const notifyForBooking = listing => async (dispatch, getState, sdk) => {
   dispatch(sendNotifyForBookingRequest());
 
+  const currentUser = getState().user.currentUser;
+  const senderName = userDisplayNameAsString(currentUser);
+  const userId = otherUser?.id?.uuid;
+  const newNotification = {
+    id: uuidv4(),
+    type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
+    createdAt: new Date().getTime(),
+    isRead: false,
+    metadata: {
+      senderName,
+    },
+  };
+
   const sentNotificationsForBooking =
-    getState().user.currentUser.attributes.profile.privateData.sentNotificationsForBooking || [];
+    currentUser.attributes.profile.privateData.sentNotificationsForBooking || [];
+
+  try {
+    await updateUserNotifications({
+      userId,
+      newNotification,
+    });
+  } catch (e) {
+    log.error(e, 'send-notification-for-payout-for-Booking-failed');
+  }
 
   try {
     const listingId = listing?.id?.uuid;

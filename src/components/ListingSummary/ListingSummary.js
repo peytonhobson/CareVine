@@ -353,8 +353,8 @@ const ListingSummaryComponent = props => {
             currentUser={currentUser}
             intl={intl}
             onSendNotifyForPayment={onSendNotifyForBooking}
-            provider={author}
-            providerListing={listing}
+            author={author}
+            listing={listing}
             sendNotifyForPaymentInProgress={sendNotifyForBookingInProgress}
             sendNotifyForPaymentSuccess={sendNotifyForBookingSuccess}
             sendNotifyForPaymentError={sendNotifyForBookingError}

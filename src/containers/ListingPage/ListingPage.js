@@ -608,7 +608,7 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onCreateBookingDraft: (listingId, bookingData) =>
     dispatch(createBookingDraft(listingId, bookingData)),
-  onSendNotifyForBooking: listing => dispatch(notifyForBooking(listing)),
+  onSendNotifyForBooking: (listing, otherUser) => dispatch(notifyForBooking(listing, otherUser)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

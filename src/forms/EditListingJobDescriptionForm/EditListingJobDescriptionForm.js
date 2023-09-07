@@ -45,11 +45,12 @@ const EditListingJobDescriptionFormComponent = props => (
         isNewListingFlow,
         generateJobDescriptionInProgress,
         values,
-        filterConfig,
         generateJobDescriptionError,
+        generatedJobDescription,
       } = formRenderProps;
 
       const [isExampleModalOpen, setIsExampleModalOpen] = useState(false);
+      const [sameJobDescriptionError, setSameJobDescriptionError] = useState(false);
 
       const descriptionLabel = (
         <span>
@@ -123,9 +124,29 @@ const EditListingJobDescriptionFormComponent = props => (
       const submitDisabled =
         invalid || disabled || submitInProgress || generateJobDescriptionInProgress;
 
+      const onSubmit = e => {
+        e.preventDefault();
+
+        // If the user has not edited the bio, we don't want to update the listing
+        if (generatedJobDescription === values.description) {
+          setSameJobDescriptionError(true);
+          return;
+        }
+
+        handleSubmit(e);
+      };
+
       return (
         <>
-          <Form className={classes} onSubmit={handleSubmit}>
+          <Form className={classes} onSubmit={onSubmit}>
+            <FormSpy
+              onChange={() => {
+                if (sameJobDescriptionError) {
+                  setSameJobDescriptionError(false);
+                }
+              }}
+              subscription={{ values: true }}
+            />
             {errorMessageShowListing}
 
             {generateJobDescriptionInProgress ? (
@@ -172,6 +193,11 @@ const EditListingJobDescriptionFormComponent = props => (
             {generateJobDescriptionError && (
               <p className={css.error}>
                 <FormattedMessage id="EditListingJobDescriptionForm.failedToGenerateJobDescription" />
+              </p>
+            )}
+            {sameJobDescriptionError && (
+              <p className={css.error}>
+                <FormattedMessage id="EditListingJobDescriptionForm.sameJobDescriptionError" />
               </p>
             )}
             {errorMessageUpdateListing}
