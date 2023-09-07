@@ -1,6 +1,6 @@
 import pick from 'lodash/pick';
 import config from '../../config';
-import { initiateTransaction } from '../../util/api';
+import { initiateBooking } from '../../util/api';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
@@ -160,7 +160,7 @@ export const initiateOrder = (orderParams, metadata, listing) => async (
   let transactionResponse;
 
   try {
-    transactionResponse = await initiateTransaction({
+    transactionResponse = await initiateBooking({
       bodyParams: {
         ...bodyParams,
         params: { ...orderParams, metadata: { notificationId, ...metadata } },

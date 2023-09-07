@@ -40,6 +40,7 @@ class EditListingPhotosPanel extends Component {
       image,
       onUpdateProfile,
       isNewListingFlow,
+      onManageDisableScrolling,
     } = this.props;
 
     const rootClass = rootClassName || css.root;
@@ -82,6 +83,7 @@ class EditListingPhotosPanel extends Component {
           fetchErrors={errors}
           initialValues={{ profileImage, selectedAvatar: this.state.selectedAvatar }}
           onImageUpload={onImageUpload}
+          onManageDisableScrolling={onManageDisableScrolling}
           onSubmit={values => {
             //Need to add upload image
 

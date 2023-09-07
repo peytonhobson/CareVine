@@ -7,12 +7,8 @@
   flex-direction: column;
 
   @media screen(md) {
-    height: 100%;
     padding: 0 3rem;
-  }
-
-  @media screen(lg) {
-    padding: 0 15rem;
+    min-height: 100%;
   }
 }
 
@@ -36,7 +32,7 @@
   width: 100%;
   text-align: center;
   margin-top: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 5rem;
 }
 
 .linkButton {
@@ -129,7 +125,7 @@
   /* Coloring */
   background-color: var(--matterColorLight);
   border: 1px solid var(--matterColorNegative);
-  border-radius: 2px;
+  border-radius: var(--borderRadius);
 
   @media screen(lg) {
     width: 25rem;
@@ -155,6 +151,7 @@
   margin-top: 2rem;
   height: 100%;
   width: 100%;
+  border-radius: var(--borderRadius);
 }
 
 .requestMessage {
@@ -163,6 +160,7 @@
   border: 1px solid var(--matterColorNegative);
   padding: 1rem;
   height: 10rem;
+  border-radius: var(--borderRadiusButton);
 }
 
 .avatar {
@@ -183,6 +181,7 @@
   box-shadow: var(--boxShadowCard);
   padding: 2rem;
   background-color: var(--matterColorLight);
+  border-radius: var(--borderRadius);
 }
 
 .userInfoContainer {
