@@ -263,6 +263,7 @@
 }
 
 .uploadAvatarWrapper {
+  position: relative;
   margin-top: 1.125rem;
   margin-bottom: 1.125rem;
 
@@ -305,20 +306,20 @@
 }
 
 .cropper {
-  width: var(--ProfileSettingsForm_avatarSize);
-  aspect-ratio: 1/1;
+  height: 20rem !important;
 
   @media screen(md) {
-    width: var(--ProfileSettingsForm_avatarSizeDesktop);
+    height: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
   }
 
   & > :global(.cropper-container) > :global(.cropper-crop-box) {
     & > :global(.cropper-view-box) {
       border-radius: 50% !important;
-      height: 100%;
-      box-shadow: 0 0 0 1px #39f;
-      outline: 0;
+      height: 100% !important;
+      box-shadow: 0 0 0 1px #39f !important;
+      outline: 0 !important;
       aspect-ratio: 1/1 !important;
+      width: 100% !important;
     }
 
     & > :global(.cropper-face) {
@@ -337,15 +338,25 @@
 }
 
 .imgPreview {
-  width: var(--ProfileSettingsForm_avatarSize);
-  aspect-ratio: 1/1;
-  margin-top: 1rem;
+  width: var(--ProfileSettingsForm_avatarSize) !important;
+  height: var(--ProfileSettingsForm_avatarSize) !important;
+  aspect-ratio: 1/1 !important;
 
   @media screen(md) {
-    width: var(--ProfileSettingsForm_avatarSizeDesktop);
+    width: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
+    height: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
   }
-  overflow: hidden;
-  border-radius: 50%;
+  overflow: hidden !important;
+  border-radius: 50% !important;
+}
+
+.uploadError {
+  color: var(--failColor);
+  max-width: var(--ProfileSettingsForm_avatarSize);
+
+  @media screen(md) {
+    max-width: var(--ProfileSettingsForm_avatarSizeDesktop);
+  }
 }
 
 .avatarPlaceholder,
@@ -515,5 +526,22 @@
   &.selected {
     outline: 2px solid var(--matterColor);
     outline-offset: 0.15rem;
+  }
+}
+
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+}
+
+.modalContainer {
+  composes: marketplaceModalBaseStyles from global;
+  min-height: 100%;
+
+  justify-content: center;
+  padding-top: 4rem;
+
+  @media screen(md) {
+    min-height: 0;
+    padding-top: 0;
   }
 }
