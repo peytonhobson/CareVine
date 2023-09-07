@@ -24,27 +24,23 @@ const NotifyForPaymentContainer = props => {
     currentUser,
     intl,
     onSendNotifyForPayment,
-    provider,
-    providerListing,
+    author,
+    listing,
     sendNotifyForPaymentInProgress,
     sendNotifyForPaymentSuccess,
     sendNotifyForPaymentError,
   } = props;
 
-  const providerName = userDisplayNameAsString(provider);
+  const providerName = userDisplayNameAsString(author);
 
   const handleNotifyForPayment = () => {
-    onSendNotifyForPayment(providerListing);
+    onSendNotifyForPayment(listing, author);
   };
 
-  const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, providerListing?.id.uuid);
+  const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, listing?.id.uuid);
 
   const notifyButtonDisabled =
-    !currentUser ||
-    !provider ||
-    !providerListing ||
-    sendNotifyForPaymentSuccess ||
-    notifiedInLastDay;
+    !currentUser || !author || !listing || sendNotifyForPaymentSuccess || notifiedInLastDay;
 
   const notifyProviderMessage = intl.formatMessage({
     id: 'NotifyForPaymentContainer.notifyButtonLabel',
@@ -56,8 +52,8 @@ const NotifyForPaymentContainer = props => {
     <div className={rootClasses}>
       <UserListingPreview
         intl={intl}
-        otherUser={provider}
-        otherUserListing={providerListing}
+        otherUser={author}
+        otherUserListing={listing}
         rootClassName={css.userPreviewRoot}
       />
       <p className={css.noPayoutMessage}>

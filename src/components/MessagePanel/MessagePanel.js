@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect } from 'react';
 import FeedSection from './FeedSection';
 import { SendMessageForm } from '../../forms';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
@@ -12,6 +12,7 @@ import {
 import { UserMessagePreview } from '../';
 
 import css from './MessagePanel.module.css';
+import { useCheckMobileScreen } from '../../util/hooks';
 const MessagePanelComponent = props => {
   const {
     intl,
@@ -35,6 +36,8 @@ const MessagePanelComponent = props => {
   //   useEffect(() => {
   //     setIsMobSaf(isMobileSafari());
   //   }, []);
+
+  const isMobile = useCheckMobileScreen();
 
   const currentTransaction = ensureTransaction(transaction);
 
@@ -83,13 +86,17 @@ const MessagePanelComponent = props => {
     id: 'MessagePanel.sendingMessageNotAllowed',
   });
 
-  //   const onSendMessageFormFocus = () => {
-  //     this.setState({ sendMessageFormFocused: true });
-  //     if (this.isMobSaf) {
-  //       // Scroll to bottom
-  //       window.scroll({ top: document.body.scrollHeight, left: 0, behavior: 'smooth' });
-  //     }
-  //   }
+  useEffect(() => {
+    if (window.$crisp) {
+      window.$crisp.push(['do', 'chat:hide']);
+    }
+
+    return () => {
+      if (window.$crisp && isMobile) {
+        window.$crisp.push(['do', 'chat:show']);
+      }
+    };
+  }, [isMobile]);
 
   const onMessageSubmit = (values, form) => {
     const message = values.message ? values.message.trim() : null;
