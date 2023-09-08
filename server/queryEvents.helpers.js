@@ -88,29 +88,31 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = async (userId, listingId) => {
-  try {
-    const userResponse = await integrationSdk.users.show({ id: userId });
+const approveListingNotification = async (userId, listingId, sendEmail) => {
+  if (sendEmail) {
+    try {
+      const userResponse = await integrationSdk.users.show({ id: userId });
 
-    const userName = userResponse?.data.data.attributes.profile.displayName;
+      const userName = userResponse?.data.data.attributes.profile.displayName;
 
-    const urlParams = `/l/${createSlug(userName)}/${listingId}`;
+      const urlParams = `/l/${createSlug(userName)}/${listingId}`;
 
-    await axios.post(
-      `${apiBaseUrl()}/api/sendgrid-template-email`,
-      {
-        receiverId: userId,
-        templateName: 'listing-approved',
-        templateData: { marketplaceUrl: rootUrl, urlParams },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
+      await axios.post(
+        `${apiBaseUrl()}/api/sendgrid-template-email`,
+        {
+          receiverId: userId,
+          templateName: 'listing-approved',
+          templateData: { marketplaceUrl: rootUrl, urlParams },
         },
-      }
-    );
-  } catch (e) {
-    log.error(e, 'approve-listing-email-failed', {});
+        {
+          headers: {
+            'Content-Type': 'application/transit+json',
+          },
+        }
+      );
+    } catch (e) {
+      log.error(e, 'approve-listing-email-failed', {});
+    }
   }
 
   const newNotification = {
@@ -140,24 +142,6 @@ const approveListingNotification = async (userId, listingId) => {
 };
 
 const closeListingNotification = async userId => {
-  try {
-    await axios.post(
-      `${apiBaseUrl()}/api/sendgrid-template-email`,
-      {
-        receiverId: userId,
-        templateName: 'listing-closed',
-        templateData: { marketplaceUrl: rootUrl },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
-        },
-      }
-    );
-  } catch (e) {
-    log.error(e, 'listing-closed-email-failed', {});
-  }
-
   try {
     const newNotification = {
       id: uuidv4(),
