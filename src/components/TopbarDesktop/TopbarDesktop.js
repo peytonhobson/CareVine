@@ -334,7 +334,7 @@ const TopbarDesktop = props => {
         {notificationsLink}
         {profileMenu}
         {forCaregivers}
-        {whyCareVine}
+        {/* {whyCareVine} */}
 
         {signupLink}
         {loginLink}

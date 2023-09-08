@@ -90,7 +90,7 @@ const TopbarMobileMenu = props => {
             />
           </div>
           {forCaregivers}
-          {whyCareVine}
+          {/* {whyCareVine} */}
         </div>
         <div className={css.footer}>
           <NamedLink className={css.createNewListingLink} name="NewListingPage">
