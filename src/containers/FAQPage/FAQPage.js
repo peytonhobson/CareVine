@@ -20,11 +20,11 @@ import { connect } from 'react-redux';
 
 import css from './FAQPage.module.css';
 
-import blogBackground from '../../assets/blog-background.jpg';
+import hero from '../../assets/faq-hero.jpg';
 
 const useStyles = makeStyles(theme => ({
   hero: {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${blogBackground}')`,
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${hero}')`,
     height: '31rem',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
