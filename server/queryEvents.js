@@ -106,7 +106,6 @@ module.exports = queryEvents = () => {
       const data = await response.Body.transformToString();
       return parseInt(data, 10);
     } catch (err) {
-      console.log(err);
       log.error(err);
     }
   };
@@ -121,13 +120,18 @@ module.exports = queryEvents = () => {
       const listingId = listing.id.uuid;
       const listingType = listing.attributes?.metadata?.listingType;
 
-      if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
-        const userId = listing.relationships.author.data.id.uuid;
+      const userId = listing.relationships.author.data.id.uuid;
+      if (prevListingState === 'closed' && newListingState === 'published') {
         approveListingNotification(userId, listingId);
       }
 
-      if (prevListingState && prevListingState === 'published' && newListingState === 'closed') {
-        const userId = listing.relationships.author.data.id.uuid;
+      console.log('prevListingState', prevListingState);
+      console.log('newListingState', newListingState);
+      if (prevListingState === 'draft' && newListingState === 'published') {
+        approveListingNotification(userId, listingId, true);
+      }
+
+      if (prevListingState === 'published' && newListingState === 'closed') {
         closeListingNotification(userId);
       }
 

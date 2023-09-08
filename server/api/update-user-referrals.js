@@ -64,7 +64,6 @@ module.exports = async (req, res) => {
       return sgMail.send(msg);
     })
     .then(apiResponse => {
-      console.log(apiResponse);
       res
         .status(200)
         .set('Content-Type', 'application/transit+json')
