@@ -106,7 +106,6 @@ module.exports = queryEvents = () => {
       const data = await response.Body.transformToString();
       return parseInt(data, 10);
     } catch (err) {
-      console.log(err);
       log.error(err);
     }
   };
