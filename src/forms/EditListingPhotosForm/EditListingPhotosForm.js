@@ -16,7 +16,7 @@ import {
   Modal,
 } from '../../components';
 import Cropper from 'react-cropper';
-import 'cropperjs/dist/cropper.css';
+import './cropper.css';
 
 import css from './EditListingPhotosForm.module.css';
 
