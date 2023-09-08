@@ -206,16 +206,8 @@
   align-items: center
 }
 
-.justify-start {
-  justify-content: flex-start
-}
-
 .\!justify-start {
   justify-content: flex-start !important
-}
-
-.justify-center {
-  justify-content: center
 }
 
 .gap-4 {
@@ -238,10 +230,6 @@
 
 .border {
   border-width: 1px
-}
-
-.pt-8 {
-  padding-top: 2rem
 }
 
 .pt-16 {
