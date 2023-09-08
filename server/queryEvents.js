@@ -1,9 +1,7 @@
 module.exports = queryEvents = () => {
-  const fs = require('fs');
-  const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+  const { integrationSdk } = require('./api-util/sdk');
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
-  const CAREGIVER = 'caregiver';
   const BACKGROUND_CHECK_APPROVED = 'approved';
   const BACKGROUND_CHECK_REJECTED = 'rejected';
   const isTest = process.env.NODE_ENV === 'production' && isDev;
@@ -29,17 +27,6 @@ module.exports = queryEvents = () => {
     sendNewCaregiverInAreaEmail,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-
-  const integrationSdk = flexIntegrationSdk.createInstance({
-    // These two env vars need to be set in the `.env` file.
-    clientId: process.env.FLEX_INTEGRATION_CLIENT_ID,
-    clientSecret: process.env.FLEX_INTEGRATION_CLIENT_SECRET,
-
-    // Normally you can just skip setting the base URL and just use the
-    // default that the `createInstance` uses. We explicitly set it here
-    // for local testing and development.
-    baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
-  });
 
   // Start polloing from current time on, when there's no stored state
   const startTime = new Date();
@@ -125,8 +112,6 @@ module.exports = queryEvents = () => {
         approveListingNotification(userId, listingId);
       }
 
-      console.log('prevListingState', prevListingState);
-      console.log('newListingState', newListingState);
       if (prevListingState === 'draft' && newListingState === 'published') {
         approveListingNotification(userId, listingId, true);
       }
