@@ -14,8 +14,6 @@ module.exports = async (req, res) => {
       ...params,
     });
 
-    console.log(subscriptionItem);
-
     res
       .set('Content-Type', 'application/transit+json')
       .send(

@@ -456,7 +456,6 @@ module.exports = (request, response) => {
       break;
     case 'charge.failed':
       const chargeFailed = event.data.object;
-      console.log(chargeFailed);
       if (chargeFailed.metadata.txId) {
         transitionTransactionToPaymentFailed(chargeFailed);
       } else {
