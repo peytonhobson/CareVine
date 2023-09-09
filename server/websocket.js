@@ -11,7 +11,7 @@ module.exports = websocket = () => {
   // Spinning the http server and the WebSocket server.
   const server = http.createServer();
   const wsServer = new WebSocketServer({ server });
-  const port = 5150;
+  const port = process.env.REACT_APP_SOCKET_PORT || 6483;
   server.listen(port, () => {
     console.log(`WebSocket server is running on port ${port}`);
   });
