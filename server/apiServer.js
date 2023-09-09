@@ -20,7 +20,7 @@ const app = express();
 
 if (isDev) {
   queryEvents();
-  websocket();
+  websocket(app);
 }
 
 // NOTE: CORS is only needed in this dev API server because it's

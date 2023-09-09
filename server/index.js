@@ -78,7 +78,7 @@ app.use(log.requestHandler());
 queryEvents();
 
 // Query events from Marketplace API and emit socket events
-websocket();
+websocket(app);
 
 // The helmet middleware sets various HTTP headers to improve security.
 // See: https://www.npmjs.com/package/helmet
