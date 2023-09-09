@@ -27,7 +27,7 @@ import { ensureCurrentUser } from '../../util/data';
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
 import css from './Topbar.module.css';
-import UserUpdateSocket from './UserUpdatesSocket';
+import SocketClient from './SocketClient';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 
@@ -69,6 +69,15 @@ class TopbarComponent extends Component {
     if (this.props.currentUser) {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { currentUser, onFetchUnreadMessages, onFetchCurrentUser } = this.props;
+
+    if (!prevProps.currentUser && currentUser) {
+      onFetchUnreadMessages();
+      onFetchCurrentUser();
     }
   }
 
@@ -272,7 +281,7 @@ class TopbarComponent extends Component {
           onChangeModalValue={onChangeModalValue}
         />
         {isAuthenticated && (
-          <UserUpdateSocket
+          <SocketClient
             onFetchCurrentUser={this.props.onFetchCurrentUser}
             onFetchUnreadMessages={this.props.onFetchUnreadMessages}
             currentUser={currentUser}
@@ -288,59 +297,6 @@ class TopbarComponent extends Component {
     );
   }
 }
-
-TopbarComponent.defaultProps = {
-  className: null,
-  rootClassName: null,
-  desktopClassName: null,
-  mobileRootClassName: null,
-  mobileClassName: null,
-  notificationCount: 0,
-  currentUser: null,
-  currentUserHasOrders: null,
-  currentPage: null,
-  sendVerificationEmailError: null,
-  authScopes: [],
-};
-
-TopbarComponent.propTypes = {
-  className: string,
-  rootClassName: string,
-  desktopClassName: string,
-  mobileRootClassName: string,
-  mobileClassName: string,
-  isAuthenticated: bool.isRequired,
-  authScopes: array,
-  authInProgress: bool.isRequired,
-  currentUser: propTypes.currentUser,
-  currentUserHasListings: bool.isRequired,
-  currentUserHasOrders: bool,
-  currentPage: string,
-  notificationCount: number,
-  onLogout: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onResendVerificationEmail: func.isRequired,
-  sendVerificationEmailInProgress: bool.isRequired,
-  sendVerificationEmailError: propTypes.error,
-  showGenericError: bool.isRequired,
-
-  // These are passed from Page to keep Topbar rendering aware of location changes
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-  location: shape({
-    search: string.isRequired,
-  }).isRequired,
-
-  // from withViewport
-  viewport: shape({
-    width: number.isRequired,
-    height: number.isRequired,
-  }).isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
 
 const Topbar = compose(withViewport, injectIntl)(TopbarComponent);
 

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-const WS_URL = 'ws://10.0.0.222:5150';
+const WS_URL = `ws://${process.env.REACT_APP_SOCKET_HOST}`;
 
-const UserUpdateSocket = props => {
+const SocketClient = props => {
   const {
     onFetchCurrentUser,
     onFetchUnreadMessages,
@@ -30,9 +30,6 @@ const UserUpdateSocket = props => {
   };
 
   const { sendMessage, readyState } = useWebSocket(WS_URL, {
-    onOpen: () => {
-      console.log('WebSocket connection established.');
-    },
     share: true,
     filter: () => false,
     retryOnError: true,
@@ -41,9 +38,7 @@ const UserUpdateSocket = props => {
   });
 
   useEffect(() => {
-    console.log(readyState);
     if (readyState === 1 && userId) {
-      console.log('sending message');
       sendMessage(JSON.stringify({ userId }));
     }
   }, [readyState, sendMessage, userId]);
@@ -51,4 +46,4 @@ const UserUpdateSocket = props => {
   return <></>;
 };
 
-export default UserUpdateSocket;
+export default SocketClient;
