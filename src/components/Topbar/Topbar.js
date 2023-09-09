@@ -65,22 +65,6 @@ class TopbarComponent extends Component {
     this.handleLogout = this.handleLogout.bind(this);
   }
 
-  componentDidMount() {
-    if (this.props.currentUser) {
-      this.props.onFetchUnreadMessages();
-      this.props.onFetchCurrentUser();
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { currentUser, onFetchUnreadMessages, onFetchCurrentUser } = this.props;
-
-    if (!prevProps.currentUser && currentUser) {
-      onFetchUnreadMessages();
-      onFetchCurrentUser();
-    }
-  }
-
   handleMobileMenuOpen() {
     redirectToURLWithModalState(this.props, 'mobilemenu');
   }
