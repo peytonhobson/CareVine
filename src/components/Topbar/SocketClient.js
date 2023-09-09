@@ -40,12 +40,22 @@ const SocketClient = props => {
     }
   };
 
+  const handleOpen = () => {
+    onFetchCurrentUser();
+    onFetchUnreadMessages();
+
+    if (currentPage === 'InboxPage') {
+      onFetchConversations();
+    }
+  };
+
   const { sendMessage, readyState } = useWebSocket(WS_URL, {
     share: true,
     filter: () => false,
     retryOnError: true,
     shouldReconnect: () => true,
     onMessage: handleMessage,
+    onOpen: handleOpen,
   });
 
   useEffect(() => {
