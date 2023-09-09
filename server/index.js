@@ -43,6 +43,7 @@ const { sitemapStructure } = require('./sitemap');
 const csp = require('./csp');
 const sdkUtils = require('./api-util/sdk');
 const queryEvents = require('./queryEvents');
+const querySocketEvents = require('./websocket');
 const cors = require('cors');
 
 const buildPath = path.resolve(__dirname, '..', 'build');
@@ -73,7 +74,11 @@ log.setup();
 // to Sentry.
 app.use(log.requestHandler());
 
+// Query events from Marketplace API
 queryEvents();
+
+// Query events from Marketplace API and emit socket events
+querySocketEvents();
 
 // The helmet middleware sets various HTTP headers to improve security.
 // See: https://www.npmjs.com/package/helmet

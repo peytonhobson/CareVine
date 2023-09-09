@@ -14,6 +14,7 @@ import { manageDisableScrolling } from '../../ducks/UI.duck';
 import { changeModalValue, fetchUnreadMessageCount } from './TopbarContainer.duck';
 import { Topbar } from '../../components';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
+import { fetchConversations } from '../InboxPage/InboxPage.duck';
 
 export const TopbarContainerComponent = props => {
   const {
@@ -126,15 +127,15 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onLogout: historyPush => dispatch(logout(historyPush)),
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
-  onChangeModalValue: value => dispatch(changeModalValue(value)),
-  onFetchUnreadMessages: () => dispatch(fetchUnreadMessageCount()),
-  onFetchCurrentUser: () => dispatch(fetchCurrentUser()),
-});
+const mapDispatchToProps = {
+  onLogout: logout,
+  onManageDisableScrolling: manageDisableScrolling,
+  onResendVerificationEmail: sendVerificationEmail,
+  onChangeModalValue: changeModalValue,
+  onFetchUnreadMessages: fetchUnreadMessageCount,
+  onFetchCurrentUser: fetchCurrentUser,
+  onFetchConversations: fetchConversations,
+};
 
 // Note: it is important that the withRouter HOC is **outside** the
 // connect HOC, otherwise React Router won't rerender any Route

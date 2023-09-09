@@ -49,7 +49,6 @@ const SET_CONVERSATIONS = 'SET_CONVERSATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 const SET_STRIPE_MODAL_OPEN = 'SET_STRIPE_MODAL_OPEN';
 const SET_INITIAL_CONVERSATION = 'SET_INITIAL_CONVERSATION';
-const SET_CONVERSATIONS_POLL = 'SET_CONVERSATIONS_POLL';
 const SET_SHOW_FETCH_ERROR = 'SET_SHOW_FETCH_ERROR';
 
 const reducer = (state, action) => {
@@ -86,8 +85,6 @@ const reducer = (state, action) => {
         activeConversation: state.conversations.find(n => n.id.uuid === action.payload),
         initialConversationSet: true,
       };
-    case SET_CONVERSATIONS_POLL:
-      return { ...state, conversationsPoll: action.payload };
     case SET_SHOW_FETCH_ERROR:
       return { ...state, showFetchError: action.payload };
     default:
@@ -142,7 +139,6 @@ export const InboxPageComponent = props => {
     isChatModalOpen: false,
     isStripeModalOpen: false,
     initialConversationSet: false,
-    conversationsPoll: null,
     showFetchError: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -150,20 +146,6 @@ export const InboxPageComponent = props => {
   const customer = state.activeConversation?.customer;
   const provider = state.activeConversation?.provider;
   const otherUser = ensuredCurrentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
-
-  useEffect(() => {
-    if (!state.conversationsPoll) {
-      const conversationsPoll = setInterval(() => {
-        onFetchConversations();
-      }, 10000);
-
-      dispatch({ type: SET_CONVERSATIONS_POLL, payload: conversationsPoll });
-
-      return () => {
-        clearInterval(state.conversationsPoll);
-      };
-    }
-  }, []);
 
   const conversationId = params.id;
 
