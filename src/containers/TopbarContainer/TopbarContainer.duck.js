@@ -15,6 +15,8 @@ export const FETCH_UNREAD_MESSAGE_COUNT_SUCCESS =
 export const FETCH_UNREAD_MESSAGE_COUNT_ERROR =
   'app/TopbarContainer/FETCH_UNREAD_MESSAGE_COUNT_ERROR';
 
+export const SET_SEND_WEBSOCKET_MESSAGE = 'app/TopbarContainer/SET_SEND_WEBSOCKET_MESSAGE';
+
 // ================ Reducer ================ //
 
 const entityRefs = entities =>
@@ -30,6 +32,7 @@ const initialState = {
   messageTransactionRefs: [],
   fetchUnreadMessageCountInProgress: false,
   fetchUnreadMessageCountError: null,
+  sendWebsocketMessage: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -73,6 +76,12 @@ export default function reducer(state = initialState, action = {}) {
         fetchUnreadMessageCountError: payload,
       };
 
+    case SET_SEND_WEBSOCKET_MESSAGE:
+      return {
+        ...state,
+        sendWebsocketMessage: payload,
+      };
+
     default:
       return state;
   }
@@ -106,7 +115,16 @@ export const fetchUnreadMessageCountError = e => ({
   error: true,
 });
 
+export const sendWebsocketMessageSet = func => ({
+  type: SET_SEND_WEBSOCKET_MESSAGE,
+  payload: func,
+});
+
 // ================ Thunks ================ //
+
+export const setSendWebsocketMessage = func => (dispatch, getState, sdk) => {
+  dispatch(sendWebsocketMessageSet(func));
+};
 
 export const changeModalValue = value => (dispatch, getState, sdk) => {
   return dispatch(changeModalValueSuccess(value));

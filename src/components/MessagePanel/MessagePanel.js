@@ -104,7 +104,7 @@ const MessagePanelComponent = props => {
     if (!message) {
       return;
     }
-    onSendMessage(currentTransaction.id, message)
+    onSendMessage(currentTransaction, message)
       .then(messageId => {
         form.reset();
       })

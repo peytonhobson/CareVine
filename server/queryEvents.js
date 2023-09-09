@@ -8,6 +8,7 @@ module.exports = queryEvents = () => {
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const activeSubscriptionTypes = ['active', 'trialing'];
+  const { WebSocket } = require('ws');
   const {
     enrollUserTCM,
     deEnrollUserTCM,
@@ -28,11 +29,23 @@ module.exports = queryEvents = () => {
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
+  const webSocket = new WebSocket(`ws://${process.env.REACT_APP_SOCKET_HOST}`);
+
+  webSocket.on('open', () => {
+    webSocket.send(
+      JSON.stringify({ type: 'connection/initiated', userId: process.env.WEBSOCKET_SERVER_ID })
+    );
+  });
+
+  webSocket.on('error' || 'close', () => {
+    log.error('Websocket connection closed');
+  });
+
   // Start polloing from current time on, when there's no stored state
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 10000; // 10 seconds
+  const pollIdleWait = 3000; // 3 seconds
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -145,6 +158,14 @@ module.exports = queryEvents = () => {
       const metadata = currentAttributes?.profile?.metadata;
       const privateData = currentAttributes?.profile?.privateData;
       const previousValuesProfile = previousValues?.attributes?.profile;
+
+      webSocket.send(
+        JSON.stringify({
+          type: 'user/updated',
+          userId: event.attributes.resource?.id?.uuid,
+          serverId: process.env.WEBSOCKET_SERVER_ID,
+        })
+      );
 
       const backgroundCheckApprovedStatus = metadata?.backgroundCheckApproved?.status;
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;

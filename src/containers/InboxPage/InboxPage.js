@@ -398,41 +398,6 @@ export const InboxPageComponent = props => {
   );
 };
 
-InboxPageComponent.defaultProps = {
-  unitType: config.bookingUnitType,
-  currentUser: null,
-  currentUserListing: null,
-  currentUserHasOrders: null,
-  fetchConversationsError: null,
-  pagination: null,
-  providerNotificationCount: 0,
-  sendVerificationEmailError: null,
-};
-
-InboxPageComponent.propTypes = {
-  params: shape({
-    tab: string.isRequired,
-    id: string,
-  }).isRequired,
-  unitType: propTypes.bookingUnitType,
-  currentUser: propTypes.currentUser,
-  currentUserListing: propTypes.ownListing,
-  fetchConversationsInProgress: bool.isRequired,
-  fetchConversationsError: propTypes.error,
-  pagination: propTypes.pagination,
-  providerNotificationCount: number,
-  scrollingDisabled: bool.isRequired,
-  conversations: arrayOf(propTypes.transaction).isRequired,
-
-  /* from withRouter */
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
-
 const sortTransactions = (a, b) => {
   const aLastMessage =
     a.messages.length > 0 && a.messages[a.messages.length - 1].attributes.createdAt;
