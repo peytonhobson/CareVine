@@ -27,6 +27,7 @@ import { ensureCurrentUser } from '../../util/data';
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
 import css from './Topbar.module.css';
+import UserUpdateSocket from './UserUpdatesSocket';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 
@@ -62,7 +63,6 @@ class TopbarComponent extends Component {
     this.handleMobileSearchClose = this.handleMobileSearchClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-    this.pollUser = this.pollUser.bind(this);
   }
 
   componentDidMount() {
@@ -70,10 +70,6 @@ class TopbarComponent extends Component {
       this.props.onFetchUnreadMessages();
       this.props.onFetchCurrentUser();
     }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.pollingInterval);
   }
 
   handleMobileMenuOpen() {
@@ -126,13 +122,6 @@ class TopbarComponent extends Component {
     });
   }
 
-  pollUser() {
-    const { onFetchCurrentUser, onFetchUnreadMessages } = this.props;
-
-    onFetchUnreadMessages();
-    onFetchCurrentUser();
-  }
-
   render() {
     const {
       className,
@@ -147,7 +136,6 @@ class TopbarComponent extends Component {
       currentUserHasListings,
       currentUserListing,
       currentUserListingFetched,
-      currentUserHasOrders,
       currentPage,
       viewport,
       intl,
@@ -160,6 +148,7 @@ class TopbarComponent extends Component {
       modalValue,
       onChangeModalValue,
       unreadMessages,
+      onFetchConversations,
     } = this.props;
 
     const { mobilemenu } = parse(location.search, {
@@ -283,11 +272,12 @@ class TopbarComponent extends Component {
           onChangeModalValue={onChangeModalValue}
         />
         {isAuthenticated && (
-          <SessionTimeout
-            intervalFunction={this.pollUser}
-            intervalTime="10000"
-            maxInactiveTime="5"
-            isAuthenticated={isAuthenticated}
+          <UserUpdateSocket
+            onFetchCurrentUser={this.props.onFetchCurrentUser}
+            onFetchUnreadMessages={this.props.onFetchUnreadMessages}
+            currentUser={currentUser}
+            onFetchConversations={onFetchConversations}
+            currentPage={currentPage}
           />
         )}
         <GenericError
