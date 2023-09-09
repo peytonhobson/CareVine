@@ -286,6 +286,18 @@ export const sendEnquiry = (listing, message, history, routes) => async (
 
     await sdk.messages.send({ transactionId, content: message });
 
+    const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
+
+    if (sendWebsocketMessage) {
+      const receiverId = listing.author.id.uuid;
+      sendWebsocketMessage(
+        JSON.stringify({
+          type: 'message/created',
+          receiverId,
+        })
+      );
+    }
+
     history.push(
       createResourceLocatorString('InboxPageWithId', routes, { id: transactionId.uuid })
     );
@@ -313,11 +325,22 @@ export const sendEnquiry = (listing, message, history, routes) => async (
   }
 };
 
-export const sendMessage = (txId, message) => async (dispatch, getState, sdk) => {
+export const sendMessage = (txId, message, receiverId) => async (dispatch, getState, sdk) => {
   dispatch(sendMessageRequest());
 
   try {
     await sdk.messages.send({ transactionId: txId, content: message });
+
+    const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
+
+    if (sendWebsocketMessage) {
+      sendWebsocketMessage(
+        JSON.stringify({
+          type: 'message/created',
+          receiverId,
+        })
+      );
+    }
 
     dispatch(sendMessageSuccess());
   } catch (e) {

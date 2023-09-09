@@ -280,15 +280,7 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-        {isAuthenticated && (
-          <SocketClient
-            onFetchCurrentUser={this.props.onFetchCurrentUser}
-            onFetchUnreadMessages={this.props.onFetchUnreadMessages}
-            currentUser={currentUser}
-            onFetchConversations={onFetchConversations}
-            currentPage={currentPage}
-          />
-        )}
+        {isAuthenticated && <SocketClient currentPage={currentPage} />}
         <GenericError
           show={showGenericError}
           errorText={<FormattedMessage id="Topbar.genericError" />}
