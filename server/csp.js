@@ -117,7 +117,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.ingest.sentry.io')
     .concat('https://strapi.carevine.us/graphql')
     .concat('*.crisp.chat')
-    .concat('wss://*.crisp.chat');
+    .concat('wss://*.crisp.chat')
+    .concat('ws://caregiver-marketplace-test:6483');
 
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc
