@@ -9,7 +9,11 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { fetchConversations } from '../../containers/InboxPage/InboxPage.duck';
 
-const WS_URL = `ws://${process.env.REACT_APP_SOCKET_HOST}:${process.env.REACT_APP_SOCKET_PORT}`;
+const isDev = process.env.NODE_ENV === 'development';
+
+const WS_URL = `${isDev ? 'ws' : 'wss'}://${process.env.REACT_APP_SOCKET_HOST}:${
+  process.env.REACT_APP_SOCKET_PORT
+}`;
 
 const SocketClient = props => {
   const {

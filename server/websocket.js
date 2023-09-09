@@ -1,4 +1,4 @@
-module.exports = websocket = () => {
+module.exports = websocket = app => {
   const { WebSocket, WebSocketServer } = require('ws');
   const http = require('http');
 
@@ -9,7 +9,7 @@ module.exports = websocket = () => {
   };
 
   // Spinning the http server and the WebSocket server.
-  const server = http.createServer();
+  const server = http.createServer(app);
   const wsServer = new WebSocketServer({ server });
   const port = process.env.REACT_APP_SOCKET_PORT || 6483;
   server.listen(port, () => {
@@ -29,6 +29,8 @@ module.exports = websocket = () => {
 
   function handleMessage(message, connection) {
     const dataFromClient = JSON.parse(message.toString());
+
+    console.log(dataFromClient);
 
     if (dataFromClient.type === messagesTypes.CONNECTION_INITIATED) {
       clients[dataFromClient.userId] = connection;
@@ -53,6 +55,7 @@ module.exports = websocket = () => {
 
   // A new client connection request received
   wsServer.on('connection', function(connection) {
+    console.log('connection');
     connection.on('message', message => handleMessage(message, connection));
   });
 };
