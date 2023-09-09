@@ -2,7 +2,6 @@ import React, { useEffect, useReducer, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isEqual } from 'lodash';
 import classNames from 'classnames';
 
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
