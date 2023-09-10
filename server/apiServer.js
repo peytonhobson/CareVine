@@ -20,7 +20,6 @@ const app = express();
 
 if (isDev) {
   queryEvents();
-  websocket(app);
 }
 
 // NOTE: CORS is only needed in this dev API server because it's
@@ -36,6 +35,10 @@ app.use(cookieParser());
 app.use('/.well-known', wellKnownRouter);
 app.use('/api', apiRouter);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`API server listening on ${PORT}`);
 });
+
+if (isDev) {
+  websocket(server);
+}

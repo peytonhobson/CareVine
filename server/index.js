@@ -77,9 +77,6 @@ app.use(log.requestHandler());
 // Query events from Marketplace API
 queryEvents();
 
-// Query events from Marketplace API and emit socket events
-websocket(app);
-
 // The helmet middleware sets various HTTP headers to improve security.
 // See: https://www.npmjs.com/package/helmet
 // Helmet 4 doesn't disable CSP by default so we need to do that explicitly.
@@ -313,10 +310,12 @@ if (cspEnabled) {
   });
 }
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   const mode = dev ? 'development' : 'production';
   console.log(`Listening to port ${PORT} in ${mode} mode`);
   if (dev) {
     console.log(`Open http://localhost:${PORT}/ and start hacking!`);
   }
 });
+
+websocket(server);

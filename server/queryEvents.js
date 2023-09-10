@@ -29,11 +29,10 @@ module.exports = queryEvents = () => {
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
-  const webSocket = new WebSocket(
-    `${isLocal ? 'ws' : 'wss'}://${process.env.REACT_APP_WEBSOCKET_HOST}:${
-      process.env.REACT_APP_WEBSOCKET_PORT
-    }`
-  );
+  const WS_URL = isLocal
+    ? `ws://${process.env.REACT_APP_WEBSOCKET_HOST}:${process.env.REACT_APP_WEBSOCKET_PORT}/ws`
+    : `${process.env.REACT_APP_CANONICAL_ROOT_URL.replace('https', 'wss')}/ws`;
+  const webSocket = new WebSocket(WS_URL);
 
   webSocket.on('open', () => {
     webSocket.send(
@@ -41,8 +40,8 @@ module.exports = queryEvents = () => {
     );
   });
 
-  webSocket.on('error' || 'close', () => {
-    log.error('Websocket connection closed');
+  webSocket.on('error' || 'close', e => {
+    log.error(e, 'Websocket connection closed');
   });
 
   // Start polloing from current time on, when there's no stored state
