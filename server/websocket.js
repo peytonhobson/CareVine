@@ -1,4 +1,4 @@
-module.exports = websocket = app => {
+module.exports = websocket = server => {
   const { WebSocket, WebSocketServer } = require('ws');
 
   const messagesTypes = {
@@ -7,11 +7,7 @@ module.exports = websocket = app => {
     CONNECTION_INITIATED: 'connection/initiated',
   };
 
-  const port = process.env.REACT_APP_WEBSOCKET_PORT || 3000;
-  const server = app.listen(port, () => {
-    console.log(`Websocket server listening on ${port}`);
-  });
-  const wsServer = new WebSocketServer({ server });
+  const wsServer = new WebSocketServer({ server, path: '/ws' });
   // I'm maintaining all active connections in this object
   const clients = {};
 
@@ -51,6 +47,7 @@ module.exports = websocket = app => {
 
   // A new client connection request received
   wsServer.on('connection', function(connection) {
+    console.log(wsServer);
     console.log('connection');
     connection.on('message', message => handleMessage(message, connection));
   });

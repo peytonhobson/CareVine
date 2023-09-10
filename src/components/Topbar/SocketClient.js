@@ -11,9 +11,9 @@ import { fetchConversations } from '../../containers/InboxPage/InboxPage.duck';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const WS_URL = `${isDev ? 'ws' : 'wss'}://${process.env.REACT_APP_WEBSOCKET_HOST}:${
-  process.env.REACT_APP_WEBSOCKET_PORT
-}`;
+const WS_URL = isDev
+  ? `ws://${process.env.REACT_APP_WEBSOCKET_HOST}:${process.env.REACT_APP_WEBSOCKET_PORT}/ws`
+  : `${process.env.REACT_APP_CANONICAL_ROOT_URL.replace('https', 'wss')}/ws`;
 
 const SocketClient = props => {
   const {
