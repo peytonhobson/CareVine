@@ -125,14 +125,19 @@ module.exports = queryEvents = () => {
 
       const userId = listing.relationships.author.data.id.uuid;
       if (prevListingState === 'closed' && newListingState === 'published') {
+        console.log('first approve');
+
         approveListingNotification(userId, listingId);
       }
 
       if (prevListingState === 'draft' && newListingState === 'published') {
+        console.log('second approve');
         approveListingNotification(userId, listingId, true);
       }
 
       if (prevListingState === 'published' && newListingState === 'closed') {
+        console.log('prevListingState', prevListingState);
+        console.log('newListingState', newListingState);
         closeListingNotification(userId);
       }
 
