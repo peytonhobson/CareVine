@@ -83,6 +83,8 @@ const calculateUnreadMessages = (conversations, state) => {
     return acc + (myUnreadMessages ? myUnreadMessages : 0);
   }, 0);
 
+  console.log(conversations?.[4]?.attributes.metadata);
+
   return unreadMessages;
 };
 
@@ -96,6 +98,8 @@ const mapStateToProps = state => {
     getMarketplaceEntities(state, messageTransactionRefs),
     state
   );
+
+  console.log('unreadMessages', unreadMessages);
 
   // Topbar needs user info.
   const {

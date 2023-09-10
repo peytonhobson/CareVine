@@ -455,7 +455,7 @@ export const sendMessage = (tx, message) => (dispatch, getState, sdk) => {
           currentUserId === tx.customer.id.uuid ? tx.provider.id.uuid : tx.customer.id.uuid;
         sendWebsocketMessage(
           JSON.stringify({
-            type: 'message/created',
+            type: 'message/sent',
             receiverId,
           })
         );

@@ -30,21 +30,21 @@ const SocketClient = props => {
   const handleMessage = message => {
     const dataFromClient = JSON.parse(message.data);
     if (dataFromClient.type === 'user/updated') {
-      console.log('user updated');
       onFetchCurrentUser();
     }
 
+    console.log(dataFromClient);
     if (dataFromClient.type === 'message/created') {
-      console.log('message created');
       onFetchUnreadMessages();
+    }
 
-      if (currentPage === 'InboxPage') {
-        onFetchConversations();
-      }
+    if (dataFromClient.type === 'message/sent' && currentPage === 'InboxPage') {
+      onFetchConversations();
     }
   };
 
   const handleOpen = () => {
+    console.log('Opening', currentUser?.id?.uuid);
     onFetchCurrentUser();
     onFetchUnreadMessages();
 
@@ -60,6 +60,7 @@ const SocketClient = props => {
     shouldReconnect: () => true,
     onMessage: handleMessage,
     onOpen: handleOpen,
+    onClose: () => console.log('closing'),
   });
 
   useEffect(() => {

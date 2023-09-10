@@ -292,7 +292,7 @@ export const sendEnquiry = (listing, message, history, routes) => async (
       const receiverId = listing.author.id.uuid;
       sendWebsocketMessage(
         JSON.stringify({
-          type: 'message/created',
+          type: 'message/sent',
           receiverId,
         })
       );
@@ -336,7 +336,7 @@ export const sendMessage = (txId, message, receiverId) => async (dispatch, getSt
     if (sendWebsocketMessage) {
       sendWebsocketMessage(
         JSON.stringify({
-          type: 'message/created',
+          type: 'message/sent',
           receiverId,
         })
       );

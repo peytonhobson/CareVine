@@ -3,6 +3,7 @@ module.exports = websocket = server => {
 
   const messagesTypes = {
     MESSAGE_CREATED: 'message/created',
+    MESSAGE_SENT: 'message/sent',
     USER_UPDATED: 'user/updated',
     CONNECTION_INITIATED: 'connection/initiated',
   };
@@ -29,8 +30,15 @@ module.exports = websocket = server => {
       connection.on('close', () => handleDisconnect(dataFromClient.userId));
     }
 
-    if (dataFromClient.type === messagesTypes.MESSAGE_CREATED) {
+    if (
+      dataFromClient.type === messagesTypes.MESSAGE_CREATED &&
+      dataFromClient.serverId === process.env.WEBSOCKET_SERVER_ID
+    ) {
       sendEvent(dataFromClient.receiverId, messagesTypes.MESSAGE_CREATED);
+    }
+
+    if (dataFromClient.type === messagesTypes.MESSAGE_SENT) {
+      sendEvent(dataFromClient.receiverId, messagesTypes.MESSAGE_SENT);
     }
 
     if (
@@ -47,7 +55,6 @@ module.exports = websocket = server => {
 
   // A new client connection request received
   wsServer.on('connection', function(connection) {
-    console.log(wsServer);
     console.log('connection');
     connection.on('message', message => handleMessage(message, connection));
   });

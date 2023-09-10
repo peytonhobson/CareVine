@@ -287,7 +287,7 @@ const backgroundCheckRejectedNotification = async userId => {
   }
 };
 
-const addUnreadMessageCount = async (txId, senderId) => {
+const addUnreadMessageCount = async (txId, senderId, webSocket) => {
   try {
     const response = await integrationSdk.transactions.show({
       id: txId,
@@ -306,14 +306,25 @@ const addUnreadMessageCount = async (txId, senderId) => {
       [providerUserId]: 0,
     };
 
-    unreadMessageCount[recipientUserId] += 1;
-
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
-        unreadMessageCount,
+        unreadMessageCount: {
+          ...unreadMessageCount,
+          [recipientUserId]: (unreadMessageCount[recipientUserId] += 1),
+        },
       },
     });
+
+    console.log(transaction.relationships);
+
+    webSocket.send(
+      JSON.stringify({
+        type: 'message/created',
+        receiverId: recipientUserId,
+        serverId: process.env.WEBSOCKET_SERVER_ID,
+      })
+    );
   } catch (e) {
     log.error(e, 'add-unread-message-count-failed', {});
   }
