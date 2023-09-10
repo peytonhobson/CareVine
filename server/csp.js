@@ -118,7 +118,7 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('https://strapi.carevine.us/graphql')
     .concat('*.crisp.chat')
     .concat('wss://*.crisp.chat')
-    .concat(`wss://${REACT_APP_CANONICAL_ROOT_URL}`);
+    .concat(`wss://${REACT_APP_WEBSOCKET_HOST}`);
 
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc
