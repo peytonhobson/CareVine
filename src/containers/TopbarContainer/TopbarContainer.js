@@ -70,30 +70,11 @@ export const TopbarContainerComponent = props => {
   );
 };
 
-const calculateUnreadMessages = (conversations, state) => {
-  const currentUser = state.user.currentUser;
-
-  const unreadMessages = conversations?.reduce((acc, conversation) => {
-    const unreadMessageCount = conversation.attributes.metadata.unreadMessageCount;
-
-    const myUnreadMessages = unreadMessageCount && unreadMessageCount[currentUser?.id?.uuid];
-
-    return acc + (myUnreadMessages ? myUnreadMessages : 0);
-  }, 0);
-
-  return unreadMessages;
-};
-
 const mapStateToProps = state => {
   // Topbar needs isAuthenticated
   const { isAuthenticated, logoutError, authScopes } = state.Auth;
 
-  const { modalValue, messageTransactionRefs } = state.TopbarContainer;
-
-  const unreadMessages = calculateUnreadMessages(
-    getMarketplaceEntities(state, messageTransactionRefs),
-    state
-  );
+  const { modalValue, unreadMessageCount } = state.TopbarContainer;
 
   // Topbar needs user info.
   const {
@@ -120,7 +101,7 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
     hasGenericError,
     modalValue,
-    unreadMessages,
+    unreadMessages: unreadMessageCount,
   };
 };
 
