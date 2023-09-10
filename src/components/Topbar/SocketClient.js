@@ -33,7 +33,6 @@ const SocketClient = props => {
       onFetchCurrentUser();
     }
 
-    console.log(dataFromClient);
     if (dataFromClient.type === 'message/created') {
       onFetchUnreadMessages();
     }
@@ -44,7 +43,6 @@ const SocketClient = props => {
   };
 
   const handleOpen = () => {
-    console.log('Opening', currentUser?.id?.uuid);
     onFetchCurrentUser();
     onFetchUnreadMessages();
 
@@ -60,7 +58,6 @@ const SocketClient = props => {
     shouldReconnect: () => true,
     onMessage: handleMessage,
     onOpen: handleOpen,
-    onClose: () => console.log('closing'),
   });
 
   useEffect(() => {
