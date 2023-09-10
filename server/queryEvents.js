@@ -162,18 +162,23 @@ module.exports = queryEvents = () => {
       const privateData = currentAttributes?.profile?.privateData;
       const previousValuesProfile = previousValues?.attributes?.profile;
 
-      webSocket.send(
-        JSON.stringify({
-          type: 'user/updated',
-          userId: event.attributes.resource?.id?.uuid,
-          serverId: process.env.WEBSOCKET_SERVER_ID,
-        })
-      );
-
       const backgroundCheckApprovedStatus = metadata?.backgroundCheckApproved?.status;
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
 
       const tcmEnrolled = privateData?.tcmEnrolled;
+
+      const previousNotifications = previousValuesProfile?.privateData?.notifications;
+      const notifications = privateData?.notifications;
+
+      if (previousNotifications?.length !== notifications?.length) {
+        webSocket.send(
+          JSON.stringify({
+            type: 'user/updated',
+            userId: event.attributes.resource?.id?.uuid,
+            serverId: process.env.WEBSOCKET_SERVER_ID,
+          })
+        );
+      }
 
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&
