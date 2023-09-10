@@ -245,7 +245,7 @@ module.exports = queryEvents = () => {
       const senderId = message?.relationships?.sender?.data?.id?.uuid;
       const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
-      addUnreadMessageCount(transactionId, senderId);
+      addUnreadMessageCount(transactionId, senderId, webSocket);
     }
 
     if (eventType === 'user/deleted') {
