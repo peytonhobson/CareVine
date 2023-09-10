@@ -113,6 +113,8 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
   } = state.user;
   const hasGenericError = !!(logoutError || hasCurrentUserErrors(state));
+
+  console.log(notificationCount);
   return {
     authInProgress: authenticationInProgress(state),
     currentUser,
