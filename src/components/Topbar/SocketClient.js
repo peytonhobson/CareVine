@@ -34,6 +34,7 @@ const SocketClient = props => {
     }
 
     if (dataFromClient.type === 'message/created') {
+      console.log('Received message created');
       onFetchUnreadMessages();
     }
 
