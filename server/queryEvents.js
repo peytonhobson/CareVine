@@ -30,7 +30,9 @@ module.exports = queryEvents = () => {
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
   const webSocket = new WebSocket(
-    `${isLocal ? 'ws' : 'wss'}://${process.env.REACT_APP_WEBSOCKET_HOST}`
+    `${isLocal ? 'ws' : 'wss'}://${process.env.REACT_APP_WEBSOCKET_HOST}:${
+      process.env.REACT_APP_WEBSOCKET_PORT
+    }`
   );
 
   webSocket.on('open', () => {

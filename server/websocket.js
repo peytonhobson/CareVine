@@ -7,8 +7,11 @@ module.exports = websocket = app => {
     CONNECTION_INITIATED: 'connection/initiated',
   };
 
-  const port = process.env.REACT_APP_SOCKET_PORT || 3000;
-  const wsServer = new WebSocketServer({ port });
+  const port = process.env.REACT_APP_WEBSOCKET_PORT || 3000;
+  const server = app.listen(port, () => {
+    console.log(`Websocket server listening on ${port}`);
+  });
+  const wsServer = new WebSocketServer({ server });
   // I'm maintaining all active connections in this object
   const clients = {};
 
