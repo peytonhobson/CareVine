@@ -154,6 +154,8 @@ class TopbarComponent extends Component {
       notification => !notification.isRead
     )?.length;
 
+    console.log(unreadNotificationCount);
+
     const notificationDot =
       unreadMessages > 0 || unreadNotificationCount > 0 ? (
         <div className={css.notificationDot} />

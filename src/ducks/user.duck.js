@@ -378,11 +378,6 @@ export const fetchCurrentUser = (params = null) => (dispatch, getState, sdk) => 
       }
       const currentUser = entities[0];
 
-      if (isEqual(currentUser, getState().user.currentUser)) {
-        dispatch(currentUserShowNoChangeSuccess());
-        return currentUser;
-      }
-
       // Save stripeAccount to store.stripe.stripeAccount if it exists
       if (currentUser.stripeAccount) {
         dispatch(stripeAccountCreateSuccess(currentUser.stripeAccount));
