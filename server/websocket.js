@@ -23,8 +23,6 @@ module.exports = websocket = server => {
   function handleMessage(message, connection) {
     const dataFromClient = JSON.parse(message.toString());
 
-    console.log(dataFromClient);
-
     if (dataFromClient.type === messagesTypes.CONNECTION_INITIATED) {
       clients[dataFromClient.userId] = connection;
       connection.on('close', () => handleDisconnect(dataFromClient.userId));
@@ -55,7 +53,6 @@ module.exports = websocket = server => {
 
   // A new client connection request received
   wsServer.on('connection', function(connection) {
-    console.log('connection');
     connection.on('message', message => handleMessage(message, connection));
   });
 };
