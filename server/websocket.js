@@ -32,6 +32,7 @@ module.exports = websocket = server => {
       dataFromClient.type === messagesTypes.MESSAGE_CREATED &&
       dataFromClient.serverId === process.env.WEBSOCKET_SERVER_ID
     ) {
+      console.log('message created');
       sendEvent(dataFromClient.receiverId, messagesTypes.MESSAGE_CREATED);
     }
 
