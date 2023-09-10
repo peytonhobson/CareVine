@@ -316,8 +316,6 @@ const addUnreadMessageCount = async (txId, senderId, webSocket) => {
       },
     });
 
-    console.log(transaction.relationships);
-
     webSocket.send(
       JSON.stringify({
         type: 'message/created',
