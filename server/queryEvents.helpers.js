@@ -306,6 +306,13 @@ const addUnreadMessageCount = async (txId, senderId, webSocket) => {
       [providerUserId]: 0,
     };
 
+    console.log({
+      unreadMessageCount: {
+        ...unreadMessageCount,
+        [recipientUserId]: (unreadMessageCount[recipientUserId] += 1),
+      },
+    });
+
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
