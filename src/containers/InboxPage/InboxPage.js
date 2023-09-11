@@ -1,8 +1,7 @@
-import React, { useEffect, useReducer } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import React, { useEffect, useReducer, useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isEqual } from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { propTypes } from '../../util/types';
@@ -39,8 +38,26 @@ import config from '../../config';
 import SideNav from './SideNav';
 import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 import { updateTransactionMetadata } from '../../util/api';
+import { fetchUnreadMessageCount } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './InboxPage.module.css';
+
+const findLatestMessage = (txId, messages) => {
+  const latestMessage = messages.get(txId)?.reduce((acc, message) => {
+    if (message.attributes.createdAt > acc.attributes.createdAt) {
+      return message;
+    }
+    return acc;
+  }, messages.get(txId)?.[0]);
+  return latestMessage;
+};
+
+const sortConversations = messages => (a, b) => {
+  const aLastMessageTime = findLatestMessage(a.id.uuid, messages)?.attributes?.createdAt;
+  const bLastMessageTime = findLatestMessage(b.id.uuid, messages)?.attributes?.createdAt;
+
+  return aLastMessageTime > bLastMessageTime ? -1 : 1;
+};
 
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_CHAT_MODAL_OPEN = 'SET_CHAT_MODAL_OPEN';
@@ -112,7 +129,7 @@ export const InboxPageComponent = props => {
     onFetchOtherUserListing,
     otherUserListing,
     onManageDisableScrolling,
-    conversations,
+    conversations: unsortedConversations,
     fetchOtherUserListingError,
     fetchConversationsError,
     fetchOtherUserListingInProgress,
@@ -126,11 +143,17 @@ export const InboxPageComponent = props => {
     fetchInitialConversationsInProgress,
     fetchInitialConversationsError,
     onFetchConversations,
+    onFetchUnreadMessageCount,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
   const isMobile = useCheckMobileScreen();
+
+  const conversations = useMemo(() => unsortedConversations.sort(sortConversations(messages)), [
+    unsortedConversations,
+    messages,
+  ]);
 
   const initialState = {
     conversations,
@@ -187,6 +210,7 @@ export const InboxPageComponent = props => {
 
         updateTransactionMetadata({ txId: id, metadata }).then(() => {
           onFetchConversations();
+          onFetchUnreadMessageCount();
         });
       }
     }
@@ -434,6 +458,7 @@ const mapDispatchToProps = {
   onSendRequestForPayment: sendRequestForPayment,
   onDeleteConversation: deleteConversation,
   onFetchConversations: fetchConversations,
+  onFetchUnreadMessageCount: fetchUnreadMessageCount,
 };
 
 const InboxPage = compose(
