@@ -43,7 +43,6 @@ const { sitemapStructure } = require('./sitemap');
 const csp = require('./csp');
 const sdkUtils = require('./api-util/sdk');
 const queryEvents = require('./queryEvents');
-const websocket = require('./websocket');
 const cors = require('cors');
 const { WebSocket, WebSocketServer } = require('ws');
 
