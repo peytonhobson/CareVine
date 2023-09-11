@@ -45,6 +45,7 @@ const sdkUtils = require('./api-util/sdk');
 const queryEvents = require('./queryEvents');
 const cors = require('cors');
 const { WebSocket, WebSocketServer } = require('ws');
+const { deserialize } = require('./api-util/sdk');
 
 const buildPath = path.resolve(__dirname, '..', 'build');
 const env = process.env.REACT_APP_ENV;
