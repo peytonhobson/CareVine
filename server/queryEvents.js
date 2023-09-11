@@ -8,7 +8,6 @@ module.exports = queryEvents = () => {
   const isProd = process.env.NODE_ENV === 'production' && !isDev;
   const isLocal = process.env.NODE_ENV === 'development' && isDev;
   const activeSubscriptionTypes = ['active', 'trialing'];
-  const { WebSocket } = require('ws');
   const {
     enrollUserTCM,
     deEnrollUserTCM,
@@ -26,23 +25,9 @@ module.exports = queryEvents = () => {
     updateBookingLedger,
     sendNewJobInAreaEmail,
     sendNewCaregiverInAreaEmail,
+    sendWebsocketMessage,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-
-  const WS_URL = isLocal
-    ? `ws://${process.env.REACT_APP_WEBSOCKET_HOST}:${process.env.REACT_APP_WEBSOCKET_PORT}/ws`
-    : `${process.env.REACT_APP_CANONICAL_ROOT_URL.replace('https', 'wss')}/ws`;
-  const webSocket = new WebSocket(WS_URL);
-
-  webSocket.on('open', () => {
-    webSocket.send(
-      JSON.stringify({ type: 'connection/initiated', userId: process.env.WEBSOCKET_SERVER_ID })
-    );
-  });
-
-  webSocket.on('error' || 'close', e => {
-    log.error(e, 'Websocket connection closed');
-  });
 
   // Start polloing from current time on, when there's no stored state
   const startTime = new Date();
@@ -125,21 +110,15 @@ module.exports = queryEvents = () => {
 
       const userId = listing.relationships.author.data.id.uuid;
       if (prevListingState === 'closed' && newListingState === 'published') {
-        console.log('first approve');
-
         approveListingNotification(userId, listingId);
       }
 
       if (prevListingState === 'draft' && newListingState === 'published') {
-        console.log('second approve');
-        approveListingNotification(userId, listingId, true);
+        approveListingNotification(userId, listingId, true, event.attributes.sequenceId);
       }
 
       if (prevListingState === 'published' && newListingState === 'closed') {
-        console.log('prevListingState', prevListingState);
-        console.log('newListingState', newListingState);
-        console.log(event.attributes.sequenceId);
-        closeListingNotification(userId);
+        closeListingNotification(userId, event.attributes.sequenceId);
       }
 
       if (
@@ -176,14 +155,8 @@ module.exports = queryEvents = () => {
       const previousNotifications = previousValuesProfile?.privateData?.notifications;
       const notifications = privateData?.notifications;
 
-      if (previousNotifications?.length !== notifications?.length) {
-        webSocket.send(
-          JSON.stringify({
-            type: 'user/updated',
-            userId: event.attributes.resource?.id?.uuid,
-            serverId: process.env.WEBSOCKET_SERVER_ID,
-          })
-        );
+      if (previousNotifications && previousNotifications?.length !== notifications?.length) {
+        sendWebsocketMessage(event.attributes.resource.id.uuid, 'user-updated');
       }
 
       if (
@@ -256,9 +229,7 @@ module.exports = queryEvents = () => {
       const senderId = message?.relationships?.sender?.data?.id?.uuid;
       const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
-      console.log('message/created');
-
-      addUnreadMessageCount(transactionId, senderId, webSocket);
+      addUnreadMessageCount(transactionId, senderId);
     }
 
     if (eventType === 'user/deleted') {
