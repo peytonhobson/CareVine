@@ -138,6 +138,7 @@ module.exports = queryEvents = () => {
       if (prevListingState === 'published' && newListingState === 'closed') {
         console.log('prevListingState', prevListingState);
         console.log('newListingState', newListingState);
+        console.log(event.attributes.sequenceId);
         closeListingNotification(userId);
       }
 
@@ -254,6 +255,8 @@ module.exports = queryEvents = () => {
       const message = event?.attributes?.resource;
       const senderId = message?.relationships?.sender?.data?.id?.uuid;
       const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
+
+      console.log('message/created');
 
       addUnreadMessageCount(transactionId, senderId, webSocket);
     }

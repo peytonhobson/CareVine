@@ -141,6 +141,8 @@ export const fetchUnreadMessageCount = () => async (dispatch, getState, sdk) => 
   try {
     const response = await sdk.transactions.query(apiQueryParams);
 
+    console.log(response.data.data);
+
     const currentUser = getState().user.currentUser;
 
     const unreadMessages = response.data.data?.reduce((acc, conversation) => {
