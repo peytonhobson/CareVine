@@ -33,7 +33,7 @@ const employerSearchFilters = [
   'price',
   'keyword',
   'careTypes',
-  'scheduleTypes',
+  'openToLiveIn',
   'experienceAreas',
   'certificationsAndTraining',
   'additionalInfo',

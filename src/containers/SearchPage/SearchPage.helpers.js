@@ -231,11 +231,11 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
 
   cgScore += cgExperienceAreasScore;
 
-  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
-  const employerScheduleType = employerPublicData.scheduleType;
+  const cgOpenToLiveIn = cgPublicData.openToLiveIn;
+  const employerCareSchedule = employerPublicData.careSchedule;
 
-  if (cgScheduleTypes.includes(employerScheduleType)) {
-    cgScore += 15;
+  if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
+    cgScore += 20;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
@@ -323,11 +323,11 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
 
   empScore += employerExperienceAreasScore;
 
-  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
-  const employerScheduleType = employerPublicData.scheduleType;
+  const cgOpenToLiveIn = cgPublicData.openToLiveIn;
+  const employerCareSchedule = employerPublicData.careSchedule;
 
-  if (cgScheduleTypes.includes(employerScheduleType)) {
-    empScore += 15;
+  if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
+    empScore += 20;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
