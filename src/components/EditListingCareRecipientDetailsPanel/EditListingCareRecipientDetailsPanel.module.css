@@ -1,5 +1,3 @@
-
-
 .root {
   flex-grow: 1;
   width: 100%;
@@ -29,7 +27,7 @@
 .addRecipientButton {
   composes: h4 from global;
   padding: 1px 0 5px 0;
-  margin: 0 0 24px 0;
+  margin: 0 0 2.5rem 0;
   display: flex;
 }
 
