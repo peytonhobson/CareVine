@@ -256,13 +256,6 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
 
   cgScore += 2 * cgCertificationsAndTrainingScore;
 
-  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
-  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
-
-  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'yes') {
-    cgScore += 10;
-  }
-
   const caregiverAuthor = caregiverListing?.author;
   const caregiverAuthorMetadata = caregiverAuthor?.attributes?.profile?.metadata;
 
@@ -354,13 +347,6 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
   ).length;
 
   empScore += 2 * employerCertificationsAndTrainingScore;
-
-  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
-  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
-
-  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'no') {
-    empScore -= 10;
-  }
 
   return empScore;
 };

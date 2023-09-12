@@ -97,7 +97,7 @@ const tabCompleted = (tab, listing, user) => {
     case EXPERIENCE:
       return !!publicData.experienceLevel;
     case ADDITIONAL_DETAILS:
-      return !!(publicData.covidVaccination && publicData.languagesSpoken);
+      return !!publicData.languagesSpoken;
     case LOCATION:
       return !!(geolocation && publicData.location && publicData.travelDistance != undefined);
     case PRICING:
