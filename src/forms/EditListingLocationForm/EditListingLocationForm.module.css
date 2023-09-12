@@ -14,11 +14,7 @@
 }
 
 .formMargins {
-  margin-bottom: 2.5rem;
-
-  @media screen(md) {
-    margin-bottom: 3rem;
-  }
+  margin-bottom: 3rem;
 }
 
 .error {
@@ -114,6 +110,10 @@
 
   @media screen(md) {
     margin-top: 0;
+  }
+
+  & label {
+    margin: 0;
   }
 }
 
