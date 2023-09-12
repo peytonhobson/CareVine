@@ -110,6 +110,7 @@
   font-size: 3rem;
   color: var(--matterColorAnti);
   padding-bottom: 5rem;
+  margin: auto;
 }
 
 .previewHoverLine {

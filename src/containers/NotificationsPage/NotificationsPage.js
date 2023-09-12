@@ -120,11 +120,11 @@ const NotificationsPageComponent = props => {
   const previousNotificationsLength = usePrevious(sortedNotifications.length);
 
   useEffect(() => {
-    if (
-      sortedNotifications.length === 0 ||
-      previousNotificationsLength === sortedNotifications.length
-    )
-      return;
+    onFetchCurrentUser();
+  }, [onFetchCurrentUser]);
+
+  useEffect(() => {
+    if (previousNotificationsLength === sortedNotifications.length) return;
     dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
   }, [previousNotificationsLength, sortedNotifications.length]);
 

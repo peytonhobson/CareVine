@@ -154,6 +154,10 @@
   position: sticky
 }
 
+.m-auto {
+  margin: auto
+}
+
 .\!mb-8 {
   margin-bottom: 2rem !important
 }
@@ -186,6 +190,10 @@
   display: none
 }
 
+.h-full {
+  height: 100%
+}
+
 .w-full {
   width: 100%
 }
@@ -212,6 +220,10 @@
 
 .\!justify-start {
   justify-content: flex-start !important
+}
+
+.justify-center {
+  justify-content: center
 }
 
 .gap-4 {
