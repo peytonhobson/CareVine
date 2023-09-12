@@ -65,21 +65,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
         id: 'EditListingAdditionalDetailsForm.additionalInfoLabel',
       });
 
-      // Covid Vaccination
-      const covidVaccinationName = intl.formatMessage({
-        id: 'EditListingAdditionalDetailsForm.covidVaccinationName',
-      });
-      const covidVaccinationOptions = findOptionsForSelectFilter(
-        covidVaccinationName,
-        filterConfig
-      );
-      const covidVaccinationLabel = intl.formatMessage({
-        id: 'EditListingAdditionalDetailsForm.covidVaccinationLabel',
-      });
-      const errorVaccineNotSelected = intl.formatMessage({
-        id: 'EditListingAdditionalDetailsForm.covidVaccinationNotSelected',
-      });
-
       // Languages Spoken
       const languagesSpokenRadioName = intl.formatMessage({
         id: 'EditListingAdditionalDetailsForm.languagesSpokenRadioName',
@@ -138,15 +123,6 @@ const EditListingAdditionalDetailsFormComponent = props => (
             options={additionalInfoOptions}
             label={additionalInfoLabel}
             twoColumns
-          />
-          <FieldRadioButtonGroup
-            className={css.formMargins}
-            id={covidVaccinationName}
-            name={covidVaccinationName}
-            options={covidVaccinationOptions}
-            label={covidVaccinationLabel}
-            required
-            validate={requiredFieldArrayRadio(errorVaccineNotSelected)}
           />
           <FieldOpenCheckboxGroup
             id="languagesSpoken"

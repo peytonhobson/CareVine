@@ -599,23 +599,6 @@ export const filters = [
     },
   },
   {
-    id: 'covidVaccination',
-    label: 'Covid Vaccination',
-    type: 'SelectSingleFilter',
-    group: 'secondary',
-    queryParamNames: ['pub_covidVaccination'],
-    config: {
-      // "key" is the option you see in Flex Console.
-      // "label" is set here for this web app's UI only.
-      // Note: label is not added through the translation files
-      // to make filter customizations a bit easier.
-      options: [
-        { key: 'yes', label: 'Yes' },
-        { key: 'no', label: 'No' },
-      ],
-    },
-  },
-  {
     id: 'listingType',
     label: 'Listing Type',
     type: 'SelectSingleFilter',

@@ -61,7 +61,6 @@ const EditListingCaregiverDetailsPanel = props => {
   const {
     certificationsAndTraining,
     additionalInfo,
-    covidVaccination,
     languagesSpoken,
     idealCaregiverDetails,
   } = publicData;
@@ -77,7 +76,6 @@ const EditListingCaregiverDetailsPanel = props => {
   const initialValues = {
     certificationsAndTraining,
     additionalInfo,
-    covidVaccination,
     languagesSpoken: {
       provided: providedLanguagesSpoken,
       additional: additionalLanguagesSpoken,
@@ -110,7 +108,6 @@ const EditListingCaregiverDetailsPanel = props => {
           const {
             certificationsAndTraining,
             additionalInfo,
-            covidVaccination,
             languagesSpoken,
             idealCaregiverDetails = ' ',
           } = values;
@@ -119,7 +116,6 @@ const EditListingCaregiverDetailsPanel = props => {
             publicData: {
               certificationsAndTraining,
               additionalInfo,
-              covidVaccination,
               languagesSpoken: [...languagesSpoken.provided, ...languagesSpoken.additional],
               idealCaregiverDetails,
             },
@@ -128,7 +124,6 @@ const EditListingCaregiverDetailsPanel = props => {
           setInitialState({
             certificationsAndTraining,
             additionalInfo,
-            covidVaccination,
             languagesSpoken: {
               provided: languagesSpoken.provided,
               additional: languagesSpoken.additional,

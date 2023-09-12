@@ -56,12 +56,7 @@ const EditListingAdditionalDetailsPanel = props => {
     />
   );
 
-  const {
-    certificationsAndTraining,
-    additionalInfo,
-    covidVaccination,
-    languagesSpoken,
-  } = publicData;
+  const { certificationsAndTraining, additionalInfo, languagesSpoken } = publicData;
   const providedLanguagesSpoken =
     languagesSpoken && isArray(languagesSpoken)
       ? languagesSpoken.filter(lang => lang === 'english' || lang === 'spanish')
@@ -73,7 +68,6 @@ const EditListingAdditionalDetailsPanel = props => {
   const initialValues = {
     certificationsAndTraining,
     additionalInfo,
-    covidVaccination,
     languagesSpoken: {
       provided: providedLanguagesSpoken,
       additional: additionalLanguagesSpoken,
@@ -102,18 +96,12 @@ const EditListingAdditionalDetailsPanel = props => {
         saveActionMsg={submitButtonText}
         required
         onSubmit={values => {
-          const {
-            certificationsAndTraining,
-            additionalInfo,
-            covidVaccination,
-            languagesSpoken,
-          } = values;
+          const { certificationsAndTraining, additionalInfo, languagesSpoken } = values;
 
           const updatedValues = {
             publicData: {
               certificationsAndTraining,
               additionalInfo,
-              covidVaccination,
               languagesSpoken: [...languagesSpoken.provided, ...languagesSpoken.additional],
             },
           };
@@ -121,7 +109,6 @@ const EditListingAdditionalDetailsPanel = props => {
           setInitialState({
             certificationsAndTraining,
             additionalInfo,
-            covidVaccination,
             languagesSpoken: {
               provided: languagesSpoken.provided,
               additional: languagesSpoken.additional,
