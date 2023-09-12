@@ -1,5 +1,3 @@
-
-
 .root {
   /* Dimensions */
   width: 100%;
@@ -19,27 +17,6 @@
 
 .error {
   color: var(--failColor);
-}
-
-.formMargins {
-  margin-bottom: 24px;
-
-  @media screen(md) {
-    margin-bottom: 32px;
-  }
-}
-
-.title {
-  composes: formMargins;
-}
-
-.description {
-  composes: formMargins;
-  flex-shrink: 0;
-}
-
-.certificate {
-  composes: formMargins;
 }
 
 .submitButton {
