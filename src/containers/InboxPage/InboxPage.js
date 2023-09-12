@@ -172,6 +172,14 @@ export const InboxPageComponent = props => {
 
   const conversationId = params.id;
 
+  const previousConverstionsLength = usePrevious(state.conversations?.length);
+
+  useEffect(() => {
+    if (!previousConverstionsLength && conversations.length && !conversationId) {
+      dispatch({ type: SET_ACTIVE_CONVERSATION, payload: conversations[0].id.uuid });
+    }
+  }, [conversations.length, previousConverstionsLength, conversationId]);
+
   useEffect(() => {
     if (
       !state.initialConversationSet &&
