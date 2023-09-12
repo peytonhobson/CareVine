@@ -88,10 +88,22 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = async (userId, listingId, sendEmail) => {
+const approveListingNotification = async (userId, listingId, sendEmail, eventSequenceId) => {
   if (sendEmail) {
     try {
       const userResponse = await integrationSdk.users.show({ id: userId });
+
+      const user = userResponse.data.data;
+
+      const notifications = user.attributes.profile.metadata.notifications || [];
+
+      const hasNotification = notifications.find(
+        n => n.metadata.eventSequenceId === eventSequenceId
+      );
+
+      if (hasNotification) {
+        return;
+      }
 
       const userName = userResponse?.data.data.attributes.profile.displayName;
 
@@ -120,7 +132,9 @@ const approveListingNotification = async (userId, listingId, sendEmail) => {
     type: 'listingOpened',
     createdAt: new Date().getTime(),
     isRead: false,
-    metadata: {},
+    metadata: {
+      eventSequenceId,
+    },
   };
 
   try {
@@ -141,7 +155,7 @@ const approveListingNotification = async (userId, listingId, sendEmail) => {
   }
 };
 
-const closeListingNotification = async userId => {
+const closeListingNotification = async (userId, eventSequenceId) => {
   try {
     const newNotification = {
       id: uuidv4(),
@@ -156,6 +170,7 @@ const closeListingNotification = async userId => {
       {
         userId,
         newNotification,
+        eventSequenceId,
       },
       {
         headers: {
@@ -306,14 +321,17 @@ const addUnreadMessageCount = async (txId, senderId) => {
       [providerUserId]: 0,
     };
 
-    unreadMessageCount[recipientUserId] += 1;
-
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
-        unreadMessageCount,
+        unreadMessageCount: {
+          ...unreadMessageCount,
+          [recipientUserId]: (unreadMessageCount[recipientUserId] += 1),
+        },
       },
     });
+
+    sendWebsocketMessage(recipientUserId, 'message-created');
   } catch (e) {
     log.error(e, 'add-unread-message-count-failed', {});
   }
@@ -797,6 +815,25 @@ const sendNewCaregiverInAreaEmail = async listing => {
   }
 };
 
+const sendWebsocketMessage = async (userId, type) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/ws/${type}`,
+      {
+        userId,
+        serverId: process.env.WEBSOCKET_SERVER_ID,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (err) {
+    log.error(err, 'send-websocket-message-failed', {});
+  }
+};
+
 module.exports = {
   approveListingNotification,
   enrollUserTCM,
@@ -814,4 +851,5 @@ module.exports = {
   updateBookingLedger,
   sendNewJobInAreaEmail,
   sendNewCaregiverInAreaEmail,
+  sendWebsocketMessage,
 };
