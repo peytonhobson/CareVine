@@ -154,17 +154,8 @@
   position: sticky
 }
 
-.my-0 {
-  margin-top: 0px;
-  margin-bottom: 0px
-}
-
 .\!mb-8 {
   margin-bottom: 2rem !important
-}
-
-.ml-4 {
-  margin-left: 1rem
 }
 
 .ml-6 {
@@ -261,10 +252,6 @@
   padding-top: 4rem
 }
 
-.pl-4 {
-  padding-left: 1rem
-}
-
 .text-center {
   text-align: center
 }
@@ -277,10 +264,6 @@
 .text-8xl {
   font-size: 6rem;
   line-height: 1
-}
-
-.font-normal {
-  font-weight: 400
 }
 
 .italic {

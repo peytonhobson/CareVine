@@ -1,7 +1,6 @@
-const { integrationSdk, handleError, serialize } = require('../api-util/sdk');
+const { serialize } = require('../api-util/sdk');
 const log = require('../log');
 const { Configuration, OpenAIApi } = require('openai');
-const { default: next } = require('next');
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
