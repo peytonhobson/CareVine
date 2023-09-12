@@ -147,7 +147,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
               <FieldRadioButtonGroup
                 id={formId ? `${formId}.openToLiveIn` : 'openToLiveIn'}
                 rootClassName="mb-4"
-                name="nearPublicTransit"
+                name="openToLiveIn"
                 label="Are you open to providing live-in care?"
                 options={openToLiveInValues}
                 required
