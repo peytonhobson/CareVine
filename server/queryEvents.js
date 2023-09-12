@@ -1,9 +1,7 @@
 module.exports = queryEvents = () => {
-  const fs = require('fs');
-  const flexIntegrationSdk = require('sharetribe-flex-integration-sdk');
+  const { integrationSdk } = require('./api-util/sdk');
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
-  const CAREGIVER = 'caregiver';
   const BACKGROUND_CHECK_APPROVED = 'approved';
   const BACKGROUND_CHECK_REJECTED = 'rejected';
   const isTest = process.env.NODE_ENV === 'production' && isDev;
@@ -27,25 +25,15 @@ module.exports = queryEvents = () => {
     updateBookingLedger,
     sendNewJobInAreaEmail,
     sendNewCaregiverInAreaEmail,
+    sendWebsocketMessage,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-
-  const integrationSdk = flexIntegrationSdk.createInstance({
-    // These two env vars need to be set in the `.env` file.
-    clientId: process.env.FLEX_INTEGRATION_CLIENT_ID,
-    clientSecret: process.env.FLEX_INTEGRATION_CLIENT_SECRET,
-
-    // Normally you can just skip setting the base URL and just use the
-    // default that the `createInstance` uses. We explicitly set it here
-    // for local testing and development.
-    baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
-  });
 
   // Start polloing from current time on, when there's no stored state
   const startTime = new Date();
 
   // Polling interval (in ms) when all events have been fetched.
-  const pollIdleWait = 10000; // 10 seconds
+  const pollIdleWait = 3000; // 3 seconds
   // Polling interval (in ms) when a full page of events is received and there may be more
   const pollWait = 1000; // 1s
 
@@ -120,14 +108,17 @@ module.exports = queryEvents = () => {
       const listingId = listing.id.uuid;
       const listingType = listing.attributes?.metadata?.listingType;
 
-      if (prevListingState && prevListingState !== 'published' && newListingState === 'published') {
-        const userId = listing.relationships.author.data.id.uuid;
+      const userId = listing.relationships.author.data.id.uuid;
+      if (prevListingState === 'closed' && newListingState === 'published') {
         approveListingNotification(userId, listingId);
       }
 
-      if (prevListingState && prevListingState === 'published' && newListingState === 'closed') {
-        const userId = listing.relationships.author.data.id.uuid;
-        closeListingNotification(userId);
+      if (prevListingState === 'draft' && newListingState === 'published') {
+        approveListingNotification(userId, listingId, true, event.attributes.sequenceId);
+      }
+
+      if (prevListingState === 'published' && newListingState === 'closed') {
+        closeListingNotification(userId, event.attributes.sequenceId);
       }
 
       if (
@@ -160,6 +151,13 @@ module.exports = queryEvents = () => {
       const backgroundCheckSubscription = metadata?.backgroundCheckSubscription;
 
       const tcmEnrolled = privateData?.tcmEnrolled;
+
+      const previousNotifications = previousValuesProfile?.privateData?.notifications;
+      const notifications = privateData?.notifications;
+
+      if (previousNotifications && previousNotifications?.length !== notifications?.length) {
+        sendWebsocketMessage(event.attributes.resource.id.uuid, 'user-updated');
+      }
 
       if (
         backgroundCheckApprovedStatus === BACKGROUND_CHECK_APPROVED &&

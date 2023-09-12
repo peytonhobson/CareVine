@@ -20,18 +20,13 @@ import {
 import { TopbarContainer } from '../../containers';
 import { useCheckMobileScreen, useIsSsr } from '../../util/hooks';
 import queryString from 'query-string';
-import {
-  SectionStepSwipe,
-  SectionEmployer,
-  SectionCaregiver,
-  SectionCity,
-  SectionBlog,
-  SectionMobileSteps,
-} from './sections';
+import { SectionStepSwipe, SectionEmployer, SectionCaregiver, SectionBlog } from './sections';
+import { useMediaQuery } from '@mui/material';
 
 import shareImage from '../../assets/Background_Share_Image.png';
 import css from './LandingPage.module.css';
-import { useMediaQuery } from '@mui/material';
+
+const isDev = process.env.REACT_APP_ENV === 'development';
 
 export const LandingPageComponent = props => {
   const {
@@ -122,7 +117,7 @@ export const LandingPageComponent = props => {
             </span>
             <SectionStepSwipe />
             <SectionCaregiver isMobile={isMobile} />
-            {!isSsr && <SectionBlog />}
+            {!isSsr && !isDev ? <SectionBlog /> : null}
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>

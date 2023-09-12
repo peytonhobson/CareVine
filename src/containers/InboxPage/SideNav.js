@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IconEnquiry, IconSpinner, InboxItem } from '../../components';
-import { cutTextToPreview } from '../../util/data';
-import { formatDate } from '../../util/dates';
 
 import css from './InboxPage.module.css';
+
+const findLatestMessage = (txId, messages) => {
+  const latestMessage = messages.get(txId)?.reduce((acc, message) => {
+    if (message.attributes.createdAt > acc.attributes.createdAt) {
+      return message;
+    }
+    return acc;
+  }, messages.get(txId)?.[0]);
+  return latestMessage;
+};
+
+const sortConversations = messages => (a, b) => {
+  const aLastMessageTime = findLatestMessage(a.id.uuid, messages)?.attributes?.createdAt;
+  const bLastMessageTime = findLatestMessage(b.id.uuid, messages)?.attributes?.createdAt;
+
+  return aLastMessageTime > bLastMessageTime ? -1 : 1;
+};
 
 const SideNav = props => {
   const {
@@ -15,10 +30,15 @@ const SideNav = props => {
     ...rest
   } = props;
 
+  const sortedConversations = useMemo(() => conversations.sort(sortConversations(messages)), [
+    conversations,
+    messages,
+  ]);
+
   return (
     <div className={css.sidenavRoot}>
-      {conversations?.length > 0 ? (
-        conversations?.map(tx => {
+      {sortedConversations?.length > 0 ? (
+        sortedConversations?.map(tx => {
           return (
             <InboxItem
               key={tx.id.uuid}

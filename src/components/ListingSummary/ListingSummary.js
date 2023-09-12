@@ -151,7 +151,7 @@ const ListingSummaryComponent = props => {
     </span>
   );
 
-  const isListingClosed = listing.attributes.state !== 'published';
+  const isListingClosed = listing.attributes.state === 'closed';
 
   const { formattedMinPrice, priceTitle } = formatPrice([minPrice, maxPrice], intl);
 
@@ -321,7 +321,7 @@ const ListingSummaryComponent = props => {
               disabled={closeListingInProgress || !listing?.id?.uuid}
               inProgress={closeListingInProgress}
             >
-              <FormattedMessage id="ListingSummary.closeListing" />
+              Close Listing
             </Button>
           ) : (
             <Button
