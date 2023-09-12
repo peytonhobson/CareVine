@@ -21,7 +21,14 @@ const timeout = 500;
 const main = async () => {
   if (dryRun === '--dry-run=false') {
     try {
-      const listings = await integrationSdk.listings.query({ meta_listingType: 'caregiver' });
+      const listings = await integrationSdk.listings.query({
+        meta_listingType: 'caregiver',
+        perPage: 100,
+        totalPages: 10,
+        page: 2,
+      });
+
+      console.log(listings);
       console.log(`Found ${listings.data.data.length} listings`);
       // Wrap calls to integration API in a function, that will be later
       // executed by the bulkUpdate function.
@@ -30,7 +37,7 @@ const main = async () => {
         listings.data.data.map(async listing => {
           const scheduleTypes = listing.attributes.publicData.scheduleTypes || [];
 
-          console.log(listing.id);
+          // console.log(listing.id);
 
           await integrationSdk.listings.update({
             id: listing.id,
