@@ -9,6 +9,7 @@
   /* Layout */
   display: flex;
   flex-direction: column;
+  padding-top: 2rem;
 
   @media screen(md) {
     padding-top: 1px;
