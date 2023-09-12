@@ -28,15 +28,12 @@ const SocketClient = props => {
   const userId = currentUser?.id?.uuid;
 
   const handleMessage = message => {
-    console.log('Received message', message);
     const dataFromClient = JSON.parse(message.data);
     if (dataFromClient.type === 'user/updated') {
-      console.log('fetching user');
       onFetchCurrentUser();
     }
 
     if (dataFromClient.type === 'message/created') {
-      console.log('Fethcing unread messages');
       onFetchUnreadMessages();
     }
 
