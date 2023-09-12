@@ -67,11 +67,6 @@ const EditListingCaregiverDetailsFormComponent = props => (
         label: option.label.replace('Have', 'Has'),
       }));
 
-      const covidVaccinationLabel = intl.formatMessage({
-        id: 'EditListingCaregiverDetailsForm.covidVaccinationLabel',
-      });
-      const covidVaccinationOptions = findOptionsForSelectFilter('covidVaccination', filterConfig);
-
       const languagesSpokenRadioOptions = findOptionsForSelectFilter(
         'languagesSpoken',
         filterConfig
@@ -135,15 +130,6 @@ const EditListingCaregiverDetailsFormComponent = props => (
             options={filteredAdditionalInfoOptions}
             label={additionalInfoLabel}
             twoColumns
-          />
-          <FieldRadioButtonGroup
-            id="covidVaccination"
-            name="covidVaccination"
-            rootClassName={css.checkboxGroup}
-            options={covidVaccinationOptions}
-            label={covidVaccinationLabel}
-            required
-            validate={requiredFieldArrayCheckbox('You must select at least one option')}
           />
 
           <FieldOpenCheckboxGroup
