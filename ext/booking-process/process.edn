@@ -144,11 +144,23 @@
    :from :state/delivered,
    :to :state/active}
 
+  ;; If payment declines, wait 24 hours to see if its updated,
+  ;;  otherwise decline payment and cancel booking
+   {:name :transition/wait-for-payment,
+   :actor :actor.role/operator,
+   :from :state/delivered,
+   :to :state/waiting-for-payment}
+
+   {:name :transition/new-payment-accepted,
+   :actor :actor.role/operator,
+   :from :state/waiting-for-payment,
+   :to :state/delivered}
+
   {:name :transition/decline-payment-repeat,
    :actor :actor.role/operator,
    :actions
     [{:name :action/cancel-booking}],
-   :from :state/delivered,
+   :from :state/waiting-for-payment,
    :to :state/payment-failed}
 
 ],
@@ -257,6 +269,10 @@
    :on :transition/decline-payment,
    :to :actor.role/provider,
    :template :payment-failed-provider}
+   {:name :notification/first-payment-failed-repeat,
+   :on :transition/wait-for-payment,
+   :to :actor.role/customer,
+   :template :repeat-payment-failed}
    {:name :notification/payment-failed-customer-repeat,
    :on :transition/decline-payment-repeat,
    :to :actor.role/customer,

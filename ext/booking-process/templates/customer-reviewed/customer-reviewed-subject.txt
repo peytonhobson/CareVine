@@ -1,1 +1,0 @@
-New Review from {{transaction.customer.display-name}}

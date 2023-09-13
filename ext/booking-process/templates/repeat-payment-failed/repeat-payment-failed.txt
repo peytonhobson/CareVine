@@ -1,0 +1,1 @@
+Payment Failed for Booking with {{transaction.provider.display-name}}

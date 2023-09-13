@@ -341,7 +341,7 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
       startDate,
       endDate,
     } = transaction.attributes.metadata;
-    const txBookedDays = { days: Object.keys(bookingSchedule), startDate, endDate };
+    const txBookedDays = { days: Object.keys(bookingSchedule), startDate, endDate, txId };
     const currentBookedDays = transaction.listing.attributes.metadata.bookedDays ?? [];
     const newBookedDays = [...currentBookedDays, txBookedDays];
 

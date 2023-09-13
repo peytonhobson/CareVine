@@ -18,17 +18,18 @@ module.exports = queryEvents = () => {
     sendQuizFailedEmail,
     approveListingNotification,
     closeListingNotification,
+    sendNewJobInAreaEmail,
+    sendNewCaregiverInAreaEmail,
+    sendWebsocketMessage,
+  } = require('./queryEvents.helpers');
+  const {
     createBookingPayment,
     createCaregiverPayout,
     updateBookingEnd,
     updateNextWeekStart,
     makeReviewable,
     updateBookingLedger,
-    updateNextWeekMetadata,
-    sendNewJobInAreaEmail,
-    sendNewCaregiverInAreaEmail,
-    sendWebsocketMessage,
-  } = require('./queryEvents.helpers');
+  } = require('./queryEvents.bookings');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
   // Start polloing from current time on, when there's no stored state

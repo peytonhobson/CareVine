@@ -114,6 +114,7 @@ export const constructBookingMetadataOneTime = (
       2
     ),
     payout: parseFloat(payout).toFixed(2),
+    type: 'oneTime',
   };
 };
 
@@ -183,5 +184,6 @@ export const constructBookingMetadataRecurring = (
     cancelAtPeriodEnd: false,
     providerBookedDates: providerBookedDates || [],
     providerBookedDays: providerBookedDays || [],
+    type: 'recurring',
   };
 };
