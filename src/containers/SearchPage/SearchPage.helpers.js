@@ -231,11 +231,11 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
 
   cgScore += cgExperienceAreasScore;
 
-  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
-  const employerScheduleType = employerPublicData.scheduleType;
+  const cgOpenToLiveIn = cgPublicData.openToLiveIn;
+  const employerCareSchedule = employerPublicData.careSchedule;
 
-  if (cgScheduleTypes.includes(employerScheduleType)) {
-    cgScore += 15;
+  if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
+    cgScore += 20;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
@@ -255,13 +255,6 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
   ).length;
 
   cgScore += 2 * cgCertificationsAndTrainingScore;
-
-  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
-  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
-
-  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'yes') {
-    cgScore += 10;
-  }
 
   const caregiverAuthor = caregiverListing?.author;
   const caregiverAuthorMetadata = caregiverAuthor?.attributes?.profile?.metadata;
@@ -323,11 +316,11 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
 
   empScore += employerExperienceAreasScore;
 
-  const cgScheduleTypes = cgPublicData.scheduleTypes || [];
-  const employerScheduleType = employerPublicData.scheduleType;
+  const cgOpenToLiveIn = cgPublicData.openToLiveIn;
+  const employerCareSchedule = employerPublicData.careSchedule;
 
-  if (cgScheduleTypes.includes(employerScheduleType)) {
-    empScore += 15;
+  if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
+    empScore += 20;
   }
 
   const cgAdditionalInfo = cgPublicData.additionalInfo || [];
@@ -354,13 +347,6 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
   ).length;
 
   empScore += 2 * employerCertificationsAndTrainingScore;
-
-  const cgCovidVaccination = cgPublicData.covidVaccination || 'no';
-  const employerCovidVaccination = employerPublicData.covidVaccination || 'no';
-
-  if (employerCovidVaccination === 'yes' && cgCovidVaccination === 'no') {
-    empScore -= 10;
-  }
 
   return empScore;
 };

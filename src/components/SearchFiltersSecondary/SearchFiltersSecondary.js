@@ -16,6 +16,19 @@ class SearchFiltersSecondaryComponent extends Component {
     this.resetAll = this.resetAll.bind(this);
   }
 
+  componentDidMount() {
+    console.log('here');
+    if (window.$crisp) {
+      window.$crisp.push(['do', 'chat:hide']);
+    }
+  }
+
+  componentWillUnmount() {
+    if (window.$crisp) {
+      window.$crisp.push(['do', 'chat:show']);
+    }
+  }
+
   // Apply the filters by redirecting to SearchPage with new filters.
   applyFilters() {
     const { applyFilters, onClosePanel } = this.props;

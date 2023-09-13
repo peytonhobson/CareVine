@@ -66,7 +66,7 @@ export const CaregiverListingCardComponent = props => {
     experienceLevel,
     minPrice = 0,
     maxPrice = 0,
-    scheduleTypes,
+    openToLiveIn,
   } = publicData;
   const slug = createSlug(userDisplayName);
 
@@ -285,7 +285,7 @@ export const CaregiverListingCardComponent = props => {
                   />
                 </div>
               )}
-              {scheduleTypes && scheduleTypes.includes('liveIn') && (
+              {openToLiveIn && (
                 <div className={css.badge}>
                   <InfoTooltip
                     title={
@@ -295,24 +295,6 @@ export const CaregiverListingCardComponent = props => {
                     }
                     icon={
                       <IconHouse height={isMobile ? '15' : null} width={isMobile ? '16' : null} />
-                    }
-                    styles={{ paddingInline: '0' }}
-                  />
-                </div>
-              )}
-              {scheduleTypes && scheduleTypes.includes('oneTime') && (
-                <div className={css.badge}>
-                  <InfoTooltip
-                    title={
-                      <p>
-                        <FormattedMessage id="CaregiverListingCard.oneTimeCare" />
-                      </p>
-                    }
-                    icon={
-                      <IconCalendar
-                        height={isMobile ? '15' : null}
-                        width={isMobile ? '16' : null}
-                      />
                     }
                     styles={{ paddingInline: '0' }}
                   />

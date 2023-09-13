@@ -96,7 +96,7 @@ const tabCompleted = (tab, listing) => {
     case CARE_RECIPIENT:
       return !!(publicData && publicData?.careRecipients?.length > 0);
     case CAREGIVER_PREFERENCES:
-      return !!(publicData && publicData.languagesSpoken && publicData.covidVaccination);
+      return !!(publicData && publicData.languagesSpoken);
     case JOB_DESCRIPTION:
       return !!description;
     default:

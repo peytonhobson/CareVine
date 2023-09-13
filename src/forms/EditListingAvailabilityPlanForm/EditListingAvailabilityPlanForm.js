@@ -5,10 +5,10 @@ import { Form as FinalForm, FormSpy } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
-import { Form, DailyPlan, Button, FieldCheckboxGroup } from '../../components';
+import { Form, DailyPlan, Button, FieldRadioButtonGroup } from '../../components';
 import { findOptionsForSelectFilter } from '../../util/search';
 import config from '../../config';
-import { required } from '../../util/validators';
+import { requiredFieldArrayRadio } from '../../util/validators';
 
 import css from './EditListingAvailabilityPlanForm.module.css';
 
@@ -118,7 +118,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
           weekdays,
           ready,
           updated,
-          hideScheduleTypes,
+          hideLiveIn,
           onChange,
           hideSubmit,
           submitButtonText,
@@ -132,9 +132,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
         const submitDisabled = submitInProgress;
         const submitReady = updated || ready;
 
-        const checkboxLabel = intl.formatMessage({ id: 'AvailabilityTypeForm.checkboxLabel' });
-
-        const typeOptions = findOptionsForSelectFilter('scheduleTypes', filterConfig);
+        const openToLiveInValues = findOptionsForSelectFilter('openToLiveIn', filterConfig);
 
         return (
           <Form id={formId} className={classes} onSubmit={handleSubmit}>
@@ -145,16 +143,16 @@ const EditListingAvailabilityPlanFormComponent = props => {
                 }
               }}
             />
-            {!hideScheduleTypes ? (
-              <FieldCheckboxGroup
-                className={css.features}
-                id="scheduleTypes"
-                name="scheduleTypes"
-                options={typeOptions}
-                label={checkboxLabel}
+            {!hideLiveIn ? (
+              <FieldRadioButtonGroup
+                id={formId ? `${formId}.openToLiveIn` : 'openToLiveIn'}
+                rootClassName="mb-4"
+                name="openToLiveIn"
+                label="Are you open to providing live-in care?"
+                options={openToLiveInValues}
                 required
                 inline
-                validate={required('Please select at least one schedule type.')}
+                validate={requiredFieldArrayRadio('Please select an option')}
               />
             ) : null}
             <h2 className={css.heading}>
@@ -169,6 +167,7 @@ const EditListingAvailabilityPlanFormComponent = props => {
                     values={values}
                     intl={intl}
                     className={css.dailyPlan}
+                    multipleTimesDisabled
                   />
                 );
               })}

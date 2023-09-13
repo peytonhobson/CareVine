@@ -62,8 +62,6 @@ const sendEvent = async (userId, type) => {
 function handleMessage(message, connection) {
   const dataFromClient = JSON.parse(message.toString());
 
-  console.log('dataFromClient', dataFromClient);
-
   if (dataFromClient.type === messagesTypes.CONNECTION_INITIATED) {
     clients[dataFromClient.userId] = connection;
     connection.on('close', () => handleDisconnect(dataFromClient.userId));

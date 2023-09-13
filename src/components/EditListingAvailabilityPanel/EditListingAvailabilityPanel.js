@@ -48,13 +48,13 @@ const createEntryDayGroups = (entries = {}) =>
     };
   }, {});
 
-const createInitialValues = (availabilityPlan, scheduleTypes) => {
+const createInitialValues = (availabilityPlan, openToLiveIn) => {
   const { timezone, entries } = availabilityPlan || {};
   const tz = timezone || defaultTimeZone();
   return {
     timezone: tz,
     ...createEntryDayGroups(entries),
-    scheduleTypes,
+    openToLiveIn,
   };
 };
 
@@ -113,18 +113,18 @@ const EditListingAvailabilityPanel = props => {
   };
   const publicData = currentListing.attributes.publicData;
   const availabilityPlan = publicData?.availabilityPlan || defaultAvailabilityPlan;
-  const scheduleTypes = publicData?.scheduleTypes || [];
+  const openToLiveIn = publicData?.openToLiveIn;
 
   const [showNoEntriesError, setShowNoEntriesError] = useState(false);
 
   const classes = classNames(rootClassName || css.root, className);
   const isPublished = currentListing.id && currentListing.attributes.state !== LISTING_STATE_DRAFT;
 
-  const initialValues = createInitialValues(availabilityPlan, scheduleTypes);
+  const initialValues = createInitialValues(availabilityPlan, openToLiveIn);
 
   const handleSubmit = values => {
     const submittedAvailabilityPlan = createAvailabilityPlan(values, currentListing);
-    const { scheduleTypes } = values;
+    const { openToLiveIn } = values;
 
     if (submittedAvailabilityPlan.entries.length === 0) {
       setShowNoEntriesError(true);
@@ -136,7 +136,7 @@ const EditListingAvailabilityPanel = props => {
       availabilityPlan: createOpenAvailabilityPlan(currentListing),
       publicData: {
         availabilityPlan: submittedAvailabilityPlan,
-        scheduleTypes,
+        openToLiveIn,
       },
     })
       .then(() => {
