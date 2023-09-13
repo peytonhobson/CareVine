@@ -311,30 +311,6 @@
   @media screen(md) {
     height: var(--ProfileSettingsForm_avatarSizeDesktop) !important;
   }
-
-  & > :global(.cropper-container) > :global(.cropper-crop-box) {
-    & > :global(.cropper-view-box) {
-      border-radius: 50% !important;
-      height: 100% !important;
-      box-shadow: 0 0 0 1px #39f !important;
-      outline: 0 !important;
-      aspect-ratio: 1/1 !important;
-      width: 100% !important;
-    }
-
-    & > :global(.cropper-face) {
-      background-color: inherit !important;
-    }
-
-    & > :global(.cropper-dashed),
-    :global(.cropper-point.point-se),
-    :global(.cropper-point.point-sw),
-    :global(.cropper-point.point-nw),
-    :global(.cropper-point.point-ne),
-    :global(.cropper-line) {
-      display: none !important;
-    }
-  }
 }
 
 .imgPreview {

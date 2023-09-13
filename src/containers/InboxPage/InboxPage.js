@@ -1,8 +1,7 @@
-import React, { useEffect, useReducer } from 'react';
-import { arrayOf, bool, number, shape, string, func } from 'prop-types';
+import React, { useEffect, useReducer, useMemo } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { FormattedMessage, injectIntl, intlShape } from '../../util/reactIntl';
+import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isEqual } from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { propTypes } from '../../util/types';
@@ -39,8 +38,26 @@ import config from '../../config';
 import SideNav from './SideNav';
 import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 import { updateTransactionMetadata } from '../../util/api';
+import { fetchUnreadMessageCount } from '../TopbarContainer/TopbarContainer.duck';
 
 import css from './InboxPage.module.css';
+
+const findLatestMessage = (txId, messages) => {
+  const latestMessage = messages.get(txId)?.reduce((acc, message) => {
+    if (message.attributes.createdAt > acc.attributes.createdAt) {
+      return message;
+    }
+    return acc;
+  }, messages.get(txId)?.[0]);
+  return latestMessage;
+};
+
+const sortConversations = messages => (a, b) => {
+  const aLastMessageTime = findLatestMessage(a.id.uuid, messages)?.attributes?.createdAt;
+  const bLastMessageTime = findLatestMessage(b.id.uuid, messages)?.attributes?.createdAt;
+
+  return aLastMessageTime > bLastMessageTime ? -1 : 1;
+};
 
 const SET_DELETE_MODAL_OPEN = 'SET_DELETE_MODAL_OPEN';
 const SET_CHAT_MODAL_OPEN = 'SET_CHAT_MODAL_OPEN';
@@ -49,7 +66,6 @@ const SET_CONVERSATIONS = 'SET_CONVERSATIONS';
 const SET_CURRENT_USER_INITIAL_FETCHED = 'SET_CURRENT_USER_INITIAL_FETCHED';
 const SET_STRIPE_MODAL_OPEN = 'SET_STRIPE_MODAL_OPEN';
 const SET_INITIAL_CONVERSATION = 'SET_INITIAL_CONVERSATION';
-const SET_CONVERSATIONS_POLL = 'SET_CONVERSATIONS_POLL';
 const SET_SHOW_FETCH_ERROR = 'SET_SHOW_FETCH_ERROR';
 
 const reducer = (state, action) => {
@@ -86,8 +102,6 @@ const reducer = (state, action) => {
         activeConversation: state.conversations.find(n => n.id.uuid === action.payload),
         initialConversationSet: true,
       };
-    case SET_CONVERSATIONS_POLL:
-      return { ...state, conversationsPoll: action.payload };
     case SET_SHOW_FETCH_ERROR:
       return { ...state, showFetchError: action.payload };
     default:
@@ -115,7 +129,7 @@ export const InboxPageComponent = props => {
     onFetchOtherUserListing,
     otherUserListing,
     onManageDisableScrolling,
-    conversations,
+    conversations: unsortedConversations,
     fetchOtherUserListingError,
     fetchConversationsError,
     fetchOtherUserListingInProgress,
@@ -129,11 +143,17 @@ export const InboxPageComponent = props => {
     fetchInitialConversationsInProgress,
     fetchInitialConversationsError,
     onFetchConversations,
+    onFetchUnreadMessageCount,
   } = props;
   const { tab } = params;
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
   const isMobile = useCheckMobileScreen();
+
+  const conversations = useMemo(() => unsortedConversations.sort(sortConversations(messages)), [
+    unsortedConversations,
+    messages,
+  ]);
 
   const initialState = {
     conversations,
@@ -142,7 +162,6 @@ export const InboxPageComponent = props => {
     isChatModalOpen: false,
     isStripeModalOpen: false,
     initialConversationSet: false,
-    conversationsPoll: null,
     showFetchError: false,
   };
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -151,21 +170,15 @@ export const InboxPageComponent = props => {
   const provider = state.activeConversation?.provider;
   const otherUser = ensuredCurrentUser.id?.uuid === provider?.id?.uuid ? customer : provider;
 
-  useEffect(() => {
-    if (!state.conversationsPoll) {
-      const conversationsPoll = setInterval(() => {
-        onFetchConversations();
-      }, 10000);
-
-      dispatch({ type: SET_CONVERSATIONS_POLL, payload: conversationsPoll });
-
-      return () => {
-        clearInterval(state.conversationsPoll);
-      };
-    }
-  }, []);
-
   const conversationId = params.id;
+
+  const previousConverstionsLength = usePrevious(state.conversations?.length);
+
+  useEffect(() => {
+    if (!previousConverstionsLength && conversations.length && !conversationId) {
+      dispatch({ type: SET_ACTIVE_CONVERSATION, payload: conversations[0].id.uuid });
+    }
+  }, [conversations.length, previousConverstionsLength, conversationId]);
 
   useEffect(() => {
     if (
@@ -205,6 +218,7 @@ export const InboxPageComponent = props => {
 
         updateTransactionMetadata({ txId: id, metadata }).then(() => {
           onFetchConversations();
+          onFetchUnreadMessageCount();
         });
       }
     }
@@ -416,41 +430,6 @@ export const InboxPageComponent = props => {
   );
 };
 
-InboxPageComponent.defaultProps = {
-  unitType: config.bookingUnitType,
-  currentUser: null,
-  currentUserListing: null,
-  currentUserHasOrders: null,
-  fetchConversationsError: null,
-  pagination: null,
-  providerNotificationCount: 0,
-  sendVerificationEmailError: null,
-};
-
-InboxPageComponent.propTypes = {
-  params: shape({
-    tab: string.isRequired,
-    id: string,
-  }).isRequired,
-  unitType: propTypes.bookingUnitType,
-  currentUser: propTypes.currentUser,
-  currentUserListing: propTypes.ownListing,
-  fetchConversationsInProgress: bool.isRequired,
-  fetchConversationsError: propTypes.error,
-  pagination: propTypes.pagination,
-  providerNotificationCount: number,
-  scrollingDisabled: bool.isRequired,
-  conversations: arrayOf(propTypes.transaction).isRequired,
-
-  /* from withRouter */
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
-
 const sortTransactions = (a, b) => {
   const aLastMessage =
     a.messages.length > 0 && a.messages[a.messages.length - 1].attributes.createdAt;
@@ -487,6 +466,7 @@ const mapDispatchToProps = {
   onSendRequestForPayment: sendRequestForPayment,
   onDeleteConversation: deleteConversation,
   onFetchConversations: fetchConversations,
+  onFetchUnreadMessageCount: fetchUnreadMessageCount,
 };
 
 const InboxPage = compose(

@@ -12,6 +12,26 @@ module.exports = (req, res) => {
       const oldNotifications =
         fetchedUser.data.data.attributes.profile.privateData.notifications || [];
 
+      const hasSameNotification = oldNotifications.find(
+        n =>
+          n.metadata.eventSequenceId &&
+          n.metadata.eventSequenceId === newNotification.metadata.eventSequenceId
+      );
+
+      if (hasSameNotification) {
+        throw {
+          status: 400,
+          statusText: 'Bad Request',
+          data: {
+            errors: [
+              {
+                code: 'notification-already-exists',
+              },
+            ],
+          },
+        };
+      }
+
       const newNotifications = [...oldNotifications, newNotification];
 
       return integrationSdk.users.updateProfile(

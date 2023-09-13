@@ -20,14 +20,16 @@ const generateBioPrompt = listing => {
     experienceLevel,
   } = publicData;
 
-  const prompt = `Generate a first-person bio with less than 800 characters (including spaces) for a caregiver with the following traits.
-            Don't include every trait. Leave some space in brackets for the caregiver to fill in their past history:
+  const prompt = `
+  I want to create a first-person bio as caregiver on a p2p marketplace for seniors and caregivers.
+  Generate the bio with less than 800 characters (including spaces) with the following traits.
+  Don't include every trait. Only include the items in the traits that are the most important for families/seniors to see.
 
             Certifications and Training: ${convertFilterKeysToLabels(
               'certificationsAndTraining',
               certificationsAndTraining
             )}
-            Languages Spoken:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
+            Language(s) Spoken:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
             Care Types: ${convertFilterKeysToLabels('careTypes', careTypes)}
             Experience Areas: ${convertFilterKeysToLabels('experienceAreas', experienceAreas)}
             Experience Level: ${convertFilterKeyToLabel('experienceLevel', experienceLevel)}
@@ -60,15 +62,17 @@ const generateJobDescriptionPrompt = listing => {
     scheduleTimes = `Days and times of Care: ${JSON.stringify(careSchedule.entries)}`;
   }
 
-  const prompt = `I want to hire a caregiver. Generate a first-person job description with less than 800 characters (including spaces) with the following traits.
-            Only include the items in the traits that are the most important.
+  const prompt = `
+  I want to create a first-person job description as a care seeker (or representative) on a p2p marketplace for seniors and caregivers.
+  Generate the job description with less than 800 characters (including spaces) with the following traits.
+  Only include the items in the traits that are the most important.
 
             Preferred Certifications and Training: ${
               certificationsAndTraining
                 ? convertFilterKeysToLabels('certificationsAndTraining', certificationsAndTraining)
                 : 'None'
             }
-            Languages Needed:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
+            Language(s) Needed:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
             Needed Care Types: ${convertFilterKeysToLabels('careTypes', careTypes)}
             Preferred Experience Areas: ${convertFilterKeysToLabels(
               'detailedCareNeeds',
@@ -77,7 +81,6 @@ const generateJobDescriptionPrompt = listing => {
             Care Recipients Information: ${JSON.stringify(careRecipients)}
             Residence Type: ${convertFilterKeyToLabel('residenceType', residenceType)}
             Care Schedule Type: ${convertFilterKeyToLabel('scheduleType', scheduleType)}
-            ${scheduleTimes}
     `;
 
   return prompt;

@@ -166,17 +166,15 @@ export const filters = [
     },
   },
   {
-    id: 'scheduleTypes',
-    label: 'Schedule Types',
-    type: 'SelectMultipleFilter',
-    group: 'primary',
-    queryParamNames: ['pub_scheduleTypes'],
+    id: 'openToLiveIn',
+    label: 'Open to Live-In',
+    type: 'SelectSingleFilter',
+    group: 'secondary',
+    queryParamNames: ['pub_openToLiveIn'],
     config: {
-      searchMode: 'has_any',
       options: [
-        { key: 'oneTime', label: 'One Time' },
-        { key: 'recurring', label: 'Repeat' },
-        { key: 'liveIn', label: '24 Hour' },
+        { key: 'yes', label: 'Yes' },
+        { key: 'no', label: 'No' },
       ],
     },
   },
@@ -597,23 +595,6 @@ export const filters = [
         { key: '5-9', label: '5-9 years' },
         { key: '10+', label: '10+ years' },
         { key: '0', label: 'I am seeking my first senior care job' },
-      ],
-    },
-  },
-  {
-    id: 'covidVaccination',
-    label: 'Covid Vaccination',
-    type: 'SelectSingleFilter',
-    group: 'secondary',
-    queryParamNames: ['pub_covidVaccination'],
-    config: {
-      // "key" is the option you see in Flex Console.
-      // "label" is set here for this web app's UI only.
-      // Note: label is not added through the translation files
-      // to make filter customizations a bit easier.
-      options: [
-        { key: 'yes', label: 'Yes' },
-        { key: 'no', label: 'No' },
       ],
     },
   },

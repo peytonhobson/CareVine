@@ -2,7 +2,6 @@ import React, { useEffect, useReducer, useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isEqual } from 'lodash';
 import classNames from 'classnames';
 
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
@@ -118,10 +117,16 @@ const NotificationsPageComponent = props => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const previousNotificationsLength = usePrevious(sortedNotifications.length);
+
   useEffect(() => {
-    if (sortedNotifications.length === 0) return;
+    onFetchCurrentUser();
+  }, [onFetchCurrentUser]);
+
+  useEffect(() => {
+    if (previousNotificationsLength === sortedNotifications.length) return;
     dispatch({ type: SET_NOTIFICATIONS, payload: sortedNotifications });
-  }, [JSON.stringify(sortedNotifications)]);
+  }, [previousNotificationsLength, sortedNotifications.length]);
 
   useEffect(() => {
     const firstNotification = state.notifications.find(n => n.id === notificationId);
@@ -144,6 +149,10 @@ const NotificationsPageComponent = props => {
       const newNotifications = state.notifications.map(n =>
         n.id === state.activeNotificationId ? { ...n, isRead: true } : n
       );
+
+      const newSortedNotifications = newNotifications.sort((a, b) => b.createdAt - a.createdAt);
+
+      dispatch({ type: SET_NOTIFICATIONS, payload: newSortedNotifications });
 
       onUpdateNotifications(newNotifications);
       onFetchCurrentUser();

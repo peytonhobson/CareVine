@@ -3,6 +3,8 @@ const fs = require('fs');
 const _ = require('lodash');
 const { types } = require('sharetribe-flex-sdk');
 
+const isDev = process.env.REACT_APP_ENV === 'development';
+
 const buildPath = path.resolve(__dirname, '..', 'build');
 
 // The HTML build file is generated from the `public/index.html` file
@@ -142,7 +144,8 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
   // NOTE: FTW is a single-page application (SPA).
   //       gtag.js sends initial page_view event after page load.
   //       but we need to handle subsequent events for in-app navigation.
-  const gtagScripts = `
+  const gtagScripts = !isDev
+    ? `
       <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
@@ -161,7 +164,8 @@ exports.render = async function(requestUrl, context, data, renderApp, webExtract
 
         gtag('config', '${googleConversionId}');
       </script>
-    `;
+    `
+    : '';
   const googleAnalyticsScript = hasGoogleAnalyticsv4Id ? gtagScripts : '';
 
   return template({

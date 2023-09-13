@@ -207,7 +207,7 @@ const CareScheduleRecurringTimesContainerComponent = props => {
           fetchErrors={errors}
           showErrors={showErrors}
           initialValuesEqual={() => true}
-          hideScheduleTypes
+          hideLiveIn
           className={css.recurringPlanForm}
           hideSubmit
         />

@@ -26,15 +26,11 @@ const NotificationListingRemoved = props => {
   return (
     <div className={css.root}>
       <Card className={classes.card}>
-        <h1 className={css.title}>Listing Removed</h1>
+        <h1 className={css.title}>Listing Closed</h1>
         <p className={css.message}>
-          Your CareVine listing has been removed and is no longer active. If this happened because
-          your subscription was canceled, you can reactivate your subscription by clicking on the{' '}
-          <strong>Reactivate</strong> button below.
+          Your CareVine listing has been closed and is no longer visible to other users on the
+          platform.
         </p>
-        <NamedLink name="SubscriptionsPage" className={css.linkButton}>
-          Reactivate
-        </NamedLink>
       </Card>
     </div>
   );

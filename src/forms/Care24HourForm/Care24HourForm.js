@@ -106,13 +106,8 @@ const Care24HourFormComponent = props => {
     careSchedule,
     userCareSchedule,
     currentListing,
-    disabled,
     fetchErrors,
-    fetchExceptionsInProgress,
     intl,
-    onAddAvailabilityException,
-    onDeleteAvailabilityException,
-    onManageDisableScrolling,
     onSubmit,
     ready,
     showErrors,
@@ -302,24 +297,6 @@ const Care24HourFormComponent = props => {
           );
         }}
       />
-      <div className={css.exceptionsContainer}>
-        <h2 className={css.exceptionsTitle}>Are there any exceptions to this schedule?</h2>
-        <CareScheduleExceptions
-          fetchExceptionsInProgress={fetchExceptionsInProgress}
-          availabilityExceptions={state.availabilityExceptions}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onManageDisableScrolling={onManageDisableScrolling}
-          careSchedule={careSchedule}
-          updateInProgress={updateInProgress}
-          errors={fetchErrors}
-          disabled={disabled}
-          ready={ready}
-          listing={currentListing}
-          onDelete={handleDeleteException}
-          onSave={handleSaveAvailabilityException}
-        />
-      </div>
       {fetchErrors?.updateListingError && showErrors ? (
         <p className={css.error}>
           <FormattedMessage id="Care24HourForm.updateFailed" />

@@ -183,7 +183,7 @@ export class ListingPageComponent extends Component {
     if (existingConversation) {
       const txId = existingConversation.id.uuid;
       try {
-        await onSendMessage(txId, message.trim());
+        await onSendMessage(txId, message.trim(), otherUserId);
 
         this.setState({ enquiryModalOpen: false });
 
@@ -602,7 +602,7 @@ const mapDispatchToProps = dispatch => ({
   onChangeModalValue: value => dispatch(changeModalValue(value)),
   onSendEnquiry: (listing, message, history, routes) =>
     dispatch(sendEnquiry(listing, message, history, routes)),
-  onSendMessage: (txId, message) => dispatch(sendMessage(txId, message)),
+  onSendMessage: (txId, message, otherUserId) => dispatch(sendMessage(txId, message, otherUserId)),
   onCloseListing: listingId => dispatch(closeListing(listingId)),
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
