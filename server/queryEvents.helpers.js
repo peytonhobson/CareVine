@@ -98,29 +98,43 @@ const integrationSdk = flexIntegrationSdk.createInstance({
   baseUrl: process.env.FLEX_INTEGRATION_BASE_URL || 'https://flex-integ-api.sharetribe.com',
 });
 
-const approveListingNotification = async (userId, listingId) => {
-  try {
-    const userResponse = await integrationSdk.users.show({ id: userId });
+const approveListingNotification = async (userId, listingId, sendEmail, eventSequenceId) => {
+  if (sendEmail) {
+    try {
+      const userResponse = await integrationSdk.users.show({ id: userId });
 
-    const userName = userResponse?.data.data.attributes.profile.displayName;
+      const user = userResponse.data.data;
 
-    const urlParams = `/l/${createSlug(userName)}/${listingId}`;
+      const notifications = user.attributes.profile.metadata.notifications || [];
 
-    await axios.post(
-      `${apiBaseUrl()}/api/sendgrid-template-email`,
-      {
-        receiverId: userId,
-        templateName: 'listing-approved',
-        templateData: { marketplaceUrl: rootUrl, urlParams },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
-        },
+      const hasNotification = notifications.find(
+        n => n.metadata.eventSequenceId === eventSequenceId
+      );
+
+      if (hasNotification) {
+        return;
       }
-    );
-  } catch (e) {
-    log.error(e, 'approve-listing-email-failed', {});
+
+      const userName = userResponse?.data.data.attributes.profile.displayName;
+
+      const urlParams = `/l/${createSlug(userName)}/${listingId}`;
+
+      await axios.post(
+        `${apiBaseUrl()}/api/sendgrid-template-email`,
+        {
+          receiverId: userId,
+          templateName: 'listing-approved',
+          templateData: { marketplaceUrl: rootUrl, urlParams },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/transit+json',
+          },
+        }
+      );
+    } catch (e) {
+      log.error(e, 'approve-listing-email-failed', {});
+    }
   }
 
   const newNotification = {
@@ -128,7 +142,9 @@ const approveListingNotification = async (userId, listingId) => {
     type: 'listingOpened',
     createdAt: new Date().getTime(),
     isRead: false,
-    metadata: {},
+    metadata: {
+      eventSequenceId,
+    },
   };
 
   try {
@@ -149,25 +165,7 @@ const approveListingNotification = async (userId, listingId) => {
   }
 };
 
-const closeListingNotification = async userId => {
-  try {
-    await axios.post(
-      `${apiBaseUrl()}/api/sendgrid-template-email`,
-      {
-        receiverId: userId,
-        templateName: 'listing-closed',
-        templateData: { marketplaceUrl: rootUrl },
-      },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
-        },
-      }
-    );
-  } catch (e) {
-    log.error(e, 'listing-closed-email-failed', {});
-  }
-
+const closeListingNotification = async (userId, eventSequenceId) => {
   try {
     const newNotification = {
       id: uuidv4(),
@@ -182,6 +180,7 @@ const closeListingNotification = async userId => {
       {
         userId,
         newNotification,
+        eventSequenceId,
       },
       {
         headers: {
@@ -332,14 +331,17 @@ const addUnreadMessageCount = async (txId, senderId) => {
       [providerUserId]: 0,
     };
 
-    unreadMessageCount[recipientUserId] += 1;
-
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
-        unreadMessageCount,
+        unreadMessageCount: {
+          ...unreadMessageCount,
+          [recipientUserId]: (unreadMessageCount[recipientUserId] += 1),
+        },
       },
     });
+
+    sendWebsocketMessage(recipientUserId, 'message-created');
   } catch (e) {
     log.error(e, 'add-unread-message-count-failed', {});
   }
@@ -974,6 +976,25 @@ const sendNewCaregiverInAreaEmail = async listing => {
   }
 };
 
+const sendWebsocketMessage = async (userId, type) => {
+  try {
+    await axios.post(
+      `${apiBaseUrl()}/ws/${type}`,
+      {
+        userId,
+        serverId: process.env.WEBSOCKET_SERVER_ID,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+  } catch (err) {
+    log.error(err, 'send-websocket-message-failed', {});
+  }
+};
+
 module.exports = {
   approveListingNotification,
   enrollUserTCM,
@@ -992,4 +1013,5 @@ module.exports = {
   updateBookingLedger,
   sendNewJobInAreaEmail,
   sendNewCaregiverInAreaEmail,
+  sendWebsocketMessage,
 };

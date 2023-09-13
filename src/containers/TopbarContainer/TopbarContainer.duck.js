@@ -15,6 +15,8 @@ export const FETCH_UNREAD_MESSAGE_COUNT_SUCCESS =
 export const FETCH_UNREAD_MESSAGE_COUNT_ERROR =
   'app/TopbarContainer/FETCH_UNREAD_MESSAGE_COUNT_ERROR';
 
+export const SET_SEND_WEBSOCKET_MESSAGE = 'app/TopbarContainer/SET_SEND_WEBSOCKET_MESSAGE';
+
 // ================ Reducer ================ //
 
 const entityRefs = entities =>
@@ -27,9 +29,10 @@ const initialState = {
   modalValue: null,
   changeModalValueInProgress: false,
   changeModalValueError: null,
-  messageTransactionRefs: [],
+  unreadMessageCount: 0,
   fetchUnreadMessageCountInProgress: false,
   fetchUnreadMessageCountError: null,
+  sendWebsocketMessage: null,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -63,7 +66,7 @@ export default function reducer(state = initialState, action = {}) {
     case FETCH_UNREAD_MESSAGE_COUNT_SUCCESS:
       return {
         ...state,
-        messageTransactionRefs: entityRefs(payload.data.data),
+        unreadMessageCount: payload,
         fetchUnreadMessageCountInProgress: false,
       };
     case FETCH_UNREAD_MESSAGE_COUNT_ERROR:
@@ -71,6 +74,12 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         fetchUnreadMessageCountInProgress: false,
         fetchUnreadMessageCountError: payload,
+      };
+
+    case SET_SEND_WEBSOCKET_MESSAGE:
+      return {
+        ...state,
+        sendWebsocketMessage: payload,
       };
 
     default:
@@ -106,7 +115,16 @@ export const fetchUnreadMessageCountError = e => ({
   error: true,
 });
 
+export const sendWebsocketMessageSet = func => ({
+  type: SET_SEND_WEBSOCKET_MESSAGE,
+  payload: func,
+});
+
 // ================ Thunks ================ //
+
+export const setSendWebsocketMessage = func => (dispatch, getState, sdk) => {
+  dispatch(sendWebsocketMessageSet(func));
+};
 
 export const changeModalValue = value => (dispatch, getState, sdk) => {
   return dispatch(changeModalValueSuccess(value));
@@ -123,8 +141,17 @@ export const fetchUnreadMessageCount = () => async (dispatch, getState, sdk) => 
   try {
     const response = await sdk.transactions.query(apiQueryParams);
 
-    dispatch(addMarketplaceEntities(response));
-    dispatch(fetchUnreadMessageCountSuccess(response));
+    const currentUser = getState().user.currentUser;
+
+    const unreadMessages = response.data.data?.reduce((acc, conversation) => {
+      const unreadMessageCount = conversation.attributes.metadata.unreadMessageCount;
+
+      const myUnreadMessages = unreadMessageCount && unreadMessageCount[currentUser?.id?.uuid];
+
+      return acc + (myUnreadMessages ? myUnreadMessages : 0);
+    }, 0);
+
+    dispatch(fetchUnreadMessageCountSuccess(unreadMessages));
   } catch (e) {
     dispatch(fetchUnreadMessageCountError(e));
   }

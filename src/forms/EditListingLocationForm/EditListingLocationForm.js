@@ -52,9 +52,7 @@ export const EditListingLocationFormComponent = props => (
       } = formRenderProps;
 
       // Address Text Field
-      const addressTitleRequiredMessage = intl.formatMessage({
-        id: 'EditListingLocationForm.address',
-      });
+      const addressTitleRequiredMessage = 'Address';
       const addressPlaceholderMessage = intl.formatMessage({
         id: 'EditListingLocationForm.addressPlaceholder',
       });
@@ -119,6 +117,9 @@ export const EditListingLocationFormComponent = props => (
               rootClassName={css.locationAutocompleteRoot}
               name="location"
               label={addressTitleRequiredMessage}
+              labelNote={
+                <p className="text-xs mt-0 mb-4 p-0">*Only your city and state will be public</p>
+              }
               placeholder={addressPlaceholderMessage}
               useDefaultPredictions={false}
               useCurrentLocation={true}

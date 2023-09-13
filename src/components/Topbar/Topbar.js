@@ -27,6 +27,7 @@ import { ensureCurrentUser } from '../../util/data';
 import MenuIcon from './MenuIcon';
 import SearchIcon from './SearchIcon';
 import css from './Topbar.module.css';
+import SocketClient from './SocketClient';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 
@@ -62,18 +63,6 @@ class TopbarComponent extends Component {
     this.handleMobileSearchClose = this.handleMobileSearchClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-    this.pollUser = this.pollUser.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.props.currentUser) {
-      this.props.onFetchUnreadMessages();
-      this.props.onFetchCurrentUser();
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.pollingInterval);
   }
 
   handleMobileMenuOpen() {
@@ -126,13 +115,6 @@ class TopbarComponent extends Component {
     });
   }
 
-  pollUser() {
-    const { onFetchCurrentUser, onFetchUnreadMessages } = this.props;
-
-    onFetchUnreadMessages();
-    onFetchCurrentUser();
-  }
-
   render() {
     const {
       className,
@@ -147,7 +129,6 @@ class TopbarComponent extends Component {
       currentUserHasListings,
       currentUserListing,
       currentUserListingFetched,
-      currentUserHasOrders,
       currentPage,
       viewport,
       intl,
@@ -160,6 +141,7 @@ class TopbarComponent extends Component {
       modalValue,
       onChangeModalValue,
       unreadMessages,
+      onFetchConversations,
     } = this.props;
 
     const { mobilemenu } = parse(location.search, {
@@ -282,14 +264,7 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-        {isAuthenticated && (
-          <SessionTimeout
-            intervalFunction={this.pollUser}
-            intervalTime="10000"
-            maxInactiveTime="5"
-            isAuthenticated={isAuthenticated}
-          />
-        )}
+        {isAuthenticated && <SocketClient currentPage={currentPage} />}
         <GenericError
           show={showGenericError}
           errorText={<FormattedMessage id="Topbar.genericError" />}
@@ -298,59 +273,6 @@ class TopbarComponent extends Component {
     );
   }
 }
-
-TopbarComponent.defaultProps = {
-  className: null,
-  rootClassName: null,
-  desktopClassName: null,
-  mobileRootClassName: null,
-  mobileClassName: null,
-  notificationCount: 0,
-  currentUser: null,
-  currentUserHasOrders: null,
-  currentPage: null,
-  sendVerificationEmailError: null,
-  authScopes: [],
-};
-
-TopbarComponent.propTypes = {
-  className: string,
-  rootClassName: string,
-  desktopClassName: string,
-  mobileRootClassName: string,
-  mobileClassName: string,
-  isAuthenticated: bool.isRequired,
-  authScopes: array,
-  authInProgress: bool.isRequired,
-  currentUser: propTypes.currentUser,
-  currentUserHasListings: bool.isRequired,
-  currentUserHasOrders: bool,
-  currentPage: string,
-  notificationCount: number,
-  onLogout: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  onResendVerificationEmail: func.isRequired,
-  sendVerificationEmailInProgress: bool.isRequired,
-  sendVerificationEmailError: propTypes.error,
-  showGenericError: bool.isRequired,
-
-  // These are passed from Page to keep Topbar rendering aware of location changes
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-  location: shape({
-    search: string.isRequired,
-  }).isRequired,
-
-  // from withViewport
-  viewport: shape({
-    width: number.isRequired,
-    height: number.isRequired,
-  }).isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
 
 const Topbar = compose(withViewport, injectIntl)(TopbarComponent);
 

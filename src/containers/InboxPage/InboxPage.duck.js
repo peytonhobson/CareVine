@@ -437,14 +437,29 @@ export const fetchMoreMessages = txId => (dispatch, getState, sdk) => {
   return dispatch(fetchMessages(txId, nextPage));
 };
 
-export const sendMessage = (txId, message) => (dispatch, getState, sdk) => {
+export const sendMessage = (tx, message) => (dispatch, getState, sdk) => {
   dispatch(sendMessageRequest());
+
+  const txId = tx.id;
 
   return sdk.messages
     .send({ transactionId: txId, content: message })
     .then(response => {
       const messageId = response.data.data.id;
 
+      const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
+
+      if (sendWebsocketMessage) {
+        const currentUserId = getState().user.currentUser?.id?.uuid;
+        const receiverId =
+          currentUserId === tx.customer.id.uuid ? tx.provider.id.uuid : tx.customer.id.uuid;
+        sendWebsocketMessage(
+          JSON.stringify({
+            type: 'message/sent',
+            receiverId,
+          })
+        );
+      }
       // We fetch the first page again to add sent message to the page data
       // and update possible incoming messages too.
       // TODO if there're more than 100 incoming messages,

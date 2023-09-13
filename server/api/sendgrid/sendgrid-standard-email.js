@@ -32,8 +32,6 @@ module.exports = (req, res) => {
     html,
   };
 
-  console.log(msg);
-
   return sgMail
     .send(msg)
     .then(apiResponse => {

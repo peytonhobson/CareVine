@@ -110,7 +110,7 @@ const SearchResultsPanel = props => {
         )}
         {props.children}
       </div>
-      {/* {paginationLinks} */}
+      {paginationLinks}
     </div>
   );
 };

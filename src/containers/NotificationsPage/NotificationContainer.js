@@ -120,7 +120,9 @@ const NotificationContainer = props => {
         ) : fetchCurrentUserInProgress ? (
           <IconSpinner className={css.mainSpinner} />
         ) : (
-          <h1 className={css.selectANotification}>Select a Notification</h1>
+          <div className="w-full h-full flex justify-center items-center">
+            <h1 className={css.selectANotification}>Select a Notification</h1>
+          </div>
         );
   }
 
