@@ -36,7 +36,7 @@
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6; font-family: Helvetica;">
     <table
       style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
       width="100%"
@@ -81,22 +81,42 @@
                           <td align="center">
                             <p
                               class="description"
-                              style="padding: 32px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding: 32px 0;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 32px; line-height: 150%;"
                             >
-                              Your dispute for your booking with
+                              Booking Payment Failed
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="description"
+                              style="padding: 0 0 32px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                            >
+                              We were unable to charge your payment method for your booking with
                               <span style="white-space: nowrap"
                                 >{{transaction.provider.display-name}}</span
-                              >
-                              was successfully submitted. We will get back to you shortly with a
-                              decision. If any additional information is needed, we will reach out.
+                              >. You have 24 hours to change your payment method or your booking
+                              will be canceled.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="description"
+                              style="padding: 0 0 32px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                            >
+                              Click the button below to go to your booking and change your payment
+                              method.
                             </p>
                           </td>
                         </tr>
                         <tr align="center">
                           <td style="padding: 24px 0;" class="button-td">
                             <a
-                              href="{{marketplace.url}}/bookings?tab=Past&bookingId={{transaction.id}}"
-                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
+                              style="padding: 12px 24px;height: 44px;background: #6BA0B6;border-radius: 10px;border: none;color: #FFFFFF; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; text-decoration: none;"
                               class="button"
                               >Go to Booking</a
                             >
@@ -107,7 +127,7 @@
                             style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
                           >
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;"
                             >
                               If you have any questions or concerns, please contact
                               <a
