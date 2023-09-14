@@ -29,7 +29,10 @@ module.exports = queryEvents = () => {
     updateNextWeekStart,
     makeReviewable,
     updateBookingLedger,
-  } = require('./queryEvents.bookings');
+    sendNewJobInAreaEmail,
+    // sendNewCaregiverInAreaEmail,
+    sendWebsocketMessage,
+  } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
   // Start polloing from current time on, when there's no stored state
@@ -133,14 +136,15 @@ module.exports = queryEvents = () => {
         sendNewJobInAreaEmail(listing);
       }
 
-      if (
-        prevListingState === 'draft' &&
-        newListingState === 'published' &&
-        listingType === 'caregiver' &&
-        isProd
-      ) {
-        sendNewCaregiverInAreaEmail(listing);
-      }
+      // TODO: Convert to weekly email
+      // if (
+      //   prevListingState === 'draft' &&
+      //   newListingState === 'published' &&
+      //   listingType === 'caregiver' &&
+      //   isProd
+      // ) {
+      //   sendNewCaregiverInAreaEmail(listing);
+      // }
     }
 
     if (eventType === 'user/updated') {

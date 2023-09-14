@@ -58,6 +58,7 @@ import {
   openListing,
   notifyForBooking,
   createBookingDraft,
+  fetchExistingConversation,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
@@ -188,8 +189,7 @@ export class ListingPageComponent extends Component {
     if (existingConversation) {
       const txId = existingConversation.id.uuid;
       try {
-        await onSendMessage(txId, message.trim(), otherUserId);
-
+        onSendMessage(txId, message.trim(), otherUserId);
         this.setState({ enquiryModalOpen: false });
 
         // Redirect to InboxPage
@@ -459,6 +459,7 @@ export class ListingPageComponent extends Component {
                       sendNotifyForBookingInProgress={sendNotifyForBookingInProgress}
                       sendNotifyForBookingSuccess={sendNotifyForBookingSuccess}
                       onSendNotifyForBooking={onSendNotifyForBooking}
+                      onFetchExistingConversation={this.props.onFetchExistingConversation}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -512,12 +513,10 @@ export class ListingPageComponent extends Component {
 }
 
 ListingPageComponent.defaultProps = {
-  unitType: config.bookingUnitType,
   filterConfig: config.custom.filters,
 };
 
 ListingPageComponent.propTypes = {
-  unitType: propTypes.bookingUnitType,
   filterConfig: array,
 };
 
@@ -614,6 +613,7 @@ const mapDispatchToProps = dispatch => ({
   onCreateBookingDraft: (listingId, bookingData) =>
     dispatch(createBookingDraft(listingId, bookingData)),
   onSendNotifyForBooking: (listing, otherUser) => dispatch(notifyForBooking(listing, otherUser)),
+  onFetchExistingConversation: listing => dispatch(fetchExistingConversation(listing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

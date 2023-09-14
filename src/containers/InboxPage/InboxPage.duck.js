@@ -17,7 +17,7 @@ import isEmpty from 'lodash/isEmpty';
 import queryString from 'query-string';
 import * as log from '../../util/log';
 import { v4 as uuidv4 } from 'uuid';
-import { updateUserNotifications, updateUser } from '../../util/api';
+import { updateUserNotifications, updateUser, sendgridTemplateEmail } from '../../util/api';
 import config from '../../config';
 import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
 
@@ -437,46 +437,82 @@ export const fetchMoreMessages = txId => (dispatch, getState, sdk) => {
   return dispatch(fetchMessages(txId, nextPage));
 };
 
-export const sendMessage = (tx, message) => (dispatch, getState, sdk) => {
+export const sendMessage = (tx, message) => async (dispatch, getState, sdk) => {
   dispatch(sendMessageRequest());
 
   const txId = tx.id;
 
-  return sdk.messages
-    .send({ transactionId: txId, content: message })
-    .then(response => {
-      const messageId = response.data.data.id;
+  let receiverId = null;
 
-      const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
+  try {
+    const messageId = (await sdk.messages.send({ transactionId: txId, content: message })).data.data
+      ?.id;
 
-      if (sendWebsocketMessage) {
-        const currentUserId = getState().user.currentUser?.id?.uuid;
-        const receiverId =
-          currentUserId === tx.customer.id.uuid ? tx.provider.id.uuid : tx.customer.id.uuid;
-        sendWebsocketMessage(
-          JSON.stringify({
-            type: 'message/sent',
-            receiverId,
-          })
-        );
-      }
-      // We fetch the first page again to add sent message to the page data
-      // and update possible incoming messages too.
-      // TODO if there're more than 100 incoming messages,
-      // this should loop through most recent pages instead of fetching just the first one.
-      return dispatch(fetchMessages(txId, 1))
-        .then(() => {
-          dispatch(sendMessageSuccess());
-          return messageId;
+    if (!messageId) return;
+
+    const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
+
+    if (sendWebsocketMessage) {
+      const currentUserId = getState().user.currentUser?.id?.uuid;
+      receiverId =
+        currentUserId === tx.customer.id.uuid ? tx.provider.id.uuid : tx.customer.id.uuid;
+      await sendWebsocketMessage(
+        JSON.stringify({
+          type: 'message/sent',
+          receiverId,
         })
-        .catch(() => dispatch(sendMessageSuccess()));
-    })
-    .catch(e => {
-      dispatch(sendMessageError(storableError(e)));
-      // Rethrow so the page can track whether the sending failed, and
-      // keep the message in the form for a retry.
-      throw e;
-    });
+      );
+    }
+    // We fetch the first page again to add sent message to the page data
+    // and update possible incoming messages too.
+    // TODO if there're more than 100 incoming messages,
+    // this should loop through most recent pages instead of fetching just the first one.
+    dispatch(fetchMessages(txId, 1));
+    dispatch(sendMessageSuccess());
+  } catch (e) {
+    dispatch(sendMessageError(storableError(e)));
+    // Rethrow so the page can track whether the sending failed, and
+    // keep the message in the form for a retry.
+    throw e;
+  }
+
+  if (receiverId) {
+    try {
+      const messagesResponse = await sdk.messages.query({
+        transactionId: txId,
+        perPage: 2,
+        page: 1,
+        include: ['sender'],
+        'fields.message': ['createdAt'],
+        'fields.user': ['profile.displayName'],
+      });
+
+      const messages = denormalisedResponseEntities(messagesResponse);
+
+      const lastMessage = messages[messages.length - 1];
+
+      const lastMessageMoreThan1HourAgo =
+        new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() >
+        1000 * 60 * 60;
+
+      const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+
+      if (lastMessageMoreThan1HourAgo) {
+        await sendgridTemplateEmail({
+          receiverId,
+          templateData: {
+            marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+            message: previewMessage,
+            senderName: lastMessage.sender.attributes.profile.displayName,
+            txId,
+          },
+          templateName: 'new-message',
+        });
+      }
+    } catch (err) {
+      log.error(e, 'send-new-message-notification-failed', { txId, message });
+    }
+  }
 };
 
 export const clearMessages = () => (dispatch, getState, sdk) => {
