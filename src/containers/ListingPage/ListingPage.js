@@ -60,6 +60,7 @@ import {
   closeListing,
   openListing,
   notifyForBooking,
+  fetchExistingConversation,
 } from './ListingPage.duck';
 import { changeModalValue } from '../TopbarContainer/TopbarContainer.duck';
 
@@ -451,6 +452,7 @@ export class ListingPageComponent extends Component {
                       sendNotifyForBookingInProgress={sendNotifyForBookingInProgress}
                       sendNotifyForBookingSuccess={sendNotifyForBookingSuccess}
                       onSendNotifyForBooking={onSendNotifyForBooking}
+                      onFetchExistingConversation={this.props.onFetchExistingConversation}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -504,47 +506,10 @@ export class ListingPageComponent extends Component {
 }
 
 ListingPageComponent.defaultProps = {
-  unitType: config.bookingUnitType,
-  currentUser: null,
-  enquiryModalOpenForListingId: null,
-  showListingError: null,
-  sendEnquiryError: null,
   filterConfig: config.custom.filters,
 };
 
 ListingPageComponent.propTypes = {
-  // from withRouter
-  history: shape({
-    push: func.isRequired,
-  }).isRequired,
-  location: shape({
-    search: string,
-  }).isRequired,
-
-  unitType: propTypes.bookingUnitType,
-  // from injectIntl
-  intl: intlShape.isRequired,
-
-  params: shape({
-    id: string.isRequired,
-    slug: string,
-    variant: oneOf([LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT]),
-  }).isRequired,
-
-  isAuthenticated: bool.isRequired,
-  currentUser: propTypes.currentUser,
-  getListing: func.isRequired,
-  getOwnListing: func.isRequired,
-  onManageDisableScrolling: func.isRequired,
-  scrollingDisabled: bool.isRequired,
-  showListingError: propTypes.error,
-  callSetInitialValues: func.isRequired,
-  reviews: arrayOf(propTypes.review),
-  fetchReviewsError: propTypes.error,
-  sendEnquiryInProgress: bool.isRequired,
-  sendEnquiryError: propTypes.error,
-  onSendEnquiry: func.isRequired,
-  onInitializeCardPaymentData: func.isRequired,
   filterConfig: array,
 };
 
@@ -637,6 +602,7 @@ const mapDispatchToProps = dispatch => ({
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onSendNotifyForBooking: (listing, otherUser) => dispatch(notifyForBooking(listing, otherUser)),
+  onFetchExistingConversation: listing => dispatch(fetchExistingConversation(listing)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

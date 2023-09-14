@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Avatar, Button, IconCareVineGold, InfoTooltip, IconArrowHead, Modal } from '..';
 import { formatPrice, userDisplayNameAsString } from '../../util/data';
@@ -12,6 +12,7 @@ import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
 import { getMissingInfoModalValue } from '../../util/data';
 import NotifyForPaymentContainer from '../../containers/StripePaymentModal/NotifyForPaymentContainer';
+import { usePrevious } from '../../util/hooks';
 
 import css from './ListingSummary.module.css';
 
@@ -79,7 +80,28 @@ const ListingSummaryComponent = props => {
     sendNotifyForBookingSuccess,
     onSendNotifyForBooking,
     sendNotifyForBookingError,
+    onFetchExistingConversation,
   } = props;
+
+  const previousListing = usePrevious(listing);
+  const previousCurrentUser = usePrevious(currentUser);
+
+  useEffect(() => {
+    if (
+      currentUser?.id?.uuid &&
+      listing?.id?.uuid &&
+      (!previousCurrentUser || !previousListing) &&
+      onFetchExistingConversation
+    ) {
+      onFetchExistingConversation(listing);
+    }
+  }, [
+    currentUser?.id?.uuid,
+    listing?.id?.uuid,
+    previousCurrentUser,
+    previousListing,
+    onFetchExistingConversation,
+  ]);
 
   const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
   const [isNotifyStripAccountModalOpen, setIsNotifyStripAccountModalOpen] = React.useState(false);

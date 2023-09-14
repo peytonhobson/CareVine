@@ -62,6 +62,7 @@ module.exports = queryEvents = () => {
         'user/created',
         'message/created',
         'transaction/transitioned',
+        'transaction/updated',
       ],
     };
     return integrationSdk.events
@@ -231,6 +232,8 @@ module.exports = queryEvents = () => {
       const transactionId = message?.relationships?.transaction?.data?.id?.uuid;
 
       addUnreadMessageCount(transactionId, senderId);
+
+      console.log(event.attributes);
     }
 
     if (eventType === 'user/deleted') {
@@ -242,6 +245,10 @@ module.exports = queryEvents = () => {
       if (tcmEnrolled && userAccessCode && !isDev) {
         deEnrollUserTCM(event, userAccessCode);
       }
+    }
+
+    if (eventType === 'transaction/updated') {
+      console.log(event?.attributes?.resource);
     }
 
     if (eventType === 'transaction/transitioned') {
