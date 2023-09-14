@@ -368,7 +368,7 @@ export const sendMessage = (txId, message, receiverId) => async (dispatch, getSt
     const lastMessageMoreThan1HourAgo =
       new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() > 1000 * 60 * 60;
 
-    if (!lastMessageMoreThan1HourAgo) {
+    if (lastMessageMoreThan1HourAgo) {
       const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
 
       await sendgridTemplateEmail({
