@@ -185,8 +185,7 @@ export class ListingPageComponent extends Component {
     if (existingConversation) {
       const txId = existingConversation.id.uuid;
       try {
-        await onSendMessage(txId, message.trim(), otherUserId);
-
+        onSendMessage(txId, message.trim(), otherUserId);
         this.setState({ enquiryModalOpen: false });
 
         // Redirect to InboxPage

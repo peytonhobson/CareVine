@@ -19,6 +19,7 @@ const SENDGRID_TEMPLATE_IDS = {
   'customer-can-review': 'd-2e1ff6f802ca4035aa97d5e6f17a0924',
   'dispute-in-review': 'd-99062df7ec72430fa6f23733efb3d749',
   'customer-disputed': 'd-576c903ac46f42e589af1d8ac5650248',
+  'new-message': 'd-6c2f53d4a0f84359989a86ac47371930',
 };
 
 module.exports = (req, res) => {
@@ -39,7 +40,7 @@ module.exports = (req, res) => {
   //   return;
   // }
 
-  integrationSdk.users
+  return integrationSdk.users
     .show({ id: receiverId })
     .then(userResponse => {
       const user = userResponse?.data?.data;
@@ -78,6 +79,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      handleError(res, e);
       log.error(e, 'sendgrid-template-email-failed', e);
     });
 };

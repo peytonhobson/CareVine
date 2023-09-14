@@ -12,14 +12,17 @@ import {
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { createResourceLocatorString } from '../../util/routes';
 import { v4 as uuidv4 } from 'uuid';
-import { updateUserNotifications, updateUser, initiatePrivilegedTransaction } from '../../util/api';
+import {
+  updateUserNotifications,
+  initiatePrivilegedTransaction,
+  sendgridTemplateEmail,
+} from '../../util/api';
 import {
   NOTIFICATION_TYPE_NEW_MESSAGE,
   NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
 } from '../../util/constants';
 import { parse } from '../../util/urlHelpers';
-import { findNextBoundary, nextMonthFn, monthIdStringInTimeZone } from '../../util/dates';
-import { denormalisedResponseEntities, userDisplayNameAsString } from '../../util/data';
+import { userDisplayNameAsString, denormalisedResponseEntities } from '../../util/data';
 import { hasStripeAccount } from '../../ducks/stripeConnectAccount.duck';
 
 const { UUID } = sdkTypes;
@@ -347,6 +350,41 @@ export const sendMessage = (txId, message, receiverId) => async (dispatch, getSt
     log.error(e, 'send-message-failed', { txId, message });
     dispatch(sendMessageError(storableError(e)));
   }
+
+  try {
+    const messagesResponse = await sdk.messages.query({
+      transactionId: txId,
+      perPage: 2,
+      page: 1,
+      include: ['sender'],
+      'fields.message': ['createdAt'],
+      'fields.user': ['profile.displayName'],
+    });
+
+    const messages = denormalisedResponseEntities(messagesResponse);
+
+    const lastMessage = messages[messages.length - 1];
+
+    const lastMessageMoreThan1HourAgo =
+      new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() > 1000 * 60 * 60;
+
+    if (!lastMessageMoreThan1HourAgo) {
+      const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+
+      await sendgridTemplateEmail({
+        receiverId,
+        templateData: {
+          marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+          message: previewMessage,
+          senderName: lastMessage.sender.attributes.profile.displayName,
+          txId,
+        },
+        templateName: 'new-message',
+      });
+    }
+  } catch (err) {
+    log.error(e, 'send-new-message-notification-failed', { txId, message });
+  }
 };
 
 export const fetchExistingConversation = listing => async (dispatch, getState, sdk) => {
@@ -365,7 +403,6 @@ export const fetchExistingConversation = listing => async (dispatch, getState, s
     const response = await sdk.transactions.query(params);
     const tx = response.data.data.length > 0 && response.data.data[0];
 
-    console.log(tx);
     dispatch(fetchExistingConversationSuccess(tx));
   } catch (e) {
     log.error(e, 'fetch-existing-conversation-failed', { listingId, otherUserId });
