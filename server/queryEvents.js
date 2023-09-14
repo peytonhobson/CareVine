@@ -24,7 +24,7 @@ module.exports = queryEvents = () => {
     makeReviewable,
     updateBookingLedger,
     sendNewJobInAreaEmail,
-    sendNewCaregiverInAreaEmail,
+    // sendNewCaregiverInAreaEmail,
     sendWebsocketMessage,
   } = require('./queryEvents.helpers');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
@@ -130,14 +130,15 @@ module.exports = queryEvents = () => {
         sendNewJobInAreaEmail(listing);
       }
 
-      if (
-        prevListingState === 'draft' &&
-        newListingState === 'published' &&
-        listingType === 'caregiver' &&
-        isProd
-      ) {
-        sendNewCaregiverInAreaEmail(listing);
-      }
+      // TODO: Convert to weekly email
+      // if (
+      //   prevListingState === 'draft' &&
+      //   newListingState === 'published' &&
+      //   listingType === 'caregiver' &&
+      //   isProd
+      // ) {
+      //   sendNewCaregiverInAreaEmail(listing);
+      // }
     }
 
     if (eventType === 'user/updated') {
