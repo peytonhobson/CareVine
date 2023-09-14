@@ -340,6 +340,7 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
       lineItems = [],
       startDate,
       endDate,
+      type,
     } = transaction.attributes.metadata;
     const txBookedDays = { days: Object.keys(bookingSchedule), startDate, endDate, txId };
     const currentBookedDays = transaction.listing.attributes.metadata.bookedDays ?? [];
@@ -348,7 +349,8 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
     const bookingDates = lineItems.map(lineItem => lineItem.date);
     const newBookedDates = [...bookedDates, ...bookingDates];
 
-    const newSchedule = startDate ? { bookedDays: newBookedDays } : { bookedDates: newBookedDates };
+    const newSchedule =
+      type === 'recurring' ? { bookedDays: newBookedDays } : { bookedDates: newBookedDates };
 
     await updateListingMetadata({
       listingId,

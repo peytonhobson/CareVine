@@ -471,6 +471,8 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
 
   const newBookingDrafts = [newBookingDraft, ...bookingDrafts];
 
+  console.log(newBookingDrafts);
+
   try {
     await sdk.currentUser.updateProfile({
       privateData: {
@@ -483,7 +485,7 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
     dispatch(createBookingDraftSuccess());
     return draftId;
   } catch (e) {
-    log.error(e, 'create-booking-draft-failed', { listingId });
+    log.error(e?.data?.errors, 'create-booking-draft-failed', { listingId });
     dispatch(createBookingDraftError(storableError(e)));
     throw e;
   }

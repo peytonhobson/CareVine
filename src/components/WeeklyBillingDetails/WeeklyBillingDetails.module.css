@@ -1,5 +1,3 @@
-
-
 .blocked {
   color: var(--matterColorLight) !important;
 }
@@ -156,6 +154,7 @@
 
     & .disabled {
       color: var(--matterColorNegative);
+      cursor: not-allowed;
     }
 
     & .highlightable {

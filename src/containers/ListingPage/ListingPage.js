@@ -104,8 +104,13 @@ export class ListingPageComponent extends Component {
         bookingRate: bookingRate?.[0],
         scheduleType,
         providerDisplayName: userDisplayNameAsString(listing.author),
-        providerProfileImage: listing.author.profileImage,
-        providerDefaultAvatar: listing.author.attributes.profile.publicData.defaultAvatar,
+        providerProfileImage: listing.author.profileImage
+          ? {
+              ...listing.author.profileImage,
+              id: { uuid: listing.author.profileImage?.id?.uuid },
+            }
+          : null,
+        providerDefaultAvatar: listing.author.attributes.profile.publicData.defaultAvatar || null,
       });
 
       history.push(

@@ -75,7 +75,10 @@ const SectionRequest = props => {
   const weekdayKeys = Object.keys(weekdays);
 
   const endOfFirstWeek = getEndOfFirstWeek(values.startDate?.date, weekdays);
-  const { bookedDays, bookedDates } = currentListing.attributes.metadata;
+  const {
+    bookedDays: blockedDays = [],
+    bookedDates: blockedDates = [],
+  } = currentListing.attributes.metadata;
 
   return (
     <div className={css.requestContentContainer}>
@@ -166,8 +169,8 @@ const SectionRequest = props => {
           weekEndDate={endOfFirstWeek}
           bookingEndDate={values.endDate?.date}
           exceptions={values.exceptions}
-          bookedDays={bookedDays}
-          bookedDates={bookedDates}
+          blockedDays={blockedDays}
+          blockedDates={blockedDates}
         />
       )}
     </div>
