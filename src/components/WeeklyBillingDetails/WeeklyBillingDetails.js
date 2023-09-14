@@ -14,15 +14,15 @@ const isSameISOWeek = (date1, date2) => {
 
 const isInBookingSchedule = (
   date,
-  bookedDates,
-  bookedDays,
+  blockedDates,
+  blockedDays,
   bookingSchedule,
   startDate,
   endDate,
   exceptions
 ) => {
-  const isBookedDate = bookedDates.some(bookingDate => moment(bookingDate).isSame(date));
-  const isBookedDay = bookedDays.some(
+  const isBookedDate = blockedDates.some(bookingDate => moment(bookingDate).isSame(date));
+  const isBookedDay = blockedDays.some(
     booking =>
       booking.days.includes(WEEKDAYS[date.getDay()]) &&
       moment(booking.startDate).isSameOrBefore(date) &&
@@ -45,8 +45,8 @@ const isInBookingSchedule = (
 
 const formatDay = (
   date,
-  bookedDates,
-  bookedDays,
+  blockedDates,
+  blockedDays,
   bookingSchedule,
   startDate,
   endDate,
@@ -56,8 +56,8 @@ const formatDay = (
 ) => {
   const inBookingSchedule = isInBookingSchedule(
     date,
-    bookedDates,
-    bookedDays,
+    blockedDates,
+    blockedDays,
     bookingSchedule,
     startDate,
     endDate,
@@ -67,6 +67,7 @@ const formatDay = (
   const isHoveredWeek = isSameISOWeek(date, hoveredDate);
 
   const beforeStartWeek = moment(date).isBefore(startDate, 'week');
+  const afterEndWeek = moment(date).isAfter(endDate, 'week');
   const isSunday = moment(date).day() === 0;
   const isSaturday = moment(date).day() === 6;
   const day = date.getDate();
@@ -74,10 +75,10 @@ const formatDay = (
   return (
     <div
       className={classNames(css.day, {
-        [css.highlighted]: isHoveredWeek && !beforeStartWeek,
-        [css.highlightable]: !beforeStartWeek,
+        [css.highlighted]: isHoveredWeek && !beforeStartWeek && !afterEndWeek,
+        [css.highlightable]: !beforeStartWeek && !afterEndWeek,
         [css.inBookingSchedule]: inBookingSchedule,
-        [css.disabled]: beforeStartWeek,
+        [css.disabled]: beforeStartWeek || afterEndWeek,
         [css.sunday]: isSunday,
         [css.saturday]: isSaturday,
       })}
@@ -89,11 +90,11 @@ const formatDay = (
   );
 };
 
-// Bookeddays and dates should be those that were there when booking was created
+// blockedDays and dates should be those that were there when booking was created
 export const WeeklyBillingDetails = props => {
   const {
-    bookedDates = [],
-    bookedDays = [],
+    blockedDates = [],
+    blockedDays = [],
     bookingSchedule = {},
     exceptions,
     startDate,
@@ -113,7 +114,12 @@ export const WeeklyBillingDetails = props => {
   const [selectedWeek, setSelectedWeek] = useState(false);
 
   const handleClickDay = date => {
-    setSelectedWeek(moment(date).startOf('week'));
+    const beforeStartWeek = moment(date).isBefore(startDate, 'week');
+    const afterEndWeek = moment(date).isAfter(endDate, 'week');
+
+    if (!beforeStartWeek && !afterEndWeek) {
+      setSelectedWeek(moment(date).startOf('week'));
+    }
   };
 
   return (
@@ -139,8 +145,8 @@ export const WeeklyBillingDetails = props => {
             startDate={selectedWeek}
             weekEndDate={moment(selectedWeek).endOf('week')}
             exceptions={exceptions}
-            bookedDays={bookedDays}
-            bookedDates={bookedDates}
+            blockedDays={blockedDays}
+            blockedDates={blockedDates}
             hideWeeklyBillingDetails
             className={css.summaryCard}
             hideRatesButton
@@ -152,8 +158,8 @@ export const WeeklyBillingDetails = props => {
           formatDay={(_, date) =>
             formatDay(
               date,
-              bookedDates,
-              bookedDays,
+              blockedDates,
+              blockedDays,
               bookingSchedule,
               startDate,
               endDate,

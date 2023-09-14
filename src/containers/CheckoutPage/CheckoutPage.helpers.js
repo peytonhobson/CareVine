@@ -3,6 +3,7 @@ import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
 import { addTimeToStartOfDay } from '../../util/dates';
 import { WEEKDAY_MAP } from '../../util/constants';
+import { filterWeeklyBookingDays } from '../../util/bookings';
 
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
@@ -124,15 +125,22 @@ export const constructBookingMetadataRecurring = (
   endDate,
   bookingRate,
   paymentMethodType,
-  listing
+  listing,
+  exceptions
 ) => {
-  const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-    const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
+  const {
+    bookedDates: blockedDates = [],
+    bookedDays: blockedDays = [],
+  } = listing.attributes.metadata;
 
-    return bookingDate >= startDate
-      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
-      : acc;
-  }, []);
+  const filteredWeekdays = filterWeeklyBookingDays({
+    weekdays,
+    startDate,
+    endDate,
+    exceptions,
+    blockedDays,
+    blockedDates,
+  });
 
   const lineItems = filteredWeekdays.map(day => {
     const { weekday, startTime, endTime } = day;
@@ -165,11 +173,6 @@ export const constructBookingMetadataRecurring = (
     paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
   );
 
-  const {
-    bookedDates: providerBookedDates,
-    bookedDays: providerBookedDays,
-  } = listing.attributes.metadata;
-
   return {
     lineItems,
     bookingFee,
@@ -182,8 +185,8 @@ export const constructBookingMetadataRecurring = (
     startDate: moment(startDate).toISOString(),
     endDate: endDate ? moment(endDate).toISOString() : null,
     cancelAtPeriodEnd: false,
-    providerBookedDates: providerBookedDates || [],
-    providerBookedDays: providerBookedDays || [],
+    blockedDates,
+    blockedDays,
     type: 'recurring',
   };
 };
