@@ -85,7 +85,7 @@ const SectionHero = props => {
     const lng = parseFloat(parseFloat(valOrigin.lng).toFixed(5));
     const origin = `${lat}%2C${lng}`;
 
-    history.push(`s?origin=${origin}&distance=30&listingType=caregiver&sort=relevant`);
+    history.push(`s?origin=${origin}&distance=30&listingType=caregiver`);
   };
 
   const classes = classNames(
