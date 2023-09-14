@@ -349,29 +349,11 @@ export const sendMessage = (txId, message, receiverId) => async (dispatch, getSt
   }
 };
 
-export const fetchExistingConversation = (listingId, otherUserId) => async (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const fetchExistingConversation = listing => async (dispatch, getState, sdk) => {
   dispatch(fetchExistingConversationRequest());
 
-  let authorId = otherUserId;
-
-  if (!authorId) {
-    try {
-      const response = await sdk.listings.show({
-        id: listingId,
-        include: ['author'],
-        'fields.user': ['id'],
-      });
-      const user = response.data?.data?.relationships?.author?.data;
-      authorId = user?.id?.uuid;
-    } catch (e) {
-      log.error(e, 'fetch-existing-conversation-author-failed', { listingId, otherUserId });
-      dispatch(fetchExistingConversationError(storableError(e)));
-    }
-  }
+  const listingId = listing.id.uuid;
+  const authorId = listing.author.id.uuid;
 
   const params = {
     lastTransitions: [TRANSITION_INITIAL_MESSAGE],
@@ -382,6 +364,8 @@ export const fetchExistingConversation = (listingId, otherUserId) => async (
   try {
     const response = await sdk.transactions.query(params);
     const tx = response.data.data.length > 0 && response.data.data[0];
+
+    console.log(tx);
     dispatch(fetchExistingConversationSuccess(tx));
   } catch (e) {
     log.error(e, 'fetch-existing-conversation-failed', { listingId, otherUserId });
@@ -511,18 +495,14 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
     return dispatch(showListing(listingId, true));
   }
 
-  const currentUser = getState().user.currentUser;
+  return Promise.all([dispatch(showListing(listingId)), dispatch(setOrigin(origin))]).then(
+    responses => {
+      if (responses[0] && responses[0].data && responses[0].data.data) {
+        const listing = responses[0].data.data;
 
-  return Promise.all([
-    dispatch(showListing(listingId)),
-    currentUser?.id && dispatch(fetchExistingConversation(listingId)),
-    dispatch(setOrigin(origin)),
-  ]).then(responses => {
-    if (responses[0] && responses[0].data && responses[0].data.data) {
-      const listing = responses[0].data.data;
-
-      dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
+        dispatch(hasStripeAccount(listing.relationships.author.data.id.uuid));
+      }
+      return responses;
     }
-    return responses;
-  });
+  );
 };
