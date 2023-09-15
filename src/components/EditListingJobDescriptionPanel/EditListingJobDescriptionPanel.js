@@ -213,8 +213,8 @@ const EditListingJobDescriptionPanel = props => {
       >
         <p className={css.modalTitle}>Please Note</p>
         <p className={css.modalMessage}>
-          We used a machine learning algorithm to generate a job description for you based on the
-          information you provided in your profile.
+          We generated a job description for you based on the information you provided in your
+          profile.
         </p>
         <p className={css.modalMessage}>
           It is probably not perfect, but it is a good starting point. You can edit the job
