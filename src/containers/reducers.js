@@ -29,6 +29,7 @@ import TransactionPage from './TransactionPage/TransactionPage.duck';
 import UserTypePage from './UserTypePage/UserTypePage.duck';
 import StripePayoutModal from './StripePayoutModal/StripePayoutModal.duck';
 import SectionReviews from './SectionReviews/SectionReviews.duck';
+import ListingTrackingPage from './ListingTrackingPage/ListingTrackingPage.duck';
 
 export {
   BookingsPage,
@@ -57,4 +58,5 @@ export {
   UserTypePage,
   StripePayoutModal,
   SectionReviews,
+  ListingTrackingPage,
 };

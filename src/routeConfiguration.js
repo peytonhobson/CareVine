@@ -3,6 +3,8 @@ import loadable from '@loadable/component';
 import getPageDataLoadingAPI from './containers/pageDataLoadingAPI';
 import { NotFoundPage } from './containers';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
 // at that point css bundling / imports will happen in wrong order.
@@ -42,6 +44,15 @@ const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "Subscripti
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
+const ListingTrackingPage = loadable(() => import(/* webpackChunkName: "ListingTrackingPage" */ './containers/ListingTrackingPage/ListingTrackingPage'));
+
+const listingTrackingPageMaybe = {
+  path: '/listing-tracking',
+  name: 'ListingTrackingPage',
+  component: ListingTrackingPage,
+  loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
+}
+
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -66,7 +77,7 @@ const RedirectToLandingPage = () => <NamedRedirect name="LandingPage" />;
 // Our routes are exact by default.
 // See behaviour from Routes.js where Route is created.
 const routeConfiguration = () => {
-  return [
+ const routeConfig = [
     {
       path: '/',
       name: 'LandingPage',
@@ -114,7 +125,7 @@ const routeConfiguration = () => {
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
     },
     {
-      path: '/l/:slug/:id/checkout',
+      path: '/l/:slug/:id/checkout/:draftId',
       name: 'CheckoutPage',
       auth: true,
       component: CheckoutPage,
@@ -384,7 +395,13 @@ const routeConfiguration = () => {
       component: EmailVerificationPage,
       loadData: pageDataLoadingAPI.EmailVerificationPage.loadData,
     },
-  ];
+ ];
+
+  if (isDev) {
+    routeConfig.push(listingTrackingPageMaybe)
+  }
+
+  return routeConfig;
 };
 
 export default routeConfiguration;

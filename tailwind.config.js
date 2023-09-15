@@ -39,6 +39,9 @@ module.exports = {
         bright: '#fcfcfc',
         light: '#ffffff',
       },
+      height: {
+        fullHeightDesktop: 'calc(100vh - 4.5rem)',
+      },
     },
   },
   plugins: [
