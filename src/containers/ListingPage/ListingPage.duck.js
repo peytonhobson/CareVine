@@ -405,7 +405,7 @@ export const fetchExistingConversation = listing => async (dispatch, getState, s
 
     dispatch(fetchExistingConversationSuccess(tx));
   } catch (e) {
-    log.error(e, 'fetch-existing-conversation-failed', { listingId, otherUserId });
+    log.error(e, 'fetch-existing-conversation-failed', { listingId, authorId });
     dispatch(fetchExistingConversationError(storableError(e)));
   }
 };
