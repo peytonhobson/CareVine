@@ -177,10 +177,7 @@ const TopbarMobileMenu = props => {
           {createListingLink}
           {listingLink}
           {bookingsLink}
-          <NamedLink
-            className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}
-            name="AccountSettingsPage"
-          >
+          <NamedLink className={classNames(css.navigationLink)} name="AccountSettingsPage">
             Account Settings
           </NamedLink>
           {referralLink}
