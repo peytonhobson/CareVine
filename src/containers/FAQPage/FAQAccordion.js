@@ -16,7 +16,7 @@ const Accordion = styled(props => <MuiAccordion disableGutters elevation={0} squ
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: '0 3.5rem',
-  color: 'var(--matterColorAnti)',
+  color: '#828282',
   transition: 'height 1000ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
 }));
 
