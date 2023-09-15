@@ -67,11 +67,19 @@ const TopbarMobileMenu = props => {
         <FormattedMessage id="TopbarMobileMenu.signupOrLogin" values={{ signup, login }} />
       </span>
     );
+
     const forCaregivers = !isAuthenticated ? (
-      <NamedLink name="ForCaregiversPage" className={css.forCaregivers}>
+      <NamedLink name="ForCaregiversPage" className={classNames(css.navigationLink, '!mt-36')}>
         For Caregivers
       </NamedLink>
     ) : null;
+
+    const whyCareVine = !isAuthenticated ? (
+      <NamedLink name="WhyPrivateCarePage" className={css.infoPageLink}>
+        Why Private Care?
+      </NamedLink>
+    ) : null;
+
     return (
       <div className={css.root}>
         <div className={css.content}>
@@ -81,9 +89,8 @@ const TopbarMobileMenu = props => {
               values={{ lineBreak: <br />, signupOrLogin }}
             />
           </div>
-          {login}
-          {signup}
           {forCaregivers}
+          {/* {whyCareVine} */}
         </div>
         <div className={css.footer}>
           <NamedLink className={css.createNewListingLink} name="NewListingPage">
@@ -97,7 +104,7 @@ const TopbarMobileMenu = props => {
   const referralLink =
     userType === CAREGIVER && stripeCustomerId ? (
       <NamedLink className={css.navigationLink} name="ReferralPage">
-        <FormattedMessage id="TopbarDesktop.referAFriendLink" />
+        Refer a Friend
       </NamedLink>
     ) : null;
 
@@ -114,16 +121,6 @@ const TopbarMobileMenu = props => {
       </span>
     </NamedLink>
   ) : null;
-
-  const unreadNotificationCountBadge =
-    unreadNotificationCount > 0 ? (
-      <NotificationBadge className={css.notificationBadge} count={unreadNotificationCount} />
-    ) : null;
-
-  const unreadMessagesBadge =
-    unreadMessages > 0 ? (
-      <NotificationBadge className={css.messageBadge} count={unreadMessages} />
-    ) : null;
 
   const displayName = user.attributes.profile.firstName;
   const currentPageClass = page => {
@@ -143,7 +140,7 @@ const TopbarMobileMenu = props => {
   const listingLink =
     isAuthenticated && currentUserListingFetched && currentUserListing && !isNewListing ? (
       <ListingLink
-        className={css.navigationLink}
+        className={classNames(css.navigationLink, 'bg-secondary')}
         listing={currentUserListing}
         children={<FormattedMessage id="TopbarDesktop.viewListing" />}
       />
@@ -153,7 +150,7 @@ const TopbarMobileMenu = props => {
     !isAuthenticated || !(currentUserListingFetched && !currentUserListing) ? (
       isNewListing ? (
         <OwnListingLink
-          className={css.navigationLink}
+          className={classNames(css.navigationLink, 'bg-secondary')}
           listingFetched={currentUserListingFetched}
           listing={currentUserListing}
         >
@@ -161,22 +158,10 @@ const TopbarMobileMenu = props => {
         </OwnListingLink>
       ) : null
     ) : (
-      <NamedLink className={css.navigationLink} name="NewListingPage">
+      <NamedLink className={classNames(css.navigationLink, 'bg-secondary')} name="NewListingPage">
         <FormattedMessage id="TopbarDesktop.createListing" />
       </NamedLink>
     );
-
-  const notificationsLink = isAuthenticated ? (
-    <NamedLink
-      className={classNames(css.regularLink, css.notificationsLink)}
-      name="NotificationsPage"
-    >
-      <span className={css.bell}>
-        <IconBell height="2.5em" width="2.5em" />
-        {unreadNotificationCountBadge}
-      </span>
-    </NamedLink>
-  ) : null;
 
   return (
     <div className={css.root}>
@@ -188,38 +173,16 @@ const TopbarMobileMenu = props => {
         <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>
           <FormattedMessage id="TopbarMobileMenu.logoutLink" />
         </InlineTextButton>
-        {notificationsLink}
-        {userCanMessage(currentUser) ? (
-          <NamedLink
-            className={classNames(css.inbox, currentPageClass('InboxPage'))}
-            name="InboxPage"
-            params={{ tab: 'messages' }}
-          >
-            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {unreadMessagesBadge}
+        <div className="mt-10 flex gap-4 flex-wrap">
+          {createListingLink}
+          {listingLink}
+          {bookingsLink}
+          <NamedLink className={classNames(css.navigationLink)} name="AccountSettingsPage">
+            Account Settings
           </NamedLink>
-        ) : (
-          <span
-            className={classNames(css.inbox, currentPageClass('InboxPage'))}
-            onClick={() =>
-              onChangeModalValue(getMissingInfoModalValue(currentUser, currentUserListing))
-            }
-          >
-            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {unreadMessagesBadge}
-          </span>
-        )}
-        {createListingLink}
-        {listingLink}
-        <NamedLink
-          className={classNames(css.navigationLink, currentPageClass('AccountSettingsPage'))}
-          name="AccountSettingsPage"
-        >
-          <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
-        </NamedLink>
-        {bookingsLink}
-        {referralLink}
-        {feedbackLink}
+          {referralLink}
+          {/* {feedbackLink} */}
+        </div>
       </div>
       <div className={css.footer}>
         {!isNewListing ? (

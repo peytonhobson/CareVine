@@ -1,0 +1,14 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5vmax 2rem;
+  background-color: var(--marketplaceColorLight);
+}
+
+.form {
+  @media screen(lg) {
+    max-width: 60rem;
+  }
+}

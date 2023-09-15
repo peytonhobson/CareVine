@@ -1,5 +1,3 @@
-
-
 /* Desktop */
 .root {
   /* Size */
@@ -431,7 +429,7 @@
   white-space: nowrap;
 }
 
-.postButtonLink {
+.whyCareVineLink {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
 
   padding: 0.5rem 1rem;
@@ -443,6 +441,7 @@
   align-items: center;
   justify-content: center;
   margin-block: auto;
+  white-space: nowrap;
 
   background-color: var(--secondaryMarketplaceColor);
 

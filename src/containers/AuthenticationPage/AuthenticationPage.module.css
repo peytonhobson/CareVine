@@ -1,8 +1,10 @@
 .layoutWrapperMain {
   height: calc(100vh - var(--topbarHeight));
+  max-height: calc(100svh - var(--topbarHeight));
 
   @media screen(md) {
     height: calc(100vh - var(--topbarHeightDesktop));
+    max-height: auto;
   }
 }
 

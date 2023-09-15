@@ -1,0 +1,24 @@
+.root {
+  background-color: var(--matterColorLight);
+}
+
+.header {
+  composes: marketplaceHeroTitleFontStyles from global;
+}
+
+.contentWrapper {
+  margin: 0 2rem;
+
+  @media screen(md) {
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  @media screen(lg) {
+    max-width: 50rem;
+  }
+
+  @media screen(xl) {
+    max-width: 100rem;
+  }
+}

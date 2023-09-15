@@ -21,6 +21,8 @@ const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDe
 const ContactUsPage = loadable(() => import(/* webpackChunkName: "ContactUsPage" */ './containers/ContactUsPage/ContactUsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ './containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ './containers/EmailVerificationPage/EmailVerificationPage'));
+const WhyPrivateCarePage = loadable(() => import(/* webpackChunkName: "WhyPrivateCarePage" */ './containers/WhyPrivateCarePage/WhyPrivateCarePage'));
+const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ './containers/FAQPage/FAQPage'));
 const FeedbackPage = loadable(() => import(/* webpackChunkName: "FeedbackPage" */ './containers/FeedbackPage/FeedbackPage'));
 const ForCaregiversPage = loadable(() => import(/* webpackChunkName: "ForCaregiversPage" */ './containers/ForCaregiversPage/ForCaregiversPage'));
 const InboxPage = loadable(() => import(/* webpackChunksFilename: "InboxPage" */ './containers/InboxPage/InboxPage'))
@@ -118,6 +120,11 @@ const routeConfiguration = () => {
       component: CheckoutPage,
       setInitialValues: pageDataLoadingAPI.CheckoutPage.setInitialValues,
       loadData: pageDataLoadingAPI.CheckoutPage.loadData,
+    },
+    {
+      path: '/faq',
+      name: 'FAQPage',
+      component: FAQPage,
     },
     {
       path: '/feedback',
@@ -222,6 +229,11 @@ const routeConfiguration = () => {
       authPage: 'LoginPage',
       component: NotificationsPage,
       loadData: pageDataLoadingAPI.NotificationsPage.loadData,
+    },
+    {
+      path: '/why-private-care',
+      name: 'WhyPrivateCarePage',
+      component: WhyPrivateCarePage,
     },
     {
       path: '/referrals',

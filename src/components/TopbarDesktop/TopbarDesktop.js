@@ -310,9 +310,9 @@ const TopbarDesktop = props => {
     </NamedLink>
   ) : null;
 
-  const postListing = isAuthenticatedOrJustHydrated ? null : (
-    <NamedLink name="SignupPage" className={css.postButtonLink}>
-      + Post a Job
+  const whyCareVine = isAuthenticatedOrJustHydrated ? null : (
+    <NamedLink name="WhyPrivateCarePage" className={css.whyCareVineLink}>
+      Why Private Care?
     </NamedLink>
   );
 
@@ -334,7 +334,7 @@ const TopbarDesktop = props => {
         {notificationsLink}
         {profileMenu}
         {forCaregivers}
-        {postListing}
+        {/* {whyCareVine} */}
 
         {signupLink}
         {loginLink}
