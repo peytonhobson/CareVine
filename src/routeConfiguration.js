@@ -3,7 +3,7 @@ import loadable from '@loadable/component';
 import getPageDataLoadingAPI from './containers/pageDataLoadingAPI';
 import { NotFoundPage } from './containers';
 
-const isDev = process.env.REACT_APP_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development';
 
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and

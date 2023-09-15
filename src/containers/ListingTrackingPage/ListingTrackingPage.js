@@ -22,8 +22,6 @@ export const InboxPageComponent = props => {
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
 
-  console.log(geolocations);
-
   const markers = useMemo(() => {
     return geolocations.map(g => {
       return { lat: g.lat, lng: g.lng };
