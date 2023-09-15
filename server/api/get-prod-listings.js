@@ -3,8 +3,9 @@ const { serialize } = require('../api-util/sdk');
 
 const integrationSdk = flexIntegrationSdk.createInstance({
   // These two env vars need to be set in the `.env` file.
-  clientId: process.env.FLEX_INTEGRATION_CLIENT_ID_PROD,
-  clientSecret: process.env.FLEX_INTEGRATION_CLIENT_SECRET_PROD,
+  clientId: process.env.FLEX_INTEGRATION_CLIENT_ID_PROD || process.env.FLEX_INTEGRATION_CLIENT_ID,
+  clientSecret:
+    process.env.FLEX_INTEGRATION_CLIENT_SECRET_PROD || process.env.FLEX_INTEGRATION_CLIENT_SECRET,
 
   // Normally you can just skip setting the base URL and just use the
   // default that the `createInstance` uses. We explicitly set it here
