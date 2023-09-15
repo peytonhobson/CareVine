@@ -91,7 +91,7 @@
   margin-bottom: 13px;
 }
 
-.forCaregivers {
+.infoPageLink {
   composes: h1 from global;
   color: var(--marketplaceColor);
   margin: 0.5rem 0;

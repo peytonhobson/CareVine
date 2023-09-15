@@ -7,6 +7,7 @@ export { default as CareScheduleSelectDatesForm } from './CareScheduleSelectDate
 export { default as ConfirmSignupForm } from './ConfirmSignupForm/ConfirmSignupForm';
 export { default as ConsentModalForm } from './ConsentModalForm/ConsentModalForm';
 export { default as ContactDetailsForm } from './ContactDetailsForm/ContactDetailsForm';
+export { default as ContactSectionForm } from './ContactSectionForm/ContactSectionForm';
 export { default as ContactUsForm } from './ContactUsForm/ContactUsForm';
 export { default as DisputeForm} from './DisputeForm/DisputeForm';
 export { default as EditBookingForm} from './EditBookingForm/EditBookingForm';

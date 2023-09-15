@@ -26,6 +26,7 @@ class FieldTextInputComponent extends Component {
       inputRef,
       required,
       exampleLink,
+      showError,
       ...rest
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -132,7 +133,7 @@ class FieldTextInputComponent extends Component {
             <span className={css.lowerText}>{exampleLink}</span>
           </>
         )}
-        <ValidationError fieldMeta={fieldMeta} />
+        <ValidationError fieldMeta={fieldMeta} showError={showError} />
       </div>
     );
   }

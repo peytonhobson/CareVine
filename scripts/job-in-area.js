@@ -78,10 +78,11 @@ const main = async () => {
         marketplaceUrl: 'https://carevine.us',
         profilePicture,
         name: author.attributes.profile.displayName,
-        description: listing.attributes.description.substring(0, 140) + '...',
+        description: listing.attributes.description.substring(0, 200) + '...',
         listingId,
         distance: authors.find(a => a.id === u.data.data.id.uuid).distance,
         location: `${listing.attributes.publicData.location.city}, ${listing.attributes.publicData.location.state}`,
+        firstLetterOfName: author.attributes.profile.displayName.substring(0, 1),
       },
     }));
 
@@ -105,14 +106,14 @@ const main = async () => {
 
     console.log(msg.personalizations);
 
-    // sgMail
-    //   .sendMultiple(msg)
-    //   .then(() => {
-    //     console.log('Emails sent successfully');
-    //   })
-    //   .catch(error => {
-    //     console.log(error?.response?.body?.errors);
-    //   });
+    sgMail
+      .sendMultiple(msg)
+      .then(() => {
+        console.log('Emails sent successfully');
+      })
+      .catch(error => {
+        console.log(error?.response?.body?.errors);
+      });
   } catch (err) {
     console.log(err);
   }

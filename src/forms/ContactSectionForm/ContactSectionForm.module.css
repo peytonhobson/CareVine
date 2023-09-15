@@ -1,0 +1,49 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @media screen(md) {
+    width: auto;
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 100%;
+  padding-bottom: 3rem;
+  gap: 3rem;
+
+  @media screen(md) {
+    flex-direction: row;
+    gap: 7rem;
+  }
+}
+
+.textInput {
+  background-color: var(--matterColorLight);
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  border-radius: var(--borderRadiusButton);
+  padding: 1.4rem 2rem !important;
+  line-height: 1.2rem !important;
+  max-width: 100%;
+
+  &textarea {
+    width: calc(100% - 4rem) !important;
+  }
+
+  &:hover {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  &:focus {
+    outline: 2px solid var(--matterColor) !important;
+    outline-offset: 0.35rem;
+  }
+}
+
+.submitButton {
+  margin-top: 3rem;
+}

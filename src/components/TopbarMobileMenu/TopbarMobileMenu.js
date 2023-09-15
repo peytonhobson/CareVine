@@ -67,11 +67,19 @@ const TopbarMobileMenu = props => {
         <FormattedMessage id="TopbarMobileMenu.signupOrLogin" values={{ signup, login }} />
       </span>
     );
+
     const forCaregivers = !isAuthenticated ? (
       <NamedLink name="ForCaregiversPage" className={classNames(css.navigationLink, '!mt-36')}>
         For Caregivers
       </NamedLink>
     ) : null;
+
+    const whyCareVine = !isAuthenticated ? (
+      <NamedLink name="WhyPrivateCarePage" className={css.infoPageLink}>
+        Why Private Care?
+      </NamedLink>
+    ) : null;
+
     return (
       <div className={css.root}>
         <div className={css.content}>
@@ -82,6 +90,7 @@ const TopbarMobileMenu = props => {
             />
           </div>
           {forCaregivers}
+          {/* {whyCareVine} */}
         </div>
         <div className={css.footer}>
           <NamedLink className={css.createNewListingLink} name="NewListingPage">
