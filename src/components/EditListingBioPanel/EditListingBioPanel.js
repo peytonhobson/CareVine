@@ -111,8 +111,7 @@ const EditListingBioPanel = props => {
       >
         <p className={css.modalTitle}>Please Note</p>
         <p className={css.modalMessage}>
-          We used a machine learning algorithm to generate a bio for you based on the information
-          you provided in your profile.
+          We generated a bio for you based on the information you provided in your profile.
         </p>
         <p className={css.modalMessage}>
           It is probably not perfect, but it is a good starting point. You can edit the bio to make

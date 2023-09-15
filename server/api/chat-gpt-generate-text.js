@@ -7,7 +7,7 @@ const configuration = new Configuration({
 const isDev = process.env.REACT_APP_ENV === 'development';
 
 module.exports = (req, res) => {
-  const { prompt, maxTokens = 250, temperature = 1, n = 1 } = req.body;
+  const { prompt, maxTokens = 250, temperature = 0.6, n = 1 } = req.body;
 
   if (isDev) {
     res
