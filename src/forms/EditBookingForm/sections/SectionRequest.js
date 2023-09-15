@@ -63,7 +63,7 @@ const SectionRequest = props => {
     currentListing,
     values,
     onManageDisableScrolling,
-    selectedPaymentMethodType,
+    selectedPaymentMethod,
     initiateOrderErrorMessage,
     listingNotFoundErrorMessage,
     initiateOrderInProgress,
@@ -151,7 +151,7 @@ const SectionRequest = props => {
           form={form}
           listing={currentListing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethodType}
+          selectedPaymentMethod={selectedPaymentMethod}
         />
       ) : (
         <RecurringBookingSummaryCard
@@ -162,7 +162,7 @@ const SectionRequest = props => {
           form={form}
           listing={currentListing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethodType}
+          selectedPaymentMethod={selectedPaymentMethod}
           subHeading="First Week Booking"
           weekdays={weekdays}
           startDate={values.startDate?.date}

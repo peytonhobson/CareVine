@@ -28,11 +28,6 @@ import WarningIcon from '@mui/icons-material/Warning';
 
 import css from './EditBookingForm.module.css';
 
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
-
-const STORAGE_KEY = 'CheckoutPage';
-
 const reverseWeekdayMap = {
   0: 'sun',
   1: 'mon',
@@ -368,9 +363,6 @@ const EditBookingFormComponent = props => (
         );
       }
 
-      const selectedPaymentMethodType =
-        selectedPaymentMethod?.type === 'card' ? CREDIT_CARD : BANK_ACCOUNT;
-
       const classes = classNames(css.root, className);
 
       let tabContent = null;
@@ -441,7 +433,7 @@ const EditBookingFormComponent = props => (
               values={values}
               bookingDates={values.bookingDates}
               onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethodType={selectedPaymentMethodType}
+              selectedPaymentMethod={selectedPaymentMethod?.type}
               initiateOrderErrorMessage={initiateOrderErrorMessage}
               listingNotFoundErrorMessage={listingNotFoundErrorMessage}
               initiateOrderInProgress={initiateOrderInProgress}

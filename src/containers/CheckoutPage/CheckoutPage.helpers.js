@@ -5,8 +5,6 @@ import { addTimeToStartOfDay } from '../../util/dates';
 import { WEEKDAY_MAP } from '../../util/constants';
 import { filterWeeklyBookingDays } from '../../util/bookings';
 
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
 const BOOKING_FEE_PERCENTAGE = 0.05;
 
 export const formatDateTimeValues = dateTimes =>
@@ -100,11 +98,7 @@ export const constructBookingMetadataOneTime = (
   const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
   const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-  const processingFee = calculateProcessingFee(
-    payout,
-    bookingFee,
-    paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
-  );
+  const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
 
   return {
     lineItems,
@@ -133,7 +127,7 @@ export const constructBookingMetadataRecurring = (
     bookedDays: blockedDays = [],
   } = listing.attributes.metadata;
 
-  const filteredWeekdays = filterWeeklyBookingDays({
+  const filteredWeekdaysObj = filterWeeklyBookingDays({
     weekdays,
     startDate,
     endDate,
@@ -141,6 +135,10 @@ export const constructBookingMetadataRecurring = (
     blockedDays,
     blockedDates,
   });
+
+  const filteredWeekdays = Object.keys(filteredWeekdaysObj)?.reduce((acc, weekdayKey) => {
+    return [...acc, { weekday: weekdayKey, ...filteredWeekdaysObj[weekdayKey][0] }];
+  }, []);
 
   const lineItems = filteredWeekdays.map(day => {
     const { weekday, startTime, endTime } = day;
@@ -167,11 +165,7 @@ export const constructBookingMetadataRecurring = (
   const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
   const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-  const processingFee = calculateProcessingFee(
-    payout,
-    bookingFee,
-    paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
-  );
+  const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
 
   return {
     lineItems,

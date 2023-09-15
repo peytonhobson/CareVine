@@ -30,9 +30,6 @@ import { injectIntl } from 'react-intl';
 
 import css from './BookingCards.module.css';
 
-const CREDIT_CARD = 'Payment Card';
-const BANK_ACCOUNT = 'Bank Account';
-
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
 
@@ -105,8 +102,6 @@ const CaregiverBookingCard = props => {
   const customerDisplayName = (
     <UserDisplayName user={customer} intl={intl} className={css.userDisplayName} />
   );
-  const selectedPaymentMethod =
-    paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
   const bookingTimes =
     lineItems

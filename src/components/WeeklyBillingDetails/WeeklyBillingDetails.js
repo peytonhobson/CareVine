@@ -67,7 +67,7 @@ const formatDay = (
   const isHoveredWeek = isSameISOWeek(date, hoveredDate);
 
   const beforeStartWeek = moment(date).isBefore(startDate, 'week');
-  const afterEndWeek = moment(date).isAfter(endDate, 'week');
+  const afterEndWeek = endDate ? moment(date).isAfter(endDate, 'week') : false;
   const isSunday = moment(date).day() === 0;
   const isSaturday = moment(date).day() === 6;
   const day = date.getDate();
@@ -115,7 +115,7 @@ export const WeeklyBillingDetails = props => {
 
   const handleClickDay = date => {
     const beforeStartWeek = moment(date).isBefore(startDate, 'week');
-    const afterEndWeek = moment(date).isAfter(endDate, 'week');
+    const afterEndWeek = endDate ? moment(date).isAfter(endDate, 'week') : false;
 
     if (!beforeStartWeek && !afterEndWeek) {
       setSelectedWeek(moment(date).startOf('week'));
@@ -142,7 +142,7 @@ export const WeeklyBillingDetails = props => {
             selectedPaymentMethod={selectedPaymentMethodType}
             subHeading="Billing Details"
             weekdays={bookingSchedule}
-            startDate={selectedWeek}
+            startDate={startDate > selectedWeek ? startDate : selectedWeek}
             weekEndDate={moment(selectedWeek).endOf('week')}
             exceptions={exceptions}
             blockedDays={blockedDays}

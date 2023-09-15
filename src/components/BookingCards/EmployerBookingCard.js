@@ -37,10 +37,6 @@ import classNames from 'classnames';
 
 import css from './BookingCards.module.css';
 
-const CREDIT_CARD = 'Payment Card';
-const BANK_ACCOUNT = 'Bank Account';
-const TRANSACTION_FEE = 0.05;
-
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
 
@@ -112,8 +108,6 @@ const EmployerBookingCard = props => {
   const providerDisplayName = (
     <UserDisplayName user={provider} intl={intl} className={css.userDisplayName} />
   );
-  const selectedPaymentMethod =
-    paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
   const bookingTimes =
     lineItems

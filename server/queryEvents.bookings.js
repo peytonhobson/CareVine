@@ -429,11 +429,7 @@ const constructBookingMetadataRecurring = (
   const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
   const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-  const processingFee = calculateProcessingFee(
-    payout,
-    bookingFee,
-    paymentMethodType === 'card' ? CREDIT_CARD : BANK_ACCOUNT
-  );
+  const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
 
   const endOfWeek = moment(startDate)
     .weekday(6)

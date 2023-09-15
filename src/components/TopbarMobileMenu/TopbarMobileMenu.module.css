@@ -144,7 +144,7 @@
 .createNewListingLink {
   composes: button buttonFont buttonText marketplaceButtonBorders buttonColors from global;
 
-  border-radisu: var(--borderRadiusButton);
+  border-radius: var(--borderRadiusButton);
 }
 
 .authenticationGreeting {

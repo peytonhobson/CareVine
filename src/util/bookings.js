@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { WEEKDAYS } from './constants';
+import { WEEKDAYS, WEEKDAY_MAP } from './constants';
 
 const filterInsideExceptions = (exceptions, startDate) =>
   Object.keys(exceptions).reduce((acc, exceptionKey) => {

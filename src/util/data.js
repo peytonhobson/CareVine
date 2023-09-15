@@ -17,7 +17,7 @@ import { BACKGROUND_CHECK_APPROVED, SUBSCRIPTION_ACTIVE_TYPES } from './constant
 import moment from 'moment';
 import { addTimeToStartOfDay } from './dates';
 
-const BANK_ACCOUNT = 'Bank Account';
+const BANK_ACCOUNT = 'us_bank_account';
 const CARD_PROCESSING_FEE = 0.029;
 const BANK_PROCESSING_FEE = 0.008;
 

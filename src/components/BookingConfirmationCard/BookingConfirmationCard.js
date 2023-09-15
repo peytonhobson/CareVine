@@ -6,9 +6,6 @@ import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingConfirmationCard.module.css';
 
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
-
 const getEndOfFirstWeek = (startDate, weekdays) => {
   if (!startDate) return null;
 
@@ -45,6 +42,7 @@ const BookingConfirmationCard = props => {
     blockedDays,
     blockedDates,
     startDate,
+    type,
   } = transaction.attributes.metadata;
 
   const bookingTimes = lineItems.map(l => ({
@@ -52,8 +50,6 @@ const BookingConfirmationCard = props => {
     startTime: l.startTime,
     endTime: l.endTime,
   }));
-  const selectedPaymentMethod =
-    paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
   const endOfFirstWeek = bookingSchedule ? getEndOfFirstWeek(startDate, bookingSchedule) : null;
 
@@ -64,7 +60,7 @@ const BookingConfirmationCard = props => {
         A notification has been sent to {authorDisplayName}. They have 72 hours or until the start
         of the booking to accept the request or it will expire.
       </h3>
-      {bookingSchedule ? (
+      {type === 'recurring' ? (
         <RecurringBookingSummaryCard
           authorDisplayName={authorDisplayName}
           currentAuthor={currentAuthor}
@@ -84,6 +80,7 @@ const BookingConfirmationCard = props => {
               First Week with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
             </h2>
           }
+          hideRatesButton
         />
       ) : (
         <SingleBookingSummaryCard
@@ -94,7 +91,7 @@ const BookingConfirmationCard = props => {
           bookingRate={bookingRate}
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethod}
+          selectedPaymentMethod={paymentMethodType}
           hideAvatar
           subHeading={
             <div className={css.subHeading}>

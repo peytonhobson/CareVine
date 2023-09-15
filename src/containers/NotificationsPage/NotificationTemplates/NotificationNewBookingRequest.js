@@ -27,9 +27,6 @@ import {
 
 import css from './NotificationTemplates.module.css';
 
-const BANK_ACCOUNT = 'Bank Account';
-const CREDIT_CARD = 'Payment Card';
-
 const NotificationNewBookingRequest = props => {
   const {
     notification,
@@ -73,8 +70,6 @@ const NotificationNewBookingRequest = props => {
     endTime: l.endTime,
   }));
   const bookingDates = lineItems?.map(l => new Date(l.date));
-  const selectedPaymentMethod =
-    paymentMethodType === 'us_bank_account' ? BANK_ACCOUNT : CREDIT_CARD;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isNotAcceptedOrDeclined =
