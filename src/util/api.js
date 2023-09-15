@@ -328,3 +328,7 @@ export const updatePendingPayouts = body => {
 export const initiatePrivilegedTransaction = body => {
   return post('/api/initiate-privileged-transaction', body);
 };
+
+export const getProdListings = body => {
+  return post('/api/get-prod-listings', body);
+};

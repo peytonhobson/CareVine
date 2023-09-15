@@ -66,6 +66,7 @@ const initiateBooking = require('./api/initiate-booking');
 const initiatePrivilegedTransaction = require('./api/initiate-privileged-transaction');
 const updateNotificationMetadata = require('./api/update-notification-metadata');
 const updatePendingPayouts = require('./api/update-pending-payouts');
+const getProdListings = require('./api/get-prod-listings');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -151,6 +152,7 @@ router.post('/update-notification-metadata', updateNotificationMetadata);
 router.post('/stripe-create-refund', stripeCreateRefund);
 router.post('/update-pending-payouts', updatePendingPayouts);
 router.post('/initiate-privileged-transaction', initiatePrivilegedTransaction);
+router.post('/get-prod-listings', getProdListings);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed
