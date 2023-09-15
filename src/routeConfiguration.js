@@ -44,20 +44,15 @@ const SubscriptionsPage = loadable(() => import(/* webpackChunkName: "Subscripti
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ './containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ './containers/TransactionPage/TransactionPage'));
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
+const ListingTrackingPage = loadable(() => import(/* webpackChunkName: "ListingTrackingPage" */ './containers/ListingTrackingPage/ListingTrackingPage'));
 
-let ListingTrackingPage;
-let listingTrackingPageMaybe;
-
-if (isDev) {
-  ListingTrackingPage = loadable(() => import(/* webpackChunkName: "ListingTrackingPage" */ './containers/ListingTrackingPage/ListingTrackingPage'));
-
-  listingTrackingPageMaybe = {
-    path: '/listing-tracking',
-    name: 'ListingTrackingPage',
-    component: ListingTrackingPage,
-    loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
-  }
+const listingTrackingPageMaybe = {
+  path: '/listing-tracking',
+  name: 'ListingTrackingPage',
+  component: ListingTrackingPage,
+  loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
 }
+
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
