@@ -1,5 +1,3 @@
-
-
 .root {
   width: 100%;
 
@@ -12,6 +10,7 @@
   /* Size */
   width: 100%;
   height: var(--topbarHeight);
+  position: relative;
 
   /* Layout for child components */
   display: flex;
@@ -32,7 +31,9 @@
 
 .home {
   display: flex;
-  padding: calc((var(--topbarHeight) - var(--Topbar_logoHeight)) / 2) 24px;
+  padding: calc((var(--topbarHeight) - var(--Topbar_logoHeight)) / 2) 0;
+  position: absolute;
+  left: calc(50vw - 3.5rem);
 }
 
 .logoutButton {
@@ -43,7 +44,7 @@
 .menu,
 .searchMenu {
   /* Font */
-  composes: h5 from global;
+  composes: h3 from global;
   color: var(--matterColor);
 
   /* Layout */
@@ -53,6 +54,7 @@
   border-width: 0px;
   background-color: transparent;
   margin-right: 2rem;
+  color: var(--marketplaceColor);
 
   /* Hovers */
   &:enabled {
@@ -70,7 +72,7 @@
 }
 
 .menu {
-  padding: 15px 24px;
+  padding: 15px 1rem;
   position: relative;
 }
 .searchMenu {
@@ -78,21 +80,24 @@
   visibility: hidden;
 }
 
-.menuIcon,
-.searchMenuIcon {
-  margin: 9px 0;
+.iconButton {
+  composes: button buttonFont buttonText buttonBorders buttonColors from global;
+  min-height: 0;
+  border-radius: 50%;
+  padding: 0.5rem;
+  position: relative;
 }
 
 .notificationDot {
   /* Dimensions */
-  width: 12px;
-  height: 12px;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
 
   /* Position */
   position: absolute;
-  top: 17px;
-  right: 17px;
+  top: 0;
+  right: -0.4rem;
 
   /* Style: red dot with white border */
   background-color: var(--failColor);
@@ -214,5 +219,6 @@
 }
 
 .signUp {
+  composes: h3 from global;
   padding: 0 1rem;
 }

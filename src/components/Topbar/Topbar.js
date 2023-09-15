@@ -21,6 +21,8 @@ import {
   TopbarMobileMenu,
   GenericError,
   SessionTimeout,
+  IconEmail,
+  IconBell,
 } from '../../components';
 import { ensureCurrentUser } from '../../util/data';
 
@@ -150,14 +152,17 @@ class TopbarComponent extends Component {
     });
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.filter(
+    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.find(
       notification => !notification.isRead
-    )?.length;
+    );
 
-    const notificationDot =
-      unreadMessages > 0 || unreadNotificationCount > 0 ? (
-        <div className={css.notificationDot} />
-      ) : null;
+    console.log(ensuredCurrentUser.attributes.profile.privateData.notifications);
+
+    const notificationDot = unreadNotificationCount ? (
+      <div className={css.notificationDot} />
+    ) : null;
+
+    const messageDot = unreadMessages > 0 ? <div className={css.notificationDot} /> : null;
 
     const isMobileLayout = viewport.width < MAX_MOBILE_SCREEN_WIDTH;
     const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
@@ -196,8 +201,7 @@ class TopbarComponent extends Component {
               onClick={this.handleMobileMenuOpen}
               title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
             >
-              <MenuIcon className={css.menuIcon} />
-              {notificationDot}
+              Menu
             </Button>
             <NamedLink
               className={css.home}
@@ -211,16 +215,16 @@ class TopbarComponent extends Component {
                 Sign up
               </NamedLink>
             ) : (
-              <Button
-                rootClassName={css.searchMenu}
-                onClick={() => {}}
-                title={intl.formatMessage({ id: 'Topbar.searchIcon' })}
-              >
-                <div>
-                  <SearchIcon className={css.searchMenuIcon} />
-                  <span className={css.caregivers}>Caregivers</span>
-                </div>
-              </Button>
+              <div className="flex gap-4 pr-4">
+                <NamedLink name="InboxPage" className={css.iconButton}>
+                  <IconEmail className={css.searchMenuIcon} />
+                  {messageDot}
+                </NamedLink>
+                <NamedLink name="NotificationsPage" className={css.iconButton}>
+                  <IconBell className={css.searchMenuIcon} />
+                  {notificationDot}
+                </NamedLink>
+              </div>
             )}
           </div>
         ) : (

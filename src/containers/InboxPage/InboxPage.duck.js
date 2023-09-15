@@ -504,7 +504,7 @@ export const sendMessage = (tx, message) => async (dispatch, getState, sdk) => {
             marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
             message: previewMessage,
             senderName: lastMessage.sender.attributes.profile.displayName,
-            txId,
+            txId: txId?.uuid,
           },
           templateName: 'new-message',
         });

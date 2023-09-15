@@ -64,11 +64,12 @@ const BlogHomePageComponent = props => {
           <TopbarContainer currentPage="BlogHomePage" />
         </LayoutWrapperTopbar>
         <LayoutWrapperMain className={css.mainWrapper}>
+          {isSsr && <h1 className="text-8xl">Blog</h1>}
           {!isSsr && (
             <>
               <Box className={classes.hero}>
                 <Box>
-                  <h1 className={css.header}>Blog</h1>
+                  <h1 className="text-8xl">Blog</h1>
                 </Box>
               </Box>
               <CardGrid />

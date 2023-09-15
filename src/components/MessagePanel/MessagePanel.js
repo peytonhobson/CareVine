@@ -104,13 +104,8 @@ const MessagePanelComponent = props => {
     if (!message) {
       return;
     }
-    onSendMessage(currentTransaction, message)
-      .then(messageId => {
-        form.reset();
-      })
-      .catch(e => {
-        // Ignore, Redux handles the error
-      });
+    onSendMessage(currentTransaction, message);
+    form.reset();
   };
 
   return (

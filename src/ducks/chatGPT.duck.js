@@ -20,6 +20,8 @@ const generateBioPrompt = listing => {
     experienceLevel,
   } = publicData;
 
+  const experienceLevelLabel = convertFilterKeyToLabel('experienceLevel', experienceLevel);
+
   const prompt = `
   I want to create a first-person bio as caregiver on a p2p marketplace for seniors and caregivers.
   Generate the bio with less than 800 characters (including spaces) with the following traits.
@@ -32,7 +34,12 @@ const generateBioPrompt = listing => {
             Language(s) Spoken:  ${convertFilterKeysToLabels('languagesSpoken', languagesSpoken)}
             Care Types: ${convertFilterKeysToLabels('careTypes', careTypes)}
             Experience Areas: ${convertFilterKeysToLabels('experienceAreas', experienceAreas)}
-            Experience Level: ${convertFilterKeyToLabel('experienceLevel', experienceLevel)}
+            Experience Level: ${
+              experienceLevelLabel === '10+ years' ||
+              experienceLevelLabel === 'I am seeking my first senior care job'
+                ? experienceLevelLabel
+                : `${experienceLevelLabel?.substring(0, 1)}+ years`
+            }
     `;
 
   return prompt;
