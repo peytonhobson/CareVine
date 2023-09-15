@@ -73,14 +73,12 @@ export const constructBookingMetadataOneTime = (
   bookingRate,
   paymentMethodType
 ) => {
-  const lineItems = formatDateTimeValues(bookingTimes).map(booking => {
-    const { startTime, endTime, date } = booking;
+  const lineItems = formatDateTimeValues(bookingTimes).map((booking, index) => {
+    const { startTime, endTime } = booking;
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = bookingDates
-      .find(d => `${d.getMonth() + 1}/${d.getDate()}` === date)
-      ?.toISOString();
+    const isoDate = bookingDates[index]?.toISOString();
 
     return {
       code: 'line-item/booking',

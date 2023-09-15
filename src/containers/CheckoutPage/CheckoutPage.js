@@ -312,7 +312,7 @@ export class CheckoutPageComponent extends Component {
                 ...bookingSchedule,
                 dateTimes,
                 exceptions,
-                bookingDates,
+                bookingDates: bookingDates.map(date => new Date(date)),
                 bookingRate,
               }}
               initialValuesEqual={() => true}

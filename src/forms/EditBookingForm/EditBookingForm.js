@@ -144,7 +144,6 @@ const EditBookingFormComponent = props => (
         onChangePaymentMethod,
         intl,
         onUpdateBookingDraft,
-        updateBookingDraftInProgress,
         history,
       } = formRenderProps;
 
@@ -168,6 +167,7 @@ const EditBookingFormComponent = props => (
           bookingSchedule,
           dateTimes: vals.dateTimes,
           exceptions: vals.exceptions,
+          bookingDates: vals.bookingDates.map(b => b.toISOString()),
         };
 
         onUpdateBookingDraft(saveParams);

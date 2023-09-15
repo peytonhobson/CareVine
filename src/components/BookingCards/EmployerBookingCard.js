@@ -46,6 +46,7 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
+// Booking card from the employers view
 const EmployerBookingCard = props => {
   const [bookingTimesPage, setBookingTimesPage] = useState(0);
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
