@@ -496,13 +496,16 @@ export const sendMessage = (tx, message) => async (dispatch, getState, sdk) => {
         1000 * 60 * 60;
 
       const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+      const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
+      const messageHasEmail = previewMessage.includes('@');
+      const messageHasPhoneNumber = previewMessage.match(phoneRegex);
 
-      if (lastMessageMoreThan1HourAgo) {
+      if (!lastMessageMoreThan1HourAgo) {
         await sendgridTemplateEmail({
           receiverId,
           templateData: {
             marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-            message: previewMessage,
+            message: messageHasEmail || messageHasPhoneNumber ? null : previewMessage,
             senderName: lastMessage.sender.attributes.profile.displayName,
             txId: txId?.uuid,
           },
