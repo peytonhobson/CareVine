@@ -95,10 +95,12 @@
                               class="title"
                               style="padding-top: 24px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              You have a new message from {{transaction.customer.display-name}}:
+                              You have a new message from {{transaction.customer.display-name}}{{#if
+                              transaction.metadata.message}}<span>:</span>{{else}}<span>.</span>{{/if}}
                             </p>
                           </td>
                         </tr>
+                        {{#if transaction.metadata.message}}
                         <tr>
                           <td align="center">
                             <p
@@ -109,14 +111,15 @@
                             </p>
                           </td>
                         </tr>
+                        {{/if}}
                         <tr>
                           <td align="center">
                             <p
                               class="title"
                               style="padding-top: 24px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              To view this message on CareVine and respond to
-                              {{transaction.customer.display-name}} click the button below.
+                              To view and respond to this message on CareVine, click the button
+                              below.
                             </p>
                           </td>
                         </tr>
