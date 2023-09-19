@@ -3,7 +3,7 @@ import loadable from '@loadable/component';
 import getPageDataLoadingAPI from './containers/pageDataLoadingAPI';
 import { NotFoundPage } from './containers';
 
-const isDev = process.env.REACT_APP_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development';
 
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
@@ -46,12 +46,13 @@ const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionP
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
 const ListingTrackingPage = loadable(() => import(/* webpackChunkName: "ListingTrackingPage" */ './containers/ListingTrackingPage/ListingTrackingPage'));
 
-const listingTrackingPageMaybe =  {
+const listingTrackingPageMaybe = {
   path: '/listing-tracking',
   name: 'ListingTrackingPage',
   component: ListingTrackingPage,
   loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
 }
+
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',

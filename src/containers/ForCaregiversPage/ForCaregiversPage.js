@@ -155,10 +155,10 @@ export const ForCaregiversPageComponent = props => {
               <p className={css.title}>Instant Background Checks</p>
               <p className={css.description}>
                 We prioritize safety on our platform for everyone. To ensure this, we conduct
-                instant background checks on all caregivers through a third party provider as part
-                of the sign up process. This verifies your identity and criminal record, providing
-                reassurance for clients and their families. Though it's an extra step, it's crucial
-                for trust within our community.
+                instant background checks on caregivers through a third party provider. This
+                verifies your identity and criminal record, providing reassurance for clients and
+                their families. Though it's an extra step, it's crucial for trust within our
+                community.
               </p>
             </div>
           </div>

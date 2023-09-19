@@ -22,8 +22,6 @@ export const InboxPageComponent = props => {
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
 
-  console.log(geolocations);
-
   const markers = useMemo(() => {
     return geolocations.map(g => {
       return { lat: g.lat, lng: g.lng };
@@ -59,7 +57,7 @@ export const InboxPageComponent = props => {
           {!isLoaded ? (
             <h1>Loading...</h1>
           ) : (
-            <GoogleMap mapContainerClassName="w-full h-[100vh]" onLoad={onLoad}>
+            <GoogleMap mapContainerClassName="w-full h-fullHeightDesktop" onLoad={onLoad}>
               {geolocations.map(g => {
                 return <Marker position={{ lat: g.lat, lng: g.lng }} />;
               })}
