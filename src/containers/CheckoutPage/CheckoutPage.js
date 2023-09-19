@@ -148,7 +148,6 @@ export class CheckoutPageComponent extends Component {
             endDate,
             bookingRate,
             this.state.selectedPaymentMethod.type,
-            listing,
             exceptions
           );
 
@@ -167,7 +166,7 @@ export class CheckoutPageComponent extends Component {
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
       providerName: listing.author.attributes.profile.displayName,
-      exceptions: scheduleType.metadata === 'recurring' ? exceptions : null,
+      exceptions: scheduleType === 'recurring' ? exceptions : null,
     };
 
     onInitiateOrder(orderParams, metadata, listing, params.draftId);

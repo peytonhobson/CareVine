@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
-import { timestampToDate } from '../../util/dates';
 import {
-  InlineTextButton,
-  TimeRange,
   Modal,
   InfoTooltip,
-  IconClose,
   Button,
   FieldDateInput,
   DailyPlan,
   PrimaryButton,
-  CancelButton,
   FieldDatePicker,
+  BookingException,
 } from '..';
-import { EditListingAvailabilityExceptionForm } from '../../forms';
 import classNames from 'classnames';
-import { DATE_TYPE_DATETIME } from '../../util/types';
 import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
 import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../util/hooks';
+import { sortExceptionsByDate } from '../../util/bookings';
 
 import css from './BookingExceptions.module.css';
-
-const sortExceptionsByDate = (a, b) => {
-  return moment(a.date) - moment(b.date);
-};
 
 const filterAvailableAddExceptionDays = (
   bookedDays,
@@ -317,35 +308,13 @@ const BookingExceptions = props => {
       </header>
       <div className={css.exceptions}>
         {sortedExceptions.map(exception => {
-          const { date, startTime, endTime, type } = exception;
           return (
-            <div key={exception.date} className={css.exception}>
-              <div className={css.exceptionHeader}>
-                <div className={css.exceptionAvailability}>
-                  <div
-                    className={classNames(css.exceptionAvailabilityDot, {
-                      [css.isAvailable]: type === 'addDate',
-                      [css.isChanged]: type === 'changeDate',
-                    })}
-                  />
-                  <div className={css.exceptionAvailabilityStatus}>
-                    {type === 'addDate' && 'Added'}
-                    {type === 'removeDate' && 'Removed'}
-                    {type === 'changeDate' && 'Changed'}
-                  </div>
-                </div>
-                <button
-                  className={css.removeExceptionButton}
-                  onClick={() => handleRemoveException(exception)}
-                >
-                  <IconClose size="normal" className={css.removeIcon} />
-                </button>
-              </div>
-              <p className={css.timeRange}>
-                {moment(date).format('dddd, MMM DD')}
-                {type !== 'removeDate' ? `, ${startTime} - ${endTime}` : ''}
-              </p>
-            </div>
+            <BookingException
+              {...exception}
+              onRemoveException={() => handleRemoveException(exception)}
+              key={exception.date}
+              className={css.exception}
+            />
           );
         })}
       </div>

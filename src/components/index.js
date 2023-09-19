@@ -206,6 +206,7 @@ export { default as UserCard } from './UserCard/UserCard';
 export { default as ViewCalendar } from './ViewCalendar/ViewCalendar';
 export { default as WeekPanel } from './WeekPanel/WeekPanel';
 export { default as WeeklyBillingDetails } from './WeeklyBillingDetails/WeeklyBillingDetails';
+export { default as BookingException} from './BookingException/BookingException';
 
 //////////////////////////////////////////////
 // Page sections and modal content wrappers //

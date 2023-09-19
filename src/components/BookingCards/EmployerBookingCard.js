@@ -172,7 +172,7 @@ const EmployerBookingCard = props => {
           </h2>
         </div>
         {showMenu ? (
-          <Menu className={css.menu}>
+          <Menu className="h-auto mb-4">
             <MenuLabel className={css.menuLabel} isOpenClassName={css.profileMenuIsOpen}>
               <MenuIcon height={isMobile ? '1.75em' : '1.25em'} width="2.25em" />
             </MenuLabel>

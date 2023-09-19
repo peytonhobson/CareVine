@@ -12,25 +12,7 @@ const isSameISOWeek = (date1, date2) => {
   return moment(date1).isSame(date2, 'week');
 };
 
-const isInBookingSchedule = (
-  date,
-  blockedDates,
-  blockedDays,
-  bookingSchedule,
-  startDate,
-  endDate,
-  exceptions
-) => {
-  const isBookedDate = blockedDates.some(bookingDate => moment(bookingDate).isSame(date));
-  const isBookedDay = blockedDays.some(
-    booking =>
-      booking.days.includes(WEEKDAYS[date.getDay()]) &&
-      moment(booking.startDate).isSameOrBefore(date) &&
-      (!booking.endDate || moment(booking.endDate).isSameOrAfter(date))
-  );
-
-  if (isBookedDate || isBookedDay) return false;
-
+const isInBookingSchedule = (date, bookingSchedule, startDate, endDate, exceptions) => {
   const inBookingSchedule = Object.keys(bookingSchedule).some(
     weekday =>
       WEEKDAY_MAP[weekday] === date.getDay() &&
@@ -45,8 +27,6 @@ const isInBookingSchedule = (
 
 const formatDay = (
   date,
-  blockedDates,
-  blockedDays,
   bookingSchedule,
   startDate,
   endDate,
@@ -56,8 +36,6 @@ const formatDay = (
 ) => {
   const inBookingSchedule = isInBookingSchedule(
     date,
-    blockedDates,
-    blockedDays,
     bookingSchedule,
     startDate,
     endDate,
@@ -90,11 +68,8 @@ const formatDay = (
   );
 };
 
-// blockedDays and dates should be those that were there when booking was created
 export const WeeklyBillingDetails = props => {
   const {
-    blockedDates = [],
-    blockedDays = [],
     bookingSchedule = {},
     exceptions,
     startDate,
@@ -105,6 +80,8 @@ export const WeeklyBillingDetails = props => {
     listing,
     onManageDisableScrolling,
     selectedPaymentMethodType,
+    hideFees,
+    isPayment,
   } = props;
 
   const classes = classNames(className, css.root);
@@ -118,7 +95,11 @@ export const WeeklyBillingDetails = props => {
     const afterEndWeek = endDate ? moment(date).isAfter(endDate, 'week') : false;
 
     if (!beforeStartWeek && !afterEndWeek) {
-      setSelectedWeek(moment(date).startOf('week'));
+      setSelectedWeek(
+        moment(date)
+          .startOf('week')
+          .toDate()
+      );
     }
   };
 
@@ -140,17 +121,17 @@ export const WeeklyBillingDetails = props => {
             listing={listing}
             onManageDisableScrolling={onManageDisableScrolling}
             selectedPaymentMethod={selectedPaymentMethodType}
-            subHeading="Billing Details"
+            subHeading={isPayment ? 'Payment Details' : 'Billing Details'}
             weekdays={bookingSchedule}
-            startDate={startDate > selectedWeek ? startDate : selectedWeek}
+            startDate={new Date(startDate) > selectedWeek ? startDate : selectedWeek}
             weekEndDate={moment(selectedWeek).endOf('week')}
             exceptions={exceptions}
-            blockedDays={blockedDays}
-            blockedDates={blockedDates}
             hideWeeklyBillingDetails
             className={css.summaryCard}
             hideRatesButton
             hideAvatar
+            hideFees={hideFees}
+            hideFullSchedule
           />
         </>
       ) : (
@@ -158,8 +139,6 @@ export const WeeklyBillingDetails = props => {
           formatDay={(_, date) =>
             formatDay(
               date,
-              blockedDates,
-              blockedDays,
               bookingSchedule,
               startDate,
               endDate,

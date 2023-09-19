@@ -23,14 +23,14 @@ const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, ex
 
 const isDayDisabled = date => date.getTime() < new Date().getTime();
 
-const isDayUnavailable = (
+const isDayUnavailable = ({
   bookingSchedule,
   startDate,
   endDate,
   unavailableDates,
   date,
-  exceptions
-) => {
+  exceptions,
+}) => {
   const { bookedDates = [], bookedDays = [] } = unavailableDates;
 
   const isAfterStartDate = moment(startDate).isSameOrBefore(date);
@@ -41,10 +41,11 @@ const isDayUnavailable = (
     !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
   const bookedDay = bookedDays.some(booking => {
+    console.log(booking.endDate);
     return (
       booking.days.includes(WEEKDAYS[date.getDay()]) &&
       moment(booking.startDate).isSameOrBefore(date) &&
-      moment(booking.endDate).isSameOrAfter(date)
+      (!booking.endDate || moment(booking.endDate).isSameOrAfter(date))
     );
   });
 
@@ -57,7 +58,7 @@ const isDayUnavailable = (
   return bookedDate && isAfterStartDate && isBeforeEndDate && isInBookingSchedule;
 };
 
-const formatDay = (
+const formatDay = ({
   locale,
   date,
   bookedDates,
@@ -66,22 +67,22 @@ const formatDay = (
   startDate,
   endDate,
   unavailableDates,
-  exceptions
-) => {
+  exceptions,
+}) => {
   const day = date.getDate();
   const isHighlighted =
     Object.keys(bookingSchedule)?.length > 0
       ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date, exceptions)
       : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
-  const isUnavailable = isDayUnavailable(
+  const isUnavailable = isDayUnavailable({
     bookingSchedule,
     startDate,
     endDate,
     unavailableDates,
     date,
-    exceptions
-  );
+    exceptions,
+  });
 
   if (isUnavailable) {
     return (
@@ -122,7 +123,7 @@ export const BookingCalendar = props => {
     <div className={classes}>
       <Calendar
         formatDay={(locale, date) =>
-          formatDay(
+          formatDay({
             locale,
             date,
             bookedDates,
@@ -131,8 +132,8 @@ export const BookingCalendar = props => {
             startDate,
             endDate,
             unavailableDates,
-            exceptions
-          )
+            exceptions,
+          })
         }
         value={initialDate}
         calendarType="Hebrew"

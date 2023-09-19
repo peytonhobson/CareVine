@@ -15,16 +15,7 @@ const filterInsideExceptions = (exceptions, startDate) =>
     return { ...acc, [exceptionKey]: insideExceptions };
   }, {});
 
-const reduceWeekdays = (
-  acc,
-  weekdayKey,
-  blockedDays,
-  blockedDates,
-  insideExceptions,
-  startDate,
-  endDate,
-  weekdays
-) => {
+const reduceWeekdays = (acc, weekdayKey, insideExceptions, startDate, endDate, weekdays) => {
   const realDate = moment(startDate)
     .weekday(WEEKDAY_MAP[weekdayKey])
     .toDate();
@@ -32,22 +23,11 @@ const reduceWeekdays = (
 
   const isAfterStartDate =
     moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]) >= moment(startDate).startOf('day');
-  const isBlockedDate = blockedDates.find(date =>
-    moment(startDate)
-      .weekday(WEEKDAY_MAP[weekdayKey])
-      .isSame(date, 'day')
-  );
-  const isBlockedDay = blockedDays.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === moment(realDate).weekday()) &&
-      (!d.endDate || realDate <= moment(d.endDate)) &&
-      realDate >= moment(d.startDate)
-  );
   const isRemovedDay = insideExceptions.removedDays?.some(d =>
     moment(d.date).isSame(realDate, 'day')
   );
 
-  if (isRemovedDay || isBlockedDate || isBlockedDay || isPastEndDate) {
+  if (isRemovedDay || isPastEndDate) {
     return acc;
   }
 
@@ -69,14 +49,7 @@ const reduceWeekdays = (
   return isAfterStartDate ? { ...acc, [weekdayKey]: weekdays[weekdayKey] } : acc;
 };
 
-export const filterWeeklyBookingDays = ({
-  weekdays,
-  startDate,
-  endDate,
-  exceptions,
-  blockedDays,
-  blockedDates,
-}) => {
+export const filterWeeklyBookingDays = ({ weekdays, startDate, endDate, exceptions }) => {
   const keys = Object.keys(weekdays);
 
   if (!keys.length) return {};
@@ -85,16 +58,7 @@ export const filterWeeklyBookingDays = ({
 
   const reducedWeekdays = keys.reduce(
     (acc, weekdayKey) =>
-      reduceWeekdays(
-        acc,
-        weekdayKey,
-        blockedDays,
-        blockedDates,
-        insideExceptions,
-        startDate,
-        endDate,
-        weekdays
-      ),
+      reduceWeekdays(acc, weekdayKey, insideExceptions, startDate, endDate, weekdays),
     {}
   );
 
@@ -112,5 +76,21 @@ export const filterWeeklyBookingDays = ({
     };
   }, reducedWeekdays);
 
-  return weekdaysWithAddedDays;
+  return sortWeekdays(weekdaysWithAddedDays);
+};
+
+export const sortWeekdays = weekdays => {
+  const sortedWeekdays = Object.keys(weekdays)
+    .sort((a, b) => WEEKDAY_MAP[a] - WEEKDAY_MAP[b])
+    .reduce((acc, key) => ({ ...acc, [key]: weekdays[key] }), {});
+
+  return sortedWeekdays;
+};
+
+export const sortExceptionsByDate = (a, b) => {
+  return moment(a.date) - moment(b.date);
+};
+
+export const checkForExceptions = exceptions => {
+  return Object.keys(exceptions).some(key => exceptions[key].length > 0);
 };

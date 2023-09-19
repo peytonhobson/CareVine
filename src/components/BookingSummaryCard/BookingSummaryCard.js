@@ -40,7 +40,7 @@ const BookingSummaryCard = props => {
     }
   };
 
-  const authorDisplayName = currentAuthor.attributes.profile.displayName;
+  const authorDisplayName = currentAuthor?.attributes.profile.displayName;
 
   return (
     <div

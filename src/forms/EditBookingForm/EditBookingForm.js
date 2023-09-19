@@ -240,8 +240,8 @@ const EditBookingFormComponent = props => (
             return false;
           }
         }
-        return true;
         window.scrollTo(0, 0);
+        return true;
       };
 
       const checkvalidPayment = () => {
@@ -471,45 +471,30 @@ const EditBookingFormComponent = props => (
               usePortal
             >
               <p className={css.modalTitle}>
-                <WarningIcon color="warning" fontSize="large" />
+                <WarningIcon color="error" fontSize="large" />
                 Warning: Unavailable Dates During Booking
               </p>
               <p className={css.modalMessage}>
                 The caregiver is unavailable for all dates highlighted in{' '}
                 <span className={css.error}>red</span> below.
-                <BookingCalendar
-                  bookingSchedule={weekdays}
-                  startDate={values.startDate?.date}
-                  endDate={values.endDate?.date}
-                  unavailableDates={{
-                    bookedDays,
-                    bookedDates,
-                  }}
-                  noDisabled
-                  className={css.warningCalendar}
-                  exceptions={values.exceptions}
-                />
-                By continuing, you are acknowledging that the caregiver is unavailable for the above
-                dates and you will need to make other arrangements. Alternatively you can change
-                your booking to accommodate the caregiver’s availability.
               </p>
-              <div className={css.warningModalButtons}>
-                <Button
-                  className={css.modalButton}
-                  onClick={() => setIsUnavailableWarningModalOpen(false)}
-                >
-                  Change Dates
-                </Button>
-                <PrimaryButton
-                  className={css.modalButton}
-                  onClick={() => {
-                    setIsUnavailableWarningModalOpen(false);
-                    setSelectedTab('Payment');
-                  }}
-                >
-                  Continue
-                </PrimaryButton>
-              </div>
+              <p>Please adjust your booking dates to continue.</p>
+              <BookingCalendar
+                bookingSchedule={weekdays}
+                startDate={values.startDate?.date}
+                endDate={values.endDate?.date}
+                unavailableDates={{
+                  bookedDays,
+                  bookedDates,
+                }}
+                noDisabled
+                className={css.warningCalendar}
+                exceptions={values.exceptions}
+              />
+
+              <Button className="mt-10" onClick={() => setIsUnavailableWarningModalOpen(false)}>
+                Change Dates
+              </Button>
             </Modal>
           ) : null}
         </Form>

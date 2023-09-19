@@ -253,7 +253,6 @@
 .bookingNumber {
   color: var(--marketplaceColor);
   margin-top: 0;
-  text-align: end;
   width: 100%;
 }
 

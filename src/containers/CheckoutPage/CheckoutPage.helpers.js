@@ -117,21 +117,13 @@ export const constructBookingMetadataRecurring = (
   endDate,
   bookingRate,
   paymentMethodType,
-  listing,
   exceptions
 ) => {
-  const {
-    bookedDates: blockedDates = [],
-    bookedDays: blockedDays = [],
-  } = listing.attributes.metadata;
-
   const filteredWeekdaysObj = filterWeeklyBookingDays({
     weekdays,
     startDate,
     endDate,
     exceptions,
-    blockedDays,
-    blockedDates,
   });
 
   const filteredWeekdays = Object.keys(filteredWeekdaysObj)?.reduce((acc, weekdayKey) => {
@@ -177,8 +169,6 @@ export const constructBookingMetadataRecurring = (
     startDate: moment(startDate).toISOString(),
     endDate: endDate ? moment(endDate).toISOString() : null,
     cancelAtPeriodEnd: false,
-    blockedDates,
-    blockedDays,
     type: 'recurring',
   };
 };

@@ -7,8 +7,9 @@ import {
   Button,
   SecondaryButton,
   NamedLink,
-  BookingSummaryCard,
   IconSpinner,
+  SingleBookingSummaryCard,
+  RecurringBookingSummaryCard,
 } from '../../../components';
 import {
   TRANSITION_ACCEPT_BOOKING,
@@ -19,13 +20,10 @@ import {
   TRANSITION_CHARGE,
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../../util/transaction';
-import {
-  userDisplayNameAsString,
-  findEndTimeFromLineItems,
-  findStartTimeFromLineItems,
-} from '../../../util/data';
+import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
 
 import css from './NotificationTemplates.module.css';
+import { checkForExceptions } from '../../../util/bookings';
 
 const NotificationNewBookingRequest = props => {
   const {
@@ -46,8 +44,23 @@ const NotificationNewBookingRequest = props => {
 
   const { txId } = notification.metadata;
 
-  const { lineItems, bookingRate, paymentMethodType, message, senderListingTitle, senderCity } =
-    currentTransaction?.attributes.metadata || {};
+  const {
+    lineItems,
+    bookingRate,
+    paymentMethodType,
+    message,
+    senderListingTitle,
+    senderCity,
+    type: bookingType,
+    bookingSchedule,
+    startDate,
+    endDate,
+    exceptions = {
+      addedDays: [],
+      removedDays: [],
+      changedDays: [],
+    },
+  } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
 
@@ -86,6 +99,8 @@ const NotificationNewBookingRequest = props => {
   );
   const isCanceledRequest =
     currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
+
+  const hasExceptions = checkForExceptions(exceptions);
 
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
@@ -127,18 +142,40 @@ const NotificationNewBookingRequest = props => {
           )}
         </div>
         <div className={css.bookingInfo}>
-          {/* <BookingSummaryCard
-            className={css.summaryCard}
-            currentAuthor={currentUser}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates?.map(bookingDate => new Date(bookingDate)) ?? []}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethod}
-            hideAvatar
-            hideRatesButton
-            hideFees
-          /> */}
+          {bookingType === 'oneTime' ? (
+            <SingleBookingSummaryCard
+              className={css.summaryCard}
+              bookingTimes={bookingTimes}
+              bookingRate={bookingRate}
+              listing={listing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              selectedPaymentMethod={paymentMethodType}
+              hideRatesButton
+              hideAvatar
+              hideFees
+            />
+          ) : (
+            <RecurringBookingSummaryCard
+              className={css.summaryCard}
+              bookingRate={bookingRate}
+              listing={listing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              selectedPaymentMethod={paymentMethodType}
+              weekdays={bookingSchedule}
+              startDate={startDate}
+              weekEndDate={moment(startDate)
+                .endOf('week')
+                .toDate()}
+              bookingEndDate={endDate}
+              exceptions={exceptions}
+              hideRatesButton
+              hideAvatar
+              hideFees
+              showWeekly
+              hideWeeklyBillingDetails
+              showExceptions={hasExceptions}
+            />
+          )}
           {(transitionTransactionError || acceptBookingError) && (
             <p className={css.error}>
               Something went wrong with accepting or declining the booking request. Please try

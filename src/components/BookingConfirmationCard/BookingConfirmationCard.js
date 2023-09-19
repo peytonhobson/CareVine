@@ -39,8 +39,6 @@ const BookingConfirmationCard = props => {
     paymentMethodType,
     bookingSchedule,
     exceptions,
-    blockedDays,
-    blockedDates,
     startDate,
     type,
   } = transaction.attributes.metadata;
@@ -73,8 +71,6 @@ const BookingConfirmationCard = props => {
           startDate={startDate}
           weekEndDate={endOfFirstWeek}
           exceptions={exceptions}
-          blockedDays={blockedDays}
-          blockedDates={blockedDates}
           avatarText={
             <h2 className={css.bookingWith}>
               First Week with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>

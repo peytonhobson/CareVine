@@ -1,0 +1,279 @@
+.sectionHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  composes: marketplaceSearchFilterSublabelFontStyles from global;
+  color: var(--matterColorAnti);
+
+  margin-top: 18px;
+  margin-bottom: 18px;
+  padding: 3px 0 3px 0;
+}
+
+.fieldDateInput {
+  flex-grow: 1;
+  margin-top: 2rem;
+
+  & :global(.SingleDatePickerInput) {
+    width: 50%;
+    margin: 0;
+  }
+
+  & :global(.SingleDatePicker_picker__directionLeft) {
+    width: 100vw;
+
+    @media screen(md) {
+      width: 50%;
+    }
+  }
+}
+
+.exceptionsLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noExceptions {
+  composes: h4 from global;
+  display: flex;
+  align-items: center;
+  margin: 0 0 24px 0;
+}
+
+.exceptions {
+  display: flex;
+  flex-direction: column;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-top: 0;
+  margin-bottom: 11px;
+
+  & > .exception {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
+
+.exceptionHeader {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.exceptionAvailability {
+  padding-right: 12px;
+  margin: 12px auto 0px 24px;
+  display: flex;
+  flex-direction: row;
+  margin-right: auto;
+}
+
+.exceptionAvailabilityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  margin-right: 12px;
+  background-color: var(--failColor);
+}
+
+.isAvailable {
+  background-color: var(--successColor);
+}
+
+.isChanged {
+  background-color: var(--marketplaceColor);
+}
+
+.exceptionAvailabilityStatus {
+  composes: h4 from global;
+  color: var(--matterColor);
+  font-weight: var(--fontWeightSemiBold);
+  margin: 0;
+  padding: 0;
+}
+
+.timeRange {
+  composes: h5 from global;
+  margin: -2px 12px 13px 32px;
+  color: var(--matterColorAnti);
+}
+
+.removeIcon {
+  width: 10px;
+  height: 10px;
+  stroke: var(--matterColorAnti);
+  fill: var(--matterColorAnti);
+}
+
+.removeExceptionButton {
+  padding: 0 24px 0 24px;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 35%;
+
+  &:hover .removeIcon {
+    stroke: var(--matterColorDark);
+    fill: var(--matterColorDark);
+  }
+}
+
+.addExceptionButton {
+  padding: 0.5rem 1rem;
+}
+
+.exceptionButtonContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.goToNextTabButton {
+  margin-top: auto;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.modalButton {
+  margin-top: 3rem;
+}
+
+/* Title of the modal */
+.modalTitle {
+  composes: marketplaceModalTitleStyles from global;
+  padding-top: 4rem;
+
+  @media screen(md) {
+    padding-top: 0;
+  }
+}
+
+/* Paragraph for the Modal */
+.modalMessage {
+  composes: marketplaceModalParagraphStyles from global;
+}
+
+.error {
+  color: var(--failColor);
+}
+
+.selectAddTimes {
+  margin-top: 4rem;
+}
+
+.addedDailyPlan {
+  border: none !important;
+  padding-left: 0;
+  margin-top: 1rem;
+
+  & > div:first-of-type {
+    width: auto;
+    white-space: nowrap;
+    padding-right: 2rem;
+    margin-right: 1rem;
+    font-weight: var(--fontWeightSemiBold);
+    border-right: solid 1px var(--matterColorNegative);
+  }
+}
+
+.removeButton {
+  border: 1px solid var(--failColor);
+  background-color: var(--failColor);
+  padding: 0;
+
+  &:hover {
+    background: rgb(150, 0, 0);
+    border: 1px solid rgb(150, 0, 0);
+  }
+
+  &:focus {
+    background-color: rgb(150, 0, 0);
+    border: 1px solid rgb(150, 0, 0);
+  }
+
+  &:disabled {
+    background-color: var(--matterColorNegative);
+    border: none;
+  }
+
+  & .ready:disabled,
+  .inProgress:disabled {
+    background-color: var(--failColor);
+  }
+}
+
+.datePicker {
+  margin-top: 2rem;
+
+  & :global(.react-calendar__tile) > abbr > span {
+    &:hover {
+      background-color: var(--failColor) !important;
+      color: var(--matterColorLight) !important;
+    }
+  }
+}
+
+.highlightedRemoveDay {
+  background-color: var(--failColor) !important;
+  color: var(--matterColorLight) !important;
+}
+
+.daysToRemove {
+  text-decoration: underline;
+}
+
+.removeDateList {
+  list-style-type: disc;
+  margin-left: 2rem;
+}
+
+@media screen(md) {
+  .sectionHeader {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  .sectionTitle {
+    margin-top: 21px;
+    margin-bottom: 17px;
+    padding: 0;
+  }
+
+  .exceptions {
+    margin-bottom: 8px;
+  }
+
+  .exceptionAvailability {
+    margin: 8px auto 0px 24px;
+  }
+
+  .exceptionAvailabilityDot {
+    margin-top: 12px;
+  }
+
+  .exceptionAvailabilityStatus {
+    margin: 0px;
+    padding: 5px 0 3px 0;
+  }
+
+  .timeRange {
+    padding: 6px 0 2px 0;
+    margin: -8px 44px 15px 44px;
+  }
+
+  .removeIcon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .removeExceptionButton {
+    padding: 6px 24px 0 24px;
+  }
+}

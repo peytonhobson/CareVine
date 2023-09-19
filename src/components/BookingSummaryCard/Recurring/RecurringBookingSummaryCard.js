@@ -1,12 +1,20 @@
 import React, { useState, useMemo } from 'react';
 
-import { InlineTextButton, PrimaryButton, Modal, WeeklyBillingDetails } from '../../../components';
+import {
+  InlineTextButton,
+  PrimaryButton,
+  Button,
+  Modal,
+  WeeklyBillingDetails,
+  BookingException,
+} from '../../../components';
 import { convertTimeFrom12to24, calculateProcessingFee } from '../../../util/data';
 import moment from 'moment';
 import { WEEKDAY_MAP, WEEKDAYS } from '../../../util/constants';
 import RecurringBookingItem from './RecurringBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
+import { sortExceptionsByDate } from '../../../util/bookings';
 
 import css from '../BookingSummaryCard.module.css';
 import { filterWeeklyBookingDays } from '../../../util/bookings';
@@ -63,26 +71,40 @@ const RecurringBookingSummaryCard = props => {
       removedDays: [],
       changedDays: [],
     },
-    blockedDays,
-    blockedDates,
     bookingRate,
     hideWeeklyBillingDetails,
     avatarText,
+    showWeekly,
+    showExceptions,
+    hideFullSchedule,
   } = props;
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
   const [isWeeklyBillingDetailsOpen, setIsWeeklyBillingDetailsOpen] = useState(false);
+  const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
+
+  const usedExceptions = showWeekly
+    ? {
+        addedDays: [],
+        removedDays: [],
+        changedDays: [],
+      }
+    : exceptions;
+
+  const allExceptions = useMemo(() => {
+    return Object.values(exceptions)
+      .flat()
+      .sort(sortExceptionsByDate);
+  }, [exceptions]);
 
   const filteredWeekdays = useMemo(() => {
     return filterWeeklyBookingDays({
       weekdays,
-      startDate,
+      startDate: showWeekly ? moment(startDate).startOf('week') : startDate,
       endDate: bookingEndDate,
-      exceptions,
-      blockedDays,
-      blockedDates,
+      exceptions: usedExceptions,
     });
-  }, [weekdays, startDate, bookingEndDate, exceptions, blockedDays, blockedDates]);
+  }, [weekdays, startDate, bookingEndDate, usedExceptions]);
 
   const totalHours = calculateTotalHours(filteredWeekdays);
 
@@ -92,6 +114,8 @@ const RecurringBookingSummaryCard = props => {
   const total = hideFees
     ? subTotal
     : calculateTotalCost(subTotal, bookingFee, processingFee, refundAmount);
+
+  const visibleEndDate = showWeekly ? bookingEndDate : weekEndDate;
 
   const cardHeading =
     Object.keys(weekdays).length > 0 ? (
@@ -107,9 +131,34 @@ const RecurringBookingSummaryCard = props => {
               Weekly Billing Details
             </PrimaryButton>
           )}
+          {showWeekly && !hideFullSchedule ? (
+            <PrimaryButton
+              className="min-h-0 py-2 mb-4"
+              type="button"
+              onClick={() => setIsWeeklyBillingDetailsOpen(true)}
+            >
+              Full Schedule
+            </PrimaryButton>
+          ) : null}
+          {showExceptions ? (
+            <Button
+              className="min-h-0 py-2 mb-4"
+              type="button"
+              onClick={() => setIsExceptionsModalOpen(true)}
+            >
+              Exceptions
+            </Button>
+          ) : null}
         </span>
+        {showExceptions ? (
+          <p className="text-error text-xs mt-0 mb-4">
+            This schedule contains exceptions. Please review the full schedule and exceptions before
+            accepting.
+          </p>
+        ) : null}
         <p className={css.startEndDates}>
-          {moment(startDate).format('ddd, MMM DD')} - {moment(weekEndDate).format('ddd, MMM DD')}
+          {moment(startDate).format('ddd, MMM DD')} -{' '}
+          {visibleEndDate ? moment(visibleEndDate).format('ddd, MMM DD') : 'No End Date'}
         </p>
       </>
     ) : null;
@@ -126,6 +175,18 @@ const RecurringBookingSummaryCard = props => {
         {Object.keys(filteredWeekdays)?.map((weekdayKey, index) => {
           const weekday = filteredWeekdays[weekdayKey];
 
+          const isException = allExceptions.find(e => {
+            const momentDate = moment(e.date);
+
+            return (
+              moment(startDate).isBefore(momentDate) &&
+              moment(startDate)
+                .endOf('week')
+                .isAfter(momentDate) &&
+              momentDate.weekday() === WEEKDAYS.indexOf(weekdayKey)
+            );
+          });
+
           return (
             <RecurringBookingItem
               weekday={weekday}
@@ -133,6 +194,8 @@ const RecurringBookingSummaryCard = props => {
               bookingRate={bookingRate}
               startDate={startDate}
               key={weekdayKey}
+              showWeekly={showWeekly}
+              isException={isException}
             />
           );
         })}
@@ -206,14 +269,13 @@ const RecurringBookingSummaryCard = props => {
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
         >
-          <p className={css.modalTitle}>Weekly Billing Breakdown</p>
+          <p className={css.modalTitle}>Weekly {showWeekly ? 'Payment' : 'Billing'} Breakdown</p>
           <p className={css.modalMessage}>
-            Click any week in your booking to view the billing details for that week.
+            Click any week in your booking to view the {showWeekly ? 'payment' : 'billing'} details
+            for that week.
           </p>
           <div className={css.weeklyBillingDetails}>
             <WeeklyBillingDetails
-              blockedDates={blockedDates}
-              blockedDays={blockedDays}
               bookingSchedule={weekdays}
               exceptions={exceptions}
               startDate={startDate}
@@ -223,7 +285,32 @@ const RecurringBookingSummaryCard = props => {
               listing={listing}
               onManageDisableScrolling={onManageDisableScrolling}
               selectedPaymentMethodType={selectedPaymentMethod.type}
+              hideFees={hideFees}
+              isPayment={showWeekly}
             />
+          </div>
+        </Modal>
+      ) : null}
+      {isExceptionsModalOpen ? (
+        <Modal
+          id="ExceptionsModal"
+          isOpen={isExceptionsModalOpen}
+          onClose={() => setIsExceptionsModalOpen(false)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+        >
+          <p className={css.modalTitle}>Booking Exceptions</p>
+          <p className={css.modalMessage}>
+            Listed below are days that are different from the regular booking schedule. Please
+            review these exceptions and make sure you're available during those days and times
+            before accepting the booking.
+          </p>
+          <div className={css.exceptions}>
+            {allExceptions.map(exception => {
+              return (
+                <BookingException {...exception} key={exception.date} className={css.exception} />
+              );
+            })}
           </div>
         </Modal>
       ) : null}
