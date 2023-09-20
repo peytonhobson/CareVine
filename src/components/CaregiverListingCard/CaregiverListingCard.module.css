@@ -264,7 +264,7 @@
 
 .badge {
   border: solid 2px var(--marketplaceColor);
-  border-radius: 5px;
+  border-radius: var(--borderRadiusButton);
   margin-right: 1rem;
   margin-bottom: 0.5rem;
   padding-inline: 0.25rem;
