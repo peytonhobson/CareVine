@@ -162,7 +162,10 @@ export const initiateOrder = (orderParams, metadata, listing, draftId) => async 
   const currentUserDisplayName = getState().user.currentUser.attributes.profile.displayName;
 
   const bodyParams = {
-    processAlias: config.bookingProcessAlias,
+    processAlias:
+      metadata.type === 'recurring'
+        ? config.recurringBookingProcessAlias
+        : config.singleBookingProcessAlias,
     transition: TRANSITION_REQUEST_BOOKING,
   };
   const queryParams = {

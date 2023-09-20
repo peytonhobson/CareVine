@@ -444,18 +444,29 @@ export const cancelBooking = booking => async (dispatch, getState, sdk) => {
       },
     });
 
-    // Update listing metadata to remove cancelled booking dates
+    // Update listing metadata to remove cancelled booking dates/days
     if (bookingState !== 'requested') {
-      try {
-        const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
-        const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
-        const newBookedDates = bookedDates.filter(
-          date => !bookingDates.includes(date) || new Date(date) < new Date()
-        );
+      if (booking.attributes.metadata.type === 'oneTime') {
+        try {
+          const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
+          const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
+          const newBookedDates = bookedDates.filter(
+            date => !bookingDates.includes(date) || new Date(date) < new Date()
+          );
 
-        await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
-      } catch (e) {
-        log.error(e, 'update-caregiver-booking-dates-failed', {});
+          await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
+        } catch (e) {
+          log.error(e, 'update-caregiver-booking-dates-failed', {});
+        }
+      } else {
+        try {
+          const bookedDays = booking.listing.attributes.metadata.bookedDays ?? [];
+          const newBookedDays = bookedDays.filter(day => day.txId !== bookingId);
+
+          await updateListingMetadata({ listingId, metadata: { bookedDays: newBookedDays } });
+        } catch (e) {
+          log.error(e, 'update-caregiver-booking-dates-failed', {});
+        }
       }
     }
 
