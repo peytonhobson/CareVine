@@ -231,17 +231,22 @@ const findStartTimeFromLineItems = lineItems => {
 // TODO: Double check this function
 const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
   // Find start and end of next week
-  const lineItemsStart = moment(findStartTimeFromLineItems(lineItems));
+  const nextWeekLineItemStart = moment(findStartTimeFromLineItems(lineItems)).add(1, 'week');
   const nextWeekStart = nextWeekLineItemStart.startOf('week').toDate();
   const nextWeekEnd = nextWeekLineItemStart.endOf('week').toDate();
+
+  console.log('newWeekLineItemStart', nextWeekLineItemStart);
+  console.log('nextWeekStart', nextWeekStart);
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.keys(exceptions)
     .flat()
     .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
 
+  console.log('insideExceptions', insideExceptions);
+
   // Create new booking schedule with exceptions
-  const newBookingSchedule = bookingSchedule.reduce((acc, day) => {
+  const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
     const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
     if (removeDay) return acc;
 
@@ -265,9 +270,13 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
     return [...acc, daySchedule];
   }, []);
 
+  console.log('newBookingSchedule', newBookingSchedule);
+
   const firstDay = newBookingSchedule[0];
   const firstTime = newBookingSchedule[0].startTime;
   const startTime = addTimeToStartOfDay(nextWeekStart.weekday(firstDay), firstTime);
+
+  console.log('startTime', startTime);
 
   return startTime;
 };
@@ -276,10 +285,16 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
 const updateNextWeekStart = async transaction => {
   const { lineItems, bookingSchedule, exceptions } = transaction.attributes.metadata;
 
+  console.log('lineItems', lineItems);
+  console.log('bookingSchedule', bookingSchedule);
+  console.log('exceptions', exceptions);
+
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
   const bookingEnd = moment(nextWeekStartTime)
     .add(1, 'hours')
     .toDate();
+
+  console.log('nextWeekStartTime', nextWeekStartTime);
 
   try {
     await integrationSdk.transactions.transition({

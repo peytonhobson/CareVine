@@ -104,9 +104,12 @@ const findNewStartDate = (startDate, weekdays) => {
   return findNewStartDate(newStartDate, weekdays);
 };
 
-const isSelectedWeekday = (weekdays, date) => {
+const isSelectedWeekday = (weekdays, date, addedDays) => {
   const day = date.getDay();
-  return weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
+  return (
+    weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]) ||
+    addedDays.some(a => moment(date).isSame(a.date))
+  );
 };
 
 const EditBookingFormComponent = props => (
@@ -208,14 +211,17 @@ const EditBookingFormComponent = props => (
 
           const weekdays = mapWeekdays(values);
 
-          if (!isSelectedWeekday(weekdays, values.startDate.date)) {
+          if (!isSelectedWeekday(weekdays, values.startDate.date, values.exceptions?.addedDays)) {
             setGoToPaymentError(
               "Your selected start date doesn't fall on one of your selected weekdays. Please select a new start date."
             );
             return false;
           }
 
-          if (values.endDate && !isSelectedWeekday(weekdays, values.endDate.date)) {
+          if (
+            values.endDate &&
+            !isSelectedWeekday(weekdays, values.endDate.date, values.exceptions?.addedDays)
+          ) {
             setGoToPaymentError(
               "Your selected end date doesn't fall on one of your selected weekdays. Please select a new end date."
             );

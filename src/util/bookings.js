@@ -55,7 +55,7 @@ export const filterWeeklyBookingDays = ({ weekdays, startDate, endDate, exceptio
 
   const reducedWeekdays = weekdays.reduce(
     (acc, weekday) => reduceWeekdays(acc, weekday, insideExceptions, startDate, endDate, weekdays),
-    {}
+    []
   );
 
   const weekdaysWithAddedDays = insideExceptions.addedDays.reduce((acc, addedDay) => {
@@ -95,7 +95,7 @@ export const checkHasBlockedDays = (
   exceptions,
   bookedDays
 ) => {
-  if (!days || !bookedDays || !startDate) return false;
+  if (!bookingSchedule || !bookedDays || !startDate) return false;
 
   const overlappingDays = bookedDays.filter(
     d =>
@@ -127,7 +127,7 @@ export const mapWeekdays = values =>
     if (values[val]) {
       return [
         ...acc,
-        { dayOfWeek: val, startTime: values[val].startTime, endTime: values[val].endTime },
+        { dayOfWeek: val, startTime: values[val][0].startTime, endTime: values[val][0].endTime },
       ];
     }
 
@@ -137,8 +137,8 @@ export const mapWeekdays = values =>
 export const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
   // Find start and end of week
   const start = moment(startDate);
-  const weekStart = start.startOf('week').toDate();
-  const weekEnd = start.endOf('week').toDate();
+  const weekStart = start.startOf('week');
+  const weekEnd = start.endOf('week');
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.keys(exceptions)
@@ -146,7 +146,7 @@ export const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
     .filter(e => moment(e.date).isBetween(weekStart, weekEnd, null, '[]'));
 
   // Create new booking schedule with exceptions
-  const newBookingSchedule = bookingSchedule.reduce((acc, day) => {
+  const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
     const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
     if (removeDay) return acc;
 

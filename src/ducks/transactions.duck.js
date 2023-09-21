@@ -362,7 +362,7 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
     dispatch(fetchTransaction(txId));
 
     const {
-      bookingSchedule = {},
+      bookingSchedule = [],
       bookedDates = [],
       lineItems = [],
       startDate,

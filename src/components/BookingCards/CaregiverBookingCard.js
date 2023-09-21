@@ -83,6 +83,7 @@ const CaregiverBookingCard = props => {
     onResetInitialState,
     onFetchCurrentUserListing,
     currentUser,
+    onResetTransactionsInitialState,
   } = props;
 
   const { customer, listing } = booking;
@@ -97,7 +98,7 @@ const CaregiverBookingCard = props => {
     paymentMethodType,
     senderListingTitle,
     bookingNumber,
-    bookingSchedule,
+    bookingSchedule = [],
     startDate,
     endDate,
     type: scheduleType,
@@ -125,6 +126,7 @@ const CaregiverBookingCard = props => {
   const handleModalClose = modalCloseFunc => {
     modalCloseFunc(false);
     onResetInitialState();
+    onResetTransactionsInitialState();
     onFetchBookings();
     onFetchCurrentUserListing();
   };

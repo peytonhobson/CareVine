@@ -120,6 +120,7 @@ export class CheckoutPageComponent extends Component {
     const bookingEnd = moment(bookingStart)
       .add(1, 'hours')
       .toDate();
+    console.log(bookingStart);
     const orderParams = {
       listingId,
       seats: 1,
@@ -205,7 +206,7 @@ export class CheckoutPageComponent extends Component {
       scheduleType,
       startDate,
       endDate,
-      bookingSchedule = {},
+      bookingSchedule = [],
       dateTimes,
       exceptions = {
         addedDays: [],

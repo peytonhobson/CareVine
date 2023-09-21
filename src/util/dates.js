@@ -911,7 +911,8 @@ export const filterAvailableBookingStartDates = (endDate, bookedDays, bookedDate
 
   const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
 
-  return (endDate && date > endDate) || isBookedDay || isBookedDate || realDate <= TODAY;
+  // TODO: Put back to realDate <= TODAY
+  return (endDate && date > endDate) || isBookedDay || isBookedDate;
 };
 
 export const filterAvailableBookingEndDates = (startDate, bookedDays, bookedDates) => date => {

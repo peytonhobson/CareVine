@@ -1,6 +1,4 @@
-import { useMediaQuery } from '@material-ui/core';
-import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import {
   Avatar,
@@ -26,6 +24,8 @@ import {
   checkHasBlockedDates,
   checkHasBlockedDays,
 } from '../../../util/bookings';
+import { useMediaQuery } from '@material-ui/core';
+import moment from 'moment';
 
 import css from './NotificationTemplates.module.css';
 
@@ -72,7 +72,7 @@ const NotificationNewBookingRequest = props => {
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
-  const { bookedDates, bookedDays } = listing?.attributes?.metadata;
+  const { bookedDates, bookedDays } = listing?.attributes?.metadata || {};
 
   const senderName = userDisplayNameAsString(customer);
 
@@ -93,6 +93,8 @@ const NotificationNewBookingRequest = props => {
     endTime: l.endTime,
   }));
   const bookingDates = lineItems?.map(l => new Date(l.date));
+
+  console.log(bookingSchedule);
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isNotAcceptedOrDeclined =

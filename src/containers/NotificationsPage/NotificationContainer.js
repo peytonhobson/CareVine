@@ -24,6 +24,7 @@ import {
   transitionTransaction,
   fetchTransaction,
   acceptBooking,
+  declineBooking,
 } from '../../ducks/transactions.duck';
 
 import css from './NotificationsPage.module.css';

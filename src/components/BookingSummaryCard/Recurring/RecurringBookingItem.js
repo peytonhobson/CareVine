@@ -18,13 +18,13 @@ const calculateCost = (bookingStart, bookingEnd, price) =>
   parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * Number(price)).toFixed(2);
 
 const RecurringBookingItem = props => {
-  const { bookingRate, weekday, weekdayKey, startDate, showWeekly, isException } = props;
+  const { bookingRate, weekday, startDate, showWeekly, isException } = props;
 
-  const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
+  const { startTime, endTime, dayOfWeek } = weekday;
+
+  const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[dayOfWeek]);
   const dateFormat = showWeekly ? 'dddd' : 'ddd, MMM Do';
   const formattedBookingDate = bookingDate.format(dateFormat);
-
-  const { startTime, endTime } = weekday[0];
 
   return (
     <div className={classNames(css.bookingTime, isException && 'text-secondary')}>

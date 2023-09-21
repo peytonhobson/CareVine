@@ -115,6 +115,7 @@ const SectionRecurring = props => {
             disabled={weekdays.length === 0}
             renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
             withPortal={isMobile}
+            enableOutsideDays
           />
           <div className={css.endDateContainer}>
             <FieldDateInput

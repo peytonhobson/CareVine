@@ -104,7 +104,7 @@ const formatDay = ({
 export const BookingCalendar = props => {
   const {
     bookedDates = [],
-    bookingSchedule = {},
+    bookingSchedule = [],
     startDate,
     endDate,
     noDisabled,

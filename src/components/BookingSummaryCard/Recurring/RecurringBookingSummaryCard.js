@@ -165,9 +165,7 @@ const RecurringBookingSummaryCard = props => {
       avatarText={avatarText}
     >
       <div className={css.bookingTimes}>
-        {Object.keys(filteredWeekdays)?.map((weekdayKey, index) => {
-          const weekday = filteredWeekdays[weekdayKey];
-
+        {filteredWeekdays?.map(weekday => {
           const isException = allExceptions.find(e => {
             const momentDate = moment(e.date);
 
@@ -176,17 +174,16 @@ const RecurringBookingSummaryCard = props => {
               moment(startDate)
                 .endOf('week')
                 .isAfter(momentDate) &&
-              momentDate.weekday() === WEEKDAYS.indexOf(weekdayKey)
+              momentDate.weekday() === WEEKDAYS.indexOf(weekday.dayOfWeek)
             );
           });
 
           return (
             <RecurringBookingItem
               weekday={weekday}
-              weekdayKey={weekdayKey}
               bookingRate={bookingRate}
               startDate={startDate}
-              key={weekdayKey}
+              key={weekday.dayOfWeek}
               showWeekly={showWeekly}
               isException={isException}
             />

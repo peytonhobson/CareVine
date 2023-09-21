@@ -33,7 +33,7 @@ const DraftBookingCard = props => {
     scheduleType,
     startDate,
     endDate,
-    bookingSchedule = {},
+    bookingSchedule = [],
     dateTimes,
     providerDefaultAvatar,
     providerProfileImage,

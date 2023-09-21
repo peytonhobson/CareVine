@@ -132,12 +132,12 @@ export const constructBookingMetadataRecurring = (
   }, []);
 
   const lineItems = filteredWeekdays.map(day => {
-    const { weekday, startTime, endTime } = day;
+    const { dayOfWeek, startTime, endTime } = day;
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startDate)
-      .weekday(WEEKDAY_MAP[weekday])
+      .weekday(WEEKDAY_MAP[dayOfWeek])
       .toISOString();
 
     return {

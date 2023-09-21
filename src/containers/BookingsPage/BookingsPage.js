@@ -25,7 +25,7 @@ import {
   setInitialState,
   removeDrafts,
 } from './BookingsPage.duck';
-import { acceptBooking, declineBooking } from '../../ducks/transactions.duck';
+import { acceptBooking, declineBooking, setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
 
@@ -71,6 +71,7 @@ const BookingsPage = props => {
     onFetchCurrentUserListing,
     history,
     onRemoveDrafts,
+    onResetTransactionsInitialState,
   } = props;
 
   const currentUser = ensureCurrentUser(user);
@@ -140,6 +141,7 @@ const BookingsPage = props => {
     onFetchBookings,
     onResetInitialState,
     onFetchCurrentUserListing,
+    onResetTransactionsInitialState,
   };
 
   const draftTabMaybe =
@@ -302,6 +304,7 @@ const mapDispatchToProps = {
   onDeclineBooking: declineBooking,
   onFetchBookings: fetchBookings,
   onResetInitialState: setInitialState,
+  onResetTransactionsInitialState: setInitialValues,
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
   onRemoveDrafts: removeDrafts,
 };
