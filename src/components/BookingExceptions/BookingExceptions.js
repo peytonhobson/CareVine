@@ -173,6 +173,7 @@ const BookingExceptions = props => {
       startTime: values.addDateTime?.[0]?.startTime,
       endTime: values.addDateTime?.[0]?.endTime,
       type: 'addDate',
+      day: WEEKDAYS[moment(values.addDate?.date).weekday()],
     };
 
     const newExceptions = {
@@ -193,6 +194,7 @@ const BookingExceptions = props => {
       startTime: values.changeDateTime?.[0]?.startTime,
       endTime: values.changeDateTime?.[0]?.endTime,
       type: 'changeDate',
+      day: WEEKDAYS[moment(values.changeDate?.date).weekday()],
     };
 
     const newExceptions = {
@@ -211,6 +213,7 @@ const BookingExceptions = props => {
     const newRemoveDateExceptions = values.removeDates.map(date => ({
       date: date.toISOString(),
       type: 'removeDate',
+      day: WEEKDAYS[moment(date).weekday()],
     }));
 
     const newExceptions = {

@@ -32,8 +32,8 @@ const calculateTotalHours = weekdays =>
   Object.keys(weekdays)?.reduce(
     (acc, curr) =>
       acc +
-      (weekdays[curr]?.[0].startTime && weekdays[curr]?.[0].endTime
-        ? calculateTimeBetween(weekdays[curr]?.[0].startTime, weekdays[curr]?.[0].endTime)
+      (weekdays[curr]?.startTime && weekdays[curr]?.endTime
+        ? calculateTimeBetween(weekdays[curr]?.startTime, weekdays[curr]?.endTime)
         : 0),
     0
   );

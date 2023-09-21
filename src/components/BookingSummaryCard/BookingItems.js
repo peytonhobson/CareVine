@@ -74,7 +74,7 @@ const RecurringBookingItem = props => {
   const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
   const formattedBookingDate = bookingDate.format('ddd, MMM Do');
 
-  const { startTime, endTime } = weekday[0];
+  const { startTime, endTime } = weekday;
 
   return (
     <div className={css.bookingTime}>

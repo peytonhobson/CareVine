@@ -251,7 +251,10 @@ module.exports = queryEvents = () => {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
       const metadata = transaction.attributes.metadata;
-      const hasNextBooking = metadata.bookingSchedule && !metadata.cancelAtPeriodEnd;
+      const hasNextBooking =
+        metadata.type === 'recurring' &&
+        !metadata.cancelAtPeriodEnd &&
+        (!metadata.endDate || moment(metadata.endDate).isAfter(moment()));
 
       // if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
       //   updateBookingEnd(transaction);
@@ -277,10 +280,10 @@ module.exports = queryEvents = () => {
       //   updateBookingLedger(transaction);
       // }
 
-      // if (lastTransition === 'transition/complete' && hasNextBooking) {
-      //   updateNextWeekStart(transaction);
-      //   updateNextWeekMetadata(transaction);
-      // }
+      if (lastTransition === 'transition/complete' && hasNextBooking) {
+        updateNextWeekStart(transaction);
+        // updateNextWeekMetadata(transaction);
+      }
     }
 
     saveLastEventSequenceId(event.attributes.sequenceId);

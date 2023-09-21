@@ -36,7 +36,7 @@ import css from './CheckoutPage.module.css';
 const findWeekdays = values =>
   WEEKDAYS.reduce((acc, key) => {
     if (values[key]) {
-      return { ...acc, [key]: values[key] };
+      return { ...acc, [key]: values[key][0] };
     }
     return acc;
   }, {});
@@ -123,7 +123,7 @@ export class CheckoutPageComponent extends Component {
     const bookingStart =
       scheduleType === 'oneTime'
         ? findStartTimeFromBookingTimes(bookingTimes)
-        : findStartTimeRecurring(weekdays, startDate);
+        : findStartTimeRecurring(weekdays, startDate, endDate, exceptions);
     const bookingEnd = moment(bookingStart)
       .add(1, 'hours')
       .toDate();
@@ -277,6 +277,16 @@ export class CheckoutPageComponent extends Component {
 
     const showPaymentForm = !!(currentUser && currentListing);
 
+    // Transfer booking schedule back to format that works with daily plan
+    const initialBookingSchedule = Object.keys(bookingSchedule)?.reduce((acc, key) => {
+      const value = bookingSchedule[key];
+
+      return {
+        ...acc,
+        [key]: [value],
+      };
+    }, {});
+
     return (
       <Page {...pageProps}>
         {topbar}
@@ -308,7 +318,7 @@ export class CheckoutPageComponent extends Component {
                 scheduleType,
                 startDate: startDate ? { date: new Date(startDate) } : null,
                 endDate: endDate ? { date: new Date(endDate) } : null,
-                ...bookingSchedule,
+                bookingSchedule: initialBookingSchedule,
                 dateTimes,
                 exceptions,
                 bookingDates: bookingDates.map(date => new Date(date)),

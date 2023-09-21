@@ -101,7 +101,7 @@ const SectionRequest = props => {
                     const day = FULL_WEEKDAY_MAP[key];
                     return (
                       <li key={key} className={css.tinyNoMargin}>
-                        {day} ({weekdays[key][0].startTime} - {weekdays[key][0].endTime})
+                        {day} ({weekdays[key].startTime} - {weekdays[key].endTime})
                       </li>
                     );
                   })}

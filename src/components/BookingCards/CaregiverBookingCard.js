@@ -243,7 +243,7 @@ const CaregiverBookingCard = props => {
                     bookingTimesPage * timesToDisplay + timesToDisplay
                   )
                   .map(weekday => {
-                    const { startTime, endTime } = bookingSchedule[weekday][0];
+                    const { startTime, endTime } = bookingSchedule[weekday];
                     return (
                       <div className={css.bookingTime} key={uuidv4()}>
                         <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>

@@ -5,6 +5,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
 const { integrationSdk } = require('./api-util/sdk');
+const { WEEKDAYS } = require('../src/util/constants');
 
 const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -227,16 +228,57 @@ const findStartTimeFromLineItems = lineItems => {
   return startTime;
 };
 
+// TODO: Double check this function
+const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
+  // Find start and end of next week
+  const lineItemsStart = moment(findStartTimeFromLineItems(lineItems));
+  const nextWeekStart = nextWeekLineItemStart.startOf('week').toDate();
+  const nextWeekEnd = nextWeekLineItemStart.endOf('week').toDate();
+
+  // Filter exceptions for those within next week
+  const insideExceptions = Object.keys(exceptions)
+    .flat()
+    .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
+
+  // Create new booking schedule with exceptions
+  const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
+    const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
+    if (removeDay) return acc;
+
+    const daySchedule = bookingSchedule[day];
+    if (!daySchedule) return acc;
+
+    const addOrChangeDay = insideExceptions.find(
+      e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
+    );
+    if (addOrChangeDay) {
+      return {
+        ...acc,
+        [day]: {
+          startTime: addOrChangeDay.startTime,
+          endTime: addOrChangeDay.endTime,
+        },
+      };
+    }
+
+    return {
+      ...acc,
+      [day]: daySchedule,
+    };
+  }, {});
+
+  const firstDay = Object.keys(newBookingSchedule)[0];
+  const firstTime = newBookingSchedule[firstDay].startTime;
+  const startTime = addTimeToStartOfDay(nextWeekStart.weekday(firstDay), firstTime);
+
+  return startTime;
+};
+
+// TODO: Double check this function
 const updateNextWeekStart = async transaction => {
-  const { lineItems, bookingSchedule } = transaction.attributes.metadata;
+  const { lineItems, bookingSchedule, exceptions } = transaction.attributes.metadata;
 
-  const thisWeekStart = findStartTimeFromLineItems(lineItems);
-  const nextWeekReference = moment(thisWeekStart).add(1, 'weeks');
-
-  const nextWeekStartDay = moment(nextWeekReference)
-    .weekday(weekdayMap[bookingSchedule[0].dayOfWeek])
-    .toDate();
-  const nextWeekStartTime = addTimeToStartOfDay(nextWeekStartDay, bookingSchedule[0].startTime);
+  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
   const bookingEnd = moment(nextWeekStartTime)
     .add(1, 'hours')
     .toDate();
@@ -400,7 +442,7 @@ const constructBookingMetadataRecurring = (
     const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
 
     return bookingDate >= startDate && bookingDate <= endDate
-      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
+      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey] }]
       : acc;
   }, []);
 

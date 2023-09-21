@@ -106,7 +106,7 @@ const findNewStartDate = (startDate, weekdays) => {
 const findWeekdays = values =>
   WEEKDAYS.reduce((acc, key) => {
     if (values[key]) {
-      return { ...acc, [key]: values[key] };
+      return { ...acc, [key]: values[key][0] };
     }
     return acc;
   }, {});

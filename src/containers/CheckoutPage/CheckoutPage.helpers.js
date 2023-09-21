@@ -3,7 +3,7 @@ import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
 import { addTimeToStartOfDay } from '../../util/dates';
 import { WEEKDAY_MAP } from '../../util/constants';
-import { filterWeeklyBookingDays } from '../../util/bookings';
+import { filterWeeklyBookingDays, sortWeekdays } from '../../util/bookings';
 
 const BOOKING_FEE_PERCENTAGE = 0.05;
 
@@ -45,16 +45,17 @@ export const findStartTimeFromBookingTimes = bookingTimes => {
   return startTime;
 };
 
-export const findStartTimeRecurring = (weekdays, startDate) => {
-  const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-    const bookingDate = moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]);
+export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions) => {
+  const filteredWeekdays = sortWeekdays(
+    filterWeeklyBookingDays({
+      weekdays,
+      startDate,
+      endDate,
+      exceptions,
+    })
+  );
 
-    return bookingDate >= startDate
-      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey][0] }]
-      : acc;
-  }, []);
-
-  const firstDay = filteredWeekdays[0];
+  const firstDay = Object.values(filteredWeekdays)[0];
   const startTime = addTimeToStartOfDay(startDate, firstDay.startTime);
 
   return startTime;
@@ -127,7 +128,7 @@ export const constructBookingMetadataRecurring = (
   });
 
   const filteredWeekdays = Object.keys(filteredWeekdaysObj)?.reduce((acc, weekdayKey) => {
-    return [...acc, { weekday: weekdayKey, ...filteredWeekdaysObj[weekdayKey][0] }];
+    return [...acc, { weekday: weekdayKey, ...filteredWeekdaysObj[weekdayKey] }];
   }, []);
 
   const lineItems = filteredWeekdays.map(day => {
