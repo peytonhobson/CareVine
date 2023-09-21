@@ -313,6 +313,8 @@ export class EditListingPhotosFormComponent extends Component {
                       files = e.target.files;
                     }
 
+                    if (!files || files.length === 0) return;
+
                     const fileSize = files?.[0]?.size || 0;
                     if (fileSize > 1024 * 1024 * 10) {
                       this.setState({ imageTooLargeError: true });
