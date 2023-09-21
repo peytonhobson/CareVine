@@ -254,7 +254,7 @@ module.exports = queryEvents = () => {
       const hasNextBooking =
         metadata.type === 'recurring' &&
         !metadata.cancelAtPeriodEnd &&
-        (!metadata.endDate || moment(metadata.endDate).isAfter(moment()));
+        (!metadata.endDate || new Date(metadata.endDate) > new Date());
 
       // if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
       //   updateBookingEnd(transaction);

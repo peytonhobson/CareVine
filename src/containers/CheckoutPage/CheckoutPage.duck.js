@@ -208,11 +208,7 @@ export const initiateOrder = (orderParams, metadata, listing, draftId) => async 
     });
 
     handleSuccess(transactionResponse);
-  } catch (e) {
-    handleError(e);
-  }
 
-  try {
     await updateUserNotifications({
       userId: listing.author.id.uuid,
       newNotification: {
@@ -224,7 +220,7 @@ export const initiateOrder = (orderParams, metadata, listing, draftId) => async 
       },
     });
   } catch (e) {
-    log.error(e, 'failed-to-send-request-notification', {});
+    handleError(e);
   }
 
   const bookingDrafts =
