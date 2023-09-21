@@ -50,7 +50,12 @@ const NotificationContainer = props => {
     onFetchTransaction,
     acceptBookingInProgress,
     acceptBookingError,
+    acceptBookingSuccess,
     onAcceptBooking,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+    onDeclineBooking,
   } = props;
 
   let notificationTemplate = null;
@@ -105,6 +110,11 @@ const NotificationContainer = props => {
           acceptBookingInProgress={acceptBookingInProgress}
           acceptBookingError={acceptBookingError}
           onAcceptBooking={onAcceptBooking}
+          acceptBookingSuccess={acceptBookingSuccess}
+          declineBookingError={declineBookingError}
+          declineBookingInProgress={declineBookingInProgress}
+          declineBookingSuccess={declineBookingSuccess}
+          onDeclineBooking={onDeclineBooking}
         />
       );
       break;
@@ -138,6 +148,10 @@ const mapStateToProps = state => {
     fetchTransactionInProgress,
     acceptBookingInProgress,
     acceptBookingError,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
   } = state.transactions;
 
   return {
@@ -148,6 +162,10 @@ const mapStateToProps = state => {
     fetchTransactionInProgress,
     acceptBookingInProgress,
     acceptBookingError,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
   };
 };
 
@@ -155,6 +173,7 @@ const mapDispatchToProps = {
   onTransitionTransaction: transitionTransaction,
   onFetchTransaction: fetchTransaction,
   onAcceptBooking: acceptBooking,
+  onDeclineBooking: declineBooking,
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationContainer);

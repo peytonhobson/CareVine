@@ -21,9 +21,13 @@ import {
   TRANSITION_CANCEL_BOOKING_REQUEST,
 } from '../../../util/transaction';
 import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
+import {
+  checkForExceptions,
+  checkHasBlockedDates,
+  checkHasBlockedDays,
+} from '../../../util/bookings';
 
 import css from './NotificationTemplates.module.css';
-import { checkForExceptions } from '../../../util/bookings';
 
 const NotificationNewBookingRequest = props => {
   const {
@@ -39,7 +43,12 @@ const NotificationNewBookingRequest = props => {
     fetchTransactionError,
     acceptBookingInProgress,
     acceptBookingError,
+    acceptBookingSuccess,
     onAcceptBooking,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+    onDeclineBooking,
   } = props;
 
   const { txId } = notification.metadata;
@@ -63,6 +72,7 @@ const NotificationNewBookingRequest = props => {
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
+  const { bookedDates, bookedDays } = listing?.attributes?.metadata;
 
   const senderName = userDisplayNameAsString(customer);
 
@@ -94,8 +104,12 @@ const NotificationNewBookingRequest = props => {
   const isExpired = currentTransaction?.attributes.lastTransition === TRANSITION_EXPIRE_BOOKING;
   const isPaymentFailed =
     currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_PAYMENT;
-  const hasSameDayBooking = listing?.attributes.metadata.bookedDates?.some(date =>
-    lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
+  const hasSameDayBooking = useMemo(
+    () =>
+      (checkHasBlockedDates(bookingDates, bookedDates) ||
+        checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
+      !(acceptBookingSuccess || acceptBookingInProgress),
+    [bookedDates, lineItems, bookedDays, startDate, endDate, exceptions]
   );
   const isCanceledRequest =
     currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
@@ -176,7 +190,7 @@ const NotificationNewBookingRequest = props => {
               showExceptions={hasExceptions}
             />
           )}
-          {(transitionTransactionError || acceptBookingError) && (
+          {(declineBookingError || acceptBookingError) && (
             <p className={css.error}>
               Something went wrong with accepting or declining the booking request. Please try
               again.
@@ -187,18 +201,13 @@ const NotificationNewBookingRequest = props => {
             hasSameDayBooking ? (
               <div className={css.bookingDecisionContainer}>
                 <h2 className={css.bookingDeclined}>
-                  You have a booking on the same day. Please decline this booking request.
+                  You have an existing booking that has dates that conflict with this request.
+                  Please decline this booking request.
                 </h2>
                 <Button
                   className={css.viewBookingLink}
-                  onClick={() =>
-                    onTransitionTransaction({
-                      transaction: currentTransaction,
-                      transition: TRANSITION_DECLINE_BOOKING,
-                      include: ['booking', 'customer', 'listing'],
-                    })
-                  }
-                  inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+                  onClick={() => onDeclineBooking(currentTransaction)}
+                  inProgress={declineBookingInProgress}
                 >
                   Decline
                 </Button>
@@ -212,15 +221,9 @@ const NotificationNewBookingRequest = props => {
                   Accept
                 </Button>
                 <SecondaryButton
-                  onClick={() =>
-                    onTransitionTransaction({
-                      transaction: currentTransaction,
-                      transition: TRANSITION_DECLINE_BOOKING,
-                      include: ['booking', 'customer', 'listing'],
-                    })
-                  }
+                  onClick={() => onDeclineBooking(currentTransaction)}
                   className={css.declineButton}
-                  inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
+                  inProgress={declineBookingInProgress}
                 >
                   Decline
                 </SecondaryButton>

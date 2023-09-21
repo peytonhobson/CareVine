@@ -36,22 +36,13 @@
 .bookingTitle {
   display: flex;
   align-items: center;
+  max-width: 70%;
 }
 
 .title {
   margin: 0;
   font-size: 1.75rem;
   line-height: 1.9rem;
-}
-
-.changeButtonsContainer {
-  display: flex;
-  gap: 1.5rem;
-  padding-inline: 0.5rem;
-
-  @media screen(md) {
-    padding-right: 1.5rem;
-  }
 }
 
 .changeButton {
@@ -127,7 +118,7 @@
 
 .viewContainer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-end;
   width: 100%;
   flex-direction: column;
@@ -138,7 +129,7 @@
 .viewButton {
   min-height: 0;
   width: 9rem;
-  height: 3rem;
+  height: 3.25rem;
   padding: 0 0.5rem;
 }
 
@@ -339,5 +330,19 @@
 
   & .menuItemBorder {
     background-color: var(--failColor);
+  }
+}
+
+.exceptions {
+  display: flex;
+  flex-direction: column;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-block: 2rem;
+
+  & > .exception {
+    border-bottom: solid 1px var(--matterColorNegative);
   }
 }

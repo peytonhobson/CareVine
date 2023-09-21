@@ -17,16 +17,15 @@ import {
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
-import { EMPLOYER } from '../../util/constants';
+import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import {
   cancelBooking,
-  declineBooking,
   disputeBooking,
   fetchBookings,
   setInitialState,
   removeDrafts,
 } from './BookingsPage.duck';
-import { acceptBooking } from '../../ducks/transactions.duck';
+import { acceptBooking, declineBooking } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
 
@@ -69,7 +68,6 @@ const BookingsPage = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
-    currentUserListing,
     onFetchCurrentUserListing,
     history,
     onRemoveDrafts,
@@ -78,7 +76,6 @@ const BookingsPage = props => {
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
   const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
-  const bookedDates = currentUserListing?.attributes.metadata.bookedDates;
   const totalBookings = bookings?.requests.length + bookings?.bookings.length;
   const bookingDrafts = currentUser?.attributes?.profile?.privateData?.bookingDrafts || [];
 
@@ -95,6 +92,12 @@ const BookingsPage = props => {
       onRemoveDrafts();
     }
   }, [currentUser.id?.uuid]);
+
+  useEffect(() => {
+    if (userType === CAREGIVER) {
+      setSelectedTab('Requests');
+    }
+  }, [userType]);
 
   useEffect(() => {
     if (searchString?.tab) {
@@ -136,7 +139,6 @@ const BookingsPage = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
-    bookedDates,
     onFetchCurrentUserListing,
   };
 
@@ -258,13 +260,17 @@ const mapStateToProps = state => {
     disputeBookingInProgress,
     disputeBookingError,
     disputeBookingSuccess,
-    declineBookingError,
-    declineBookingInProgress,
-    declineBookingSuccess,
   } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
 
-  const { acceptBookingError, acceptBookingInProgress, acceptBookingSuccess } = state.transactions;
+  const {
+    acceptBookingError,
+    acceptBookingInProgress,
+    acceptBookingSuccess,
+    declineBookingError,
+    declineBookingInProgress,
+    declineBookingSuccess,
+  } = state.transactions;
 
   return {
     fetchBookingsInProgress,

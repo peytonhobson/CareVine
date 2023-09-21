@@ -4,7 +4,6 @@ import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_DECLINE_BOOKING,
   TRANSITION_COMPLETE,
   TRANSITION_COMPLETE_CANCELED,
   TRANSITION_CANCEL_BOOKING_REQUEST,
@@ -25,8 +24,6 @@ import {
   sendgridStandardEmail,
   updateListingMetadata,
   sendgridTemplateEmail,
-  transitionPrivileged,
-  updateUser,
   updatePendingPayouts,
 } from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
@@ -148,10 +145,6 @@ export const DISPUTE_BOOKING_REQUEST = 'app/BookingsPage/DISPUTE_BOOKING_REQUEST
 export const DISPUTE_BOOKING_SUCCESS = 'app/BookingsPage/DISPUTE_BOOKING_SUCCESS';
 export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
 
-export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST';
-export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
-export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
-
 export const REMOVE_OLD_DRAFTS = 'app/BookingsPage/REMOVE_OLD_DRAFTS';
 
 // ================ Reducer ================ //
@@ -169,9 +162,6 @@ const initialState = {
   disputeBookingInProgress: false,
   disputeBookingError: null,
   disputeBookingSuccess: false,
-  declineBookingError: null,
-  declineBookingInProgress: false,
-  declineBookingSuccess: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -210,18 +200,6 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, disputeBookingInProgress: false, disputeBookingSuccess: true };
     case DISPUTE_BOOKING_ERROR:
       return { ...state, disputeBookingInProgress: false, disputeBookingError: payload };
-
-    case DECLINE_BOOKING_REQUEST:
-      return {
-        ...state,
-        declineBookingInProgress: true,
-        declineBookingError: null,
-        declineBookingSuccess: false,
-      };
-    case DECLINE_BOOKING_SUCCESS:
-      return { ...state, declineBookingInProgress: false, declineBookingSuccess: true };
-    case DECLINE_BOOKING_ERROR:
-      return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
     case REMOVE_OLD_DRAFTS:
       return {
@@ -262,14 +240,6 @@ export const disputeBookingRequest = () => ({ type: DISPUTE_BOOKING_REQUEST });
 export const disputeBookingSuccess = () => ({ type: DISPUTE_BOOKING_SUCCESS });
 export const disputeBookingError = e => ({
   type: DISPUTE_BOOKING_ERROR,
-  error: true,
-  payload: e,
-});
-
-export const declineBookingRequest = () => ({ type: DECLINE_BOOKING_REQUEST });
-export const declineBookingSuccess = () => ({ type: DECLINE_BOOKING_SUCCESS });
-export const declineBookingError = e => ({
-  type: DECLINE_BOOKING_ERROR,
   error: true,
   payload: e,
 });
@@ -547,26 +517,6 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
     });
   } catch (e) {
     log.error(e, 'dispute-booking-emails-failed', { bookingId });
-  }
-};
-
-export const declineBooking = transaction => async (dispatch, getState, sdk) => {
-  dispatch(declineBookingRequest());
-
-  const txId = transaction.id.uuid;
-
-  try {
-    await sdk.transactions.transition({
-      id: txId,
-      transition: TRANSITION_DECLINE_BOOKING,
-      params: {},
-    });
-
-    dispatch(declineBookingSuccess());
-    return;
-  } catch (e) {
-    log.error(e, 'decline-booking-failed', { txId });
-    dispatch(declineBookingError(storableError(e)));
   }
 };
 

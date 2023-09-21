@@ -94,3 +94,36 @@ export const sortExceptionsByDate = (a, b) => {
 export const checkForExceptions = exceptions => {
   return Object.keys(exceptions).some(key => exceptions[key].length > 0);
 };
+
+export const checkHasBlockedDates = (dates, bookedDates) =>
+  dates?.some(d => bookedDates.includes(d.date));
+
+export const checkHasBlockedDays = (days, startDate, endDate, exceptions, bookedDays) => {
+  if (!days || !bookedDays || !startDate) return false;
+
+  const dayKeys = Object.keys(days);
+
+  const overlappingDays = bookedDays.filter(
+    d =>
+      moment(d.startDate).isBetween(startDate, endDate, 'day', '[]') ||
+      moment(d.endDate).isBetween(startDate, endDate, 'day', '[]') ||
+      (moment(d.startDate).isSameOrBefore(startDate, 'day') &&
+        (!d.endDate || moment(d.endDate).isSameOrAfter(endDate, 'day')))
+  );
+
+  if (overlappingDays.length === 0) return false;
+
+  const hasBlockedDay = overlappingDays.some(d => {
+    return d.days.some(day => dayKeys.includes(day));
+  });
+
+  if (hasBlockedDay) return true;
+
+  const insideExceptions = filterInsideExceptions(exceptions, startDate);
+
+  const hasBlockedException = insideExceptions.addedDays.some(exception => {
+    return overlappingDays.some(d => d.days.includes(WEEKDAYS[moment(exception.date).weekday()]));
+  });
+
+  return hasBlockedException;
+};

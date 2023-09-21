@@ -31,6 +31,10 @@ export const ACCEPT_BOOKING_REQUEST = 'app/transactions/ACCEPT_BOOKING_REQUEST';
 export const ACCEPT_BOOKING_SUCCESS = 'app/transactions/ACCEPT_BOOKING_SUCCESS';
 export const ACCEPT_BOOKING_ERROR = 'app/transactions/ACCEPT_BOOKING_ERROR';
 
+export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST';
+export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
+export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -47,6 +51,9 @@ const initialState = {
   acceptBookingInProgress: false,
   acceptBookingError: null,
   acceptBookingSuccess: null,
+  declineBookingError: null,
+  declineBookingInProgress: false,
+  declineBookingSuccess: false,
 };
 
 export default function payoutMethodsPageReducer(state = initialState, action = {}) {
@@ -128,6 +135,18 @@ export default function payoutMethodsPageReducer(state = initialState, action = 
         acceptBookingError: payload,
       };
 
+    case DECLINE_BOOKING_REQUEST:
+      return {
+        ...state,
+        declineBookingInProgress: true,
+        declineBookingError: null,
+        declineBookingSuccess: false,
+      };
+    case DECLINE_BOOKING_SUCCESS:
+      return { ...state, declineBookingInProgress: false, declineBookingSuccess: true };
+    case DECLINE_BOOKING_ERROR:
+      return { ...state, declineBookingInProgress: false, declineBookingError: payload };
+
     default:
       return state;
   }
@@ -190,6 +209,14 @@ export const acceptBookingError = e => ({
   type: ACCEPT_BOOKING_ERROR,
   payload: e,
   error: true,
+});
+
+export const declineBookingRequest = () => ({ type: DECLINE_BOOKING_REQUEST });
+export const declineBookingSuccess = () => ({ type: DECLINE_BOOKING_SUCCESS });
+export const declineBookingError = e => ({
+  type: DECLINE_BOOKING_ERROR,
+  error: true,
+  payload: e,
 });
 
 export const setCurrentTransaction = transaction => ({
@@ -362,5 +389,25 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
   } catch (e) {
     log.error(e, 'accept-booking-failed', { txId });
     dispatch(acceptBookingError(storableError(e)));
+  }
+};
+
+export const declineBooking = transaction => async (dispatch, getState, sdk) => {
+  dispatch(declineBookingRequest());
+
+  const txId = transaction.id.uuid;
+
+  try {
+    await sdk.transactions.transition({
+      id: txId,
+      transition: TRANSITION_DECLINE_BOOKING,
+      params: {},
+    });
+
+    dispatch(declineBookingSuccess());
+    return;
+  } catch (e) {
+    log.error(e, 'decline-booking-failed', { txId });
+    dispatch(declineBookingError(storableError(e)));
   }
 };

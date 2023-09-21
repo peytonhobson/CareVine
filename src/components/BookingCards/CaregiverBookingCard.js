@@ -4,13 +4,21 @@ import {
   Avatar,
   SecondaryButton,
   Modal,
-  BookingSummaryCard,
   BookingCalendar,
   CancelButton,
   Button,
   UserDisplayName,
   PrimaryButton,
+  SingleBookingSummaryCard,
+  WeeklyBillingDetails,
+  BookingException,
+  Menu,
+  MenuItem,
+  MenuContent,
+  MenuLabel,
+  InlineTextButton,
 } from '..';
+import MenuIcon from '../ManageListingCard/MenuIcon';
 import {
   TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
@@ -27,6 +35,14 @@ import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
+import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
+import {
+  checkHasBlockedDates,
+  checkHasBlockedDays,
+  sortExceptionsByDate,
+} from '../../util/bookings';
+import classNames from 'classnames';
+import moment from 'moment';
 
 import css from './BookingCards.module.css';
 
@@ -45,6 +61,7 @@ const CaregiverBookingCard = props => {
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
+  const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
 
   const {
     booking,
@@ -64,11 +81,13 @@ const CaregiverBookingCard = props => {
     onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
-    bookedDates,
     onFetchCurrentUserListing,
+    currentUser,
   } = props;
 
-  const { customer } = booking;
+  const { customer, listing } = booking;
+
+  const { bookedDays, bookedDates } = listing.attributes.metadata;
 
   const lastTransition = booking.attributes.lastTransition;
   const bookingMetadata = booking.attributes.metadata;
@@ -81,7 +100,19 @@ const CaregiverBookingCard = props => {
     bookingSchedule,
     startDate,
     endDate,
+    type: scheduleType,
+    exceptions = {
+      addedDays: [],
+      removedDays: [],
+      changedDays: [],
+    },
   } = bookingMetadata;
+  const bookingScheduleKeys = bookingSchedule ? WEEKDAYS.filter(w => bookingSchedule[w]) : [];
+  const allExceptions = useMemo(() => {
+    return Object.values(exceptions)
+      .flat()
+      .sort(sortExceptionsByDate);
+  }, [exceptions]);
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -121,14 +152,17 @@ const CaregiverBookingCard = props => {
   const isCharged = lastTransition === TRANSITION_CHARGE;
   const isActive =
     lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
-  const showCancel = isActive || isAccepted || isCharged;
+  const showMenu = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
-      bookedDates?.some(date =>
-        lineItems?.some(l => new Date(date).getTime() === new Date(l.date).getTime())
-      ) && !(acceptBookingSuccess || acceptBookingInProgress),
-    [bookedDates, lineItems]
+      (checkHasBlockedDates(bookingDates, bookedDates) ||
+        checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
+      !(acceptBookingSuccess || acceptBookingInProgress),
+    [bookedDates, lineItems, bookedDays]
   );
+
+  const previewTimeCount =
+    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : bookingTimes?.length;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -147,72 +181,105 @@ const CaregiverBookingCard = props => {
       : ''}
   `;
 
+  const TitleTag = isMobile ? 'h3' : 'h2';
+
   return (
     <div className={css.bookingCard}>
-      {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
-        <div className={css.bookingTitle}>
-          <Avatar user={customer} className={css.avatar} />
-          <div>
-            {isMobile ? (
-              <h3 style={{ margin: 0 }}>
+        <div>
+          {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
+          <div className={css.bookingTitle}>
+            <Avatar user={customer} className={css.avatar} />
+            <div>
+              <TitleTag style={{ margin: 0 }}>
                 {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
-              </h3>
-            ) : (
-              <h2 style={{ margin: 0 }}>
-                {senderListingTitle !== 'Title' ? senderListingTitle : customerDisplayName}
-              </h2>
-            )}
+              </TitleTag>
+            </div>
           </div>
         </div>
-        <div className={css.changeButtonsContainer}>
-          {isRequest && (
-            <Button
-              className={css.changeButton}
-              onClick={() => handleModalOpen(setIsRespondModalOpen)}
-            >
-              Respond
-            </Button>
-          )}
-          {disputeInReview && <h3 className={css.error}>Customer Dispute In Review</h3>}
-          {showCancel && (
-            <CancelButton
-              className={css.changeButton}
-              onClick={() => handleModalOpen(setIsCancelModalOpen)}
-            >
-              Cancel
-            </CancelButton>
-          )}
-        </div>
+        {showMenu ? (
+          <Menu className="h-auto mb-4">
+            <MenuLabel className={css.menuLabel} isOpenClassName={css.profileMenuIsOpen}>
+              <MenuIcon height={isMobile ? '1.75em' : '1.25em'} width="2.25em" />
+            </MenuLabel>
+            <MenuContent className={css.menuContent} style={{ right: isMobile }}>
+              <MenuItem key="cancel">
+                <InlineTextButton
+                  rootClassName={classNames(css.menuItem, 'text-error', css.cancelMenuItem)}
+                  onClick={() => handleModalOpen(setIsCancelModalOpen)}
+                >
+                  <span className={css.menuItemBorder} />
+                  Cancel
+                </InlineTextButton>
+              </MenuItem>
+            </MenuContent>
+          </Menu>
+        ) : null}
+        {isRequest && (
+          <Button
+            className={css.changeButton}
+            onClick={() => handleModalOpen(setIsRespondModalOpen)}
+          >
+            Respond
+          </Button>
+        )}
       </div>
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
-          <h2 className={css.datesAndTimes}>Dates & Times</h2>
+          <h2 className={css.datesAndTimes}>
+            {bookingSchedule ? 'Weekly Schedule' : 'Dates & Times'}
+          </h2>
+          {startDate ? (
+            <p class="text-primary mt-0 mb-2 text-sm">
+              {moment(startDate).format('ddd, MMM DD')} -{' '}
+              {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
+            </p>
+          ) : null}
           <div className={css.dateTimes}>
-            {bookingTimes
-              ?.slice(
-                bookingTimesPage * timesToDisplay,
-                bookingTimesPage * timesToDisplay + timesToDisplay
-              )
-              .map(({ date, startTime, endTime }) => {
-                return (
-                  <div className={css.bookingTime} key={uuidv4()}>
-                    <h3 className={css.summaryDate}>{date}</h3>
-                    <span className={css.summaryTimes}>
-                      {startTime} - {endTime}
-                    </span>
-                    <p className={css.tinyNoMargin}>
-                      ({calculateBookingDayHours(startTime, endTime)} hours)
-                    </p>
-                  </div>
-                );
-              })}
+            {scheduleType === 'recurring'
+              ? bookingScheduleKeys
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(weekday => {
+                    const { startTime, endTime } = bookingSchedule[weekday][0];
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })
+              : bookingTimes
+                  ?.slice(
+                    bookingTimesPage * timesToDisplay,
+                    bookingTimesPage * timesToDisplay + timesToDisplay
+                  )
+                  .map(({ date, startTime, endTime }) => {
+                    return (
+                      <div className={css.bookingTime} key={uuidv4()}>
+                        <h3 className={css.summaryDate}>{date}</h3>
+                        <span className={css.summaryTimes}>
+                          {startTime} - {endTime}
+                        </span>
+                        <p className={css.tinyNoMargin}>
+                          ({calculateBookingDayHours(startTime, endTime)} hours)
+                        </p>
+                      </div>
+                    );
+                  })}
           </div>
           <div className={css.tablePagination}>
-            {bookingTimes?.length > timesToDisplay ? (
+            {previewTimeCount > timesToDisplay ? (
               <TablePagination
                 component="div"
-                count={bookingTimes?.length}
+                count={previewTimeCount}
                 page={bookingTimesPage}
                 onPageChange={handleChangeTimesPage}
                 rowsPerPage={timesToDisplay}
@@ -232,12 +299,21 @@ const CaregiverBookingCard = props => {
           >
             Payment Details
           </Button>
-          <SecondaryButton
-            className={css.viewButton}
-            onClick={() => handleModalOpen(setIsBookingCalendarModalOpen)}
-          >
-            View Calendar
-          </SecondaryButton>
+          {scheduleType === 'oneTime' ? (
+            <SecondaryButton
+              className={css.viewButton}
+              onClick={() => handleModalOpen(setIsBookingCalendarModalOpen)}
+            >
+              View Calendar
+            </SecondaryButton>
+          ) : allExceptions.length ? (
+            <CancelButton
+              className={css.viewButton}
+              onClick={() => handleModalOpen(setIsExceptionsModalOpen)}
+            >
+              Schedule Exceptions
+            </CancelButton>
+          ) : null}
         </div>
       </div>
       {isPaymentDetailsModalOpen && (
@@ -251,22 +327,39 @@ const CaregiverBookingCard = props => {
           usePortal
         >
           <p className={css.modalTitle}>Payment Summary</p>
-          {/* <BookingSummaryCard
-            className={css.bookingSummaryCard}
-            authorDisplayName={customerDisplayName}
-            currentAuthor={customer}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethod}
-            displayOnMobile={!isLarge}
-            hideAvatar
-            subHeading={<span className={css.bookingWith}>Payment Details</span>}
-            refundAmount={refundAmount}
-            hideRatesButton
-            hideFees
-          /> */}
+          {scheduleType === 'oneTime' ? (
+            <SingleBookingSummaryCard
+              className={css.summaryCard}
+              bookingTimes={bookingTimes}
+              bookingRate={bookingRate}
+              listing={listing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              selectedPaymentMethod={paymentMethodType}
+              hideRatesButton
+              hideAvatar
+              hideFees
+            />
+          ) : (
+            <>
+              <p className={css.modalMessage}>
+                Click any week in your booking to view the payment details for that week.
+              </p>
+              <WeeklyBillingDetails
+                className="mt-6"
+                bookingSchedule={bookingSchedule}
+                exceptions={exceptions}
+                startDate={startDate}
+                endDate={endDate}
+                currentAuthor={currentUser}
+                bookingRate={bookingRate}
+                listing={listing}
+                onManageDisableScrolling={onManageDisableScrolling}
+                selectedPaymentMethodType={paymentMethodType}
+                hideFees
+                isPayment
+              />
+            </>
+          )}
         </Modal>
       )}
       {isBookingCalendarModalOpen && (
@@ -341,6 +434,12 @@ const CaregiverBookingCard = props => {
           containerClassName={css.modalContainer}
         >
           <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
+          {allExceptions.length ? (
+            <p className={classNames(css.modalMessage, 'text-error')}>
+              This schedule contains exceptions. Please review the full schedule and exceptions
+              before accepting.
+            </p>
+          ) : null}
           {/* <BookingSummaryCard
             className={css.bookingSummaryCard}
             authorDisplayName={customerDisplayName}
@@ -368,9 +467,11 @@ const CaregiverBookingCard = props => {
           ) : null}
           {hasSameDayBooking ? (
             <div className={css.bookingDecisionContainer}>
-              <h3 className={css.bookingDeclined}>
-                You have a booking on the same day. Please decline this booking request.
+              <h3 className="text-error text-md">
+                You have an existing booking that has dates that conflict with this request. Please
+                decline this booking request.
               </h3>
+
               <CancelButton
                 inProgress={declineBookingInProgress}
                 ready={declineBookingSuccess}
@@ -419,6 +520,29 @@ const CaregiverBookingCard = props => {
               </CancelButton>
             </div>
           )}
+        </Modal>
+      )}
+      {isExceptionsModalOpen && (
+        <Modal
+          title="Booking Exceptions"
+          id="BookingExceptionsModal"
+          isOpen={isExceptionsModalOpen}
+          onClose={() => handleModalClose(setIsExceptionsModalOpen)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          usePortal
+          containerClassName={css.modalContainer}
+        >
+          <p className={css.modalTitle}>Booking Exceptions</p>
+          <p className={css.modalMessage}>
+            Listed below are days that are different from the regular booking schedule.
+          </p>
+          <div className={css.exceptions}>
+            {allExceptions.map(exception => {
+              return (
+                <BookingException {...exception} key={exception.date} className={css.exception} />
+              );
+            })}
+          </div>
         </Modal>
       )}
     </div>

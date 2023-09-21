@@ -82,9 +82,9 @@ const EmployerBookingCard = props => {
     bookingSchedule,
     startDate,
     endDate,
+    type: scheduleType,
   } = bookingMetadata;
   const bookingScheduleKeys = bookingSchedule ? WEEKDAYS.filter(w => bookingSchedule[w]) : [];
-  const scheduleType = bookingSchedule ? 'recurring' : 'oneTime';
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -163,13 +163,15 @@ const EmployerBookingCard = props => {
 
   return (
     <div className={css.bookingCard}>
-      {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.header}>
-        <div className={css.bookingTitle}>
-          <Avatar user={provider} listing={listing} className={css.avatar} />
-          <h2 className={css.title}>
-            Booking with <span className="whitespace-nowrap">{providerDisplayName}</span>
-          </h2>
+        <div>
+          {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
+          <div className={css.bookingTitle}>
+            <Avatar user={provider} listing={listing} className={css.avatar} />
+            <h2 className={css.title}>
+              Booking with <span className="whitespace-nowrap">{providerDisplayName}</span>
+            </h2>
+          </div>
         </div>
         {showMenu ? (
           <Menu className="h-auto mb-4">
