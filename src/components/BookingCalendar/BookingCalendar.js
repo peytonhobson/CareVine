@@ -11,10 +11,9 @@ const isDayHighlightedSingle = (bookedDates, date) =>
   bookedDates.map(d => d.getTime()).includes(date.getTime());
 
 const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, exceptions) =>
-  (Object.keys(bookingSchedule).some(
-    weekday =>
-      WEEKDAY_MAP[weekday] === date.getDay() &&
-      bookingSchedule[weekday]?.length > 0 &&
+  (bookingSchedule.some(
+    b =>
+      WEEKDAY_MAP[b.dayOfWeek] === date.getDay() &&
       moment(startDate) <= date &&
       (!endDate || moment(endDate) >= date)
   ) ||
@@ -36,12 +35,11 @@ const isDayUnavailable = ({
   const isAfterStartDate = moment(startDate).isSameOrBefore(date);
   const isBeforeEndDate = !endDate || moment(endDate).isSameOrAfter(date);
   const isInBookingSchedule =
-    (bookingSchedule[WEEKDAYS[date.getDay()]] ||
+    (bookingSchedule.some(b => b.dayOfWeek === [WEEKDAYS[date.getDay()]]) ||
       exceptions?.addedDays?.some(d => moment(d.date).isSame(date))) &&
     !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
   const bookedDay = bookedDays.some(booking => {
-    console.log(booking.endDate);
     return (
       booking.days.includes(WEEKDAYS[date.getDay()]) &&
       moment(booking.startDate).isSameOrBefore(date) &&
@@ -71,7 +69,7 @@ const formatDay = ({
 }) => {
   const day = date.getDate();
   const isHighlighted =
-    Object.keys(bookingSchedule)?.length > 0
+    bookingSchedule?.length > 0
       ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date, exceptions)
       : isDayHighlightedSingle(bookedDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);

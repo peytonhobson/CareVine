@@ -13,16 +13,13 @@ const isSameISOWeek = (date1, date2) => {
 };
 
 const isInBookingSchedule = (date, bookingSchedule, startDate, endDate, exceptions) => {
-  const inBookingSchedule = Object.keys(bookingSchedule).some(
-    weekday =>
-      WEEKDAY_MAP[weekday] === date.getDay() &&
-      moment(startDate).isSameOrBefore(date) &&
-      (!endDate || moment(endDate).isSameOrAfter(date))
-  );
+  const withinTimeFrame =
+    moment(startDate).isSameOrBefore(date) && (!endDate || moment(endDate).isSameOrAfter(date));
+  const inBookingSchedule = bookingSchedule.some(b => b.dayOfWeek === date.getDay());
   const isAddedDay = exceptions?.addedDays?.some(d => moment(d.date).isSame(date));
   const isRemovedDay = exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
-  return (inBookingSchedule || isAddedDay) && !isRemovedDay;
+  return ((inBookingSchedule && withinTimeFrame) || isAddedDay) && !isRemovedDay;
 };
 
 const formatDay = (

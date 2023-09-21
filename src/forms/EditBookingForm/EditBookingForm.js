@@ -25,6 +25,7 @@ import { SectionOneTime, SectionRecurring, SectionRequest, SectionPayment } from
 import moment from 'moment';
 import { WEEKDAYS } from '../../util/constants';
 import WarningIcon from '@mui/icons-material/Warning';
+import { mapWeekdays } from '../../util/bookings';
 
 import css from './EditBookingForm.module.css';
 
@@ -74,8 +75,8 @@ const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = [
     return acc;
   }, []);
 
-  const unavailableDays = [...new Set([...bookedDaysArr, ...bookedDatesArr])].filter(
-    w => weekdays[w]
+  const unavailableDays = [...new Set([...bookedDaysArr, ...bookedDatesArr])].filter(w =>
+    weekdays.some(weekday => weekday.dayOfWeek === w)
   );
 
   return unavailableDays;
@@ -95,7 +96,7 @@ const checkValidBookingTimes = (bookingTimes, bookingDates) => {
 const findNewStartDate = (startDate, weekdays) => {
   const day = moment(startDate).day();
 
-  if (weekdays[reverseWeekdayMap[day]]) {
+  if (weekdays.some(w => w.dayOfWeek === WEEKDAYS[day])) {
     return startDate;
   }
 
@@ -103,17 +104,9 @@ const findNewStartDate = (startDate, weekdays) => {
   return findNewStartDate(newStartDate, weekdays);
 };
 
-const findWeekdays = values =>
-  WEEKDAYS.reduce((acc, key) => {
-    if (values[key]) {
-      return { ...acc, [key]: values[key][0] };
-    }
-    return acc;
-  }, {});
-
 const isSelectedWeekday = (weekdays, date) => {
   const day = date.getDay();
-  return weekdays[WEEKDAYS[day]];
+  return weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
 };
 
 const EditBookingFormComponent = props => (
@@ -158,7 +151,7 @@ const EditBookingFormComponent = props => (
         e?.preventDefault();
         const vals = form.getState().values;
 
-        const bookingSchedule = findWeekdays(vals);
+        const bookingSchedule = mapWeekdays(vals);
         const saveParams = {
           bookingRate: vals.bookingRate,
           scheduleType: vals.scheduleType,
@@ -213,7 +206,7 @@ const EditBookingFormComponent = props => (
             return false;
           }
 
-          const weekdays = findWeekdays(values);
+          const weekdays = mapWeekdays(values);
 
           if (!isSelectedWeekday(weekdays, values.startDate.date)) {
             setGoToPaymentError(
@@ -305,7 +298,7 @@ const EditBookingFormComponent = props => (
       );
 
       const { bookedDates, bookedDays } = currentListing.attributes.metadata;
-      const weekdays = useMemo(() => findWeekdays(values), [values]);
+      const weekdays = useMemo(() => mapWeekdays(values), [values]);
       const unavailableDates = useMemo(
         () =>
           getUnavailableDays(

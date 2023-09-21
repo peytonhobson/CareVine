@@ -29,14 +29,7 @@ const calculateTimeBetween = (bookingStart, bookingEnd) => {
 };
 
 const calculateTotalHours = weekdays =>
-  Object.keys(weekdays)?.reduce(
-    (acc, curr) =>
-      acc +
-      (weekdays[curr]?.startTime && weekdays[curr]?.endTime
-        ? calculateTimeBetween(weekdays[curr]?.startTime, weekdays[curr]?.endTime)
-        : 0),
-    0
-  );
+  weekdays?.reduce((acc, curr) => acc + calculateTimeBetween(curr.startTime, curr.endTime), 0);
 
 const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
 
@@ -118,7 +111,7 @@ const RecurringBookingSummaryCard = props => {
   const visibleEndDate = showWeekly ? bookingEndDate : weekEndDate;
 
   const cardHeading =
-    Object.keys(weekdays).length > 0 ? (
+    weekdays.length > 0 ? (
       <>
         <span className={css.recurringSubheading}>
           {subHeading}

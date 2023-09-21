@@ -241,34 +241,32 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
     .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
 
   // Create new booking schedule with exceptions
-  const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
+  const newBookingSchedule = bookingSchedule.reduce((acc, day) => {
     const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
     if (removeDay) return acc;
 
-    const daySchedule = bookingSchedule[day];
+    const daySchedule = bookingSchedule.find(b => b.dayOfWeek === day);
     if (!daySchedule) return acc;
 
     const addOrChangeDay = insideExceptions.find(
       e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
     );
     if (addOrChangeDay) {
-      return {
+      return [
         ...acc,
-        [day]: {
+        {
+          dayOfWeek: day,
           startTime: addOrChangeDay.startTime,
           endTime: addOrChangeDay.endTime,
         },
-      };
+      ];
     }
 
-    return {
-      ...acc,
-      [day]: daySchedule,
-    };
-  }, {});
+    return [...acc, daySchedule];
+  }, []);
 
-  const firstDay = Object.keys(newBookingSchedule)[0];
-  const firstTime = newBookingSchedule[firstDay].startTime;
+  const firstDay = newBookingSchedule[0];
+  const firstTime = newBookingSchedule[0].startTime;
   const startTime = addTimeToStartOfDay(nextWeekStart.weekday(firstDay), firstTime);
 
   return startTime;
@@ -431,63 +429,63 @@ const updateBookingLedger = async transaction => {
   }
 };
 
-const constructBookingMetadataRecurring = (
-  weekdays,
-  startDate,
-  endDate,
-  bookingRate,
-  paymentMethodType
-) => {
-  const filteredWeekdays = Object.keys(weekdays)?.reduce((acc, weekdayKey) => {
-    const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
+// const constructBookingMetadataRecurring = (
+//   weekdays,
+//   startDate,
+//   endDate,
+//   bookingRate,
+//   paymentMethodType
+// ) => {
+//   const filteredWeekdays = weekdays?.reduce((acc, weekdayKey) => {
+//     const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
 
-    return bookingDate >= startDate && bookingDate <= endDate
-      ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey] }]
-      : acc;
-  }, []);
+//     return bookingDate >= startDate && bookingDate <= endDate
+//       ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey] }]
+//       : acc;
+//   }, []);
 
-  const lineItems = filteredWeekdays.map(day => {
-    const { weekday, startTime, endTime } = day;
+//   const lineItems = filteredWeekdays.map(day => {
+//     const { weekday, startTime, endTime } = day;
 
-    const hours = calculateTimeBetween(startTime, endTime);
-    const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = moment(startDate)
-      .weekday(weekdayMap[weekday])
-      .toISOString();
+//     const hours = calculateTimeBetween(startTime, endTime);
+//     const amount = parseFloat(hours * bookingRate).toFixed(2);
+//     const isoDate = moment(startDate)
+//       .weekday(weekdayMap[weekday])
+//       .toISOString();
 
-    return {
-      code: 'line-item/booking',
-      startTime,
-      endTime,
-      seats: 1,
-      date: isoDate,
-      shortDate: moment(isoDate).format('MM/DD'),
-      hours,
-      amount,
-      bookingFee: parseFloat(amount * 0.05).toFixed(2),
-    };
-  });
+//     return {
+//       code: 'line-item/booking',
+//       startTime,
+//       endTime,
+//       seats: 1,
+//       date: isoDate,
+//       shortDate: moment(isoDate).format('MM/DD'),
+//       hours,
+//       amount,
+//       bookingFee: parseFloat(amount * 0.05).toFixed(2),
+//     };
+//   });
 
-  const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+//   const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
-  const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-  const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
+//   const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
+//   const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
 
-  const endOfWeek = moment(startDate)
-    .weekday(6)
-    .toISOString();
+//   const endOfWeek = moment(startDate)
+//     .weekday(6)
+//     .toISOString();
 
-  return {
-    lineItems,
-    bookingFee,
-    processingFee,
-    totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
-      2
-    ),
-    payout: parseFloat(payout).toFixed(2),
-    cancelAtPeriodEnd: endDate <= endOfWeek,
-  };
-};
+//   return {
+//     lineItems,
+//     bookingFee,
+//     processingFee,
+//     totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+//       2
+//     ),
+//     payout: parseFloat(payout).toFixed(2),
+//     cancelAtPeriodEnd: endDate <= endOfWeek,
+//   };
+// };
 
 const updateNextWeekMetadata = async transaction => {
   const {

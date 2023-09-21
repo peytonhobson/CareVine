@@ -12,6 +12,7 @@ import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../../util/hooks';
 
 import css from '../EditBookingForm.module.css';
+import { mapWeekdays } from '../../../util/bookings';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
@@ -55,7 +56,7 @@ const SectionRecurring = props => {
   const isMobile = useCheckMobileScreen();
 
   const { startDate, endDate } = values;
-  const weekdays = pick(values, WEEKDAYS);
+  const weekdays = mapWeekdays(values);
 
   const startDay = startDate?.date;
   const endDay = endDate?.date;
@@ -65,11 +66,11 @@ const SectionRecurring = props => {
   const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata;
 
   useEffect(() => {
-    if (Object.keys(weekdays)?.length === 0) {
+    if (weekdays.length === 0) {
       form.change('startDate', null);
       form.change('endDate', null);
     }
-  }, [Object.keys(weekdays)?.length]);
+  }, [weekdays?.length]);
 
   return (
     <div className={css.recurringRoot}>
@@ -111,7 +112,7 @@ const SectionRecurring = props => {
             )}
             useMobileMargins
             showErrorMessage={false}
-            disabled={Object.keys(weekdays).length === 0}
+            disabled={weekdays.length === 0}
             renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
             withPortal={isMobile}
           />

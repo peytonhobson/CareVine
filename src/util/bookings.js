@@ -15,14 +15,14 @@ const filterInsideExceptions = (exceptions, startDate) =>
     return { ...acc, [exceptionKey]: insideExceptions };
   }, {});
 
-const reduceWeekdays = (acc, weekdayKey, insideExceptions, startDate, endDate, weekdays) => {
+const reduceWeekdays = (acc, weekday, insideExceptions, startDate, endDate) => {
   const realDate = moment(startDate)
-    .weekday(WEEKDAY_MAP[weekdayKey])
+    .weekday(WEEKDAY_MAP[weekday.dayOfWeek])
     .toDate();
   const isPastEndDate = endDate ? moment(realDate).isAfter(endDate) : false;
 
   const isAfterStartDate =
-    moment(startDate).weekday(WEEKDAY_MAP[weekdayKey]) >= moment(startDate).startOf('day');
+    moment(startDate).weekday(WEEKDAY_MAP[weekday.dayOfWeek]) >= moment(startDate).startOf('day');
   const isRemovedDay = insideExceptions.removedDays?.some(d =>
     moment(d.date).isSame(realDate, 'day')
   );
@@ -35,57 +35,47 @@ const reduceWeekdays = (acc, weekdayKey, insideExceptions, startDate, endDate, w
     moment(d.date).isSame(realDate, 'day')
   );
   if (changedDay) {
-    return {
+    return [
       ...acc,
-      [weekdayKey]: [
-        {
-          startTime: changedDay.startTime,
-          endTime: changedDay.endTime,
-        },
-      ],
-    };
+      {
+        dayOfWeek: weekday.dayOfWeek,
+        startTime: changedDay.startTime,
+        endTime: changedDay.endTime,
+      },
+    ];
   }
 
-  return isAfterStartDate ? { ...acc, [weekdayKey]: weekdays[weekdayKey] } : acc;
+  return isAfterStartDate ? [...acc, weekday] : acc;
 };
 
 export const filterWeeklyBookingDays = ({ weekdays, startDate, endDate, exceptions }) => {
-  const keys = Object.keys(weekdays);
-
-  if (!keys.length) return {};
+  if (!weekdays.length) return [];
 
   const insideExceptions = filterInsideExceptions(exceptions, startDate);
 
-  const reducedWeekdays = keys.reduce(
-    (acc, weekdayKey) =>
-      reduceWeekdays(acc, weekdayKey, insideExceptions, startDate, endDate, weekdays),
+  const reducedWeekdays = weekdays.reduce(
+    (acc, weekday) => reduceWeekdays(acc, weekday, insideExceptions, startDate, endDate, weekdays),
     {}
   );
 
   const weekdaysWithAddedDays = insideExceptions.addedDays.reduce((acc, addedDay) => {
     const weekdayKey = WEEKDAYS[moment(addedDay.date).weekday()];
 
-    return {
+    return [
       ...acc,
-      [weekdayKey]: [
-        {
-          startTime: addedDay.startTime,
-          endTime: addedDay.endTime,
-        },
-      ],
-    };
+      {
+        dayOfWeek: weekdayKey,
+        startTime: addedDay.startTime,
+        endTime: addedDay.endTime,
+      },
+    ];
   }, reducedWeekdays);
 
   return sortWeekdays(weekdaysWithAddedDays);
 };
 
-export const sortWeekdays = weekdays => {
-  const sortedWeekdays = Object.keys(weekdays)
-    .sort((a, b) => WEEKDAY_MAP[a] - WEEKDAY_MAP[b])
-    .reduce((acc, key) => ({ ...acc, [key]: weekdays[key] }), {});
-
-  return sortedWeekdays;
-};
+export const sortWeekdays = weekdays =>
+  weekdays.sort((a, b) => WEEKDAY_MAP[a.dayOfWeek] - WEEKDAY_MAP[b.dayOfWeek]);
 
 export const sortExceptionsByDate = (a, b) => {
   return moment(a.date) - moment(b.date);
@@ -98,10 +88,14 @@ export const checkForExceptions = exceptions => {
 export const checkHasBlockedDates = (dates, bookedDates) =>
   dates?.some(d => bookedDates.includes(d.date));
 
-export const checkHasBlockedDays = (days, startDate, endDate, exceptions, bookedDays) => {
+export const checkHasBlockedDays = (
+  bookingSchedule,
+  startDate,
+  endDate,
+  exceptions,
+  bookedDays
+) => {
   if (!days || !bookedDays || !startDate) return false;
-
-  const dayKeys = Object.keys(days);
 
   const overlappingDays = bookedDays.filter(
     d =>
@@ -114,7 +108,7 @@ export const checkHasBlockedDays = (days, startDate, endDate, exceptions, booked
   if (overlappingDays.length === 0) return false;
 
   const hasBlockedDay = overlappingDays.some(d => {
-    return d.days.some(day => dayKeys.includes(day));
+    return d.days.some(day => bookingSchedule.find(b => b.dayOfWeek === day));
   });
 
   if (hasBlockedDay) return true;
@@ -126,4 +120,57 @@ export const checkHasBlockedDays = (days, startDate, endDate, exceptions, booked
   });
 
   return hasBlockedException;
+};
+
+export const mapWeekdays = values =>
+  WEEKDAYS.reduce((acc, val) => {
+    if (values[val]) {
+      return [
+        ...acc,
+        { dayOfWeek: val, startTime: values[val].startTime, endTime: values[val].endTime },
+      ];
+    }
+
+    return acc;
+  }, []);
+
+export const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
+  // Find start and end of week
+  const start = moment(startDate);
+  const weekStart = start.startOf('week').toDate();
+  const weekEnd = start.endOf('week').toDate();
+
+  // Filter exceptions for those within next week
+  const insideExceptions = Object.keys(exceptions)
+    .flat()
+    .filter(e => moment(e.date).isBetween(weekStart, weekEnd, null, '[]'));
+
+  // Create new booking schedule with exceptions
+  const newBookingSchedule = bookingSchedule.reduce((acc, day) => {
+    const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
+    if (removeDay) return acc;
+
+    const daySchedule = bookingSchedule.find(b => b.dayOfWeek === day);
+    if (!daySchedule) return acc;
+
+    const addOrChangeDay = insideExceptions.find(
+      e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
+    );
+    if (addOrChangeDay) {
+      return [
+        ...acc,
+        {
+          dayOfWeek: day,
+          startTime: addOrChangeDay.startTime,
+          endTime: addOrChangeDay.endTime,
+        },
+      ];
+    }
+
+    return [...acc, daySchedule];
+  }, []);
+
+  const lastDay = sortWeekdays(newBookingSchedule)[newBookingSchedule.length - 1];
+
+  return weekStart.weekday(WEEKDAYS.indexOf(lastDay.dayOfWeek));
 };

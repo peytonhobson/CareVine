@@ -530,7 +530,7 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
   const newBookingDrafts = bookingDrafts.filter(
     draft =>
       new Date(draft.createdAt) > new Date() - 48 * 36e5 &&
-      (Object.keys(draft.attributes?.bookingSchedule || {}).length || draft.attributes?.dateTimes)
+      (draft.attributes?.bookingSchedule?.length || draft.attributes?.dateTimes)
   );
 
   if (newBookingDrafts.length === bookingDrafts.length) return;

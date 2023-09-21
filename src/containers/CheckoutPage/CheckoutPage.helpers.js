@@ -55,7 +55,7 @@ export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions)
     })
   );
 
-  const firstDay = Object.values(filteredWeekdays)[0];
+  const firstDay = filteredWeekdays[0];
   const startTime = addTimeToStartOfDay(startDate, firstDay.startTime);
 
   return startTime;

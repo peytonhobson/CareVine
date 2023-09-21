@@ -84,7 +84,6 @@ const EmployerBookingCard = props => {
     endDate,
     type: scheduleType,
   } = bookingMetadata;
-  const bookingScheduleKeys = bookingSchedule ? WEEKDAYS.filter(w => bookingSchedule[w]) : [];
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
@@ -147,7 +146,7 @@ const EmployerBookingCard = props => {
 
   const timesToDisplay = isMobile ? 1 : 3;
   const previewTimeCount =
-    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : bookingTimes?.length;
+    scheduleType === 'recurring' ? bookingSchedule?.length : bookingTimes?.length;
 
   const TablePagination = styled(MuiTablePagination)`
     ${isMobile
@@ -208,7 +207,7 @@ const EmployerBookingCard = props => {
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
           <h2 className={css.datesAndTimes}>
-            {bookingSchedule ? 'Weekly Schedule' : 'Dates & Times'}
+            {scheduleType === 'recurring' ? 'Weekly Schedule' : 'Dates & Times'}
           </h2>
           {startDate ? (
             <p class="text-primary mt-0 mb-2 text-sm">
@@ -218,16 +217,16 @@ const EmployerBookingCard = props => {
           ) : null}
           <div className={css.dateTimes}>
             {scheduleType === 'recurring'
-              ? bookingScheduleKeys
+              ? bookingSchedule
                   ?.slice(
                     bookingTimesPage * timesToDisplay,
                     bookingTimesPage * timesToDisplay + timesToDisplay
                   )
-                  .map(weekday => {
-                    const { startTime, endTime } = bookingSchedule[weekday];
+                  .map(b => {
+                    const { startTime, endTime, dayOfWeek } = b;
                     return (
                       <div className={css.bookingTime} key={uuidv4()}>
-                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[dayOfWeek]}</h3>
                         <span className={css.summaryTimes}>
                           {startTime} - {endTime}
                         </span>

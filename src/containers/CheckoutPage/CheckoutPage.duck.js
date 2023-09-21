@@ -278,7 +278,7 @@ export const updateBookingDraft = (bookingData, draftId) => async (dispatch, get
   };
 
   const { bookingSchedule, dateTimes } = bookingData;
-  const isEmptyDraft = !Object.keys(bookingSchedule).length && !dateTimes;
+  const isEmptyDraft = !bookingSchedule.length && !dateTimes;
 
   const updatedBookingDrafts = isEmptyDraft
     ? bookingDrafts.filter(draft => draft.id !== draftId)

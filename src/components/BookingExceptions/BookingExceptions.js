@@ -17,7 +17,7 @@ import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../util/hooks';
-import { sortExceptionsByDate } from '../../util/bookings';
+import { sortExceptionsByDate, mapWeekdays } from '../../util/bookings';
 
 import css from './BookingExceptions.module.css';
 
@@ -38,7 +38,7 @@ const filterAvailableAddExceptionDays = (
       realDate >= new Date(d.startDate)
   );
   const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
-  const isAlreadySelected = weekdays[WEEKDAYS[day]];
+  const isAlreadySelected = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => e.date === realDate.toISOString());
@@ -66,10 +66,7 @@ const filterAvailableChangeExceptionDays = (
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => e.date === date.toISOString());
-  const isAlreadySelected =
-    weekdays[WEEKDAYS[date.day()]] &&
-    startDate.date <= realDate &&
-    (!endDate?.date || endDate.date >= realDate);
+  const isAlreadySelected = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
 
   const isBookedDay = bookedDays.some(
     d =>
@@ -79,7 +76,14 @@ const filterAvailableChangeExceptionDays = (
   );
   const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
 
-  return isAlreadyException || !isAlreadySelected || isBookedDay || isBookedDate;
+  return (
+    isAlreadyException ||
+    !isAlreadySelected ||
+    isBookedDay ||
+    isBookedDate ||
+    (endDate && realDate > endDate) ||
+    realDate < startDate
+  );
 };
 
 const renderChangeDayContents = (bookedDays, bookedDates) => (date, classes) => {
@@ -127,7 +131,7 @@ const BookingExceptions = props => {
     .flat()
     .sort(sortExceptionsByDate);
 
-  const weekdays = pick(values, WEEKDAYS);
+  const weekdays = mapWeekdays(pick(values, WEEKDAYS));
 
   useEffect(() => {
     //Remove all exceptions that fall outside of start and end date
@@ -145,17 +149,16 @@ const BookingExceptions = props => {
 
   useEffect(() => {
     //Remove all exceptions that interfere with weekdays
-    const weekdayKeys = Object.keys(weekdays);
     const newExceptions = {
       ...exceptions,
       removedDays: exceptions.removedDays.filter(d =>
-        weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+        weekdays.find(w => w.dayOfWeek === WEEKDAYS[moment(d.date).day()])
       ),
       addedDays: exceptions.addedDays.filter(
-        d => !weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+        d => !weekdays.find(w => w.dayOfWeek === WEEKDAYS[moment(d.date).day()])
       ),
       changedDays: exceptions.changedDays.filter(d =>
-        weekdayKeys.includes(WEEKDAYS[moment(d.date).day()])
+        weekdays.find(w => w.dayOfWeek === WEEKDAYS[moment(d.date).day()])
       ),
     };
 
@@ -254,7 +257,7 @@ const BookingExceptions = props => {
   };
 
   const currentBookedDays = {
-    days: Object.keys(weekdays),
+    days: weekdays.map(w => w.dayOfWeek),
     startDate: startDate?.date,
     endDate: endDate?.date,
   };

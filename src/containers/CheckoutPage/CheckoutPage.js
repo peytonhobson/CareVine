@@ -30,16 +30,9 @@ import {
 } from './CheckoutPage.helpers';
 import { WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
+import { mapWeekdays } from '../../util/bookings';
 
 import css from './CheckoutPage.module.css';
-
-const findWeekdays = values =>
-  WEEKDAYS.reduce((acc, key) => {
-    if (values[key]) {
-      return { ...acc, [key]: values[key][0] };
-    }
-    return acc;
-  }, {});
 
 export class CheckoutPageComponent extends Component {
   constructor(props) {
@@ -106,7 +99,7 @@ export class CheckoutPageComponent extends Component {
       exceptions,
     } = values;
 
-    const weekdays = findWeekdays(values);
+    const weekdays = mapWeekdays(values);
 
     const startDate = moment(startDateDate?.date)
       .startOf('day')
@@ -278,12 +271,15 @@ export class CheckoutPageComponent extends Component {
     const showPaymentForm = !!(currentUser && currentListing);
 
     // Transfer booking schedule back to format that works with daily plan
-    const initialBookingSchedule = Object.keys(bookingSchedule)?.reduce((acc, key) => {
-      const value = bookingSchedule[key];
-
+    const initialBookingSchedule = bookingSchedule?.reduce((acc, curr) => {
       return {
         ...acc,
-        [key]: [value],
+        [curr.dayOfWeek]: [
+          {
+            startTime: curr.startTime,
+            endTime: curr.endTime,
+          },
+        ],
       };
     }, {});
 

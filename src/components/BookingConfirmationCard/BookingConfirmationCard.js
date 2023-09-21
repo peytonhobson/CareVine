@@ -1,27 +1,9 @@
 import React from 'react';
 
 import { Avatar, SingleBookingSummaryCard, RecurringBookingSummaryCard } from '..';
-import moment from 'moment';
-import { WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingConfirmationCard.module.css';
-
-const getEndOfFirstWeek = (startDate, weekdays) => {
-  if (!startDate) return null;
-
-  const lastDay = Object.keys(weekdays).reduce((acc, curr) => {
-    const day = WEEKDAY_MAP[curr];
-
-    const date = moment(startDate).weekday(day);
-
-    if (date.isAfter(acc)) {
-      return date;
-    }
-    return acc;
-  }, startDate);
-
-  return lastDay;
-};
+import { getFirstWeekEndDate } from '../../util/bookings';
 
 const BookingConfirmationCard = props => {
   const {
@@ -49,7 +31,8 @@ const BookingConfirmationCard = props => {
     endTime: l.endTime,
   }));
 
-  const endOfFirstWeek = bookingSchedule ? getEndOfFirstWeek(startDate, bookingSchedule) : null;
+  const endOfFirstWeek =
+    type === 'recurring' ? getFirstWeekEndDate(startDate, bookingSchedule, exceptions) : null;
 
   return (
     <div className={css.root}>

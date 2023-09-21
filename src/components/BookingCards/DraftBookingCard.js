@@ -39,7 +39,6 @@ const DraftBookingCard = props => {
     providerProfileImage,
     listingId,
   } = draft.attributes;
-  const bookingScheduleKeys = WEEKDAYS.filter(w => bookingSchedule[w]);
   const dateTimesKeys = dateTimes ? Object.keys(dateTimes) : [];
 
   const handleChangeTimesPage = (e, page) => {
@@ -82,13 +81,13 @@ const DraftBookingCard = props => {
   `;
 
   const previewTimeCount =
-    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : dateTimesKeys?.length;
+    scheduleType === 'recurring' ? bookingSchedule?.length : dateTimesKeys?.length;
 
   let timeTitle = null;
 
-  if (scheduleType === 'recurring' && bookingScheduleKeys.length > 0) {
+  if (scheduleType === 'recurring' && bookingSchedule?.length) {
     timeTitle = 'Weekly Schedule';
-  } else if (scheduleType === 'oneTime' && dateTimesKeys?.length > 0) {
+  } else if (scheduleType === 'oneTime' && dateTimesKeys?.length) {
     timeTitle = 'Dates & Times';
   }
 
@@ -123,16 +122,16 @@ const DraftBookingCard = props => {
           ) : null}
           <div className={css.dateTimes}>
             {scheduleType === 'recurring'
-              ? bookingScheduleKeys
+              ? bookingSchedule
                   ?.slice(
                     bookingTimesPage * timesToDisplay,
                     bookingTimesPage * timesToDisplay + timesToDisplay
                   )
-                  .map(weekday => {
-                    const { startTime, endTime } = bookingSchedule[weekday];
+                  .map(b => {
+                    const { startTime, endTime, dayOfWeek } = b;
                     return (
                       <div className={css.bookingTime} key={uuidv4()}>
-                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[dayOfWeek]}</h3>
                         <span className={css.summaryTimes}>
                           {startTime} - {endTime}
                         </span>

@@ -3,15 +3,11 @@ import React from 'react';
 import {
   FieldTextInput,
   Button,
-  PrimaryButton,
-  Modal,
   SingleBookingSummaryCard,
   RecurringBookingSummaryCard,
 } from '../../../components';
-import { pick } from 'lodash';
-import { WEEKDAYS, WEEKDAY_MAP } from '../../../util/constants';
 import moment from 'moment';
-import WeeklyBillingDetails from '../../../components/WeeklyBillingDetails/WeeklyBillingDetails';
+import { mapWeekdays, getFirstWeekEndDate } from '../../../util/bookings';
 
 import css from '../EditBookingForm.module.css';
 
@@ -37,25 +33,6 @@ const formatDateTimeValues = dateTimes =>
     };
   });
 
-const getEndOfFirstWeek = (startDate, weekdays) => {
-  if (!startDate) return null;
-
-  const start = moment(startDate);
-
-  const lastDay = Object.keys(weekdays).reduce((acc, curr) => {
-    const day = WEEKDAY_MAP[curr];
-
-    const date = start.weekday(day);
-
-    if (date.isAfter(acc)) {
-      return date;
-    }
-    return acc;
-  }, start);
-
-  return lastDay;
-};
-
 const SectionRequest = props => {
   const {
     authorDisplayName,
@@ -71,11 +48,9 @@ const SectionRequest = props => {
     form,
   } = props;
 
-  const weekdays = pick(values, WEEKDAYS);
-  const weekdayKeys = Object.keys(weekdays);
+  const weekdays = mapWeekdays(values);
 
-  const endOfFirstWeek = getEndOfFirstWeek(values.startDate?.date, weekdays);
-
+  const endOfFirstWeek = getFirstWeekEndDate(values.startDate?.date, weekdays, values.exceptions);
   return (
     <div className={css.requestContentContainer}>
       <div
@@ -94,14 +69,14 @@ const SectionRequest = props => {
                 )
               </span>
             </h2>
-            {weekdayKeys.length > 0 && (
+            {weekdays.length > 0 && (
               <>
                 <ul className={css.summaryDays}>
-                  {weekdayKeys.map((key, i) => {
-                    const day = FULL_WEEKDAY_MAP[key];
+                  {weekdays.map((w, i) => {
+                    const day = FULL_WEEKDAY_MAP[w.dayOfWeek];
                     return (
                       <li key={key} className={css.tinyNoMargin}>
-                        {day} ({weekdays[key].startTime} - {weekdays[key].endTime})
+                        {day} ({w.startTime} - {w.endTime})
                       </li>
                     );
                   })}

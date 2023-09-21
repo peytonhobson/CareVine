@@ -107,7 +107,6 @@ const CaregiverBookingCard = props => {
       changedDays: [],
     },
   } = bookingMetadata;
-  const bookingScheduleKeys = bookingSchedule ? WEEKDAYS.filter(w => bookingSchedule[w]) : [];
   const allExceptions = useMemo(() => {
     return Object.values(exceptions)
       .flat()
@@ -162,7 +161,7 @@ const CaregiverBookingCard = props => {
   );
 
   const previewTimeCount =
-    bookingScheduleKeys.length > 0 ? Object.keys(bookingSchedule).length : bookingTimes?.length;
+    scheduleType === 'recurring' ? bookingSchedule?.length : bookingTimes?.length;
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isMobile = useCheckMobileScreen();
@@ -227,7 +226,7 @@ const CaregiverBookingCard = props => {
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
           <h2 className={css.datesAndTimes}>
-            {bookingSchedule ? 'Weekly Schedule' : 'Dates & Times'}
+            {scheduleType === 'recurring' ? 'Weekly Schedule' : 'Dates & Times'}
           </h2>
           {startDate ? (
             <p class="text-primary mt-0 mb-2 text-sm">
@@ -237,16 +236,16 @@ const CaregiverBookingCard = props => {
           ) : null}
           <div className={css.dateTimes}>
             {scheduleType === 'recurring'
-              ? bookingScheduleKeys
+              ? bookingSchedule
                   ?.slice(
                     bookingTimesPage * timesToDisplay,
                     bookingTimesPage * timesToDisplay + timesToDisplay
                   )
-                  .map(weekday => {
-                    const { startTime, endTime } = bookingSchedule[weekday];
+                  .map(b => {
+                    const { startTime, endTime, dayOfWeek } = b;
                     return (
                       <div className={css.bookingTime} key={uuidv4()}>
-                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[weekday]}</h3>
+                        <h3 className={css.summaryDate}>{FULL_WEEKDAY_MAP[dayOfWeek]}</h3>
                         <span className={css.summaryTimes}>
                           {startTime} - {endTime}
                         </span>
