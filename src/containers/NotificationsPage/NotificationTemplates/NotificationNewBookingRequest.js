@@ -1,6 +1,6 @@
 import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Avatar,
@@ -9,6 +9,7 @@ import {
   NamedLink,
   BookingSummaryCard,
   IconSpinner,
+  ButtonTabNavHorizontal,
 } from '../../../components';
 import {
   TRANSITION_ACCEPT_BOOKING,
@@ -31,6 +32,8 @@ const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
 
 const NotificationNewBookingRequest = props => {
+  const [selectedTab, setSelectedTab] = useState('message');
+
   const {
     notification,
     currentUser,
@@ -49,8 +52,15 @@ const NotificationNewBookingRequest = props => {
 
   const { txId } = notification.metadata;
 
-  const { lineItems, bookingRate, paymentMethodType, message, senderListingTitle, senderCity } =
-    currentTransaction?.attributes.metadata || {};
+  const {
+    lineItems,
+    bookingRate,
+    paymentMethodType,
+    message,
+    senderListingTitle,
+    senderCity,
+    senderListingDescription,
+  } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
 
@@ -92,6 +102,30 @@ const NotificationNewBookingRequest = props => {
   const isCanceledRequest =
     currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
 
+  const tabs = [];
+
+  if (message) {
+    tabs.push({
+      text: 'Message',
+      selected: selectedTab === 'message',
+      onClick: () => setSelectedTab('message'),
+    });
+  }
+
+  if (senderListingDescription) {
+    tabs.push({
+      text: 'Job Description',
+      selected: selectedTab === 'jobDescription',
+      onClick: () => setSelectedTab('jobDescription'),
+    });
+  }
+
+  useEffect(() => {
+    if (senderListingDescription && !message) {
+      setSelectedTab('jobDescription');
+    }
+  }, [message, senderListingDescription]);
+
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
       <IconSpinner className={css.bookingRequestSpinner} />
@@ -124,12 +158,22 @@ const NotificationNewBookingRequest = props => {
               {senderListingTitle !== 'Title' ? senderListingTitle : ''}
             </h2>
           </div>
-          {message && (
+          {message || senderListingDescription ? (
             <div className={css.messageContainer}>
-              <h2 style={{ marginTop: 0 }}>Message</h2>
-              <p className={css.requestMessage}>{message}</p>
+              <ButtonTabNavHorizontal
+                tabs={tabs}
+                rootClassName={css.nav}
+                tabRootClassName={css.tab}
+                tabContentClass={css.tabContent}
+                tabClassName={css.tab}
+              />
+              {selectedTab === 'message' ? (
+                <p className={css.requestMessage}>{message}</p>
+              ) : (
+                <p className={css.requestMessage}>{senderListingDescription}</p>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
         <div className={css.bookingInfo}>
           <BookingSummaryCard
