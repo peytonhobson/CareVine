@@ -120,7 +120,7 @@ export class CheckoutPageComponent extends Component {
     const bookingEnd = moment(bookingStart)
       .add(1, 'hours')
       .toDate();
-    console.log(bookingStart);
+
     const orderParams = {
       listingId,
       seats: 1,
@@ -272,17 +272,18 @@ export class CheckoutPageComponent extends Component {
     const showPaymentForm = !!(currentUser && currentListing);
 
     // Transfer booking schedule back to format that works with daily plan
-    const initialBookingSchedule = bookingSchedule?.reduce((acc, curr) => {
-      return {
-        ...acc,
-        [curr.dayOfWeek]: [
-          {
-            startTime: curr.startTime,
-            endTime: curr.endTime,
-          },
-        ],
-      };
-    }, {});
+    const initialBookingSchedule =
+      bookingSchedule?.reduce((acc, curr) => {
+        return {
+          ...acc,
+          [curr.dayOfWeek]: [
+            {
+              startTime: curr.startTime,
+              endTime: curr.endTime,
+            },
+          ],
+        };
+      }, {}) || {};
 
     return (
       <Page {...pageProps}>
@@ -315,7 +316,7 @@ export class CheckoutPageComponent extends Component {
                 scheduleType,
                 startDate: startDate ? { date: new Date(startDate) } : null,
                 endDate: endDate ? { date: new Date(endDate) } : null,
-                bookingSchedule: initialBookingSchedule,
+                ...initialBookingSchedule,
                 dateTimes,
                 exceptions,
                 bookingDates: bookingDates.map(date => new Date(date)),

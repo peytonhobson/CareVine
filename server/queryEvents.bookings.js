@@ -6,6 +6,7 @@ const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
 const { integrationSdk } = require('./api-util/sdk');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const { constructBookingMetadataRecurring } = require('./bookingHelpers');
 
 const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -229,17 +230,21 @@ const findStartTimeFromLineItems = lineItems => {
 };
 
 // TODO: Double check this function
-const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
+const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNum = 1) => {
+  console.log(attemptNum);
+  if (attemptNum > 4) return null;
   // Find start and end of next week
-  const nextWeekLineItemStart = moment(findStartTimeFromLineItems(lineItems)).add(1, 'week');
-  const nextWeekStart = nextWeekLineItemStart.startOf('week');
-  const nextWeekEnd = nextWeekLineItemStart.endOf('week');
+  const nextWeekLineItemStart = moment(lineItems[0].date).add(7 * attemptNum, 'days');
+  const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
+  const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
 
-  console.log('newWeekLineItemStart', nextWeekLineItemStart);
-  console.log('nextWeekStart', nextWeekStart);
+  console.log('lineItemDate', moment(lineItems[0].date).toISOString());
+  console.log('newWeekLineItemStart', nextWeekLineItemStart.toISOString());
+  console.log('nextWeekStart', nextWeekStart.toISOString());
+  console.log('nextWeekEnd', nextWeekEnd.toISOString());
 
   // Filter exceptions for those within next week
-  const insideExceptions = Object.keys(exceptions)
+  const insideExceptions = Object.values(exceptions)
     .flat()
     .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
 
@@ -250,12 +255,12 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
     const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
     if (removeDay) return acc;
 
-    const daySchedule = bookingSchedule.find(b => b.dayOfWeek === day);
-    if (!daySchedule) return acc;
-
     const addOrChangeDay = insideExceptions.find(
       e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
     );
+
+    console.log('addOrChangeDay', addOrChangeDay);
+    console.log('day');
     if (addOrChangeDay) {
       return [
         ...acc,
@@ -267,21 +272,31 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
       ];
     }
 
+    const daySchedule = bookingSchedule.find(b => b.dayOfWeek === day);
+    if (!daySchedule) return acc;
+
     return [...acc, daySchedule];
   }, []);
 
+  if (newBookingSchedule.length === 0) {
+    return findNextWeekStartTime(lineItems, bookingSchedule, exceptions, attemptNum + 1);
+  }
+
   console.log('newBookingSchedule', newBookingSchedule);
 
-  const firstDay = newBookingSchedule[0];
-  const firstTime = newBookingSchedule[0].startTime;
+  const firstDay = newBookingSchedule[0] || {};
+  const firstTime = firstDay.startTime;
   const startTime = addTimeToStartOfDay(
-    nextWeekStart.weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek)),
+    nextWeekStart
+      .clone()
+      .weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek))
+      .startOf('day'),
     firstTime
   );
 
-  console.log('startTime', startTime);
+  console.log('startTime', startTime.toISOString());
 
-  return startTime;
+  return moment(startTime).toISOString();
 };
 
 // TODO: Double check this function
@@ -295,10 +310,14 @@ const updateNextWeekStart = async transaction => {
 
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
   const bookingEnd = moment(nextWeekStartTime)
+    .clone()
     .add(1, 'hours')
-    .toDate();
+    .toISOString();
 
-  console.log('nextWeekStartTime', nextWeekStartTime);
+  if (!nextWeekStartTime) {
+    log.error({}, 'No next week start time found', { txId });
+    return;
+  }
 
   try {
     await integrationSdk.transactions.transition({
@@ -310,7 +329,7 @@ const updateNextWeekStart = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e, 'update-next-week-start-failed', {});
+    log.error(e?.data?.errors, 'update-next-week-start-failed', {});
   }
 };
 
@@ -448,64 +467,6 @@ const updateBookingLedger = async transaction => {
   }
 };
 
-// const constructBookingMetadataRecurring = (
-//   weekdays,
-//   startDate,
-//   endDate,
-//   bookingRate,
-//   paymentMethodType
-// ) => {
-//   const filteredWeekdays = weekdays?.reduce((acc, weekdayKey) => {
-//     const bookingDate = moment(startDate).weekday(weekdayMap[weekdayKey]);
-
-//     return bookingDate >= startDate && bookingDate <= endDate
-//       ? [...acc, { weekday: weekdayKey, ...weekdays[weekdayKey] }]
-//       : acc;
-//   }, []);
-
-//   const lineItems = filteredWeekdays.map(day => {
-//     const { weekday, startTime, endTime } = day;
-
-//     const hours = calculateTimeBetween(startTime, endTime);
-//     const amount = parseFloat(hours * bookingRate).toFixed(2);
-//     const isoDate = moment(startDate)
-//       .weekday(weekdayMap[weekday])
-//       .toISOString();
-
-//     return {
-//       code: 'line-item/booking',
-//       startTime,
-//       endTime,
-//       seats: 1,
-//       date: isoDate,
-//       shortDate: moment(isoDate).format('MM/DD'),
-//       hours,
-//       amount,
-//       bookingFee: parseFloat(amount * 0.05).toFixed(2),
-//     };
-//   });
-
-//   const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-//   const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-//   const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
-
-//   const endOfWeek = moment(startDate)
-//     .weekday(6)
-//     .toISOString();
-
-//   return {
-//     lineItems,
-//     bookingFee,
-//     processingFee,
-//     totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
-//       2
-//     ),
-//     payout: parseFloat(payout).toFixed(2),
-//     cancelAtPeriodEnd: endDate <= endOfWeek,
-//   };
-// };
-
 const updateNextWeekMetadata = async transaction => {
   const {
     bookingSchedule,
@@ -513,6 +474,7 @@ const updateNextWeekMetadata = async transaction => {
     bookingRate,
     endDate,
     paymentMethodType,
+    exceptions,
   } = transaction.attributes.metadata;
 
   const newMetadata = constructBookingMetadataRecurring(
@@ -520,7 +482,8 @@ const updateNextWeekMetadata = async transaction => {
     startDate,
     endDate,
     bookingRate,
-    paymentMethodType
+    paymentMethodType,
+    exceptions
   );
 
   try {

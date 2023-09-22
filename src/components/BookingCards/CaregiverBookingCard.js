@@ -44,6 +44,8 @@ import {
 import classNames from 'classnames';
 import moment from 'moment';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 import css from './BookingCards.module.css';
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
@@ -466,7 +468,7 @@ const CaregiverBookingCard = props => {
               There was an issue declining the booking request. Please try again.
             </p>
           ) : null}
-          {hasSameDayBooking ? (
+          {hasSameDayBooking && !isDev ? (
             <div className={css.bookingDecisionContainer}>
               <h3 className="text-error text-md">
                 You have an existing booking that has dates that conflict with this request. Please

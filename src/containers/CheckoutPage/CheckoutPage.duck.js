@@ -198,6 +198,8 @@ export const initiateOrder = (orderParams, metadata, listing, draftId) => async 
 
   let transactionResponse;
 
+  console.log({ ...orderParams, metadata: { notificationId, ...metadata } });
+
   try {
     transactionResponse = await initiateBooking({
       bodyParams: {

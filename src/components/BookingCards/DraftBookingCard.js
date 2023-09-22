@@ -41,6 +41,10 @@ const DraftBookingCard = props => {
   } = draft.attributes;
   const dateTimesKeys = dateTimes ? Object.keys(dateTimes) : [];
 
+  if (!Array.isArray(bookingSchedule)) {
+    return <div></div>;
+  }
+
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
   };
