@@ -65,22 +65,34 @@ const exceptions = {
   ],
   removedDays: [
     {
-      date: startOfDay.add(7, 'days').toISOString(),
+      date: startOfDay
+        .clone()
+        .add(7, 'days')
+        .toISOString(),
       type: 'removeDate',
       day: WEEKDAYS[moment().weekday() - 1],
     },
     {
-      date: startOfDay.add(7 * 2, 'days').toISOString(),
+      date: startOfDay
+        .clone()
+        .add(7 * 2, 'days')
+        .toISOString(),
       type: 'removeDate',
       day: WEEKDAYS[moment().weekday() - 1],
     },
     {
-      date: startOfDay.add(7 * 3, 'days').toISOString(),
+      date: startOfDay
+        .clone()
+        .add(7 * 3, 'days')
+        .toISOString(),
       type: 'removeDate',
       day: WEEKDAYS[moment().weekday() - 1],
     },
     {
-      date: startOfDay.add(7 * 4, 'days').toISOString(),
+      date: startOfDay
+        .clone()
+        .add(7 * 4, 'days')
+        .toISOString(),
       type: 'removeDate',
       day: WEEKDAYS[moment().weekday() - 1],
     },
@@ -104,8 +116,6 @@ EXCEPTIONS FORMAT
       day: WEEKDAYS[moment().weekday() -1],
     }
 */
-
-console.log(startTime, endTime);
 
 const BODY_PARAMS = {
   processAlias: 'booking-process/active',
@@ -181,6 +191,8 @@ const main = async () => {
         },
       },
     });
+
+    console.log('SUCCESS');
   } catch (err) {
     console.log(err?.data);
 
