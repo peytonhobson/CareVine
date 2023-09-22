@@ -266,7 +266,7 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
     ...minPriceMaybe,
     ...maxPriceMaybe,
     per_page: perPage,
-    bounds: expandBounds(selectedLocation || origin, distance),
+    bounds: selectedLocation || origin ? expandBounds(selectedLocation || origin, distance) : null,
     ...sortMaybe,
     meta_listingType: listingType,
   };
