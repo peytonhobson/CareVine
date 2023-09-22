@@ -69,6 +69,21 @@ const exceptions = {
       type: 'removeDate',
       day: WEEKDAYS[moment().weekday() - 1],
     },
+    {
+      date: startOfDay.add(7 * 2, 'days').toISOString(),
+      type: 'removeDate',
+      day: WEEKDAYS[moment().weekday() - 1],
+    },
+    {
+      date: startOfDay.add(7 * 3, 'days').toISOString(),
+      type: 'removeDate',
+      day: WEEKDAYS[moment().weekday() - 1],
+    },
+    {
+      date: startOfDay.add(7 * 4, 'days').toISOString(),
+      type: 'removeDate',
+      day: WEEKDAYS[moment().weekday() - 1],
+    },
   ],
   changedDays: [],
 };
