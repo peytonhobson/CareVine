@@ -238,8 +238,8 @@ export class CheckoutPageComponent extends Component {
     const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
     const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
-    const currentUserListingTitle = currentUserListing.attributes.title;
-    const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
+    const currentUserListingTitle = currentUserListing?.attributes.title;
+    const currentUserListingCity = currentUserListing?.attributes.publicData.location.city;
     const processingFee = calculateProcessingFee(
       payout,
       bookingFee,
@@ -256,7 +256,7 @@ export class CheckoutPageComponent extends Component {
       message,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,
-      senderListingDescription: currentUserListing.attributes.description,
+      senderListingDescription: currentUserListing?.attributes.description,
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
