@@ -156,8 +156,6 @@ class TopbarComponent extends Component {
       notification => !notification.isRead
     );
 
-    console.log(ensuredCurrentUser.attributes.profile.privateData.notifications);
-
     const notificationDot = unreadNotificationCount ? (
       <div className={css.notificationDot} />
     ) : null;
