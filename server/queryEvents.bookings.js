@@ -232,8 +232,8 @@ const findStartTimeFromLineItems = lineItems => {
 const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
   // Find start and end of next week
   const nextWeekLineItemStart = moment(findStartTimeFromLineItems(lineItems)).add(1, 'week');
-  const nextWeekStart = nextWeekLineItemStart.startOf('week').toDate();
-  const nextWeekEnd = nextWeekLineItemStart.endOf('week').toDate();
+  const nextWeekStart = nextWeekLineItemStart.startOf('week');
+  const nextWeekEnd = nextWeekLineItemStart.endOf('week');
 
   console.log('newWeekLineItemStart', nextWeekLineItemStart);
   console.log('nextWeekStart', nextWeekStart);
@@ -274,7 +274,10 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
 
   const firstDay = newBookingSchedule[0];
   const firstTime = newBookingSchedule[0].startTime;
-  const startTime = addTimeToStartOfDay(nextWeekStart.weekday(firstDay), firstTime);
+  const startTime = addTimeToStartOfDay(
+    nextWeekStart.weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek)),
+    firstTime
+  );
 
   console.log('startTime', startTime);
 
@@ -283,6 +286,7 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions) => {
 
 // TODO: Double check this function
 const updateNextWeekStart = async transaction => {
+  const txId = transaction.id.uuid;
   const { lineItems, bookingSchedule, exceptions } = transaction.attributes.metadata;
 
   console.log('lineItems', lineItems);
@@ -306,7 +310,7 @@ const updateNextWeekStart = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e?.data?.errors, 'update-next-week-start-failed', {});
+    log.error(e, 'update-next-week-start-failed', {});
   }
 };
 
