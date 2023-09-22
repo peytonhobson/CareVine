@@ -59,7 +59,6 @@ exports.handleError = (res, error) => {
 
   if (error.status && error.statusText && error.data) {
     const { status, statusText, data } = error;
-    console.log(error?.errors?.meta);
 
     // JS SDK error
     res
