@@ -31,7 +31,9 @@ const NotificationNewMessage = props => {
         <h1 className={css.title}>
           New Message from <span className={css.noWrapText}>{senderName}</span>
         </h1>
-        <p className={classNames(css.message, '!text-secondary', '!mb-8')}>"{previewMessage}"</p>
+        {previewMessage ? (
+          <p className={classNames(css.message, '!text-secondary', '!mb-8')}>"{previewMessage}"</p>
+        ) : null}
         <p className={css.message}>
           To view this message and respond to {senderName}, click the button below.
         </p>

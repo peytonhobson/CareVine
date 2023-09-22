@@ -156,6 +156,7 @@ export class CheckoutPageComponent extends Component {
       paymentMethodType: this.state.selectedPaymentMethod?.type,
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,
+      senderListingDescription: currentUserListing?.attributes.description,
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,

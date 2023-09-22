@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   Avatar,
@@ -8,6 +8,7 @@ import {
   IconSpinner,
   SingleBookingSummaryCard,
   RecurringBookingSummaryCard,
+  ButtonTabNavHorizontal,
 } from '../../../components';
 import {
   TRANSITION_ACCEPT_BOOKING,
@@ -30,6 +31,8 @@ import moment from 'moment';
 import css from './NotificationTemplates.module.css';
 
 const NotificationNewBookingRequest = props => {
+  const [selectedTab, setSelectedTab] = useState('message');
+
   const {
     notification,
     currentUser,
@@ -60,6 +63,7 @@ const NotificationNewBookingRequest = props => {
     message,
     senderListingTitle,
     senderCity,
+    senderListingDescription,
     type: bookingType,
     bookingSchedule,
     startDate,
@@ -118,6 +122,30 @@ const NotificationNewBookingRequest = props => {
 
   const hasExceptions = checkForExceptions(exceptions);
 
+  const tabs = [];
+
+  if (message) {
+    tabs.push({
+      text: 'Message',
+      selected: selectedTab === 'message',
+      onClick: () => setSelectedTab('message'),
+    });
+  }
+
+  if (senderListingDescription) {
+    tabs.push({
+      text: 'Job Description',
+      selected: selectedTab === 'jobDescription',
+      onClick: () => setSelectedTab('jobDescription'),
+    });
+  }
+
+  useEffect(() => {
+    if (senderListingDescription && !message) {
+      setSelectedTab('jobDescription');
+    }
+  }, [message, senderListingDescription]);
+
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
       <IconSpinner className={css.bookingRequestSpinner} />
@@ -150,12 +178,22 @@ const NotificationNewBookingRequest = props => {
               {senderListingTitle !== 'Title' ? senderListingTitle : ''}
             </h2>
           </div>
-          {message && (
+          {message || senderListingDescription ? (
             <div className={css.messageContainer}>
-              <h2 style={{ marginTop: 0 }}>Message</h2>
-              <p className={css.requestMessage}>{message}</p>
+              <ButtonTabNavHorizontal
+                tabs={tabs}
+                rootClassName={css.nav}
+                tabRootClassName={css.tab}
+                tabContentClass={css.tabContent}
+                tabClassName={css.tab}
+              />
+              {selectedTab === 'message' ? (
+                <p className={css.requestMessage}>{message}</p>
+              ) : (
+                <p className={css.requestMessage}>{senderListingDescription}</p>
+              )}
             </div>
-          )}
+          ) : null}
         </div>
         <div className={css.bookingInfo}>
           {bookingType === 'oneTime' ? (

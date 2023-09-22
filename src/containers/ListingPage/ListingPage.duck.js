@@ -293,17 +293,32 @@ export const sendEnquiry = (listing, message, history, routes) => async (
 
   const listingId = listing.id.uuid;
 
-  const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+  let previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
   const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
-  const messageHasEmail = previewMessage.includes('@');
-  const messageHasPhoneNumber = previewMessage.match(phoneRegex);
+  const emailRegex = /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g;
+  const messageEmails = previewMessage.match(emailRegex);
+  const messagePhoneNumbers = previewMessage.match(phoneRegex);
+
+  if (messageEmails) {
+    // loop through all message emails and replace each with stars
+    messageEmails.forEach(email => {
+      previewMessage = previewMessage.replace(email, '*'.repeat(email.length));
+    });
+  }
+
+  if (messagePhoneNumbers) {
+    // loop through all message phone numbers and replace each with stars
+    messagePhoneNumbers.forEach(phoneNumber => {
+      previewMessage = previewMessage.replace(phoneNumber, '*'.repeat(phoneNumber.length));
+    });
+  }
 
   const bodyParams = {
     transition: TRANSITION_INITIAL_MESSAGE,
     processAlias: config.messageProcessAlias,
     params: {
       listingId,
-      metadata: { message: messageHasEmail || messageHasPhoneNumber ? null : previewMessage },
+      metadata: { message: previewMessage, redacted: messageEmails || messagePhoneNumbers },
     },
   };
 
@@ -394,18 +409,34 @@ export const sendMessage = (txId, message, receiverId) => async (dispatch, getSt
       new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() > 1000 * 60 * 60;
 
     if (lastMessageMoreThan1HourAgo) {
-      const previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
+      let previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
       const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
-      const messageHasEmail = previewMessage.includes('@');
-      const messageHasPhoneNumber = previewMessage.match(phoneRegex);
+      const emailRegex = /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g;
+      const messageEmails = previewMessage.match(emailRegex);
+      const messagePhoneNumbers = previewMessage.match(phoneRegex);
+
+      if (messageEmails) {
+        // loop through all message emails and replace each with stars
+        messageEmails.forEach(email => {
+          previewMessage = previewMessage.replace(email, '*'.repeat(email.length));
+        });
+      }
+
+      if (messagePhoneNumbers) {
+        // loop through all message phone numbers and replace each with stars
+        messagePhoneNumbers.forEach(phoneNumber => {
+          previewMessage = previewMessage.replace(phoneNumber, '*'.repeat(phoneNumber.length));
+        });
+      }
 
       await sendgridTemplateEmail({
         receiverId,
         templateData: {
           marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-          message: messageHasEmail || messageHasPhoneNumber ? null : previewMessage,
+          message: previewMessage,
           senderName: lastMessage.sender.attributes.profile.displayName,
           txId,
+          redacted: messageEmails || messagePhoneNumbers,
         },
         templateName: 'new-message',
       });

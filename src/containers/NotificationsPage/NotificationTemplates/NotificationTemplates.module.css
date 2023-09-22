@@ -99,6 +99,7 @@
 
   @media screen(lg) {
     margin-right: 2rem;
+    max-width: 35rem;
   }
 }
 
@@ -145,6 +146,12 @@
   }
 }
 
+.tabContent {
+  font-size: 1.25rem;
+  font-weight: var(--fontWeightSemiBold);
+  padding-top: 0;
+}
+
 .messageContainer {
   box-shadow: var(--boxShadowCard);
   padding: 2rem;
@@ -157,10 +164,10 @@
 
 .requestMessage {
   overflow-y: auto;
-  margin: 0;
-  border: 1px solid var(--matterColorNegative);
-  padding: 1rem;
+  margin: 1rem 0;
+  padding: 0.25rem 0.5rem;
   height: 10rem;
+  border: 1px solid var(--matterColorNegative);
   border-radius: var(--borderRadiusButton);
 }
 
