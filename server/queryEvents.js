@@ -28,7 +28,7 @@ module.exports = queryEvents = () => {
     updateBookingEnd,
     updateNextWeekStart,
     makeReviewable,
-    updateBookingLedger,
+    updateNextWeekMetadata,
   } = require('./queryEvents.bookings');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -256,6 +256,8 @@ module.exports = queryEvents = () => {
         !metadata.cancelAtPeriodEnd &&
         (!metadata.endDate || new Date(metadata.endDate) > new Date());
 
+      const bookingType = metadata.type;
+
       // if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
       //   updateBookingEnd(transaction);
       // }
@@ -271,18 +273,21 @@ module.exports = queryEvents = () => {
         createCaregiverPayout(transaction);
       }
 
-      // if (
-      //   lastTransition === 'transition/complete' ||
-      //   lastTransition === 'transition/complete-canceled'
-      // ) {
-      //   makeReviewable(transaction);
-      //   createCaregiverPayout(transaction);
-      //   updateBookingLedger(transaction);
-      // }
+      if (
+        lastTransition === 'transition/complete' ||
+        lastTransition === 'transition/complete-canceled'
+      ) {
+        makeReviewable(transaction);
+        createCaregiverPayout(transaction);
+      }
 
-      if (lastTransition === 'transition/complete' && hasNextBooking) {
+      if (
+        lastTransition === 'transition/complete' &&
+        bookingType === 'recurring' &&
+        hasNextBooking
+      ) {
         updateNextWeekStart(transaction);
-        // updateNextWeekMetadata(transaction);
+        updateNextWeekMetadata(transaction);
       }
     }
 

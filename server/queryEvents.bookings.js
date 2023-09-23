@@ -352,10 +352,12 @@ const makeReviewable = async transaction => {
       include: ['reviews'],
     });
 
+    // Check if a previous transaction has already been made reviewable
     const reviews = await transactionResponse.data.data.filter(
       tx => tx.relationships.reviews.data.length > 0
     );
 
+    // If previous transaction has already been made reviewable, do nothing
     if (pendingReviews.includes(listingId) || reviews.length !== 0) return;
 
     await integrationSdk.users.updateProfile({
@@ -406,7 +408,6 @@ const updateBookingLedger = async transaction => {
     paymentMethodId,
     paymentIntentId,
     refundAmount,
-    chargedLineItems,
   } = transaction.attributes.metadata;
 
   const amount = parseFloat(
@@ -444,24 +445,14 @@ const updateBookingLedger = async transaction => {
         ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
         : null,
       end: bookingEnd.toISOString(),
-      bookingSessions: lineItems.map(item => ({
+      lineItems: lineItems.map(item => ({
         date: item.date,
         startTime: item.startTime,
         endTime: item.endTime,
       })),
     };
 
-    await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata: {
-        ledger: [...bookingLedger, ledgerEntry],
-
-        // Remove current line items from charged ones because they are now in ledger
-        chargedLineItems: chargedLineItems.filter(
-          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
-        ),
-      },
-    });
+    return [...bookingLedger, ledgerEntry];
   } catch (e) {
     log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
   }
@@ -475,6 +466,8 @@ const updateNextWeekMetadata = async transaction => {
     endDate,
     paymentMethodType,
     exceptions,
+    chargedLineItems,
+    lineItems,
   } = transaction.attributes.metadata;
 
   const newMetadata = constructBookingMetadataRecurring(
@@ -486,15 +479,21 @@ const updateNextWeekMetadata = async transaction => {
     exceptions
   );
 
+  const newLedger = await updateBookingLedger(transaction);
+
   try {
     await integrationSdk.transactions.updateMetadata({
       id: transaction.id.uuid,
       metadata: {
         ...newMetadata,
+        ledger: newLedger,
+        chargedLineItems: chargedLineItems.filter(
+          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
+        ),
       },
     });
   } catch (e) {
-    log.error(e, 'update-next-week-line-items-failed', {});
+    log.error(e, 'update-next-week-metadata-failed', {});
   }
 };
 
@@ -505,4 +504,5 @@ module.exports = {
   updateNextWeekStart,
   makeReviewable,
   updateBookingLedger,
+  updateNextWeekMetadata,
 };
