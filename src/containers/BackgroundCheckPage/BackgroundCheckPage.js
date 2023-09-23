@@ -472,7 +472,6 @@ const BackgroundCheckPage = props => {
         bcType === BASIC ? CAREVINE_BASIC_PRICE_ID : CAREVINE_GOLD_PRICE_ID,
         currentUser?.id?.uuid,
         {
-          coupon: bcType === BASIC ? null : CAREVINE_8_OFF_3_MONTHS_COUPON,
           proration_behavior: 'none',
         }
       ).then(() => {

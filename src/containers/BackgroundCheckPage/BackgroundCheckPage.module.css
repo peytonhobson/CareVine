@@ -79,6 +79,7 @@
 .screeningTitleContainer {
   width: 100%;
   text-align: center;
+  padding-bottom: 1.5rem;
 }
 
 .screeningTitle {
@@ -95,15 +96,17 @@
 
 .benefitsListContainer {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   padding-inline: 2rem;
+  margin-top: auto;
+  flex-grow: 1;
 }
 
 .benefitsList {
   list-style: none;
   display: block;
   padding-left: 0;
-  margin-top: 1rem;
+  margin-top: auto;
 
   & > li > p {
     margin-block: 0.2rem;

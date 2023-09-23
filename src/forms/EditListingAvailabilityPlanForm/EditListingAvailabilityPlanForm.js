@@ -10,9 +10,9 @@ import { findOptionsForSelectFilter } from '../../util/search';
 import config from '../../config';
 import { requiredFieldArrayRadio } from '../../util/validators';
 
-import css from './EditListingAvailabilityPlanForm.module.css';
-
 const filterConfig = config.custom.filters;
+
+import css from './EditListingAvailabilityPlanForm.module.css';
 
 const startTimeOrderMap = new Map([
   ['12:00am', 0],
