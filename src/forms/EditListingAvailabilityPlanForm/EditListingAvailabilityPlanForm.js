@@ -10,7 +10,18 @@ import { findOptionsForSelectFilter } from '../../util/search';
 import config from '../../config';
 import { requiredFieldArrayRadio } from '../../util/validators';
 
+const filterConfig = config.custom.filters;
+
 import css from './EditListingAvailabilityPlanForm.module.css';
+
+const sortEntries = (defaultCompareReturn = 0) => (a, b) => {
+  if (a.startTime && b.startTime) {
+    const aStart = startTimeOrderMap.get(a.startTime);
+    const bStart = startTimeOrderMap.get(b.startTime);
+    return aStart - bStart;
+  }
+  return defaultCompareReturn;
+};
 
 const submit = (onSubmit, weekdays, values) => {
   const sortedValues = weekdays.reduce(
