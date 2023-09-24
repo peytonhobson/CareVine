@@ -1,6 +1,50 @@
 const moment = require('moment');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
+const BOOKING_FEE_PERCENTAGE = 0.05;
+const BANK_ACCOUNT = 'us_bank_account';
+const CARD_PROCESSING_FEE = 0.029;
+const BANK_PROCESSING_FEE = 0.008;
+
+const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
+  const totalAmount = Number(subTotal) + Number(transactionFee);
+  if (selectedPaymentMethod === BANK_ACCOUNT) {
+    const calculatedFee = parseFloat(
+      Math.round(((totalAmount * BANK_PROCESSING_FEE) / (1 - BANK_PROCESSING_FEE)) * 100) / 100
+    ).toFixed(2);
+    return calculatedFee > 5 ? '5.00' : calculatedFee;
+  }
+
+  return parseFloat(
+    Math.round(((totalAmount * CARD_PROCESSING_FEE + 0.3) / (1 - CARD_PROCESSING_FEE)) * 100) / 100
+  ).toFixed(2);
+};
+
+const convertTimeFrom12to24 = fullTime => {
+  if (!fullTime || fullTime.length === 5) {
+    return fullTime;
+  }
+
+  const [time, ampm] = fullTime.split(/(am|pm)/i);
+  const [hours, minutes] = time.split(':');
+  let convertedHours = parseInt(hours);
+
+  if (ampm.toLowerCase() === 'am' && hours === '12') {
+    convertedHours = 0;
+  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
+    convertedHours += 12;
+  }
+
+  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+const calculateTimeBetween = (bookingStart, bookingEnd) => {
+  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
+  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
+
+  return end - start;
+};
+
 const filterInsideExceptions = (exceptions, startDate) =>
   Object.keys(exceptions).reduce((acc, exceptionKey) => {
     const insideExceptions = exceptions[exceptionKey].filter(exception =>
@@ -194,7 +238,7 @@ const constructBookingMetadataRecurring = (
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startDate)
-      .weekday(WEEKDAY_MAP[dayOfWeek])
+      .weekday(WEEKDAYS.indexOf(dayOfWeek))
       .toISOString();
 
     return {

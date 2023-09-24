@@ -258,9 +258,9 @@ module.exports = queryEvents = () => {
 
       const bookingType = metadata.type;
 
-      // if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
-      //   updateBookingEnd(transaction);
-      // }
+      if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
+        updateBookingEnd(transaction);
+      }
 
       if (lastTransition === 'transition/charge') {
         createBookingPayment(transaction);
