@@ -165,6 +165,7 @@ const findEndTimeFromLineItems = lineItems => {
 };
 
 const updateBookingEnd = async transaction => {
+  const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
   const bookingEnd = findEndTimeFromLineItems(lineItems);
@@ -184,7 +185,7 @@ const updateBookingEnd = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e?.data, 'update-booking-end-failed', {});
+    log.error(e, 'update-booking-end-failed', {});
   }
 };
 
@@ -269,7 +270,7 @@ const updateNextWeekStart = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e?.data?.errors, 'update-next-week-start-failed', {});
+    log.error(e?.data, 'update-next-week-start-failed', {});
   }
 };
 
