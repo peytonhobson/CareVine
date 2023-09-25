@@ -511,7 +511,7 @@ const updateBookingEnd = async transaction => {
   const bookingEnd = findEndTimeFromLineItems(lineItems);
   const bookingStart = moment(bookingEnd)
     .subtract(1, 'hours')
-    .toDate();
+    .toISOString();
 
   try {
     await integrationSdk.transactions.transition({
