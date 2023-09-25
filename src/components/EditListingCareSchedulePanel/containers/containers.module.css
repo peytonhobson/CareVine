@@ -137,6 +137,8 @@
   padding: 1px 0 5px 0;
   margin: 0 0 24px 0;
   display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .modalContainer {
@@ -158,6 +160,8 @@
     display: inline-block;
     margin-bottom: 1.5rem;
     margin-top: 2rem;
+    max-width: 17rem;
+    margin-inline: auto;
   }
 }
 

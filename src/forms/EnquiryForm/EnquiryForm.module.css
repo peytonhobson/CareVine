@@ -4,7 +4,7 @@
   justify-content: center;
   flex-direction: column;
   margin-top: 10px;
-  height: 60vh;
+  min-height: 60vh;
   flex-wrap: wrap;
   overflow-x: none;
 
@@ -27,6 +27,13 @@
   margin: 1.5rem 0;
   width: 100%;
   display: block;
+
+  @media screen(md) {
+    & textarea {
+      max-height: 10rem;
+      overflow-y: auto;
+    }
+  }
 }
 
 .error {

@@ -10,7 +10,45 @@ import { findOptionsForSelectFilter } from '../../util/search';
 import config from '../../config';
 import { requiredFieldArrayRadio } from '../../util/validators';
 
+const filterConfig = config.custom.filters;
+
 import css from './EditListingAvailabilityPlanForm.module.css';
+
+const startTimeOrderMap = new Map([
+  ['12:00am', 0],
+  ['1:00am', 1],
+  ['2:00am', 2],
+  ['3:00am', 3],
+  ['4:00am', 4],
+  ['5:00am', 5],
+  ['6:00am', 6],
+  ['7:00am', 7],
+  ['8:00am', 8],
+  ['9:00am', 9],
+  ['10:00am', 10],
+  ['11:00am', 11],
+  ['12:00pm', 12],
+  ['1:00pm', 13],
+  ['2:00pm', 14],
+  ['3:00pm', 15],
+  ['4:00pm', 16],
+  ['5:00pm', 17],
+  ['6:00pm', 18],
+  ['7:00pm', 19],
+  ['8:00pm', 20],
+  ['9:00pm', 21],
+  ['10:00pm', 22],
+  ['11:00pm', 23],
+]);
+
+const sortEntries = (defaultCompareReturn = 0) => (a, b) => {
+  if (a.startTime && b.startTime) {
+    const aStart = startTimeOrderMap.get(a.startTime);
+    const bStart = startTimeOrderMap.get(b.startTime);
+    return aStart - bStart;
+  }
+  return defaultCompareReturn;
+};
 
 const submit = (onSubmit, weekdays, values) => {
   const sortedValues = weekdays.reduce(
