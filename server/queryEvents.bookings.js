@@ -244,36 +244,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   return moment(startTime).toISOString();
 };
 
-// TODO: Double check this function
-const updateNextWeekStart = async transaction => {
-  const txId = transaction.id.uuid;
-  const { lineItems, bookingSchedule, exceptions } = transaction.attributes.metadata;
-
-  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
-  const bookingEnd = moment(nextWeekStartTime)
-    .clone()
-    .add(1, 'hours')
-    .toISOString();
-
-  if (!nextWeekStartTime) {
-    log.error({}, 'No next week start time found', { txId });
-    return;
-  }
-
-  try {
-    await integrationSdk.transactions.transition({
-      id: txId,
-      transition: 'transition/update-next-week-start',
-      params: {
-        bookingStart: nextWeekStartTime,
-        bookingEnd,
-      },
-    });
-  } catch (e) {
-    log.error(e?.data, 'update-next-week-start-failed', {});
-  }
-};
-
 const makeReviewable = async transaction => {
   const customerId = transaction.relationships.customer.data.id.uuid;
   const providerId = transaction.relationships.provider.data.id.uuid;
@@ -399,7 +369,8 @@ const updateBookingLedger = async transaction => {
   }
 };
 
-const updateNextWeekMetadata = async transaction => {
+const updateNextWeek = async transaction => {
+  const txId = transaction.id.uuid;
   const {
     bookingSchedule,
     bookingRate,
@@ -410,11 +381,33 @@ const updateNextWeekMetadata = async transaction => {
     lineItems,
   } = transaction.attributes.metadata;
 
-  const nextWeekStart = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
+  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
+  const bookingEnd = moment(nextWeekStartTime)
+    .clone()
+    .add(1, 'hours')
+    .toISOString();
+
+  // Update bookingStart to be next week start time
+  try {
+    if (!nextWeekStartTime) {
+      throw new Error('No next week start time found');
+    }
+
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/update-next-week-start',
+      params: {
+        bookingStart: nextWeekStartTime,
+        bookingEnd,
+      },
+    });
+  } catch (e) {
+    log.error(e?.data, 'update-next-week-start-failed', {});
+  }
 
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
-    moment(nextWeekStart)
+    moment(nextWeekStartTime)
       .startOf('week')
       .toISOString(),
     endDate,
@@ -425,14 +418,6 @@ const updateNextWeekMetadata = async transaction => {
 
   const newLedger = await updateBookingLedger(transaction);
 
-  console.log({
-    ...newMetadata,
-    ledger: newLedger,
-    chargedLineItems: chargedLineItems.filter(
-      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
-    ),
-  });
-
   try {
     await integrationSdk.transactions.updateMetadata({
       id: transaction.id.uuid,
@@ -440,7 +425,7 @@ const updateNextWeekMetadata = async transaction => {
         ...newMetadata,
         ledger: newLedger,
         chargedLineItems: chargedLineItems.filter(
-          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
+          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
         ),
       },
     });
@@ -453,8 +438,7 @@ module.exports = {
   createBookingPayment,
   createCaregiverPayout,
   updateBookingEnd,
-  updateNextWeekStart,
+  updateNextWeek,
   makeReviewable,
   updateBookingLedger,
-  updateNextWeekMetadata,
 };

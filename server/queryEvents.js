@@ -26,9 +26,8 @@ module.exports = queryEvents = () => {
     createBookingPayment,
     createCaregiverPayout,
     updateBookingEnd,
-    updateNextWeekStart,
+    updateNextWeek,
     makeReviewable,
-    updateNextWeekMetadata,
   } = require('./queryEvents.bookings');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -289,8 +288,7 @@ module.exports = queryEvents = () => {
         bookingType === 'recurring' &&
         hasNextBooking
       ) {
-        updateNextWeekStart(transaction);
-        updateNextWeekMetadata(transaction);
+        updateNextWeek(transaction);
       }
     }
 
