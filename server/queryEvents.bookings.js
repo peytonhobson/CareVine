@@ -177,7 +177,7 @@ const updateBookingEnd = async transaction => {
   try {
     await integrationSdk.transactions.transition({
       id: txId,
-      transition: 'transition/start-update-times',
+      transition: 'transition/start',
       params: {
         bookingStart,
         bookingEnd,

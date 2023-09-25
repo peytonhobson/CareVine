@@ -258,7 +258,10 @@ module.exports = queryEvents = () => {
 
       const bookingType = metadata.type;
 
-      if (lastTransition === 'transition/start' || lastTransition === 'transition/start-repeat') {
+      if (
+        lastTransition === 'transition/update-booking-end' ||
+        lastTransition === 'transition/update-booking-end-repeat'
+      ) {
         updateBookingEnd(transaction);
       }
 
