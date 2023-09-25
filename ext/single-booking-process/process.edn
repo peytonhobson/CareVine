@@ -88,17 +88,15 @@
    :from :state/charged,
    :to :state/canceled}
 
-   {:name :transition/start,
+   {:name :transition/update-booking-end,
    :at
    {:fn/timepoint [:time/booking-start]}
    :from :state/charged,
-   :to :state/active}
+   :to :state/updating-booking-end}
 
-    {:name :transition/start-update-times,
-    :actor :actor.role/operator,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}]
-   :from :state/active,
+   {:name :transition/start,
+   :actor :actor.role/operator,
+   :from :state/updating-booking-end,
    :to :state/active}
 
    {:name :transition/cancel-active-booking-customer,
