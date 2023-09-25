@@ -20,37 +20,20 @@ const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod)
   ).toFixed(2);
 };
 
-const convertTimeFrom12to24 = fullTime => {
-  if (!fullTime || fullTime.length === 5) {
-    return fullTime;
-  }
-
-  const [time, ampm] = fullTime.split(/(am|pm)/i);
-  const [hours, minutes] = time.split(':');
-  let convertedHours = parseInt(hours);
-
-  if (ampm.toLowerCase() === 'am' && hours === '12') {
-    convertedHours = 0;
-  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
-    convertedHours += 12;
-  }
-
-  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
-};
-
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
+  // Convert time from 12 hour to 24 hour format using moment
+  const start = moment(bookingStart, ['h:mma']).format('HH');
+  const end = moment(bookingEnd, ['h:mma']).format('HH');
 
-  return end - start;
+  return bookingEnd === '12:00am' ? 24 : end - start;
 };
 
-const filterInsideExceptions = (exceptions, startDate) =>
+const filterInsideExceptions = (exceptions, startOfWeek) =>
   Object.keys(exceptions).reduce((acc, exceptionKey) => {
     const insideExceptions = exceptions[exceptionKey].filter(exception =>
       moment(exception.date).isBetween(
-        moment(startDate).startOf('week'),
-        moment(startDate).endOf('week'),
+        moment(startOfWeek).startOf('week'),
+        moment(startOfWeek).endOf('week'),
         'day',
         '[]'
       )
@@ -59,15 +42,15 @@ const filterInsideExceptions = (exceptions, startDate) =>
     return { ...acc, [exceptionKey]: insideExceptions };
   }, {});
 
-const reduceWeekdays = (acc, weekday, insideExceptions, startDate, endDate) => {
-  const realDate = moment(startDate)
+const reduceWeekdays = (acc, weekday, insideExceptions, startOfWeek, endDate) => {
+  const realDate = moment(startOfWeek)
     .weekday(WEEKDAYS.indexOf(weekday.dayOfWeek))
     .toDate();
   const isPastEndDate = endDate ? moment(realDate).isAfter(endDate) : false;
 
   const isAfterStartDate =
-    moment(startDate).weekday(WEEKDAYS.indexOf(weekday.dayOfWeek)) >=
-    moment(startDate).startOf('day');
+    moment(startOfWeek).weekday(WEEKDAYS.indexOf(weekday.dayOfWeek)) >=
+    moment(startOfWeek).startOf('day');
   const isRemovedDay = insideExceptions.removedDays?.some(d =>
     moment(d.date).isSame(realDate, 'day')
   );
@@ -93,13 +76,14 @@ const reduceWeekdays = (acc, weekday, insideExceptions, startDate, endDate) => {
   return isAfterStartDate ? [...acc, weekday] : acc;
 };
 
-const filterWeeklyBookingDays = ({ weekdays, startDate, endDate, exceptions }) => {
+const filterWeeklyBookingDays = ({ weekdays, startOfWeek, endDate, exceptions }) => {
   if (!weekdays.length) return [];
 
-  const insideExceptions = filterInsideExceptions(exceptions, startDate);
+  const insideExceptions = filterInsideExceptions(exceptions, startOfWeek);
 
   const reducedWeekdays = weekdays.reduce(
-    (acc, weekday) => reduceWeekdays(acc, weekday, insideExceptions, startDate, endDate, weekdays),
+    (acc, weekday) =>
+      reduceWeekdays(acc, weekday, insideExceptions, startOfWeek, endDate, weekdays),
     []
   );
 
@@ -215,29 +199,25 @@ const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
 
 const constructBookingMetadataRecurring = (
   weekdays,
-  startDate,
+  startOfWeek,
   endDate,
   bookingRate,
   paymentMethodType,
   exceptions
 ) => {
-  const filteredWeekdaysObj = filterWeeklyBookingDays({
+  const filteredWeekdays = filterWeeklyBookingDays({
     weekdays,
-    startDate,
+    startOfWeek,
     endDate,
     exceptions,
   });
-
-  const filteredWeekdays = Object.keys(filteredWeekdaysObj)?.reduce((acc, weekdayKey) => {
-    return [...acc, { weekday: weekdayKey, ...filteredWeekdaysObj[weekdayKey] }];
-  }, []);
 
   const lineItems = filteredWeekdays.map(day => {
     const { dayOfWeek, startTime, endTime } = day;
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = moment(startDate)
+    const isoDate = moment(startOfWeek)
       .weekday(WEEKDAYS.indexOf(dayOfWeek))
       .toISOString();
 
@@ -267,11 +247,6 @@ const constructBookingMetadataRecurring = (
       2
     ),
     payout: parseFloat(payout).toFixed(2),
-    bookingSchedule: weekdays,
-    startDate: moment(startDate).toISOString(),
-    endDate: endDate ? moment(endDate).toISOString() : null,
-    cancelAtPeriodEnd: false,
-    type: 'recurring',
   };
 };
 

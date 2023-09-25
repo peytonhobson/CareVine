@@ -5,17 +5,11 @@ import { convertTimeFrom12to24, calculateProcessingFee } from '../../../util/dat
 import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
 import SingleBookingItem from './SingleBookingItem';
+import { calculateTimeBetween } from '../../../util/dates';
 
 import css from '../BookingSummaryCard.module.css';
 
 const TRANSACTION_FEE = 0.05;
-
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
-
-  return end - start;
-};
 
 const calculateTotalHours = bookingTimes =>
   bookingTimes?.reduce(

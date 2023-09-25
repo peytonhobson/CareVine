@@ -62,10 +62,11 @@ export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions)
 };
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
+  // Convert time from 12 hour to 24 hour format using moment
+  const start = moment(bookingStart, ['h:mma']).format('HH');
+  const end = moment(bookingEnd, ['h:mma']).format('HH');
 
-  return end - start;
+  return bookingEnd === '12:00am' ? 24 : end - start;
 };
 
 export const constructBookingMetadataOneTime = (
@@ -120,16 +121,12 @@ export const constructBookingMetadataRecurring = (
   paymentMethodType,
   exceptions
 ) => {
-  const filteredWeekdaysObj = filterWeeklyBookingDays({
+  const filteredWeekdays = filterWeeklyBookingDays({
     weekdays,
     startDate,
     endDate,
     exceptions,
   });
-
-  const filteredWeekdays = Object.keys(filteredWeekdaysObj)?.reduce((acc, weekdayKey) => {
-    return [...acc, { weekday: weekdayKey, ...filteredWeekdaysObj[weekdayKey] }];
-  }, []);
 
   const lineItems = filteredWeekdays.map(day => {
     const { dayOfWeek, startTime, endTime } = day;

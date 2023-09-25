@@ -928,3 +928,11 @@ export const filterAvailableBookingEndDates = (startDate, bookedDays, bookedDate
 
   return date < startDate || isBookedDay || isBookedDate || realDate <= TODAY;
 };
+
+export const calculateTimeBetween = (bookingStart, bookingEnd) => {
+  // Convert time from 12 hour to 24 hour format using moment
+  const start = moment(bookingStart, ['h:mma']).format('HH');
+  const end = moment(bookingEnd, ['h:mma']).format('HH');
+
+  return bookingEnd === '12:00am' ? 24 : end - start;
+};

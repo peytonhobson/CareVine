@@ -7,21 +7,21 @@ const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const employerUserToken = {
   access_token:
-    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NDAzMDU1LCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzUyZTFmNi1jMDdjLTQwM2MtODRhYy00OGJiYWVmNTg2YTIiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.9qJKBxFdG07Cxy5pHFMDoqTibHyEo0JFIfXAjoSmJo8',
+    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NjY3MjQ4LCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzUyZTFmNi1jMDdjLTQwM2MtODRhYy00OGJiYWVmNTg2YTIiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.RzW9hqmSZvQ6ag8kebdIOVdKlG3TsSsYEOJpbMGOmPE',
   scope: 'user',
   token_type: 'bearer',
   expires_in: 600,
   refresh_token:
-    'v2--33580563-ea7a-4a00-b88b-a151c648cc43--278928d1d1f2ebad1a9b2c4fb87202fdc3406db8',
+    'v2--8b44fc85-b961-4330-98cd-8420c2c8bb4a--2538a3f7837fbc7443bdc1ee83de80a22c617848',
 };
 const providerUserToken = {
   access_token:
-    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NDExNzgwLCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzliYmM5ZC05ZGFiLTRjMWQtYWYyYi1hY2QyNWYzNTAzMzQiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.0xdYh-QdKLFJQahGM7L92Bb0dKmUOhC7loqO2OhxmIc',
+    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NjY3MzYzLCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzliYmM5ZC05ZGFiLTRjMWQtYWYyYi1hY2QyNWYzNTAzMzQiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.1YSaCfeNYPkPjyZNvP_FKkiRPcf4fmUfa1CAGD1BWCE',
   scope: 'user',
   token_type: 'bearer',
   expires_in: 600,
   refresh_token:
-    'v2--c8657723-64d6-4dab-9c72-c028f174012d--8a78bf1f8efd7c6a15c92419ef0c854d2446f855',
+    'v2--c1c81ac1-ff2c-4e39-b579-0fb1775f52db--29f5079408ca98d3c32615b4f756641a44b6bcf7',
 };
 
 const timeout = 500;
@@ -64,38 +64,14 @@ const exceptions = {
     // },
   ],
   removedDays: [
-    {
-      date: startOfDay
-        .clone()
-        .add(7, 'days')
-        .toISOString(),
-      type: 'removeDate',
-      day: WEEKDAYS[moment().weekday() - 1],
-    },
-    {
-      date: startOfDay
-        .clone()
-        .add(7 * 2, 'days')
-        .toISOString(),
-      type: 'removeDate',
-      day: WEEKDAYS[moment().weekday() - 1],
-    },
-    {
-      date: startOfDay
-        .clone()
-        .add(7 * 3, 'days')
-        .toISOString(),
-      type: 'removeDate',
-      day: WEEKDAYS[moment().weekday() - 1],
-    },
-    {
-      date: startOfDay
-        .clone()
-        .add(7 * 4, 'days')
-        .toISOString(),
-      type: 'removeDate',
-      day: WEEKDAYS[moment().weekday() - 1],
-    },
+    // {
+    //   date: startOfDay
+    //     .clone()
+    //     .add(7, 'days')
+    //     .toISOString(),
+    //   type: 'removeDate',
+    //   day: WEEKDAYS[moment().weekday() - 1],
+    // },
   ],
   changedDays: [],
 };

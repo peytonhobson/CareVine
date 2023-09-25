@@ -8,25 +8,19 @@ import {
   WeeklyBillingDetails,
   BookingException,
 } from '../../../components';
-import { convertTimeFrom12to24, calculateProcessingFee } from '../../../util/data';
+import { calculateProcessingFee } from '../../../util/data';
 import moment from 'moment';
-import { WEEKDAY_MAP, WEEKDAYS } from '../../../util/constants';
+import { WEEKDAYS } from '../../../util/constants';
 import RecurringBookingItem from './RecurringBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
 import { sortExceptionsByDate } from '../../../util/bookings';
+import { filterWeeklyBookingDays } from '../../../util/bookings';
+import { calculateTimeBetween } from '../../../util/dates';
 
 import css from '../BookingSummaryCard.module.css';
-import { filterWeeklyBookingDays } from '../../../util/bookings';
 
 const TRANSACTION_FEE = 0.05;
-
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
-
-  return end - start;
-};
 
 const calculateTotalHours = weekdays =>
   weekdays?.reduce((acc, curr) => acc + calculateTimeBetween(curr.startTime, curr.endTime), 0);

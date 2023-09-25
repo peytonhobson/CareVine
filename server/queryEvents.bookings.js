@@ -148,24 +148,6 @@ const createCaregiverPayout = async transaction => {
   }
 };
 
-const convertTimeFrom12to24 = fullTime => {
-  if (!fullTime || fullTime.length === 5) {
-    return fullTime;
-  }
-
-  const [time, ampm] = fullTime.split(/(am|pm)/i);
-  const [hours, minutes] = time.split(':');
-  let convertedHours = parseInt(hours);
-
-  if (ampm.toLowerCase() === 'am' && hours === '12') {
-    convertedHours = 0;
-  } else if (ampm.toLowerCase() === 'pm' && hours !== '12') {
-    convertedHours += 12;
-  }
-
-  return `${convertedHours.toString().padStart(2, '0')}:${minutes}`;
-};
-
 const findEndTimeFromLineItems = lineItems => {
   if (!lineItems || lineItems.length === 0) return null;
   const sortedLineItems = lineItems.sort((a, b) => {
@@ -174,7 +156,7 @@ const findEndTimeFromLineItems = lineItems => {
 
   const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   const additionalTime =
-    lastDay.endTime === '12:00am' ? 24 : convertTimeFrom12to24(lastDay.endTime).split(':')[0];
+    lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
   const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
     .add(additionalTime, 'hours')
     .toDate();
@@ -188,7 +170,9 @@ const updateBookingEnd = async transaction => {
   const bookingEnd = findEndTimeFromLineItems(lineItems);
   const bookingStart = moment(bookingEnd)
     .subtract(1, 'hours')
-    .toDate();
+    .toISOString();
+
+  console.log(bookingEnd);
 
   try {
     await integrationSdk.transactions.transition({
@@ -200,7 +184,7 @@ const updateBookingEnd = async transaction => {
       },
     });
   } catch (e) {
-    log.error(e?.data?.errors, 'update-booking-end-failed', {});
+    log.error(e?.data, 'update-booking-end-failed', {});
   }
 };
 
@@ -417,7 +401,6 @@ const updateBookingLedger = async transaction => {
 const updateNextWeekMetadata = async transaction => {
   const {
     bookingSchedule,
-    startDate,
     bookingRate,
     endDate,
     paymentMethodType,
@@ -440,6 +423,14 @@ const updateNextWeekMetadata = async transaction => {
   );
 
   const newLedger = await updateBookingLedger(transaction);
+
+  console.log({
+    ...newMetadata,
+    ledger: newLedger,
+    chargedLineItems: chargedLineItems.filter(
+      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date))
+    ),
+  });
 
   try {
     await integrationSdk.transactions.updateMetadata({

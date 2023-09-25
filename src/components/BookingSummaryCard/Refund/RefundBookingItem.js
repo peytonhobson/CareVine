@@ -1,17 +1,9 @@
 import React from 'react';
 
-import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
-import { addTimeToStartOfDay } from '../../util/dates';
+import { addTimeToStartOfDay, calculateTimeBetween } from '../../util/dates';
 
 import css from '../BookingSummaryCard.module.css';
-
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  const start = convertTimeFrom12to24(bookingStart).split(':')[0];
-  const end = bookingEnd === '12:00am' ? 24 : convertTimeFrom12to24(bookingEnd).split(':')[0];
-
-  return end - start;
-};
 
 const RefundBookingItem = props => {
   const { lineItem } = props;
