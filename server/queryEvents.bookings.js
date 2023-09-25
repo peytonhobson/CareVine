@@ -23,16 +23,6 @@ const apiBaseUrl = () => {
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const weekdayMap = {
-  sun: 0,
-  mon: 1,
-  tue: 2,
-  wed: 3,
-  thu: 4,
-  fri: 5,
-  sat: 6,
-};
-
 const createBookingPayment = async transaction => {
   const {
     lineItems,
@@ -214,41 +204,17 @@ const updateBookingEnd = async transaction => {
   }
 };
 
-const findStartTimeFromLineItems = lineItems => {
-  if (!lineItems || lineItems.length === 0) return null;
-  const sortedLineItems = lineItems.sort((a, b) => {
-    return new Date(a.date) - new Date(b.date);
-  });
-
-  const firstDay = sortedLineItems[0] ?? { startTime: '12:00am' };
-  const additionalTime = convertTimeFrom12to24(firstDay.startTime).split(':')[0];
-  const startTime = moment(sortedLineItems[0].date)
-    .add(additionalTime, 'hours')
-    .toDate();
-
-  return startTime;
-};
-
-// TODO: Double check this function
 const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNum = 1) => {
-  console.log(attemptNum);
   if (attemptNum > 4) return null;
   // Find start and end of next week
   const nextWeekLineItemStart = moment(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
 
-  console.log('lineItemDate', moment(lineItems[0].date).toISOString());
-  console.log('newWeekLineItemStart', nextWeekLineItemStart.toISOString());
-  console.log('nextWeekStart', nextWeekStart.toISOString());
-  console.log('nextWeekEnd', nextWeekEnd.toISOString());
-
   // Filter exceptions for those within next week
   const insideExceptions = Object.values(exceptions)
     .flat()
     .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
-
-  console.log('insideExceptions', insideExceptions);
 
   // Create new booking schedule with exceptions
   const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
@@ -259,8 +225,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
       e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
     );
 
-    console.log('addOrChangeDay', addOrChangeDay);
-    console.log('day');
     if (addOrChangeDay) {
       return [
         ...acc,
@@ -282,8 +246,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
     return findNextWeekStartTime(lineItems, bookingSchedule, exceptions, attemptNum + 1);
   }
 
-  console.log('newBookingSchedule', newBookingSchedule);
-
   const firstDay = newBookingSchedule[0] || {};
   const firstTime = firstDay.startTime;
   const startTime = addTimeToStartOfDay(
@@ -294,8 +256,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
     firstTime
   );
 
-  console.log('startTime', startTime.toISOString());
-
   return moment(startTime).toISOString();
 };
 
@@ -303,10 +263,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
 const updateNextWeekStart = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems, bookingSchedule, exceptions } = transaction.attributes.metadata;
-
-  console.log('lineItems', lineItems);
-  console.log('bookingSchedule', bookingSchedule);
-  console.log('exceptions', exceptions);
 
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
   const bookingEnd = moment(nextWeekStartTime)
@@ -470,9 +426,13 @@ const updateNextWeekMetadata = async transaction => {
     lineItems,
   } = transaction.attributes.metadata;
 
+  const nextWeekStart = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
+
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
-    startDate,
+    moment(nextWeekStart)
+      .startOf('week')
+      .toISOString(),
     endDate,
     bookingRate,
     paymentMethodType,
