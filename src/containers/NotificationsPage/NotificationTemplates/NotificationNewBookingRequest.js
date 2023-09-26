@@ -76,7 +76,7 @@ const NotificationNewBookingRequest = props => {
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
-  const { bookedDates, bookedDays } = listing?.attributes?.metadata || {};
+  const { bookedDates = [], bookedDays = [] } = listing?.attributes?.metadata || {};
 
   const senderName = userDisplayNameAsString(customer);
 
@@ -98,8 +98,6 @@ const NotificationNewBookingRequest = props => {
   }));
   const bookingDates = lineItems?.map(l => new Date(l.date));
 
-  console.log(bookingSchedule);
-
   const isLarge = useMediaQuery('(min-width:1024px)');
   const isNotAcceptedOrDeclined =
     currentTransaction?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
@@ -112,8 +110,9 @@ const NotificationNewBookingRequest = props => {
     currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_PAYMENT;
   const hasSameDayBooking = useMemo(
     () =>
-      (checkHasBlockedDates(bookingDates, bookedDates) ||
-        checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
+      (bookingType === 'oneTime'
+        ? checkHasBlockedDates(bookingDates, bookedDates)
+        : checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
       !(acceptBookingSuccess || acceptBookingInProgress),
     [bookedDates, lineItems, bookedDays, startDate, endDate, exceptions]
   );

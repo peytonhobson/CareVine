@@ -85,7 +85,7 @@ export const checkForExceptions = exceptions => {
   return Object.keys(exceptions).some(key => exceptions[key].length > 0);
 };
 
-export const checkHasBlockedDates = (dates, bookedDates) =>
+export const checkHasBlockedDates = (dates = [], bookedDates = []) =>
   dates?.some(d => bookedDates.includes(d.date));
 
 export const checkHasBlockedDays = (
@@ -93,7 +93,7 @@ export const checkHasBlockedDays = (
   startDate,
   endDate,
   exceptions,
-  bookedDays
+  bookedDays = []
 ) => {
   if (!bookingSchedule || !bookedDays || !startDate) return false;
 
