@@ -191,7 +191,9 @@ const updateBookingEnd = async transaction => {
 
 const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNum = 1) => {
   if (attemptNum > 4) return null;
+
   // Find start and end of next week
+  // Unlike cron you can use lineItems here because they haven't been updated yet
   const nextWeekLineItemStart = moment(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
