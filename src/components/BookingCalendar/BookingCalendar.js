@@ -6,9 +6,10 @@ import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingCalendar.module.css';
+import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bookings';
 
-const isDayHighlightedSingle = (bookedDates, date) =>
-  bookedDates.map(d => d.getTime()).includes(date.getTime());
+const isDayHighlightedSingle = (bookingDates, date) =>
+  bookingDates.map(d => d.getTime()).includes(date.getTime());
 
 const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, exceptions) =>
   (bookingSchedule.some(
@@ -26,58 +27,43 @@ const isDayUnavailable = ({
   bookingSchedule,
   startDate,
   endDate,
-  unavailableDates,
+  bookedDates,
+  bookedDays,
   date,
   exceptions,
 }) => {
-  const { bookedDates = [], bookedDays = [] } = unavailableDates;
-
-  const isAfterStartDate = moment(startDate).isSameOrBefore(date);
-  const isBeforeEndDate = !endDate || moment(endDate).isSameOrAfter(date);
+  const isInBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
+  const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
   const isInBookingSchedule =
-    (bookingSchedule.some(b => b.dayOfWeek === [WEEKDAYS[date.getDay()]]) ||
-      exceptions?.addedDays?.some(d => moment(d.date).isSame(date))) &&
-    !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
+    bookingSchedule.some(d => WEEKDAYS.indexOf(d.dayOfWeek) === moment(date).weekday()) ||
+    exceptions?.addedDays?.some(d => moment(d.date).isSame(date));
 
-  const bookedDay = bookedDays.some(booking => {
-    return (
-      booking.days.includes(WEEKDAYS[date.getDay()]) &&
-      moment(booking.startDate).isSameOrBefore(date) &&
-      (!booking.endDate || moment(booking.endDate).isSameOrAfter(date))
-    );
-  });
-
-  if (bookedDay && isAfterStartDate && isBeforeEndDate && isInBookingSchedule) return true;
-
-  const bookedDate = bookedDates.some(bookingDate => {
-    return moment(bookingDate).isSame(date);
-  });
-
-  return bookedDate && isAfterStartDate && isBeforeEndDate && isInBookingSchedule;
+  return isInBookingWindow && isBlockedDay && isInBookingSchedule;
 };
 
 const formatDay = ({
-  locale,
   date,
+  bookingDates,
   bookedDates,
+  bookedDays,
   noDisabled,
   bookingSchedule,
   startDate,
   endDate,
-  unavailableDates,
   exceptions,
 }) => {
   const day = date.getDate();
   const isHighlighted =
     bookingSchedule?.length > 0
       ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date, exceptions)
-      : isDayHighlightedSingle(bookedDates, date);
+      : isDayHighlightedSingle(bookingDates, date);
   const isDisabled = noDisabled ? false : isDayDisabled(date);
   const isUnavailable = isDayUnavailable({
     bookingSchedule,
     startDate,
     endDate,
-    unavailableDates,
+    bookedDates,
+    bookedDays,
     date,
     exceptions,
   });
@@ -103,19 +89,20 @@ const formatDay = ({
 
 export const BookingCalendar = props => {
   const {
+    bookingDates = [],
     bookedDates = [],
+    bookedDays = [],
     bookingSchedule = [],
     startDate,
     endDate,
     noDisabled,
-    unavailableDates = {},
     children,
     className,
     exceptions,
   } = props;
 
   const classes = classNames(className, css.root);
-  const initialDate = bookedDates?.[0] || new Date();
+  const initialDate = bookingDates?.[0] || new Date();
 
   return (
     <div className={classes}>
@@ -124,12 +111,13 @@ export const BookingCalendar = props => {
           formatDay({
             locale,
             date,
+            bookingDates,
+            bookedDays,
             bookedDates,
             noDisabled,
             bookingSchedule,
             startDate,
             endDate,
-            unavailableDates,
             exceptions,
           })
         }

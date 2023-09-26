@@ -13,11 +13,16 @@ import {
 } from '..';
 import classNames from 'classnames';
 import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
-import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
+import { WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../util/hooks';
-import { sortExceptionsByDate, mapWeekdays } from '../../util/bookings';
+import {
+  sortExceptionsByDate,
+  mapWeekdays,
+  checkIsBlockedDay,
+  checkIsDateWithinBookingWindow,
+} from '../../util/bookings';
 
 import css from './BookingExceptions.module.css';
 
@@ -31,75 +36,33 @@ const filterAvailableAddExceptionDays = (
 ) => date => {
   const day = date.day();
   const realDate = date.startOf('day');
-  const isBookedDay = bookedDays.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
-  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
+  const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
   const isAlreadySelected = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => e.date === realDate.toISOString());
+  const isWithinBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
 
-  return (
-    (endDate && date > endDate) ||
-    isBookedDay ||
-    isBookedDate ||
-    realDate < startDate ||
-    isAlreadySelected ||
-    isAlreadyException
-  );
+  return isBlockedDay || isAlreadySelected || isAlreadyException || !isWithinBookingWindow;
 };
 
-const filterAvailableChangeExceptionDays = (
-  startDate,
-  endDate,
-  weekdays,
-  exceptions,
-  bookedDays,
-  bookedDates
-) => date => {
-  const realDate = date.startOf('day');
-  const day = date.day();
+const filterAvailableChangeExceptionDays = (startDate, endDate, weekdays, exceptions) => date => {
+  const day = moment(date).weekday();
   const isAlreadyException = Object.values(exceptions)
     .flat()
-    .some(e => e.date === date.toISOString());
-  const isAlreadySelected = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
+    .some(e => moment(date).isSame(e.date, 'day'));
+  const isInBookingSchedule = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
+  const isDateWithinBooking = checkIsDateWithinBookingWindow({ startDate, endDate, date });
 
-  const isBookedDay = bookedDays.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
-  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
-
-  return (
-    isAlreadyException ||
-    !isAlreadySelected ||
-    isBookedDay ||
-    isBookedDate ||
-    (endDate && realDate > endDate) ||
-    realDate < startDate
-  );
+  return isAlreadyException || !isInBookingSchedule || !isDateWithinBooking;
 };
 
 const renderChangeDayContents = (bookedDays, bookedDates) => (date, classes) => {
-  const realDate = date.startOf('day');
-  const day = date.day();
-  const isBookedDay = bookedDays?.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
-  const isBookedDate = bookedDates?.some(d => d === realDate.toISOString());
+  const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
 
   const isBlocked = classes.has('blocked');
 
-  return isBookedDay || isBookedDate ? (
+  return isBlockedDay ? (
     <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
   ) : (
     <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
@@ -408,12 +371,10 @@ const BookingExceptions = props => {
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
             isDayBlocked={filterAvailableChangeExceptionDays(
-              startDate,
-              endDate,
+              startDate?.date,
+              endDate?.date,
               weekdays,
-              exceptions,
-              bookedDays,
-              bookedDates
+              exceptions
             )}
             useMobileMargins
             showErrorMessage={false}

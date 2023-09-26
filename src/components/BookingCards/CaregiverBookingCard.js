@@ -37,8 +37,8 @@ import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
 import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
 import {
-  checkHasBlockedDates,
-  checkHasBlockedDays,
+  checkIsBlockedOneTime,
+  checkIsBlockedRecurring,
   sortExceptionsByDate,
 } from '../../util/bookings';
 import classNames from 'classnames';
@@ -158,10 +158,11 @@ const CaregiverBookingCard = props => {
   const showMenu = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
-      (checkHasBlockedDates(bookingDates, bookedDates) ||
-        checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
+      (scheduleType === 'oneTime'
+        ? checkIsBlockedOneTime({ bookingDates, listing })
+        : checkIsBlockedRecurring({ bookingSchedule, startDate, endDate, exceptions, listing })) &&
       !(acceptBookingSuccess || acceptBookingInProgress),
-    [bookedDates, lineItems, bookedDays]
+    [bookingDates, listing, startDate, endDate, exceptions, scheduleType]
   );
 
   const previewTimeCount =
@@ -379,7 +380,7 @@ const CaregiverBookingCard = props => {
             Booking Calendar
           </p>
           <BookingCalendar
-            bookedDates={bookingDates}
+            bookingDates={bookingDates}
             bookingSchedule={bookingSchedule}
             startDate={startDate}
             endDate={endDate}

@@ -22,8 +22,8 @@ import {
 import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
 import {
   checkForExceptions,
-  checkHasBlockedDates,
-  checkHasBlockedDays,
+  checkIsBlockedOneTime,
+  checkIsBlockedRecurring,
 } from '../../../util/bookings';
 import { useMediaQuery } from '@material-ui/core';
 import moment from 'moment';
@@ -111,10 +111,10 @@ const NotificationNewBookingRequest = props => {
   const hasSameDayBooking = useMemo(
     () =>
       (bookingType === 'oneTime'
-        ? checkHasBlockedDates(bookingDates, bookedDates)
-        : checkHasBlockedDays(bookingSchedule, startDate, endDate, exceptions, bookedDays)) &&
+        ? checkIsBlockedOneTime({ bookingDates, listing })
+        : checkIsBlockedRecurring({ bookingSchedule, startDate, endDate, exceptions, listing })) &&
       !(acceptBookingSuccess || acceptBookingInProgress),
-    [bookedDates, lineItems, bookedDays, startDate, endDate, exceptions]
+    [bookingDates, listing, startDate, endDate, exceptions, bookingType]
   );
   const isCanceledRequest =
     currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;

@@ -329,7 +329,7 @@ const EmployerBookingCard = props => {
             Booking Calendar
           </p>
           <BookingCalendar
-            bookedDates={bookingDates}
+            bookingDates={bookingDates}
             bookingSchedule={bookingSchedule}
             startDate={startDate}
             endDate={endDate}

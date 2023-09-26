@@ -1,3 +1,4 @@
+const { default: d } = require('final-form-arrays');
 const moment = require('moment');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
@@ -114,36 +115,6 @@ const checkForExceptions = exceptions => {
   return Object.keys(exceptions).some(key => exceptions[key].length > 0);
 };
 
-const checkHasBlockedDates = (dates, bookedDates) => dates?.some(d => bookedDates.includes(d.date));
-
-const checkHasBlockedDays = (bookingSchedule, startDate, endDate, exceptions, bookedDays) => {
-  if (!bookingSchedule || !bookedDays || !startDate) return false;
-
-  const overlappingDays = bookedDays.filter(
-    d =>
-      moment(d.startDate).isBetween(startDate, endDate, 'day', '[]') ||
-      moment(d.endDate).isBetween(startDate, endDate, 'day', '[]') ||
-      (moment(d.startDate).isSameOrBefore(startDate, 'day') &&
-        (!d.endDate || moment(d.endDate).isSameOrAfter(endDate, 'day')))
-  );
-
-  if (overlappingDays.length === 0) return false;
-
-  const hasBlockedDay = overlappingDays.some(d => {
-    return d.days.some(day => bookingSchedule.find(b => b.dayOfWeek === day));
-  });
-
-  if (hasBlockedDay) return true;
-
-  const insideExceptions = filterInsideExceptions(exceptions, startDate);
-
-  const hasBlockedException = insideExceptions.addedDays.some(exception => {
-    return overlappingDays.some(d => d.days.includes(WEEKDAYS[moment(exception.date).weekday()]));
-  });
-
-  return hasBlockedException;
-};
-
 const mapWeekdays = values =>
   WEEKDAYS.reduce((acc, val) => {
     if (values[val]) {
@@ -253,8 +224,6 @@ const constructBookingMetadataRecurring = (
 module.exports = {
   filterWeeklyBookingDays,
   checkForExceptions,
-  checkHasBlockedDates,
-  checkHasBlockedDays,
   mapWeekdays,
   getFirstWeekEndDate,
   sortExceptionsByDate,

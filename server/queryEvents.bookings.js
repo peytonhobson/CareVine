@@ -234,6 +234,10 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   }
 
   const firstDay = newBookingSchedule[0] || {};
+
+  console.log('newBookingSchedule', newBookingSchedule);
+  console.log('firstDay', firstDay);
+
   const firstTime = firstDay.startTime;
   const startTime = addTimeToStartOfDay(
     nextWeekStart
@@ -305,7 +309,7 @@ const makeReviewable = async transaction => {
 };
 
 const addTimeToStartOfDay = (day, time) => {
-  const hours = moment(time, ['h:mm A']).format('HH');
+  const hours = moment(time, ['h:mma']).format('HH');
   return moment(day)
     .add(hours, 'hours')
     .toDate();

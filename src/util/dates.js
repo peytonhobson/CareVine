@@ -3,7 +3,7 @@
 // and slows down the first paint.
 import moment from 'moment-timezone/builds/moment-timezone-with-data-10-year-range.min';
 import jstz from 'jstimezonedetect';
-import { WEEKDAY_MAP } from './constants';
+import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from './bookings';
 /**
  * Input names for the DateRangePicker from react-dates.
  */
@@ -869,7 +869,7 @@ export const isYesterday = dirtyDate => {
 };
 
 export const addTimeToStartOfDay = (day, time) => {
-  const hours = moment(time, ['h:mm A']).format('HH');
+  const hours = moment(time, ['h:mma']).format('HH');
   return moment(day)
     .add(hours, 'hours')
     .toDate();
@@ -900,33 +900,22 @@ export const getAvailableStartDates = endDate => day => {
 const TODAY = new Date();
 
 export const filterAvailableBookingStartDates = (endDate, bookedDays, bookedDates) => date => {
-  const day = date.day();
-  const realDate = date.startOf('day');
-  const isBookedDay = bookedDays.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
+  // TODO: Remove subtract
+  const isAfterOrSameDay = checkIsDateWithinBookingWindow({
+    date,
+    endDate,
+    startDate: moment().subtract(1, 'days'),
+  });
+  const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
 
-  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
-
-  // TODO: Put back to realDate <= TODAY
-  return (endDate && date > endDate) || isBookedDay || isBookedDate;
+  return !isAfterOrSameDay || isBooked;
 };
 
 export const filterAvailableBookingEndDates = (startDate, bookedDays, bookedDates) => date => {
-  const day = date.day();
-  const realDate = date.startOf('day');
-  const isBookedDay = bookedDays.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
-  const isBookedDate = bookedDates.some(d => d === realDate.toISOString());
+  const isBeforeOrSameDay = checkIsDateWithinBookingWindow({ date, endDate: TODAY, startDate });
+  const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
 
-  return date < startDate || isBookedDay || isBookedDate || realDate <= TODAY;
+  return isBooked || isBeforeOrSameDay;
 };
 
 export const calculateTimeBetween = (bookingStart, bookingEnd) => {

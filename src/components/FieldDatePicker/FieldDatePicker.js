@@ -8,51 +8,25 @@ import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 
 import css from './FieldDatePicker.module.css';
 import { InlineTextButton } from '../Button/Button';
+import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bookings';
 
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = (
-  bookedDates,
-  bookedDays,
-  selectedDays,
-  date,
-  bufferDays,
-  currentBookedDays
-) => {
-  const beforeBuffer =
-    date.getTime() <
-    moment()
-      .add(bufferDays ?? 1, 'days')
-      .startOf('day')
-      .toDate()
-      .getTime();
+const isDayDisabled = ({ bookedDates, bookedDays, selectedDays, date, currentBookedDays }) => {
+  const inPastOrToday = moment(date).isSameOrBefore(moment(), 'day');
 
   let isCurrentBookedDay = false;
   if (currentBookedDays) {
-    const afterStart = currentBookedDays.startDate <= date;
-    const beforeEnd = !currentBookedDays.endDate || date <= currentBookedDays.endDate;
+    const { startDate, endDate } = currentBookedDays;
+    const isWithinBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
     const isSelectedWeekday = currentBookedDays.days.includes(WEEKDAYS[date.getDay()]);
 
-    isCurrentBookedDay = !afterStart || !beforeEnd || !isSelectedWeekday;
+    isCurrentBookedDay = !isWithinBookingWindow || !isSelectedWeekday;
   }
 
-  const dateBooked = bookedDates.some(
-    d => moment(d).format('YYYY-MM-DD') === moment(date).format('YYYY-MM-DD')
-  );
-
-  const dayBooked = bookedDays.some(d => {
-    const day = date.getDay();
-
-    return (
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      new Date(d.startDate) <= date &&
-      (!d.endDate || date <= new Date(d.endDate))
-    );
-  });
-
   if (selectedDays.length == 0) {
-    return dateBooked || beforeBuffer || dayBooked || isCurrentBookedDay;
+    return inPastOrToday || isCurrentBookedDay;
   }
 
   const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
@@ -71,37 +45,27 @@ const isDayDisabled = (
   const isBeforeFirstSelectedDay = date.getTime() >= twoWeeksAfterFirstSelectedDay.getTime();
   const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
 
-  return (
-    dateBooked ||
-    isBeforeFirstSelectedDay ||
-    isAfterLastSelectedDay ||
-    beforeBuffer ||
-    dayBooked ||
-    isCurrentBookedDay
-  );
+  return inPastOrToday || isBeforeFirstSelectedDay || isAfterLastSelectedDay || isCurrentBookedDay;
 };
 
-const formatDay = (
-  locale,
+const formatDay = ({
   date,
   selectedDays,
   bookedDates,
   bookedDays,
   onClick,
-  bufferDays,
   currentBookedDays,
-  highlightedClassName
-) => {
+  highlightedClassName,
+}) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled(
+  const isDisabled = isDayDisabled({
     bookedDates,
     bookedDays,
     selectedDays,
     date,
-    bufferDays,
-    currentBookedDays
-  );
+    currentBookedDays,
+  });
 
   if (isHighlighted) {
     return (
@@ -130,7 +94,6 @@ export const FieldDatePickerComponent = props => {
     input,
     children,
     className,
-    bufferDays,
     onChange,
     currentBookedDays,
     highlightedClassName,
@@ -173,18 +136,16 @@ export const FieldDatePickerComponent = props => {
     <div className={classes}>
       {children}
       <Calendar
-        formatDay={(locale, date) =>
-          formatDay(
-            locale,
+        formatDay={(_, date) =>
+          formatDay({
             date,
             selectedDays,
             bookedDates,
             bookedDays,
-            handleSelectDay,
-            bufferDays,
+            onClick: handleSelectDay,
             currentBookedDays,
-            highlightedClassName
-          )
+            highlightedClassName,
+          })
         }
         value={initialDate}
         view="month"

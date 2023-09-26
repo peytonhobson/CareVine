@@ -8,26 +8,19 @@ import {
   filterAvailableBookingStartDates,
 } from '../../../util/dates';
 import { WEEKDAYS, WEEKDAY_MAP } from '../../../util/constants';
-import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../../util/hooks';
+import moment from 'moment';
 
 import css from '../EditBookingForm.module.css';
-import { mapWeekdays } from '../../../util/bookings';
+import { checkIsBlockedDay, mapWeekdays } from '../../../util/bookings';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
 const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes) => {
-  const realDate = date.startOf('day');
-  const day = date.day();
-  const isBookedDay = bookedDays?.some(
-    d =>
-      d.days.some(dd => WEEKDAY_MAP[dd] === day) &&
-      (!d.endDate || realDate <= new Date(d.endDate)) &&
-      realDate >= new Date(d.startDate)
-  );
-  const isBookedDate = bookedDates?.some(d => d === realDate.toISOString());
+  const isBlockedDay = checkIsBlockedDay({ date, bookedDays, bookedDates });
+  const dateInPast = moment(date).isBefore(moment().startOf('day'));
 
   const isBlocked = classes.has('blocked');
 
@@ -35,8 +28,8 @@ const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes)
     return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
   }
 
-  return isBookedDay || isBookedDate ? (
-    <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
+  return isBlockedDay && !dateInPast ? (
+    <div className="text-error cursor-not-allowed">{date.format('D')}</div>
   ) : (
     <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
   );
@@ -71,6 +64,8 @@ const SectionRecurring = props => {
       form.change('endDate', null);
     }
   }, [weekdays?.length]);
+
+  console.log('unavailableDates', unavailableDates);
 
   return (
     <div className={css.recurringRoot}>

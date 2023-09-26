@@ -9,7 +9,6 @@ import {
   Button,
   NamedLink,
   ButtonTabNavHorizontal,
-  PrimaryButton,
   Modal,
   BookingCalendar,
 } from '../../components';
@@ -25,48 +24,40 @@ import { SectionOneTime, SectionRecurring, SectionRequest, SectionPayment } from
 import moment from 'moment';
 import { WEEKDAYS } from '../../util/constants';
 import WarningIcon from '@mui/icons-material/Warning';
-import { mapWeekdays } from '../../util/bookings';
+import {
+  checkIsDateWithinBookingWindow,
+  mapWeekdays,
+  checkIfBookingDateRangesOverlap,
+} from '../../util/bookings';
 
 import css from './EditBookingForm.module.css';
 
-const reverseWeekdayMap = {
-  0: 'sun',
-  1: 'mon',
-  2: 'tue',
-  3: 'wed',
-  4: 'thu',
-  5: 'fri',
-  6: 'sat',
-};
-
-const overlapsBookingTime = (startDate, endDate, booking) => {
-  const bookingStart = new Date(booking.startDate);
-  const bookingEnd = new Date(booking.endDate);
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : null;
-
-  return (
-    (start <= bookingStart && (!end || end >= bookingStart) && !booking.endDate) ||
-    (start >= bookingStart && !booking.endDate) ||
-    (start >= bookingStart && start <= bookingEnd) ||
-    (end >= bookingStart && (!end || end <= bookingEnd)) ||
-    (start <= bookingStart && (!end || end <= bookingEnd))
-  );
-};
-
+// TODO: Figure out way to get this to be compatible with removedDays
 const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = [], weekdays) => {
+  if (!startDate || !weekdays) return [];
+
   const bookedDaysArr = bookedDays.reduce((acc, booking) => {
-    const overlaps = overlapsBookingTime(startDate, endDate, booking);
+    const overlaps = checkIfBookingDateRangesOverlap(
+      startDate,
+      endDate,
+      booking.startDate,
+      booking.endDate
+    );
+
+    const insideExceptions =
+      booking.exceptions?.addedDays.filter(e =>
+        checkIsDateWithinBookingWindow({ startDate, endDate, date: e.date })
+      ) || [];
+    const exceptionDays = insideExceptions.map(e => e.day);
 
     if (overlaps) {
-      return [...acc, ...booking.days];
+      return [...acc, ...booking.days, ...exceptionDays];
     }
     return acc;
   }, []);
 
   const bookedDatesArr = bookedDates.reduce((acc, bookingDate) => {
-    const isBetween =
-      new Date(bookingDate) >= startDate && (!endDate || new Date(bookingDate) <= endDate);
+    const isBetween = checkIsDateWithinBookingWindow({ startDate, endDate, date: bookingDate });
 
     if (isBetween) {
       const dayOfWeek = WEEKDAYS[new Date(bookingDate).getDay()];
@@ -482,10 +473,8 @@ const EditBookingFormComponent = props => (
                 bookingSchedule={weekdays}
                 startDate={values.startDate?.date}
                 endDate={values.endDate?.date}
-                unavailableDates={{
-                  bookedDays,
-                  bookedDates,
-                }}
+                bookedDays={bookedDays}
+                bookedDates={bookedDates}
                 noDisabled
                 className={css.warningCalendar}
                 exceptions={values.exceptions}

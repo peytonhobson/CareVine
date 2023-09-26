@@ -368,8 +368,15 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
       startDate,
       endDate,
       type,
+      exceptions,
     } = transaction.attributes.metadata;
-    const txBookedDays = { days: bookingSchedule.map(b => b.dayOfWeek), startDate, endDate, txId };
+    const txBookedDays = {
+      days: bookingSchedule.map(b => b.dayOfWeek),
+      startDate,
+      endDate,
+      txId,
+      exceptions,
+    };
     const currentBookedDays = transaction.listing.attributes.metadata.bookedDays ?? [];
     const newBookedDays = [...currentBookedDays, txBookedDays];
 
