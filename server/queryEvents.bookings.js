@@ -310,6 +310,7 @@ const makeReviewable = async transaction => {
 
 const addTimeToStartOfDay = (day, time) => {
   const hours = moment(time, ['h:mma']).format('HH');
+  console.log('startTimeHours', hours);
   return moment(day)
     .add(hours, 'hours')
     .toDate();
