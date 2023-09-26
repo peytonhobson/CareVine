@@ -173,7 +173,7 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .toISOString();
 
-  console.log(bookingEnd);
+  console.log('bookingEnd', bookingEnd);
 
   try {
     await integrationSdk.transactions.transition({
@@ -387,6 +387,11 @@ const updateNextWeek = async transaction => {
     .add(1, 'hours')
     .toISOString();
 
+  console.log('bookingTimes', {
+    bookingStart: nextWeekStartTime,
+    bookingEnd,
+  });
+
   // Update bookingStart to be next week start time
   try {
     if (!nextWeekStartTime) {
@@ -417,6 +422,14 @@ const updateNextWeek = async transaction => {
   );
 
   const newLedger = await updateBookingLedger(transaction);
+
+  console.log('newMetadata', {
+    ...newMetadata,
+    ledger: newLedger,
+    chargedLineItems: chargedLineItems.filter(
+      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
+    ),
+  });
 
   try {
     await integrationSdk.transactions.updateMetadata({
