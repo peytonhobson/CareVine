@@ -254,7 +254,7 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
     firstTime
   );
 
-  return moment(startTime).toISOString();
+  return moment(startTime);
 };
 
 const makeReviewable = async transaction => {
@@ -416,7 +416,7 @@ const updateNextWeek = async transaction => {
       id: txId,
       transition: 'transition/update-next-week-start',
       params: {
-        bookingStart: nextWeekStartTime,
+        bookingStart: nextWeekStartTime.toISOString(),
         bookingEnd,
       },
     });
