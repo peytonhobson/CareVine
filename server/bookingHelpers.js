@@ -221,6 +221,103 @@ const constructBookingMetadataRecurring = (
   };
 };
 
+const checkIsDateWithinBookingWindow = ({ startDate, endDate, date }) =>
+  endDate
+    ? moment(date).isBetween(startDate, endDate, 'day', '[]')
+    : moment(date).isSameOrAfter(startDate, 'day');
+
+const checkIfBookingDateRangesOverlap = (start1, end1, start2, end2) => {
+  // If end dates are null, set them to a very distant future date
+  end1 = end1 ? moment(end1) : moment().add(1000, 'years');
+  end2 = end2 ? moment(end2) : moment().add(1000, 'years');
+
+  // Check for overlap
+  return (
+    (moment(start1).isSameOrBefore(end2) && end1.isSameOrAfter(start2)) ||
+    (moment(start2).isSameOrBefore(end1) && end2.isSameOrAfter(start1))
+  );
+};
+
+// Check if one time is blocked by caregivers listing
+const checkIsBlockedOneTime = ({ dates, listing }) => {
+  if (!dates || !listing) return false;
+
+  const { bookedDates = [], bookedDays } = listing.attributes.metadata;
+
+  // Dates are blocked if they are in the bookedDates array
+  const overlappingDates = bookedDates.filter(d =>
+    dates.some(date => moment(d).isSame(date, 'day'))
+  );
+
+  if (overlappingDates.length > 0) return true;
+
+  // Dates are blocked if they a intersect a previous recurring booking (thats not a removed day) or its added days
+  const hasBlockingDays = bookedDays.some(d =>
+    dates.some(
+      date =>
+        checkIsDateWithinBookingWindow({ date, startDate: d.startDate, endDate: d.endDate }) &&
+        ((d.days.includes(WEEKDAYS[moment(date).weekday()]) &&
+          !d.exceptions?.removedDays.some(r => moment(r.date).isSame(date))) ||
+          d.exceptions?.addedDays.some(a => moment(a.date).isSame(date)))
+    )
+  );
+
+  return hasBlockingDays;
+};
+
+const checkIsBlockedRecurring = ({ bookingSchedule, startDate, endDate, exceptions, listing }) => {
+  if (!listing) return;
+
+  const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata;
+
+  if (!bookingSchedule || !startDate) return false;
+
+  const overlappingDates = bookedDates.filter(d =>
+    checkIsDateWithinBookingWindow({ date: d, startDate, endDate })
+  );
+
+  const hasBlockedDates = overlappingDates.some(d => {
+    return (
+      (bookingSchedule.find(b => b.dayOfWeek === WEEKDAYS[moment(d).weekday()]) &&
+        !exceptions?.removedDays?.some(e => moment(e.date).isSame(d, 'day'))) ||
+      exceptions?.addedDays?.some(e => moment(e.date).isSame(d, 'day'))
+    );
+  });
+
+  if (hasBlockedDates) return true;
+
+  const overlappingDays = bookedDays.filter(d =>
+    checkIfBookingDateRangesOverlap(d.startDate, d.endDate, startDate, endDate)
+  );
+
+  if (overlappingDays.length === 0) return false;
+
+  // If pre-existing booking is found, check if it overlaps with the booking schedule
+  // This can be the regularaly scheduled days or added day from exceptions
+  const hasBlockedDay = overlappingDays.some(d => {
+    return d.days.some(day =>
+      bookingSchedule.find(
+        b => b.dayOfWeek === day || d.exceptions?.addedDays.some(e => e.day === day)
+      )
+    );
+  });
+
+  if (hasBlockedDay) return true;
+
+  const insideExceptions = filterInsideExceptions(exceptions, startDate);
+
+  // Check if exceptions overlap with previous booked days or exceptions
+  const hasBlockedException = insideExceptions.addedDays.some(exception => {
+    return overlappingDays.some(
+      d =>
+        d.days.includes(exception.day) ||
+        d.exceptions?.addedDays.some(e => moment(e.date).isSame(exception.date))
+    );
+  });
+
+  return hasBlockedException;
+};
+
 module.exports = {
   filterWeeklyBookingDays,
   checkForExceptions,
@@ -229,4 +326,6 @@ module.exports = {
   sortExceptionsByDate,
   sortWeekdays,
   constructBookingMetadataRecurring,
+  checkIsBlockedRecurring,
+  checkIsBlockedOneTime,
 };

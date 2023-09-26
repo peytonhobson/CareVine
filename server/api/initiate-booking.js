@@ -1,10 +1,5 @@
-const {
-  getSdk,
-  getTrustedSdk,
-  integrationSdk,
-  handleError,
-  serialize,
-} = require('../api-util/sdk');
+const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
+const { checkIsBlockedOneTime, checkIsBlockedRecurring } = require('../bookingHelpers');
 
 module.exports = (req, res) => {
   const { bodyParams, queryParams } = req.body;
@@ -12,10 +7,10 @@ module.exports = (req, res) => {
   const listingId = bodyParams?.params ? bodyParams.params.listingId : null;
   const metadata = bodyParams.params.metadata;
 
+  const { type, bookingSchedule, startDate, endDate, exceptions } = metadata;
+
   const sdk = getSdk(req, res);
 
-  let transactionResponse = null;
-  let prevBookedDates = null;
   const bookingDates = metadata.lineItems.map(l => l.date);
 
   sdk.listings
@@ -23,12 +18,16 @@ module.exports = (req, res) => {
     .then(listingResponse => {
       const listing = listingResponse.data.data;
 
-      prevBookedDates = listing.attributes.metadata.bookedDates ?? [];
-      const bookedDatesUnixTimestamps = prevBookedDates.map(d => new Date(d).getTime()) ?? [];
-      const bookingDatesUnixTimestamps = bookingDates.map(d => new Date(d).getTime());
-
       const isBooked =
-        bookingDatesUnixTimestamps.some(d => bookedDatesUnixTimestamps.includes(d)) ?? false;
+        type === 'recurring'
+          ? checkIsBlockedRecurring({
+              bookingSchedule,
+              startDate,
+              endDate,
+              exceptions,
+              listing,
+            })
+          : checkIsBlockedOneTime({ dates: bookingDates, listing });
 
       if (isBooked) {
         throw {
