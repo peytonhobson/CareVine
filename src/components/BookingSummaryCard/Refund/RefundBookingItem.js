@@ -11,9 +11,12 @@ const RefundBookingItem = props => {
   const { startTime, endTime, date, amount } = lineItem;
   const formattedDate = moment(date).format('ddd, MM/DD');
 
-  const differenceInHours = addTimeToStartOfDay(date, startTime) - moment().toDate();
-  const isInFuture = differenceInHours > 0;
-  const isFifty = differenceInHours < 48 * 36e5 && isInFuture;
+  const start = addTimeToStartOfDay(date, startTime);
+  const isInFuture = start.isAfter(moment());
+  const isFifty =
+    moment()
+      .add(2, 'days')
+      .isAfter(start) && isInFuture;
   const refund = isFifty ? 0.5 : 1;
 
   return startTime && endTime && isInFuture ? (

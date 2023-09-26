@@ -237,6 +237,13 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
 
   console.log('newBookingSchedule', newBookingSchedule);
   console.log('firstDay', firstDay);
+  console.log(
+    'startOfDay',
+    nextWeekStart
+      .clone()
+      .weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek))
+      .startOf('day')
+  );
 
   const firstTime = firstDay.startTime;
   const startTime = addTimeToStartOfDay(
@@ -311,9 +318,7 @@ const makeReviewable = async transaction => {
 const addTimeToStartOfDay = (day, time) => {
   const hours = moment(time, ['h:mma']).format('HH');
   console.log('startTimeHours', hours);
-  return moment(day)
-    .add(hours, 'hours')
-    .toDate();
+  return moment(day).add(hours, 'hours');
 };
 
 const updateBookingLedger = async transaction => {
@@ -360,7 +365,9 @@ const updateBookingLedger = async transaction => {
       payout: parseFloat(amount).toFixed(2),
       refundAmount: refundAmount ? refundAmount : null,
       start: lineItems?.[0]
-        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).toISOString()
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime)
+            .toDate()
+            .toISOString()
         : null,
       end: bookingEnd.toISOString(),
       lineItems: lineItems.map(item => ({

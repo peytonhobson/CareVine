@@ -116,10 +116,13 @@ export class CheckoutPageComponent extends Component {
     const bookingStart =
       scheduleType === 'oneTime'
         ? findStartTimeFromBookingTimes(bookingTimes)
+            .toDate()
+            .toISOString()
         : findStartTimeRecurring(weekdays, startDate, endDate, exceptions);
     const bookingEnd = moment(bookingStart)
       .add(1, 'hours')
-      .toDate();
+      .toDate()
+      .toISOString();
 
     const orderParams = {
       listingId,

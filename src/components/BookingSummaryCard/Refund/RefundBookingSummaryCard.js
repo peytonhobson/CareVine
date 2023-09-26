@@ -25,9 +25,12 @@ const calculateSubTotal = (totalHours, bookingRate, lineItems) => {
       lineItems.reduce((acc, lineItem) => {
         const { startTime, date, amount } = lineItem;
 
-        const differenceInHours = addTimeToStartOfDay(date, startTime) - moment().toDate();
-        const isInFuture = differenceInHours > 0;
-        const isFifty = differenceInHours < 48 * 36e5 && isInFuture;
+        const start = addTimeToStartOfDay(date, startTime);
+        const isInFuture = start.isAfter(moment());
+        const isFifty =
+          moment()
+            .add(2, 'days')
+            .isAfter(start) && isInFuture;
         const refund = isFifty ? 0.5 : 1;
 
         return acc + refund * amount;
@@ -57,8 +60,8 @@ const RefundBookingSummaryCard = props => {
   const lineItems = allLineItems?.filter(lineItem => {
     const { startTime, date } = lineItem;
 
-    const differenceInHours = addTimeToStartOfDay(date, startTime) - moment().toDate();
-    const isInFuture = differenceInHours > 0;
+    const startTimeMoment = addTimeToStartOfDay(date, startTime);
+    const isInFuture = moment().isBefore(startTimeMoment);
 
     return isInFuture;
   });

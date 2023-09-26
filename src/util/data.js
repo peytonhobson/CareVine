@@ -613,11 +613,12 @@ export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
   // If caregiver canceled then we need to refund the full amount
   // Otherwise, all line items that are within 48 hours of the start time
   // will be refunded at 50% of the amount
+
   if (caregiverCanceled) {
     const fullRefunds = lineItems
       ?.filter(l => {
-        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
-        return differenceInHours > 0;
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return moment().isBefore(startTime);
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 
@@ -625,15 +626,21 @@ export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
   } else {
     const fiftyPercentRefunds = lineItems
       ?.filter(l => {
-        const differenceInHours = addTimeToStartOfDay(l.date, l.startTime) - moment().toDate();
-        return differenceInHours < 48 * 36e5 && differenceInHours > 0;
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return (
+          moment()
+            .add(2, 'days')
+            .isAfter(startTime) && moment().isBefore(startTime)
+        );
       })
       .reduce((acc, curr) => acc + curr.amount / 2, 0);
 
     const fullRefunds = lineItems
       ?.filter(l => {
         const startTime = addTimeToStartOfDay(l.date, l.startTime);
-        return startTime - moment().toDate() >= 48 * 36e5;
+        return moment()
+          .add(2, 'days')
+          .isSameOrBefore(startTime);
       })
       .reduce((acc, curr) => acc + curr.amount, 0);
 

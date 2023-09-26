@@ -65,7 +65,9 @@ const mapLineItemsForCancellationCustomer = lineItems => {
     .map(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
       const isWithin48Hours =
-        startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+        moment()
+          .add(2, 'days')
+          .isAfter(startTime) && moment().isBefore(startTime);
       if (isWithin48Hours) {
         return {
           ...lineItem,
@@ -78,7 +80,11 @@ const mapLineItemsForCancellationCustomer = lineItems => {
     })
     .filter(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return startTime - moment().toDate() < 48 * 36e5;
+      return (
+        moment()
+          .add(2, 'days')
+          .isAfter(startTime) && moment().isBefore(startTime)
+      );
     });
 };
 
@@ -86,7 +92,7 @@ const mapLineItemsForCancellationProvider = lineItems => {
   // Filter out all line items that occur after now.
   return lineItems.filter(lineItem => {
     const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-    return startTime < moment().toDate();
+    return moment().isAfter(startTime);
   });
 };
 
@@ -94,7 +100,10 @@ const mapRefundItems = (lineItems, isCaregiver) => {
   return lineItems.map(lineItem => {
     const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
     const isWithin48Hours =
-      startTime - moment().toDate() < 48 * 36e5 && startTime > moment().toDate();
+      moment()
+        .add(2, 'days')
+        .isAfter(startTime) && moment().isBefore(startTime);
+
     const isFifty = isWithin48Hours && !isCaregiver;
 
     const base = isFifty

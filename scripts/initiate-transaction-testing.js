@@ -3,8 +3,6 @@ require('dotenv').config();
 const { getTrustedSdk, integrationSdk } = require('./sdk');
 const moment = require('moment');
 
-const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
 const employerUserToken = {
   access_token:
     'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NjY3MjQ4LCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzUyZTFmNi1jMDdjLTQwM2MtODRhYy00OGJiYWVmNTg2YTIiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.RzW9hqmSZvQ6ag8kebdIOVdKlG3TsSsYEOJpbMGOmPE',
@@ -27,7 +25,7 @@ const providerUserToken = {
 const timeout = 500;
 
 const LISTING_ID = '63de6118-d981-4bbd-a6aa-074ceee7d5fd';
-const now = moment(new Date());
+const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
@@ -52,6 +50,8 @@ const endTime = start
   .set({ minutes: 0, second: 0, millisecond: 0 })
   .add(2, 'hours')
   .format('h:mma');
+
+console.log(bookingStart);
 
 const exceptions = {
   addedDays: [
@@ -161,11 +161,7 @@ const main = async () => {
     await providerTrustedSdk.transactions.transition({
       id: transactionResponse.data.data.id.uuid,
       transition: 'transition/accept',
-      params: {
-        metadata: {
-          asdf: 'asdf',
-        },
-      },
+      params: {},
     });
 
     console.log('SUCCESS');
