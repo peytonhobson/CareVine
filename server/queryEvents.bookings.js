@@ -164,9 +164,6 @@ const findEndTimeFromLineItems = lineItems => {
     'hours'
   );
 
-  console.log('date', sortedLineItems[sortedLineItems.length - 1].date);
-  console.log(endTime);
-
   return endTime;
 };
 
@@ -179,8 +176,6 @@ const updateBookingEnd = async transaction => {
     .clone()
     .subtract(1, 'hours')
     .format(ISO_OFFSET_FORMAT);
-
-  console.log('bookingEnd', bookingEnd);
 
   try {
     await integrationSdk.transactions.transition({
@@ -204,6 +199,10 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   const nextWeekLineItemStart = moment(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
+
+  console.log('startDate', lineItems[0].date);
+  console.log('nextWeekStart', nextWeekStart);
+  console.log('nextWeekEnd', nextWeekEnd);
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.values(exceptions)
