@@ -2,7 +2,7 @@
 require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
-const isDev = false;
+const isDev = true;
 
 const employerUserTokenLocal = {
   access_token:
