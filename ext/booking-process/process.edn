@@ -95,6 +95,8 @@
    :to :state/updating-booking-end}
 
    {:name :transition/start,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}],
    :actor :actor.role/operator,
    :from :state/updating-booking-end,
    :to :state/active}

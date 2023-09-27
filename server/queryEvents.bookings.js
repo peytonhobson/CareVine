@@ -157,9 +157,10 @@ const findEndTimeFromLineItems = lineItems => {
   const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
-  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date)
-    .add(additionalTime, 'hours')
-    .toDate();
+  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date).add(
+    additionalTime,
+    'hours'
+  );
 
   return endTime;
 };
@@ -173,6 +174,8 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .toISOString();
 
+  console.log('toDate', bookingEnd.toDate());
+
   console.log('bookingEnd', bookingEnd);
 
   try {
@@ -181,11 +184,11 @@ const updateBookingEnd = async transaction => {
       transition: 'transition/start',
       params: {
         bookingStart,
-        bookingEnd,
+        bookingEnd: bookingEnd.toISOString(),
       },
     });
   } catch (e) {
-    log.error(e, 'update-booking-end-failed', {});
+    log.error(e?.data?.errors, 'update-booking-end-failed', {});
   }
 };
 
@@ -403,11 +406,6 @@ const updateNextWeek = async transaction => {
     .clone()
     .add(1, 'hours')
     .toISOString();
-
-  console.log('bookingTimes', {
-    bookingStart: nextWeekStartTime,
-    bookingEnd,
-  });
 
   // Update bookingStart to be next week start time
   try {

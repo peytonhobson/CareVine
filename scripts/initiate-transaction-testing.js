@@ -1,7 +1,7 @@
 // This dotenv import is required for the `.env` file to be read
 require('dotenv').config();
-const { getTrustedSdk, integrationSdk } = require('./sdk');
 const moment = require('moment');
+const { getTrustedSdk } = require('./sdk');
 
 const employerUserToken = {
   access_token:
@@ -149,14 +149,14 @@ const BODY_PARAMS = {
 
 const main = async () => {
   try {
-    const trustedSdk = await getTrustedSdk(employerUserToken);
+    const trustedSdk = await getTrustedSdk(employerUserToken, true);
 
     const transactionResponse = await trustedSdk.transactions.initiate(BODY_PARAMS, {
       include: ['booking', 'provider'],
       expand: true,
     });
 
-    const providerTrustedSdk = await getTrustedSdk(providerUserToken);
+    const providerTrustedSdk = await getTrustedSdk(providerUserToken, true);
 
     await providerTrustedSdk.transactions.transition({
       id: transactionResponse.data.data.id.uuid,
@@ -166,7 +166,7 @@ const main = async () => {
 
     console.log('SUCCESS');
   } catch (err) {
-    console.log(err?.data);
+    console.log(err);
 
     if (err?.data?.errors) {
       console.log(err.data.errors.map(e => e.source));
