@@ -275,6 +275,7 @@ module.exports = queryEvents = () => {
         createCaregiverPayout(transaction);
       }
 
+      // TODO: Double check this isnt getting called twice when cancelling delivered booking
       if (
         lastTransition === 'transition/complete' ||
         lastTransition === 'transition/complete-canceled'

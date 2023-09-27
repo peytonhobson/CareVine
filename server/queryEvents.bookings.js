@@ -112,6 +112,7 @@ const createBookingPayment = async transaction => {
   }
 };
 
+// TODO: Double check this isnt getting called twice when cancelling delivered booking
 const createCaregiverPayout = async transaction => {
   const { lineItems, paymentIntentId, stripeAccountId } = transaction.attributes.metadata;
 

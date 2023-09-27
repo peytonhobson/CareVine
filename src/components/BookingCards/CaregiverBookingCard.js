@@ -57,20 +57,6 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   return end - start;
 };
 
-const cancelableTransitions = [
-  TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_CHARGE,
-  TRANSITION_START,
-  TRANSITION_START_UPDATE_TIMES,
-  TRANSITION_COMPLETE,
-  TRANSITION_COMPLETE_CANCELED,
-  TRANSITION_UPDATE_NEXT_WEEK_START,
-  TRANSITION_UPDATE_BOOKING_END_REPEAT,
-  TRANSITION_WAIT_FOR_PAYMENT,
-  TRANSITION_NEW_PAYMENT_ACCEPTED,
-  TRANSITION_UPDATE_BOOKING_END,
-];
-
 const CaregiverBookingCard = props => {
   const [bookingTimesPage, setBookingTimesPage] = useState(0);
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
