@@ -513,6 +513,8 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .toISOString();
 
+  console.log('newBookingEnd', bookingEnd);
+
   try {
     await integrationSdk.transactions.transition({
       id: txId,
