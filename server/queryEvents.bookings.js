@@ -159,10 +159,11 @@ const findEndTimeFromLineItems = lineItems => {
   const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
-  const endTime = moment(sortedLineItems[sortedLineItems.length - 1].date).add(
-    additionalTime,
-    'hours'
-  );
+  const endTime = moment
+    .parseZone(sortedLineItems[sortedLineItems.length - 1].date)
+    .add(additionalTime, 'hours');
+
+  console.log('endTime', endTime);
 
   return endTime;
 };

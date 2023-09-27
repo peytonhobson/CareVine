@@ -171,6 +171,20 @@ const BODY_PARAMS = {
   },
 };
 
+console.log([
+  {
+    code: 'line-item/booking',
+    startTime,
+    endTime,
+    seats: 1,
+    date: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+    shortDate: start.format('MM/DD'),
+    hours: 1,
+    amount: '243.00',
+    bookingFee: '12.15',
+  },
+]);
+
 const main = async () => {
   try {
     const trustedSdk = await getTrustedSdk(EMPLOYER_USER_TOKEN, isDev);
