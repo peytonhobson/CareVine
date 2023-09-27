@@ -44,8 +44,6 @@ const providerUserTokenDev = {
 const EMPLOYER_USER_TOKEN = isDev ? employerUserTokenDev : employerUserTokenLocal;
 const PROVIDER_USER_TOKEN = isDev ? providerUserTokenDev : providerUserTokenLocal;
 
-const timeout = 500;
-
 const LISTING_ID = isDev
   ? '64445318-2c84-4e24-9511-d4fe2ca745d6'
   : '63de6118-d981-4bbd-a6aa-074ceee7d5fd';
@@ -118,7 +116,7 @@ EXCEPTIONS FORMAT
 */
 
 const BODY_PARAMS = {
-  processAlias: 'booking-process/active',
+  processAlias: 'single-booking-process/active',
   transition: 'transition/request-booking',
   params: {
     listingId: {
