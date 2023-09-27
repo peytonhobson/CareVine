@@ -6,6 +6,7 @@ const BOOKING_FEE_PERCENTAGE = 0.05;
 const BANK_ACCOUNT = 'us_bank_account';
 const CARD_PROCESSING_FEE = 0.029;
 const BANK_PROCESSING_FEE = 0.008;
+const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
   const totalAmount = Number(subTotal) + Number(transactionFee);
