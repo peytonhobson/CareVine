@@ -122,7 +122,7 @@ exports.getSdk = (req, res) => {
 exports.getTrustedSdk = req => {
   const userToken = getUserToken(req);
 
-  console.log('userToken', userToken);
+  // console.log('userToken', userToken);
 
   // Initiate an SDK instance for token exchange
   const sdk = sharetribeSdk.createInstance({
