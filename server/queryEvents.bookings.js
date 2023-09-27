@@ -174,8 +174,6 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .format();
 
-  console.log('toDate', bookingEnd.toDate());
-
   console.log('bookingEnd', bookingEnd);
 
   try {
@@ -395,7 +393,7 @@ const updateNextWeek = async transaction => {
     endDate,
     paymentMethodType,
     exceptions,
-    chargedLineItems,
+    chargedLineItems = [],
     lineItems,
   } = transaction.attributes.metadata;
 

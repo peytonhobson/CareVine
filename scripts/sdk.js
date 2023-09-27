@@ -44,7 +44,6 @@ exports.deserialize = str => {
 };
 
 exports.getTrustedSdk = (userToken, useDev) => {
-  console.log(22);
   // Initiate an SDK instance for token exchange
   const sdk = sharetribeSdk.createInstance({
     transitVerbose: TRANSIT_VERBOSE,
@@ -56,8 +55,6 @@ exports.getTrustedSdk = (userToken, useDev) => {
     typeHandlers,
     ...baseUrlMaybe,
   });
-
-  console.log(33);
 
   // Perform a token exchange
   return sdk.exchangeToken().then(response => {

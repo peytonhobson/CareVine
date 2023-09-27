@@ -116,7 +116,7 @@ EXCEPTIONS FORMAT
 */
 
 const BODY_PARAMS = {
-  processAlias: 'single-booking-process/active',
+  processAlias: 'booking-process/active',
   transition: 'transition/request-booking',
   params: {
     listingId: {
@@ -171,17 +171,12 @@ const BODY_PARAMS = {
 
 const main = async () => {
   try {
-    console.log(1);
     const trustedSdk = await getTrustedSdk(EMPLOYER_USER_TOKEN, isDev);
-
-    console.log(2);
 
     const transactionResponse = await trustedSdk.transactions.initiate(BODY_PARAMS, {
       include: ['booking', 'provider'],
       expand: true,
     });
-
-    console.log(3);
 
     const providerTrustedSdk = await getTrustedSdk(PROVIDER_USER_TOKEN, isDev);
 
