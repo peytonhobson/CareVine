@@ -44,17 +44,20 @@ exports.deserialize = str => {
 };
 
 exports.getTrustedSdk = (userToken, useDev) => {
+  console.log(22);
   // Initiate an SDK instance for token exchange
   const sdk = sharetribeSdk.createInstance({
     transitVerbose: TRANSIT_VERBOSE,
     clientId: useDev ? process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID_DEV : CLIENT_ID,
-    clientSecret: useDev ? process.env.SHARETRIBE_SDK_CLIENT_SECRET : CLIENT_SECRET,
+    clientSecret: useDev ? process.env.SHARETRIBE_SDK_CLIENT_SECRET_DEV : CLIENT_SECRET,
     httpAgent,
     httpsAgent,
     tokenStore: memoryStore(userToken),
     typeHandlers,
     ...baseUrlMaybe,
   });
+
+  console.log(33);
 
   // Perform a token exchange
   return sdk.exchangeToken().then(response => {
