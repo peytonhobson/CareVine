@@ -58,6 +58,10 @@ export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver'
 export const TRANSITION_UPDATE_NEXT_WEEK_START = 'transition/update-next-week-start';
 export const TRANSITION_START_REPEAT = 'transition/start-repeat';
 export const TRANSITION_DECLINE_PAYMENT_REPEAT = 'transition/decline-payment-repeat';
+export const TRANSITION_UPDATE_BOOKING_END_REPEAT = 'transition/update-booking-end-repeat';
+export const TRANSITION_WAIT_FOR_PAYMENT = 'transition/wait-for-payment';
+export const TRANSITION_NEW_PAYMENT_ACCEPTED = 'transition/new-payment-accepted';
+export const TRANSITION_UPDATE_BOOKING_END = 'transition/update-booking-end';
 
 /**
  * Actors
