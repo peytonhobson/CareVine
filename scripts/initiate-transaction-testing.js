@@ -56,11 +56,13 @@ const start = now
 
 const bookingStart = moment(start)
   .clone()
-  .toISOString();
+  .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
 const bookingEnd = moment(bookingStart)
   .clone()
   .add(5, 'minutes')
-  .toISOString();
+  .format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+
+console.log(bookingStart);
 
 const startTime = start
   .clone()
@@ -73,7 +75,7 @@ const endTime = start
   .add(2, 'hours')
   .format('h:mma');
 
-console.log(bookingStart);
+console.log(bookingEnd);
 
 const exceptions = {
   addedDays: [
@@ -133,7 +135,7 @@ const BODY_PARAMS = {
           startTime,
           endTime,
           seats: 1,
-          date: start.startOf('day').toISOString(),
+          date: start.startOf('day').format(),
           shortDate: start.format('MM/DD'),
           hours: 1,
           amount: '243.00',
@@ -151,7 +153,7 @@ const BODY_PARAMS = {
           endTime,
         },
       ],
-      startDate: start.startOf('day').toISOString(),
+      startDate: start.startOf('day').format(),
       endDate: null,
       cancelAtPeriodEnd: false,
       type: 'recurring',
@@ -191,6 +193,7 @@ const main = async () => {
     console.log(err);
 
     if (err?.data?.errors) {
+      console.log(err.data.errors);
       console.log(err.data.errors.map(e => e.source));
     }
   }

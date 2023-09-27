@@ -2,7 +2,7 @@ import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
 import { addTimeToStartOfDay, calculateTimeBetween } from '../../util/dates';
-import { WEEKDAY_MAP } from '../../util/constants';
+import { WEEKDAY_MAP, ISO_OFFSET_FORMAT } from '../../util/constants';
 import { filterWeeklyBookingDays, sortWeekdays } from '../../util/bookings';
 
 const BOOKING_FEE_PERCENTAGE = 0.05;
@@ -72,7 +72,7 @@ export const constructBookingMetadataOneTime = (
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = bookingDates[index]?.format();
+    const isoDate = bookingDates[index]?.format(ISO_OFFSET_FORMAT);
 
     return {
       code: 'line-item/booking',
@@ -127,7 +127,7 @@ export const constructBookingMetadataRecurring = (
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startDate)
       .weekday(WEEKDAY_MAP[dayOfWeek])
-      .format();
+      .format(ISO_OFFSET_FORMAT);
 
     return {
       code: 'line-item/booking',
@@ -156,8 +156,8 @@ export const constructBookingMetadataRecurring = (
     ),
     payout: parseFloat(payout).toFixed(2),
     bookingSchedule: weekdays,
-    startDate: moment(startDate).format(),
-    endDate: endDate ? moment(endDate).format() : null,
+    startDate: moment(startDate).format(ISO_OFFSET_FORMAT),
+    endDate: endDate ? moment(endDate).format(ISO_OFFSET_FORMAT) : null,
     cancelAtPeriodEnd: false,
     type: 'recurring',
   };

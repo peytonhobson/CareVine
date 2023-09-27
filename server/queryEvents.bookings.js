@@ -7,6 +7,8 @@ const moment = require('moment');
 const { integrationSdk } = require('./api-util/sdk');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const { constructBookingMetadataRecurring } = require('./bookingHelpers');
+// Time
+const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -136,7 +138,7 @@ const createCaregiverPayout = async transaction => {
           {
             amount,
             paymentIntentId,
-            date: moment().format(),
+            date: moment().format(ISO_OFFSET_FORMAT),
             openDispute: false,
             txId: transaction.id.uuid,
           },
@@ -169,10 +171,10 @@ const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
-  const bookingEnd = findEndTimeFromLineItems(lineItems).format();
+  const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
   const bookingStart = moment(bookingEnd)
     .subtract(1, 'hours')
-    .format();
+    .format(ISO_OFFSET_FORMAT);
 
   console.log('bookingEnd', bookingEnd);
 
@@ -369,9 +371,11 @@ const updateBookingLedger = async transaction => {
       payout: parseFloat(amount).toFixed(2),
       refundAmount: refundAmount ? refundAmount : null,
       start: lineItems?.[0]
-        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).format()
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).format(
+            ISO_OFFSET_FORMAT
+          )
         : null,
-      end: bookingEnd.format(),
+      end: bookingEnd.format(ISO_OFFSET_FORMAT),
       lineItems: lineItems.map(item => ({
         date: item.date,
         startTime: item.startTime,
@@ -397,11 +401,13 @@ const updateNextWeek = async transaction => {
     lineItems,
   } = transaction.attributes.metadata;
 
-  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions).format();
+  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions).format(
+    ISO_OFFSET_FORMAT
+  );
   const bookingEnd = moment(nextWeekStartTime)
     .clone()
     .add(1, 'hours')
-    .format();
+    .format(ISO_OFFSET_FORMAT);
 
   // Update bookingStart to be next week start time
   try {
@@ -426,7 +432,7 @@ const updateNextWeek = async transaction => {
     moment(nextWeekStartTime)
       .clone()
       .startOf('week')
-      .format(),
+      .format(ISO_OFFSET_FORMAT),
     endDate,
     bookingRate,
     paymentMethodType,
