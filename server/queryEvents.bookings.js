@@ -164,6 +164,9 @@ const findEndTimeFromLineItems = lineItems => {
     'hours'
   );
 
+  console.log('date', sortedLineItems[sortedLineItems.length - 1].date);
+  console.log(endTime);
+
   return endTime;
 };
 
@@ -173,6 +176,7 @@ const updateBookingEnd = async transaction => {
 
   const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
   const bookingStart = moment(bookingEnd)
+    .clone()
     .subtract(1, 'hours')
     .format(ISO_OFFSET_FORMAT);
 
