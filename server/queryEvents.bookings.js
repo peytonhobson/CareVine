@@ -342,6 +342,9 @@ const updateBookingLedger = async transaction => {
       ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
       : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
 
+  console.log('bookingFee', bookingFee);
+  console.log('processingFee', processingFee);
+
   try {
     const transactionResponse = await integrationSdk.transactions.show({
       id: txId,
@@ -427,6 +430,7 @@ const updateNextWeek = async transaction => {
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
     moment(nextWeekStartTime)
+      .clone()
       .startOf('week')
       .toISOString(),
     endDate,

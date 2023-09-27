@@ -1,7 +1,7 @@
 import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
-import { addTimeToStartOfDay } from '../../util/dates';
+import { addTimeToStartOfDay, calculateTimeBetween } from '../../util/dates';
 import { WEEKDAY_MAP } from '../../util/constants';
 import { filterWeeklyBookingDays, sortWeekdays } from '../../util/bookings';
 
@@ -59,14 +59,6 @@ export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions)
   const startTime = addTimeToStartOfDay(startDate, firstDay.startTime);
 
   return startTime;
-};
-
-const calculateTimeBetween = (bookingStart, bookingEnd) => {
-  // Convert time from 12 hour to 24 hour format using moment
-  const start = moment(bookingStart, ['h:mma']).format('HH');
-  const end = moment(bookingEnd, ['h:mma']).format('HH');
-
-  return bookingEnd === '12:00am' ? 24 : end - start;
 };
 
 export const constructBookingMetadataOneTime = (
