@@ -28,7 +28,7 @@ import {
   constructBookingMetadataRecurring,
   findStartTimeRecurring,
 } from './CheckoutPage.helpers';
-import { WEEKDAYS } from '../../util/constants';
+import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { mapWeekdays } from '../../util/bookings';
 
@@ -103,11 +103,11 @@ export class CheckoutPageComponent extends Component {
 
     const startDate = moment(startDateDate?.date)
       .startOf('day')
-      .toDate();
+      .format(ISO_OFFSET_FORMAT);
     const endDate = endDateDate?.date
       ? moment(endDateDate.date)
           .startOf('day')
-          .toDate()
+          .format(ISO_OFFSET_FORMAT)
       : null;
     const { onInitiateOrder, currentUserListing, currentUser, listing, params } = this.props;
 
@@ -115,14 +115,15 @@ export class CheckoutPageComponent extends Component {
 
     const bookingStart =
       scheduleType === 'oneTime'
-        ? findStartTimeFromBookingTimes(bookingTimes)
-            .toDate()
-            .toISOString()
-        : findStartTimeRecurring(weekdays, startDate, endDate, exceptions);
-    const bookingEnd = moment(bookingStart)
+        ? findStartTimeFromBookingTimes(bookingTimes).format(ISO_OFFSET_FORMAT)
+        : findStartTimeRecurring(weekdays, startDate, endDate, exceptions).format(
+            ISO_OFFSET_FORMAT
+          );
+    const bookingEnd = moment
+      .parseZone(bookingStart)
+      .clone()
       .add(1, 'hours')
-      .toDate()
-      .toISOString();
+      .format(ISO_OFFSET_FORMAT);
 
     const orderParams = {
       listingId,

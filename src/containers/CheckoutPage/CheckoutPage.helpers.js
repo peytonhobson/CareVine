@@ -38,9 +38,7 @@ export const findStartTimeFromBookingTimes = bookingTimes => {
 
   const firstDay = sortedBookingTimes[0];
   const additionalTime = parseInt(convertTimeFrom12to24(firstDay.startTime).split(':')[0], 10);
-  const startTime = moment(sortedBookingTimes[0].date)
-    .add(additionalTime, 'hours')
-    .toDate();
+  const startTime = moment(sortedBookingTimes[0].date).add(additionalTime, 'hours');
 
   return startTime;
 };
@@ -72,7 +70,7 @@ export const constructBookingMetadataOneTime = (
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = bookingDates[index]?.format(ISO_OFFSET_FORMAT);
+    const isoDate = moment(bookingDates[index])?.format(ISO_OFFSET_FORMAT);
 
     return {
       code: 'line-item/booking',

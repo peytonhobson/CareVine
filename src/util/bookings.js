@@ -89,7 +89,7 @@ export const checkForExceptions = exceptions => {
 export const checkIsBlockedOneTime = ({ dates, listing }) => {
   if (!dates || !listing) return false;
 
-  const { bookedDates = [], bookedDays } = listing.attributes.metadata;
+  const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
 
   // Dates are blocked if they are in the bookedDates array
   const overlappingDates = bookedDates.filter(d =>
@@ -220,6 +220,8 @@ export const checkIfBookingDateRangesOverlap = (start1, end1, start2, end2) => {
 };
 
 export const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
+  if (!startDate || !bookingSchedule?.length) return null;
+
   // Find start and end of week
   const start = moment(startDate);
   const weekStart = start.startOf('week');

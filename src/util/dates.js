@@ -870,7 +870,10 @@ export const isYesterday = dirtyDate => {
 
 export const addTimeToStartOfDay = (day, time) => {
   const hours = moment(time, ['h:mma']).format('HH');
-  return moment(day).add(hours, 'hours');
+
+  return typeof day === 'string'
+    ? moment.parseZone(day).add(hours, 'hours')
+    : moment(day).add(hours, 'hours');
 };
 
 // Format form's value for the react-dates input: convert timeOfDay to the local time

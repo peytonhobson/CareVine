@@ -13,7 +13,7 @@ module.exports = (req, res) => {
 
   const bookingDates = metadata.lineItems.map(l => l.date);
 
-  sdk.listings
+  return sdk.listings
     .show({ id: listingId })
     .then(listingResponse => {
       const listing = listingResponse.data.data;

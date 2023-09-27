@@ -50,7 +50,11 @@ const SectionRequest = props => {
 
   const weekdays = mapWeekdays(values);
 
-  const endOfFirstWeek = getFirstWeekEndDate(values.startDate?.date, weekdays, values.exceptions);
+  console.log(weekdays.length);
+
+  const endOfFirstWeek = weekdays?.length
+    ? getFirstWeekEndDate(values.startDate?.date, weekdays, values.exceptions)
+    : null;
   return (
     <div className={css.requestContentContainer}>
       <div

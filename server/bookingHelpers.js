@@ -129,10 +129,12 @@ const mapWeekdays = values =>
   }, []);
 
 const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
+  if (!bookingSchedule || !bookingSchedule.length) return null;
+
   // Find start and end of week
-  const start = moment(startDate);
-  const weekStart = start.startOf('week');
-  const weekEnd = start.endOf('week');
+  const start = moment(startDate).format(ISO_OFFSET_FORMAT);
+  const weekStart = moment.parseZone(start).startOf('week');
+  const weekEnd = moment.parseZone(start).endOf('week');
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.keys(exceptions)

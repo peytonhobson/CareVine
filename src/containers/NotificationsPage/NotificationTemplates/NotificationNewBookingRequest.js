@@ -111,7 +111,7 @@ const NotificationNewBookingRequest = props => {
   const hasSameDayBooking = useMemo(
     () =>
       (bookingType === 'oneTime'
-        ? checkIsBlockedOneTime({ bookingDates, listing })
+        ? checkIsBlockedOneTime({ dates: bookingDates, listing })
         : checkIsBlockedRecurring({ bookingSchedule, startDate, endDate, exceptions, listing })) &&
       !(acceptBookingSuccess || acceptBookingInProgress),
     [bookingDates, listing, startDate, endDate, exceptions, bookingType]

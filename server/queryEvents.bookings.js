@@ -183,8 +183,8 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
-        bookingStart,
-        bookingEnd,
+        // bookingStart,
+        // bookingEnd,
       },
     });
   } catch (e) {
@@ -197,7 +197,7 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
 
   // Find start and end of next week
   // Unlike cron you can use lineItems here because they haven't been updated yet
-  const nextWeekLineItemStart = moment(lineItems[0].date).add(7 * attemptNum, 'days');
+  const nextWeekLineItemStart = moment.parseZone(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
 
@@ -324,8 +324,10 @@ const makeReviewable = async transaction => {
 
 const addTimeToStartOfDay = (day, time) => {
   const hours = moment(time, ['h:mma']).format('HH');
-  console.log('startTimeHours', hours);
-  return moment(day).add(hours, 'hours');
+
+  return typeof day === 'string'
+    ? moment.parseZone(day).add(hours, 'hours')
+    : moment(day).add(hours, 'hours');
 };
 
 const updateBookingLedger = async transaction => {

@@ -159,7 +159,7 @@ const CaregiverBookingCard = props => {
   const hasSameDayBooking = useMemo(
     () =>
       (scheduleType === 'oneTime'
-        ? checkIsBlockedOneTime({ bookingDates, listing })
+        ? checkIsBlockedOneTime({ dates: bookingDates, listing })
         : checkIsBlockedRecurring({ bookingSchedule, startDate, endDate, exceptions, listing })) &&
       !(acceptBookingSuccess || acceptBookingInProgress),
     [bookingDates, listing, startDate, endDate, exceptions, scheduleType]
@@ -469,10 +469,10 @@ const CaregiverBookingCard = props => {
               There was an issue declining the booking request. Please try again.
             </p>
           ) : null}
-          {hasSameDayBooking && !isDev ? (
+          {hasSameDayBooking ? (
             <div className={css.bookingDecisionContainer}>
               <h3 className="text-error text-md">
-                You have an existing booking that has dates that conflict with this request. Please
+                You have an existing booking with dates that conflict with this request. Please
                 decline this booking request.
               </h3>
 
