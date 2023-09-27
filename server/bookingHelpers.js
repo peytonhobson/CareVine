@@ -190,7 +190,7 @@ const constructBookingMetadataRecurring = (
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startOfWeek)
       .weekday(WEEKDAYS.indexOf(dayOfWeek))
-      .toISOString();
+      .format();
 
     return {
       code: 'line-item/booking',

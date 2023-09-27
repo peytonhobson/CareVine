@@ -72,7 +72,7 @@ export const constructBookingMetadataOneTime = (
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = bookingDates[index]?.toISOString();
+    const isoDate = bookingDates[index]?.format();
 
     return {
       code: 'line-item/booking',
@@ -127,7 +127,7 @@ export const constructBookingMetadataRecurring = (
     const amount = parseFloat(hours * bookingRate).toFixed(2);
     const isoDate = moment(startDate)
       .weekday(WEEKDAY_MAP[dayOfWeek])
-      .toISOString();
+      .format();
 
     return {
       code: 'line-item/booking',
@@ -156,8 +156,8 @@ export const constructBookingMetadataRecurring = (
     ),
     payout: parseFloat(payout).toFixed(2),
     bookingSchedule: weekdays,
-    startDate: moment(startDate).toISOString(),
-    endDate: endDate ? moment(endDate).toISOString() : null,
+    startDate: moment(startDate).format(),
+    endDate: endDate ? moment(endDate).format() : null,
     cancelAtPeriodEnd: false,
     type: 'recurring',
   };

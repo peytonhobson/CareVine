@@ -136,7 +136,7 @@ const createCaregiverPayout = async transaction => {
           {
             amount,
             paymentIntentId,
-            date: new Date().toISOString(),
+            date: moment().format(),
             openDispute: false,
             txId: transaction.id.uuid,
           },
@@ -169,10 +169,10 @@ const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
-  const bookingEnd = findEndTimeFromLineItems(lineItems);
+  const bookingEnd = findEndTimeFromLineItems(lineItems).format();
   const bookingStart = moment(bookingEnd)
     .subtract(1, 'hours')
-    .toISOString();
+    .format();
 
   console.log('toDate', bookingEnd.toDate());
 
@@ -184,7 +184,7 @@ const updateBookingEnd = async transaction => {
       transition: 'transition/start',
       params: {
         bookingStart,
-        bookingEnd: bookingEnd.toISOString(),
+        bookingEnd,
       },
     });
   } catch (e) {
@@ -371,11 +371,9 @@ const updateBookingLedger = async transaction => {
       payout: parseFloat(amount).toFixed(2),
       refundAmount: refundAmount ? refundAmount : null,
       start: lineItems?.[0]
-        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime)
-            .toDate()
-            .toISOString()
+        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).format()
         : null,
-      end: bookingEnd.toISOString(),
+      end: bookingEnd.format(),
       lineItems: lineItems.map(item => ({
         date: item.date,
         startTime: item.startTime,
@@ -401,11 +399,11 @@ const updateNextWeek = async transaction => {
     lineItems,
   } = transaction.attributes.metadata;
 
-  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions);
+  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions).format();
   const bookingEnd = moment(nextWeekStartTime)
     .clone()
     .add(1, 'hours')
-    .toISOString();
+    .format();
 
   // Update bookingStart to be next week start time
   try {
@@ -417,7 +415,7 @@ const updateNextWeek = async transaction => {
       id: txId,
       transition: 'transition/update-next-week-start',
       params: {
-        bookingStart: nextWeekStartTime.toISOString(),
+        bookingStart: nextWeekStartTime,
         bookingEnd,
       },
     });
@@ -430,7 +428,7 @@ const updateNextWeek = async transaction => {
     moment(nextWeekStartTime)
       .clone()
       .startOf('week')
-      .toISOString(),
+      .format(),
     endDate,
     bookingRate,
     paymentMethodType,
