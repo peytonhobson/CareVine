@@ -56,25 +56,31 @@ export const TX_TRANSITION_ACTORS = [
   TX_TRANSITION_ACTOR_OPERATOR,
 ];
 
+// Booking States
 export const STATE_INITIAL = 'initial';
 export const STATE_BOOKING_REQUESTED = 'booking-requested';
 export const STATE_ACCEPTED = 'accepted';
+export const STATE_REQUEST_CANCELED = 'request-canceled';
 export const STATE_DECLINED = 'declined';
-export const STATE_CANCELED = 'canceled';
 export const STATE_CHARGED = 'charged';
+export const STATE_CANCELED = 'canceled';
+export const PAYMENT_FAILED = 'payment-failed';
+export const STATE_UPDATING_BOOKING_END = 'updating-booking-end';
 export const STATE_ACTIVE = 'active';
 export const STATE_DELIVERED = 'delivered';
-export const STATE_PAID_OUT = 'paid-out';
-export const STATE_DISPUTE_REVIEW = 'dispute-review';
-export const STATE_REVIEWABLE = 'reviewable';
-export const STATE_REVIEWED = 'reviewed';
-export const STATE_PAYMENT_FAILED = 'payment-failed';
-export const STATE_ACTIVE_CANCELED = 'active-canceled';
-export const STATE_CANCELED_PAID_OUT = 'canceled-paid-out';
-export const STATE_REQUEST_CANCELED = 'request-canceled';
 
-const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
-const STATE_PAYMENT_REQUESTED = 'payment-requested';
+// Only recurring bookings
+export const STATE_WAITING_FOR_NEXT_WEEK = 'waiting-for-next-week';
+export const STATE_FINAL = 'final';
+
+// Single Action Process States
+export const STATE_NOTIFIED_FOR_PAYMENT = 'notified-for-payment';
+export const STATE_PAYMENT_REQUESTED = 'payment-requested';
+export const STATE_REVIEWED = 'reviewed';
+
+// Messaging Process States
+export const STATE_MESSAGING = 'messaging';
+export const STATE_DELETED = 'deleted';
 
 /**
  * Description of transaction process
@@ -85,11 +91,8 @@ const STATE_PAYMENT_REQUESTED = 'payment-requested';
  *       but this description format is following Xstate (FSM library)
  *       https://xstate.js.org/docs/
  */
-const stateDescriptionSingle = {
-  // id is defined only to support Xstate format.
-  // However if you have multiple transaction processes defined,
-  // it is best to keep them in sync with transaction process aliases.
-  // id: 'instant-care-payment-process/release-8',
+const singleBookingStateDescription = {
+  id: 'single-booking-process/active',
 
   // This 'initial' state is a starting point for new transaction
   initial: STATE_INITIAL,
