@@ -74,7 +74,7 @@ const createBookingPayment = async transaction => {
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
-        chargedLineItems: [{ paymentIntentId, lineItems }],
+        chargedLineItems: [{ paymentIntentId, dates: lineItems.map(l => l.date) }],
       },
     });
   } catch (e) {
@@ -418,8 +418,9 @@ const updateNextWeek = async transaction => {
   console.log(
     'newChargedLineItems',
     chargedLineItems.filter(
-      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
-    )
+      chargedItem =>
+        !chargedItem.dates.some(c => lineItems.some(l => moment(l.date).isSame(c, 'day')))
+    ) // Remove line items from past week from chargedLineItems
   );
 
   try {
@@ -429,7 +430,8 @@ const updateNextWeek = async transaction => {
         ...newMetadata,
         ledger: newLedger,
         chargedLineItems: chargedLineItems.filter(
-          chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
+          chargedItem =>
+            !chargedItem.dates.some(c => lineItems.some(l => moment(l.date).isSame(c, 'day')))
         ),
       },
     });
