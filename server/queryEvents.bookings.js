@@ -164,8 +164,6 @@ const findEndTimeFromLineItems = lineItems => {
     .parseZone(sortedLineItems[sortedLineItems.length - 1].date)
     .add(additionalTime, 'hours');
 
-  console.log('endTime', endTime);
-
   return endTime;
 };
 
@@ -184,8 +182,8 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
-        // bookingStart,
-        // bookingEnd,
+        bookingStart,
+        bookingEnd,
       },
     });
   } catch (e) {
@@ -201,10 +199,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   const nextWeekLineItemStart = moment.parseZone(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
-
-  console.log('startDate', lineItems[0].date);
-  console.log('nextWeekStart', nextWeekStart);
-  console.log('nextWeekEnd', nextWeekEnd);
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.values(exceptions)
@@ -242,16 +236,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   }
 
   const firstDay = newBookingSchedule[0] || {};
-
-  console.log('newBookingSchedule', newBookingSchedule);
-  console.log('firstDay', firstDay);
-  console.log(
-    'startOfDay',
-    nextWeekStart
-      .clone()
-      .weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek))
-      .startOf('day')
-  );
 
   const firstTime = firstDay.startTime;
   const startTime = addTimeToStartOfDay(
@@ -352,9 +336,6 @@ const updateBookingLedger = async transaction => {
       ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
       : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
 
-  console.log('bookingFee', bookingFee);
-  console.log('processingFee', processingFee);
-
   try {
     const transactionResponse = await integrationSdk.transactions.show({
       id: txId,
@@ -447,14 +428,6 @@ const updateNextWeek = async transaction => {
   );
 
   const newLedger = await updateBookingLedger(transaction);
-
-  console.log('newMetadata', {
-    ...newMetadata,
-    ledger: newLedger,
-    chargedLineItems: chargedLineItems.filter(
-      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
-    ),
-  });
 
   try {
     await integrationSdk.transactions.updateMetadata({

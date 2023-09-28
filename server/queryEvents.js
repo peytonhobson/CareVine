@@ -189,7 +189,6 @@ module.exports = queryEvents = () => {
       const previousQuizAttempts = previousValuesProfile?.privateData?.identityProofQuizAttempts;
       const identityProofQuizAttempts = privateData?.identityProofQuizAttempts;
       const previousBackgroundCheckRejected =
-        prevBackgroundCheckApprovedStatus &&
         prevBackgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED;
       const backgroundCheckRejected = backgroundCheckApprovedStatus === BACKGROUND_CHECK_REJECTED;
 
