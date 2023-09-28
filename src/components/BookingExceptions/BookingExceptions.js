@@ -13,7 +13,7 @@ import {
 } from '..';
 import classNames from 'classnames';
 import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
-import { WEEKDAYS } from '../../util/constants';
+import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
 import { pick } from 'lodash';
 import { useCheckMobileScreen } from '../../util/hooks';
@@ -35,12 +35,11 @@ const filterAvailableAddExceptionDays = (
   exceptions
 ) => date => {
   const day = date.day();
-  const realDate = date.startOf('day');
   const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
   const isAlreadySelected = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
   const isAlreadyException = Object.values(exceptions)
     .flat()
-    .some(e => e.date === realDate.toISOString());
+    .some(e => moment(e.date).isSame(date, 'day'));
   const isWithinBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
 
   return isBlockedDay || isAlreadySelected || isAlreadyException || !isWithinBookingWindow;
@@ -135,7 +134,7 @@ const BookingExceptions = props => {
 
   const handleAddDate = () => {
     const newAddDateException = {
-      date: values.addDate?.date.toISOString(),
+      date: moment(values.addDate?.date).format(ISO_OFFSET_FORMAT),
       startTime: values.addDateTime?.[0]?.startTime,
       endTime: values.addDateTime?.[0]?.endTime,
       type: 'addDate',
@@ -156,7 +155,7 @@ const BookingExceptions = props => {
 
   const handleChangeDate = () => {
     const newChangeDateException = {
-      date: values.changeDate?.date.toISOString(),
+      date: moment(values.changeDate?.date).format(ISO_OFFSET_FORMAT),
       startTime: values.changeDateTime?.[0]?.startTime,
       endTime: values.changeDateTime?.[0]?.endTime,
       type: 'changeDate',
@@ -177,7 +176,7 @@ const BookingExceptions = props => {
 
   const handleRemoveDays = () => {
     const newRemoveDateExceptions = values.removeDates.map(date => ({
-      date: date.toISOString(),
+      date: moment(date).format(ISO_OFFSET_FORMAT),
       type: 'removeDate',
       day: WEEKDAYS[moment(date).weekday()],
     }));

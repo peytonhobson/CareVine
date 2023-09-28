@@ -15,12 +15,10 @@ import {
   InlineTextButton,
 } from '..';
 import {
-  TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_CHARGE,
   TRANSITION_START,
-  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -133,12 +131,10 @@ const EmployerBookingCard = props => {
     Date.now() - new Date(bookingLedger[bookingLedger.length - 1].end) < 48 * 36e5 &&
     !hasCurrentDispute;
 
-  const disputeInReview = lastTransition === TRANSITION_DISPUTE;
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
   const isCharged = lastTransition === TRANSITION_CHARGE;
-  const isActive =
-    lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
+  const isActive = lastTransition === TRANSITION_START;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
   const showMenu = showCancel || isDisputable;
 

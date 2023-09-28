@@ -12,6 +12,7 @@ import { ensureTransaction } from './data';
 // Single Action Process Transitions
 export const TRANSITION_REQUEST_PAYMENT = 'transition/request-payment';
 export const TRANSITION_NOTIFY_FOR_PAYMENT = 'transition/notify-for-payment';
+export const TRANSITION_REVIEW = 'transition/review';
 
 // Messaging Process Transitions
 export const TRANSITION_INITIAL_MESSAGE = 'transition/initial-message';
@@ -24,44 +25,17 @@ export const TRANSITION_DECLINE_BOOKING = 'transition/decline';
 export const TRANSITION_EXPIRE_BOOKING = 'transition/expire';
 export const TRANSITION_ACCEPT_BOOKING = 'transition/accept';
 export const TRANSITION_CANCEL_BOOKING_REQUEST = 'transition/cancel-request';
-export const TRANSITION_CANCEL_ACCEPTED_BOOKING_CUSTOMER =
-  'transition/cancel-accepted-booking-customer';
-export const TRANSITION_CANCEL_ACCEPTED_BOOKING_PROVIDER =
-  'transition/cancel-accepted-booking-provider';
-export const TRANSITION_CANCEL_ACCEPTED_BOOKING_OPERATOR =
-  'transition/cancel-accepted-booking-operator';
 export const TRANSITION_CHARGE = 'transition/charge';
-export const TRANSITION_CANCEL_CHARGED_BOOKING_CUSTOMER =
-  'transition/cancel-charged-booking-customer';
-export const TRANSITION_CANCEL_CHARGED_BOOKING_PROVIDER =
-  'transition/cancel-charged-booking-provider';
-export const TRANSITION_CANCEL_CHARGED_BOOKING_OPERATOR =
-  'transition/cancel-charged-booking-operator';
 export const TRANSITION_START = 'transition/start';
-export const TRANSITION_START_UPDATE_TIMES = 'transition/start-update-times';
-export const TRANSITION_CANCEL_ACTIVE_BOOKING_CUSTOMER =
-  'transition/cancel-active-booking-customer';
-export const TRANSITION_CANCEL_ACTIVE_BOOKING_PROVIDER =
-  'transition/cancel-active-booking-provider';
-export const TRANSITION_CANCEL_ACTIVE_BOOKING_OPERATOR =
-  'transition/cancel-active-booking-operator';
-export const TRANSITION_COMPLETE_CANCELED = 'transition/complete-canceled';
 export const TRANSITION_COMPLETE = 'transition/complete';
-export const TRANSITION_PAY_CAREGIVER = 'transition/pay-caregiver';
-export const TRANSITION_DISPUTE = 'transition/dispute';
-export const TRANSITION_RESOLVE_DISPUTE = 'transition/resolve-dispute';
-export const TRANSITION_MAKE_REVIEWABLE = 'transition/make-reviewable';
-export const TRANSITION_REVIEW = 'transition/review';
-export const TRANSITION_EXPIRE_REVIEW_PERIOD = 'transition/expire-review-period';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
 export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver';
 export const TRANSITION_UPDATE_NEXT_WEEK_START = 'transition/update-next-week-start';
-export const TRANSITION_START_REPEAT = 'transition/start-repeat';
-export const TRANSITION_DECLINE_PAYMENT_REPEAT = 'transition/decline-payment-repeat';
 export const TRANSITION_UPDATE_BOOKING_END_REPEAT = 'transition/update-booking-end-repeat';
-export const TRANSITION_WAIT_FOR_PAYMENT = 'transition/wait-for-payment';
-export const TRANSITION_NEW_PAYMENT_ACCEPTED = 'transition/new-payment-accepted';
 export const TRANSITION_UPDATE_BOOKING_END = 'transition/update-booking-end';
+export const TRANSITION_ACTIVE_CANCEL = 'transition/active-cancel';
+export const TRANSITION_CHARGED_CANCEL = 'transition/charged-cancel';
+export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
 
 /**
  * Actors

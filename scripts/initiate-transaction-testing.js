@@ -2,7 +2,9 @@
 require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
+const { constructBookingMetadataRecurring } = require('../server/bookingHelpers');
 const isDev = false;
+const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const employerUserTokenLocal = {
   access_token:
@@ -64,58 +66,60 @@ const bookingEnd = moment(bookingStart)
 
 console.log(bookingStart);
 
-const startTime = start
-  .clone()
-  .add(1, 'hours')
-  .set({ minutes: 0, second: 0, millisecond: 0 })
-  .format('h:mma');
-const endTime = start
-  .clone()
-  .set({ minutes: 0, second: 0, millisecond: 0 })
-  .add(2, 'hours')
-  .format('h:mma');
-
-console.log(bookingEnd);
-
 const exceptions = {
   addedDays: [
     // {
-    //   date: startOfDay.add(6, 'days').toISOString(),
-    //   startTime: '3:00am',
-    //   endTime: '4:00am',
+    //   date: startOfDay.add(3, 'days').format(ISO_OFFSET_FORMAT),
+    //   startTime: '12:00am',
+    //   endTime: '2:00am',
     //   type: 'addDate',
-    //   day: WEEKDAYS[moment().weekday() - 2],
+    //   day: 'mon',
     // },
   ],
   removedDays: [
     // {
     //   date: startOfDay
     //     .clone()
-    //     .add(7, 'days')
-    //     .toISOString(),
+    //     .add(8, 'days')
+    //     .format(ISO_OFFSET_FORMAT),
     //   type: 'removeDate',
-    //   day: WEEKDAYS[moment().weekday() - 1],
+    //   day: 'fri',
     // },
   ],
-  changedDays: [],
+  changedDays: [
+    {
+      date: startOfDay.format(ISO_OFFSET_FORMAT),
+      startTime: '5:00pm',
+      endTime: '7:00pm',
+      type: 'changeDate',
+      day: 'thu',
+    },
+  ],
 };
 
-/*
-EXCEPTIONS FORMAT
+const bookingSchedule = [
+  {
+    dayOfWeek: 'thu',
+    startTime: '2:00pm',
+    endTime: '3:00pm',
+  },
+  {
+    dayOfWeek: 'sun',
+    startTime: '2:00pm',
+    endTime: '3:00pm',
+  },
+];
+const bookingRate = 24;
+const paymentMethodType = 'us_bank_account';
 
-{
-      date: startOfDay.add(6, 'days').toISOString(),
-      startTime: "3:00am",
-      endTime: "4:00am",
-      type: 'addDate',
-      day: WEEKDAYS[moment().weekday()],
-}
-{
-      date: startOfDay.add(7, 'days').toISOString(),
-      type: 'removeDate',
-      day: WEEKDAYS[moment().weekday() -1],
-    }
-*/
+const metadata = constructBookingMetadataRecurring(
+  bookingSchedule,
+  moment().startOf('day'),
+  null,
+  bookingRate,
+  paymentMethodType,
+  exceptions
+);
 
 const BODY_PARAMS = {
   processAlias: 'booking-process/active',
@@ -129,37 +133,14 @@ const BODY_PARAMS = {
     bookingStart,
     bookingEnd,
     metadata: {
-      lineItems: [
-        {
-          code: 'line-item/booking',
-          startTime,
-          endTime,
-          seats: 1,
-          date: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          shortDate: start.format('MM/DD'),
-          hours: 1,
-          amount: '243.00',
-          bookingFee: '12.15',
-        },
-      ],
-      bookingFee: '12.15',
-      processingFee: '2.06',
-      totalPayment: '257.21',
-      payout: '243.00',
-      bookingSchedule: [
-        {
-          dayOfWeek: start.format('ddd').toLocaleLowerCase(),
-          startTime,
-          endTime,
-        },
-      ],
+      bookingSchedule,
       startDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       endDate: null,
       cancelAtPeriodEnd: false,
       type: 'recurring',
-      bookingRate: '27',
+      bookingRate,
       paymentMethodId: 'pm_1NYH31JsU2TVwfKB4U3Rja7M',
-      paymentMethodType: 'us_bank_account',
+      paymentMethodType,
       senderListingTitle: '24 Hour Care Needed for My Spouse in Westminster ',
       senderCity: 'Westminster',
       stripeCustomerId: 'cus_Mqfug6MnoKUAdt',
@@ -167,23 +148,12 @@ const BODY_PARAMS = {
       stripeAccountId: 'acct_1MFf3NQw1sFyCVAj',
       providerName: 'Peyton C',
       exceptions,
+      ...metadata,
     },
   },
 };
 
-console.log([
-  {
-    code: 'line-item/booking',
-    startTime,
-    endTime,
-    seats: 1,
-    date: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-    shortDate: start.format('MM/DD'),
-    hours: 1,
-    amount: '243.00',
-    bookingFee: '12.15',
-  },
-]);
+console.log('metadata', metadata);
 
 const main = async () => {
   try {

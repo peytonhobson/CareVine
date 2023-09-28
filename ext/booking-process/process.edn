@@ -38,19 +38,7 @@
    :to :state/accepted,
    :privileged? true}
 
-   {:name :transition/cancel-accepted-booking-customer,
-   :actions
-   [{:name :action/cancel-booking}],
-   :actor :actor.role/customer,
-   :from :state/accepted,
-   :to :state/canceled}
-   {:name :transition/cancel-accepted-booking-provider,
-   :actions
-   [{:name :action/cancel-booking}],
-   :actor :actor.role/provider,
-   :from :state/accepted,
-   :to :state/canceled}
-   {:name :transition/cancel-accepted-booking-operator,
+   {:name :transition/accepted-cancel,
    :actions
    [{:name :action/cancel-booking}],
    :actor :actor.role/operator,
@@ -69,19 +57,7 @@
    {:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2D"]}]},
    :from :state/accepted,
    :to :state/charged}
-   {:name :transition/cancel-charged-booking-customer,
-   :actions
-   [{:name :action/cancel-booking}],
-   :actor :actor.role/customer,
-   :from :state/charged,
-   :to :state/canceled}
-   {:name :transition/cancel-charged-booking-provider,
-   :actions
-   [{:name :action/cancel-booking}],
-   :actor :actor.role/provider,
-   :from :state/charged,
-   :to :state/canceled}
-   {:name :transition/cancel-charged-booking-operator,
+   {:name :transition/charged-cancel,
    :actions
    [{:name :action/cancel-booking}],
    :actor :actor.role/operator,
@@ -101,30 +77,6 @@
    :from :state/updating-booking-end,
    :to :state/active}
 
-   {:name :transition/cancel-active-booking-customer,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/customer,
-   :from :state/active,
-   :to :state/active-canceled}
-   {:name :transition/cancel-active-booking-provider,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/provider,
-   :from :state/active,
-   :to :state/active-canceled}
-   {:name :transition/cancel-active-booking-operator,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/operator,
-   :from :state/active,
-   :to :state/active-canceled}
-
-   {:name :transition/complete-canceled,
-   :at {:fn/timepoint [:time/booking-end]},
-   :from :state/active-canceled,
-   :to :state/delivered}
-
    {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},
    :from :state/active,
@@ -137,25 +89,6 @@
    :from :state/delivered,
    :to :state/waiting-for-next-week}
 
-   {:name :transition/wfnw-cancel-customer,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/customer,
-   :from :state/waiting-for-next-week,
-   :to :state/active-canceled}
-   {:name :transition/wfnw-cancel-provider,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/provider
-   :from :state/waiting-for-next-week,
-   :to :state/active-canceled}
-   {:name :transition/wfnw-cancel-operator,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/operator
-   :from :state/waiting-for-next-week,
-   :to :state/active-canceled}
-
   ;; TODO: May need to update this to be 5 mins after booking start to accomdate edge cases
   {:name :transition/update-booking-end-repeat,
    :at {:fn/ignore-if-past [{:fn/timepoint [:time/booking-start]}]},
@@ -164,45 +97,24 @@
    :from :state/waiting-for-next-week,
    :to :state/updating-booking-end}
 
-  ;; If payment declines, wait 24 hours to see if its updated,
-  ;;  otherwise decline payment and cancel booking
-   {:name :transition/wait-for-payment,
-   :actor :actor.role/operator,
-   :from :state/waiting-for-next-week
-   :to :state/waiting-for-payment}
-  {:name :transition/wfp-cancel-customer,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/customer,
-   :from :state/waiting-for-payment,
-   :to :state/active-canceled}
-   {:name :transition/wfp-cancel-provider,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/provider
-   :from :state/waiting-for-payment,
-   :to :state/active-canceled}
-   {:name :transition/wfp-cancel-operator,
-   :actions
-   [{:name :action/update-booking :config {:type :time}}],
-   :actor :actor.role/operator
-   :from :state/waiting-for-payment,
-   :to :state/active-canceled}
-
-
-
-
-   {:name :transition/new-payment-accepted,
-   :actor :actor.role/operator,
-   :from :state/waiting-for-payment,
-   :to :state/waiting-for-next-week}
-
-  {:name :transition/decline-payment-repeat,
-   :actor :actor.role/operator,
-   :actions
-    [{:name :action/cancel-booking}],
-   :from :state/waiting-for-payment,
-   :to :state/payment-failed}
+{:name :transition/wfnw-cancel,
+    :actor :actor.role/operator,
+    :actions
+    [{:name :action/update-booking :config {:type :time}}]
+   :from :state/waiting-for-next-week,
+   :to :state/final}
+   {:name :transition/active-cancel,
+    :actor :actor.role/operator,
+    :actions
+    [{:name :action/update-booking :config {:type :time}}]
+   :from :state/active,
+   :to :state/final}
+   {:name :transition/delivered-cancel,
+    :actor :actor.role/operator,
+    :actions
+    [{:name :action/update-booking :config {:type :time}}]
+   :from :state/delivered,
+   :to :state/final}
 
 ],
  :notifications
@@ -235,66 +147,6 @@
    :to :actor.role/provider,
    :template :booking-confirmed}
 
-    ; Provider canceling booking after acceptance, but before charging
-    {:name :notification/booking-canceled-accepted-provider-confirmation,
-    :on :transition/cancel-accepted-booking-provider,
-    :to :actor.role/provider
-    :template :booking-canceled-provider-confirmation}
-    {:name :notification/provider-canceled-accepted-booking,
-    :on :transition/cancel-accepted-booking-provider,
-    :to :actor.role/customer,
-    :template :provider-canceled-booking}
-
-    ; Provider canceling booking after charge, but before active
-    {:name :notification/booking-canceled-charged-provider-confirmation,
-    :on :transition/cancel-charged-booking-provider,
-    :to :actor.role/provider
-    :template :booking-canceled-provider-confirmation}
-    {:name :notification/provider-canceled-charged-booking,
-    :on :transition/cancel-charged-booking-provider,
-    :to :actor.role/customer,
-    :template :provider-canceled-booking}
-
-    ; Provider cancelling active Booking
-    {:name :notification/booking-active-canceled-provider-confirmation,
-    :on :transition/cancel-active-booking-provider,
-    :to :actor.role/provider
-    :template :booking-canceled-provider-confirmation}
-    {:name :notification/provider-active-canceled-booking,
-    :on :transition/cancel-active-booking-provider,
-    :to :actor.role/customer,
-    :template :provider-canceled-booking}
-
-    ; Customer canceling booking after acceptance, but before charging
-    {:name :notification/booking-canceled-accepted-customer-confirmation,
-    :on :transition/cancel-accepted-booking-customer,
-    :to :actor.role/customer,
-    :template :booking-canceled-customer-confirmation}
-    {:name :notification/customer-canceled-accepted-booking,
-    :on :transition/cancel-accepted-booking-customer,
-    :to :actor.role/provider,
-    :template :customer-canceled-booking}
-
-    ; Customer canceling booking after acceptance, but before charging
-    {:name :notification/booking-canceled-charged-customer-confirmation,
-    :on :transition/cancel-charged-booking-customer,
-    :to :actor.role/customer,
-    :template :booking-canceled-customer-confirmation}
-    {:name :notification/customer-canceled-charged-booking,
-    :on :transition/cancel-charged-booking-customer,
-    :to :actor.role/provider,
-    :template :customer-canceled-booking}
-
-    ; Customer canceled active booking
-    {:name :notification/booking-active-canceled-customer-confirmation,
-    :on :transition/cancel-active-booking-customer,
-    :to :actor.role/customer,
-    :template :booking-canceled-customer-confirmation}
-    {:name :notification/customer-active-canceled-booking,
-    :on :transition/cancel-active-booking-customer,
-    :to :actor.role/provider,
-    :template :customer-canceled-booking}
-
     ; Customer canceled booking request
     {:name :notification/booking-request-canceled-confirmation,
     :on :transition/cancel-request,
@@ -308,18 +160,6 @@
    :template :payment-failed-customer}
    {:name :notification/payment-failed-provider
    :on :transition/decline-payment,
-   :to :actor.role/provider,
-   :template :payment-failed-provider}
-   {:name :notification/first-payment-failed-repeat,
-   :on :transition/wait-for-payment,
-   :to :actor.role/customer,
-   :template :repeat-payment-failed}
-   {:name :notification/payment-failed-customer-repeat,
-   :on :transition/decline-payment-repeat,
-   :to :actor.role/customer,
-   :template :payment-failed-customer}
-   {:name :notification/payment-failed-provider-repeat
-   :on :transition/decline-payment-repeat,
    :to :actor.role/provider,
    :template :payment-failed-provider}
 

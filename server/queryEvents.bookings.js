@@ -316,8 +316,6 @@ const addTimeToStartOfDay = (day, time) => {
 };
 
 const updateBookingLedger = async transaction => {
-  const txId = transaction.id.uuid;
-
   const {
     lineItems,
     paymentMethodType,
@@ -325,6 +323,7 @@ const updateBookingLedger = async transaction => {
     paymentMethodId,
     paymentIntentId,
     refundAmount,
+    ledger = [],
   } = transaction.attributes.metadata;
 
   const amount = parseFloat(
@@ -336,45 +335,26 @@ const updateBookingLedger = async transaction => {
       ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
       : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
 
-  try {
-    const transactionResponse = await integrationSdk.transactions.show({
-      id: txId,
-      include: ['booking'],
-    });
+  const ledgerEntry = {
+    bookingRate,
+    paymentMethodId,
+    paymentMethodType,
+    bookingFee,
+    processingFee,
+    paymentIntentId,
+    totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
+      2
+    ),
+    payout: parseFloat(amount).toFixed(2),
+    refundAmount: refundAmount ? refundAmount : null,
+    lineItems: lineItems.map(item => ({
+      date: item.date,
+      startTime: item.startTime,
+      endTime: item.endTime,
+    })),
+  };
 
-    const bookingLedger = transactionResponse.data.data.attributes.metadata.ledger ?? [];
-    const booking = transactionResponse.data.included.find(i => i.type === 'booking');
-    const bookingEnd = booking.attributes.end;
-
-    const ledgerEntry = {
-      bookingRate,
-      paymentMethodId,
-      paymentMethodType,
-      bookingFee,
-      processingFee,
-      paymentIntentId,
-      totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
-        2
-      ),
-      payout: parseFloat(amount).toFixed(2),
-      refundAmount: refundAmount ? refundAmount : null,
-      start: lineItems?.[0]
-        ? addTimeToStartOfDay(lineItems?.[0].date, lineItems?.[0].startTime).format(
-            ISO_OFFSET_FORMAT
-          )
-        : null,
-      end: bookingEnd.format(ISO_OFFSET_FORMAT),
-      lineItems: lineItems.map(item => ({
-        date: item.date,
-        startTime: item.startTime,
-        endTime: item.endTime,
-      })),
-    };
-
-    return [...bookingLedger, ledgerEntry];
-  } catch (e) {
-    log.error(e?.data?.errors, 'update-booking-ledger-failed', {});
-  }
+  return [...ledger, ledgerEntry];
 };
 
 const updateNextWeek = async transaction => {
@@ -389,13 +369,15 @@ const updateNextWeek = async transaction => {
     lineItems,
   } = transaction.attributes.metadata;
 
-  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions).format(
+  const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions)?.format(
     ISO_OFFSET_FORMAT
   );
   const bookingEnd = moment(nextWeekStartTime)
     .clone()
     .add(1, 'hours')
     .format(ISO_OFFSET_FORMAT);
+
+  console.log('nextWeekStartTime', nextWeekStartTime);
 
   // Update bookingStart to be next week start time
   try {
@@ -428,6 +410,17 @@ const updateNextWeek = async transaction => {
   );
 
   const newLedger = await updateBookingLedger(transaction);
+
+  console.log('new', newMetadata);
+  console.log('exceptions', exceptions);
+  console.log('newLedger', newLedger);
+  console.log('chargedLineItems', chargedLineItems);
+  console.log(
+    'newChargedLineItems',
+    chargedLineItems.filter(
+      chargedItem => !chargedItem.lineItems.find(c => lineItems.find(l => l.date === c.date)) // Remove line items from past week from chargedLineItems
+    )
+  );
 
   try {
     await integrationSdk.transactions.updateMetadata({

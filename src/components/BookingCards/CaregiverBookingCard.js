@@ -20,12 +20,10 @@ import {
 } from '..';
 import MenuIcon from '../ManageListingCard/MenuIcon';
 import {
-  TRANSITION_DISPUTE,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_CHARGE,
   TRANSITION_START,
-  TRANSITION_START_UPDATE_TIMES,
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -149,12 +147,10 @@ const CaregiverBookingCard = props => {
     ?.filter(l => l.code === 'refund')
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
-  const disputeInReview = lastTransition === TRANSITION_DISPUTE;
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
   const isCharged = lastTransition === TRANSITION_CHARGE;
-  const isActive =
-    lastTransition === TRANSITION_START || lastTransition === TRANSITION_START_UPDATE_TIMES;
+  const isActive = lastTransition === TRANSITION_START;
   const showMenu = isActive || isAccepted || isCharged;
   const hasSameDayBooking = useMemo(
     () =>
