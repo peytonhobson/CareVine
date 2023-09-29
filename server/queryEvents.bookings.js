@@ -6,7 +6,7 @@ const sgMail = require('@sendgrid/mail');
 const moment = require('moment');
 const { integrationSdk } = require('./api-util/sdk');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-const { constructBookingMetadataRecurring } = require('./bookingHelpers');
+const { constructBookingMetadataRecurring, addTimeToStartOfDay } = require('./bookingHelpers');
 // Time
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
@@ -305,14 +305,6 @@ const makeReviewable = async transaction => {
   } catch (e) {
     log.error(e?.data?.errors, 'make-reviewable-failed', {});
   }
-};
-
-const addTimeToStartOfDay = (day, time) => {
-  const hours = moment(time, ['h:mma']).format('HH');
-
-  return typeof day === 'string'
-    ? moment.parseZone(day).add(hours, 'hours')
-    : moment(day).add(hours, 'hours');
 };
 
 const updateBookingLedger = async transaction => {

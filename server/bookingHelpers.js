@@ -241,6 +241,14 @@ const checkIfBookingDateRangesOverlap = (start1, end1, start2, end2) => {
   );
 };
 
+const addTimeToStartOfDay = (day, time) => {
+  const hours = moment(time, ['h:mma']).format('HH');
+
+  return typeof day === 'string'
+    ? moment.parseZone(day).add(hours, 'hours')
+    : moment(day).add(hours, 'hours');
+};
+
 // Check if one time is blocked by caregivers listing
 const checkIsBlockedOneTime = ({ dates, listing }) => {
   if (!dates || !listing) return false;
@@ -331,4 +339,5 @@ module.exports = {
   constructBookingMetadataRecurring,
   checkIsBlockedRecurring,
   checkIsBlockedOneTime,
+  addTimeToStartOfDay,
 };

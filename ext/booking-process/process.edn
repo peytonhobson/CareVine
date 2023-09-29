@@ -10,9 +10,12 @@
    :privileged? true}
 
    {:name :transition/cancel-request,
-   :actor :actor.role/customer,
+   :actor :actor.role/operator,
+   :actions
+    [{:name :action/privileged-update-metadata}]
    :from :state/booking-requested,
-   :to :state/request-canceled}
+   :to :state/request-canceled,
+   :privileged? true}
 
   {:name :transition/decline,
     :actions
@@ -40,10 +43,11 @@
 
    {:name :transition/accepted-cancel,
    :actions
-   [{:name :action/cancel-booking}],
+   [{:name :action/cancel-booking}, {:name :action/privileged-update-metadata}],
    :actor :actor.role/operator,
    :from :state/accepted,
-   :to :state/canceled}
+   :to :state/canceled,
+   :privileged? true}
 
    {:name :transition/decline-payment,
    :actor :actor.role/operator,
@@ -59,10 +63,11 @@
    :to :state/charged}
    {:name :transition/charged-cancel,
    :actions
-   [{:name :action/cancel-booking}],
+   [{:name :action/cancel-booking},{:name :action/privileged-update-metadata}],
    :actor :actor.role/operator,
    :from :state/charged,
-   :to :state/canceled}
+   :to :state/canceled,
+   :privileged? true}
 
    {:name :transition/update-booking-end,
    :at
@@ -100,22 +105,25 @@
 {:name :transition/wfnw-cancel,
     :actor :actor.role/operator,
     :actions
-    [{:name :action/update-booking :config {:type :time}}]
+    [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}]
    :from :state/waiting-for-next-week,
-   :to :state/final}
+   :to :state/final,
+   :privileged? true}
+
    {:name :transition/active-cancel,
     :actor :actor.role/operator,
     :actions
-    [{:name :action/update-booking :config {:type :time}}]
+    [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}]
    :from :state/active,
-   :to :state/final}
+   :to :state/final,
+   :privileged? true}
    {:name :transition/delivered-cancel,
     :actor :actor.role/operator,
     :actions
-    [{:name :action/update-booking :config {:type :time}}]
+    [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}]
    :from :state/delivered,
-   :to :state/final}
-
+   :to :state/final,
+   :privileged? true}
 ],
  :notifications
  [

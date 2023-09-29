@@ -10,6 +10,19 @@ const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
 const USING_SSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 const TRANSIT_VERBOSE = process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true';
 
+export const apiBaseUrl = () => {
+  const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
+  const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
+
+  // In development, the dev API server is running in a different port
+  if (useDevApiServer) {
+    return `http://localhost:${port}`;
+  }
+
+  // Otherwise, use the same domain and port as the frontend
+  return process.env.REACT_APP_CANONICAL_ROOT_URL;
+};
+
 // Application type handlers for JS SDK.
 //
 // NOTE: keep in sync with `typeHandlers` in `src/util/api.js`

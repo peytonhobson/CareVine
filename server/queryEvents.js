@@ -249,12 +249,6 @@ module.exports = queryEvents = () => {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
       const metadata = transaction.attributes.metadata;
-      const hasNextBooking =
-        metadata.type === 'recurring' &&
-        !metadata.cancelAtPeriodEnd &&
-        (!metadata.endDate || new Date(metadata.endDate) > new Date());
-
-      const bookingType = metadata.type;
 
       if (
         lastTransition === 'transition/update-booking-end' ||
@@ -280,12 +274,23 @@ module.exports = queryEvents = () => {
         createCaregiverPayout(transaction);
       }
 
+      const hasNextBooking =
+        metadata.type === 'recurring' &&
+        !metadata.cancelAtPeriodEnd &&
+        (!metadata.endDate || moment(metadata.endDate).isAfter()) &&
+        !metadata.waitingForPayment;
+      const bookingType = metadata.type;
+
       if (
         lastTransition === 'transition/complete' &&
         bookingType === 'recurring' &&
-        hasNextBooking
       ) {
-        updateNextWeek(transaction);
+        if (hasNextBooking) {
+          updateNextWeek(transaction);
+        }
+        else {
+          // TODO: Update to final state
+        }
       }
     }
 

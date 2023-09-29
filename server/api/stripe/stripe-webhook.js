@@ -1,5 +1,5 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleError, serialize, integrationSdk, getSdk } = require('../../api-util/sdk');
+const { integrationSdk, apiBaseUrl } = require('../../api-util/sdk');
 const log = require('../../log');
 const CAREVINE_GOLD_PRICE_ID =
   process.env.REACT_APP_ENV === 'development'
@@ -16,19 +16,6 @@ const activeSubscriptionTypes = ['active', 'trialing'];
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-const apiBaseUrl = () => {
-  const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
-  const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
-
-  // In development, the dev API server is running in a different port
-  if (useDevApiServer) {
-    return `http://localhost:${port}`;
-  }
-
-  // Otherwise, use the same domain and port as the frontend
-  return process.env.REACT_APP_CANONICAL_ROOT_URL;
-};
 
 const sendgridEmail = (receiverId, templateName, templateData, failMessage) => {
   axios
