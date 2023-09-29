@@ -23,8 +23,8 @@ import {
   updateListingMetadata,
   sendgridTemplateEmail,
   updatePendingPayouts,
+  cancelBooking as apiCancelBooking,
 } from '../../util/api';
-import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
@@ -224,144 +224,19 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const cancelBooking = booking => async (dispatch, getState, sdk) => {
+export const cancelBooking = transaction => async (dispatch, getState, sdk) => {
   dispatch(cancelBookingRequest());
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
-  const bookingId = booking.id.uuid;
-  const { paymentIntentId, lineItems, bookingFee } = booking.attributes.metadata;
-  const listingId = booking.listing.id.uuid;
-  const totalAmount = lineItems.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) * 100;
-
-  const refundItems = mapRefundItems(lineItems, userType === CAREGIVER);
-  const refundAmount = parseInt(
-    refundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
-  );
-
-  const lastTransition = booking.attributes.lastTransition;
-  let bookingState = null;
-
-  // TODO: Update this to use object map and keys
-  switch (lastTransition) {
-    case TRANSITION_ACCEPT_BOOKING:
-      bookingState = 'accepted';
-      break;
-    case TRANSITION_CHARGE:
-      bookingState = 'charged';
-      break;
-    case TRANSITION_START:
-      bookingState = 'active';
-      break;
-    case TRANSITION_REQUEST_BOOKING:
-      bookingState = 'requested';
-      break;
-    default:
-      bookingState = null;
-  }
-
-  const isCaregiver = userType === CAREGIVER;
-
-  const transition = cancelBookingTransitions[userType][bookingState];
+  const txId = transaction.id.uuid;
+  const listingId = transaction.attributes.listing.id.uuid;
 
   try {
-    if (bookingState !== 'requested' && bookingState !== 'accepted' && !paymentIntentId) {
-      throw new Error('Missing payment intent id');
-    }
-
-    if (paymentIntentId && refundAmount > 0) {
-      const applicationFeeRefund = parseInt(
-        (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
-      );
-
-      await stripeCreateRefund({
-        paymentIntentId,
-        amount: refundAmount,
-        applicationFeeRefund,
-      });
-
-      const newLineItems = isCaregiver
-        ? mapLineItemsForCancellationProvider(lineItems)
-        : mapLineItemsForCancellationCustomer(lineItems);
-      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-      // Update line items so caregiver is paid out correct amount after refund
-      await updateTransactionMetadata({
-        txId: bookingId,
-        metadata: {
-          lineItems: newLineItems,
-          refundAmount: parseFloat(refundAmount / 100).toFixed(2),
-          payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
-          refundItems,
-          bookingFeeRefundAmount: parseFloat(applicationFeeRefund / 100).toFixed(2),
-          totalRefund: parseFloat(refundAmount / 100 + applicationFeeRefund / 100).toFixed(2),
-        },
-      });
-    } else {
-      await updateTransactionMetadata({
-        txId: bookingId,
-        metadata: {
-          lineItems: [],
-          refundAmount: 0,
-          payout: 0,
-          refundItems: [],
-        },
-      });
-    }
-
-    // Create new booking end so cancel-active goes to delivered after transitioning
-    let newBookingEnd = null;
-    let newBookingStart = null;
-    if (bookingState === 'active') {
-      // Add 10 minutes to booking end to give time for backend to process transition to delivered
-      newBookingEnd = moment(roundDateToNearest5Minutes(new Date()))
-        .add(10, 'minutes')
-        .toDate();
-      newBookingStart = moment(newBookingEnd)
-        .subtract(1, 'hours')
-        .toDate();
-    }
-
-    const response = await sdk.transactions.transition({
-      id: bookingId,
-      transition,
-      params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
-      },
-    });
-
-    // Update listing metadata to remove cancelled booking dates/days
-    if (bookingState !== 'requested') {
-      if (booking.attributes.metadata.type === 'oneTime') {
-        try {
-          const bookedDates = booking.listing.attributes.metadata.bookedDates ?? [];
-          const bookingDates = booking.attributes.metadata.lineItems.map(lineItem => lineItem.date);
-          const newBookedDates = bookedDates.filter(
-            date => !bookingDates.includes(date) || new Date(date) < new Date()
-          );
-
-          await updateListingMetadata({ listingId, metadata: { bookedDates: newBookedDates } });
-        } catch (e) {
-          log.error(e, 'update-caregiver-booking-dates-failed', {});
-        }
-      } else {
-        try {
-          const bookedDays = booking.listing.attributes.metadata.bookedDays ?? [];
-          const newBookedDays = bookedDays.filter(day => day.txId !== bookingId);
-
-          await updateListingMetadata({ listingId, metadata: { bookedDays: newBookedDays } });
-        } catch (e) {
-          log.error(e, 'update-caregiver-booking-dates-failed', {});
-        }
-      }
-    }
-
-    const bookingResponse = denormalisedResponseEntities(response);
+    await apiCancelBooking({ txId, listingId, cancelingUserType: userType });
 
     dispatch(cancelBookingSuccess());
-    return bookingResponse;
   } catch (e) {
-    log.error(e, 'cancel-booking-failed', { transition, bookingId });
+    log.error(e, 'cancel-booking-failed', { txId });
     dispatch(fetchBookings());
     dispatch(cancelBookingError(storableError(e)));
   }

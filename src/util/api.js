@@ -332,3 +332,7 @@ export const initiatePrivilegedTransaction = body => {
 export const getProdListings = body => {
   return post('/api/get-prod-listings', body);
 };
+
+export const cancelBooking = body => {
+  return post('/api/cancel-booking', body);
+};
