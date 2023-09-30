@@ -3,6 +3,7 @@ const { addTimeToStartOfDay } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');
+const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 // Map of last transitions to cancel transitions
 const cancelTransitionMap = {
@@ -66,27 +67,32 @@ const mapLineItemsForCancellationProvider = lineItems => {
 // If more than 48 hours, refund 100% of base
 const mapRefundItems = (chargedLineItems, isCaregiver) => {
   return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
-    const refundedLineItems = lineItems.map(lineItem => {
-      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      const isWithin48Hours =
-        moment()
+    // TODO: This may need to be reduced to exclude any past items
+    const refundedLineItems = lineItems
+      .filter(l => {
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return moment().isBefore(startTime);
+      })
+      .map(lineItem => {
+        const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+        const isWithin48Hours = moment()
           .add(2, 'days')
-          .isAfter(startTime) && moment().isBefore(startTime);
+          .isAfter(startTime);
 
-      const isFifty = isWithin48Hours && !isCaregiver;
+        const isFifty = isWithin48Hours && !isCaregiver;
 
-      const base = isFifty
-        ? parseFloat(lineItem.amount / 2).toFixed(2)
-        : parseFloat(lineItem.amount).toFixed(2);
-      const bookingFee = parseFloat(base * 0.05).toFixed(2);
-      return {
-        isFifty,
-        base,
-        bookingFee,
-        amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
-        date: moment(lineItem.date).format('MM/DD'),
-      };
-    });
+        const base = isFifty
+          ? parseFloat(lineItem.amount / 2).toFixed(2)
+          : parseFloat(lineItem.amount).toFixed(2);
+        const bookingFee = parseFloat(base * 0.05).toFixed(2);
+        return {
+          isFifty,
+          base,
+          bookingFee,
+          amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+          date: moment(lineItem.date).format('MM/DD'),
+        };
+      });
 
     return {
       lineItems: refundedLineItems,
@@ -96,7 +102,7 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
 };
 
 const stripeCreateRefund = async ({ paymentIntentId, amount, applicationFeeRefund }) => {
-  await axios.post(
+  return await axios.post(
     `${apiBaseUrl()}/api/stripe-create-refund`,
     {
       paymentIntentId,
@@ -118,7 +124,7 @@ module.exports = async (req, res) => {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
 
     const {
-      chargedLineItems,
+      chargedLineItems = [],
       paymentIntentId,
       type: bookingType,
     } = transaction.attributes.metadata;
@@ -129,9 +135,10 @@ module.exports = async (req, res) => {
     const totalRefundAmount = parseInt(
       allRefundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
     );
-    const totalApplicationFeeRefund = parseInt(
-      (parseFloat(totalRefundAmount) * 0.05).toFixed(2) * 100
-    );
+    const totalApplicationFeeRefund = parseInt((parseFloat(totalRefundAmount) * 0.05).toFixed(2));
+
+    console.log('allLineItems', allLineItems);
+    console.log('allRefundItems', allRefundItems);
 
     const lastTransition = transaction.attributes.lastTransition;
 
@@ -151,13 +158,18 @@ module.exports = async (req, res) => {
 
     let metadataToUpdate;
 
+    console.log('refundItems', refundItems);
+
     if (totalRefundAmount > 0) {
       await Promise.all(
         refundItems.map(async ({ lineItems, paymentIntentId }) => {
           const refundAmount = parseInt(
             lineItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
           );
-          const applicationFeeRefund = parseInt((parseFloat(refundAmount) * 0.05).toFixed(2) * 100);
+          const applicationFeeRefund = parseInt(parseFloat(refundAmount * 0.05).toFixed(2));
+
+          console.log('refundAmount', refundAmount);
+          console.log('applicationFeeRefund', applicationFeeRefund);
 
           await stripeCreateRefund({
             paymentIntentId,
@@ -193,21 +205,28 @@ module.exports = async (req, res) => {
       };
     }
 
-    console.log('metadataToUpdate', metadataToUpdate);
-
     const isActive = activeTransitions.includes(lastTransition);
     const newBookingEnd = isActive
       ? moment()
-          .add(5 - (now.minute() % 5), 'minutes')
+          .add(5 - (moment().minute() % 5), 'minutes')
           .set({ second: 0, millisecond: 0 })
+          .format(ISO_OFFSET_FORMAT)
       : null;
     const newBookingStart = isActive
       ? moment(newBookingEnd)
           .subtract(1, 'hours')
-          .toDate()
+          .format(ISO_OFFSET_FORMAT)
       : null;
 
-    console.log('newBookingStart', newBookingStart);
+    console.log('updateParams', {
+      id: txId,
+      transition: cancelTransitionMap[lastTransition],
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+        metadata: metadataToUpdate,
+      },
+    });
 
     const response = await integrationSdk.transactions.transition({
       id: txId,

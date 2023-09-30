@@ -434,6 +434,19 @@ const updateNextWeek = async transaction => {
   }
 };
 
+const endRecurring = async transaction => {
+  const txId = transaction.id.uuid;
+
+  try {
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/delivered-cancel',
+    });
+  } catch (e) {
+    log.error(e?.data, 'end-recurring-failed', {});
+  }
+};
+
 module.exports = {
   createBookingPayment,
   createCaregiverPayout,
@@ -441,4 +454,5 @@ module.exports = {
   updateNextWeek,
   makeReviewable,
   updateBookingLedger,
+  endRecurring,
 };

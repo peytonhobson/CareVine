@@ -28,6 +28,7 @@ module.exports = queryEvents = () => {
     updateBookingEnd,
     updateNextWeek,
     makeReviewable,
+    endRecurring,
   } = require('./queryEvents.bookings');
   const { GetObjectCommand, S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 
@@ -268,7 +269,6 @@ module.exports = queryEvents = () => {
         createCaregiverPayout(transaction);
       }
 
-      // TODO: Double check this isnt getting called twice when cancelling delivered booking
       if (lastTransition === 'transition/complete' || lastTransition === 'active-cancel') {
         makeReviewable(transaction);
         createCaregiverPayout(transaction);
@@ -277,15 +277,14 @@ module.exports = queryEvents = () => {
       const hasNextBooking =
         metadata.type === 'recurring' &&
         !metadata.cancelAtPeriodEnd &&
-        (!metadata.endDate || moment(metadata.endDate).isAfter()) &&
-        !metadata.waitingForPayment;
+        (!metadata.endDate || moment(metadata.endDate).isAfter());
       const bookingType = metadata.type;
 
       if (lastTransition === 'transition/complete' && bookingType === 'recurring') {
         if (hasNextBooking) {
           updateNextWeek(transaction);
         } else {
-          // TODO: Update to final state
+          endRecurring(transaction);
         }
       }
     }
