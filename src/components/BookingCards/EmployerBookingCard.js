@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import {
   Avatar,
   SecondaryButton,
   Modal,
-  BookingCalendar,
   CancelButton,
   Button,
   UserDisplayName,
@@ -13,28 +12,31 @@ import {
   MenuContent,
   MenuItem,
   InlineTextButton,
+  WeeklyBillingDetails,
 } from '..';
 import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_CHARGE,
-  TRANSITION_START,
   CANCELABLE_TRANSITIONS,
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { v4 as uuidv4 } from 'uuid';
-import { DisputeForm } from '../../forms';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
-import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
+import { FULL_WEEKDAY_MAP } from '../../util/constants';
 import moment from 'moment';
 import MenuIcon from '../ManageListingCard/MenuIcon';
 import classNames from 'classnames';
+import { sortExceptionsByDate } from '../../util/bookings';
 
 import css from './BookingCards.module.css';
+import ExceptionsModal from './Modals/ExceptionsModal';
+import BookingCalendarModal from './Modals/BookingCalendarModal';
+import DisputeModal from './Modals/DisputeModal';
+import CancelModal from './Modals/CancelModal';
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
@@ -47,27 +49,15 @@ const calculateBookingDayHours = (bookingStart, bookingEnd) => {
 
 // Booking card from the employers view
 const EmployerBookingCard = props => {
+  // TODO: useReducer
   const [bookingTimesPage, setBookingTimesPage] = useState(0);
   const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
   const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+  const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
 
-  const {
-    booking,
-    onManageDisableScrolling,
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    onCancelBooking,
-    disputeBookingInProgress,
-    disputeBookingError,
-    disputeBookingSuccess,
-    onDisputeBooking,
-    intl,
-    onFetchBookings,
-    onResetInitialState,
-  } = props;
+  const { booking, onManageDisableScrolling, intl, sonFetchBookings, onResetInitialState } = props;
 
   const { provider } = booking;
 
@@ -82,15 +72,21 @@ const EmployerBookingCard = props => {
     startDate,
     endDate,
     type: scheduleType,
+    exceptions = {
+      addedDays: [],
+      removedDays: [],
+      changedDays: [],
+    },
   } = bookingMetadata;
+
+  const allExceptions = useMemo(() => {
+    return Object.values(exceptions)
+      .flat()
+      .sort(sortExceptionsByDate);
+  }, [exceptions]);
 
   const handleChangeTimesPage = (e, page) => {
     setBookingTimesPage(page);
-  };
-
-  const handleDisputeBooking = values => {
-    const { disputeReason } = values;
-    onDisputeBooking(booking, disputeReason);
   };
 
   const handleModalOpen = modalOpenFunc => {
@@ -134,9 +130,6 @@ const EmployerBookingCard = props => {
 
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
-  const isCharged = lastTransition === TRANSITION_CHARGE;
-  const isActive = lastTransition === TRANSITION_START;
-  const showCancel = isRequest || isActive || isAccepted || isCharged;
   const canCancel = CANCELABLE_TRANSITIONS.includes(lastTransition);
   const showMenu = canCancel || isDisputable;
 
@@ -188,7 +181,7 @@ const EmployerBookingCard = props => {
                 )}
               </MenuItem>
               <MenuItem key="cancel">
-                {showCancel && (
+                {canCancel && (
                   <InlineTextButton
                     rootClassName={classNames(css.menuItem, 'text-error', css.cancelMenuItem)}
                     onClick={() => handleModalOpen(setIsCancelModalOpen)}
@@ -277,12 +270,21 @@ const EmployerBookingCard = props => {
           >
             Payment Details
           </Button>
-          <SecondaryButton
-            className={css.viewButton}
-            onClick={() => setIsBookingCalendarModalOpen(true)}
-          >
-            View Calendar
-          </SecondaryButton>
+          {scheduleType === 'oneTime' ? (
+            <SecondaryButton
+              className={css.viewButton}
+              onClick={() => handleModalOpen(setIsBookingCalendarModalOpen)}
+            >
+              View Calendar
+            </SecondaryButton>
+          ) : allExceptions.length ? (
+            <CancelButton
+              className={css.viewButton}
+              onClick={() => handleModalOpen(setIsExceptionsModalOpen)}
+            >
+              Schedule Exceptions
+            </CancelButton>
+          ) : null}
         </div>
       </div>
       {isPaymentDetailsModalOpen && (
@@ -296,131 +298,63 @@ const EmployerBookingCard = props => {
           usePortal
         >
           <p className={css.modalTitle}>Payment Summary</p>
-          {/* <BookingSummaryCard
-            className={css.bookingSummaryCard}
-            authorDisplayName={providerDisplayName}
-            currentAuthor={provider}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethod}
-            displayOnMobile={!isLarge}
-            hideAvatar
-            subHeading={<span className={css.bookingWith}>Payment Details</span>}
-            refundAmount={refundAmount}
-            hideRatesButton
-          /> */}
-        </Modal>
-      )}
-      {isBookingCalendarModalOpen && (
-        <Modal
-          title="Booking Calendar"
-          id="BookingCalendarModal"
-          isOpen={isBookingCalendarModalOpen}
-          onClose={() => setIsBookingCalendarModalOpen(false)}
-          containerClassName={css.modalContainer}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-        >
-          <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
-            Booking Calendar
-          </p>
-          <BookingCalendar
-            bookingDates={bookingDates}
-            bookingSchedule={bookingSchedule}
-            startDate={startDate}
-            endDate={endDate}
-            noDisabled
-          />
-        </Modal>
-      )}
-      {isCancelModalOpen && (
-        <Modal
-          title="Cancel Booking"
-          id="CancelBookingModal"
-          isOpen={isCancelModalOpen}
-          onClose={() => handleModalClose(setIsCancelModalOpen)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-          containerClassName={css.modalContainer}
-        >
-          <p className={css.modalTitle}>Cancel Booking with {providerDisplayName}</p>
-          {!isRequest && !isAccepted ? (
-            <>
-              <p className={css.modalMessageRefund}>Cancellation Policy</p>
-              <ul className={css.refundList}>
-                <li className={css.refundListItem}>
-                  100% refund for booked times canceled more than 48 hours in advance
-                </li>
-                <li className={css.refundListItem}>
-                  50% refund for booked times canceled less than 48 hours in advance
-                </li>
-                <li className={css.refundListItem}>
-                  Service fees will be refunded in proportion to the refunded base booking amount.
-                  Processing fees are non-refundable under all circumstances.
-                </li>
-              </ul>
-              <div>
-                {/* <BookingSummaryCard
-                  className={css.bookingSummaryCard}
-                  lineItems={lineItems}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                /> */}
-              </div>
-            </>
+          {scheduleType === 'oneTime' ? (
+            <SingleBookingSummaryCard
+              className={css.summaryCard}
+              bookingTimes={bookingTimes}
+              bookingRate={bookingRate}
+              listing={listing}
+              onManageDisableScrolling={onManageDisableScrolling}
+              selectedPaymentMethod={paymentMethodType}
+              hideRatesButton
+              hideAvatar
+            />
           ) : (
-            <p className={css.modalMessage}>
-              You have not been charged for this booking and will therefore not receive a refund.
-            </p>
+            <>
+              <p className={css.modalMessage}>
+                Click any week in your booking to view the payment details for that week.
+              </p>
+              <WeeklyBillingDetails
+                className="mt-6"
+                bookingSchedule={bookingSchedule}
+                exceptions={exceptions}
+                startDate={startDate}
+                endDate={endDate}
+                currentAuthor={provider}
+                bookingRate={bookingRate}
+                listing={listing}
+                onManageDisableScrolling={onManageDisableScrolling}
+                selectedPaymentMethodType={paymentMethodType}
+              />
+            </>
           )}
-          {cancelBookingError ? (
-            <p className={css.modalError}>
-              There was an error cancelling your booking. Please try again.
-            </p>
-          ) : null}
-          <div className={css.modalButtonContainer}>
-            <Button
-              onClick={() => handleModalClose(setIsCancelModalOpen)}
-              className={css.modalButton}
-            >
-              Back
-            </Button>
-            <CancelButton
-              inProgress={cancelBookingInProgress}
-              onClick={() => onCancelBooking(booking)}
-              className={css.modalButton}
-              ready={cancelBookingSuccess}
-              disabled={cancelBookingSuccess || cancelBookingInProgress}
-            >
-              Cancel
-            </CancelButton>
-          </div>
         </Modal>
       )}
-      {isDisputeModalOpen && (
-        <Modal
-          title="Dispute Booking"
-          id="DisputeBookingModal"
-          isOpen={isDisputeModalOpen}
-          onClose={() => handleModalClose(setIsDisputeModalOpen)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-          containerClassName={css.modalContainer}
-        >
-          <p className={css.modalTitle}>Submit Dispute</p>
-          <p className={css.modalMessage}>
-            Any dispute submitted will be reviewed by CareVine. You will be notified of the outcome
-            once we have reviewed the case.
-          </p>
-          <DisputeForm
-            onSubmit={handleDisputeBooking}
-            inProgress={disputeBookingInProgress}
-            disputeBookingError={disputeBookingError}
-            disputeBookingSuccess={disputeBookingSuccess}
-          />
-        </Modal>
-      )}
+      <CancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => handleModalClose(setIsCancelModalOpen)}
+        lastTransition={lastTransition}
+        otherUserDisplayName={providerDisplayName}
+      />
+      <DisputeModal
+        isOpen={isDisputeModalOpen}
+        onClose={() => handleModalClose(setIsDisputeModalOpen)}
+      />
+      <ExceptionsModal
+        isOpen={isExceptionsModalOpen}
+        onClose={() => handleModalClose(setIsExceptionsModalOpen)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        exceptions={allExceptions}
+      />
+      <BookingCalendarModal
+        isOpen={isBookingCalendarModalOpen}
+        onClose={() => setIsBookingCalendarModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        bookingDates={bookingDates}
+        bookingSchedule={bookingSchedule}
+        startDate={startDate}
+        endDate={endDate}
+      />
     </div>
   );
 };

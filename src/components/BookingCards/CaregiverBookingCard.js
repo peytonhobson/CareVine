@@ -19,13 +19,7 @@ import {
   InlineTextButton,
 } from '..';
 import MenuIcon from '../ManageListingCard/MenuIcon';
-import {
-  TRANSITION_REQUEST_BOOKING,
-  TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_CHARGE,
-  TRANSITION_START,
-  CANCELABLE_TRANSITIONS,
-} from '../../util/transaction';
+import { TRANSITION_REQUEST_BOOKING, CANCELABLE_TRANSITIONS } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useMediaQuery } from '@mui/material';
@@ -34,7 +28,7 @@ import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
-import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
+import { FULL_WEEKDAY_MAP } from '../../util/constants';
 import {
   checkIsBlockedOneTime,
   checkIsBlockedRecurring,
@@ -42,10 +36,12 @@ import {
 } from '../../util/bookings';
 import classNames from 'classnames';
 import moment from 'moment';
+import ExceptionsModal from './Modals/ExceptionsModal';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 import css from './BookingCards.module.css';
+import BookingCalendarModal from './Modals/BookingCalendarModal';
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
@@ -88,8 +84,6 @@ const CaregiverBookingCard = props => {
   } = props;
 
   const { customer, listing } = booking;
-
-  const { bookedDays, bookedDates } = listing.attributes.metadata;
 
   const lastTransition = booking.attributes.lastTransition;
   const bookingMetadata = booking.attributes.metadata;
@@ -361,67 +355,6 @@ const CaregiverBookingCard = props => {
           )}
         </Modal>
       )}
-      {isBookingCalendarModalOpen && (
-        <Modal
-          title="Booking Calendar"
-          id="BookingCalendarModal"
-          isOpen={isBookingCalendarModalOpen}
-          onClose={() => setIsBookingCalendarModalOpen(false)}
-          containerClassName={css.modalContainer}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-        >
-          <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
-            Booking Calendar
-          </p>
-          <BookingCalendar
-            bookingDates={bookingDates}
-            bookingSchedule={bookingSchedule}
-            startDate={startDate}
-            endDate={endDate}
-            noDisabled
-          />
-        </Modal>
-      )}
-      {isCancelModalOpen && (
-        <Modal
-          title="Cancel Booking"
-          id="CancelBookingModal"
-          isOpen={isCancelModalOpen}
-          onClose={() => handleModalClose(setIsCancelModalOpen)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-          containerClassName={css.modalContainer}
-        >
-          <p className={css.modalTitle}>Cancel Booking with {customerDisplayName}</p>
-          <p className={css.modalMessage}>
-            If you cancel the booking now, {customerDisplayName} will be fully refunded for any
-            booking times not completed. Your search ranking may also be affected.
-          </p>
-          {cancelBookingError ? (
-            <p className={css.modalError}>
-              There was an error cancelling your booking. Please try again.
-            </p>
-          ) : null}
-          <div className={css.modalButtonContainer}>
-            <Button
-              onClick={() => handleModalClose(setIsCancelModalOpen)}
-              className={css.modalButton}
-            >
-              Back
-            </Button>
-            <CancelButton
-              inProgress={cancelBookingInProgress}
-              onClick={() => onCancelBooking(booking)}
-              className={css.modalButton}
-              ready={cancelBookingSuccess}
-              disabled={cancelBookingSuccess || cancelBookingInProgress}
-            >
-              Cancel
-            </CancelButton>
-          </div>
-        </Modal>
-      )}
       {isRespondModalOpen && (
         <Modal
           title="Respond to Booking"
@@ -521,29 +454,28 @@ const CaregiverBookingCard = props => {
           )}
         </Modal>
       )}
-      {isExceptionsModalOpen && (
-        <Modal
-          title="Booking Exceptions"
-          id="BookingExceptionsModal"
-          isOpen={isExceptionsModalOpen}
-          onClose={() => handleModalClose(setIsExceptionsModalOpen)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-          containerClassName={css.modalContainer}
-        >
-          <p className={css.modalTitle}>Booking Exceptions</p>
-          <p className={css.modalMessage}>
-            Listed below are days that are different from the regular booking schedule.
-          </p>
-          <div className={css.exceptions}>
-            {allExceptions.map(exception => {
-              return (
-                <BookingException {...exception} key={exception.date} className={css.exception} />
-              );
-            })}
-          </div>
-        </Modal>
-      )}
+      <CancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => handleModalClose(setIsCancelModalOpen)}
+        lastTransition={lastTransition}
+        otherUserDisplayName={customerDisplayName}
+        isCaregiver
+      />
+      <ExceptionsModal
+        isOpen={isExceptionsModalOpen}
+        onClose={() => handleModalClose(setIsExceptionsModalOpen)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        exceptions={allExceptions}
+      />
+      <BookingCalendarModal
+        isOpen={isBookingCalendarModalOpen}
+        onClose={() => setIsBookingCalendarModalOpen(false)}
+        onManageDisableScrolling={onManageDisableScrolling}
+        bookingDates={bookingDates}
+        bookingSchedule={bookingSchedule}
+        startDate={startDate}
+        endDate={endDate}
+      />
     </div>
   );
 };

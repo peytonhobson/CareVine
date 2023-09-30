@@ -164,10 +164,10 @@ const RecurringBookingSummaryCard = props => {
             const momentDate = moment(e.date);
 
             return (
-              moment(startDate).isBefore(momentDate) &&
+              moment(startDate).isSameOrBefore(momentDate, 'day') &&
               moment(startDate)
                 .endOf('week')
-                .isAfter(momentDate) &&
+                .isSameOrAfter(momentDate, 'day') &&
               momentDate.weekday() === WEEKDAYS.indexOf(weekday.dayOfWeek)
             );
           });

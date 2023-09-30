@@ -18,13 +18,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
-import {
-  cancelBooking,
-  disputeBooking,
-  fetchBookings,
-  setInitialState,
-  removeDrafts,
-} from './BookingsPage.duck';
+import { fetchBookings, setInitialState, removeDrafts } from './BookingsPage.duck';
 import { acceptBooking, declineBooking, setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
@@ -50,14 +44,6 @@ const BookingsPage = props => {
     currentUser: user,
     scrollingDisabled,
     onManageDisableScrolling,
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    onCancelBooking,
-    disputeBookingInProgress,
-    disputeBookingError,
-    disputeBookingSuccess,
-    onDisputeBooking,
     acceptBookingError,
     acceptBookingInProgress,
     acceptBookingSuccess,
@@ -122,14 +108,6 @@ const BookingsPage = props => {
   const cardProps = {
     currentUser,
     onManageDisableScrolling,
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    onCancelBooking,
-    disputeBookingInProgress,
-    disputeBookingError,
-    disputeBookingSuccess,
-    onDisputeBooking,
     acceptBookingError,
     acceptBookingInProgress,
     acceptBookingSuccess,
@@ -252,17 +230,7 @@ const BookingsPage = props => {
 };
 
 const mapStateToProps = state => {
-  const {
-    fetchBookingsInProgress,
-    fetchBookingsError,
-    bookings,
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    disputeBookingInProgress,
-    disputeBookingError,
-    disputeBookingSuccess,
-  } = state.BookingsPage;
+  const { fetchBookingsInProgress, fetchBookingsError, bookings } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
 
   const {
@@ -280,12 +248,6 @@ const mapStateToProps = state => {
     bookings,
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    disputeBookingInProgress,
-    disputeBookingError,
-    disputeBookingSuccess,
     acceptBookingError,
     acceptBookingInProgress,
     acceptBookingSuccess,
@@ -298,8 +260,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
-  onCancelBooking: cancelBooking,
-  onDisputeBooking: disputeBooking,
   onAcceptBooking: acceptBooking,
   onDeclineBooking: declineBooking,
   onFetchBookings: fetchBookings,

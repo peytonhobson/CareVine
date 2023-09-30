@@ -6,22 +6,18 @@ const log = require('../log');
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 // Map of last transitions to cancel transitions
+// Does not include transition/complete because that should move immediately to next week start
 const cancelTransitionMap = {
   'transition/request-booking': 'transition/cancel-request',
   'transition/accept': 'transition/accepted-cancel',
   'transition/charge': 'transition/charged-cancel',
   'transition/start': 'transition/active-cancel',
-  'transition/complete': 'transition/delivered-cancel',
   'transition/update-next-week-start': 'transition/wfnw-cancel',
 };
 
 const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 
-const activeTransitions = [
-  'transition/start',
-  'transition/complete',
-  'transition/update-next-week-start',
-];
+const activeTransitions = ['transition/start', 'transition/update-next-week-start'];
 
 const mapLineItemsForCancellationCustomer = lineItems => {
   // Half the amount of the line item if it is within 48 hours of the start time.
