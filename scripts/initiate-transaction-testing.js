@@ -68,19 +68,19 @@ console.log(bookingStart);
 
 const exceptions = {
   addedDays: [
-    // {
-    //   date: startOfDay.add(3, 'days').format(ISO_OFFSET_FORMAT),
-    //   startTime: '12:00am',
-    //   endTime: '2:00am',
-    //   type: 'addDate',
-    //   day: 'mon',
-    // },
+    {
+      date: startOfDay.add(3, 'days').format(ISO_OFFSET_FORMAT),
+      startTime: '12:00am',
+      endTime: '9:00am',
+      type: 'addDate',
+      day: 'mon',
+    },
   ],
   removedDays: [
     // {
     //   date: startOfDay
     //     .clone()
-    //     .add(8, 'days')
+    //     .add(7, 'days')
     //     .format(ISO_OFFSET_FORMAT),
     //   type: 'removeDate',
     //   day: 'fri',
@@ -88,28 +88,28 @@ const exceptions = {
   ],
   changedDays: [
     {
-      date: startOfDay.format(ISO_OFFSET_FORMAT),
+      date: startOfDay.add(7, 'days').format(ISO_OFFSET_FORMAT),
       startTime: '5:00pm',
       endTime: '7:00pm',
       type: 'changeDate',
-      day: 'thu',
+      day: 'fri',
     },
   ],
 };
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'thu',
-    startTime: '2:00pm',
-    endTime: '3:00pm',
+    dayOfWeek: 'fri',
+    startTime: '9:00am',
+    endTime: '10:00am',
   },
   {
     dayOfWeek: 'sun',
-    startTime: '2:00pm',
-    endTime: '3:00pm',
+    startTime: '12:00am',
+    endTime: '1:00am',
   },
 ];
-const bookingRate = 24;
+const bookingRate = 19;
 const paymentMethodType = 'us_bank_account';
 
 const metadata = constructBookingMetadataRecurring(

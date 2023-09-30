@@ -19,6 +19,7 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_CHARGE,
   TRANSITION_START,
+  CANCELABLE_TRANSITIONS,
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -136,7 +137,8 @@ const EmployerBookingCard = props => {
   const isCharged = lastTransition === TRANSITION_CHARGE;
   const isActive = lastTransition === TRANSITION_START;
   const showCancel = isRequest || isActive || isAccepted || isCharged;
-  const showMenu = showCancel || isDisputable;
+  const canCancel = CANCELABLE_TRANSITIONS.includes(lastTransition);
+  const showMenu = canCancel || isDisputable;
 
   const isMobile = useCheckMobileScreen();
 

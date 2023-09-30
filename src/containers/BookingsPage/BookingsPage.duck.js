@@ -229,9 +229,10 @@ export const cancelBooking = transaction => async (dispatch, getState, sdk) => {
 
   const userType = getState().user.currentUser.attributes.profile.metadata.userType;
   const txId = transaction.id.uuid;
-  const listingId = transaction.attributes.listing.id.uuid;
+  const listingId = transaction.listing.id.uuid;
 
   try {
+    console.log('beforeCall');
     await apiCancelBooking({ txId, listingId, cancelingUserType: userType });
 
     dispatch(cancelBookingSuccess());

@@ -130,6 +130,15 @@ const stateDescription = {
 // Note: currently we assume that state description doesn't contain nested states.
 const statesFromStateDescription = description => description.states || {};
 
+export const CANCELABLE_TRANSITIONS = [
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_CHARGE,
+  TRANSITION_START,
+  TRANSITION_COMPLETE,
+  TRANSITION_UPDATE_NEXT_WEEK_START,
+];
+
 // Get all the transitions from states object in an array
 const getTransitions = states => {
   const stateNames = Object.keys(states);

@@ -10,7 +10,7 @@ const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
 const USING_SSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 const TRANSIT_VERBOSE = process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true';
 
-export const apiBaseUrl = () => {
+exports.apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
   const useDevApiServer = process.env.NODE_ENV === 'development' && !!port;
 

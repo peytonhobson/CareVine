@@ -281,14 +281,10 @@ module.exports = queryEvents = () => {
         !metadata.waitingForPayment;
       const bookingType = metadata.type;
 
-      if (
-        lastTransition === 'transition/complete' &&
-        bookingType === 'recurring' &&
-      ) {
+      if (lastTransition === 'transition/complete' && bookingType === 'recurring') {
         if (hasNextBooking) {
           updateNextWeek(transaction);
-        }
-        else {
+        } else {
           // TODO: Update to final state
         }
       }

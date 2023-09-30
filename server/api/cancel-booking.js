@@ -2,6 +2,7 @@ const { apiBaseUrl, integrationSdk } = require('../api-util/sdk');
 const { addTimeToStartOfDay } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
+const log = require('../log');
 
 // Map of last transitions to cancel transitions
 const cancelTransitionMap = {
@@ -63,26 +64,33 @@ const mapLineItemsForCancellationProvider = lineItems => {
 // Determine items to refund based on time in future
 // If within 48 hours, refund 50% of base
 // If more than 48 hours, refund 100% of base
-const mapRefundItems = (lineItems, isCaregiver) => {
-  return lineItems.map(lineItem => {
-    const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-    const isWithin48Hours =
-      moment()
-        .add(2, 'days')
-        .isAfter(startTime) && moment().isBefore(startTime);
+const mapRefundItems = (chargedLineItems, isCaregiver) => {
+  return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
+    const refundedLineItems = lineItems.map(lineItem => {
+      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      const isWithin48Hours =
+        moment()
+          .add(2, 'days')
+          .isAfter(startTime) && moment().isBefore(startTime);
 
-    const isFifty = isWithin48Hours && !isCaregiver;
+      const isFifty = isWithin48Hours && !isCaregiver;
 
-    const base = isFifty
-      ? parseFloat(lineItem.amount / 2).toFixed(2)
-      : parseFloat(lineItem.amount).toFixed(2);
-    const bookingFee = parseFloat(base * 0.05).toFixed(2);
+      const base = isFifty
+        ? parseFloat(lineItem.amount / 2).toFixed(2)
+        : parseFloat(lineItem.amount).toFixed(2);
+      const bookingFee = parseFloat(base * 0.05).toFixed(2);
+      return {
+        isFifty,
+        base,
+        bookingFee,
+        amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+        date: moment(lineItem.date).format('MM/DD'),
+      };
+    });
+
     return {
-      isFifty,
-      base,
-      bookingFee,
-      amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
-      date: moment(lineItem.date).format('MM/DD'),
+      lineItems: refundedLineItems,
+      paymentIntentId,
     };
   });
 };
@@ -109,12 +117,20 @@ module.exports = async (req, res) => {
   try {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
 
-    const { lineItems, paymentIntentId, type: bookingType } = transaction.attributes.metadata;
+    const {
+      chargedLineItems,
+      paymentIntentId,
+      type: bookingType,
+    } = transaction.attributes.metadata;
 
-    const totalAmount = lineItems.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) * 100;
-    const refundItems = mapRefundItems(lineItems, userType === CAREGIVER);
-    const refundAmount = parseInt(
-      refundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+    const allLineItems = chargedLineItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
+    const refundItems = mapRefundItems(chargedLineItems, cancelingUserType === 'caregiver');
+    const allRefundItems = refundItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
+    const totalRefundAmount = parseInt(
+      allRefundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+    );
+    const totalApplicationFeeRefund = parseInt(
+      (parseFloat(totalRefundAmount) * 0.05).toFixed(2) * 100
     );
 
     const lastTransition = transaction.attributes.lastTransition;
@@ -133,6 +149,52 @@ module.exports = async (req, res) => {
       };
     }
 
+    let metadataToUpdate;
+
+    if (totalRefundAmount > 0) {
+      await Promise.all(
+        refundItems.map(async ({ lineItems, paymentIntentId }) => {
+          const refundAmount = parseInt(
+            lineItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+          );
+          const applicationFeeRefund = parseInt((parseFloat(refundAmount) * 0.05).toFixed(2) * 100);
+
+          await stripeCreateRefund({
+            paymentIntentId,
+            amount: refundAmount,
+            applicationFeeRefund,
+          });
+        })
+      );
+
+      const newLineItems =
+        cancelingUserType === 'caregiver'
+          ? mapLineItemsForCancellationProvider(allLineItems)
+          : mapLineItemsForCancellationCustomer(allLineItems);
+      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+      // Update line items so caregiver is paid out correct amount after refund
+      metadataToUpdate = {
+        lineItems: newLineItems,
+        refundAmount: parseFloat(totalRefundAmount / 100).toFixed(2),
+        payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
+        refundItems: allRefundItems,
+        bookingFeeRefundAmount: parseFloat(totalApplicationFeeRefund / 100).toFixed(2),
+        totalRefund: parseFloat(totalRefundAmount / 100 + totalApplicationFeeRefund / 100).toFixed(
+          2
+        ),
+      };
+    } else {
+      metadataToUpdate = {
+        lineItems: [],
+        refundAmount: 0,
+        payout: 0,
+        refundItems: [],
+      };
+    }
+
+    console.log('metadataToUpdate', metadataToUpdate);
+
     const isActive = activeTransitions.includes(lastTransition);
     const newBookingEnd = isActive
       ? moment()
@@ -145,42 +207,7 @@ module.exports = async (req, res) => {
           .toDate()
       : null;
 
-    let metadataToUpdate;
-
-    if (paymentIntentId && refundAmount > 0) {
-      const applicationFeeRefund = parseInt(
-        (parseFloat(refundAmount) / parseFloat(totalAmount)) * bookingFee * 100
-      );
-
-      await stripeCreateRefund({
-        paymentIntentId,
-        amount: refundAmount,
-        applicationFeeRefund,
-      });
-
-      const newLineItems =
-        cancelingUserType === 'caregiver'
-          ? mapLineItemsForCancellationProvider(lineItems)
-          : mapLineItemsForCancellationCustomer(lineItems);
-      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-      // Update line items so caregiver is paid out correct amount after refund
-      metadataToUpdate = {
-        lineItems: newLineItems,
-        refundAmount: parseFloat(refundAmount / 100).toFixed(2),
-        payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
-        refundItems,
-        bookingFeeRefundAmount: parseFloat(applicationFeeRefund / 100).toFixed(2),
-        totalRefund: parseFloat(refundAmount / 100 + applicationFeeRefund / 100).toFixed(2),
-      };
-    } else {
-      metadataToUpdate = {
-        lineItems: [],
-        refundAmount: 0,
-        payout: 0,
-        refundItems: [],
-      };
-    }
+    console.log('newBookingStart', newBookingStart);
 
     const response = await integrationSdk.transactions.transition({
       id: txId,
@@ -210,7 +237,7 @@ module.exports = async (req, res) => {
 
       if (bookingType === 'oneTime' && listing) {
         const bookedDates = listing.attributes.metadata.bookedDates ?? [];
-        const bookingDates = lineItems.map(lineItem => lineItem.date);
+        const bookingDates = allLineItems.map(lineItem => lineItem.date);
         const newBookedDates = bookedDates.filter(
           date => !bookingDates.includes(date) || moment(date).isBefore()
         );
@@ -220,7 +247,9 @@ module.exports = async (req, res) => {
         };
       } else if (listing) {
         const bookedDays = listing.attributes.metadata.bookedDays ?? [];
-        const newBookedDays = bookedDays.filter(day => day.txId !== bookingId);
+        const newBookedDays = bookedDays.filter(day => day.txId !== txId);
+
+        console.log('newBookedDays', newBookedDays);
 
         updateListingMetadata = {
           bookedDays: newBookedDays,
@@ -242,6 +271,7 @@ module.exports = async (req, res) => {
     return res.status(200).json(response.data.data);
   } catch (e) {
     log.error(e, 'cancel-booking-failed', {});
+    console.log(e?.data);
     return res.status(e.status || 500).json(e.data);
   }
 };

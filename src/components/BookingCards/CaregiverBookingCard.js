@@ -24,6 +24,7 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_CHARGE,
   TRANSITION_START,
+  CANCELABLE_TRANSITIONS,
 } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
@@ -148,10 +149,8 @@ const CaregiverBookingCard = props => {
     .reduce((acc, curr) => acc - curr.amount, 0);
   const bookingDates = lineItems?.map(li => new Date(li.date)) ?? [];
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
-  const isCharged = lastTransition === TRANSITION_CHARGE;
-  const isActive = lastTransition === TRANSITION_START;
-  const showMenu = isActive || isAccepted || isCharged;
+  const canCancel = CANCELABLE_TRANSITIONS.includes(lastTransition) && !isRequest;
+  const showMenu = canCancel;
   const hasSameDayBooking = useMemo(
     () =>
       (scheduleType === 'oneTime'
