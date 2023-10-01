@@ -1,6 +1,5 @@
-import { chain } from 'lodash';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import { updateUser } from '../../util/api';
+import { updateUser, sendgridTemplateEmail } from '../../util/api';
 import { CAREGIVER } from '../../util/constants';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
