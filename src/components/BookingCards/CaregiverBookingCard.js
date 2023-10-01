@@ -3,15 +3,9 @@ import React, { useState, useMemo } from 'react';
 import {
   Avatar,
   SecondaryButton,
-  Modal,
-  BookingCalendar,
   CancelButton,
   Button,
   UserDisplayName,
-  PrimaryButton,
-  SingleBookingSummaryCard,
-  WeeklyBillingDetails,
-  BookingException,
   Menu,
   MenuItem,
   MenuContent,
@@ -37,6 +31,9 @@ import {
 import classNames from 'classnames';
 import moment from 'moment';
 import ExceptionsModal from './Modals/ExceptionsModal';
+import CancelModal from './Modals/CancelModal';
+import PaymentDetailsModal from './Modals/PaymentDetailsModal';
+import ResponseModal from './Modals/ResponseModal';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -63,19 +60,9 @@ const CaregiverBookingCard = props => {
   const {
     booking,
     onManageDisableScrolling,
-    cancelBookingInProgress,
-    cancelBookingError,
-    cancelBookingSuccess,
-    onCancelBooking,
     intl,
-    acceptBookingError,
     acceptBookingInProgress,
     acceptBookingSuccess,
-    declineBookingError,
-    declineBookingInProgress,
-    declineBookingSuccess,
-    onAcceptBooking,
-    onDeclineBooking,
     onFetchBookings,
     onResetInitialState,
     onFetchCurrentUserListing,
@@ -309,157 +296,36 @@ const CaregiverBookingCard = props => {
           ) : null}
         </div>
       </div>
-      {isPaymentDetailsModalOpen && (
-        <Modal
-          title="Payment Details"
-          id="PaymentDetailsModal"
-          isOpen={isPaymentDetailsModalOpen}
-          onClose={() => setIsPaymentDetailsModalOpen(false)}
-          containerClassName={css.modalContainer}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-        >
-          <p className={css.modalTitle}>Payment Summary</p>
-          {scheduleType === 'oneTime' ? (
-            <SingleBookingSummaryCard
-              className={css.summaryCard}
-              bookingTimes={bookingTimes}
-              bookingRate={bookingRate}
-              listing={listing}
-              onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethod={paymentMethodType}
-              hideRatesButton
-              hideAvatar
-              hideFees
-            />
-          ) : (
-            <>
-              <p className={css.modalMessage}>
-                Click any week in your booking to view the payment details for that week.
-              </p>
-              <WeeklyBillingDetails
-                className="mt-6"
-                bookingSchedule={bookingSchedule}
-                exceptions={exceptions}
-                startDate={startDate}
-                endDate={endDate}
-                currentAuthor={currentUser}
-                bookingRate={bookingRate}
-                listing={listing}
-                onManageDisableScrolling={onManageDisableScrolling}
-                selectedPaymentMethodType={paymentMethodType}
-                hideFees
-                isPayment
-              />
-            </>
-          )}
-        </Modal>
-      )}
-      {isRespondModalOpen && (
-        <Modal
-          title="Respond to Booking"
-          id="RespondModal"
-          isOpen={isRespondModalOpen}
-          onClose={() => handleModalClose(setIsRespondModalOpen)}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-          containerClassName={css.modalContainer}
-        >
-          <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
-          {allExceptions.length ? (
-            <p className={classNames(css.modalMessage, 'text-error')}>
-              This schedule contains exceptions. Please review the full schedule and exceptions
-              before accepting.
-            </p>
-          ) : null}
-          {/* <BookingSummaryCard
-            className={css.bookingSummaryCard}
-            authorDisplayName={customerDisplayName}
-            currentAuthor={customer}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethod}
-            hideAvatar
-            subHeading={<span className={css.bookingWith}>Payment Details</span>}
-            refundAmount={refundAmount}
-            hideRatesButton
-            hideFees
-          /> */}
-          {acceptBookingError ? (
-            <p className={css.error}>
-              There was an issue accepting the booking request. Please try again.
-            </p>
-          ) : null}
-          {declineBookingError ? (
-            <p className={css.error}>
-              There was an issue declining the booking request. Please try again.
-            </p>
-          ) : null}
-          {hasSameDayBooking ? (
-            <div className={css.bookingDecisionContainer}>
-              <h3 className="text-error text-md">
-                You have an existing booking with dates that conflict with this request. Please
-                decline this booking request.
-              </h3>
-
-              <CancelButton
-                inProgress={declineBookingInProgress}
-                ready={declineBookingSuccess}
-                className={css.declineButton}
-                // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
-                onClick={() => onDeclineBooking(booking)}
-                disabled={
-                  acceptBookingSuccess ||
-                  acceptBookingInProgress ||
-                  declineBookingSuccess ||
-                  declineBookingInProgress
-                }
-              >
-                Decline
-              </CancelButton>
-            </div>
-          ) : (
-            <div className={css.acceptDeclineButtons}>
-              <PrimaryButton
-                inProgress={acceptBookingInProgress}
-                ready={acceptBookingSuccess}
-                onClick={() => onAcceptBooking(booking)}
-                disabled={
-                  declineBookingSuccess ||
-                  declineBookingInProgress ||
-                  acceptBookingSuccess ||
-                  acceptBookingInProgress
-                }
-              >
-                Accept
-              </PrimaryButton>
-              <CancelButton
-                inProgress={declineBookingInProgress}
-                ready={declineBookingSuccess}
-                className={css.declineButton}
-                // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
-                onClick={() => onDeclineBooking(booking)}
-                disabled={
-                  acceptBookingSuccess ||
-                  acceptBookingInProgress ||
-                  declineBookingSuccess ||
-                  declineBookingInProgress
-                }
-              >
-                Decline
-              </CancelButton>
-            </div>
-          )}
-        </Modal>
-      )}
+      <ResponseModal
+        isOpen={isRespondModalOpen}
+        onClose={() => handleModalClose(setIsRespondModalOpen)}
+        exceptions={allExceptions}
+        customerDisplayName={customerDisplayName}
+        hasSameDayBooking={hasSameDayBooking}
+        booking={booking}
+      />
+      <PaymentDetailsModal
+        isOpen={isPaymentDetailsModalOpen}
+        onClose={() => setIsPaymentDetailsModalOpen(false)}
+        bookingTimes={bookingTimes}
+        bookingRate={bookingRate}
+        listing={listing}
+        onManageDisableScrolling={onManageDisableScrolling}
+        paymentMethodType={paymentMethodType}
+        scheduleType={scheduleType}
+        bookingSchedule={bookingSchedule}
+        exceptions={exceptions}
+        startDate={startDate}
+        endDate={endDate}
+        provider={currentUser}
+      />
       <CancelModal
         isOpen={isCancelModalOpen}
         onClose={() => handleModalClose(setIsCancelModalOpen)}
         lastTransition={lastTransition}
         otherUserDisplayName={customerDisplayName}
         isCaregiver
+        booking={booking}
       />
       <ExceptionsModal
         isOpen={isExceptionsModalOpen}

@@ -99,17 +99,12 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'sat',
-    startTime: '3:00pm',
-    endTime: '4:00pm',
-  },
-  {
     dayOfWeek: 'sun',
     startTime: '3:00pm',
-    endTime: '4:00pm',
+    endTime: '6:00pm',
   },
 ];
-const bookingRate = 19;
+const bookingRate = 23;
 const paymentMethodType = 'us_bank_account';
 
 const metadata = constructBookingMetadataRecurring(

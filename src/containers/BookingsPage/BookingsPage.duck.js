@@ -41,14 +41,6 @@ const bookingTransitions = [
   TRANSITION_UPDATE_BOOKING_END,
 ];
 
-// TODO: Update usage of this
-const cancelBookingTransitions = {
-  requested: TRANSITION_CANCEL_BOOKING_REQUEST,
-  accepted: TRANSITION_ACCEPTED_CANCEL,
-  charged: TRANSITION_CHARGED_CANCEL,
-  active: TRANSITION_ACTIVE_CANCEL,
-};
-
 // ================ Action types ================ //
 
 export const SET_INTIIAL_STATE = 'app/BookingsPage/SET_INTIIAL_STATE';
@@ -197,11 +189,14 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     const response = await sdk.transactions.query({
       ...params,
       lastTransitions: [
-        TRANSITION_ACCEPT_BOOKING,
         TRANSITION_REQUEST_BOOKING,
+        TRANSITION_ACCEPT_BOOKING,
         TRANSITION_CHARGE,
         TRANSITION_START,
         TRANSITION_COMPLETE,
+        TRANSITION_UPDATE_NEXT_WEEK_START,
+        TRANSITION_UPDATE_BOOKING_END_REPEAT,
+        TRANSITION_UPDATE_BOOKING_END,
       ],
     });
 

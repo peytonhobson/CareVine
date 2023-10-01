@@ -56,7 +56,7 @@ const initialState = {
   declineBookingSuccess: false,
 };
 
-export default function payoutMethodsPageReducer(state = initialState, action = {}) {
+export default function transactionsReducer(state = initialState, action = {}) {
   const { type, payload } = action;
   switch (type) {
     case SET_INITIAL_VALUES:

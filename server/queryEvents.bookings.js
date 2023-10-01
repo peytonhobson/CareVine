@@ -177,13 +177,14 @@ const updateBookingEnd = async transaction => {
     .subtract(1, 'hours')
     .format(ISO_OFFSET_FORMAT);
 
+  // TODO: Remove comments
   try {
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/start',
       params: {
-        bookingStart,
-        bookingEnd,
+        // bookingStart,
+        // bookingEnd,
       },
     });
   } catch (e) {

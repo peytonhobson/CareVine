@@ -37,6 +37,7 @@ import ExceptionsModal from './Modals/ExceptionsModal';
 import BookingCalendarModal from './Modals/BookingCalendarModal';
 import DisputeModal from './Modals/DisputeModal';
 import CancelModal from './Modals/CancelModal';
+import PaymentDetailsModal from './Modals/PaymentDetailsModal';
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;
@@ -57,7 +58,7 @@ const EmployerBookingCard = props => {
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
   const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
 
-  const { booking, onManageDisableScrolling, intl, sonFetchBookings, onResetInitialState } = props;
+  const { booking, onManageDisableScrolling, intl, onFetchBookings, onResetInitialState } = props;
 
   const { provider } = booking;
 
@@ -128,8 +129,6 @@ const EmployerBookingCard = props => {
     Date.now() - new Date(bookingLedger[bookingLedger.length - 1].end) < 48 * 36e5 &&
     !hasCurrentDispute;
 
-  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isAccepted = lastTransition === TRANSITION_ACCEPT_BOOKING;
   const canCancel = CANCELABLE_TRANSITIONS.includes(lastTransition);
   const showMenu = canCancel || isDisputable;
 
@@ -287,54 +286,27 @@ const EmployerBookingCard = props => {
           ) : null}
         </div>
       </div>
-      {isPaymentDetailsModalOpen && (
-        <Modal
-          title="Payment Details"
-          id="PaymentDetailsModal"
-          isOpen={isPaymentDetailsModalOpen}
-          onClose={() => setIsPaymentDetailsModalOpen(false)}
-          containerClassName={css.modalContainer}
-          onManageDisableScrolling={onManageDisableScrolling}
-          usePortal
-        >
-          <p className={css.modalTitle}>Payment Summary</p>
-          {scheduleType === 'oneTime' ? (
-            <SingleBookingSummaryCard
-              className={css.summaryCard}
-              bookingTimes={bookingTimes}
-              bookingRate={bookingRate}
-              listing={listing}
-              onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethod={paymentMethodType}
-              hideRatesButton
-              hideAvatar
-            />
-          ) : (
-            <>
-              <p className={css.modalMessage}>
-                Click any week in your booking to view the payment details for that week.
-              </p>
-              <WeeklyBillingDetails
-                className="mt-6"
-                bookingSchedule={bookingSchedule}
-                exceptions={exceptions}
-                startDate={startDate}
-                endDate={endDate}
-                currentAuthor={provider}
-                bookingRate={bookingRate}
-                listing={listing}
-                onManageDisableScrolling={onManageDisableScrolling}
-                selectedPaymentMethodType={paymentMethodType}
-              />
-            </>
-          )}
-        </Modal>
-      )}
+      <PaymentDetailsModal
+        isOpen={isPaymentDetailsModalOpen}
+        onClose={() => setIsPaymentDetailsModalOpen(false)}
+        bookingTimes={bookingTimes}
+        bookingRate={bookingRate}
+        listing={listing}
+        onManageDisableScrolling={onManageDisableScrolling}
+        paymentMethodType={paymentMethodType}
+        scheduleType={scheduleType}
+        bookingSchedule={bookingSchedule}
+        exceptions={exceptions}
+        startDate={startDate}
+        endDate={endDate}
+        provider={provider}
+      />
       <CancelModal
         isOpen={isCancelModalOpen}
         onClose={() => handleModalClose(setIsCancelModalOpen)}
         lastTransition={lastTransition}
         otherUserDisplayName={providerDisplayName}
+        booking={booking}
       />
       <DisputeModal
         isOpen={isDisputeModalOpen}

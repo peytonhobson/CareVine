@@ -27,3 +27,48 @@
     border-bottom: solid 1px var(--matterColorNegative);
   }
 }
+
+.refundList {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+}
+
+.refundListItem {
+  composes: marketplaceTinyFontStyles from global;
+  display: list-item;
+  list-style-type: disc;
+  margin: 0;
+}
+
+.modalMessageRefund {
+  composes: modalMessage from global;
+  composes: marketplaceTinyFontStyles from global;
+  text-decoration: underline;
+}
+
+.modalError {
+  color: var(--failColor);
+  margin-top: 1rem;
+}
+
+.modalButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 3rem;
+}
+
+.modalButton {
+  padding: 1rem 2rem;
+  width: 8rem;
+  height: auto;
+  min-height: 0;
+  display: inline;
+  margin-left: 1rem;
+}
+
+.acceptDeclineButtons {
+  display: flex;
+  margin-top: 2rem;
+  gap: 1.5rem;
+}

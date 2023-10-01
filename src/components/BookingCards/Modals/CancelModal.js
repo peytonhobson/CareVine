@@ -22,6 +22,7 @@ const CancelModal = props => {
     cancelBookingError,
     cancelBookingSuccess,
     isCaregiver,
+    booking,
   } = props;
 
   const showCancellationPolicy = !nonPaidTransitions.includes(lastTransition);
@@ -52,6 +53,7 @@ const CancelModal = props => {
           </li>
         </ul>
         <div>
+          {/* TODO: Add refund cards */}
           {/* <BookingSummaryCard
                   className={css.bookingSummaryCard}
                   lineItems={lineItems}
@@ -66,8 +68,6 @@ const CancelModal = props => {
     );
   }
 
-  // TODO: Add refund cards
-  // TODO: Add prop for caregiver vs employer
   return isOpen ? (
     <Modal
       title="Cancel Booking"
@@ -102,6 +102,7 @@ const CancelModal = props => {
     </Modal>
   ) : null;
 };
+
 const mapStateToProps = state => {
   const { cancelBookingInProgress, cancelBookingError, cancelBookingSuccess } = state.BookingsPage;
 
