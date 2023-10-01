@@ -1,6 +1,5 @@
-import { chain } from 'lodash';
 import { fetchCurrentUser } from '../../ducks/user.duck';
-import { updateUser } from '../../util/api';
+import { updateUser, sendgridTemplateEmail } from '../../util/api';
 import { CAREGIVER } from '../../util/constants';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
@@ -50,23 +49,35 @@ export const updateUserTypeError = e => ({
 
 // ================ Thunks ================ //
 
-export const updateUserType = userType => (dispatch, getState, sdk) => {
+export const updateUserType = userType => async (dispatch, getState, sdk) => {
   dispatch(updateUserTypeRequest());
 
-  const userId = getState().user?.currentUser?.id?.uuid;
+  const userId = getState().user.currentUser?.id?.uuid;
 
-  return updateUser({
-    userId,
-    metadata: { userType, inviteFriendsReminderReceived: userType === CAREGIVER ? false : null },
-  })
-    .then(res => {
-      dispatch(updateUserTypeSuccess(userType));
-      dispatch(fetchCurrentUser());
-    })
-    .catch(e => {
-      log.error(e, 'update-user-type-failed', { userType });
-      dispatch(updateUserTypeError(storableError(e)));
+  try {
+    await updateUser({
+      userId,
+      metadata: { userType, inviteFriendsReminderReceived: userType === CAREGIVER ? false : null },
     });
+
+    dispatch(updateUserTypeSuccess(userType));
+    dispatch(fetchCurrentUser());
+  } catch (e) {
+    log.error(e, 'update-user-type-failed', { userType });
+    dispatch(updateUserTypeError(storableError(e)));
+  }
+
+  try {
+    await sendgridTemplateEmail({
+      receiverId: userId,
+      templateData: {
+        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
+      },
+      templateName: userType === CAREGIVER ? 'caregiver-welcome' : 'employer-welcome',
+    });
+  } catch (e) {
+    log.error(e, 'send-welcome-email-failed', { userType, userId });
+  }
 };
 
 export const loadData = () => (dispatch, getState, sdk) => {
