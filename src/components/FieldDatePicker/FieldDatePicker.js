@@ -13,7 +13,7 @@ import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bo
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.map(d => d.getTime()).includes(date.getTime());
 
-const isDayDisabled = ({ bookedDates, bookedDays, selectedDays, date, currentBookedDays }) => {
+const isDayDisabled = ({ selectedDays, date, currentBookedDays }) => {
   const inPastOrToday = moment(date).isSameOrBefore(moment(), 'day');
 
   let isCurrentBookedDay = false;
@@ -60,14 +60,19 @@ const formatDay = ({
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
   const isDisabled = isDayDisabled({
-    bookedDates,
-    bookedDays,
     selectedDays,
     date,
     currentBookedDays,
   });
+  const isUnavailable = checkIsBlockedDay({ bookedDays, date, bookedDates });
 
-  if (isHighlighted) {
+  if (isDisabled || isUnavailable) {
+    return (
+      <span className={classNames(css.day, css.blocked, isUnavailable && css.unavailable)}>
+        {day}
+      </span>
+    );
+  } else if (isHighlighted) {
     return (
       <div
         className={classNames(css.day, highlightedClassName ?? css.highlighted)}
@@ -76,8 +81,6 @@ const formatDay = ({
         <span>{day}</span>
       </div>
     );
-  } else if (isDisabled) {
-    return <span className={classNames(css.day, css.blocked)}>{day}</span>;
   } else {
     return (
       <span className={css.day} onClick={() => onClick(date)}>

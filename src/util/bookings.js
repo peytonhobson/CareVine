@@ -89,27 +89,9 @@ export const checkForExceptions = exceptions => {
 export const checkIsBlockedOneTime = ({ dates, listing }) => {
   if (!dates || !listing) return false;
 
-  const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
+  const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata;
 
-  // Dates are blocked if they are in the bookedDates array
-  const overlappingDates = bookedDates.filter(d =>
-    dates.some(date => moment(d).isSame(date, 'day'))
-  );
-
-  if (overlappingDates.length > 0) return true;
-
-  // Dates are blocked if they a intersect a previous recurring booking (thats not a removed day) or its added days
-  const hasBlockingDays = bookedDays.some(d =>
-    dates.some(
-      date =>
-        checkIsDateWithinBookingWindow({ date, startDate: d.startDate, endDate: d.endDate }) &&
-        ((d.days.includes(WEEKDAYS[moment(date).weekday()]) &&
-          !d.exceptions?.removedDays.some(r => moment(r.date).isSame(date))) ||
-          d.exceptions?.addedDays.some(a => moment(a.date).isSame(date)))
-    )
-  );
-
-  return hasBlockingDays;
+  return dates.some(d => checkIsBlockedDay({ date: d, bookedDays, bookedDates }));
 };
 
 // Check if recurring booking is blocked by caregivers listing

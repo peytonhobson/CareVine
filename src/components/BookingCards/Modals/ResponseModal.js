@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { Modal, CancelButton, PrimaryButton } from '../../';
 import { declineBooking, acceptBooking } from '../../../ducks/transactions.duck';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';

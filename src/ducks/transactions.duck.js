@@ -363,7 +363,6 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
 
     const {
       bookingSchedule = [],
-      bookedDates = [],
       lineItems = [],
       startDate,
       endDate,
@@ -378,10 +377,11 @@ export const acceptBooking = transaction => async (dispatch, getState, sdk) => {
       exceptions,
     };
     const currentBookedDays = transaction.listing.attributes.metadata.bookedDays ?? [];
+    const currentBookedDates = transaction.listing.attributes.metadata.bookedDates ?? [];
     const newBookedDays = [...currentBookedDays, txBookedDays];
 
     const bookingDates = lineItems.map(lineItem => lineItem.date);
-    const newBookedDates = [...bookedDates, ...bookingDates];
+    const newBookedDates = [...currentBookedDates, ...bookingDates];
 
     const newSchedule =
       type === 'recurring' ? { bookedDays: newBookedDays } : { bookedDates: newBookedDates };

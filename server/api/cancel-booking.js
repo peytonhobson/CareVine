@@ -123,6 +123,7 @@ module.exports = async (req, res) => {
       chargedLineItems = [],
       paymentIntentId,
       type: bookingType,
+      lineItems: bookingLineItems,
     } = transaction.attributes.metadata;
 
     const allLineItems = chargedLineItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
@@ -210,7 +211,7 @@ module.exports = async (req, res) => {
       : null;
     const newBookingStart = isActive
       ? moment(newBookingEnd)
-          .subtract(1, 'hours')
+          .subtract(5, 'minutes')
           .format(ISO_OFFSET_FORMAT)
       : null;
 
@@ -252,10 +253,14 @@ module.exports = async (req, res) => {
 
       if (bookingType === 'oneTime' && listing) {
         const bookedDates = listing.attributes.metadata.bookedDates ?? [];
-        const bookingDates = allLineItems.map(lineItem => lineItem.date);
+        const bookingDates = bookingLineItems.map(lineItem => lineItem.date);
         const newBookedDates = bookedDates.filter(
-          date => !bookingDates.includes(date) || moment(date).isBefore()
+          date => !bookingDates.some(d => moment(d).isSame(date, 'day')) && moment(date).isAfter()
         );
+
+        console.log('bookingDates', bookingDates);
+        console.log('bookedDates', bookedDates);
+        console.log('newBookedDates', newBookedDates);
 
         updateListingMetadata = {
           bookedDates: newBookedDates,

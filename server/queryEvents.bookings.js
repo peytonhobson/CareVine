@@ -406,15 +406,6 @@ const updateNextWeek = async transaction => {
 
   console.log('new', newMetadata);
   console.log('exceptions', exceptions);
-  console.log('newLedger', newLedger);
-  console.log('chargedLineItems', chargedLineItems);
-  console.log(
-    'newChargedLineItems',
-    chargedLineItems.filter(
-      chargedItem =>
-        !chargedItem?.lineItems.some(c => lineItems.some(l => moment(l.date).isSame(c.date, 'day')))
-    ) // Remove line items from past week from chargedLineItems
-  );
 
   try {
     await integrationSdk.transactions.updateMetadata({
@@ -444,7 +435,7 @@ const endRecurring = async transaction => {
       transition: 'transition/delivered-cancel',
     });
   } catch (e) {
-    log.error(e?.data, 'end-recurring-failed', {});
+    log.error(e, 'end-recurring-failed', {});
   }
 };
 

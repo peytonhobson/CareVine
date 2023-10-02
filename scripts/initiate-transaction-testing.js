@@ -8,21 +8,21 @@ const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const employerUserTokenLocal = {
   access_token:
-    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NjY3MjQ4LCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzUyZTFmNi1jMDdjLTQwM2MtODRhYy00OGJiYWVmNTg2YTIiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.RzW9hqmSZvQ6ag8kebdIOVdKlG3TsSsYEOJpbMGOmPE',
+    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk2MTk1OTU1LCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzUyZTFmNi1jMDdjLTQwM2MtODRhYy00OGJiYWVmNTg2YTIiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.NpKULyuqDTRpzMYiWtJnZZE8SclXcWWpix-1a8KDHqc',
   scope: 'user',
   token_type: 'bearer',
   expires_in: 600,
   refresh_token:
-    'v2--8b44fc85-b961-4330-98cd-8420c2c8bb4a--2538a3f7837fbc7443bdc1ee83de80a22c617848',
+    'v2--1eafb7ab-cdad-4923-937d-0a64ef1f1e3a--ee6f7648826080f628bc4ae066810370118f79b2',
 };
 const providerUserTokenLocal = {
   access_token:
-    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk1NjY3MzYzLCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzliYmM5ZC05ZGFiLTRjMWQtYWYyYi1hY2QyNWYzNTAzMzQiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.1YSaCfeNYPkPjyZNvP_FKkiRPcf4fmUfa1CAGD1BWCE',
+    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjM2Q1NWZhMy04OGJjLTQ1YjItOTkyYS0yZTdmNTNiNGQ2MWIiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMjU4OS00YjIxLWI2NGUtNThjZjg4NzI0MDI4Iiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk2MTk2MTUzLCJlbnYiOiJkZW1vIiwiaWRlbnQiOiJjYXJlZ2l2ZXItdGVzdCIsInVzZXItaWQiOiI2MzliYmM5ZC05ZGFiLTRjMWQtYWYyYi1hY2QyNWYzNTAzMzQiLCJ1c2VyLXJvbGVzIjpbInVzZXIucm9sZS9wcm92aWRlciIsInVzZXIucm9sZS9jdXN0b21lciJdfQ.H8vabmxyVqzMQrrzf-ByYzXULeRFpAM3S4o9C6X1NmY',
   scope: 'user',
   token_type: 'bearer',
   expires_in: 600,
   refresh_token:
-    'v2--c1c81ac1-ff2c-4e39-b579-0fb1775f52db--29f5079408ca98d3c32615b4f756641a44b6bcf7',
+    'v2--c646614d-157f-43e1-a93d-1ed9fc3d8727--2a7e9628cc3b74094e7acd0fe00d22342f2b98e8',
 };
 const employerUserTokenDev = {
   access_token:
@@ -99,8 +99,18 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'sun',
-    startTime: '3:00pm',
+    dayOfWeek: 'mon',
+    startTime: '5:00pm',
+    endTime: '8:00pm',
+  },
+  {
+    dayOfWeek: 'wed',
+    startTime: '5:00pm',
+    endTime: '8:00pm',
+  },
+  {
+    dayOfWeek: 'thu',
+    startTime: '5:00pm',
     endTime: '6:00pm',
   },
 ];
@@ -169,11 +179,8 @@ const main = async () => {
 
     console.log('SUCCESS');
   } catch (err) {
-    console.log(err);
-
     if (err?.data?.errors) {
       console.log(err.data.errors);
-      console.log(err.data.errors.map(e => e.source));
     }
   }
 };

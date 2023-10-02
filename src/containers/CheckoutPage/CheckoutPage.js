@@ -99,6 +99,8 @@ export class CheckoutPageComponent extends Component {
       exceptions,
     } = values;
 
+    console.log('values', values);
+
     const weekdays = mapWeekdays(values);
 
     const startDate = moment(startDateDate?.date)
