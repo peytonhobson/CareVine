@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, CancelButton, Button } from '../../';
+import { Modal, CancelButton, Button } from '../..';
 import { cancelBooking } from '../../../containers/BookingsPage/BookingsPage.duck';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';
 import { compose } from 'redux';

@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
 import moment from 'moment';
-import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../util/constants';
+import { FULL_WEEKDAY_MAP } from '../../util/constants';
 
 import css from './BookingCards.module.css';
 

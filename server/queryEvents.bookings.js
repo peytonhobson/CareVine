@@ -435,7 +435,7 @@ const endRecurring = async transaction => {
       transition: 'transition/delivered-cancel',
     });
   } catch (e) {
-    log.error(e, 'end-recurring-failed', {});
+    log.error(e?.data?.errors, 'end-recurring-failed', {});
   }
 };
 

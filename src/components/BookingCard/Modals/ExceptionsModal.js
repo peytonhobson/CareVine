@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, BookingException } from '../../';
+import { Modal, BookingException } from '../..';
 
 import css from './BookingCardModals.module.css';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal } from '../../';
+import { Modal } from '../..';
 import { DisputeForm } from '../../../forms';
 import { compose } from 'redux';
 import { connect } from 'react-redux';

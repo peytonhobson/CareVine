@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Modal, CancelButton, PrimaryButton } from '../../';
+import { Modal, CancelButton, PrimaryButton } from '../..';
 import { declineBooking, acceptBooking } from '../../../ducks/transactions.duck';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';
 import { checkIsBlockedOneTime, checkIsBlockedRecurring } from '../../../util/bookings';

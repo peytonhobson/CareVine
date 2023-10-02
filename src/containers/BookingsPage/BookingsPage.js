@@ -30,7 +30,7 @@ import {
   BookingCardTablePagination,
   BookingCardTitle,
   BookingCardMenu,
-} from '../../components/BookingCards/BookingCard';
+} from '../../components';
 
 import css from './BookingsPage.module.css';
 

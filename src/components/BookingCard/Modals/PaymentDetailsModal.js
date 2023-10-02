@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, SingleBookingSummaryCard, WeeklyBillingDetails } from '../../';
+import { Modal, SingleBookingSummaryCard, WeeklyBillingDetails } from '../..';
 
 import css from './BookingCardModals.module.css';
 

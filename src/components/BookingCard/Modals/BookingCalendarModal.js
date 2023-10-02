@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, BookingCalendar } from '../../';
+import { Modal, BookingCalendar } from '../..';
 
 import css from './BookingCardModals.module.css';
 
