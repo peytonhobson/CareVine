@@ -1,23 +1,45 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import moment from 'moment';
-import { addTimeToStartOfDay, calculateTimeBetween } from '../../util/dates';
+import { addTimeToStartOfDay, calculateTimeBetween } from '../../../util/dates';
 import RefundBookingItem from './RefundBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
 
-import css from './BookingSummaryCard.module.css';
+import css from '../BookingSummaryCard.module.css';
 
 const TRANSACTION_FEE = 0.05;
 
 const calculateTotalHours = bookingTimes =>
-  bookingTimes?.reduce(
-    (acc, curr) =>
-      acc +
-      (curr.startTime && curr.endTime ? calculateTimeBetween(curr.startTime, curr.endTime) : 0),
-    0
-  );
+  bookingTimes?.reduce((acc, curr) => calculateTimeBetween(curr.startTime, curr.endTime) + acc, 0);
 
 const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
+
+const mapRefundItems = chargedLineItems => {
+  return chargedLineItems.reduce((acc, curr) => {
+    const refundedLineItems = curr.lineItems
+      .filter(l => {
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return moment().isBefore(startTime);
+      })
+      .map(lineItem => {
+        const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+        const isWithin48Hours = moment()
+          .add(2, 'days')
+          .isAfter(startTime);
+
+        const amount = isWithin48Hours
+          ? parseFloat(lineItem.amount / 2).toFixed(2)
+          : parseFloat(lineItem.amount).toFixed(2);
+        return {
+          ...lineItem,
+          isFifty: isWithin48Hours,
+          amount,
+        };
+      });
+
+    return [...acc, ...refundedLineItems];
+  }, []);
+};
 
 const calculateSubTotal = (totalHours, bookingRate, lineItems) => {
   if (lineItems?.length > 0) {
@@ -45,30 +67,17 @@ const calculateTotalCost = (subTotal, bookingFee, refundAmount = 0) =>
   parseFloat(Number(subTotal) + Number(bookingFee) - Number(refundAmount)).toFixed(2);
 
 const RefundBookingSummaryCard = props => {
-  const {
-    authorDisplayName,
-    currentAuthor,
-    bookingRate,
-    className,
-    hideAvatar,
-    subHeading,
-    hideFees,
-    refundAmount,
-    lineItems: allLineItems,
-  } = props;
+  const { currentAuthor, className, hideAvatar, subHeading, hideFees, booking } = props;
 
-  const lineItems = allLineItems?.filter(lineItem => {
-    const { startTime, date } = lineItem;
+  const { chargedLineItems = [], bookingRate } = booking.attributes.metadata;
 
-    const startTimeMoment = addTimeToStartOfDay(date, startTime);
-    const isInFuture = moment().isBefore(startTimeMoment);
+  const refundItems = useMemo(() => mapRefundItems(chargedLineItems), [chargedLineItems]);
 
-    return isInFuture;
-  });
+  const totalHours = calculateTotalHours(refundItems);
 
-  const totalHours = calculateTotalHours(lineItems);
+  const refundAmount = refundItems.reduce((acc, curr) => acc + curr.base, 0);
 
-  const subTotal = calculateSubTotal(totalHours, bookingRate, lineItems);
+  const subTotal = calculateSubTotal(totalHours, bookingRate, refundItems);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
   const total = hideFees ? subTotal : calculateTotalCost(subTotal, bookingFee, refundAmount);
 
@@ -80,7 +89,8 @@ const RefundBookingSummaryCard = props => {
       subHeading={subHeading}
     >
       <div className={css.bookingTimes}>
-        {lineItems.map((lineItem, index) => (
+        {/* TODO: May need to add more fields to refundItems */}
+        {refundItems.map((lineItem, index) => (
           <RefundBookingItem lineItem={lineItem} key={index} />
         ))}
       </div>

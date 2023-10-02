@@ -63,7 +63,6 @@ const mapLineItemsForCancellationProvider = lineItems => {
 // If more than 48 hours, refund 100% of base
 const mapRefundItems = (chargedLineItems, isCaregiver) => {
   return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
-    // TODO: This may need to be reduced to exclude any past items
     const refundedLineItems = lineItems
       .filter(l => {
         const startTime = addTimeToStartOfDay(l.date, l.startTime);

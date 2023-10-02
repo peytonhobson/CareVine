@@ -7,6 +7,8 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 import css from './BookingCardModals.module.css';
+import { CAREGIVER } from '../../../util/constants';
+import RefundBookingSummaryCard from '../../BookingSummaryCard/Refund/RefundBookingSummaryCard';
 
 const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 
@@ -21,14 +23,15 @@ const CancelModal = props => {
     cancelBookingInProgress,
     cancelBookingError,
     cancelBookingSuccess,
-    isCaregiver,
     booking,
+    userType,
   } = props;
 
   const showCancellationPolicy = !nonPaidTransitions.includes(lastTransition);
 
-  let policy;
+  const isCaregiver = userType === CAREGIVER;
 
+  let policy;
   if (isCaregiver) {
     policy = (
       <p className={css.modalMessage}>
@@ -53,12 +56,13 @@ const CancelModal = props => {
           </li>
         </ul>
         <div>
-          {/* TODO: Add refund cards */}
-          {/* <BookingSummaryCard
-                  className={css.bookingSummaryCard}
-                  lineItems={lineItems}
-                  onManageDisableScrolling={onManageDisableScrolling}
-                /> */}
+          <RefundBookingSummaryCard
+            booking={booking}
+            className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+            hideAvatar
+            hideFees
+            subHeading="Refund Summary"
+          />
         </div>
       </>
     ) : (

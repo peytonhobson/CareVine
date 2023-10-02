@@ -1,27 +1,14 @@
-import React, { useState, useMemo, createContext, useContext } from 'react';
+import React, { useReducer, useMemo, createContext, useContext } from 'react';
 
-import {
-  Avatar,
-  UserDisplayName,
-  Menu,
-  MenuLabel,
-  MenuContent,
-  MenuItem,
-  InlineTextButton,
-  Button,
-  SecondaryButton,
-  CancelButton,
-} from '..';
-import { CANCELABLE_TRANSITIONS } from '../../util/transaction';
+import { Avatar, UserDisplayName, Button, SecondaryButton, CancelButton } from '..';
+import { CANCELABLE_TRANSITIONS, TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
-import { EMPLOYER, FULL_WEEKDAY_MAP } from '../../util/constants';
+import { CAREGIVER, EMPLOYER, FULL_WEEKDAY_MAP } from '../../util/constants';
 import moment from 'moment';
-import MenuIcon from '../ManageListingCard/MenuIcon';
-import classNames from 'classnames';
 import { sortExceptionsByDate } from '../../util/bookings';
 import {
   ExceptionsModal,
@@ -34,6 +21,7 @@ import {
 import { calculateTimeBetween } from '../../util/dates';
 
 import css from './BookingCards.module.css';
+import ActionsModal from './Modals/ActionsModal';
 
 const MODAL_TYPES = {
   RESPOND: 'respond',
@@ -42,6 +30,8 @@ const MODAL_TYPES = {
   DISPUTE: 'dispute',
   CALENDAR: 'calendar',
   EXCEPTIONS: 'exceptions',
+  ACTIONS: 'actions',
+  MODIFY: 'modify',
 };
 
 const BookingCardContext = createContext(null);
@@ -54,15 +44,30 @@ const useBookingCard = () => {
   return context;
 };
 
+const SET_OPEN_MODAL_TYPE = 'SET_OPEN_MODAL_TYPE';
+const CLOSE_MODAL = 'CLOSE_MODAL';
+const SET_BOOKING_TIMES_PAGE = 'SET_BOOKING_TIMES_PAGE';
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case SET_OPEN_MODAL_TYPE:
+      return { ...state, openModalType: action.payload };
+    case CLOSE_MODAL:
+      return { ...state, openModalType: null };
+    case SET_BOOKING_TIMES_PAGE:
+      return { ...state, bookingTimesPage: action.payload };
+    default:
+      return state;
+  }
+};
+
 const BookingCardComponent = props => {
-  // TODO: useReducer
-  const [bookingTimesPage, setBookingTimesPage] = useState(0);
-  const [isPaymentDetailsModalOpen, setIsPaymentDetailsModalOpen] = useState(false);
-  const [isBookingCalendarModalOpen, setIsBookingCalendarModalOpen] = useState(false);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
-  const [isExceptionsModalOpen, setIsExceptionsModalOpen] = useState(false);
-  const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
+  const initialState = {
+    openModalType: null,
+    bookingTimesPage: 0,
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     booking,
@@ -108,59 +113,19 @@ const BookingCardComponent = props => {
   const handleModalOpen = modalType => {
     onFetchBookings();
 
-    switch (modalType) {
-      case MODAL_TYPES.RESPOND:
-        setIsRespondModalOpen(true);
-        break;
-      case MODAL_TYPES.PAYMENT_DETAILS:
-        setIsPaymentDetailsModalOpen(true);
-        break;
-      case MODAL_TYPES.CANCEL:
-        setIsCancelModalOpen(true);
-        break;
-      case MODAL_TYPES.DISPUTE:
-        setIsDisputeModalOpen(true);
-        break;
-      case MODAL_TYPES.CALENDAR:
-        setIsBookingCalendarModalOpen(true);
-        break;
-      case MODAL_TYPES.EXCEPTIONS:
-        setIsExceptionsModalOpen(true);
-        break;
-      default:
-        break;
-    }
+    dispatch({ type: SET_OPEN_MODAL_TYPE, payload: modalType });
   };
 
   const handleModalClose = modalType => {
-    switch (modalType) {
-      case MODAL_TYPES.RESPOND:
-        setIsRespondModalOpen(false);
-        break;
-      case MODAL_TYPES.PAYMENT_DETAILS:
-        setIsPaymentDetailsModalOpen(false);
-        break;
-      case MODAL_TYPES.CANCEL:
-        setIsCancelModalOpen(false);
-        break;
-      case MODAL_TYPES.DISPUTE:
-        setIsDisputeModalOpen(false);
-        break;
-      case MODAL_TYPES.CALENDAR:
-        setIsBookingCalendarModalOpen(false);
-        break;
-      case MODAL_TYPES.EXCEPTIONS:
-        setIsExceptionsModalOpen(false);
-        break;
-      default:
-        break;
-    }
+    dispatch({ type: CLOSE_MODAL });
 
     onResetInitialState();
     onResetTransactionsInitialState();
     onFetchBookings();
     onFetchCurrentUserListing();
   };
+
+  const setBookingTimesPage = page => dispatch({ type: SET_BOOKING_TIMES_PAGE, payload: page });
 
   const bookingDates = useMemo(() => {
     return lineItems?.map(li => new Date(li.date)) ?? [];
@@ -183,7 +148,7 @@ const BookingCardComponent = props => {
     userType,
     booking,
     isMobile,
-    bookingTimesPage,
+    bookingTimesPage: state.bookingTimesPage,
     bookingTimes,
     setBookingTimesPage,
     handleModalOpen,
@@ -196,7 +161,7 @@ const BookingCardComponent = props => {
     <BookingCardContext.Provider value={contextValue}>
       <div className={css.bookingCard}>{children}</div>
       <ResponseModal
-        isOpen={isRespondModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.RESPOND}
         onClose={() => handleModalClose(MODAL_TYPES.RESPOND)}
         exceptions={allExceptions}
         customerDisplayName={otherUserDisplayName}
@@ -204,7 +169,7 @@ const BookingCardComponent = props => {
         bookingDates={bookingDates}
       />
       <PaymentDetailsModal
-        isOpen={isPaymentDetailsModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.PAYMENT_DETAILS}
         onClose={() => handleModalClose(MODAL_TYPES.PAYMENT_DETAILS)}
         bookingTimes={bookingTimes}
         bookingRate={bookingRate}
@@ -219,21 +184,21 @@ const BookingCardComponent = props => {
         provider={provider}
       />
       <CancelModal
-        isOpen={isCancelModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.CANCEL}
         onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
         lastTransition={lastTransition}
         otherUserDisplayName={otherUserDisplayName}
-        isCaregiver
+        userType={userType}
         booking={booking}
       />
       <ExceptionsModal
-        isOpen={isExceptionsModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.EXCEPTIONS}
         onClose={() => handleModalClose(MODAL_TYPES.EXCEPTIONS)}
         onManageDisableScrolling={onManageDisableScrolling}
         exceptions={allExceptions}
       />
       <BookingCalendarModal
-        isOpen={isBookingCalendarModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.CALENDAR}
         onClose={() => handleModalClose(MODAL_TYPES.CALENDAR)}
         onManageDisableScrolling={onManageDisableScrolling}
         bookingDates={bookingDates}
@@ -242,8 +207,16 @@ const BookingCardComponent = props => {
         endDate={endDate}
       />
       <DisputeModal
-        isOpen={isDisputeModalOpen}
+        isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
         onClose={() => handleModalClose(MODAL_TYPES.DISPUTE)}
+      />
+      <ActionsModal
+        isOpen={state.openModalType === MODAL_TYPES.ACTIONS}
+        onClose={() => handleModalClose(MODAL_TYPES.ACTIONS)}
+        booking={booking}
+        onModalOpen={handleModalOpen}
+        onManageDisableScrolling={onManageDisableScrolling}
+        userType={userType}
       />
     </BookingCardContext.Provider>
   );
@@ -284,57 +257,24 @@ export const BookingCardTitle = () => {
 };
 
 export const BookingCardMenu = () => {
-  const { booking, isMobile, userType, handleModalOpen } = useBookingCard();
+  const { booking, userType, handleModalOpen } = useBookingCard();
 
-  const bookingLedger = booking.attributes.metadata.ledger ?? [];
-  const lastTransition = booking.attributes.lastTransition;
+  const showRespond =
+    booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING && userType === CAREGIVER;
 
-  const hasCurrentDispute =
-    bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
-  const isDisputable =
-    bookingLedger.length > 0 &&
-    bookingLedger[bookingLedger.length - 1].end &&
-    moment(bookingLedger[bookingLedger.length - 1].end).isAfter(moment().subtract(2, 'days')) &&
-    !hasCurrentDispute &&
-    userType === EMPLOYER;
-  const isRequest = booking.attributes.lastTransition === 'transition/booking-request';
-
-  const canCancel = CANCELABLE_TRANSITIONS.includes(lastTransition);
-  const showMenu =
-    ((canCancel || isDisputable) && userType === EMPLOYER) ||
-    (canCancel && userType === CAREGIVER && !isRequest);
-
-  return showMenu ? (
-    <Menu className="h-auto mb-4">
-      <MenuLabel className={css.menuLabel} isOpenClassName={css.profileMenuIsOpen}>
-        <MenuIcon height={isMobile ? '1.75em' : '1.25em'} width="2.25em" />
-      </MenuLabel>
-      <MenuContent className={css.menuContent} style={{ right: isMobile }}>
-        <MenuItem key="dispute">
-          {isDisputable && (
-            <InlineTextButton
-              rootClassName={css.menuItem}
-              onClick={() => handleModalOpen(MODAL_TYPES.DISPUTE)}
-            >
-              <span className={css.menuItemBorder} />
-              Dispute
-            </InlineTextButton>
-          )}
-        </MenuItem>
-        <MenuItem key="cancel">
-          {canCancel && (
-            <InlineTextButton
-              rootClassName={classNames(css.menuItem, 'text-error', css.cancelMenuItem)}
-              onClick={() => handleModalOpen(MODAL_TYPES.CANCEL)}
-            >
-              <span className={css.menuItemBorder} />
-              Cancel
-            </InlineTextButton>
-          )}
-        </MenuItem>
-      </MenuContent>
-    </Menu>
-  ) : null;
+  return (
+    <>
+      {showRespond ? (
+        <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}>
+          Respond
+        </Button>
+      ) : (
+        <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}>
+          Actions
+        </Button>
+      )}
+    </>
+  );
 };
 
 export const BookingCardHeader = ({ children }) => {
@@ -371,8 +311,6 @@ export const BookingCardDateTimes = () => {
 
   const { bookingSchedule, type: scheduleType } = booking.attributes.metadata;
   const timesToDisplay = isMobile ? 1 : 3;
-
-  console.log(bookingTimes);
 
   return (
     <div className={css.dateTimes}>
