@@ -10,8 +10,6 @@ import {
   LayoutWrapperMain,
   LayoutWrapperFooter,
   Footer,
-  EmployerBookingCard,
-  CaregiverBookingCard,
   ButtonTabNavHorizontal,
   DraftBookingCard,
 } from '../../components';
@@ -19,9 +17,20 @@ import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { fetchBookings, setInitialState, removeDrafts } from './BookingsPage.duck';
-import { acceptBooking, declineBooking, setInitialValues } from '../../ducks/transactions.duck';
+import { setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
+import {
+  BookingCard,
+  BookingCardHeader,
+  BookingCardBody,
+  BookingCardDateTimes,
+  BookingCardDateTimesContainer,
+  BookingCardDetailsButtons,
+  BookingCardTablePagination,
+  BookingCardTitle,
+  BookingCardMenu,
+} from '../../components/BookingCards/BookingCard';
 
 import css from './BookingsPage.module.css';
 
@@ -30,6 +39,24 @@ const sortDrafts = (a, b) => {
   const bDate = new Date(b.createdAt);
 
   return bDate - aDate;
+};
+
+const BookingCardComponent = props => {
+  return (
+    <BookingCard {...props}>
+      <BookingCardHeader>
+        <BookingCardTitle />
+        <BookingCardMenu />
+      </BookingCardHeader>
+      <BookingCardBody>
+        <BookingCardDateTimesContainer>
+          <BookingCardDateTimes />
+          <BookingCardTablePagination />
+        </BookingCardDateTimesContainer>
+        <BookingCardDetailsButtons />
+      </BookingCardBody>
+    </BookingCard>
+  );
 };
 
 const BookingsPage = props => {
@@ -44,8 +71,6 @@ const BookingsPage = props => {
     currentUser: user,
     scrollingDisabled,
     onManageDisableScrolling,
-    acceptBookingInProgress,
-    acceptBookingSuccess,
     onFetchBookings,
     onResetInitialState,
     onFetchCurrentUserListing,
@@ -56,7 +81,6 @@ const BookingsPage = props => {
 
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
-  const CardComponent = userType === EMPLOYER ? EmployerBookingCard : CaregiverBookingCard;
   const totalBookings = bookings?.requests.length + bookings?.bookings.length;
   const bookingDrafts = currentUser?.attributes?.profile?.privateData?.bookingDrafts || [];
 
@@ -100,14 +124,12 @@ const BookingsPage = props => {
   }, [totalBookings]);
 
   const cardProps = {
-    currentUser,
     onManageDisableScrolling,
-    acceptBookingInProgress,
-    acceptBookingSuccess,
     onFetchBookings,
     onResetInitialState,
     onFetchCurrentUserListing,
     onResetTransactionsInitialState,
+    userType,
   };
 
   const draftTabMaybe =
@@ -155,7 +177,7 @@ const BookingsPage = props => {
         bookings.requests.length > 0 ? (
           bookings.requests.map(b => (
             <span id={b.id.uuid} key={b.id.uuid}>
-              <CardComponent {...cardProps} booking={b} />
+              <BookingCardComponent booking={b} {...cardProps} />
             </span>
           ))
         ) : (
@@ -167,7 +189,7 @@ const BookingsPage = props => {
         bookings.bookings.length > 0 ? (
           bookings.bookings.map(b => (
             <span id={b.id.uuid} style={{ display: 'flex' }} key={b.id.uuid}>
-              <CardComponent {...cardProps} booking={b} />
+              <BookingCardComponent booking={b} {...cardProps} />
             </span>
           ))
         ) : (

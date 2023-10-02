@@ -99,8 +99,6 @@ export class CheckoutPageComponent extends Component {
       exceptions,
     } = values;
 
-    console.log('values', values);
-
     const weekdays = mapWeekdays(values);
 
     const startDate = moment(startDateDate?.date)
@@ -169,6 +167,8 @@ export class CheckoutPageComponent extends Component {
       providerName: listing.author.attributes.profile.displayName,
       exceptions: scheduleType === 'recurring' ? exceptions : null,
     };
+
+    console.log('metadata', metadata);
 
     onInitiateOrder(orderParams, metadata, listing, params.draftId);
   }

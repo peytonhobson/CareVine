@@ -3,7 +3,6 @@ import React, { useState, useMemo } from 'react';
 import {
   Avatar,
   SecondaryButton,
-  Modal,
   CancelButton,
   Button,
   UserDisplayName,
@@ -12,13 +11,8 @@ import {
   MenuContent,
   MenuItem,
   InlineTextButton,
-  WeeklyBillingDetails,
 } from '..';
-import {
-  TRANSITION_REQUEST_BOOKING,
-  TRANSITION_ACCEPT_BOOKING,
-  CANCELABLE_TRANSITIONS,
-} from '../../util/transaction';
+import { CANCELABLE_TRANSITIONS } from '../../util/transaction';
 import { convertTimeFrom12to24 } from '../../util/data';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { v4 as uuidv4 } from 'uuid';

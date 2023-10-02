@@ -2,7 +2,10 @@
 require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
-const { constructBookingMetadataRecurring } = require('../server/bookingHelpers');
+const {
+  constructBookingMetadataRecurring,
+  constructBookingMetadataOneTime,
+} = require('../server/bookingHelpers');
 const isDev = false;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
@@ -117,17 +120,68 @@ const bookingSchedule = [
 const bookingRate = 23;
 const paymentMethodType = 'us_bank_account';
 
-const metadata = constructBookingMetadataRecurring(
-  bookingSchedule,
-  moment().startOf('day'),
-  null,
-  bookingRate,
-  paymentMethodType,
-  exceptions
-);
+const metadata = {
+  lineItems: [
+    {
+      code: 'line-item/booking',
+      startTime: '12:00pm',
+      endTime: '1:00pm',
+      date: '2023-10-02T00:00:00.000-06:00',
+      shortDate: '10/02',
+      hours: 1,
+      amount: '23.00',
+      bookingFee: '4.05',
+    },
+    {
+      code: 'line-item/booking',
+      startTime: '12:00pm',
+      endTime: '1:00pm',
+      date: '2023-10-03T00:00:00.000-06:00',
+      shortDate: '10/03',
+      hours: 1,
+      amount: '23.00',
+      bookingFee: '1.15',
+    },
+    {
+      code: 'line-item/booking',
+      startTime: '12:00pm',
+      endTime: '1:00pm',
+      date: '2023-10-05T00:00:00.000-06:00',
+      shortDate: '10/05',
+      hours: 1,
+      amount: '23.00',
+      bookingFee: '1.15',
+    },
+  ],
+  bookingRate: '27',
+  bookingFee: '3.45',
+  processingFee: '0.57',
+  totalPayment: '85.74',
+  payout: '73.02',
+  type: 'oneTime',
+  paymentMethodId: 'pm_1NYH31JsU2TVwfKB4U3Rja7M',
+  paymentMethodType: 'us_bank_account',
+  senderListingTitle: '24 Hour Care Needed for My Spouse in Westminster ',
+  senderCity: 'Westminster',
+  senderListingDescription:
+    "It was cloudy outside but not really raining. There was a light sprinkle at most and there certainly wasn't a need for an umbrella. This hadn't stopped Sarah from pulling her umbrella ",
+  stripeCustomerId: 'cus_Mqfug6MnoKUAdt',
+  clientEmail: 'peyton.hobson1@gmail.com',
+  stripeAccountId: 'acct_1MFf3NQw1sFyCVAj',
+  providerName: 'Peyton C',
+};
+
+//   constructBookingMetadataRecurring(
+//   bookingSchedule,
+//   moment().startOf('day'),
+//   null,
+//   bookingRate,
+//   paymentMethodType,
+//   exceptions
+// );
 
 const BODY_PARAMS = {
-  processAlias: 'booking-process/active',
+  processAlias: 'single-booking-process/active',
   transition: 'transition/request-booking',
   params: {
     listingId: {
@@ -142,7 +196,7 @@ const BODY_PARAMS = {
       startDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       endDate: null,
       cancelAtPeriodEnd: false,
-      type: 'recurring',
+      // type: 'recurring',
       bookingRate,
       paymentMethodId: 'pm_1NYH31JsU2TVwfKB4U3Rja7M',
       paymentMethodType,

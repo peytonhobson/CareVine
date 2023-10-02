@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { Modal, CancelButton, PrimaryButton } from '../../';
 import { declineBooking, acceptBooking } from '../../../ducks/transactions.duck';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';
+import { checkIsBlockedOneTime, checkIsBlockedRecurring } from '../../../util/bookings';
 
 import css from './BookingCardModals.module.css';
 
@@ -17,7 +18,6 @@ const ResponseModal = props => {
     acceptBookingError,
     customerDisplayName,
     booking,
-    hasSameDayBooking,
     declineBookingError,
     declineBookingInProgress,
     declineBookingSuccess,
@@ -26,6 +26,29 @@ const ResponseModal = props => {
     onDeclineBooking,
     onAcceptBooking,
   } = props;
+
+  const {
+    bookingSchedule,
+    type: scheduleType,
+    startDate,
+    endDate,
+    listing,
+    bookingDates,
+  } = booking.attributes.metadata;
+
+  const hasSameDayBooking = useMemo(
+    () =>
+      (scheduleType === 'oneTime'
+        ? checkIsBlockedOneTime({ dates: bookingDates, listing })
+        : checkIsBlockedRecurring({
+            bookingSchedule,
+            startDate,
+            endDate,
+            exceptions,
+            listing,
+          })) && !(acceptBookingSuccess || acceptBookingInProgress),
+    [bookingDates, listing, startDate, endDate, exceptions, scheduleType]
+  );
 
   return isOpen ? (
     <Modal

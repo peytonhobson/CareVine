@@ -34,7 +34,7 @@ const PaymentDetailsModal = props => {
       <p className={css.modalTitle}>Payment Summary</p>
       {scheduleType === 'oneTime' ? (
         <SingleBookingSummaryCard
-          className={css.summaryCard}
+          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
           bookingTimes={bookingTimes}
           bookingRate={bookingRate}
           listing={listing}

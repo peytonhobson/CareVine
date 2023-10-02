@@ -80,7 +80,7 @@ const createBookingPayment = async transaction => {
   } catch (e) {
     try {
       await integrationSdk.transactions.transition({
-        id: transaction.id.uuid,
+        id: txId,
         transition: 'transition/decline-payment',
         params: {},
       });
@@ -95,7 +95,7 @@ const createBookingPayment = async transaction => {
 
       // If recurring booking, create new listing bookedDays by removing booking days
       const listingBookedDays = fullListing.attributes.metadata.bookedDays;
-      const newBookedDays = listingBookedDays.filter(b => b.txId !== transaction.id.uuid);
+      const newBookedDays = listingBookedDays.filter(b => b.txId !== txId);
 
       await integrationSdk.listings.update({
         id: listingId,
@@ -108,7 +108,7 @@ const createBookingPayment = async transaction => {
       log.error(e, 'transition-decline-payment-failed', {});
     }
 
-    log.error(e, 'create-booking-payment-failed', {});
+    log.error(e?.data?.errors || e, 'create-booking-payment-failed', {});
   }
 };
 
