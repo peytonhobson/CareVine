@@ -1,5 +1,3 @@
-
-
 .root {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
 
@@ -202,9 +200,15 @@
     border: none;
   }
 
-  & .ready:disabled,
-  .inProgress:disabled {
+  &.ready {
     background-color: var(--failColor);
     color: var(--matterColorLight);
+    border: 1px solid var(--failColor);
+  }
+
+  &.inProgress {
+    background-color: var(--failColor);
+    color: var(--matterColorLight);
+    border: 1px solid var(--failColor);
   }
 }
