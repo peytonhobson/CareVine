@@ -42,29 +42,29 @@ const RecurringBookingSummaryCard = props => {
     form,
     listing,
     onManageDisableScrolling,
-    selectedPaymentMethod,
     className,
     hideAvatar,
     subHeading,
     hideRatesButton,
     hideFees,
     refundAmount,
-    weekdays = [],
-    startDate,
-    weekEndDate,
-    bookingEndDate,
-    exceptions = {
-      addedDays: [],
-      removedDays: [],
-      changedDays: [],
-    },
-    bookingRate,
+    startOfWeek,
     hideWeeklyBillingDetails,
     avatarText,
     showWeekly,
     showExceptions,
     hideFullSchedule,
+    booking,
   } = props;
+
+  const {
+    paymentMethodType,
+    bookingSchedule: weekdays = [],
+    startDate,
+    endDate: bookingEndDate,
+    exceptions = { addedDays: [], removedDays: [], changedDays: [] },
+    bookingRate,
+  } = booking?.attributes.metadata || {};
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
   const [isWeeklyBillingDetailsOpen, setIsWeeklyBillingDetailsOpen] = useState(false);
@@ -87,7 +87,7 @@ const RecurringBookingSummaryCard = props => {
   const filteredWeekdays = useMemo(() => {
     return filterWeeklyBookingDays({
       weekdays,
-      startDate: showWeekly ? moment(startDate).startOf('week') : startDate,
+      startDate: showWeekly ? startOfWeek : startDate,
       endDate: bookingEndDate,
       exceptions: usedExceptions,
     });
@@ -97,12 +97,12 @@ const RecurringBookingSummaryCard = props => {
 
   const subTotal = calculateSubTotal(totalHours, bookingRate);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
-  const processingFee = calculateProcessingFee(subTotal, bookingFee, selectedPaymentMethod);
+  const processingFee = calculateProcessingFee(subTotal, bookingFee, paymentMethodType);
   const total = hideFees
     ? subTotal
     : calculateTotalCost(subTotal, bookingFee, processingFee, refundAmount);
 
-  const visibleEndDate = showWeekly ? bookingEndDate : weekEndDate;
+  const visibleEndDate = showWeekly ? bookingEndDate : moment(startOfWeek).endOf('week');
 
   const cardHeading =
     weekdays.length > 0 ? (
@@ -144,7 +144,7 @@ const RecurringBookingSummaryCard = props => {
           </p>
         ) : null}
         <p className={css.startEndDates}>
-          {moment(startDate).format('ddd, MMM DD')} -{' '}
+          {moment(startOfWeek).format('ddd, MMM DD')} -{' '}
           {visibleEndDate ? moment(visibleEndDate).format('ddd, MMM DD') : 'No End Date'}
         </p>
       </>
@@ -260,15 +260,10 @@ const RecurringBookingSummaryCard = props => {
           </p>
           <div className={css.weeklyBillingDetails}>
             <WeeklyBillingDetails
-              bookingSchedule={weekdays}
-              exceptions={exceptions}
-              startDate={startDate}
-              endDate={bookingEndDate}
+              booking={booking}
               currentAuthor={currentAuthor}
-              bookingRate={bookingRate}
               listing={listing}
               onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethodType={selectedPaymentMethod.type}
               hideFees={hideFees}
               isPayment={showWeekly}
             />

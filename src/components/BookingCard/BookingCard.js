@@ -22,6 +22,7 @@ import { calculateTimeBetween } from '../../util/dates';
 
 import css from './BookingCards.module.css';
 import ActionsModal from './Modals/ActionsModal';
+import CancelWeekEndModal from './Modals/CancelWeekEndModal';
 
 const MODAL_TYPES = {
   RESPOND: 'respond',
@@ -32,6 +33,7 @@ const MODAL_TYPES = {
   EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
   MODIFY: 'modify',
+  CANCEL_WEEK_END: 'cancelWeekEnd',
 };
 
 const BookingCardContext = createContext(null);
@@ -85,17 +87,11 @@ const BookingCardComponent = props => {
   const lastTransition = booking.attributes.lastTransition;
   const {
     lineItems,
-    bookingSchedule,
-    startDate,
-    endDate,
-    type: scheduleType,
     exceptions = {
       addedDays: [],
       removedDays: [],
       changedDays: [],
     },
-    bookingRate,
-    paymentMethodType,
   } = bookingMetadata;
 
   const { customer, provider, listing } = booking;
@@ -149,12 +145,12 @@ const BookingCardComponent = props => {
     booking,
     isMobile,
     bookingTimesPage: state.bookingTimesPage,
-    bookingTimes,
     setBookingTimesPage,
     handleModalOpen,
     handleModalClose,
     otherUser,
     otherUserDisplayName,
+    bookingTimes,
   };
 
   return (
@@ -163,25 +159,16 @@ const BookingCardComponent = props => {
       <ResponseModal
         isOpen={state.openModalType === MODAL_TYPES.RESPOND}
         onClose={() => handleModalClose(MODAL_TYPES.RESPOND)}
-        exceptions={allExceptions}
         customerDisplayName={otherUserDisplayName}
         booking={booking}
         bookingDates={bookingDates}
+        allExceptions={allExceptions}
       />
       <PaymentDetailsModal
         isOpen={state.openModalType === MODAL_TYPES.PAYMENT_DETAILS}
         onClose={() => handleModalClose(MODAL_TYPES.PAYMENT_DETAILS)}
-        bookingTimes={bookingTimes}
-        bookingRate={bookingRate}
-        listing={listing}
         onManageDisableScrolling={onManageDisableScrolling}
-        paymentMethodType={paymentMethodType}
-        scheduleType={scheduleType}
-        bookingSchedule={bookingSchedule}
-        exceptions={exceptions}
-        startDate={startDate}
-        endDate={endDate}
-        provider={provider}
+        booking={booking}
       />
       <CancelModal
         isOpen={state.openModalType === MODAL_TYPES.CANCEL}
@@ -202,9 +189,7 @@ const BookingCardComponent = props => {
         onClose={() => handleModalClose(MODAL_TYPES.CALENDAR)}
         onManageDisableScrolling={onManageDisableScrolling}
         bookingDates={bookingDates}
-        bookingSchedule={bookingSchedule}
-        startDate={startDate}
-        endDate={endDate}
+        booking={booking}
       />
       <DisputeModal
         isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
@@ -217,6 +202,12 @@ const BookingCardComponent = props => {
         onModalOpen={handleModalOpen}
         onManageDisableScrolling={onManageDisableScrolling}
         userType={userType}
+      />
+      <CancelWeekEndModal
+        isOpen={state.openModalType === MODAL_TYPES.CANCEL_WEEK_END}
+        onClose={() => handleModalClose(MODAL_TYPES.CANCEL_WEEK_END)}
+        otherUserDisplayName={otherUserDisplayName}
+        booking={booking}
       />
     </BookingCardContext.Provider>
   );

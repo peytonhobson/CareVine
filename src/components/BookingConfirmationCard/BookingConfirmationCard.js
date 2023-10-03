@@ -16,7 +16,6 @@ const BookingConfirmationCard = props => {
   } = props;
 
   const {
-    lineItems,
     bookingRate,
     paymentMethodType,
     bookingSchedule,
@@ -24,12 +23,6 @@ const BookingConfirmationCard = props => {
     startDate,
     type,
   } = transaction.attributes.metadata;
-
-  const bookingTimes = lineItems.map(l => ({
-    date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
-    startTime: l.startTime,
-    endTime: l.endTime,
-  }));
 
   const endOfFirstWeek =
     type === 'recurring' ? getFirstWeekEndDate(startDate, bookingSchedule, exceptions) : null;
@@ -45,15 +38,12 @@ const BookingConfirmationCard = props => {
         <RecurringBookingSummaryCard
           authorDisplayName={authorDisplayName}
           currentAuthor={currentAuthor}
-          bookingRate={bookingRate}
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
           selectedPaymentMethod={paymentMethodType}
           subHeading=""
-          weekdays={bookingSchedule}
-          startDate={startDate}
-          weekEndDate={endOfFirstWeek}
-          exceptions={exceptions}
+          booking={transaction}
+          startOfWeek={startDate}
           avatarText={
             <h2 className={css.bookingWith}>
               First Week with <span style={{ whiteSpace: 'nowrap' }}>{authorDisplayName}</span>
@@ -66,11 +56,9 @@ const BookingConfirmationCard = props => {
           className={css.summaryCard}
           authorDisplayName={authorDisplayName}
           currentAuthor={currentAuthor}
-          bookingTimes={bookingTimes}
-          bookingRate={bookingRate}
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={paymentMethodType}
+          booking={transaction}
           hideAvatar
           subHeading={
             <div className={css.subHeading}>

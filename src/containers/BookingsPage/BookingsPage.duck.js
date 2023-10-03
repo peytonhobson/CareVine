@@ -1,31 +1,23 @@
-import { CAREGIVER } from '../../util/constants';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_COMPLETE,
-  TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_START,
   TRANSITION_CHARGE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_UPDATE_BOOKING_END_REPEAT,
   TRANSITION_UPDATE_BOOKING_END,
-  TRANSITION_ACTIVE_CANCEL,
-  TRANSITION_CHARGED_CANCEL,
-  TRANSITION_ACCEPTED_CANCEL,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
-  stripeCreateRefund,
   updateTransactionMetadata,
   sendgridStandardEmail,
-  updateListingMetadata,
   sendgridTemplateEmail,
   updatePendingPayouts,
   cancelBooking as apiCancelBooking,
 } from '../../util/api';
-import moment from 'moment';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
@@ -57,6 +49,10 @@ export const DISPUTE_BOOKING_REQUEST = 'app/BookingsPage/DISPUTE_BOOKING_REQUEST
 export const DISPUTE_BOOKING_SUCCESS = 'app/BookingsPage/DISPUTE_BOOKING_SUCCESS';
 export const DISPUTE_BOOKING_ERROR = 'app/BookingsPage/DISPUTE_BOOKING_ERROR';
 
+export const UPDATE_BOOKING_METADATA_REQUEST = 'app/BookingsPage/UPDATE_BOOKING_METADATA_REQUEST';
+export const UPDATE_BOOKING_METADATA_SUCCESS = 'app/BookingsPage/UPDATE_BOOKING_METADATA_SUCCESS';
+export const UPDATE_BOOKING_METADATA_ERROR = 'app/BookingsPage/UPDATE_BOOKING_METADATA_ERROR';
+
 export const REMOVE_OLD_DRAFTS = 'app/BookingsPage/REMOVE_OLD_DRAFTS';
 
 // ================ Reducer ================ //
@@ -74,6 +70,9 @@ const initialState = {
   disputeBookingInProgress: false,
   disputeBookingError: null,
   disputeBookingSuccess: false,
+  updateBookingMetadataInProgress: false,
+  updateBookingMetadataError: null,
+  updateBookingMetadataSuccess: false,
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -112,6 +111,26 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
       return { ...state, disputeBookingInProgress: false, disputeBookingSuccess: true };
     case DISPUTE_BOOKING_ERROR:
       return { ...state, disputeBookingInProgress: false, disputeBookingError: payload };
+
+    case UPDATE_BOOKING_METADATA_REQUEST:
+      return {
+        ...state,
+        updateBookingMetadataInProgress: true,
+        updateBookingMetadataError: null,
+        updateBookingMetadataSuccess: false,
+      };
+    case UPDATE_BOOKING_METADATA_SUCCESS:
+      return {
+        ...state,
+        updateBookingMetadataInProgress: false,
+        updateBookingMetadataSuccess: true,
+      };
+    case UPDATE_BOOKING_METADATA_ERROR:
+      return {
+        ...state,
+        updateBookingMetadataInProgress: false,
+        updateBookingMetadataError: payload,
+      };
 
     case REMOVE_OLD_DRAFTS:
       return {
@@ -152,6 +171,14 @@ export const disputeBookingRequest = () => ({ type: DISPUTE_BOOKING_REQUEST });
 export const disputeBookingSuccess = () => ({ type: DISPUTE_BOOKING_SUCCESS });
 export const disputeBookingError = e => ({
   type: DISPUTE_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const updateBookingMetadataRequest = () => ({ type: UPDATE_BOOKING_METADATA_REQUEST });
+export const updateBookingMetadataSuccess = () => ({ type: UPDATE_BOOKING_METADATA_SUCCESS });
+export const updateBookingMetadataError = e => ({
+  type: UPDATE_BOOKING_METADATA_ERROR,
   error: true,
   payload: e,
 });
@@ -304,6 +331,24 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
     });
   } catch (e) {
     log.error(e, 'dispute-booking-emails-failed', { bookingId });
+  }
+};
+
+export const updateBookingMetadata = (booking, metadata) => async (dispatch, getState, sdk) => {
+  dispatch(updateBookingMetadataRequest());
+
+  const bookingId = booking.id.uuid;
+
+  try {
+    await updateTransactionMetadata({
+      txId: bookingId,
+      metadata,
+    });
+
+    dispatch(updateBookingMetadataSuccess());
+  } catch (e) {
+    log.error(e, 'update-booking-metadata-failed', { bookingId });
+    dispatch(updateBookingMetadataError(storableError(e)));
   }
 };
 

@@ -20,6 +20,7 @@ const MODAL_TYPES = {
   EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
   MODIFY: 'modify',
+  CANCEL_WEEK_END: 'cancelWeekEnd',
 };
 
 const ActionsModal = props => {
@@ -58,12 +59,12 @@ const ActionsModal = props => {
             onClick={() => onModalOpen(MODAL_TYPES.CANCEL)}
             className="w-auto py-2 px-4 mt-4"
           >
-            Cancel {isRequest ? 'Request' : 'Booking'}
+            Cancel Now
           </CancelButton>
         ) : null}
         {isCancelable && bookingType === 'recurring' ? (
           <CancelButton
-            onClick={() => onModalOpen(MODAL_TYPES.CANCEL)}
+            onClick={() => onModalOpen(MODAL_TYPES.CANCEL_WEEK_END)}
             className="w-auto py-2 px-4 mt-4"
           >
             Cancel at Week End

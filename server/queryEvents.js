@@ -284,6 +284,7 @@ module.exports = queryEvents = () => {
         if (hasNextBooking) {
           updateNextWeek(transaction);
         } else {
+          // TODO: If customer cancels at period end, but caregiver is being partially paid, update pending payouts
           endRecurring(transaction);
         }
       }

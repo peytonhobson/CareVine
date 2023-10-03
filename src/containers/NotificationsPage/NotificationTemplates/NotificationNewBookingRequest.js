@@ -35,12 +35,8 @@ const NotificationNewBookingRequest = props => {
 
   const {
     notification,
-    currentUser,
     onManageDisableScrolling,
-    transitionTransactionInProgress,
-    transitionTransactionError,
     currentTransaction,
-    onTransitionTransaction,
     onFetchTransaction,
     fetchTransactionInProgress,
     fetchTransactionError,
@@ -50,16 +46,19 @@ const NotificationNewBookingRequest = props => {
     onAcceptBooking,
     declineBookingError,
     declineBookingInProgress,
-    declineBookingSuccess,
     onDeclineBooking,
   } = props;
 
   const { txId } = notification.metadata;
 
+  useEffect(() => {
+    if (txId) {
+      onFetchTransaction(txId);
+    }
+  }, [txId]);
+
   const {
     lineItems,
-    bookingRate,
-    paymentMethodType,
     message,
     senderListingTitle,
     senderCity,
@@ -76,26 +75,9 @@ const NotificationNewBookingRequest = props => {
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
-  const { bookedDates = [], bookedDays = [] } = listing?.attributes?.metadata || {};
 
   const senderName = userDisplayNameAsString(customer);
 
-  const bookingStart = findStartTimeFromLineItems(lineItems);
-  const bookingEnd = moment(bookingStart)
-    .add(1, 'hours')
-    .toDate();
-
-  useEffect(() => {
-    if (txId) {
-      onFetchTransaction(txId);
-    }
-  }, [txId]);
-
-  const bookingTimes = lineItems?.map(l => ({
-    date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
-    startTime: l.startTime,
-    endTime: l.endTime,
-  }));
   const bookingDates = lineItems?.map(l => new Date(l.date));
 
   const isLarge = useMediaQuery('(min-width:1024px)');
@@ -198,11 +180,9 @@ const NotificationNewBookingRequest = props => {
           {bookingType === 'oneTime' ? (
             <SingleBookingSummaryCard
               className={css.summaryCard}
-              bookingTimes={bookingTimes}
-              bookingRate={bookingRate}
               listing={listing}
               onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethod={paymentMethodType}
+              booking={currentTransaction}
               hideRatesButton
               hideAvatar
               hideFees
@@ -210,17 +190,10 @@ const NotificationNewBookingRequest = props => {
           ) : (
             <RecurringBookingSummaryCard
               className={css.summaryCard}
-              bookingRate={bookingRate}
               listing={listing}
               onManageDisableScrolling={onManageDisableScrolling}
-              selectedPaymentMethod={paymentMethodType}
-              weekdays={bookingSchedule}
-              startDate={startDate}
-              weekEndDate={moment(startDate)
-                .endOf('week')
-                .toDate()}
-              bookingEndDate={endDate}
-              exceptions={exceptions}
+              startOfWeek={startDate}
+              booking={currentTransaction}
               hideRatesButton
               hideAvatar
               hideFees

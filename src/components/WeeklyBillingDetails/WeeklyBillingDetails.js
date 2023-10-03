@@ -14,7 +14,8 @@ const isSameISOWeek = (date1, date2) => {
 
 const isInBookingSchedule = (date, bookingSchedule, startDate, endDate, exceptions) => {
   const withinTimeFrame =
-    moment(startDate).isSameOrBefore(date) && (!endDate || moment(endDate).isSameOrAfter(date));
+    moment(startDate).isSameOrBefore(date, 'day') &&
+    (!endDate || moment(endDate).isSameOrAfter(date, 'day'));
   const inBookingSchedule = bookingSchedule.some(b => b.dayOfWeek === WEEKDAYS[date.getDay()]);
   const isAddedDay = exceptions?.addedDays?.some(d => moment(d.date).isSame(date));
   const isRemovedDay = exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
@@ -67,19 +68,23 @@ const formatDay = (
 
 export const WeeklyBillingDetails = props => {
   const {
-    bookingSchedule = [],
-    exceptions,
-    startDate,
-    endDate,
+    booking,
     className,
     currentAuthor,
-    bookingRate,
     listing,
     onManageDisableScrolling,
-    selectedPaymentMethodType,
     hideFees,
     isPayment,
   } = props;
+
+  const {
+    startDate,
+    endDate,
+    bookingRate,
+    exceptions,
+    paymentMethodType,
+    bookingSchedule = [],
+  } = booking.attributes.metadata;
 
   const classes = classNames(className, css.root);
   const initialDate = startDate ? new Date(startDate) : new Date();
@@ -114,15 +119,11 @@ export const WeeklyBillingDetails = props => {
           </Button>
           <RecurringBookingSummaryCard
             currentAuthor={currentAuthor}
-            bookingRate={bookingRate}
             listing={listing}
+            booking={booking}
             onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethodType}
             subHeading={isPayment ? 'Payment Details' : 'Billing Details'}
-            weekdays={bookingSchedule}
-            startDate={new Date(startDate) > selectedWeek ? startDate : selectedWeek}
-            weekEndDate={moment(selectedWeek).endOf('week')}
-            exceptions={exceptions}
+            startOfWeek={moment(selectedWeek).isBefore(startDate) ? startDate : selectedWeek}
             hideWeeklyBillingDetails
             className={css.summaryCard}
             hideRatesButton

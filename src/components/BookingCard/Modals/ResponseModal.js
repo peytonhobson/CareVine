@@ -2,10 +2,20 @@ import React, { useMemo } from 'react';
 
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { Modal, CancelButton, PrimaryButton } from '../..';
+import {
+  Modal,
+  CancelButton,
+  PrimaryButton,
+  SingleBookingSummaryCard,
+  RecurringBookingSummaryCard,
+} from '../..';
 import { declineBooking, acceptBooking } from '../../../ducks/transactions.duck';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';
-import { checkIsBlockedOneTime, checkIsBlockedRecurring } from '../../../util/bookings';
+import {
+  checkIsBlockedOneTime,
+  checkIsBlockedRecurring,
+  sortExceptionsByDate,
+} from '../../../util/bookings';
 
 import css from './BookingCardModals.module.css';
 
@@ -14,7 +24,6 @@ const ResponseModal = props => {
     isOpen,
     onClose,
     onManageDisableScrolling,
-    exceptions,
     acceptBookingError,
     customerDisplayName,
     booking,
@@ -25,16 +34,25 @@ const ResponseModal = props => {
     acceptBookingInProgress,
     onDeclineBooking,
     onAcceptBooking,
+    bookingDates,
+    allExceptions,
   } = props;
+
+  const { listing } = booking;
 
   const {
     bookingSchedule,
     type: scheduleType,
     startDate,
     endDate,
-    listing,
-    bookingDates,
+    exceptions = {
+      addedDays: [],
+      removedDays: [],
+      changedDays: [],
+    },
   } = booking.attributes.metadata;
+
+  console.log('bookingDates', bookingDates);
 
   const hasSameDayBooking = useMemo(
     () =>
@@ -67,21 +85,31 @@ const ResponseModal = props => {
           accepting.
         </p>
       ) : null}
-      {/* <BookingSummaryCard
-            className={css.bookingSummaryCard}
-            authorDisplayName={customerDisplayName}
-            currentAuthor={customer}
-            selectedBookingTimes={bookingTimes}
-            bookingRate={bookingRate}
-            bookingDates={bookingDates}
-            onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethod={selectedPaymentMethod}
-            hideAvatar
-            subHeading={<span className={css.bookingWith}>Payment Details</span>}
-            refundAmount={refundAmount}
-            hideRatesButton
-            hideFees
-          /> */}
+      {scheduleType === 'oneTime' ? (
+        <SingleBookingSummaryCard
+          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+          listing={listing}
+          onManageDisableScrolling={onManageDisableScrolling}
+          booking={booking}
+          hideRatesButton
+          hideAvatar
+          hideFees
+        />
+      ) : (
+        <RecurringBookingSummaryCard
+          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+          listing={listing}
+          onManageDisableScrolling={onManageDisableScrolling}
+          startOfWeek={startDate}
+          booking={booking}
+          hideRatesButton
+          hideAvatar
+          hideFees
+          showWeekly
+          hideWeeklyBillingDetails
+          showExceptions={allExceptions.length > 0}
+        />
+      )}
       {acceptBookingError ? (
         <p className="text-error">
           There was an issue accepting the booking request. Please try again.

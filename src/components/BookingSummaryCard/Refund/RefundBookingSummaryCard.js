@@ -41,28 +41,6 @@ const mapRefundItems = chargedLineItems => {
   }, []);
 };
 
-const calculateSubTotal = (totalHours, bookingRate, lineItems) => {
-  if (lineItems?.length > 0) {
-    return parseFloat(
-      lineItems.reduce((acc, lineItem) => {
-        const { startTime, date, amount } = lineItem;
-
-        const start = addTimeToStartOfDay(date, startTime);
-        const isInFuture = start.isAfter(moment());
-        const isFifty =
-          moment()
-            .add(2, 'days')
-            .isAfter(start) && isInFuture;
-        const refund = isFifty ? 0.5 : 1;
-
-        return acc + refund * amount;
-      }, 0)
-    ).toFixed(2);
-  }
-
-  return parseFloat(totalHours * Number(bookingRate)).toFixed(2);
-};
-
 const calculateTotalCost = (subTotal, bookingFee, refundAmount = 0) =>
   parseFloat(Number(subTotal) + Number(bookingFee) - Number(refundAmount)).toFixed(2);
 
@@ -74,10 +52,9 @@ const RefundBookingSummaryCard = props => {
   const refundItems = useMemo(() => mapRefundItems(chargedLineItems), [chargedLineItems]);
 
   const totalHours = calculateTotalHours(refundItems);
-
-  const refundAmount = refundItems.reduce((acc, curr) => acc + Number(curr.amount), 0);
-
-  const subTotal = calculateSubTotal(totalHours, bookingRate, refundItems);
+  const subTotal = useMemo(() => refundItems.reduce((acc, curr) => Number(curr.amount) + acc, 0), [
+    refundItems,
+  ]);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
   const total = hideFees ? subTotal : calculateTotalCost(subTotal, bookingFee);
 

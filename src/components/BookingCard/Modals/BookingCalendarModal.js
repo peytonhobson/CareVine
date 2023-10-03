@@ -5,15 +5,9 @@ import { Modal, BookingCalendar } from '../..';
 import css from './BookingCardModals.module.css';
 
 const BookingCalendarModal = props => {
-  const {
-    isOpen,
-    onClose,
-    onManageDisableScrolling,
-    bookingDates,
-    bookingSchedule,
-    startDate,
-    endDate,
-  } = props;
+  const { isOpen, onClose, onManageDisableScrolling, bookingDates, booking } = props;
+
+  const { bookingSchedule, startDate, endDate } = booking;
 
   return isOpen ? (
     <Modal

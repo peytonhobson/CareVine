@@ -5,21 +5,11 @@ import { Modal, SingleBookingSummaryCard, WeeklyBillingDetails } from '../..';
 import css from './BookingCardModals.module.css';
 
 const PaymentDetailsModal = props => {
-  const {
-    isOpen,
-    onClose,
-    bookingTimes,
-    bookingRate,
-    listing,
-    onManageDisableScrolling,
-    paymentMethodType,
-    scheduleType,
-    bookingSchedule,
-    exceptions,
-    startDate,
-    endDate,
-    provider,
-  } = props;
+  const { isOpen, onClose, booking, onManageDisableScrolling } = props;
+
+  const { provider, listing } = booking;
+
+  const { type: scheduleType } = booking.attributes.metadata;
 
   return isOpen ? (
     <Modal
@@ -35,11 +25,9 @@ const PaymentDetailsModal = props => {
       {scheduleType === 'oneTime' ? (
         <SingleBookingSummaryCard
           className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
-          bookingTimes={bookingTimes}
-          bookingRate={bookingRate}
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={paymentMethodType}
+          booking={booking}
           hideRatesButton
           hideAvatar
         />
@@ -50,15 +38,10 @@ const PaymentDetailsModal = props => {
           </p>
           <WeeklyBillingDetails
             className="mt-6"
-            bookingSchedule={bookingSchedule}
-            exceptions={exceptions}
-            startDate={startDate}
-            endDate={endDate}
+            booking={booking}
             currentAuthor={provider}
-            bookingRate={bookingRate}
             listing={listing}
             onManageDisableScrolling={onManageDisableScrolling}
-            selectedPaymentMethodType={paymentMethodType}
           />
         </>
       )}

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { InlineTextButton } from '../..';
-import { convertTimeFrom12to24, calculateProcessingFee } from '../../../util/data';
+import { calculateProcessingFee } from '../../../util/data';
 import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
 import SingleBookingItem from './SingleBookingItem';
@@ -33,28 +33,37 @@ const calculateTotalCost = (subTotal, bookingFee, processingFee, refundAmount = 
 const SingleBookingSummaryCard = props => {
   const {
     currentAuthor,
-    bookingTimes = [],
-    bookingRate,
     formValues,
     form,
     listing,
     onManageDisableScrolling,
-    selectedPaymentMethod,
     className,
     hideAvatar,
     hideRatesButton,
     hideFees,
     refundAmount,
     subHeading,
+    booking,
   } = props;
+
+  const { bookingRate, lineItems, paymentMethodType } = booking?.attributes.metadata || {};
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
 
+  const bookingTimes = useMemo(
+    () =>
+      lineItems?.map(l => ({
+        date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
+        startTime: l.startTime,
+        endTime: l.endTime,
+      })),
+    [lineItems]
+  );
   const totalHours = calculateTotalHours(bookingTimes);
 
   const subTotal = calculateSubTotal(totalHours, bookingRate);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
-  const processingFee = calculateProcessingFee(subTotal, bookingFee, selectedPaymentMethod);
+  const processingFee = calculateProcessingFee(subTotal, bookingFee, paymentMethodType);
   const total = hideFees
     ? subTotal
     : calculateTotalCost(subTotal, bookingFee, processingFee, refundAmount);

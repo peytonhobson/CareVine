@@ -10,6 +10,8 @@ import moment from 'moment';
 import { mapWeekdays, getFirstWeekEndDate } from '../../../util/bookings';
 
 import css from '../EditBookingForm.module.css';
+import { calculateTimeBetween } from '../../../util/dates';
+import { ISO_OFFSET_FORMAT } from '../../../util/constants';
 
 const FULL_WEEKDAY_MAP = {
   sun: 'Sunday',
@@ -21,15 +23,20 @@ const FULL_WEEKDAY_MAP = {
   sat: 'Saturday',
 };
 
-const formatDateTimeValues = dateTimes =>
+const formatLineItems = (dateTimes, bookingDates, bookingRate) =>
   Object.keys(dateTimes).map(key => {
     const startTime = dateTimes[key].startTime;
     const endTime = dateTimes[key].endTime;
 
+    const date = moment(bookingDates.find(date => moment(date).format('MM/DD') === key)).format(
+      ISO_OFFSET_FORMAT
+    );
+
     return {
       startTime,
       endTime,
-      date: key,
+      date,
+      amount: calculateTimeBetween(startTime, endTime) * bookingRate,
     };
   });
 
@@ -50,11 +57,25 @@ const SectionRequest = props => {
 
   const weekdays = mapWeekdays(values);
 
-  console.log(weekdays.length);
-
   const endOfFirstWeek = weekdays?.length
     ? getFirstWeekEndDate(values.startDate?.date, weekdays, values.exceptions)
     : null;
+
+  const currentBooking = {
+    attributes: {
+      metadata: {
+        paymentMethodType: selectedPaymentMethod,
+        lineItems: values.dateTimes
+          ? formatLineItems(values.dateTimes, values.bookingDates, values.bookingRate)
+          : null,
+        bookingRate: values.bookingRate,
+        bookingSchedule: weekdays,
+        startDate: values.startDate?.date,
+        endDate: values.endDate?.date,
+        exceptions: values.exceptions,
+      },
+    },
+  };
   return (
     <div className={css.requestContentContainer}>
       <div
@@ -120,30 +141,24 @@ const SectionRequest = props => {
         <SingleBookingSummaryCard
           authorDisplayName={authorDisplayName}
           currentAuthor={currentAuthor}
-          bookingTimes={values.dateTimes && formatDateTimeValues(values.dateTimes)}
-          bookingRate={values?.bookingRate}
           formValues={values}
           form={form}
           listing={currentListing}
           onManageDisableScrolling={onManageDisableScrolling}
-          selectedPaymentMethod={selectedPaymentMethod}
+          booking={currentBooking}
         />
       ) : (
         <RecurringBookingSummaryCard
           authorDisplayName={authorDisplayName}
           currentAuthor={currentAuthor}
-          bookingRate={values?.bookingRate}
           formValues={values}
           form={form}
           listing={currentListing}
           onManageDisableScrolling={onManageDisableScrolling}
           selectedPaymentMethod={selectedPaymentMethod}
           subHeading="First Week Booking"
-          weekdays={weekdays}
-          startDate={values.startDate?.date}
-          weekEndDate={endOfFirstWeek}
-          bookingEndDate={values.endDate?.date}
-          exceptions={values.exceptions}
+          startOfWeek={values.startDate?.date}
+          booking={currentBooking}
         />
       )}
     </div>
