@@ -334,7 +334,11 @@ const sendEvent = async (userId, type) => {
   const client = clients[userId];
 
   if (client && client.readyState === WebSocket.OPEN) {
-    client.send(JSON.stringify({ type }));
+    try {
+      client.send(JSON.stringify({ type }));
+    } catch (e) {
+      log.error(e, 'websocket-send-failed');
+    }
   }
 };
 
