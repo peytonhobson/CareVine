@@ -34,26 +34,9 @@ export const ForCaregiversPageComponent = props => {
   const parsedSearchParams = queryString.parse(location.search);
   const { externalPromo } = parsedSearchParams;
 
-  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
   const [secondImageLoaded, setSecondImageLoaded] = useState(false);
   const [thirdImageLoaded, setThirdImageLoaded] = useState(false);
   const [fourthImageLoaded, setFourthImageLoaded] = useState(false);
-  const firstImageRef = useRef(null);
-
-  useEffect(() => {
-    if (firstImageRef?.current && !firstImageLoaded) {
-      const img = new Image();
-
-      img.onload = () => {
-        firstImageRef.current.src = img.src;
-        firstImageRef.current.alt = img.alt;
-        setFirstImageLoaded(true);
-      };
-
-      img.src = yourJourneyImage;
-      img.alt = 'People holding signs.';
-    }
-  }, [firstImageRef?.current]);
 
   useEffect(() => {
     if (externalPromo) {
@@ -109,10 +92,7 @@ export const ForCaregiversPageComponent = props => {
               </NamedLink>
             </div>
             <div className={css.imageContainer}>
-              <img
-                className={firstImageLoaded ? css.firstImage : css.noFirstImage}
-                ref={firstImageRef}
-              />
+              <img className={css.firstImage} src={yourJourneyImage} alt="People holding signs." />
             </div>
           </div>
           <div className={css.sectionTwo}>
