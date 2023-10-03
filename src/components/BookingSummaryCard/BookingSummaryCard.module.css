@@ -12,8 +12,8 @@
     background-color: var(--matterColorLight);
     border: 1px solid var(--matterColorNegative);
     border-radius: 2px;
-    max-height: 32rem;
-    overflow-y: scroll;
+    max-height: 33rem;
+    overflow-y: auto;
     position: relative;
   }
 }

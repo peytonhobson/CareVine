@@ -55,15 +55,12 @@ const CancelModal = props => {
             Processing fees are non-refundable under all circumstances.
           </li>
         </ul>
-        <div>
-          <RefundBookingSummaryCard
-            booking={booking}
-            className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
-            hideAvatar
-            hideFees
-            subHeading="Refund Summary"
-          />
-        </div>
+        <RefundBookingSummaryCard
+          booking={booking}
+          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+          hideAvatar
+          subHeading="Refund Summary"
+        />
       </>
     ) : (
       <p className={css.modalMessage}>

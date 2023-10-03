@@ -75,11 +75,11 @@ const RefundBookingSummaryCard = props => {
 
   const totalHours = calculateTotalHours(refundItems);
 
-  const refundAmount = refundItems.reduce((acc, curr) => acc + curr.base, 0);
+  const refundAmount = refundItems.reduce((acc, curr) => acc + Number(curr.amount), 0);
 
   const subTotal = calculateSubTotal(totalHours, bookingRate, refundItems);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
-  const total = hideFees ? subTotal : calculateTotalCost(subTotal, bookingFee, refundAmount);
+  const total = hideFees ? subTotal : calculateTotalCost(subTotal, bookingFee);
 
   return (
     <BookingSummaryCard
@@ -89,7 +89,6 @@ const RefundBookingSummaryCard = props => {
       subHeading={subHeading}
     >
       <div className={css.bookingTimes}>
-        {/* TODO: May need to add more fields to refundItems */}
         {refundItems.map((lineItem, index) => (
           <RefundBookingItem lineItem={lineItem} key={index} />
         ))}
@@ -100,19 +99,9 @@ const RefundBookingSummaryCard = props => {
             {!hideFees ? (
               <>
                 <div className={css.spread}>
-                  <h4 className={css.paymentCalc}>CareVine Service Fee Refund</h4>
+                  <h4 className={css.paymentCalc}>Service Fee Refund</h4>
                   <h4 className={css.paymentCalc}>${bookingFee}</h4>
                 </div>
-                {refundAmount && refundAmount > 0 ? (
-                  <div className={css.spread}>
-                    <h4 className={css.paymentCalc} style={{ color: 'var(--failColor)' }}>
-                      Refunded
-                    </h4>
-                    <h4 className={css.paymentCalc} style={{ color: 'var(--failColor)' }}>
-                      ${refundAmount}
-                    </h4>
-                  </div>
-                ) : null}
               </>
             ) : null}
           </div>
