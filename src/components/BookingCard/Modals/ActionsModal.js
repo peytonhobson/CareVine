@@ -11,28 +11,24 @@ import moment from 'moment';
 
 import css from './BookingCardModals.module.css';
 
-const MODAL_TYPES = {
-  RESPOND: 'respond',
-  PAYMENT_DETAILS: 'paymentDetails',
-  CANCEL: 'cancel',
-  DISPUTE: 'dispute',
-  CALENDAR: 'calendar',
-  EXCEPTIONS: 'exceptions',
-  ACTIONS: 'actions',
-  MODIFY: 'modify',
-  CANCEL_WEEK_END: 'cancelWeekEnd',
-};
-
 const ActionsModal = props => {
-  const { isOpen, onClose, onManageDisableScrolling, onModalOpen, booking, userType } = props;
+  const {
+    isOpen,
+    onClose,
+    onManageDisableScrolling,
+    onModalOpen,
+    booking,
+    userType,
+    modalTypes,
+  } = props;
 
   const lastTransition = booking.attributes.lastTransition;
+  const { ledger: bookingLedger = [], type: bookingType } = booking.attributes.metadata;
 
   const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
   const isCancelable = CANCELABLE_TRANSITIONS.includes(lastTransition);
   const isModifiable = MODIFIABLE_TRANSITIONS.includes(lastTransition) && userType === EMPLOYER;
-
-  const { ledger: bookingLedger = [], type: bookingType } = booking.attributes.metadata;
+  const canChangePaymentMethod = bookingType === 'recurring' && userType === EMPLOYER;
 
   const hasCurrentDispute =
     bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
@@ -42,6 +38,8 @@ const ActionsModal = props => {
     moment(bookingLedger[bookingLedger.length - 1].end).isAfter(moment().subtract(2, 'days')) &&
     !hasCurrentDispute &&
     userType === EMPLOYER;
+
+  const buttonClass = 'w-auto py-2 px-4 mt-4';
 
   return isOpen ? (
     <Modal
@@ -55,31 +53,33 @@ const ActionsModal = props => {
       <p className={css.modalTitle}>What would you like to do?</p>
       <div className="grid grid-flow-row grid-cols-2 gap-4 pt-6">
         {isCancelable ? (
-          <CancelButton
-            onClick={() => onModalOpen(MODAL_TYPES.CANCEL)}
-            className="w-auto py-2 px-4 mt-4"
-          >
+          <CancelButton onClick={() => onModalOpen(modalTypes.CANCEL)} className={buttonClass}>
             Cancel Now
           </CancelButton>
         ) : null}
         {isCancelable && bookingType === 'recurring' ? (
           <CancelButton
-            onClick={() => onModalOpen(MODAL_TYPES.CANCEL_WEEK_END)}
-            className="w-auto py-2 px-4 mt-4"
+            onClick={() => onModalOpen(modalTypes.CANCEL_WEEK_END)}
+            className={buttonClass}
           >
             Cancel at Week End
           </CancelButton>
         ) : null}
         {isModifiable ? (
-          <Button onClick={() => onModalOpen(MODAL_TYPES.MODIFY)} className="w-auto py-2 px-4 mt-4">
+          <Button onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE)} className={buttonClass}>
             Modify Schedule
           </Button>
         ) : null}
-        {isDisputable ? (
-          <PrimaryButton
-            onClick={() => onModalOpen(MODAL_TYPES.DISPUTE)}
-            className="w-auto py-2 px-4 mt-4"
+        {canChangePaymentMethod ? (
+          <Button
+            onClick={() => onModalOpen(modalTypes.CHANGE_PAYMENT_METHOD)}
+            className={buttonClass}
           >
+            Change Payment Method
+          </Button>
+        ) : null}
+        {isDisputable ? (
+          <PrimaryButton onClick={() => onModalOpen(modalTypes.DISPUTE)} className={buttonClass}>
             Submit Dispute
           </PrimaryButton>
         ) : null}

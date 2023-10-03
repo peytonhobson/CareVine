@@ -32,8 +32,9 @@ const MODAL_TYPES = {
   CALENDAR: 'calendar',
   EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
-  MODIFY: 'modify',
+  MODIFY_SCHEDULE: 'modifySchedule',
   CANCEL_WEEK_END: 'cancelWeekEnd',
+  CHANGE_PAYMENT_METHOD: 'changePaymentMethod',
 };
 
 const BookingCardContext = createContext(null);
@@ -202,6 +203,7 @@ const BookingCardComponent = props => {
         onModalOpen={handleModalOpen}
         onManageDisableScrolling={onManageDisableScrolling}
         userType={userType}
+        modalTypes={MODAL_TYPES}
       />
       <CancelWeekEndModal
         isOpen={state.openModalType === MODAL_TYPES.CANCEL_WEEK_END}
