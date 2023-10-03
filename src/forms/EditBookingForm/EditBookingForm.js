@@ -24,54 +24,9 @@ import { SectionOneTime, SectionRecurring, SectionRequest, SectionPayment } from
 import moment from 'moment';
 import { WEEKDAYS } from '../../util/constants';
 import WarningIcon from '@mui/icons-material/Warning';
-import {
-  checkIsDateWithinBookingWindow,
-  mapWeekdays,
-  checkIfBookingDateRangesOverlap,
-} from '../../util/bookings';
+import { mapWeekdays, getUnavailableDays } from '../../util/bookings';
 
 import css from './EditBookingForm.module.css';
-
-// TODO: Figure out way to get this to be compatible with removedDays
-const getUnavailableDays = (bookedDays = [], startDate, endDate, bookedDates = [], weekdays) => {
-  if (!startDate || !weekdays) return [];
-
-  const bookedDaysArr = bookedDays.reduce((acc, booking) => {
-    const overlaps = checkIfBookingDateRangesOverlap(
-      startDate,
-      endDate,
-      booking.startDate,
-      booking.endDate
-    );
-
-    const insideExceptions =
-      booking.exceptions?.addedDays.filter(e =>
-        checkIsDateWithinBookingWindow({ startDate, endDate, date: e.date })
-      ) || [];
-    const exceptionDays = insideExceptions.map(e => e.day);
-
-    if (overlaps) {
-      return [...acc, ...booking.days, ...exceptionDays];
-    }
-    return acc;
-  }, []);
-
-  const bookedDatesArr = bookedDates.reduce((acc, bookingDate) => {
-    const isBetween = checkIsDateWithinBookingWindow({ startDate, endDate, date: bookingDate });
-
-    if (isBetween) {
-      const dayOfWeek = WEEKDAYS[new Date(bookingDate).getDay()];
-      return [...acc, dayOfWeek];
-    }
-    return acc;
-  }, []);
-
-  const unavailableDays = [...new Set([...bookedDaysArr, ...bookedDatesArr])].filter(w =>
-    weekdays.some(weekday => weekday.dayOfWeek === w)
-  );
-
-  return unavailableDays;
-};
 
 const checkValidBookingTimes = (bookingTimes, bookingDates) => {
   if (!bookingTimes || !bookingDates || bookingDates.length === 0) return false;
@@ -140,6 +95,20 @@ const EditBookingFormComponent = props => (
       const [isUnavailableWarningModalOpen, setIsUnavailableWarningModalOpen] = useState(false);
 
       const isLarge = useMediaQuery('(min-width:1024px)');
+
+      const { bookedDates, bookedDays } = currentListing.attributes.metadata;
+      const weekdays = useMemo(() => mapWeekdays(values), [values]);
+      const unavailableDays = useMemo(
+        () =>
+          getUnavailableDays({
+            bookedDays,
+            startDate: values.startDate?.date,
+            endDate: values.endDate?.date,
+            bookedDates,
+            weekdays,
+          }),
+        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
+      );
 
       const updateDraft = e => {
         e?.preventDefault();
@@ -245,7 +214,7 @@ const EditBookingFormComponent = props => (
       const handleGoToPayment = () => {
         if (!checkValidDates()) return;
 
-        if (unavailableDates.length > 0 && selectedTab === 'Dates/Times') {
+        if (unavailableDays.length > 0 && selectedTab === 'Dates/Times') {
           setIsUnavailableWarningModalOpen(true);
           return;
         }
@@ -292,20 +261,6 @@ const EditBookingFormComponent = props => (
         >
           <FormattedMessage id="CheckoutPage.errorlistingLinkText" />
         </NamedLink>
-      );
-
-      const { bookedDates, bookedDays } = currentListing.attributes.metadata;
-      const weekdays = useMemo(() => mapWeekdays(values), [values]);
-      const unavailableDates = useMemo(
-        () =>
-          getUnavailableDays(
-            bookedDays,
-            values.startDate?.date,
-            values.endDate?.date,
-            bookedDates,
-            weekdays
-          ),
-        [bookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
       );
 
       let initiateOrderErrorMessage = null;
@@ -381,7 +336,7 @@ const EditBookingFormComponent = props => (
                   isLarge={isLarge}
                   onDeleteEndDate={() => form.change('endDate', null)}
                   form={form}
-                  unavailableDates={unavailableDates}
+                  unavailableDates={unavailableDays}
                 />
               )}
               {!isLarge ? (

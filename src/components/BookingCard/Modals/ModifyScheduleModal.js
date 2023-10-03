@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 
 import css from './BookingCardModals.module.css';
 import { updateBookingMetadata } from '../../../containers/BookingsPage/BookingsPage.duck';
+import { ModifyBookingScheduleForm } from '../../../forms';
 
 const findEndDate = lineItems =>
   lineItems.reduce(
@@ -27,37 +28,48 @@ const ModifyScheduleModal = props => {
     updateBookingMetadataError,
     updateBookingMetadataSuccess,
     onUpdateBooking,
+    onGoBack,
   } = props;
 
-  const { chargedLineItems = [], lineItems = [] } = booking.attributes.metadata;
+  const {
+    chargedLineItems = [],
+    lineItems = [],
+    startDate,
+    endDate,
+    bookingSchedule,
+    exceptions,
+    bookingRate,
+  } = booking.attributes.metadata;
 
-  const lastDayOfWeek = findEndDate(lineItems);
+  const initialBookingSchedule =
+    bookingSchedule?.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr.dayOfWeek]: [
+          {
+            startTime: curr.startTime,
+            endTime: curr.endTime,
+          },
+        ],
+      };
+    }, {}) || {};
 
-  const nextWeekLineItems = useMemo(
-    () =>
-      chargedLineItems
-        .map(c => {
-          const newLineItems = c.lineItems.filter(l =>
-            moment(l.date).isAfter(moment().endOf('week'))
-          );
-          return {
-            ...c,
-            lineItems: newLineItems,
-          };
-        })
-        .filter(c => c.lineItems.length > 0),
-    [chargedLineItems]
-  );
+  const dateTimes = lineItems.map(lineItem => ({
+    date: moment(lineItem.date).format('MM/DD'),
+    startTime: lineItem.startTime,
+    endTime: lineItem.endTime,
+  }));
 
-  const nextWeekBooking = {
-    ...booking,
-    attributes: {
-      ...booking.attributes,
-      metadata: {
-        ...booking.attributes.metadata,
-        chargedLineItems: nextWeekLineItems,
-      },
-    },
+  const bookingDates = lineItems.map(lineItem => lineItem.date);
+
+  const initialValues = {
+    startDate: startDate ? { date: new Date(startDate) } : null,
+    endDate: endDate ? { date: new Date(endDate) } : null,
+    ...initialBookingSchedule,
+    dateTimes,
+    exceptions,
+    bookingDates,
+    bookingRate,
   };
 
   return isOpen ? (
@@ -68,60 +80,18 @@ const ModifyScheduleModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Modify Booking Schedule</p>
-      {/* TODO: If someone cancels and already charged for next week, then refund? */}
-      <p className={css.modalMessage}>
-        By clicking the button below, you will end your booking with {otherUserDisplayName} on{' '}
-        <span className="whitespace-nowrap">{moment(lastDayOfWeek).format('dddd MMM, Do')}</span>.
-        You will not be charged for any time after this date.
-      </p>
-      {/* TODO: Check this with charged next week */}
-      {nextWeekLineItems.length ? (
-        <>
-          <p className={css.modalMessageRefund}>Cancellation Policy</p>
-          <ul className={css.refundList}>
-            <li className={css.refundListItem}>
-              100% refund for booked times canceled more than 48 hours in advance
-            </li>
-            <li className={css.refundListItem}>
-              50% refund for booked times canceled less than 48 hours in advance
-            </li>
-            <li className={css.refundListItem}>
-              Service fees will be refunded in proportion to the refunded base booking amount.
-              Processing fees are non-refundable under all circumstances.
-            </li>
-          </ul>
-          <RefundBookingSummaryCard
-            booking={nextWeekBooking}
-            className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
-            hideAvatar
-            subHeading="Refund Summary"
-          />
-        </>
-      ) : null}
-      {updateBookingMetadataError ? (
-        <p className={css.modalError}>
-          There was an error cancelling your booking. Please try again.
-        </p>
-      ) : null}
-      <div className={css.modalButtonContainer}>
-        <Button onClick={onClose} className={css.modalButton}>
-          Back
-        </Button>
-        <CancelButton
-          inProgress={updateBookingMetadataInProgress}
-          onClick={() =>
-            onUpdateBooking(booking, { cancelAtPeriodEnd: true, endDate: lastDayOfWeek })
-          } // Update booking metadata to cancel at period end
-          className={css.modalButton}
-          ready={updateBookingMetadataSuccess}
-          disabled={updateBookingMetadataSuccess || updateBookingMetadataInProgress}
-        >
-          Cancel
-        </CancelButton>
-      </div>
+      <ModifyBookingScheduleForm
+        booking={booking}
+        onManageDisableScrolling={onManageDisableScrolling}
+        onSubmit={() => {}}
+        initialValues={initialValues}
+        updateBookingMetadataInProgress={updateBookingMetadataInProgress}
+        updateBookingMetadataError={updateBookingMetadataError}
+        updateBookingMetadataSuccess={updateBookingMetadataSuccess}
+        onGoBack={onGoBack}
+      />
     </Modal>
   ) : null;
 };

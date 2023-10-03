@@ -11,10 +11,13 @@ import { InlineTextButton } from '../Button/Button';
 import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bookings';
 
 const isDayHighlighted = (selectedDays, date) =>
-  selectedDays.map(d => d.getTime()).includes(date.getTime());
+  selectedDays.some(d => moment(d).isSame(date, 'day'));
 
-const isDayDisabled = ({ selectedDays, date, currentBookedDays }) => {
-  const inPastOrToday = moment(date).isSameOrBefore(moment(), 'day');
+// TODO: Change default buffer days to one
+const isDayDisabled = ({ selectedDays, date, currentBookedDays, bufferDays = 0 }) => {
+  const inPastOrToday = moment()
+    .add(bufferDays, 'days')
+    .isSameOrAfter(date, 'day');
 
   let isCurrentBookedDay = false;
   if (currentBookedDays) {
@@ -42,8 +45,8 @@ const isDayDisabled = ({ selectedDays, date, currentBookedDays }) => {
     .subtract(2, 'weeks')
     .toDate();
 
-  const isBeforeFirstSelectedDay = date.getTime() >= twoWeeksAfterFirstSelectedDay.getTime();
-  const isAfterLastSelectedDay = date.getTime() <= twoWeeksBeforeLastSelectedDay.getTime();
+  const isBeforeFirstSelectedDay = moment(date).isSameOrAfter(twoWeeksAfterFirstSelectedDay);
+  const isAfterLastSelectedDay = moment(date).isSameOrBefore(twoWeeksBeforeLastSelectedDay);
 
   return inPastOrToday || isBeforeFirstSelectedDay || isAfterLastSelectedDay || isCurrentBookedDay;
 };
@@ -56,6 +59,7 @@ const formatDay = ({
   onClick,
   currentBookedDays,
   highlightedClassName,
+  bufferDays,
 }) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
@@ -63,6 +67,7 @@ const formatDay = ({
     selectedDays,
     date,
     currentBookedDays,
+    bufferDays,
   });
   const isUnavailable = checkIsBlockedDay({ bookedDays, date, bookedDates });
 
@@ -100,15 +105,16 @@ export const FieldDatePickerComponent = props => {
     onChange,
     currentBookedDays,
     highlightedClassName,
+    bufferDays,
   } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
-      ? input.value?.find(entry => entry.getTime() === date.getTime())
+      ? input.value?.find(entry => moment(entry).isSame(date, 'day'))
       : false;
 
     if (isDaySelected) {
-      const newSelectedDays = input.value.filter(entry => entry.getTime() !== date.getTime());
+      const newSelectedDays = input.value.filter(entry => !moment(entry).isSame(date, 'day'));
 
       input.onChange(newSelectedDays);
       if (onChange) {
@@ -148,6 +154,7 @@ export const FieldDatePickerComponent = props => {
             onClick: handleSelectDay,
             currentBookedDays,
             highlightedClassName,
+            bufferDays,
           })
         }
         value={initialDate}

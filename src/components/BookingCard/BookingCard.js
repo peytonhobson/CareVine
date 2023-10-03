@@ -23,6 +23,7 @@ import { calculateTimeBetween } from '../../util/dates';
 import css from './BookingCards.module.css';
 import ActionsModal from './Modals/ActionsModal';
 import CancelWeekEndModal from './Modals/CancelWeekEndModal';
+import ModifyScheduleModal from './Modals/ModifyScheduleModal';
 
 const MODAL_TYPES = {
   RESPOND: 'respond',
@@ -210,6 +211,12 @@ const BookingCardComponent = props => {
         onClose={() => handleModalClose(MODAL_TYPES.CANCEL_WEEK_END)}
         otherUserDisplayName={otherUserDisplayName}
         booking={booking}
+      />
+      <ModifyScheduleModal
+        isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE}
+        onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE)}
+        booking={booking}
+        onGoBack={() => handleModalOpen(MODAL_TYPES.ACTIONS)}
       />
     </BookingCardContext.Provider>
   );

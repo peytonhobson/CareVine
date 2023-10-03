@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { compose } from 'redux';
-import { Form as FinalForm, FormSpy } from 'react-final-form';
-import { intlShape, injectIntl, FormattedMessage } from '../../util/reactIntl';
+import { Form as FinalForm } from 'react-final-form';
+import { injectIntl } from '../../util/reactIntl';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
-import {
-  Form,
-  Button,
-  FieldSelect,
-  Modal,
-  FieldDatePicker,
-  FieldTextInput,
-  NamedLink,
-  FieldRangeSlider,
-} from '../../components';
-import { convertTimeFrom12to24 } from '../../util/data';
+import { Form, Button, PrimaryButton } from '../../components';
+import { mapWeekdays, getUnavailableDays } from '../../util/bookings';
+import { SectionOneTime, SectionRecurring } from '../EditBookingForm/sections';
 
 import css from './ModifyBookingScheduleForm.module.css';
-import { SectionOneTime, SectionRecurring } from '../EditBookingForm/sections';
 
 const checkValidBookingTimes = (bookingTimes, bookingDates) => {
   if (!bookingTimes || !bookingDates || bookingDates.length === 0) return false;
@@ -37,18 +28,16 @@ const ModifyBookingScheduleForm = props => (
     render={formRenderProps => {
       const {
         className,
-        disabled,
-        ready,
         handleSubmit,
         intl,
-        invalid,
-        pristine,
-        updated,
         values,
         form,
         booking,
         onManageDisableScrolling,
-        bookedDates,
+        updateBookingMetadataInProgress,
+        updateBookingMetadataError,
+        updateBookingMetadataSuccess,
+        onGoBack,
       } = formRenderProps;
 
       const { type: bookingType } = booking.attributes.metadata;
@@ -59,8 +48,27 @@ const ModifyBookingScheduleForm = props => (
         form.change('endDate', null);
       };
 
+      const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
+      const filteredBookedDays = bookedDays.filter(b => b.txId !== booking.id.uuid);
+      const weekdays = useMemo(() => mapWeekdays(values), [values]);
+      const unavailableDays = useMemo(
+        () =>
+          getUnavailableDays({
+            bookedDays: filteredBookedDays,
+            startDate: values.startDate?.date,
+            endDate: values.endDate?.date,
+            bookedDates,
+            weekdays,
+          }),
+        [filteredBookedDays, values.startDate?.date, values.endDate?.date, bookedDates, weekdays]
+      );
+
+      const submitInProgress = updateBookingMetadataInProgress;
+      const submitDisabled = updateBookingMetadataInProgress || updateBookingMetadataSuccess;
+      const submitReady = updateBookingMetadataSuccess;
+
       return (
-        <Form>
+        <Form onSubmit={handleSubmit}>
           {bookingType === 'recurring' ? (
             <SectionRecurring
               values={values}
@@ -69,16 +77,35 @@ const ModifyBookingScheduleForm = props => (
               listing={listing}
               onDeleteEndDate={onDeleteEndDate}
               form={form}
-              unavailableDates={unavailableDates}
+              unavailableDates={unavailableDays}
             />
           ) : (
             <SectionOneTime
-              bookedDates={bookedDates}
               values={values}
               listing={listing}
               form={form}
+              className={css.sectionOneTime}
+              booking={booking}
             />
           )}
+          {updateBookingMetadataError ? (
+            <p className="text-error">Failed to update booking schedule. Please try again.</p>
+          ) : null}
+          <div className={css.modalButtonContainer}>
+            <Button onClick={onGoBack} className={css.modalButton} type="button">
+              Back
+            </Button>
+            <PrimaryButton
+              inProgress={submitInProgress}
+              onClick={() => onCancelBooking(booking)}
+              className={css.modalButton}
+              ready={submitReady}
+              disabled={submitDisabled}
+              type="submit"
+            >
+              Submit Changes
+            </PrimaryButton>
+          </div>
         </Form>
       );
     }}

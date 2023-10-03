@@ -243,3 +243,50 @@ export const getFirstWeekEndDate = (startDate, bookingSchedule, exceptions) => {
 
   return weekStart.weekday(WEEKDAYS.indexOf(lastDay.dayOfWeek));
 };
+
+// TODO: Figure out way to get this to be compatible with removedDays
+export const getUnavailableDays = ({
+  bookedDays = [],
+  startDate,
+  endDate,
+  bookedDates = [],
+  weekdays,
+}) => {
+  if (!startDate || !weekdays) return [];
+
+  const bookedDaysArr = bookedDays.reduce((acc, booking) => {
+    const overlaps = checkIfBookingDateRangesOverlap(
+      startDate,
+      endDate,
+      booking.startDate,
+      booking.endDate
+    );
+
+    const insideExceptions =
+      booking.exceptions?.addedDays.filter(e =>
+        checkIsDateWithinBookingWindow({ startDate, endDate, date: e.date })
+      ) || [];
+    const exceptionDays = insideExceptions.map(e => e.day);
+
+    if (overlaps) {
+      return [...acc, ...booking.days, ...exceptionDays];
+    }
+    return acc;
+  }, []);
+
+  const bookedDatesArr = bookedDates.reduce((acc, bookingDate) => {
+    const isBetween = checkIsDateWithinBookingWindow({ startDate, endDate, date: bookingDate });
+
+    if (isBetween) {
+      const dayOfWeek = WEEKDAYS[new Date(bookingDate).getDay()];
+      return [...acc, dayOfWeek];
+    }
+    return acc;
+  }, []);
+
+  const unavailableDays = [...new Set([...bookedDaysArr, ...bookedDatesArr])].filter(w =>
+    weekdays.some(weekday => weekday.dayOfWeek === w)
+  );
+
+  return unavailableDays;
+};
