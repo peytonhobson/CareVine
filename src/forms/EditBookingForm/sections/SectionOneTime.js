@@ -41,7 +41,7 @@ const SectionOneTime = props => {
 
   const legend = (
     <>
-      <p className="text-xs my-1 text-left mt-4 md:mt-0">
+      <p className="text-xs my-1 text-left mt-4 lg:mt-2">
         <span className={classNames(css.day, css.blocked)}>23</span> Dates in gray are not available
       </p>
       <p className="text-xs my-1 text-left">
