@@ -64,6 +64,7 @@ const BookingPaymentComponent = props => {
     className,
     removeDisabled,
     onFetchStripeCustomer,
+    initialPaymentMethodId,
   } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
@@ -72,6 +73,31 @@ const BookingPaymentComponent = props => {
   const bankAccounts = defaultPaymentMethods?.bankAccounts;
   const stripeCustomer = ensureStripeCustomer(ensuredCurrentUser.stripeCustomer);
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
+
+  useEffect(() => {
+    onFetchDefaultPayment();
+  }, []);
+
+  useEffect(() => {
+    if (initialPaymentMethodId) {
+      const isCard = cards?.find(card => card.id === initialPaymentMethodId);
+      const isBankAccount = bankAccounts?.find(
+        bankAccount => bankAccount.id === initialPaymentMethodId
+      );
+
+      console.log(initialPaymentMethodId);
+      console.log(defaultPaymentMethods);
+
+      if (isCard) {
+        console.log('setting card');
+        setSelectedTab(CREDIT_CARD);
+      }
+
+      if (isBankAccount) {
+        setSelectedTab(BANK_ACCOUNT);
+      }
+    }
+  }, [initialPaymentMethodId, cards, bankAccounts]);
 
   useEffect(() => {
     setUseDifferentMethod(false);
@@ -204,6 +230,7 @@ const BookingPaymentComponent = props => {
                 methodType={BANK_ACCOUNT}
                 stripeCustomer={stripeCustomer}
                 onFetchDefaultPayment={onFetchDefaultPayment}
+                initialPaymentMethodId={initialPaymentMethodId}
               />
               <InlineTextButton
                 onClick={handleUseDifferentMethod}
@@ -262,6 +289,7 @@ const BookingPaymentComponent = props => {
                 methodType={CREDIT_CARD}
                 stripeCustomer={stripeCustomer}
                 onFetchDefaultPayment={onFetchDefaultPayment}
+                initialPaymentMethodId={initialPaymentMethodId}
               />
               <InlineTextButton
                 onClick={handleUseDifferentMethod}
@@ -339,6 +367,10 @@ const mapStateToProps = state => {
     deletePaymentMethodError,
     deletePaymentMethodInProgress,
     deletedPaymentMethod,
+    defaultPaymentFetched,
+    defaultPaymentMethods,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
   } = state.paymentMethods;
 
   return {
@@ -355,20 +387,21 @@ const mapStateToProps = state => {
     deletedPaymentMethod,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
+    defaultPaymentFetched,
+    defaultPaymentMethods,
+    fetchDefaultPaymentError,
+    fetchDefaultPaymentInProgress,
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-  onDeletePaymentMethod: paymentMethodId => dispatch(deletePaymentMethod(paymentMethodId)),
-  onFetchDefaultPayment: stripeCustomerId => dispatch(fetchDefaultPayment(stripeCustomerId)),
-  onCreateBankAccount: (stripeCustomerId, stripe, currentUser) =>
-    dispatch(createBankAccount(stripeCustomerId, stripe, currentUser)),
-  onCreateCreditCard: (stripeCustomerId, stripe, billingDetails, card) =>
-    dispatch(createCreditCard(stripeCustomerId, stripe, billingDetails, card)),
-  onFetchStripeCustomer: () => dispatch(stripeCustomer()),
-});
+const mapDispatchToProps = {
+  onManageDisableScrolling: manageDisableScrolling,
+  onDeletePaymentMethod: deletePaymentMethod,
+  onFetchDefaultPayment: fetchDefaultPayment,
+  onCreateBankAccount: createBankAccount,
+  onCreateCreditCard: createCreditCard,
+  onFetchStripeCustomer: stripeCustomer,
+};
 
 const PaymentMethods = compose(
   connect(mapStateToProps, mapDispatchToProps),

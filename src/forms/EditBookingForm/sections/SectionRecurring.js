@@ -44,6 +44,7 @@ const SectionRecurring = props => {
     onDeleteEndDate,
     form,
     unavailableDates,
+    booking,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -65,7 +66,14 @@ const SectionRecurring = props => {
     }
   }, [weekdays?.length]);
 
-  console.log('unavailableDates', unavailableDates);
+  console.log(booking?.attributes.metadata.startDate);
+
+  const startDateDisabled =
+    (booking
+      ? !moment()
+          .add(2, 'days')
+          .isBefore(booking?.attributes.metadata.startDate, 'day')
+      : false) || weekdays.length === 0;
 
   return (
     <div className={css.recurringRoot}>
@@ -107,9 +115,10 @@ const SectionRecurring = props => {
             )}
             useMobileMargins
             showErrorMessage={false}
-            disabled={weekdays.length === 0}
+            disabled={startDateDisabled}
             renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
             withPortal={isMobile}
+            // TODO: REmove enable outside days
             enableOutsideDays
           />
           <div className={css.endDateContainer}>

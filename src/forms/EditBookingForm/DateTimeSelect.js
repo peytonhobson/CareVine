@@ -2,11 +2,12 @@ import React from 'react';
 
 import { FieldSelect } from '../../components';
 import { convertTimeFrom12to24 } from '../../util/data';
+import classNames from 'classnames';
 
 import css from './EditBookingForm.module.css';
 
 const DateTimeSelect = props => {
-  const { date, values } = props;
+  const { date, values, disabled } = props;
 
   const startTimeValue = values.dateTimes?.[date]?.startTime;
   const endTimeValue = values.dateTimes?.[date]?.endTime;
@@ -18,8 +19,10 @@ const DateTimeSelect = props => {
     : 0;
 
   return (
-    <div className={css.dateContainer} key={date}>
-      <h3 className={css.date}>{date}</h3>
+    <div className={classNames(css.dateContainer, 'bg-bright')} key={date}>
+      <h3 className={css.date}>
+        {date} {disabled ? '(Past)' : ''}
+      </h3>
       <div className={css.formRow}>
         <div className={css.field}>
           <label htmlFor={`dateTimes.${date}.startTime`} className={css.timeSelectLabel}>
@@ -30,6 +33,7 @@ const DateTimeSelect = props => {
             name={`dateTimes.${date}.startTime`}
             selectClassName={css.timeSelect}
             initialValueSelected={date.startTime}
+            disabled={disabled}
           >
             <option disabled value="">
               8:00am
@@ -57,6 +61,7 @@ const DateTimeSelect = props => {
             id={`dateTimes.${date}.endTime`}
             name={`dateTimes.${date}.endTime`}
             selectClassName={css.timeSelect}
+            disabled={disabled}
           >
             <option disabled value="">
               5:00pm

@@ -15,13 +15,9 @@ import {
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
+import { stripeCustomer } from '../../ducks/stripe.duck';
 
-import {
-  initiateOrder,
-  stripeCustomer,
-  updateBookingDraft,
-  setInitialValues,
-} from './CheckoutPage.duck';
+import { initiateOrder, updateBookingDraft, setInitialValues } from './CheckoutPage.duck';
 import {
   findStartTimeFromBookingTimes,
   constructBookingMetadataOneTime,
@@ -168,8 +164,6 @@ export class CheckoutPageComponent extends Component {
       exceptions: scheduleType === 'recurring' ? exceptions : null,
     };
 
-    console.log('metadata', metadata);
-
     onInitiateOrder(orderParams, metadata, listing, params.draftId);
   }
 
@@ -181,13 +175,7 @@ export class CheckoutPageComponent extends Component {
       intl,
       params,
       currentUser,
-      stripeCustomerFetched,
-      monthlyTimeSlots,
       onManageDisableScrolling,
-      defaultPaymentFetched,
-      defaultPaymentMethods,
-      fetchDefaultPaymentError,
-      fetchDefaultPaymentInProgress,
       onUpdateBookingDraft,
       listing,
       updateBookingDraftInProgress,
@@ -276,8 +264,6 @@ export class CheckoutPageComponent extends Component {
       );
     }
 
-    const showPaymentForm = !!(currentUser && currentListing);
-
     // Transfer booking schedule back to format that works with daily plan
     const initialBookingSchedule =
       bookingSchedule?.reduce((acc, curr) => {
@@ -292,6 +278,8 @@ export class CheckoutPageComponent extends Component {
         };
       }, {}) || {};
 
+    console.log(this.state.selectedPaymentMethod);
+
     return (
       <Page {...pageProps}>
         {topbar}
@@ -301,10 +289,8 @@ export class CheckoutPageComponent extends Component {
               className={css.editBookingForm}
               listing={currentListing}
               onSubmit={this.handleSubmit}
-              monthlyTimeSlots={monthlyTimeSlots}
               onManageDisableScrolling={onManageDisableScrolling}
               authorDisplayName={authorDisplayName}
-              defaultPaymentMethods={defaultPaymentMethods}
               selectedPaymentMethod={this.state.selectedPaymentMethod}
               initiateOrderInProgress={initiateOrderInProgress}
               initiateOrderError={initiateOrderError}
@@ -312,12 +298,6 @@ export class CheckoutPageComponent extends Component {
               currentListing={currentListing}
               listingTitle={listingTitle}
               currentAuthor={currentAuthor}
-              bookingRate={bookingRate}
-              showPaymentForm={showPaymentForm}
-              defaultPaymentFetched={defaultPaymentFetched}
-              fetchDefaultPaymentError={fetchDefaultPaymentError}
-              fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-              stripeCustomerFetched={stripeCustomerFetched}
               onChangePaymentMethod={method => this.setState({ selectedPaymentMethod: method })}
               initialValues={{
                 scheduleType,
@@ -348,7 +328,6 @@ export class CheckoutPageComponent extends Component {
 const mapStateToProps = state => {
   const {
     listing,
-    stripeCustomerFetched,
     transaction,
     initiateOrderError,
     initiateOrderInProgress,
@@ -356,25 +335,14 @@ const mapStateToProps = state => {
     showListingError,
   } = state.CheckoutPage;
   const { currentUser, currentUserListing } = state.user;
-  const {
-    defaultPaymentFetched,
-    defaultPaymentMethods,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
-  } = state.paymentMethods;
 
   return {
     scrollingDisabled: isScrollingDisabled(state),
     currentUser,
-    stripeCustomerFetched,
     transaction,
     listing,
     initiateOrderError,
     initiateOrderInProgress,
-    defaultPaymentFetched,
-    defaultPaymentMethods,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
     currentUserListing,
     updateBookingDraftInProgress,
     showListingError,
@@ -382,7 +350,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  fetchStripeCustomer: stripeCustomer,
   onInitiateOrder: initiateOrder,
   onSavePaymentMethod: createCreditCard,
   onManageDisableScrolling: manageDisableScrolling,

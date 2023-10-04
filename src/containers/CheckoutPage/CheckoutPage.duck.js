@@ -14,6 +14,7 @@ import { NOTIFICATION_TYPE_BOOKING_REQUESTED } from '../../util/constants';
 import { v4 as uuidv4 } from 'uuid';
 import { updateUserNotifications } from '../../util/api';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { stripeCustomer } from '../../ducks/stripe.duck';
 
 const { UUID } = sdkTypes;
 
@@ -235,20 +236,6 @@ export const initiateOrder = (orderParams, metadata, listing, draftId) => async 
   } catch (e) {
     log.error(e, 'failed-to-update-booking-drafts', {});
   }
-};
-
-// StripeCustomer is a relantionship to currentUser
-// We need to fetch currentUser with correct params to include relationship
-export const stripeCustomer = () => (dispatch, getState, sdk) => {
-  dispatch(stripeCustomerRequest());
-
-  return dispatch(fetchCurrentUser({ include: ['stripeCustomer.defaultPaymentMethod'] }))
-    .then(response => {
-      dispatch(stripeCustomerSuccess());
-    })
-    .catch(e => {
-      dispatch(stripeCustomerError(storableError(e)));
-    });
 };
 
 export const updateBookingDraft = (bookingData, draftId) => async (dispatch, getState, sdk) => {

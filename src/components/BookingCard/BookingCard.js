@@ -24,6 +24,7 @@ import css from './BookingCards.module.css';
 import ActionsModal from './Modals/ActionsModal';
 import CancelWeekEndModal from './Modals/CancelWeekEndModal';
 import ModifyScheduleModal from './Modals/ModifyScheduleModal';
+import ChangePaymentMethodModal from './Modals/ChangePaymentMethodModal';
 
 const MODAL_TYPES = {
   RESPOND: 'respond',
@@ -123,6 +124,13 @@ const BookingCardComponent = props => {
     onFetchCurrentUserListing();
   };
 
+  const handleGoBackToActions = () => {
+    handleModalOpen(MODAL_TYPES.ACTIONS);
+    onResetInitialState();
+    onResetTransactionsInitialState();
+    onFetchCurrentUserListing();
+  };
+
   const setBookingTimesPage = page => dispatch({ type: SET_BOOKING_TIMES_PAGE, payload: page });
 
   const bookingDates = useMemo(() => {
@@ -155,69 +163,123 @@ const BookingCardComponent = props => {
     bookingTimes,
   };
 
+  let openModal;
+  switch (state.openModalType) {
+    case MODAL_TYPES.RESPOND:
+      openModal = (
+        <ResponseModal
+          isOpen={state.openModalType === MODAL_TYPES.RESPOND}
+          onClose={() => handleModalClose(MODAL_TYPES.RESPOND)}
+          customerDisplayName={otherUserDisplayName}
+          booking={booking}
+          bookingDates={bookingDates}
+          allExceptions={allExceptions}
+        />
+      );
+      break;
+    case MODAL_TYPES.PAYMENT_DETAILS:
+      openModal = (
+        <PaymentDetailsModal
+          isOpen={state.openModalType === MODAL_TYPES.PAYMENT_DETAILS}
+          onClose={() => handleModalClose(MODAL_TYPES.PAYMENT_DETAILS)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          booking={booking}
+        />
+      );
+      break;
+    case MODAL_TYPES.CANCEL:
+      openModal = (
+        <CancelModal
+          isOpen={state.openModalType === MODAL_TYPES.CANCEL}
+          onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
+          lastTransition={lastTransition}
+          otherUserDisplayName={otherUserDisplayName}
+          userType={userType}
+          booking={booking}
+          onGoBack={handleGoBackToActions}
+        />
+      );
+      break;
+    case MODAL_TYPES.EXCEPTIONS:
+      openModal = (
+        <ExceptionsModal
+          isOpen={state.openModalType === MODAL_TYPES.EXCEPTIONS}
+          onClose={() => handleModalClose(MODAL_TYPES.EXCEPTIONS)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          exceptions={allExceptions}
+        />
+      );
+      break;
+    case MODAL_TYPES.CALENDAR:
+      openModal = (
+        <BookingCalendarModal
+          isOpen={state.openModalType === MODAL_TYPES.CALENDAR}
+          onClose={() => handleModalClose(MODAL_TYPES.CALENDAR)}
+          onManageDisableScrolling={onManageDisableScrolling}
+          bookingDates={bookingDates}
+          booking={booking}
+        />
+      );
+      break;
+    case MODAL_TYPES.DISPUTE:
+      openModal = (
+        <DisputeModal
+          isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
+          onClose={() => handleModalClose(MODAL_TYPES.DISPUTE)}
+        />
+      );
+      break;
+    case MODAL_TYPES.ACTIONS:
+      openModal = (
+        <ActionsModal
+          isOpen={state.openModalType === MODAL_TYPES.ACTIONS}
+          onClose={() => handleModalClose(MODAL_TYPES.ACTIONS)}
+          booking={booking}
+          onModalOpen={handleModalOpen}
+          onManageDisableScrolling={onManageDisableScrolling}
+          userType={userType}
+          modalTypes={MODAL_TYPES}
+        />
+      );
+      break;
+    case MODAL_TYPES.CANCEL_WEEK_END:
+      openModal = (
+        <CancelWeekEndModal
+          isOpen={state.openModalType === MODAL_TYPES.CANCEL_WEEK_END}
+          onClose={() => handleModalClose(MODAL_TYPES.CANCEL_WEEK_END)}
+          otherUserDisplayName={otherUserDisplayName}
+          booking={booking}
+        />
+      );
+      break;
+    case MODAL_TYPES.MODIFY_SCHEDULE:
+      openModal = (
+        <ModifyScheduleModal
+          isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE}
+          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE)}
+          booking={booking}
+          onGoBack={handleGoBackToActions}
+        />
+      );
+      break;
+    case MODAL_TYPES.CHANGE_PAYMENT_METHOD:
+      openModal = (
+        <ChangePaymentMethodModal
+          isOpen={state.openModalType === MODAL_TYPES.CHANGE_PAYMENT_METHOD}
+          onClose={() => handleModalClose(MODAL_TYPES.CHANGE_PAYMENT_METHOD)}
+          booking={booking}
+          onGoBack={handleGoBackToActions}
+        />
+      );
+      break;
+    default:
+      openModal = null;
+  }
+
   return (
     <BookingCardContext.Provider value={contextValue}>
       <div className={css.bookingCard}>{children}</div>
-      <ResponseModal
-        isOpen={state.openModalType === MODAL_TYPES.RESPOND}
-        onClose={() => handleModalClose(MODAL_TYPES.RESPOND)}
-        customerDisplayName={otherUserDisplayName}
-        booking={booking}
-        bookingDates={bookingDates}
-        allExceptions={allExceptions}
-      />
-      <PaymentDetailsModal
-        isOpen={state.openModalType === MODAL_TYPES.PAYMENT_DETAILS}
-        onClose={() => handleModalClose(MODAL_TYPES.PAYMENT_DETAILS)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        booking={booking}
-      />
-      <CancelModal
-        isOpen={state.openModalType === MODAL_TYPES.CANCEL}
-        onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
-        lastTransition={lastTransition}
-        otherUserDisplayName={otherUserDisplayName}
-        userType={userType}
-        booking={booking}
-      />
-      <ExceptionsModal
-        isOpen={state.openModalType === MODAL_TYPES.EXCEPTIONS}
-        onClose={() => handleModalClose(MODAL_TYPES.EXCEPTIONS)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        exceptions={allExceptions}
-      />
-      <BookingCalendarModal
-        isOpen={state.openModalType === MODAL_TYPES.CALENDAR}
-        onClose={() => handleModalClose(MODAL_TYPES.CALENDAR)}
-        onManageDisableScrolling={onManageDisableScrolling}
-        bookingDates={bookingDates}
-        booking={booking}
-      />
-      <DisputeModal
-        isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
-        onClose={() => handleModalClose(MODAL_TYPES.DISPUTE)}
-      />
-      <ActionsModal
-        isOpen={state.openModalType === MODAL_TYPES.ACTIONS}
-        onClose={() => handleModalClose(MODAL_TYPES.ACTIONS)}
-        booking={booking}
-        onModalOpen={handleModalOpen}
-        onManageDisableScrolling={onManageDisableScrolling}
-        userType={userType}
-        modalTypes={MODAL_TYPES}
-      />
-      <CancelWeekEndModal
-        isOpen={state.openModalType === MODAL_TYPES.CANCEL_WEEK_END}
-        onClose={() => handleModalClose(MODAL_TYPES.CANCEL_WEEK_END)}
-        otherUserDisplayName={otherUserDisplayName}
-        booking={booking}
-      />
-      <ModifyScheduleModal
-        isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE}
-        onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE)}
-        booking={booking}
-        onGoBack={() => handleModalOpen(MODAL_TYPES.ACTIONS)}
-      />
+      {openModal}
     </BookingCardContext.Provider>
   );
 };
@@ -295,7 +357,7 @@ export const BookingCardDateTimesContainer = ({ children }) => {
       <h2 className={css.datesAndTimes}>
         {scheduleType === 'recurring' ? 'Weekly Schedule' : 'Dates & Times'}
       </h2>
-      {startDate ? (
+      {startDate && scheduleType === 'recurring' ? (
         <p class="text-primary mt-0 mb-2 text-sm">
           {moment(startDate).format('ddd, MMM DD')} -{' '}
           {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}

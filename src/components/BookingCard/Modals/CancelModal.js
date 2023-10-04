@@ -25,6 +25,7 @@ const CancelModal = props => {
     cancelBookingSuccess,
     booking,
     userType,
+    onGoBack,
   } = props;
 
   const showCancellationPolicy = !nonPaidTransitions.includes(lastTransition);
@@ -87,7 +88,7 @@ const CancelModal = props => {
         </p>
       ) : null}
       <div className={css.modalButtonContainer}>
-        <Button onClick={onClose} className={css.modalButton}>
+        <Button onClick={onGoBack} className={css.modalButton}>
           Back
         </Button>
         <CancelButton

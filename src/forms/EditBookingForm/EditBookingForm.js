@@ -70,7 +70,6 @@ const EditBookingFormComponent = props => (
         form,
         onManageDisableScrolling,
         authorDisplayName,
-        defaultPaymentMethods,
         selectedPaymentMethod,
         initiateOrderInProgress,
         initiateOrderError,
@@ -78,11 +77,6 @@ const EditBookingFormComponent = props => (
         currentListing,
         listingTitle,
         currentAuthor,
-        showPaymentForm,
-        defaultPaymentFetched,
-        fetchDefaultPaymentError,
-        fetchDefaultPaymentInProgress,
-        stripeCustomerFetched,
         onChangePaymentMethod,
         intl,
         onUpdateBookingDraft,
@@ -355,14 +349,8 @@ const EditBookingFormComponent = props => (
           tabContent = (
             <SectionPayment
               isLarge={isLarge}
-              showPaymentForm={showPaymentForm}
-              defaultPaymentFetched={defaultPaymentFetched}
-              fetchDefaultPaymentError={fetchDefaultPaymentError}
-              fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
-              stripeCustomerFetched={stripeCustomerFetched}
               onChangePaymentMethod={onChangePaymentMethod}
               onManageDisableScrolling={onManageDisableScrolling}
-              defaultPaymentMethods={defaultPaymentMethods}
               onGoToRequest={handleGoToRequest}
               goToRequestError={goToRequestError}
               setGoToRequestError={setGoToRequestError}

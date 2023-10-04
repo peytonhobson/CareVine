@@ -123,12 +123,12 @@ const SavedPaymentDetails = props => {
     onFetchDefaultPayment,
     onManageDisableScrolling,
     rootClassName,
-    selected,
     stripeCustomer,
     onChange,
     type,
     removeDisabled,
     methodType,
+    initialPaymentMethodId,
   } = props;
 
   const [selectedMethod, setSelectedMethod] = useState(methods?.[0]);
@@ -207,6 +207,16 @@ const SavedPaymentDetails = props => {
   useEffect(() => {
     setSelectedMethod(methods?.[0]);
   }, [methods?.length]);
+
+  useEffect(() => {
+    if (initialPaymentMethodId) {
+      const initialMethod = methods.find(method => method.id === initialPaymentMethodId);
+
+      if (initialMethod) {
+        setSelectedMethod(initialMethod);
+      }
+    }
+  }, [initialPaymentMethodId]);
 
   useEffect(() => {
     if (deletedPaymentMethod && stripeCustomer) {

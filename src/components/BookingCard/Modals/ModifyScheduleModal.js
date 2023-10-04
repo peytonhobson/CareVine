@@ -1,15 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import { Modal, CancelButton, Button } from '../..';
+import { Modal } from '../..';
 import moment from 'moment';
-import RefundBookingSummaryCard from '../../BookingSummaryCard/Refund/RefundBookingSummaryCard';
 import { manageDisableScrolling } from '../../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-
-import css from './BookingCardModals.module.css';
 import { updateBookingMetadata } from '../../../containers/BookingsPage/BookingsPage.duck';
 import { ModifyBookingScheduleForm } from '../../../forms';
+
+import css from './BookingCardModals.module.css';
 
 const findEndDate = lineItems =>
   lineItems.reduce(

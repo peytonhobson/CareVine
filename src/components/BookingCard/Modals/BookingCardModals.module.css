@@ -72,3 +72,7 @@
   margin-top: 2rem;
   gap: 1.5rem;
 }
+
+.sectionPayment > section {
+  margin-top: 0;
+}

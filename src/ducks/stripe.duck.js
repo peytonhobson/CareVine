@@ -115,6 +115,7 @@ export const initialState = {
   updateCustomerCreditBalanceError: null,
   fetchStripeCustomerInProgress: false,
   fetchStripeCustomerError: null,
+  stripeCustomerFetched: false,
 };
 
 export default function reducer(state = initialState, action = {}) {

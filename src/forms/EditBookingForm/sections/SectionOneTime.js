@@ -7,6 +7,8 @@ import moment from 'moment';
 import css from '../EditBookingForm.module.css';
 import classNames from 'classnames';
 
+const modifyBufferDays = 2;
+
 const SectionOneTime = props => {
   const { values, listing, form, className, booking } = props;
 
@@ -73,7 +75,7 @@ const SectionOneTime = props => {
           id="bookingDates"
           bookedDays={bookedDays}
           onChange={handleBookingDatesChange}
-          bufferDays={booking ? 2 : 0}
+          bufferDays={booking ? modifyBufferDays : 0}
           isModify={booking}
         >
           <p className={css.bookingTimeText}>
@@ -87,7 +89,20 @@ const SectionOneTime = props => {
           {values.bookingDates?.map(date => {
             const formattedDate = moment(date).format('MM/DD');
 
-            return <DateTimeSelect key={formattedDate} date={formattedDate} values={values} />;
+            const disabled = booking
+              ? moment()
+                  .add(modifyBufferDays, 'days')
+                  .isSameOrAfter(date, 'day')
+              : false;
+
+            return (
+              <DateTimeSelect
+                key={formattedDate}
+                date={formattedDate}
+                values={values}
+                disabled={disabled}
+              />
+            );
           })}
         </div>
       </div>

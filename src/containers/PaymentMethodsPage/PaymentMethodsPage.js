@@ -24,17 +24,7 @@ import { CAREGIVER } from '../../util/constants';
 import css from './PaymentMethodsPage.module.css';
 
 const PaymentMethodsPageComponent = props => {
-  const {
-    currentUser,
-    intl,
-    scrollingDisabled,
-    currentUserListing,
-    defaultPaymentFetched,
-    defaultPaymentMethods,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
-    stripeCustomerFetched,
-  } = props;
+  const { currentUser, intl, scrollingDisabled, currentUserListing, stripeCustomerFetched } = props;
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
 
@@ -65,10 +55,6 @@ const PaymentMethodsPageComponent = props => {
               <FormattedMessage id="PaymentMethodsPage.heading" />
             </h1>
             <PaymentMethods
-              defaultPaymentFetched={defaultPaymentFetched}
-              defaultPaymentMethods={defaultPaymentMethods}
-              fetchDefaultPaymentError={fetchDefaultPaymentError}
-              fetchDefaultPaymentInProgress={fetchDefaultPaymentInProgress}
               stripeCustomerFetched={stripeCustomerFetched}
               className={css.paymentMethods}
             />
@@ -86,21 +72,11 @@ const mapStateToProps = state => {
   const { currentUser, currentUserListing } = state.user;
 
   const { stripeCustomerFetched } = state.PaymentMethodsPage;
-  const {
-    defaultPaymentFetched,
-    defaultPaymentMethods,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
-  } = state.paymentMethods;
 
   return {
     currentUser,
     scrollingDisabled: isScrollingDisabled(state),
     currentUserListing,
-    defaultPaymentFetched,
-    defaultPaymentMethods,
-    fetchDefaultPaymentError,
-    fetchDefaultPaymentInProgress,
     stripeCustomerFetched,
   };
 };

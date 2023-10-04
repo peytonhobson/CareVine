@@ -78,6 +78,7 @@ const ModifyBookingScheduleForm = props => (
               onDeleteEndDate={onDeleteEndDate}
               form={form}
               unavailableDates={unavailableDays}
+              booking={booking}
             />
           ) : (
             <SectionOneTime
