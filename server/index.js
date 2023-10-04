@@ -333,6 +333,8 @@ const clients = {};
 const sendEvent = async (userId, type) => {
   const client = clients[userId];
 
+  console.log('sendEvent', userId, type, client);
+
   if (client && client.readyState === WebSocket.OPEN) {
     try {
       client.send(JSON.stringify({ type }));
@@ -361,6 +363,7 @@ const handleDisconnect = async userId => {
 
 // A new client connection request received
 wsServer.on('connection', function(connection) {
+  console.log('New connection');
   connection.on('message', message => handleMessage(message, connection));
 });
 
@@ -392,6 +395,7 @@ wsRouter.use((req, res, next) => {
 });
 
 wsRouter.post('/message-created', (req, res) => {
+  console.log('message-created');
   const { userId, serverId } = req.body;
 
   if (serverId === process.env.WEBSOCKET_SERVER_ID) {
@@ -400,6 +404,7 @@ wsRouter.post('/message-created', (req, res) => {
 });
 
 wsRouter.post('/user-updated', (req, res) => {
+  console.log('user-updated');
   const { userId, serverId } = req.body;
 
   if (serverId === process.env.WEBSOCKET_SERVER_ID) {
