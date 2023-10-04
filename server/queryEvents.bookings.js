@@ -432,9 +432,11 @@ const endRecurring = async transaction => {
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/delivered-cancel',
+      params: {},
     });
   } catch (e) {
     log.error(e?.data?.errors, 'end-recurring-failed', {});
+    console.log(e?.data?.errors?.[0].source);
   }
 };
 
