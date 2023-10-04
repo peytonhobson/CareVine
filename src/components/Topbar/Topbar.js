@@ -178,7 +178,7 @@ class TopbarComponent extends Component {
     );
 
     const classes = classNames(rootClassName || css.root, className);
-    const isMobileSafari = isMobileSafari();
+    const isMobileSaf = isMobileSafari();
 
     return (
       <div className={classes}>
@@ -263,7 +263,7 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-        {isAuthenticated && !isMobileSafari ? <SocketClient currentPage={currentPage} /> : null}
+        {isAuthenticated && !isMobileSaf ? <SocketClient currentPage={currentPage} /> : null}
         <GenericError
           show={showGenericError}
           errorText={<FormattedMessage id="Topbar.genericError" />}
