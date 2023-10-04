@@ -41,17 +41,17 @@ const SectionOneTime = props => {
 
   const legend = (
     <>
-      <p className="text-xs my-1">
+      <p className="text-xs my-1 text-left mt-4 md:mt-0">
         <span className={classNames(css.day, css.blocked)}>23</span> Dates in gray are not available
       </p>
-      <p className="text-xs my-1">
+      <p className="text-xs my-1 text-left">
         <span className={classNames(css.day)}>23</span> Dates in black are available
       </p>
-      <p className="text-xs my-1">
+      <p className="text-xs my-1 text-left">
         <span className={classNames(css.day, css.highlighted)}>23</span> Dates in blue are selected
       </p>
       {booking ? (
-        <p className="text-xs my-1">
+        <p className="text-xs my-1 text-left">
           <span className={classNames(css.day, css.highlighted, css.past)}>23</span> Dates in green
           are past booking dates
         </p>
