@@ -30,17 +30,14 @@ const SocketClient = props => {
   const handleMessage = message => {
     const dataFromClient = JSON.parse(message.data);
     if (dataFromClient.type === 'user/updated') {
-      console.log('user updated');
       onFetchCurrentUser();
     }
 
     if (dataFromClient.type === 'message/created') {
-      console.log('message created');
       onFetchUnreadMessages();
     }
 
     if (dataFromClient.type === 'message/sent' && currentPage === 'InboxPage') {
-      console.log('message sent');
       onFetchConversations();
     }
   };
@@ -57,11 +54,9 @@ const SocketClient = props => {
   const { sendMessage, readyState } = useWebSocket(WS_URL, {
     share: true,
     filter: () => false,
-    retryOnError: true,
     shouldReconnect: () => true,
     onMessage: handleMessage,
     onOpen: handleOpen,
-    onError: e => console.log(e),
   });
 
   useEffect(() => {
