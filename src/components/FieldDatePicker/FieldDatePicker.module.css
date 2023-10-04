@@ -180,12 +180,11 @@
     & .highlighted {
       background-color: var(--marketplaceColor);
       color: var(--matterColorLight);
-    }
 
-    & .unavailable {
-      text-decoration: line-through;
-      color: var(--failColor) !important;
-      cursor: not-allowed;
+      &.past {
+        cursor: not-allowed;
+        background-color: var(--successColor);
+      }
     }
   }
 

@@ -39,12 +39,33 @@ const SectionOneTime = props => {
     form.change('dateTimes', newDateTimes);
   };
 
+  const legend = (
+    <>
+      <p className="text-xs my-1">
+        <span className={classNames(css.day, css.blocked)}>23</span> Dates in gray are not available
+      </p>
+      <p className="text-xs my-1">
+        <span className={classNames(css.day)}>23</span> Dates in black are available
+      </p>
+      <p className="text-xs my-1">
+        <span className={classNames(css.day, css.highlighted)}>23</span> Dates in blue are selected
+      </p>
+      {booking ? (
+        <p className="text-xs my-1">
+          <span className={classNames(css.day, css.highlighted, css.past)}>23</span> Dates in green
+          are past booking dates
+        </p>
+      ) : null}
+    </>
+  );
+
   const classes = classNames(css.datesTimesContainer, className);
 
   return (
     <div className={classes}>
       <div>
         <h2 className={css.pickYourTimes}>Pick your Dates</h2>
+        {legend}
         <FieldDatePicker
           className={css.datePicker}
           bookedDates={filteredBookedDates}
@@ -53,6 +74,7 @@ const SectionOneTime = props => {
           bookedDays={bookedDays}
           onChange={handleBookingDatesChange}
           bufferDays={booking ? 2 : 0}
+          isModify={booking}
         >
           <p className={css.bookingTimeText}>
             Caregivers can only be booked within a two-week period

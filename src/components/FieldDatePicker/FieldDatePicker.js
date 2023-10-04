@@ -60,6 +60,7 @@ const formatDay = ({
   currentBookedDays,
   highlightedClassName,
   bufferDays,
+  isModify,
 }) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
@@ -70,12 +71,15 @@ const formatDay = ({
     bufferDays,
   });
   const isUnavailable = checkIsBlockedDay({ bookedDays, date, bookedDates });
+  const isPast = moment()
+    .add(bufferDays, 'days')
+    .isSameOrAfter(date, 'day');
 
-  if (isDisabled || isUnavailable) {
+  if (isHighlighted && isPast) {
     return (
-      <span className={classNames(css.day, css.blocked, isUnavailable && css.unavailable)}>
-        {day}
-      </span>
+      <div className={classNames(css.day, css.past, highlightedClassName ?? css.highlighted)}>
+        <span>{day}</span>
+      </div>
     );
   } else if (isHighlighted) {
     return (
@@ -86,6 +90,8 @@ const formatDay = ({
         <span>{day}</span>
       </div>
     );
+  } else if (isDisabled || isUnavailable) {
+    return <span className={classNames(css.day, css.blocked)}>{day}</span>;
   } else {
     return (
       <span className={css.day} onClick={() => onClick(date)}>
@@ -106,6 +112,7 @@ export const FieldDatePickerComponent = props => {
     currentBookedDays,
     highlightedClassName,
     bufferDays,
+    isModify,
   } = props;
 
   const handleSelectDay = date => {
@@ -155,6 +162,7 @@ export const FieldDatePickerComponent = props => {
             currentBookedDays,
             highlightedClassName,
             bufferDays,
+            isModify,
           })
         }
         value={initialDate}
