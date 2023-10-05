@@ -54,7 +54,6 @@ const SocketClient = props => {
   const { sendMessage, readyState } = useWebSocket(WS_URL, {
     share: true,
     filter: () => false,
-    retryOnError: true,
     shouldReconnect: () => true,
     onMessage: handleMessage,
     onOpen: handleOpen,

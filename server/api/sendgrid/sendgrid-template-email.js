@@ -83,6 +83,6 @@ module.exports = (req, res) => {
     })
     .catch(e => {
       handleError(res, e);
-      log.error(e, 'sendgrid-template-email-failed', e);
+      log.error(e, 'sendgrid-template-email-failed', { receiverId });
     });
 };

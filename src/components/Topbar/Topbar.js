@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { array, bool, func, number, shape, string } from 'prop-types';
 import { compose } from 'redux';
-import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
+import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import pickBy from 'lodash/pickBy';
 import classNames from 'classnames';
 import config from '../../config';
@@ -9,7 +8,6 @@ import routeConfiguration from '../../routeConfiguration';
 import { withViewport } from '../../util/contextHelpers';
 import { parse, stringify } from '../../util/urlHelpers';
 import { createResourceLocatorString, pathByRouteName } from '../../util/routes';
-import { propTypes } from '../../util/types';
 import {
   Button,
   LimitedAccessBanner,
@@ -20,16 +18,14 @@ import {
   TopbarDesktop,
   TopbarMobileMenu,
   GenericError,
-  SessionTimeout,
   IconEmail,
   IconBell,
 } from '../../components';
 import { ensureCurrentUser } from '../../util/data';
 
-import MenuIcon from './MenuIcon';
-import SearchIcon from './SearchIcon';
 import css from './Topbar.module.css';
 import SocketClient from './SocketClient';
+import { isMobileSafari } from '../../util/userAgent';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 
@@ -182,6 +178,7 @@ class TopbarComponent extends Component {
     );
 
     const classes = classNames(rootClassName || css.root, className);
+    const isMobileSaf = isMobileSafari();
 
     return (
       <div className={classes}>
@@ -266,7 +263,7 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
-        {isAuthenticated && <SocketClient currentPage={currentPage} />}
+        {isAuthenticated && !isMobileSaf ? <SocketClient currentPage={currentPage} /> : null}
         <GenericError
           show={showGenericError}
           errorText={<FormattedMessage id="Topbar.genericError" />}
