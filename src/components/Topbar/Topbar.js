@@ -263,6 +263,7 @@ class TopbarComponent extends Component {
           modalValue={modalValue}
           onChangeModalValue={onChangeModalValue}
         />
+        {/* TODO: Figure out how to get websockets to work on mobile safari */}
         {isAuthenticated && !isMobileSaf ? <SocketClient currentPage={currentPage} /> : null}
         <GenericError
           show={showGenericError}
