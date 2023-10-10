@@ -22,7 +22,7 @@ import { calculateTimeBetween } from '../../util/dates';
 
 import css from './BookingCards.module.css';
 import ActionsModal from './Modals/ActionsModal';
-import CancelWeekEndModal from './Modals/CancelWeekEndModal';
+import CancelWeekEndModal from './Modals/ChangeEndDateModal';
 import ModifyScheduleModal from './Modals/ModifyScheduleModal';
 import ChangePaymentMethodModal from './Modals/ChangePaymentMethodModal';
 
@@ -35,7 +35,7 @@ const MODAL_TYPES = {
   EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
   MODIFY_SCHEDULE: 'modifySchedule',
-  CANCEL_WEEK_END: 'cancelWeekEnd',
+  CHANGE_END_DATE: 'changeEndDate',
   CHANGE_PAYMENT_METHOD: 'changePaymentMethod',
 };
 
@@ -242,11 +242,11 @@ const BookingCardComponent = props => {
         />
       );
       break;
-    case MODAL_TYPES.CANCEL_WEEK_END:
+    case MODAL_TYPES.CHANGE_END_DATE:
       openModal = (
         <CancelWeekEndModal
-          isOpen={state.openModalType === MODAL_TYPES.CANCEL_WEEK_END}
-          onClose={() => handleModalClose(MODAL_TYPES.CANCEL_WEEK_END)}
+          isOpen={state.openModalType === MODAL_TYPES.CHANGE_END_DATE}
+          onClose={() => handleModalClose(MODAL_TYPES.CHANGE_END_DATE)}
           otherUserDisplayName={otherUserDisplayName}
           booking={booking}
         />

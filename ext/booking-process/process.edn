@@ -82,6 +82,13 @@
    :from :state/updating-booking-end,
    :to :state/active}
 
+   {:name :transition/active-update-booking-end,
+   :actions
+   [{:name :action/update-booking :config {:type :time}}],
+   :actor :actor.role/customer,
+   :from :state/active,
+   :to :state/updating-booking-end}
+
    {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},
    :from :state/active,

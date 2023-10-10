@@ -7,12 +7,12 @@ import {
   filterAvailableBookingEndDates,
   filterAvailableBookingStartDates,
 } from '../../../util/dates';
-import { WEEKDAYS, WEEKDAY_MAP } from '../../../util/constants';
+import { WEEKDAYS } from '../../../util/constants';
 import { useCheckMobileScreen } from '../../../util/hooks';
 import moment from 'moment';
+import { checkIsBlockedDay, mapWeekdays } from '../../../util/bookings';
 
 import css from '../EditBookingForm.module.css';
-import { checkIsBlockedDay, mapWeekdays } from '../../../util/bookings';
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:

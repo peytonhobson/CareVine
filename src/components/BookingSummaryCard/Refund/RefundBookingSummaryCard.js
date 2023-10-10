@@ -14,12 +14,12 @@ const calculateTotalHours = bookingTimes =>
 
 const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
 
-const mapRefundItems = chargedLineItems => {
+const mapRefundItems = (chargedLineItems, cancelDate) => {
   return chargedLineItems.reduce((acc, curr) => {
     const refundedLineItems = curr.lineItems
       .filter(l => {
         const startTime = addTimeToStartOfDay(l.date, l.startTime);
-        return moment().isBefore(startTime);
+        return moment(cancelDate).isBefore(startTime);
       })
       .map(lineItem => {
         const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
@@ -45,11 +45,16 @@ const calculateTotalCost = (subTotal, bookingFee, refundAmount = 0) =>
   parseFloat(Number(subTotal) + Number(bookingFee) - Number(refundAmount)).toFixed(2);
 
 const RefundBookingSummaryCard = props => {
-  const { currentAuthor, className, hideAvatar, subHeading, hideFees, booking } = props;
+  const { currentAuthor, className, hideAvatar, subHeading, hideFees, booking, cancelDate } = props;
 
-  const { chargedLineItems = [], bookingRate } = booking.attributes.metadata;
+  const { chargedLineItems = [] } = booking.attributes.metadata;
 
-  const refundItems = useMemo(() => mapRefundItems(chargedLineItems), [chargedLineItems]);
+  const dateOfCancellation = moment(cancelDate).endOf('day') ?? moment();
+
+  const refundItems = useMemo(() => mapRefundItems(chargedLineItems, dateOfCancellation), [
+    chargedLineItems,
+    dateOfCancellation,
+  ]);
 
   const totalHours = calculateTotalHours(refundItems);
   const subTotal = useMemo(() => refundItems.reduce((acc, curr) => Number(curr.amount) + acc, 0), [

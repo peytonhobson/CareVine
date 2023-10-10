@@ -253,7 +253,8 @@ module.exports = queryEvents = () => {
 
       if (
         lastTransition === 'transition/update-booking-end' ||
-        lastTransition === 'transition/update-booking-end-repeat'
+        lastTransition === 'transition/update-booking-end-repeat' ||
+        lastTransition === 'transition/active-update-booking-end-'
       ) {
         updateBookingEnd(transaction);
       }

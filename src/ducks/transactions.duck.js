@@ -2,9 +2,19 @@ import pick from 'lodash/pick';
 import { storableError } from '../util/errors';
 import * as log from '../util/log';
 import { types as sdkTypes } from '../util/sdkLoader';
-import { TRANSITION_ACCEPT_BOOKING, TRANSITION_DECLINE_BOOKING } from '../util/transaction';
-import { updateListingMetadata, transitionPrivileged } from '../util/api';
-import { fetchCurrentUser } from './user.duck';
+import {
+  TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_DECLINE_BOOKING,
+  TRANSITION_START,
+} from '../util/transaction';
+import {
+  updateListingMetadata,
+  transitionPrivileged,
+  stripeCreateRefund,
+  updateTransactionMetadata,
+} from '../util/api';
+import { moment } from 'moment';
+import { addTimeToStartOfDay } from '../util/dates';
 import { denormalisedResponseEntities } from '../util/data';
 const { UUID } = sdkTypes;
 
@@ -35,6 +45,10 @@ export const DECLINE_BOOKING_REQUEST = 'app/BookingsPage/DECLINE_BOOKING_REQUEST
 export const DECLINE_BOOKING_SUCCESS = 'app/BookingsPage/DECLINE_BOOKING_SUCCESS';
 export const DECLINE_BOOKING_ERROR = 'app/BookingsPage/DECLINE_BOOKING_ERROR';
 
+export const UPDATE_BOOKING_END_DATE_REQUEST = 'app/transactions/UPDATE_BOOKING_END_DATE_REQUEST';
+export const UPDATE_BOOKING_END_DATE_SUCCESS = 'app/transactions/UPDATE_BOOKING_END_DATE_SUCCESS';
+export const UPDATE_BOOKING_END_DATE_ERROR = 'app/transactions/UPDATE_BOOKING_END_DATE_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -54,6 +68,9 @@ const initialState = {
   declineBookingError: null,
   declineBookingInProgress: false,
   declineBookingSuccess: false,
+  updateBookingEndDateInProgress: false,
+  updateBookingEndDateError: null,
+  updateBookingEndDateSuccess: null,
 };
 
 export default function transactionsReducer(state = initialState, action = {}) {
@@ -147,6 +164,26 @@ export default function transactionsReducer(state = initialState, action = {}) {
     case DECLINE_BOOKING_ERROR:
       return { ...state, declineBookingInProgress: false, declineBookingError: payload };
 
+    case UPDATE_BOOKING_END_DATE_REQUEST:
+      return {
+        ...state,
+        updateBookingEndDateInProgress: true,
+        updateBookingEndDateError: null,
+        updateBookingEndDateSuccess: false,
+      };
+    case UPDATE_BOOKING_END_DATE_SUCCESS:
+      return {
+        ...state,
+        updateBookingEndDateInProgress: false,
+        updateBookingEndDateSuccess: true,
+      };
+    case UPDATE_BOOKING_END_DATE_ERROR:
+      return {
+        ...state,
+        updateBookingEndDateInProgress: false,
+        updateBookingEndDateError: payload,
+      };
+
     default:
       return state;
   }
@@ -215,6 +252,14 @@ export const declineBookingRequest = () => ({ type: DECLINE_BOOKING_REQUEST });
 export const declineBookingSuccess = () => ({ type: DECLINE_BOOKING_SUCCESS });
 export const declineBookingError = e => ({
   type: DECLINE_BOOKING_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const updateBookingEndDateRequest = () => ({ type: UPDATE_BOOKING_END_DATE_REQUEST });
+export const updateBookingEndDateSuccess = () => ({ type: UPDATE_BOOKING_END_DATE_SUCCESS });
+export const updateBookingEndDateError = e => ({
+  type: UPDATE_BOOKING_END_DATE_ERROR,
   error: true,
   payload: e,
 });
@@ -417,5 +462,158 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   } catch (e) {
     log.error(e, 'decline-booking-failed', { txId });
     dispatch(declineBookingError(storableError(e)));
+  }
+};
+
+// TODO: Make it so this maps chargedLineItems so any not yet completed and within 48 hours get added to booking lineItems. This way caregiver can get paid.
+const mapNewLineItems = (lineItems, endDate) => {
+  return lineItems.filter(item =>
+    moment(endDate)
+      .endOf('day')
+      .isSameOrAfter(item.date, 'day')
+  );
+};
+
+const mapRefundItems = (chargedLineItems, cancelDate) => {
+  return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
+    const refundedLineItems = lineItems
+      .filter(l => {
+        const startTime = addTimeToStartOfDay(l.date, l.startTime);
+        return moment().isBefore(startTime);
+      })
+      .map(lineItem => {
+        const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+        const isWithin48Hours = moment()
+          .add(2, 'days')
+          .isAfter(startTime);
+
+        const base = isWithin48Hours
+          ? parseFloat(lineItem.amount / 2).toFixed(2)
+          : parseFloat(lineItem.amount).toFixed(2);
+        const bookingFee = parseFloat(base * 0.05).toFixed(2);
+        return {
+          isFifty,
+          base,
+          bookingFee,
+          amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+          date: moment(lineItem.date).format('MM/DD'),
+        };
+      });
+
+    return {
+      lineItems: refundedLineItems,
+      paymentIntentId,
+    };
+  });
+};
+
+export const updateBookingEndDate = (transaction, endDate) => async (dispatch, getState, sdk) => {
+  dispatch(updateBookingEndDateRequest());
+
+  const txId = transaction.id.uuid;
+
+  const { chargedLineItems = [], lineItems = [] } = transaction.attributes.metadata;
+
+  const refundItems = mapRefundItems(chargedLineItems, moment(endDate).endOf('day'));
+  const allRefundItems = refundItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
+  const totalRefundAmount = parseInt(
+    allRefundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+  );
+  const totalApplicationFeeRefund = parseInt((parseFloat(totalRefundAmount) * 0.05).toFixed(2));
+
+  // TODO: Line items for caregiver payout could also include 50% ones from charged line items
+  // How can we include those in the lineItems and recognize that its currently in active state?
+  const newLineItems = mapNewLineItems(lineItems, endDate);
+
+  // TODO: Wrap in try/catch and handle error
+  let metadataToUpdate = {};
+
+  try {
+    if (totalRefundAmount > 0) {
+      await Promise.all(
+        refundItems.map(async ({ lineItems, paymentIntentId }) => {
+          const refundAmount = parseInt(
+            lineItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
+          );
+          const applicationFeeRefund = parseInt(refundAmount * 0.05);
+
+          await stripeCreateRefund({
+            paymentIntentId,
+            amount: refundAmount,
+            applicationFeeRefund,
+          });
+        })
+      );
+
+      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+
+      // Update line items so caregiver is paid out correct amount after refund
+      metadataToUpdate = {
+        lineItems: newLineItems,
+        refundAmount: parseFloat(totalRefundAmount / 100).toFixed(2),
+        payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
+        refundItems: allRefundItems,
+        bookingFeeRefundAmount: parseFloat(totalApplicationFeeRefund / 100).toFixed(2),
+        totalRefund: parseFloat(totalRefundAmount / 100 + totalApplicationFeeRefund / 100).toFixed(
+          2
+        ),
+      };
+    }
+
+    // TODO: Needs to be more than last transition. End Date must also be occurring in current week.
+    if (transaction.attributes.lastTransition === TRANSITION_START) {
+      const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
+      const bookingEnd = addTimeToStartOfDay(endDate, endingLineItem?.endTime);
+      const bookingStart = moment(bookingEnd).subtract(5, 'minutes');
+
+      await sdk.transactions.transition({
+        id: txId,
+        transition: TRANSITION_UPDATE_END_DATE,
+        params: {
+          bookingEnd,
+          bookingStart,
+          metadata: {
+            ...metadataToUpdate,
+            endDate,
+            chargedLineItems: [],
+          },
+        },
+      });
+    } else {
+      await updateTransactionMetadata({
+        txId,
+        metadata: {
+          ...metadataToUpdate,
+          endDate,
+        },
+      });
+    }
+
+    const { listing } = transaction;
+    const listingId = listing.id.uuid;
+    const { bookedDays = [] } = listing.attributes.metadata;
+
+    const newBookedDays = bookedDays.map(bd => {
+      if (bd.txId === txId) {
+        return {
+          ...bd,
+          endDate,
+        };
+      }
+      return bd;
+    });
+
+    await updateListingMetadata({
+      listingId,
+      metadata: {
+        bookedDays: newBookedDays,
+      },
+    });
+
+    dispatch(updateBookingEndDateSuccess());
+    return;
+  } catch (e) {
+    log.error(e, 'update-booking-end-date-failed', { txId });
+    dispatch(updateBookingEndDateError(storableError(e)));
   }
 };
