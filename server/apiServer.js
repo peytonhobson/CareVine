@@ -81,6 +81,10 @@ wsServer.on('connection', function(connection) {
   connection.on('message', message => handleMessage(message, connection));
 });
 
+wsServer.on('error', function(err) {
+  log.error(err, 'websocket-server-error');
+});
+
 const wsRouter = express.Router();
 
 wsRouter.use(

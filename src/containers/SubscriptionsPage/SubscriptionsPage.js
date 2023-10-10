@@ -114,6 +114,7 @@ const SubscriptionsPageComponent = props => {
     upcomingInvoice,
     upcomingInvoiceError,
     onFetchUpcomingInvoice,
+    fetchDefaultPaymentInProgress,
   } = props;
 
   const [isEditCardModalOpen, setIsEditCardModalOpen] = useState(false);
@@ -292,7 +293,7 @@ const SubscriptionsPageComponent = props => {
          */
         if (isReactivateSubscriptionPaymentModalOpen === BASIC) {
           try {
-            const response = await onCreateFutureSubscription(
+            await onCreateFutureSubscription(
               stripeCustomerId,
               // Start subscription a minute after the current period ends so subscription canceled in webhook happens prior to this
               // Stripe does unix timestamps in seconds, so we add 60 seconds to the current period end
@@ -327,10 +328,7 @@ const SubscriptionsPageComponent = props => {
         const params = { cancel_at_period_end: false };
 
         try {
-          const response = await onUpdateSubscription(
-            backgroundCheckSubscription.subscriptionId,
-            params
-          );
+          await onUpdateSubscription(backgroundCheckSubscription.subscriptionId, params);
 
           createFetchUserInterval();
           setIsReactivateSubscriptionPaymentModalOpen(false);
@@ -343,7 +341,7 @@ const SubscriptionsPageComponent = props => {
       const params = { default_payment_method: cardId, cancel_at_period_end: false };
 
       try {
-        const response = await onCreateSubscription(
+        await onCreateSubscription(
           stripeCustomerId,
           priceId,
           ensuredCurrentUser.id.uuid,
@@ -482,7 +480,9 @@ const SubscriptionsPageComponent = props => {
     </div>
   ) : null;
 
-  const cardContent = !!card ? (
+  console.log(stripeCustomer);
+
+  const cardContent = card ? (
     <SavedCardDetails
       card={ensurePaymentMethodCard(card)}
       onEditCard={() => setIsEditCardModalOpen(true)}
@@ -505,12 +505,12 @@ const SubscriptionsPageComponent = props => {
       inProgress={isSubmitting}
       onSubmit={handleCardSubmit}
     />
-  ) : (
+  ) : fetchDefaultPaymentInProgress ? (
     <div className={css.spinnerContainer}>
       <IconSpinner />
       <span className={css.loadingText}>Loading payment info...</span>
     </div>
-  );
+  ) : null;
 
   if (ensuredCurrentUser?.attributes?.profile?.metadata?.userType === EMPLOYER) {
     return <NamedRedirect name="LandingPage" />;
@@ -545,11 +545,15 @@ const SubscriptionsPageComponent = props => {
                 </p>
               ) : null}
               {futureSubscriptionsContent}
-              <h2 className={css.subheading}>
-                <FormattedMessage id="SubscriptionsPage.paymentInformation" />
-              </h2>
+              {stripeCustomer?.id ? (
+                <>
+                  <h2 className={css.subheading}>
+                    <FormattedMessage id="SubscriptionsPage.paymentInformation" />
+                  </h2>
 
-              {cardContent}
+                  {cardContent}
+                </>
+              ) : null}
             </div>
           </LayoutWrapperMain>
           <LayoutWrapperFooter>

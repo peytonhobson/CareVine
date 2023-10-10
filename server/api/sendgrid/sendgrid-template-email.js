@@ -22,6 +22,8 @@ const SENDGRID_TEMPLATE_IDS = {
   'dispute-in-review': 'd-99062df7ec72430fa6f23733efb3d749',
   'customer-disputed': 'd-576c903ac46f42e589af1d8ac5650248',
   'new-message': 'd-6c2f53d4a0f84359989a86ac47371930',
+  'caregiver-welcome': 'd-b10552ce85174ad0892c59f6e0313f74',
+  'employer-welcome': 'd-63f33ee652d046f59423825a6c145eb0',
 };
 
 module.exports = (req, res) => {
@@ -81,6 +83,6 @@ module.exports = (req, res) => {
     })
     .catch(e => {
       handleError(res, e);
-      log.error(e, 'sendgrid-template-email-failed', e);
+      log.error(e, 'sendgrid-template-email-failed', { receiverId });
     });
 };

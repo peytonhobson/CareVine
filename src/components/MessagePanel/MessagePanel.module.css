@@ -32,9 +32,11 @@
   flex-direction: column;
   overflow-y: hidden;
   max-height: calc(100vh - var(--topbarHeight) - 12rem);
+  max-height: calc(100svh - var(--topbarHeight) - 12rem);
 
   @media screen(md) {
     max-height: calc(100vh - var(--topbarHeightDesktop) - 12rem);
+    max-height: calc(100svh - var(--topbarHeightDesktop) - 12rem);
   }
 }
 

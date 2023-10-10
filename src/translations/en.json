@@ -1309,7 +1309,7 @@
   "StripeConnectAccountStatusBox.getVerifiedButton": "Get verified",
   "StripeConnectAccountStatusBox.verificationFailedText": "In order for you to receive payments, you need to add your banking details and verify your account.",
   "StripeConnectAccountStatusBox.verificationFailedTitle": "Something went wrong - please try again",
-  "StripeConnectAccountStatusBox.verificationNeededText": "In order for you to receive payments you need to add few more details to your Stripe account to verify your account.",
+  "StripeConnectAccountStatusBox.verificationNeededText": "In order for you to receive payments, you need to add few more details to your Stripe account.",
   "StripeConnectAccountStatusBox.verificationNeededTitle": "Stripe needs more information",
   "StripeConnectAccountStatusBox.verificationSuccessTitle": "Your Stripe account is up to date!",
   "StripePaymentAddress.addressLine1Label": "Street address",

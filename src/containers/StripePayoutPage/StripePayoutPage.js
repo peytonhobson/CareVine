@@ -289,12 +289,11 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onPayoutDetailsFormChange: () => dispatch(stripeAccountClearError()),
-  onPayoutDetailsFormSubmit: (values, isUpdateCall) =>
-    dispatch(savePayoutDetails(values, isUpdateCall)),
-  onGetStripeConnectAccountLink: params => dispatch(getStripeConnectAccountLink(params)),
-});
+const mapDispatchToProps = {
+  onPayoutDetailsFormChange: stripeAccountClearError,
+  onPayoutDetailsFormSubmit: savePayoutDetails,
+  onGetStripeConnectAccountLink: getStripeConnectAccountLink,
+};
 
 const StripePayoutPage = compose(
   connect(mapStateToProps, mapDispatchToProps),

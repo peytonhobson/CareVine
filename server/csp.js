@@ -120,7 +120,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('*.crisp.chat')
     .concat('wss://*.crisp.chat')
     .concat(`${process.env.REACT_APP_CANONICAL_ROOT_URL.replace('https', 'wss')}/ws`)
-    .concat('*.googlesyndication.com');
+    .concat('*.googlesyndication.com')
+    .concat('ws://localhost:3000/ws');
 
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc

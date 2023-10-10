@@ -334,7 +334,11 @@ const sendEvent = async (userId, type) => {
   const client = clients[userId];
 
   if (client && client.readyState === WebSocket.OPEN) {
-    client.send(JSON.stringify({ type }));
+    try {
+      client.send(JSON.stringify({ type }));
+    } catch (e) {
+      log.error(e, 'websocket-send-failed');
+    }
   }
 };
 
@@ -358,6 +362,10 @@ const handleDisconnect = async userId => {
 // A new client connection request received
 wsServer.on('connection', function(connection) {
   connection.on('message', message => handleMessage(message, connection));
+});
+
+wsServer.on('error', function(err) {
+  log.error(err, 'websocket-server-error');
 });
 
 const wsRouter = express.Router();
