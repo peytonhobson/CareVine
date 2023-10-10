@@ -253,8 +253,7 @@ module.exports = queryEvents = () => {
 
       if (
         lastTransition === 'transition/update-booking-end' ||
-        lastTransition === 'transition/update-booking-end-repeat' ||
-        lastTransition === 'transition/active-update-booking-end-'
+        lastTransition === 'transition/update-booking-end-repeat'
       ) {
         updateBookingEnd(transaction);
       }
@@ -263,30 +262,38 @@ module.exports = queryEvents = () => {
         createBookingPayment(transaction);
       }
 
-      if (
-        lastTransition === 'transition/cancel-charged-booking-provider' ||
-        lastTransition === 'transition/cancel-charged-booking-customer'
-      ) {
+      if (lastTransition === 'transition/charged-cancel') {
         createCaregiverPayout(transaction);
       }
 
-      if (lastTransition === 'transition/complete' || lastTransition === 'active-cancel') {
+      // If user cancels while booking is active, make reviewable and create caregiver payout.
+      // This assumes lineItems have already been adjusted during cancellation.
+      if (lastTransition === 'active-cancel') {
         makeReviewable(transaction);
         createCaregiverPayout(transaction);
       }
 
+      const bookingType = metadata.type;
       const hasNextBooking =
-        metadata.type === 'recurring' &&
+        bookingType === 'recurring' &&
         !metadata.cancelAtPeriodEnd &&
         (!metadata.endDate || moment(metadata.endDate).isAfter());
-      const bookingType = metadata.type;
 
-      if (lastTransition === 'transition/complete' && bookingType === 'recurring') {
-        if (hasNextBooking) {
-          updateNextWeek(transaction);
+      if (lastTransition === 'transition/complete') {
+        makeReviewable(transaction);
+
+        if (bookingType === 'recurring' && !hasNextBooking) {
+          // Must create any refunds and adjust line items before creating payout
+          endRecurring(transaction).then(() => {
+            createCaregiverPayout(transaction);
+          });
+        } else if (hasNextBooking) {
+          // Must create caregiver payout before updating lineItems
+          createCaregiverPayout(transaction).then(() => {
+            updateNextWeek(transaction);
+          });
         } else {
-          // TODO: If customer cancels at period end, but caregiver is being partially paid, update pending payouts
-          endRecurring(transaction);
+          createCaregiverPayout(transaction);
         }
       }
     }

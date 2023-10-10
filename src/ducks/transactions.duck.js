@@ -465,107 +465,21 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   }
 };
 
-// TODO: Make it so this maps chargedLineItems so any not yet completed and within 48 hours get added to booking lineItems. This way caregiver can get paid.
-const mapNewLineItems = (lineItems, endDate) => {
-  return lineItems.filter(item =>
-    moment(endDate)
-      .endOf('day')
-      .isSameOrAfter(item.date, 'day')
-  );
-};
-
-const mapRefundItems = (chargedLineItems, cancelDate) => {
-  return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
-    const refundedLineItems = lineItems
-      .filter(l => {
-        const startTime = addTimeToStartOfDay(l.date, l.startTime);
-        return moment().isBefore(startTime);
-      })
-      .map(lineItem => {
-        const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-        const isWithin48Hours = moment()
-          .add(2, 'days')
-          .isAfter(startTime);
-
-        const base = isWithin48Hours
-          ? parseFloat(lineItem.amount / 2).toFixed(2)
-          : parseFloat(lineItem.amount).toFixed(2);
-        const bookingFee = parseFloat(base * 0.05).toFixed(2);
-        return {
-          isFifty,
-          base,
-          bookingFee,
-          amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
-          date: moment(lineItem.date).format('MM/DD'),
-        };
-      });
-
-    return {
-      lineItems: refundedLineItems,
-      paymentIntentId,
-    };
-  });
-};
-
 export const updateBookingEndDate = (transaction, endDate) => async (dispatch, getState, sdk) => {
   dispatch(updateBookingEndDateRequest());
 
   const txId = transaction.id.uuid;
 
-  const { chargedLineItems = [], lineItems = [] } = transaction.attributes.metadata;
+  const { lineItems = [] } = transaction.attributes.metadata;
 
-  const refundItems = mapRefundItems(chargedLineItems, moment(endDate).endOf('day'));
-  const allRefundItems = refundItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
-  const totalRefundAmount = parseInt(
-    allRefundItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
-  );
-  const totalApplicationFeeRefund = parseInt((parseFloat(totalRefundAmount) * 0.05).toFixed(2));
-
-  // TODO: Line items for caregiver payout could also include 50% ones from charged line items
-  // How can we include those in the lineItems and recognize that its currently in active state?
-  const newLineItems = mapNewLineItems(lineItems, endDate);
-
-  // TODO: Wrap in try/catch and handle error
-  let metadataToUpdate = {};
+  const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
 
   try {
-    if (totalRefundAmount > 0) {
-      await Promise.all(
-        refundItems.map(async ({ lineItems, paymentIntentId }) => {
-          const refundAmount = parseInt(
-            lineItems.reduce((acc, curr) => acc + parseFloat(curr.base), 0) * 100
-          );
-          const applicationFeeRefund = parseInt(refundAmount * 0.05);
-
-          await stripeCreateRefund({
-            paymentIntentId,
-            amount: refundAmount,
-            applicationFeeRefund,
-          });
-        })
-      );
-
-      const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
-
-      // Update line items so caregiver is paid out correct amount after refund
-      metadataToUpdate = {
-        lineItems: newLineItems,
-        refundAmount: parseFloat(totalRefundAmount / 100).toFixed(2),
-        payout: parseInt(payout) === 0 ? 0 : parseFloat(payout).toFixed(2),
-        refundItems: allRefundItems,
-        bookingFeeRefundAmount: parseFloat(totalApplicationFeeRefund / 100).toFixed(2),
-        totalRefund: parseFloat(totalRefundAmount / 100 + totalApplicationFeeRefund / 100).toFixed(
-          2
-        ),
-      };
-    }
-
-    // TODO: Needs to be more than last transition. End Date must also be occurring in current week.
-    if (transaction.attributes.lastTransition === TRANSITION_START) {
-      const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
+    if (transaction.attributes.lastTransition === TRANSITION_START && endingLineItem) {
       const bookingEnd = addTimeToStartOfDay(endDate, endingLineItem?.endTime);
       const bookingStart = moment(bookingEnd).subtract(5, 'minutes');
 
+      // Need to do loop transition to update booking start and end if active
       await sdk.transactions.transition({
         id: txId,
         transition: TRANSITION_UPDATE_END_DATE,
@@ -573,9 +487,7 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
           bookingEnd,
           bookingStart,
           metadata: {
-            ...metadataToUpdate,
             endDate,
-            chargedLineItems: [],
           },
         },
       });
@@ -583,7 +495,6 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
       await updateTransactionMetadata({
         txId,
         metadata: {
-          ...metadataToUpdate,
           endDate,
         },
       });
@@ -593,6 +504,7 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
     const listingId = listing.id.uuid;
     const { bookedDays = [] } = listing.attributes.metadata;
 
+    // Update Booked Days to match end date
     const newBookedDays = bookedDays.map(bd => {
       if (bd.txId === txId) {
         return {
