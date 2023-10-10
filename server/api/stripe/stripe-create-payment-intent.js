@@ -23,7 +23,7 @@ module.exports = (req, res) => {
   integrationSdk.users
     .show({ id: recipientId.uuid, include: ['stripeAccount'] })
     .then(res => {
-      const stripeAccountId = res?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
+      const stripeAccountId = apiResponse.data.data?.relationships?.stripeAccount?.data?.id?.uuid;
 
       const senderEmail = sender?.attributes?.email;
       const senderId = sender?.id?.uuid;
