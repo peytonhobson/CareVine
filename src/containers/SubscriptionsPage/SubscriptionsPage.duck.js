@@ -228,12 +228,9 @@ export const loadData = () => (dispatch, getState, sdk) => {
 
   return Promise.all([dispatch(stripeCustomer()), dispatch(fetchCurrentUser())]).then(() => {
     const currentUser = getState().user.currentUser;
-    const backgroundCheckSubscription =
-      currentUser?.attributes.profile.metadata?.backgroundCheckSubscription;
-    const stripeCustomer = currentUser.stripeCustomer;
+    const stripeCustomerId = currentUser.stripeCustomer?.attributes?.stripeCustomerId;
 
-    if (stripeCustomer) {
-      const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
+    if (stripeCustomerId) {
       return Promise.all([
         dispatch(fetchDefaultPayment(stripeCustomerId)),
         dispatch(retrieveUpcomingInvoice(stripeCustomerId)),
