@@ -7,12 +7,11 @@ module.exports = (req, res) => {
   const { userId } = req.body;
 
   integrationSdk.users
-    .show({ id: userId.uuid ? userId.uuid : userId, include: ['stripeAccount'] })
+    .show({ id: userId.uuid ?? userId })
     .then(apiResponse => {
-      const stripeAccountId =
-        apiResponse?.data?.data?.attributes?.profile?.metadata?.stripeAccountId;
+      const stripeConnected = apiResponse.data.data?.attributes?.stripeConnected;
 
-      if (!!stripeAccountId) {
+      if (stripeConnected) {
         res
           .set('Content-Type', 'application/transit+json')
           .send(

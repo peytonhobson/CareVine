@@ -102,16 +102,6 @@ const CreateStripeAccountFields = props => {
           showAsRequired={showAsRequired}
         />
       </div>
-
-      <StripeBankAccountTokenInputField
-        className={css.bankDetailsStripeField}
-        disabled={disabled}
-        name="bankAccountToken"
-        formName="StripeConnectAccountForm"
-        country="US"
-        currency={countryCurrency('US')}
-        validate={validators.required(' ')}
-      />
     </div>
   );
 };
@@ -136,25 +126,6 @@ const UpdateStripeAccountFields = props => {
       <h3 className={css.accountInformationTitle}>
         <FormattedMessage id="StripeConnectAccountForm.bankAccountLabel" />
       </h3>
-
-      {showCardUpdateInput && savedCountry ? (
-        <StripeBankAccountTokenInputField
-          className={css.bankDetailsStripeField}
-          disabled={disabled}
-          name="bankAccountToken"
-          formName="StripeConnectAccountForm"
-          country={savedCountry}
-          currency={countryCurrency(savedCountry)}
-          validate={validators.required(' ')}
-        />
-      ) : !submitInProgress ? (
-        <InlineTextButton
-          className={css.savedBankAccount}
-          onClick={() => setShowCardUpdateInput(true)}
-        >
-          •••••••••••••••••••••••• {stripeBankAccountLastDigits}
-        </InlineTextButton>
-      ) : null}
     </div>
   );
 };
@@ -251,19 +222,7 @@ const StripeConnectAccountFormComponent = props => {
             values={values}
             intl={intl}
           />
-        ) : (
-          <UpdateStripeAccountFields
-            disabled={disabled}
-            countryLabel={countryLabel}
-            savedCountry={savedCountry}
-            stripeBankAccountLastDigits={stripeBankAccountLastDigits}
-            showCardUpdateInput={showCardUpdateInput}
-            values={values}
-            submitInProgress={submitInProgress}
-            setShowCardUpdateInput={setShowCardUpdateInput}
-            intl={intl}
-          />
-        );
+        ) : null;
 
         const stripeConnectedAccountTermsLink = (
           <ExternalLink href="https://stripe.com/connect-account/legal" className={css.termsLink}>
