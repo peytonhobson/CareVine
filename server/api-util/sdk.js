@@ -92,7 +92,7 @@ exports.handleError = (res, error) => {
 };
 
 exports.handleStripeError = (res, error) => {
-  log.error(error, 'stripe-api-request-failed', error?.type);
+  log.error(error?.response?.data?.error, 'stripe-api-request-failed', error?.type);
 
   if (error.statusCode && error.raw && error.type) {
     const { statusCode, raw, type } = error;

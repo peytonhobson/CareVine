@@ -2,6 +2,7 @@ module.exports = queryEvents = () => {
   const { integrationSdk } = require('./api-util/sdk');
   const log = require('./log');
   const isDev = process.env.REACT_APP_ENV === 'development';
+  const moment = require('moment');
   const BACKGROUND_CHECK_APPROVED = 'approved';
   const BACKGROUND_CHECK_REJECTED = 'rejected';
   const isTest = process.env.NODE_ENV === 'production' && isDev;

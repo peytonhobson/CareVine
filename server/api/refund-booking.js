@@ -1,4 +1,4 @@
-const { apiBaseUrl, integrationSdk } = require('../api-util/sdk');
+const { apiBaseUrl, integrationSdk, handleStripeError } = require('../api-util/sdk');
 const { addTimeToStartOfDay } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
@@ -111,6 +111,8 @@ module.exports = async (req, res) => {
     );
     const totalApplicationFeeRefund = parseInt(Number(totalRefundAmount) * 0.05);
 
+    console.log('refunding');
+
     let metadataToUpdate;
     if (totalRefundAmount > 0) {
       await Promise.all(
@@ -154,9 +156,10 @@ module.exports = async (req, res) => {
       };
     }
 
-    return res.status(200).json({ data: { metadata: metadataToUpdate } });
+    console.log('metadata refund', metadataToUpdate);
+
+    return res.status(200).json({ metadata: metadataToUpdate });
   } catch (e) {
-    log.error(e, 'refund-booking-failed', {});
-    return res.status(e.status || 500).json(e.data);
+    handleStripeError(res, e);
   }
 };

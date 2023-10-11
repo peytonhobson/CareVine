@@ -419,14 +419,15 @@ export const BookingCardDateTimes = () => {
 };
 
 export const BookingCardTablePagination = () => {
-  const { isMobile, booking, bookingTimes } = useBookingCard();
-
   const {
-    bookingSchedule,
-    type: scheduleType,
+    isMobile,
+    booking,
+    bookingTimes,
     bookingTimesPage,
     setBookingTimesPage,
-  } = booking.attributes.metadata;
+  } = useBookingCard();
+
+  const { bookingSchedule, type: scheduleType } = booking.attributes.metadata;
 
   const timesToDisplay = isMobile ? 1 : 3;
   const previewTimeCount =

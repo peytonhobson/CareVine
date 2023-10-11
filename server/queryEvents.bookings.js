@@ -182,8 +182,8 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
-        bookingStart,
-        bookingEnd,
+        // bookingStart,
+        // bookingEnd,
       },
     });
   } catch (e) {

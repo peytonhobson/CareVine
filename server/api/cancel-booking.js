@@ -1,4 +1,4 @@
-const { apiBaseUrl, integrationSdk } = require('../api-util/sdk');
+const { apiBaseUrl, integrationSdk, handleError } = require('../api-util/sdk');
 const { addTimeToStartOfDay } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
@@ -20,17 +20,23 @@ const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 const activeTransitions = ['transition/start', 'transition/update-next-week-start'];
 
 const createRefund = async params => {
-  return await axios.post(
-    `${apiBaseUrl()}/api/refund-booking`,
-    {
-      ...params,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/transit+json',
+  try {
+    const response = await axios.post(
+      `${apiBaseUrl()}/api/refund-booking`,
+      {
+        ...params,
       },
-    }
-  );
+      {
+        headers: {
+          'Content-Type': 'application/transit+json',
+        },
+      }
+    );
+
+    return response;
+  } catch (e) {
+    console.log('Failed to create refund');
+  }
 };
 
 const updateListing = async ({ listingId, transaction }) => {
@@ -107,7 +113,7 @@ module.exports = async (req, res) => {
 
     let metadata;
     if (hasRefund) {
-      metadata = (await createRefund({ txId, cancelingUserType })).data.metadata;
+      metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
     }
 
     const isActive = activeTransitions.includes(lastTransition);
@@ -140,8 +146,6 @@ module.exports = async (req, res) => {
 
     return res.status(200).json(response.data.data);
   } catch (e) {
-    log.error(e, 'cancel-booking-failed', {});
-    console.log(e?.data);
-    return res.status(e.status || 500).json(e.data);
+    handleError(res, e);
   }
 };
