@@ -182,8 +182,8 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
-        // bookingStart,
-        // bookingEnd,
+        bookingStart,
+        bookingEnd,
       },
     });
   } catch (e) {
@@ -402,9 +402,6 @@ const updateNextWeek = async transaction => {
   );
 
   const newLedger = await updateBookingLedger(transaction);
-
-  console.log('new', newMetadata);
-  console.log('exceptions', exceptions);
 
   try {
     await integrationSdk.transactions.updateMetadata({

@@ -20,23 +20,19 @@ const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 const activeTransitions = ['transition/start', 'transition/update-next-week-start'];
 
 const createRefund = async params => {
-  try {
-    const response = await axios.post(
-      `${apiBaseUrl()}/api/refund-booking`,
-      {
-        ...params,
+  const response = await axios.post(
+    `${apiBaseUrl()}/api/refund-booking`,
+    {
+      ...params,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/transit+json',
       },
-      {
-        headers: {
-          'Content-Type': 'application/transit+json',
-        },
-      }
-    );
+    }
+  );
 
-    return response;
-  } catch (e) {
-    console.log('Failed to create refund');
-  }
+  return response;
 };
 
 const updateListing = async ({ listingId, transaction }) => {

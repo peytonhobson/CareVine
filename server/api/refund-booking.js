@@ -111,8 +111,6 @@ module.exports = async (req, res) => {
     );
     const totalApplicationFeeRefund = parseInt(Number(totalRefundAmount) * 0.05);
 
-    console.log('refunding');
-
     let metadataToUpdate;
     if (totalRefundAmount > 0) {
       await Promise.all(
@@ -155,8 +153,6 @@ module.exports = async (req, res) => {
         refundItems: [],
       };
     }
-
-    console.log('metadata refund', metadataToUpdate);
 
     return res.status(200).json({ metadata: metadataToUpdate });
   } catch (e) {
