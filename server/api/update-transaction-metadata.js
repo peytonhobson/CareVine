@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
       )
       .end();
   } catch (e) {
-    log.error(e);
+    log.error(e?.data?.errors?.[0]?.source);
     handleError(res, e);
   }
 };

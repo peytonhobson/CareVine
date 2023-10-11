@@ -872,8 +872,13 @@ export const addTimeToStartOfDay = (day, time) => {
   const hours = moment(time, ['h:mma']).format('HH');
 
   return typeof day === 'string'
-    ? moment.parseZone(day).add(hours, 'hours')
-    : moment(day).add(hours, 'hours');
+    ? moment
+        .parseZone(day)
+        .startOf('day')
+        .add(hours, 'hours')
+    : moment(day)
+        .startOf('day')
+        .add(hours, 'hours');
 };
 
 // Format form's value for the react-dates input: convert timeOfDay to the local time

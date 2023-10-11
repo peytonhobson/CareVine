@@ -57,7 +57,7 @@ const ActionsModal = props => {
             Cancel Now
           </CancelButton>
         ) : null}
-        {isCancelable && bookingType === 'recurring' ? (
+        {isModifiable && bookingType === 'recurring' ? (
           <Button onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)} className={buttonClass}>
             Change End Date
           </Button>

@@ -128,6 +128,12 @@ export class CheckoutPageComponent extends Component {
       bookingEnd,
     };
 
+    const ensuredExceptions = exceptions || {
+      addedDays: [],
+      removedDays: [],
+      changedDays: [],
+    };
+
     const scheduleTypeMetadata =
       scheduleType === 'oneTime'
         ? constructBookingMetadataOneTime(
@@ -142,7 +148,7 @@ export class CheckoutPageComponent extends Component {
             endDate,
             bookingRate,
             this.state.selectedPaymentMethod.type,
-            exceptions
+            ensuredExceptions
           );
 
     const currentUserListingTitle = currentUserListing.attributes.title;
@@ -161,7 +167,7 @@ export class CheckoutPageComponent extends Component {
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
       providerName: listing.author.attributes.profile.displayName,
-      exceptions: scheduleType === 'recurring' ? exceptions : null,
+      exceptions: scheduleType === 'recurring' ? ensuredExceptions : null,
     };
 
     onInitiateOrder(orderParams, metadata, listing, params.draftId);

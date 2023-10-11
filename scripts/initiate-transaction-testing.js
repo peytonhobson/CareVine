@@ -119,7 +119,7 @@ const bookingSchedule = [
   {
     dayOfWeek: 'fri',
     startTime: '6:00pm',
-    endTime: '8:00pm',
+    endTime: '9:00pm',
   },
 ];
 const bookingRate = 23;

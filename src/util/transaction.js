@@ -36,6 +36,7 @@ export const TRANSITION_UPDATE_BOOKING_END = 'transition/update-booking-end';
 export const TRANSITION_ACTIVE_CANCEL = 'transition/active-cancel';
 export const TRANSITION_CHARGED_CANCEL = 'transition/charged-cancel';
 export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
+export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-booking-end';
 
 /**
  * Actors
@@ -137,6 +138,7 @@ export const CANCELABLE_TRANSITIONS = [
   TRANSITION_START,
   TRANSITION_COMPLETE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
 ];
 
 export const MODIFIABLE_TRANSITIONS = [
@@ -146,6 +148,7 @@ export const MODIFIABLE_TRANSITIONS = [
   TRANSITION_START,
   TRANSITION_COMPLETE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
 ];
 
 // Get all the transitions from states object in an array

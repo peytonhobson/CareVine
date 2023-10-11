@@ -8,13 +8,14 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { formatFieldDateInput, parseFieldDateInput } from '../../../util/dates';
 import { injectIntl } from '../../../util/reactIntl';
-import { checkIsDateWithinBookingWindow } from '../../../util/bookings';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import { useCheckMobileScreen } from '../../../util/hooks';
 import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../../util/constants';
+import { updateBookingEndDate } from '../../../ducks/transactions.duck';
 
 import css from './BookingCardModals.module.css';
+import { checkIsBlockedDay } from '../../../util/bookings';
 
 const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
   const isInRegularDays = bookingSchedule.some(
@@ -26,28 +27,37 @@ const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
   return (isInRegularDays && !isRemovedDay) || isAddedDay;
 };
 
-const filterAvailableBookingEndDates = (
-  startDate,
+const filterAvailableBookingEndDates = ({
   bookingSchedule,
-  endDate,
-  exceptions
-) => date => {
-  const isWithinBookingWindow = checkIsDateWithinBookingWindow({
-    date,
-    endDate,
-    startDate,
-  });
+  exceptions,
+  bookedDates,
+  bookedDays,
+  oldEndDate,
+}) => date => {
+  const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
   const isInScheduledDays = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
+  const isInPast = moment(date).isBefore(TODAY, 'day');
+  const isCurrentEndDate = moment(date).isSame(oldEndDate, 'day');
 
-  return !isWithinBookingWindow || !isInScheduledDays;
+  return isDayBlocked || !isInScheduledDays || isInPast || isCurrentEndDate;
 };
 
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const renderDayContents = (isMobile, bookingSchedule, exceptions) => (date, classes) => {
+const renderDayContents = ({
+  isMobile,
+  bookingSchedule,
+  exceptions,
+  bookedDates,
+  bookedDays,
+  oldEndDate,
+}) => (date, classes) => {
   const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
+  const isInPast = moment(date).isBefore(TODAY, 'day');
+  const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
+  const isCurrentEndDate = moment(date).isSame(oldEndDate, 'day');
 
   if (classes.has('selected') && isMobile) {
     return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
@@ -56,7 +66,7 @@ const renderDayContents = (isMobile, bookingSchedule, exceptions) => (date, clas
   return (
     <span
       className={
-        isInBookingSchedule
+        isInBookingSchedule && !isInPast && !isDayBlocked && !isCurrentEndDate
           ? 'text-light cursor-pointer hover:bg-light hover:text-primary px-3 py-1'
           : null
       }
@@ -68,29 +78,45 @@ const renderDayContents = (isMobile, bookingSchedule, exceptions) => (date, clas
 
 const ChangeEndDateModal = props => {
   const [selectedEndDate, setSelectedEndDate] = useState(null);
+  const [showInvalidError, setShowInvalidError] = useState(false);
 
-  const { isOpen, onClose, onManageDisableScrolling, booking } = props;
+  const { isOpen, onClose, onManageDisableScrolling, booking, onUpdateBookingEndDate } = props;
 
   const {
     chargedLineItems = [],
-    endDate,
+    endDate: oldEndDate,
     bookingSchedule,
     exceptions,
   } = booking.attributes.metadata;
+  const txId = booking.id.uuid;
 
-  const onFormSubmit = values => {};
+  const { bookedDates = [], bookedDays = [] } = booking.listing.attributes.metadata;
+
+  const filteredBookedDays = useMemo(() => bookedDays.filter(d => d.txId !== txId), [bookedDays]);
+
+  const onFormSubmit = values => {
+    if (!values.endDate?.date) {
+      setShowInvalidError(true);
+      return;
+    }
+
+    onUpdateBookingEndDate(booking, values.endDate.date);
+  };
 
   const onFormChange = ({ values }) => {
-    const timeZoneDate = moment(values.endDate?.date).format(ISO_OFFSET_FORMAT);
+    const endDate = values.endDate?.date;
+    const timeZoneDate = endDate ? moment(endDate).format(ISO_OFFSET_FORMAT) : null;
     setSelectedEndDate(timeZoneDate);
+    setShowInvalidError(false);
   };
 
   const hasRefund = useMemo(
     () =>
-      selectedEndDate &&
-      chargedLineItems.some(item =>
-        item.lineItems?.some(i => moment(i.date).isAfter(moment(selectedEndDate)))
-      ),
+      selectedEndDate
+        ? chargedLineItems.some(item =>
+            item.lineItems?.some(i => moment(i.date).isAfter(moment(selectedEndDate)))
+          )
+        : false,
     [selectedEndDate, chargedLineItems]
   );
 
@@ -109,17 +135,16 @@ const ChangeEndDateModal = props => {
         {...props}
         onSubmit={onFormSubmit}
         mutators={{ ...arrayMutators }}
-        initialValues={{ endDate: endDate ? { date: new Date(endDate) } : null }}
-        initialValuesEqual={() => true}
         render={formRenderProps => {
           const {
             handleSubmit,
             intl,
             booking,
-            updateBookingMetadataInProgress,
-            updateBookingMetadataError,
-            updateBookingMetadataSuccess,
+            updateBookingEndDateInProgress,
+            updateBookingEndDateError,
+            updateBookingEndDateSuccess,
             onGoBack,
+            invalid,
           } = formRenderProps;
 
           const { listing } = booking;
@@ -128,9 +153,10 @@ const ChangeEndDateModal = props => {
 
           const isMobile = useCheckMobileScreen();
 
-          const submitInProgress = updateBookingMetadataInProgress;
-          const submitDisabled = updateBookingMetadataInProgress || updateBookingMetadataSuccess;
-          const submitReady = updateBookingMetadataSuccess;
+          const submitInProgress = updateBookingEndDateInProgress;
+          const submitDisabled =
+            updateBookingEndDateInProgress || updateBookingEndDateSuccess || invalid;
+          const submitReady = updateBookingEndDateSuccess;
 
           return (
             <Form onSubmit={handleSubmit}>
@@ -143,15 +169,23 @@ const ChangeEndDateModal = props => {
                 placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
                 format={formatFieldDateInput(timezone)}
                 parse={parseFieldDateInput(timezone)}
-                isDayBlocked={filterAvailableBookingEndDates(
-                  moment(),
+                isDayBlocked={filterAvailableBookingEndDates({
                   bookingSchedule,
-                  endDate,
-                  exceptions
-                )}
+                  exceptions,
+                  bookedDates,
+                  bookedDays: filteredBookedDays,
+                  oldEndDate,
+                })}
                 useMobileMargins
                 showErrorMessage={false}
-                renderDayContents={renderDayContents(isMobile, bookingSchedule, exceptions)}
+                renderDayContents={renderDayContents({
+                  isMobile,
+                  bookingSchedule,
+                  exceptions,
+                  bookedDates,
+                  bookedDays: filteredBookedDays,
+                  oldEndDate,
+                })}
                 withPortal={isMobile}
               />
               {selectedEndDate ? (
@@ -164,7 +198,8 @@ const ChangeEndDateModal = props => {
                   {hasRefund ? (
                     <>
                       <p className={css.modalMessage}>
-                        You will be refunded according to the table below:
+                        Once your booking is complete, you will be refunded according to the table
+                        below:
                       </p>
                       <RefundBookingSummaryCard
                         booking={booking}
@@ -177,8 +212,11 @@ const ChangeEndDateModal = props => {
                   ) : null}
                 </>
               ) : null}
-              {updateBookingMetadataError ? (
+              {updateBookingEndDateError ? (
                 <p className="text-error">Failed to update booking schedule. Please try again.</p>
+              ) : null}
+              {showInvalidError ? (
+                <p className="text-error text-center">Please select a date.</p>
               ) : null}
               <div className={css.modalButtonContainer}>
                 <Button onClick={onGoBack} className={css.modalButton} type="button">
@@ -186,7 +224,6 @@ const ChangeEndDateModal = props => {
                 </Button>
                 <PrimaryButton
                   inProgress={submitInProgress}
-                  onClick={() => onCancelBooking(booking)}
                   className="w-auto ml-4 px-6 min-w-[10rem]"
                   ready={submitReady}
                   disabled={submitDisabled}
@@ -205,20 +242,21 @@ const ChangeEndDateModal = props => {
 
 const mapStateToProps = state => {
   const {
-    updateBookingMetadataInProgress,
-    updateBookingMetadataError,
-    updateBookingMetadataSuccess,
-  } = state.BookingsPage;
+    updateBookingEndDateInProgress,
+    updateBookingEndDateError,
+    updateBookingEndDateSuccess,
+  } = state.transactions;
 
   return {
-    updateBookingMetadataInProgress,
-    updateBookingMetadataError,
-    updateBookingMetadataSuccess,
+    updateBookingEndDateInProgress,
+    updateBookingEndDateError,
+    updateBookingEndDateSuccess,
   };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
+  onUpdateBookingEndDate: updateBookingEndDate,
 };
 
 export default compose(

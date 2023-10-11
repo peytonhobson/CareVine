@@ -69,6 +69,7 @@ const updatePendingPayouts = require('./api/update-pending-payouts');
 const getProdListings = require('./api/get-prod-listings');
 const cancelBooking = require('./api/cancel-booking');
 const refundBooking = require('./api/refund-booking');
+const sendBookingModifiedNotification = require('./api/send-booking-modified-notification');
 
 const createUserWithIdp = require('./api/auth/createUserWithIdp');
 
@@ -157,6 +158,7 @@ router.post('/initiate-privileged-transaction', initiatePrivilegedTransaction);
 router.post('/get-prod-listings', getProdListings);
 router.post('/cancel-booking', cancelBooking);
 router.post('/refund-booking', refundBooking);
+router.post('/send-booking-modified-notification', sendBookingModifiedNotification);
 
 // Create user with identity provider (e.g. Facebook or Google)
 // This endpoint is called to create a new user after user has confirmed

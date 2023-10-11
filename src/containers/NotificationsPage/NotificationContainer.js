@@ -8,6 +8,7 @@ import {
   NOTIFICATION_TYPE_PAYMENT_RECEIVED,
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
   NOTIFICATION_TYPE_BOOKING_REQUESTED,
+  NOTIFICATION_TYPE_BOOKING_MODIFIED,
 } from '../../util/constants';
 import {
   NotificationPaymentRequested,
@@ -17,6 +18,7 @@ import {
   NotificationListingRemoved,
   NotificationListingOpened,
   NotificationNewBookingRequest,
+  NotificationBookingModified,
 } from './NotificationTemplates';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -116,6 +118,17 @@ const NotificationContainer = props => {
           declineBookingInProgress={declineBookingInProgress}
           declineBookingSuccess={declineBookingSuccess}
           onDeclineBooking={onDeclineBooking}
+        />
+      );
+      break;
+    case NOTIFICATION_TYPE_BOOKING_MODIFIED:
+      notificationTemplate = (
+        <NotificationBookingModified
+          notification={notification}
+          currentTransaction={currentTransaction}
+          fetchTransactionError={fetchTransactionError}
+          fetchTransactionInProgress={fetchTransactionInProgress}
+          onFetchTransaction={onFetchTransaction}
         />
       );
       break;

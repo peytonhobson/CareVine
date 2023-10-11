@@ -6,16 +6,20 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_DECLINE_BOOKING,
   TRANSITION_START,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_REQUEST_BOOKING,
 } from '../util/transaction';
 import {
   updateListingMetadata,
   transitionPrivileged,
-  stripeCreateRefund,
   updateTransactionMetadata,
+  sendBookingModifiedNotification,
 } from '../util/api';
-import { moment } from 'moment';
+import moment from 'moment';
 import { addTimeToStartOfDay } from '../util/dates';
 import { denormalisedResponseEntities } from '../util/data';
+import { ISO_OFFSET_FORMAT, NOTIFICATION_TYPE_BOOKING_MODIFIED } from '../util/constants';
+import { v4 as uuidv4 } from 'uuid';
 const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
@@ -470,33 +474,70 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
 
   const txId = transaction.id.uuid;
 
-  const { lineItems = [] } = transaction.attributes.metadata;
+  const { lineItems = [], endDate: oldEndDate, bookingNumber } = transaction.attributes.metadata;
 
   const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
 
+  const formattedEndDate = moment(endDate)
+    .startOf('day')
+    .format(ISO_OFFSET_FORMAT);
+  const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate);
+  const isRequest = transaction.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
+  const needsApproval = !isRequest && newEndDateLater;
+
   try {
-    if (transaction.attributes.lastTransition === TRANSITION_START && endingLineItem) {
-      const bookingEnd = addTimeToStartOfDay(endDate, endingLineItem?.endTime);
-      const bookingStart = moment(bookingEnd).subtract(5, 'minutes');
+    if (
+      (transaction.attributes.lastTransition === TRANSITION_START ||
+        transaction.attributes.lastTransition === TRANSITION_ACTIVE_UPDATE_BOOKING_END) &&
+      endingLineItem &&
+      !needsApproval
+    ) {
+      const bookingEnd = addTimeToStartOfDay(formattedEndDate, endingLineItem?.endTime).format(
+        ISO_OFFSET_FORMAT
+      );
+      const bookingStart = moment(bookingEnd)
+        .subtract(5, 'minutes')
+        .format(ISO_OFFSET_FORMAT);
 
       // Need to do loop transition to update booking start and end if active
-      await sdk.transactions.transition({
-        id: txId,
-        transition: TRANSITION_UPDATE_END_DATE,
-        params: {
-          bookingEnd,
-          bookingStart,
-          metadata: {
-            endDate,
+      await transitionPrivileged({
+        bodyParams: {
+          id: txId,
+          transition: TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+          params: {
+            bookingEnd,
+            bookingStart,
+            metadata: {
+              endDate: formattedEndDate,
+            },
           },
         },
       });
-    } else {
+
+      await sendBookingModifiedNotification({
+        txId,
+        modification: { endDate: formattedEndDate },
+        isRequest: false,
+      });
+    } else if (!needsApproval) {
       await updateTransactionMetadata({
         txId,
         metadata: {
-          endDate,
+          endDate: formattedEndDate,
         },
+      });
+
+      await sendBookingModifiedNotification({
+        txId,
+        modification: { endDate: formattedEndDate },
+        isRequest: false,
+      });
+    } else {
+      // If booking is not a request and end date is later, we need to send request to caregiver
+      await sendBookingModifiedNotification({
+        txId,
+        modification: { endDate: formattedEndDate },
+        isRequest: true,
       });
     }
 
@@ -509,7 +550,7 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
       if (bd.txId === txId) {
         return {
           ...bd,
-          endDate,
+          endDate: formattedEndDate,
         };
       }
       return bd;

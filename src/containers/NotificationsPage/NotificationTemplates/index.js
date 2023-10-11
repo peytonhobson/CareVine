@@ -5,3 +5,4 @@ export { default as NotificationNewMessage } from './NotificationNewMessage';
 export { default as NotificationListingRemoved } from './NotificationListingRemoved';
 export { default as NotificationListingOpened } from './NotificationListingOpened';
 export { default as NotificationNewBookingRequest } from './NotificationNewBookingRequest';
+export { default as NotificationBookingModified } from './NotificationBookingModified';

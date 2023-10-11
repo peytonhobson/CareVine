@@ -336,3 +336,7 @@ export const getProdListings = body => {
 export const cancelBooking = body => {
   return post('/api/cancel-booking', body);
 };
+
+export const sendBookingModifiedNotification = body => {
+  return post('/api/send-booking-modified-notification', body);
+};

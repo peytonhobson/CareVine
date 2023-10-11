@@ -9,6 +9,7 @@ import {
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_UPDATE_BOOKING_END_REPEAT,
   TRANSITION_UPDATE_BOOKING_END,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -31,6 +32,7 @@ const bookingTransitions = [
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_UPDATE_BOOKING_END_REPEAT,
   TRANSITION_UPDATE_BOOKING_END,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
 ];
 
 // ================ Action types ================ //
@@ -215,16 +217,7 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
   try {
     const response = await sdk.transactions.query({
       ...params,
-      lastTransitions: [
-        TRANSITION_REQUEST_BOOKING,
-        TRANSITION_ACCEPT_BOOKING,
-        TRANSITION_CHARGE,
-        TRANSITION_START,
-        TRANSITION_COMPLETE,
-        TRANSITION_UPDATE_NEXT_WEEK_START,
-        TRANSITION_UPDATE_BOOKING_END_REPEAT,
-        TRANSITION_UPDATE_BOOKING_END,
-      ],
+      lastTransitions: [...requestTransitions, ...bookingTransitions],
     });
 
     const denormalizedBookings = denormalisedResponseEntities(response);

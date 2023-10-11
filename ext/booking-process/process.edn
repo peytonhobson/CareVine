@@ -84,10 +84,11 @@
 
    {:name :transition/active-update-booking-end,
    :actions
-   [{:name :action/update-booking :config {:type :time}}],
+   [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}],
    :actor :actor.role/customer,
    :from :state/active,
-   :to :state/updating-booking-end}
+   :to :state/active,
+   :privileged? true}
 
    {:name :transition/complete,
    :at {:fn/timepoint [:time/booking-end]},

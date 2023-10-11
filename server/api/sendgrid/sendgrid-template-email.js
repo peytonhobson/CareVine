@@ -24,25 +24,27 @@ const SENDGRID_TEMPLATE_IDS = {
   'new-message': 'd-6c2f53d4a0f84359989a86ac47371930',
   'caregiver-welcome': 'd-b10552ce85174ad0892c59f6e0313f74',
   'employer-welcome': 'd-63f33ee652d046f59423825a6c145eb0',
+  'booking-modified': 'd-0307c7838451428bb8679df84b390a6c',
 };
 
 module.exports = (req, res) => {
   const { receiverId, templateData, templateName } = req.body;
 
-  if (isDev) {
-    res
-      .status(200)
-      .set('Content-Type', 'application/transit+json')
-      .send(
-        serialize({
-          data: {
-            message: 'Emails are not sent in development mode',
-          },
-        })
-      )
-      .end();
-    return;
-  }
+  // TODO: Put back
+  // if (isDev) {
+  //   res
+  //     .status(200)
+  //     .set('Content-Type', 'application/transit+json')
+  //     .send(
+  //       serialize({
+  //         data: {
+  //           message: 'Emails are not sent in development mode',
+  //         },
+  //       })
+  //     )
+  //     .end();
+  //   return;
+  // }
 
   return integrationSdk.users
     .show({ id: receiverId })

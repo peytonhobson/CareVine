@@ -12,12 +12,17 @@ const cancelTransitionMap = {
   'transition/accept': 'transition/accepted-cancel',
   'transition/charge': 'transition/charged-cancel',
   'transition/start': 'transition/active-cancel',
+  'transition/active-update-booking-end': 'transition/active-cancel',
   'transition/update-next-week-start': 'transition/wfnw-cancel',
 };
 
 const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 
-const activeTransitions = ['transition/start', 'transition/update-next-week-start'];
+const activeTransitions = [
+  'transition/start',
+  'transition/update-next-week-start',
+  'transition/active-update-booking-end',
+];
 
 const createRefund = async params => {
   const response = await axios.post(
@@ -104,12 +109,12 @@ module.exports = async (req, res) => {
 
     // Employer has refund if there are any future charged line items
     const hasRefund = chargedLineItems.some(cl =>
-      cl.lineItems.some(l => addTimeToStartOfDay(l.date, l.startTime).isBefore())
+      cl.lineItems.some(l => addTimeToStartOfDay(l.date, l.startTime).isAfter())
     );
 
-    let metadata;
+    let metadataMaybe = {};
     if (hasRefund) {
-      metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
+      metadataMaybe.metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
     }
 
     const isActive = activeTransitions.includes(lastTransition);
@@ -131,7 +136,7 @@ module.exports = async (req, res) => {
       params: {
         bookingStart: newBookingStart,
         bookingEnd: newBookingEnd,
-        metadata,
+        ...metadataMaybe,
       },
     });
 
