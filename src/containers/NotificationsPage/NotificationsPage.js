@@ -96,6 +96,8 @@ const NotificationsPageComponent = props => {
     params,
   } = props;
 
+  console.log('fetched user');
+
   const isMobile = useCheckMobileScreen();
 
   const { notificationId } = params;
@@ -140,8 +142,8 @@ const NotificationsPageComponent = props => {
   }, [notificationId, state.notifications?.length]);
 
   const activeNotification = useMemo(
-    () => state.notifications.find(n => n.id === state.activeNotificationId),
-    [state.activeNotificationId, JSON.stringify(state.notifications)]
+    () => notifications.find(n => n.id === state.activeNotificationId),
+    [state.activeNotificationId, JSON.stringify(notifications)]
   );
 
   useEffect(() => {

@@ -153,24 +153,6 @@ export const LandingPageComponent = props => {
   );
 };
 
-LandingPageComponent.defaultProps = {
-  currentUserListing: null,
-  currentUserListingFetched: false,
-};
-
-LandingPageComponent.propTypes = {
-  scrollingDisabled: bool.isRequired,
-  currentUserListing: propTypes.ownListing,
-  currentUserListingFetched: bool,
-
-  // from withRouter
-  history: object.isRequired,
-  location: object.isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
-
 const mapStateToProps = state => {
   const {
     currentUser,

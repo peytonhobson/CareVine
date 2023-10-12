@@ -474,7 +474,10 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
 
   const txId = transaction.id.uuid;
 
-  const { lineItems = [], endDate: oldEndDate, bookingNumber } = transaction.attributes.metadata;
+  const {
+    lineItems = [],
+    endDate: oldEndDate = moment().add(10, 'years'),
+  } = transaction.attributes.metadata;
 
   const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
 

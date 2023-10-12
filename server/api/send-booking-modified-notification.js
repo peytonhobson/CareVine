@@ -2,9 +2,29 @@ const { integrationSdk, handleError, apiBaseUrl } = require('../api-util/sdk');
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const moment = require('moment');
+const { addTimeToStartOfDay } = require('../bookingHelpers');
 
 const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
+const findNextWeekStartTime = bookingSchedule => {
+  const now = moment();
+
+  const nextWeekStart = now
+    .clone()
+    .add(1, 'week')
+    .startOf('week');
+
+  const nextWeekStartDay = WEEKDAYS.indexOf(bookingSchedule[0].dayOfWeek);
+  const nextWeekStartDate = nextWeekStart.clone().weekday(nextWeekStartDay);
+  const nextWeekStartTime = addTimeToStartOfDay(nextWeekStartDate, bookingSchedule[0].startTime);
+
+  return nextWeekStartTime;
+};
+
+const sortExceptionsByDate = exceptions =>
+  exceptions.sort((a, b) => moment(a.date).isBefore(b.date));
 
 const sendEmail = async params => {
   await axios.post(
@@ -34,9 +54,25 @@ module.exports = async (req, res) => {
     const customer = (await integrationSdk.users.show({ id: customerId })).data.data;
     const provider = (await integrationSdk.users.show({ id: providerId })).data.data;
 
-    const { bookingNumber } = transaction.attributes.metadata;
+    const { bookingNumber, bookingSchedule, endDate, exceptions } = transaction.attributes.metadata;
 
     const customerDisplayName = customer.attributes.profile.displayName;
+
+    let expiration;
+
+    const modificationType = Object.keys(modification)[0];
+    switch (modificationType) {
+      case 'bookingSchedule':
+        expiration = findNextWeekStartTime(modification.bookingSchedule);
+        break;
+      case 'endDate':
+        expiration = moment(modification.endDate).startOf('day');
+        break;
+      case 'exceptions':
+        const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
+        expiration = moment(firstExceptionDate).startOf('day');
+        break;
+    }
 
     const notificationId = uuidv4();
     const newNotification = {
@@ -50,6 +86,12 @@ module.exports = async (req, res) => {
         bookingNumber,
         customerDisplayName,
         modification,
+        expiration: expiration.format(ISO_OFFSET_FORMAT),
+        previousMetadata: {
+          bookingSchedule,
+          endDate,
+          exceptions,
+        },
       },
     };
 

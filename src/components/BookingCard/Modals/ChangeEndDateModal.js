@@ -33,13 +33,20 @@ const filterAvailableBookingEndDates = ({
   bookedDates,
   bookedDays,
   oldEndDate,
+  chargedDates,
 }) => date => {
+  // If current end date is in charged line items, all end dates after should be unavailable.
+  // This ensures if a user extends the end date that we don't have to deal with the additional
+  // charges that finish out their charged line items.
+  const isCharged =
+    chargedDates.some(d => moment(d).isSame(oldEndDate, 'day')) &&
+    moment(date).isAfter(oldEndDate, 'day');
   const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
   const isInScheduledDays = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
   const isInPast = moment(date).isBefore(TODAY, 'day');
   const isCurrentEndDate = moment(date).isSame(oldEndDate, 'day');
 
-  return isDayBlocked || !isInScheduledDays || isInPast || isCurrentEndDate;
+  return isDayBlocked || !isInScheduledDays || isInPast || isCurrentEndDate || isCharged;
 };
 
 const TODAY = new Date();
@@ -53,7 +60,11 @@ const renderDayContents = ({
   bookedDates,
   bookedDays,
   oldEndDate,
+  chargedDates,
 }) => (date, classes) => {
+  const isCharged =
+    chargedDates.some(d => moment(d).isSame(oldEndDate, 'day')) &&
+    moment(date).isAfter(oldEndDate, 'day');
   const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
   const isInPast = moment(date).isBefore(TODAY, 'day');
   const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
@@ -63,12 +74,13 @@ const renderDayContents = ({
     return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
   }
 
+  const available =
+    isInBookingSchedule && !isInPast && !isDayBlocked && !isCurrentEndDate && !isCharged;
+
   return (
     <span
       className={
-        isInBookingSchedule && !isInPast && !isDayBlocked && !isCurrentEndDate
-          ? 'text-light cursor-pointer hover:bg-light hover:text-primary px-3 py-1'
-          : null
+        available ? 'text-light cursor-pointer hover:bg-light hover:text-primary px-3 py-1' : null
       }
     >
       {date.format('D')}
@@ -84,7 +96,9 @@ const ChangeEndDateModal = props => {
 
   const {
     chargedLineItems = [],
-    endDate: oldEndDate,
+    endDate: oldEndDate = moment()
+      .add(10, 'years')
+      .format(ISO_OFFSET_FORMAT),
     bookingSchedule,
     exceptions,
   } = booking.attributes.metadata;
@@ -118,6 +132,23 @@ const ChangeEndDateModal = props => {
           )
         : false,
     [selectedEndDate, chargedLineItems]
+  );
+
+  // Any charged dates after old end date
+  const chargedDates = useMemo(
+    () =>
+      chargedLineItems
+        .map(item => item.lineItems?.map(i => i.date))
+        .flat()
+        .filter(d => (oldEndDate ? moment(d).isAfter(oldEndDate, 'day') : true)),
+    [chargedLineItems, oldEndDate]
+  );
+
+  // Used to determine if the user can select future end dates to change to
+  const endDateCharged = useMemo(() =>
+    selectedEndDate
+      ? chargedDates.some(d => moment(d).isSame(selectedEndDate, 'day'))
+      : false[(chargedLineItems, oldEndDate)]
   );
 
   return isOpen ? (
@@ -175,6 +206,7 @@ const ChangeEndDateModal = props => {
                   bookedDates,
                   bookedDays: filteredBookedDays,
                   oldEndDate,
+                  chargedDates,
                 })}
                 useMobileMargins
                 showErrorMessage={false}
@@ -185,6 +217,7 @@ const ChangeEndDateModal = props => {
                   bookedDates,
                   bookedDays: filteredBookedDays,
                   oldEndDate,
+                  chargedDates,
                 })}
                 withPortal={isMobile}
               />
@@ -217,6 +250,12 @@ const ChangeEndDateModal = props => {
               ) : null}
               {showInvalidError ? (
                 <p className="text-error text-center">Please select a date.</p>
+              ) : null}
+              {endDateCharged ? (
+                <p className="text-error text-center text-xs">
+                  *Please Note: You cannot change the end date of your booking to a future date
+                  after the current end date has been charged.
+                </p>
               ) : null}
               <div className={css.modalButtonContainer}>
                 <Button onClick={onGoBack} className={css.modalButton} type="button">

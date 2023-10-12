@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IconBell, IconSpinner } from '../../components';
 import NotificationPreview from './NotificationPreview';
 
@@ -14,10 +14,15 @@ const SideNav = props => {
     isMobile,
   } = props;
 
+  const sortedNotifications = useMemo(
+    () => notifications?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) ?? [],
+    [notifications]
+  );
+
   return (
     <div className={css.sidenavRoot}>
-      {notifications.length > 0 ? (
-        notifications.map((notification, index) => {
+      {sortedNotifications.length > 0 ? (
+        sortedNotifications.map((notification, index) => {
           return (
             <NotificationPreview
               key={index}

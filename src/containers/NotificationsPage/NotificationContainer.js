@@ -122,15 +122,7 @@ const NotificationContainer = props => {
       );
       break;
     case NOTIFICATION_TYPE_BOOKING_MODIFIED:
-      notificationTemplate = (
-        <NotificationBookingModified
-          notification={notification}
-          currentTransaction={currentTransaction}
-          fetchTransactionError={fetchTransactionError}
-          fetchTransactionInProgress={fetchTransactionInProgress}
-          onFetchTransaction={onFetchTransaction}
-        />
-      );
+      notificationTemplate = <NotificationBookingModified notification={notification} />;
       break;
     default:
       notificationTemplate =
