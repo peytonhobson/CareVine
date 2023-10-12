@@ -340,3 +340,7 @@ export const cancelBooking = body => {
 export const sendBookingModifiedNotification = body => {
   return post('/api/send-booking-modified-notification', body);
 };
+
+export const sendBookingModifiedNotificationResponse = body => {
+  return post('/api/send-booking-modified-response-notification', body);
+};

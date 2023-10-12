@@ -473,10 +473,12 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
   dispatch(updateBookingEndDateRequest());
 
   const txId = transaction.id.uuid;
-
+  const tenYearsAhead = moment().add(10, 'years');
   const {
     lineItems = [],
-    endDate: oldEndDate = moment().add(10, 'years'),
+    endDate: oldEndDate,
+    bookingSchedule,
+    exceptions,
   } = transaction.attributes.metadata;
 
   const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
@@ -484,7 +486,7 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
   const formattedEndDate = moment(endDate)
     .startOf('day')
     .format(ISO_OFFSET_FORMAT);
-  const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate);
+  const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate || tenYearsAhead);
   const isRequest = transaction.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
   const needsApproval = !isRequest && newEndDateLater;
 
@@ -517,10 +519,17 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
         },
       });
 
+      console.log(1);
+
       await sendBookingModifiedNotification({
         txId,
         modification: { endDate: formattedEndDate },
         isRequest: false,
+        previousMetadata: {
+          endDate: oldEndDate,
+          bookingSchedule,
+          exceptions,
+        },
       });
     } else if (!needsApproval) {
       await updateTransactionMetadata({
@@ -530,17 +539,30 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
         },
       });
 
+      console.log(2);
+
       await sendBookingModifiedNotification({
         txId,
         modification: { endDate: formattedEndDate },
         isRequest: false,
+        previousMetadata: {
+          endDate: oldEndDate,
+          bookingSchedule,
+          exceptions,
+        },
       });
     } else {
+      console.log(3);
       // If booking is not a request and end date is later, we need to send request to caregiver
       await sendBookingModifiedNotification({
         txId,
         modification: { endDate: formattedEndDate },
         isRequest: true,
+        previousMetadata: {
+          endDate: oldEndDate,
+          bookingSchedule,
+          exceptions,
+        },
       });
     }
 

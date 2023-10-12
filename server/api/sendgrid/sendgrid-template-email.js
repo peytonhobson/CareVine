@@ -25,6 +25,7 @@ const SENDGRID_TEMPLATE_IDS = {
   'caregiver-welcome': 'd-b10552ce85174ad0892c59f6e0313f74',
   'employer-welcome': 'd-63f33ee652d046f59423825a6c145eb0',
   'booking-modified': 'd-0307c7838451428bb8679df84b390a6c',
+  'booking-modification-request-response': 'd-096389e1583b4ea7b09541a7d4159781',
 };
 
 module.exports = (req, res) => {

@@ -79,6 +79,7 @@ export const NOTIFICATION_TYPE_LISTING_REMOVED = 'listingRemoved';
 export const NOTIFICATION_TYPE_NEW_MESSAGE = 'newMessage';
 export const NOTIFICATION_TYPE_BOOKING_REQUESTED = 'bookingRequested';
 export const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
+export const NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE = 'bookingModifiedResponse';
 
 export const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 export const WEEKDAY_MAP = {

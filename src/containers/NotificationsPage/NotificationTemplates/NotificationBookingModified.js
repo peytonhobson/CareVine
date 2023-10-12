@@ -117,7 +117,7 @@ const NotificationBookingModified = props => {
               <h2 className="text-center">Original</h2>
               <div>
                 <h3 className="underline">Days</h3>
-                {previousMetadata.bookingSchedule?.map((day, index) => {
+                {previousMetadata?.bookingSchedule?.map((day, index) => {
                   const { dayOfWeek, startTime, endTime } = day;
 
                   return (
@@ -135,7 +135,7 @@ const NotificationBookingModified = props => {
               <div>
                 <h3 className="underline">End Date</h3>
                 <p className={modificationType === 'endDate' ? 'text-error' : null}>
-                  {previousMetadata.endDate
+                  {previousMetadata?.endDate
                     ? moment(previousMetadata.endDate).format('ddd, MMM DD')
                     : 'No End Date'}
                 </p>

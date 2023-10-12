@@ -1,7 +1,11 @@
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { storableError } from '../../util/errors';
 import { TRANSITION_ACTIVE_UPDATE_BOOKING_END, TRANSITION_START } from '../../util/transaction';
-import { transitionPrivileged, updateTransactionMetadata } from '../../util/api';
+import {
+  sendBookingModifiedNotificationResponse,
+  transitionPrivileged,
+  updateTransactionMetadata,
+} from '../../util/api';
 import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { ISO_OFFSET_FORMAT } from '../../util/constants';
@@ -322,7 +326,13 @@ export const acceptBookingModification = notification => async (dispatch, getSta
       privateData: { notifications: newNotifications },
     });
 
-    // TODO: Send notifications/emails that modification has been accepted here
+    const { txId, modification, previousMetadata } = notification.metadata;
+    await sendBookingModifiedNotificationResponse({
+      txId,
+      modification,
+      previousMetadata,
+      isAccepted: true,
+    });
 
     dispatch(fetchCurrentUser());
     dispatch(acceptBookingModificationSuccess());
@@ -357,7 +367,13 @@ export const declineBookingModification = notification => async (dispatch, getSt
       privateData: { notifications: newNotifications },
     });
 
-    // TODO: Send customer notification that booking request has been declined here
+    const { txId, modification, previousMetadata } = notification.metadata;
+    await sendBookingModifiedNotificationResponse({
+      txId,
+      modification,
+      previousMetadata,
+      isAccepted: false,
+    });
 
     dispatch(fetchCurrentUser());
     dispatch(declineBookingModificationSuccess());

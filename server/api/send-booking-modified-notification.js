@@ -41,7 +41,7 @@ const sendEmail = async params => {
 };
 
 module.exports = async (req, res) => {
-  const { txId, modification, isRequest } = req.body;
+  const { txId, modification, previousMetadata, isRequest } = req.body;
 
   try {
     const transaction = (
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
     const customer = (await integrationSdk.users.show({ id: customerId })).data.data;
     const provider = (await integrationSdk.users.show({ id: providerId })).data.data;
 
-    const { bookingNumber, bookingSchedule, endDate, exceptions } = transaction.attributes.metadata;
+    const { bookingNumber } = transaction.attributes.metadata;
 
     const customerDisplayName = customer.attributes.profile.displayName;
 
@@ -87,11 +87,7 @@ module.exports = async (req, res) => {
         customerDisplayName,
         modification,
         expiration: expiration.format(ISO_OFFSET_FORMAT),
-        previousMetadata: {
-          bookingSchedule,
-          endDate,
-          exceptions,
-        },
+        previousMetadata,
       },
     };
 

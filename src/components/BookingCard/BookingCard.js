@@ -358,7 +358,7 @@ export const BookingCardDateTimesContainer = ({ children }) => {
         {scheduleType === 'recurring' ? 'Weekly Schedule' : 'Dates & Times'}
       </h2>
       {startDate && scheduleType === 'recurring' ? (
-        <p class="text-primary mt-0 mb-2 text-sm">
+        <p className="text-primary mt-0 mb-2 text-sm">
           {moment(startDate).format('ddd, MMM DD')} -{' '}
           {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
         </p>
