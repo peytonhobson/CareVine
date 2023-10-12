@@ -1,15 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 
-import { BookingException, CancelButton, PrimaryButton } from '../../../components';
+import { BookingException, CancelButton, CancelBookingModal } from '../../../components';
 import { makeStyles } from '@material-ui/core/styles';
 import { sortExceptionsByDate } from '../../../util/bookings';
 import moment from 'moment';
 import classNames from 'classnames';
-import { FULL_WEEKDAY_MAP } from '../../../util/constants';
+import { EMPLOYER, FULL_WEEKDAY_MAP } from '../../../util/constants';
 import Card from '@material-ui/core/Card';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { acceptBookingModification, declineBookingModification } from '../NotificationsPage.duck';
+import { CANCELED_TRANSITIONS } from '../../../util/transaction';
+import { fetchTransaction } from '../../../ducks/transactions.duck';
 
 import css from './NotificationTemplates.module.css';
 
@@ -31,34 +32,39 @@ const filterExceptionsForFuture = exception => {
   return moment(exception.date).isAfter();
 };
 
-const NotificationBookingModified = props => {
+const NotificationBookingModifiedResponse = props => {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const {
     notification,
-    acceptBookingModificationInProgress,
-    acceptBookingModificationError,
-    onAccept,
-    declineBookingModificationInProgress,
-    declineBookingModificationError,
-    onDecline,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+    currentTransaction,
+    onFetchTransaction,
   } = props;
 
-  const createdAt = moment(notification.createdAt);
   const {
-    customerDisplayName,
+    providerDisplayName,
     txId,
-    isRequest,
     bookingNumber,
     modification = {},
-    expiration,
-    accepted,
-    declined,
+    isAccepted,
     previousMetadata = {},
   } = notification.metadata;
 
+  useEffect(() => {
+    if (txId) {
+      onFetchTransaction(txId);
+    }
+  }, [txId]);
+
+  const handleCloseModal = () => {
+    setShowCancelModal(false);
+    onFetchTransaction(txId);
+  };
+
   const classes = useStyles();
-
   const modificationType = Object.keys(modification)[0];
-
   const sortedPreviousExceptions = useMemo(
     () =>
       previousMetadata?.exceptions
@@ -76,25 +82,16 @@ const NotificationBookingModified = props => {
     ...modification,
   };
 
-  const isExpired =
-    moment(expiration).isBefore(moment()) ||
-    moment(createdAt)
-      .add(3, 'days')
-      .isBefore();
+  const isCanceled = CANCELED_TRANSITIONS.includes(currentTransaction?.attributes.lastTransition);
 
   return (
     <div className={css.root}>
       <Card className={classes.card}>
-        <h1 className={css.title}>Booking Modification {isRequest ? 'Request' : ''}</h1>
-        {isRequest ? (
-          <p className={classNames(css.message, '!my-8')}>
-            {customerDisplayName} has requested a modification to booking #{bookingNumber}.
-          </p>
-        ) : (
-          <p className={classNames(css.message, '!my-8')}>
-            {customerDisplayName} has modified booking #{bookingNumber}.
-          </p>
-        )}
+        <h1 className={css.title}>Booking Modification {isAccepted ? 'Accepted' : 'Declined'}</h1>
+        <p className={classNames(css.message, '!my-8')}>
+          {providerDisplayName} has {isAccepted ? 'accepted' : 'declined'} your modification to
+          booking #{bookingNumber}.
+        </p>
         <div className="grid grid-cols-2 gap-4">
           <Card className={classes.innerCard}>
             <h2 className="text-center">Original</h2>
@@ -141,7 +138,7 @@ const NotificationBookingModified = props => {
             </div>
           </Card>
           <Card className={classes.innerCard}>
-            <h2 className="text-center">{isRequest ? 'Requested ' : ''}Change</h2>
+            <h2 className="text-center">New Booking</h2>
             <div>
               <h3 className="underline">Days</h3>
               {newSchedule.bookingSchedule?.map(day => {
@@ -185,73 +182,63 @@ const NotificationBookingModified = props => {
             </div>
           </Card>
         </div>
-        {isRequest ? (
-          <>
-            {declineBookingModificationError ? (
-              <p className="text-error text-center">Failed to decline.</p>
+        {isAccepted ? null : (
+          <div className="mt-10 flex flex-col items-center">
+            <p className="text-primary">
+              If you want to cancel this booking, click the button below.
+            </p>
+            {fetchTransactionError ? (
+              <p className={css.modalError}>
+                There was an error fetching the transaction. Please try refreshing the page.
+              </p>
             ) : null}
-            {acceptBookingModificationError ? (
-              <p className="text-error text-center">Failed to accept.</p>
-            ) : null}
-            {!isExpired && !accepted && !declined ? (
-              <div className="flex mt-16 justify-evenly">
-                <CancelButton
-                  className="max-w-[15rem]"
-                  onClick={() => onDecline(notification)}
-                  inProgress={declineBookingModificationInProgress}
-                  disabled={
-                    declineBookingModificationInProgress || acceptBookingModificationInProgress
-                  }
-                >
-                  Decline
-                </CancelButton>
-                <PrimaryButton
-                  className="max-w-[15rem]"
-                  onClick={() => onAccept(notification)}
-                  inProgress={acceptBookingModificationInProgress}
-                  disabled={
-                    acceptBookingModificationInProgress || declineBookingModificationInProgress
-                  }
-                >
-                  Accept
-                </PrimaryButton>
-              </div>
-            ) : null}
-            {isExpired ? (
-              <h2 className="text-error text-center">This request is expired.</h2>
-            ) : null}
-            {accepted ? (
-              <h2 className="text-success text-center">You accepted this request.</h2>
-            ) : null}
-            {declined ? (
-              <h2 className="text-error text-center">You declined this request.</h2>
-            ) : null}
-          </>
+            <CancelButton
+              className="max-w-[15rem]"
+              onClick={() => setShowCancelModal(true)}
+              disabled={fetchTransactionInProgress || fetchTransactionError || !currentTransaction}
+            >
+              Cancel
+            </CancelButton>
+          </div>
+        )}
+        {isCanceled ? (
+          <div className="mt-10 flex flex-col items-center">
+            <h2 className="text-success">This booking has been canceled.</h2>
+          </div>
         ) : null}
       </Card>
+      {showCancelModal ? (
+        <CancelBookingModal
+          isOpen={showCancelModal}
+          onClose={handleCloseModal}
+          otherUserDisplayName={providerDisplayName}
+          userType={EMPLOYER}
+          booking={currentTransaction}
+          onGoBack={handleCloseModal}
+        />
+      ) : null}
     </div>
   );
 };
 
 const mapStateToProps = state => {
   const {
-    acceptBookingModificationInProgress,
-    acceptBookingModificationError,
-    declineBookingModificationInProgress,
-    declineBookingModificationError,
-  } = state.NotificationsPage;
+    fetchTransactionError,
+    fetchTransactionInProgress,
+    currentTransaction,
+  } = state.transactions;
 
   return {
-    acceptBookingModificationInProgress,
-    acceptBookingModificationError,
-    declineBookingModificationInProgress,
-    declineBookingModificationError,
+    fetchTransactionError,
+    fetchTransactionInProgress,
+    currentTransaction,
   };
 };
 
 const mapDispatchToProps = {
-  onAccept: acceptBookingModification,
-  onDecline: declineBookingModification,
+  onFetchTransaction: fetchTransaction,
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(NotificationBookingModified);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  NotificationBookingModifiedResponse
+);

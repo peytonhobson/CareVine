@@ -10,6 +10,7 @@ import {
   TRANSITION_UPDATE_BOOKING_END_REPEAT,
   TRANSITION_UPDATE_BOOKING_END,
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_DELIVERED_CANCEL,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -33,6 +34,7 @@ const bookingTransitions = [
   TRANSITION_UPDATE_BOOKING_END_REPEAT,
   TRANSITION_UPDATE_BOOKING_END,
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_DELIVERED_CANCEL,
 ];
 
 // ================ Action types ================ //

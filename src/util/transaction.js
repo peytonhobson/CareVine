@@ -29,7 +29,6 @@ export const TRANSITION_CHARGE = 'transition/charge';
 export const TRANSITION_START = 'transition/start';
 export const TRANSITION_COMPLETE = 'transition/complete';
 export const TRANSITION_DECLINE_PAYMENT = 'transition/decline-payment';
-export const TRANSITION_CANCEL_PAY_CAREGIVER = 'transition/cancel-pay-caregiver';
 export const TRANSITION_UPDATE_NEXT_WEEK_START = 'transition/update-next-week-start';
 export const TRANSITION_UPDATE_BOOKING_END_REPEAT = 'transition/update-booking-end-repeat';
 export const TRANSITION_UPDATE_BOOKING_END = 'transition/update-booking-end';
@@ -37,6 +36,7 @@ export const TRANSITION_ACTIVE_CANCEL = 'transition/active-cancel';
 export const TRANSITION_CHARGED_CANCEL = 'transition/charged-cancel';
 export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
 export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-booking-end';
+export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
 
 /**
  * Actors
@@ -130,6 +130,13 @@ const stateDescription = {
 
 // Note: currently we assume that state description doesn't contain nested states.
 const statesFromStateDescription = description => description.states || {};
+
+export const CANCELED_TRANSITIONS = [
+  TRANSITION_CHARGED_CANCEL,
+  TRANSITION_CANCEL_BOOKING_REQUEST,
+  TRANSITION_ACCEPTED_CANCEL,
+  TRANSITION_ACTIVE_CANCEL,
+];
 
 export const CANCELABLE_TRANSITIONS = [
   TRANSITION_REQUEST_BOOKING,

@@ -6,3 +6,4 @@ export { default as NotificationListingRemoved } from './NotificationListingRemo
 export { default as NotificationListingOpened } from './NotificationListingOpened';
 export { default as NotificationNewBookingRequest } from './NotificationNewBookingRequest';
 export { default as NotificationBookingModified } from './NotificationBookingModified';
+export { default as NotificationBookingModifiedResponse } from './NotificationBookingModifiedResponse';

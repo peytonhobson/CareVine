@@ -9,6 +9,7 @@ import {
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
   NOTIFICATION_TYPE_BOOKING_REQUESTED,
   NOTIFICATION_TYPE_BOOKING_MODIFIED,
+  NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE,
 } from '../../util/constants';
 import {
   NotificationPaymentRequested,
@@ -19,6 +20,7 @@ import {
   NotificationListingOpened,
   NotificationNewBookingRequest,
   NotificationBookingModified,
+  NotificationBookingModifiedResponse,
 } from './NotificationTemplates';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -123,6 +125,9 @@ const NotificationContainer = props => {
       break;
     case NOTIFICATION_TYPE_BOOKING_MODIFIED:
       notificationTemplate = <NotificationBookingModified notification={notification} />;
+      break;
+    case NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE:
+      notificationTemplate = <NotificationBookingModifiedResponse notification={notification} />;
       break;
     default:
       notificationTemplate =

@@ -9,6 +9,7 @@ import {
   NOTIFICATION_TYPE_PAYMENT_REQUESTED,
   NOTIFICATION_TYPE_BOOKING_REQUESTED,
   NOTIFICATION_TYPE_BOOKING_MODIFIED,
+  NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE,
 } from '../../util/constants';
 import { IconVerticalDots } from '../../components';
 import { isToday, isYesterday, timestampToDate } from '../../util/dates';
@@ -54,6 +55,8 @@ const buildText = (type, metadata) => {
       return `You have a new booking request from ${metadata.senderName}.`;
     case NOTIFICATION_TYPE_BOOKING_MODIFIED:
       return `${metadata.customerDisplayName} has requested a modification to your booking. Please review the request and accept or decline it.`;
+    case NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE:
+      return `Your modification request has been ${metadata.isAccepted ? 'accepted' : 'declined'}.`;
     default:
       return null;
   }
@@ -104,6 +107,8 @@ const TitleContent = ({ type, metadata }) => {
           <span className={css.noWrapText}>{metadata.customerDisplayName}</span>
         </span>
       );
+    case NOTIFICATION_TYPE_BOOKING_MODIFIED_RESPONSE:
+      return <span>Booking Modification {metadata.isAccepted ? 'Accepted' : 'Declined'}</span>;
     default:
       return null;
   }

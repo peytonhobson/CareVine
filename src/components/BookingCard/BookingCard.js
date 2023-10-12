@@ -192,7 +192,6 @@ const BookingCardComponent = props => {
         <CancelModal
           isOpen={state.openModalType === MODAL_TYPES.CANCEL}
           onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
-          lastTransition={lastTransition}
           otherUserDisplayName={otherUserDisplayName}
           userType={userType}
           booking={booking}

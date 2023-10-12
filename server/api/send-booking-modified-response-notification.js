@@ -69,13 +69,13 @@ module.exports = async (req, res) => {
     await sendEmail({
       receiverId: userId,
       templateData: {
-        providerDisplayNameDisplayName,
+        providerDisplayName,
         bookingNumber,
         isAccepted,
         marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
         notificationId,
       },
-      templateName: 'booking-modified',
+      templateName: 'booking-modification-response',
     });
 
     await integrationSdk.transactions.updateMetadata({
