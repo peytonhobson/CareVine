@@ -21,7 +21,7 @@
   width: 100%;
 
   @media screen(md) {
-    width: 20rem;
+    width: 19rem;
   }
 
   @media screen(lg) {

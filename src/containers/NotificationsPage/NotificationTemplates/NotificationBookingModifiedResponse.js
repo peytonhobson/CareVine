@@ -9,12 +9,12 @@ import { EMPLOYER, FULL_WEEKDAY_MAP } from '../../../util/constants';
 import Card from '@material-ui/core/Card';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { CANCELED_TRANSITIONS } from '../../../util/transaction';
+import { CANCELED_TRANSITIONS, CANCELABLE_TRANSITIONS } from '../../../util/transaction';
 import { fetchTransaction } from '../../../ducks/transactions.duck';
 
 import css from './NotificationTemplates.module.css';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   card: {
     borderRadius: 'var(--borderRadius)',
     transition: 'all 0.2s ease-in 0s !important',
@@ -63,6 +63,7 @@ const NotificationBookingModifiedResponse = props => {
     onFetchTransaction(txId);
   };
 
+  console.log(currentTransaction);
   const classes = useStyles();
   const modificationType = Object.keys(modification)[0];
   const sortedPreviousExceptions = useMemo(
@@ -82,6 +83,9 @@ const NotificationBookingModifiedResponse = props => {
     ...modification,
   };
 
+  const isCancelable = CANCELABLE_TRANSITIONS.includes(
+    currentTransaction?.attributes.lastTransition
+  );
   const isCanceled = CANCELED_TRANSITIONS.includes(currentTransaction?.attributes.lastTransition);
 
   return (
@@ -92,7 +96,7 @@ const NotificationBookingModifiedResponse = props => {
           {providerDisplayName} has {isAccepted ? 'accepted' : 'declined'} your modification to
           booking #{bookingNumber}.
         </p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">
           <Card className={classes.innerCard}>
             <h2 className="text-center">Original</h2>
             <div>
@@ -106,7 +110,10 @@ const NotificationBookingModifiedResponse = props => {
                     className={modificationType === 'bookingSchedule' ? 'text-error' : null}
                   >
                     <p className="my-0 leading-6">
-                      {FULL_WEEKDAY_MAP[dayOfWeek]}: {startTime} - {endTime}
+                      {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
+                      <span className="whitespace-nowrap">
+                        {startTime} - {endTime}
+                      </span>
                     </p>
                   </div>
                 );
@@ -150,7 +157,10 @@ const NotificationBookingModifiedResponse = props => {
                     className={modificationType === 'bookingSchedule' ? 'text-success' : null}
                   >
                     <p className="my-0 leading-6">
-                      {FULL_WEEKDAY_MAP[dayOfWeek]}: {startTime} - {endTime}
+                      {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
+                      <span className="whitespace-nowrap">
+                        {startTime} - {endTime}
+                      </span>
                     </p>
                   </div>
                 );
@@ -182,9 +192,9 @@ const NotificationBookingModifiedResponse = props => {
             </div>
           </Card>
         </div>
-        {isAccepted ? null : (
+        {!isAccepted && isCancelable ? (
           <div className="mt-10 flex flex-col items-center">
-            <p className="text-primary">
+            <p className="text-primary text-center">
               If you want to cancel this booking, click the button below.
             </p>
             {fetchTransactionError ? (
@@ -194,17 +204,18 @@ const NotificationBookingModifiedResponse = props => {
             ) : null}
             <CancelButton
               className="max-w-[15rem]"
-              onClick={() => setShowCancelModal(true)}
+              onClick={() => {
+                setShowCancelModal(true);
+                window.scrollTo(0, 0);
+              }}
               disabled={fetchTransactionInProgress || fetchTransactionError || !currentTransaction}
             >
               Cancel
             </CancelButton>
           </div>
-        )}
+        ) : null}
         {isCanceled ? (
-          <div className="mt-10 flex flex-col items-center">
-            <h2 className="text-success">This booking has been canceled.</h2>
-          </div>
+          <h2 className="text-success text-center">This booking has been canceled.</h2>
         ) : null}
       </Card>
       {showCancelModal ? (

@@ -37,6 +37,7 @@ export const TRANSITION_CHARGED_CANCEL = 'transition/charged-cancel';
 export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
 export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-booking-end';
 export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
+export const TRANSITON_WNFW_CANCEL = 'transition/wfnw-cancel';
 
 /**
  * Actors
@@ -136,6 +137,7 @@ export const CANCELED_TRANSITIONS = [
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_ACCEPTED_CANCEL,
   TRANSITION_ACTIVE_CANCEL,
+  TRANSITON_WNFW_CANCEL,
 ];
 
 export const CANCELABLE_TRANSITIONS = [

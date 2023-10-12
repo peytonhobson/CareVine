@@ -95,7 +95,7 @@ const NotificationBookingModified = props => {
             {customerDisplayName} has modified booking #{bookingNumber}.
           </p>
         )}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">
           <Card className={classes.innerCard}>
             <h2 className="text-center">Original</h2>
             <div>
@@ -109,7 +109,10 @@ const NotificationBookingModified = props => {
                     className={modificationType === 'bookingSchedule' ? 'text-error' : null}
                   >
                     <p className="my-0 leading-6">
-                      {FULL_WEEKDAY_MAP[dayOfWeek]}: {startTime} - {endTime}
+                      {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
+                      <span className="whitespace-nowrap">
+                        {startTime} - {endTime}
+                      </span>
                     </p>
                   </div>
                 );
@@ -153,7 +156,10 @@ const NotificationBookingModified = props => {
                     className={modificationType === 'bookingSchedule' ? 'text-success' : null}
                   >
                     <p className="my-0 leading-6">
-                      {FULL_WEEKDAY_MAP[dayOfWeek]}: {startTime} - {endTime}
+                      {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
+                      <span className="whitespace-nowrap">
+                        {startTime} - {endTime}
+                      </span>
                     </p>
                   </div>
                 );
@@ -194,7 +200,7 @@ const NotificationBookingModified = props => {
               <p className="text-error text-center">Failed to accept.</p>
             ) : null}
             {!isExpired && !accepted && !declined ? (
-              <div className="flex mt-16 justify-evenly">
+              <div className="flex mt-16 justify-evenly gap-4">
                 <CancelButton
                   className="max-w-[15rem]"
                   onClick={() => onDecline(notification)}

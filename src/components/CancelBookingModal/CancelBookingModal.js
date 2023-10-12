@@ -79,7 +79,9 @@ const CancelBookingModal = props => {
       usePortal
       containerClassName={css.modalContainer}
     >
-      <p className={css.modalTitle}>Cancel Booking with {otherUserDisplayName}</p>
+      <p className={css.modalTitle}>
+        Cancel Booking with <span className="whitespace-nowrap">{otherUserDisplayName}</span>
+      </p>
       {policy}
       {cancelBookingError ? (
         <p className={css.modalError}>
