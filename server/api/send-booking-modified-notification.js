@@ -59,7 +59,6 @@ module.exports = async (req, res) => {
     const customerDisplayName = customer.attributes.profile.displayName;
 
     let expiration;
-
     const modificationType = Object.keys(modification)[0];
     switch (modificationType) {
       case 'bookingSchedule':
@@ -73,6 +72,9 @@ module.exports = async (req, res) => {
         expiration = moment(firstExceptionDate).startOf('day');
         break;
     }
+
+    const threeDaysFromNow = moment().add(3, 'days');
+    expiration = expiration.isAfter(threeDaysFromNow) ? threeDaysFromNow : expiration;
 
     const notificationId = uuidv4();
     const newNotification = {

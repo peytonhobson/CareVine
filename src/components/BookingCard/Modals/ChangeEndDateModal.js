@@ -102,6 +102,8 @@ const ChangeEndDateModal = props => {
   } = booking.attributes.metadata;
   const txId = booking.id.uuid;
 
+  const providerDisplayName = booking?.provider?.attributes?.profile?.displayName;
+
   const { bookedDates = [], bookedDays = [] } = booking.listing.attributes.metadata;
 
   const filteredBookedDays = useMemo(() => bookedDays.filter(d => d.txId !== txId), [bookedDays]);
@@ -142,6 +144,16 @@ const ChangeEndDateModal = props => {
       : false[(chargedLineItems, oldEndDate)]
   );
 
+  const startOfSelectedDay = moment(selectedEndDate).startOf('day');
+  const threeDaysFromNow = moment().add(3, 'days');
+  const expiration = moment(startOfSelectedDay).isAfter(threeDaysFromNow)
+    ? threeDaysFromNow.format('MMMM Do')
+    : startOfSelectedDay.format('MMMM Do');
+  const expirationTime = moment(startOfSelectedDay).isAfter(threeDaysFromNow)
+    ? threeDaysFromNow.format('h:mm a')
+    : startOfSelectedDay.format('h:mm a');
+  const futureDateSelected = selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');
+
   return isOpen ? (
     <Modal
       title="Change End Date"
@@ -180,6 +192,8 @@ const ChangeEndDateModal = props => {
             updateBookingEndDateInProgress || updateBookingEndDateSuccess || invalid;
           const submitReady = updateBookingEndDateSuccess;
 
+          const formattedEndDate = moment(selectedEndDate).format('MMMM Do');
+
           return (
             <Form onSubmit={handleSubmit}>
               <FormSpy subscription={{ values: true }} onChange={onFormChange} />
@@ -214,11 +228,19 @@ const ChangeEndDateModal = props => {
               />
               {selectedEndDate ? (
                 <>
-                  <p className={css.modalMessage}>
-                    By clicking 'Submit', the end date of your booking will be changed to{' '}
-                    {moment(selectedEndDate).format('MMMM Do')}. You will not be charged for any
-                    time after this date.
-                  </p>
+                  {futureDateSelected ? (
+                    <p className={classNames(css.modalMessage, 'text-primary')}>
+                      When you click 'Submit', a request to change your booking end date to{' '}
+                      {formattedEndDate} will be sent to {providerDisplayName}. They have until{' '}
+                      {expiration} at {expirationTime} to accept or decline. If the request expires
+                      or they respond, you will be notified.
+                    </p>
+                  ) : (
+                    <p className={classNames(css.modalMessage, 'text-primary')}>
+                      By clicking 'Submit', the end date of your booking will be changed to{' '}
+                      {formattedEndDate}. You will not be charged for any time after this date.
+                    </p>
+                  )}
                   {hasRefund ? (
                     <>
                       <p className={css.modalMessage}>
