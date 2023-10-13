@@ -1,4 +1,4 @@
-import { CAREGIVER } from '../../util/constants';
+import { CAREGIVER, BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import {
@@ -99,7 +99,7 @@ const mapRefundItems = (lineItems, isCaregiver) => {
     const base = isFifty
       ? parseFloat(lineItem.amount / 2).toFixed(2)
       : parseFloat(lineItem.amount).toFixed(2);
-    const bookingFee = parseFloat(base * 0.05).toFixed(2);
+    const bookingFee = parseFloat(base * BOOKING_FEE_PERCENTAGE).toFixed(2);
     return {
       isFifty,
       base,

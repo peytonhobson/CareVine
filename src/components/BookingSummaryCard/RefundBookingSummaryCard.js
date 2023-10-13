@@ -5,10 +5,9 @@ import { addTimeToStartOfDay } from '../../util/dates';
 import { convertTimeFrom12to24 } from '../../util/data';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
+import { BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
-
-const TRANSACTION_FEE = 0.05;
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -41,7 +40,7 @@ const RefundBookingSummaryCard = props => {
   const subTotal =
     fiftyPercentRefund.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) +
     fullRefund.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
-  const bookingFee = parseFloat(subTotal * TRANSACTION_FEE).toFixed(2);
+  const bookingFee = parseFloat(subTotal * BOOKING_FEE_PERCENTAGE).toFixed(2);
   const total = subTotal + Number(bookingFee);
 
   return (
@@ -97,7 +96,7 @@ const RefundBookingSummaryCard = props => {
         <div className={css.totalContainer}>
           <div className={css.totalCalc}>
             <h4 className={css.paymentCalc}>
-              +5% Booking fee refund - ${parseFloat(bookingFee).toFixed(2)}
+              +2% Booking fee refund - ${parseFloat(bookingFee).toFixed(2)}
             </h4>
           </div>
           <h3 className={css.total}>Total Refund: ${parseFloat(total).toFixed(2)}</h3>

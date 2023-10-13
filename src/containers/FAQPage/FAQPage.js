@@ -284,7 +284,7 @@ const FAQPage = props => {
           answer: (
             <span>
               CareVine charges a service fee for using the platform, which covers the costs of
-              maintaining the site, providing support, and processing payments. This fee is 5% of
+              maintaining the site, providing support, and processing payments. This fee is 2% of
               the amount paid to caregiver and is added to the total booking cost. In addition, a
               processing fee of is charged by Stripe for each transaction. This fee is 2.9% + $0.30
               for credit card transactions or 0.08% for bank transactions. CareVine recommends using

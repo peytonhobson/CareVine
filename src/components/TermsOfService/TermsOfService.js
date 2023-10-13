@@ -358,7 +358,7 @@ const TermsOfService = props => {
               <h2>5.5. Fees</h2>
               <div id="cancellation-policy" />
               <p>
-                For each booking, a 5% booking fee is applied. Additionally, a processing fee,
+                For each booking, a 2% booking fee is applied. Additionally, a processing fee,
                 depending on the payment method chosen, is charged for each booking. Credit card
                 payments incur a fee of 2.9% plus $0.30, while bank account payments incur a fee of
                 0.8%, up to $5.00.

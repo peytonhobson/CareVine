@@ -607,8 +607,6 @@ export const findStartTimeFromLineItems = lineItems => {
   return startTime;
 };
 
-const TRANSACTION_FEE = 0.05;
-
 export const calculateRefundAmount = (lineItems, caregiverCanceled) => {
   // If caregiver canceled then we need to refund the full amount
   // Otherwise, all line items that are within 48 hours of the start time
