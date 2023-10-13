@@ -138,6 +138,7 @@ module.exports = async (req, res) => {
             customerDisplayName,
             bookingNumber,
             notificationId,
+            bookingId: txId,
           },
         },
       })

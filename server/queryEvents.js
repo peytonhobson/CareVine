@@ -250,6 +250,7 @@ module.exports = queryEvents = () => {
     if (eventType === 'transaction/transitioned') {
       const transaction = event.attributes.resource;
       const lastTransition = transaction.attributes.lastTransition;
+      const processName = transaction.attributes.processName;
       const metadata = transaction.attributes.metadata;
 
       if (
@@ -296,6 +297,19 @@ module.exports = queryEvents = () => {
         } else {
           createCaregiverPayout(transaction);
         }
+      }
+
+      if (lastTransition === 'transition/expire' && processName === 'modify-booking-process') {
+        const bookingId = transaction.attributes.metadata.bookingId;
+        // TODO: Needs to be tested
+        integrationSdk.transactions
+          .updateMetadata({
+            id: bookingId,
+            metadata: {
+              awaitingModificationApproval: false,
+            },
+          })
+          .catch(e => log.error(e, 'Modify Booking Expired Update Failed', { bookingId }));
       }
     }
 
