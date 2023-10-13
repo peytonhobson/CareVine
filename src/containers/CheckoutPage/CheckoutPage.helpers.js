@@ -2,10 +2,8 @@ import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
 import { calculateProcessingFee } from '../../util/data';
 import { addTimeToStartOfDay, calculateTimeBetween } from '../../util/dates';
-import { WEEKDAY_MAP, ISO_OFFSET_FORMAT } from '../../util/constants';
+import { WEEKDAY_MAP, ISO_OFFSET_FORMAT, BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 import { filterWeeklyBookingDays, sortWeekdays } from '../../util/bookings';
-
-const BOOKING_FEE_PERCENTAGE = 0.05;
 
 export const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -80,7 +78,7 @@ export const constructBookingMetadataOneTime = (
       shortDate: moment(isoDate).format('MM/DD'),
       hours,
       amount,
-      bookingFee: parseFloat(amount * 0.05).toFixed(2),
+      bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
     };
   });
 
@@ -134,7 +132,7 @@ export const constructBookingMetadataRecurring = (
       shortDate: moment(isoDate).format('MM/DD'),
       hours,
       amount,
-      bookingFee: parseFloat(amount * 0.05).toFixed(2),
+      bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
     };
   });
 

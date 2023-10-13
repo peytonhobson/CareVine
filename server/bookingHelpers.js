@@ -2,7 +2,7 @@ const { default: d } = require('final-form-arrays');
 const moment = require('moment');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-const BOOKING_FEE_PERCENTAGE = 0.05;
+const BOOKING_FEE_PERCENTAGE = 0.02;
 const BANK_ACCOUNT = 'us_bank_account';
 const CARD_PROCESSING_FEE = 0.029;
 const BANK_PROCESSING_FEE = 0.008;
@@ -204,7 +204,7 @@ const constructBookingMetadataRecurring = (
       shortDate: moment(isoDate).format('MM/DD'),
       hours,
       amount,
-      bookingFee: parseFloat(amount * 0.05).toFixed(2),
+      bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
     };
   });
 

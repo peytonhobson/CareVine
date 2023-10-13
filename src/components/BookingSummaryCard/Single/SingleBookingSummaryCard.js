@@ -6,10 +6,9 @@ import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
 import SingleBookingItem from './SingleBookingItem';
 import { calculateTimeBetween } from '../../../util/dates';
+import { BOOKING_FEE_PERCENTAGE } from '../../../util/constants';
 
 import css from '../BookingSummaryCard.module.css';
-
-const TRANSACTION_FEE = 0.05;
 
 const calculateTotalHours = bookingTimes =>
   bookingTimes?.reduce(
@@ -19,7 +18,8 @@ const calculateTotalHours = bookingTimes =>
     0
   );
 
-const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
+const calculateBookingFee = subTotal =>
+  parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const calculateSubTotal = (totalHours, bookingRate) => {
   return parseFloat(totalHours * Number(bookingRate)).toFixed(2);

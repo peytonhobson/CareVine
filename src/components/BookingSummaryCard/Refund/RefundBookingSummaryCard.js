@@ -4,15 +4,15 @@ import moment from 'moment';
 import { addTimeToStartOfDay, calculateTimeBetween } from '../../../util/dates';
 import RefundBookingItem from './RefundBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
+import { BOOKING_FEE_PERCENTAGE } from '../../../util/constants';
 
 import css from '../BookingSummaryCard.module.css';
-
-const TRANSACTION_FEE = 0.05;
 
 const calculateTotalHours = bookingTimes =>
   bookingTimes?.reduce((acc, curr) => calculateTimeBetween(curr.startTime, curr.endTime) + acc, 0);
 
-const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
+const calculateBookingFee = subTotal =>
+  parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const mapRefundItems = (chargedLineItems, cancelDate) => {
   return chargedLineItems.reduce((acc, curr) => {

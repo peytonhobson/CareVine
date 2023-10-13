@@ -9,6 +9,7 @@ const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const { constructBookingMetadataRecurring, addTimeToStartOfDay } = require('./bookingHelpers');
 // Time
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+const BOOKING_FEE_PERCENTAGE = 0.02;
 
 const apiBaseUrl = () => {
   const port = process.env.REACT_APP_DEV_API_SERVER_PORT;
@@ -321,7 +322,7 @@ const updateBookingLedger = async transaction => {
   const amount = parseFloat(
     lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
   ).toFixed(2);
-  const bookingFee = parseInt(Math.round(amount * 0.05));
+  const bookingFee = parseInt(Math.round(amount * BOOKING_FEE_PERCENTAGE));
   const processingFee =
     paymentMethodType === 'Bank Account'
       ? parseFloat(Math.round(amount * 0.008)).toFixed(2)

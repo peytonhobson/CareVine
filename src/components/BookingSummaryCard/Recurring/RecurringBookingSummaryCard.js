@@ -10,7 +10,7 @@ import {
 } from '../../../components';
 import { calculateProcessingFee } from '../../../util/data';
 import moment from 'moment';
-import { WEEKDAYS } from '../../../util/constants';
+import { WEEKDAYS, BOOKING_FEE_PERCENTAGE } from '../../../util/constants';
 import RecurringBookingItem from './RecurringBookingItem';
 import BookingSummaryCard from '../BookingSummaryCard';
 import ChangeRatesModal from '../ChangeRatesModal';
@@ -20,12 +20,11 @@ import { calculateTimeBetween } from '../../../util/dates';
 
 import css from '../BookingSummaryCard.module.css';
 
-const TRANSACTION_FEE = 0.05;
-
 const calculateTotalHours = weekdays =>
   weekdays?.reduce((acc, curr) => acc + calculateTimeBetween(curr.startTime, curr.endTime), 0);
 
-const calculateBookingFee = subTotal => parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
+const calculateBookingFee = subTotal =>
+  parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const calculateSubTotal = (totalHours, bookingRate) =>
   parseFloat(totalHours * Number(bookingRate)).toFixed(2);

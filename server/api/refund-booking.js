@@ -4,6 +4,8 @@ const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');
 
+const BOOKING_FEE_PERCENTAGE = 0.02;
+
 const mapLineItemsForCancellationCustomer = lineItems => {
   // Half the amount of the line item if it is within 48 hours of the start time.
   // Remove line items that are more than 48 hours away.
@@ -64,7 +66,7 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
         const base = isFifty
           ? parseFloat(lineItem.amount / 2).toFixed(2)
           : parseFloat(lineItem.amount).toFixed(2);
-        const bookingFee = parseFloat(base * 0.05).toFixed(2);
+        const bookingFee = parseFloat(base * BOOKING_FEE_PERCENTAGE).toFixed(2);
         return {
           isFifty,
           base,
@@ -109,7 +111,7 @@ module.exports = async (req, res) => {
     const totalRefundAmount = parseInt(
       allRefundItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
     );
-    const totalApplicationFeeRefund = parseInt(Number(totalRefundAmount) * 0.05);
+    const totalApplicationFeeRefund = parseInt(Number(totalRefundAmount) * BOOKING_FEE_PERCENTAGE);
 
     let metadataToUpdate;
     if (totalRefundAmount > 0) {
@@ -118,7 +120,7 @@ module.exports = async (req, res) => {
           const refundAmount = parseInt(
             lineItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
           );
-          const applicationFeeRefund = parseInt(refundAmount * 0.05);
+          const applicationFeeRefund = parseInt(refundAmount * BOOKING_FEE_PERCENTAGE);
 
           await stripeCreateRefund({
             paymentIntentId,
