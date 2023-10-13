@@ -215,14 +215,11 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     'booking',
   ];
 
-  const params = {
-    userId: currentUser.id.uuid,
-    include,
-  };
-
   try {
     const response = await sdk.transactions.query({
-      ...params,
+      processNames: ['single-booking-process', 'booking-process'],
+      userId: currentUser.id.uuid,
+      include,
       lastTransitions: [...requestTransitions, ...bookingTransitions],
     });
 

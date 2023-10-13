@@ -1,4 +1,4 @@
-const { integrationSdk, handleError, apiBaseUrl } = require('../api-util/sdk');
+const { integrationSdk, handleError, apiBaseUrl, getTrustedSdk } = require('../api-util/sdk');
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const moment = require('moment');
@@ -45,7 +45,10 @@ module.exports = async (req, res) => {
 
   try {
     const transaction = (
-      await integrationSdk.transactions.show({ id: txId, include: ['customer', 'provider'] })
+      await integrationSdk.transactions.show({
+        id: txId,
+        include: ['customer', 'provider', 'listing'],
+      })
     ).data.data;
 
     const customerId = transaction.relationships.customer.data.id;
@@ -71,6 +74,8 @@ module.exports = async (req, res) => {
         const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
         expiration = moment(firstExceptionDate).startOf('day');
         break;
+      default:
+        expiration = moment();
     }
 
     const threeDaysFromNow = moment().add(3, 'days');
@@ -97,6 +102,7 @@ module.exports = async (req, res) => {
     const oldNotifications = provider.attributes.profile.privateData.notifications ?? [];
 
     // If customer makes multiple requests, we want to replace the old one so caregiver can't accept multiple times
+    // Shouldn't be an issue as we only send one request at a time, but here just in case we change that
     const replacedNotifications = oldNotifications.filter(
       n =>
         !(
@@ -105,25 +111,48 @@ module.exports = async (req, res) => {
           Object.keys(n.metadata.modification)[0] === Object.keys(modification)[0]
         )
     );
+
+    const trustedSdk = await getTrustedSdk(req);
+    const bookingStart = moment(expiration)
+      .add(5 - (moment(expiration).minute() % 5), 'minutes')
+      .set({ second: 0, millisecond: 0 })
+      .format(ISO_OFFSET_FORMAT);
+    const bookingEnd = moment(bookingStart)
+      .clone()
+      .add(5, 'minutes')
+      .format(ISO_OFFSET_FORMAT);
+    const bookingTimesMaybe = isRequest
+      ? {
+          bookingStart,
+          bookingEnd,
+        }
+      : {};
+    const modifyBookingTransaction = (
+      await trustedSdk.transactions.initiate({
+        processAlias: 'modify-booking-process/active',
+        transition: isRequest ? 'transition/modify-booking-request' : 'transition/booking-modified',
+        params: {
+          listingId: transaction.relationships.listing.data.id,
+          ...bookingTimesMaybe,
+          metadata: {
+            customerDisplayName,
+            bookingNumber,
+            notificationId,
+          },
+        },
+      })
+    ).data.data;
+
+    const modifyBookingTxId = modifyBookingTransaction.id.uuid;
+    newNotification.metadata.modifyBookingTxId = modifyBookingTransaction.id.uuid;
     const newNotifications = [newNotification, ...replacedNotifications];
 
     await integrationSdk.users.updateProfile({
       id: userId,
       privateData: {
         notifications: newNotifications,
+        modifyBookingTxId,
       },
-    });
-
-    await sendEmail({
-      receiverId: userId,
-      templateData: {
-        customerDisplayName,
-        bookingNumber,
-        isRequest,
-        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-        notificationId,
-      },
-      templateName: 'booking-modified',
     });
 
     if (isRequest) {
@@ -138,5 +167,6 @@ module.exports = async (req, res) => {
     res.status(200).json({});
   } catch (e) {
     handleError(res, e);
+    console.log(e?.data?.errors?.[0]?.source);
   }
 };

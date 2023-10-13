@@ -119,7 +119,7 @@ const bookingSchedule = [
   {
     dayOfWeek: 'sat',
     startTime: '6:00am',
-    endTime: '8:00am',
+    endTime: '11:00am',
   },
 ];
 const bookingRate = 23;
@@ -148,7 +148,7 @@ const BODY_PARAMS = {
     metadata: {
       bookingSchedule,
       startDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-      endDate: null,
+      endDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       cancelAtPeriodEnd: false,
       type: 'recurring',
       bookingRate,

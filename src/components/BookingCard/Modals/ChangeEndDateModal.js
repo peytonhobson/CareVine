@@ -232,8 +232,8 @@ const ChangeEndDateModal = props => {
                     <p className={classNames(css.modalMessage, 'text-primary')}>
                       When you click 'Submit', a request to change your booking end date to{' '}
                       {formattedEndDate} will be sent to {providerDisplayName}. They have until{' '}
-                      {expiration} at {expirationTime} to accept or decline. If the request expires
-                      or they respond, you will be notified.
+                      {expiration} at {expirationTime} to accept or decline. If they respond or the
+                      request expires, you will be notified.
                     </p>
                   ) : (
                     <p className={classNames(css.modalMessage, 'text-primary')}>

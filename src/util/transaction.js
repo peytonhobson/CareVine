@@ -39,6 +39,13 @@ export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-bo
 export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
 export const TRANSITON_WNFW_CANCEL = 'transition/wfnw-cancel';
 
+// Modify Booking Process Transitions
+export const TRANSITION_MODIFY_BOOKING = 'transition/booking-modified';
+export const TRANSITION_MODIFY_BOOKING_REQUEST = 'transition/modify-booking-request';
+export const TRANSITION_MODIFY_BOOKING_ACCEPT = 'transition/accept';
+export const TRANSITION_MODIFY_BOOKING_DECLINE = 'transition/decline';
+export const TRANSITION_MODIFY_BOOKING_EXPIRE = 'transition/expire';
+
 /**
  * Actors
  *

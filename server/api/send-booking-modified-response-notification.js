@@ -1,4 +1,4 @@
-const { integrationSdk, handleError, apiBaseUrl } = require('../api-util/sdk');
+const { integrationSdk, handleError, apiBaseUrl, getTrustedSdk } = require('../api-util/sdk');
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const moment = require('moment');
@@ -21,7 +21,7 @@ const sendEmail = async params => {
 };
 
 module.exports = async (req, res) => {
-  const { txId, modification, previousMetadata, isAccepted } = req.body;
+  const { txId, modification, previousMetadata, isAccepted, modifyBookingTxId } = req.body;
 
   try {
     const transaction = (
@@ -66,16 +66,17 @@ module.exports = async (req, res) => {
       },
     });
 
-    await sendEmail({
-      receiverId: userId,
-      templateData: {
-        providerDisplayName,
-        bookingNumber,
-        isAccepted,
-        marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-        notificationId,
+    const trustedSdk = await getTrustedSdk(req);
+    await trustedSdk.transactions.transition({
+      id: modifyBookingTxId,
+      transition: isAccepted ? 'transition/accept' : 'transition/decline',
+      params: {
+        metadata: {
+          providerDisplayName,
+          bookingNumber,
+          notificationId,
+        },
       },
-      templateName: 'booking-modification-response',
     });
 
     await integrationSdk.transactions.updateMetadata({

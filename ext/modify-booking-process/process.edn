@@ -2,27 +2,41 @@
  :transitions
  [
   {:name :transition/modify-booking-request,
+  :actions
+  [{:name :action/privileged-update-metadata}, {:name :action/create-proposed-booking :config {:type :time}}],
    :actor :actor.role/customer,
-   :to :state/modify-booking-requested},
+   :to :state/modify-booking-requested,
+   :privileged? true
+   },
 
    {:name :transition/expire,
    :at {:fn/timepoint [:time/booking-start]}
    :from :state/modify-booking-requested,
    :to :state/expired}
 
-   {:name :transition/accept
+   {:name :transition/accept,
+   :actions
+  [{:name :action/privileged-update-metadata}],
    :actor :actor.role/provider,
    :from :state/modify-booking-requested,
-   :to :state/accepted}
+   :to :state/accepted,
+   :privileged? true}
 
-   {:name :transition/decline
+
+   {:name :transition/decline,
+   :actions
+  [{:name :action/privileged-update-metadata}],
    :actor :actor.role/provider,
    :from :state/modify-booking-requested,
-   :to :state/declined}
+   :to :state/declined,
+   :privileged? true}
 
-   {:name :transition/booking-modified
+   {:name :transition/booking-modified,
+   :actions
+  [{:name :action/privileged-update-metadata}],
    :actor :actor.role/customer,
-   :to :state/modified}
+   :to :state/modified,
+   :privileged? true}
 
    ],
  :notifications

@@ -290,7 +290,7 @@ const acceptEndDateModification = async (transaction, modification) => {
 export const acceptBookingModification = notification => async (dispatch, getState, sdk) => {
   dispatch(acceptBookingModificationRequest());
 
-  const { modification, txId, previousMetadata } = notification.metadata;
+  const { modification, txId, previousMetadata, modifyBookingTxId } = notification.metadata;
   const modificationType = Object.keys(modification)[0];
 
   try {
@@ -329,6 +329,7 @@ export const acceptBookingModification = notification => async (dispatch, getSta
       modification,
       previousMetadata,
       isAccepted: true,
+      modifyBookingTxId,
     });
 
     dispatch(fetchCurrentUser());
@@ -364,12 +365,13 @@ export const declineBookingModification = notification => async (dispatch, getSt
       privateData: { notifications: newNotifications },
     });
 
-    const { txId, modification, previousMetadata } = notification.metadata;
+    const { txId, modification, previousMetadata, modifyBookingTxId } = notification.metadata;
     await sendBookingModifiedNotificationResponse({
       txId,
       modification,
       previousMetadata,
       isAccepted: false,
+      modifyBookingTxId,
     });
 
     dispatch(fetchCurrentUser());
