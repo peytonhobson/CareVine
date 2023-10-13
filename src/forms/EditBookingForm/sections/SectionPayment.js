@@ -103,9 +103,16 @@ const SectionPayment = props => {
             </li>
             <li className={css.learnMoreListItem}>
               <strong>Flexible Cancellation</strong>: We understand that plans change, and we've got
-              you covered. If you need to cancel the booking, you'll be refunded in
-              {/* TODO: Add link to cancellation policy in TOS here */}
-              accordance with our fair and transparent cancellation policy.
+              you covered. If you need to cancel the booking, you'll be refunded in accordance with
+              our fair and transparent{' '}
+              <NamedLink
+                name="TermsOfServicePage"
+                target="_blank"
+                to={{ hash: '#cancellation-policy' }}
+              >
+                cancellation policy
+              </NamedLink>
+              .
             </li>
           </ol>
           We take your security and trust very seriously. Our process is designed to ensure every

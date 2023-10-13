@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, CancelButton, Button, RefundBookingSummaryCard } from '..';
+import { Modal, CancelButton, Button, RefundBookingSummaryCard, NamedLink } from '..';
 import { cancelBooking } from '../../containers/BookingsPage/BookingsPage.duck';
 import { manageDisableScrolling } from '../../ducks/UI.duck';
 import { compose } from 'redux';
@@ -42,19 +42,17 @@ const CancelBookingModal = props => {
   } else {
     policy = showCancellationPolicy ? (
       <>
-        <p className={css.modalMessageRefund}>Cancellation Policy</p>
-        <ul className={css.refundList}>
-          <li className={css.refundListItem}>
-            100% refund for booked times canceled more than 48 hours in advance
-          </li>
-          <li className={css.refundListItem}>
-            50% refund for booked times canceled less than 48 hours in advance
-          </li>
-          <li className={css.refundListItem}>
-            Service fees will be refunded in proportion to the refunded base booking amount.
-            Processing fees are non-refundable under all circumstances.
-          </li>
-        </ul>
+        <p className={css.modalMessage}>
+          For more information about our cancellation policy, click{' '}
+          <NamedLink
+            name="TermsOfServicePage"
+            target="_blank"
+            to={{ hash: '#cancellation-policy' }}
+          >
+            here
+          </NamedLink>
+          .
+        </p>
         <RefundBookingSummaryCard
           booking={booking}
           className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"

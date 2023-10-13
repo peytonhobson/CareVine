@@ -1,7 +1,14 @@
 import React, { useReducer, useMemo, createContext, useContext } from 'react';
 
-import { Avatar, UserDisplayName, Button, SecondaryButton, CancelButton } from '..';
-import { CANCELABLE_TRANSITIONS, TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
+import {
+  Avatar,
+  UserDisplayName,
+  Button,
+  SecondaryButton,
+  CancelButton,
+  CancelBookingModal,
+} from '..';
+import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
@@ -16,7 +23,6 @@ import {
   PaymentDetailsModal,
   BookingCalendarModal,
   DisputeModal,
-  CancelModal,
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
 
@@ -189,7 +195,7 @@ const BookingCardComponent = props => {
       break;
     case MODAL_TYPES.CANCEL:
       openModal = (
-        <CancelModal
+        <CancelBookingModal
           isOpen={state.openModalType === MODAL_TYPES.CANCEL}
           onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
           otherUserDisplayName={otherUserDisplayName}

@@ -54,7 +54,7 @@ const DateTimeSelect = props => {
         </div>
         <span className={css.dashBetweenTimes}>-</span>
         <div className={css.field}>
-          <label htmlFor={`dateTimes.${date}.startTime`} class={css.timeSelectLabel}>
+          <label htmlFor={`dateTimes.${date}.startTime`} className={css.timeSelectLabel}>
             End Time
           </label>
           <FieldSelect
