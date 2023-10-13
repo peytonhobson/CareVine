@@ -14,6 +14,8 @@ const moment = require('moment');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const BOOKING_FEE_PERCENTAGE = 0.02;
+
 const createSlug = str => {
   let text = str
     .toString()
@@ -605,7 +607,7 @@ const updateBookingLedger = async transaction => {
   const amount = parseFloat(
     lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
   ).toFixed(2);
-  const bookingFee = parseInt(Math.round(amount * 0.05));
+  const bookingFee = parseInt(Math.round(amount * BOOKING_FEE_PERCENTAGE));
   const processingFee =
     paymentMethodType === 'Bank Account'
       ? parseFloat(Math.round(amount * 0.008)).toFixed(2)

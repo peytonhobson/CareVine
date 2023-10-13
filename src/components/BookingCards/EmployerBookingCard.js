@@ -34,7 +34,6 @@ import css from './BookingCards.module.css';
 
 const CREDIT_CARD = 'Payment Card';
 const BANK_ACCOUNT = 'Bank Account';
-const TRANSACTION_FEE = 0.05;
 
 const calculateBookingDayHours = (bookingStart, bookingEnd) => {
   if (!bookingStart || !bookingEnd) return 0;

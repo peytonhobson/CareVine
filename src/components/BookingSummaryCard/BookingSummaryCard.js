@@ -13,10 +13,9 @@ import {
 import { useMediaQuery } from '@mui/material';
 import { convertTimeFrom12to24, calculateProcessingFee } from '../../util/data';
 import { v4 as uuidv4 } from 'uuid';
+import { BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
-
-const TRANSACTION_FEE = 0.05;
 
 const calculateTimeBetween = (bookingStart, bookingEnd) => {
   const start = convertTimeFrom12to24(bookingStart).split(':')[0];
@@ -37,7 +36,7 @@ const calculateCost = (bookingStart, bookingEnd, price) =>
   parseFloat(calculateTimeBetween(bookingStart, bookingEnd) * Number(price)).toFixed(2);
 
 const calculateTransactionFee = subTotal =>
-  parseFloat(Number(subTotal) * TRANSACTION_FEE).toFixed(2);
+  parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const calculateSubTotal = (bookingTimes, bookingRate) =>
   bookingTimes
@@ -155,7 +154,7 @@ const BookingSummaryCard = props => {
               </h4>
               {!hideFees ? (
                 <>
-                  <h4 className={css.paymentCalc}>+5% Booking fee - ${transactionFee}</h4>
+                  <h4 className={css.paymentCalc}>+ 2% Booking fee - ${transactionFee}</h4>
                   <h4 className={css.paymentCalc}>+ Processing fee - ${processingFee}</h4>
                   {refundAmount && refundAmount > 0 ? (
                     <h4 className={css.paymentCalc} style={{ color: 'var(--failColor)' }}>

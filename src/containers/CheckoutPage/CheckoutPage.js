@@ -25,11 +25,11 @@ import { storeData, storedData } from './CheckoutPageSessionHelpers';
 import css from './CheckoutPage.module.css';
 import { convertTimeFrom12to24 } from '../../util/data';
 import moment from 'moment';
+import { BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 
 const STORAGE_KEY = 'CheckoutPage';
 const BANK_ACCOUNT = 'Bank Account';
 const CREDIT_CARD = 'Payment Card';
-const BOOKING_FEE_PERCENTAGE = 0.05;
 
 const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
@@ -231,7 +231,7 @@ export class CheckoutPageComponent extends Component {
         shortDate: moment(isoDate).format('MM/DD'),
         hours,
         amount,
-        bookingFee: parseFloat(amount * 0.05).toFixed(2),
+        bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
       };
     });
 
