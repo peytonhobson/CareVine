@@ -24,7 +24,7 @@ import {
   constructBookingMetadataRecurring,
   findStartTimeRecurring,
 } from './CheckoutPage.helpers';
-import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../util/constants';
+import { ISO_OFFSET_FORMAT } from '../../util/constants';
 import moment from 'moment';
 import { mapWeekdays } from '../../util/bookings';
 

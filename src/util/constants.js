@@ -103,3 +103,5 @@ export const FULL_WEEKDAY_MAP = {
 
 // Time
 export const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+
+export const BOOKING_FEE_PERCENTAGE = 0.02;
