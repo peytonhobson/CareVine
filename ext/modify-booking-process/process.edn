@@ -12,10 +12,12 @@
 
    {:name :transition/accept
    :actor :actor.role/provider,
+   :from :state/modify-booking-requested,
    :to :state/accepted}
 
    {:name :transition/decline
    :actor :actor.role/provider,
+   :from :state/modify-booking-requested,
    :to :state/declined}
 
    {:name :transition/booking-modified

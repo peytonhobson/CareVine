@@ -43,6 +43,7 @@ const messageProcessAlias = `message-process/active`;
 const singleActionProcessAlias = `single-action-process/active`;
 const recurringBookingProcessAlias = `booking-process/active`;
 const singleBookingProcessAlias = `single-booking-process/active`;
+const modifyBookingProcessAlias = `modify-booking-process/active`;
 
 // The transaction line item code for the main unit type in bookings.
 //
@@ -213,6 +214,8 @@ const config = {
   locale,
   recurringBookingProcessAlias,
   singleBookingProcessAlias,
+  modifyBookingProcessAlias,
+  singleActionProcessAlias,
   messageProcessAlias,
   bookingUnitType,
   enableAvailability,
