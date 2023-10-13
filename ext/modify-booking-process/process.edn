@@ -1,0 +1,53 @@
+{:format :v3,
+ :transitions
+ [
+  {:name :transition/modify-booking-request,
+   :actor :actor.role/customer,
+   :to :state/modify-booking-requested},
+
+   {:name :transition/expire,
+   :at {:fn/timepoint [:time/booking-start]}
+   :from :state/modify-booking-requested,
+   :to :state/expired}
+
+   {:name :transition/accept
+   :actor :actor.role/provider,
+   :to :state/accepted}
+
+   {:name :transition/decline
+   :actor :actor.role/provider,
+   :to :state/declined}
+
+   {:name :transition/booking-modified
+   :actor :actor.role/customer,
+   :to :state/modified}
+
+   ],
+ :notifications
+ [
+  {:name :notification/modify-booking-requested,
+    :on :transition/modify-booking-request,
+    :to :actor.role/provider,
+    :template :modify-booking-requested},
+
+  {:name :notification/modify-booking-accepted,
+   :on :transition/accept,
+   :to :actor.role/customer,
+   :template :modify-booking-accepted},
+
+   {:name :notification/modify-booking-declined,
+   :on :transition/decline,
+   :to :actor.role/customer,
+   :template :modify-booking-declined},
+
+    {:name :notification/modify-booking-expired,
+    :on :transition/expire,
+    :to :actor.role/customer,
+    :template :modify-booking-expired},
+
+    {:name :notification/booking-modified,
+    :on :transition/booking-modified,
+    :to :actor.role/provider,
+    :template :booking-modified},
+
+   ]}

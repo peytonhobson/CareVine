@@ -1,29 +1,37 @@
 {:format :v3,
  :transitions
- [{:name :transition/notify-for-payment,
+ [
+  {:name :transition/notify-for-payment,
    :actor :actor.role/customer,
    :to :state/notified-for-payment},
+
    {:name :transition/request-payment,
    :actor :actor.role/customer,
    :actions [
     {:name :action/update-protected-data},
    ],
    :to :state/payment-requested},
+
    {:name :transition/review,
    :actor :actor.role/customer,
    :actions
    [{:name :action/post-review-by-customer}
     {:name :action/publish-reviews}],
-   :to :state/reviewed}],
+   :to :state/reviewed}
+
+   ],
  :notifications
- [{:name :notification/payment-details-notification,
+ [
+  {:name :notification/payment-details-notification,
    :on :transition/notify-for-payment,
    :to :actor.role/provider,
    :template :payout-details-notice},
+
    {:name :notification/payment-requested,
    :on :transition/request-payment,
    :to :actor.role/provider,
    :template :payment-requested},
+
    {:name :notification/customer-reviewed,
    :on :transition/review,
    :to :actor.role/provider,
