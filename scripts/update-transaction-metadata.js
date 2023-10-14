@@ -16,8 +16,7 @@ const integrationSdk = flexIntegrationSdk.createInstance({
 const queryAllPages = (query, page = 3, allResults = []) => {
   return integrationSdk.transactions
     .query({
-      customerId: '6352e1f6-c07c-403c-84ac-48bbaef586a2',
-      providerId: '639bbc9d-9dab-4c1d-af2b-acd25f350334',
+      processName: 'booking-process',
       page,
       perPage: 100,
     })
@@ -38,7 +37,7 @@ function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function sleep() {
-  await timeout(500);
+  await timeout(2000);
 }
 
 const main = async () => {
@@ -54,12 +53,16 @@ const main = async () => {
     for (const tx of transactions) {
       console.log(count);
       count++;
+      if (tx.attributes.metadata.cancelAtPeriodEnd) {
+        continue;
+      }
       await integrationSdk.transactions.updateMetadata({
         id: tx.id.uuid,
         metadata: {
           cancelAtPeriodEnd: true,
         },
       });
+      await sleep();
     }
   } catch (err) {
     console.log(err?.data?.errors || err);

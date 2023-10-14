@@ -799,7 +799,7 @@ textarea {
 .buttonBordersSecondary {
   border-width: 1px;
   border-style: solid;
-  border-color: var(--matterColorNegative);
+  border-color: var(--marketplaceColor);
   border-radius: var(--borderRadiusButton);
 }
 .buttonBordersSecondary:hover,
@@ -843,7 +843,7 @@ textarea {
 /* Button colors: secondary */
 .buttonColorsSecondary {
   background-color: var(--matterColorLight);
-  color: var(--matterColor);
+  color: var(--marketplaceColor);
 }
 .buttonColorsSecondary:disabled {
   background-color: var(--matterColorNegative);

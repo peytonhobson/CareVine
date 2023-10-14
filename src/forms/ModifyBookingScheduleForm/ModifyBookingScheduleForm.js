@@ -87,6 +87,7 @@ const ModifyBookingScheduleForm = props => (
               form={form}
               className={css.sectionOneTime}
               booking={booking}
+              hideLegend
             />
           )}
           {updateBookingMetadataError ? (

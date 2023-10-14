@@ -8,7 +8,12 @@ import {
   CancelButton,
   CancelBookingModal,
 } from '..';
-import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
+import {
+  TRANSITION_REQUEST_BOOKING,
+  CANCELABLE_TRANSITIONS,
+  FINAL_TRANSITIONS,
+  MODIFIABLE_TRANSITIONS,
+} from '../../util/transaction';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
@@ -28,7 +33,7 @@ import { calculateTimeBetween } from '../../util/dates';
 
 import css from './BookingCards.module.css';
 import ActionsModal from './Modals/ActionsModal';
-import CancelWeekEndModal from './Modals/ChangeEndDateModal';
+import CancelEndDateModal from './Modals/ChangeEndDateModal';
 import ModifyScheduleModal from './Modals/ModifyScheduleModal';
 import ChangePaymentMethodModal from './Modals/ChangePaymentMethodModal';
 
@@ -58,6 +63,7 @@ const useBookingCard = () => {
 const SET_OPEN_MODAL_TYPE = 'SET_OPEN_MODAL_TYPE';
 const CLOSE_MODAL = 'CLOSE_MODAL';
 const SET_BOOKING_TIMES_PAGE = 'SET_BOOKING_TIMES_PAGE';
+const SET_ACTIONS_DISPLAY_STATE = 'SET_ACTIONS_DISPLAY_STATE';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -67,6 +73,8 @@ const reducer = (state, action) => {
       return { ...state, openModalType: null };
     case SET_BOOKING_TIMES_PAGE:
       return { ...state, bookingTimesPage: action.payload };
+    case SET_ACTIONS_DISPLAY_STATE:
+      return { ...state, actionsDisplayState: action.payload };
     default:
       return state;
   }
@@ -101,6 +109,8 @@ const BookingCardComponent = props => {
       removedDays: [],
       changedDays: [],
     },
+    ledger: bookingLedger = [],
+    type: bookingType,
   } = bookingMetadata;
 
   const { customer, provider, listing } = booking;
@@ -130,14 +140,42 @@ const BookingCardComponent = props => {
     onFetchCurrentUserListing();
   };
 
-  const handleGoBackToActions = () => {
+  const handleGoBackToActions = displayState => {
     handleModalOpen(MODAL_TYPES.ACTIONS);
     onResetInitialState();
     onResetTransactionsInitialState();
     onFetchCurrentUserListing();
+
+    if (displayState) {
+      dispatch({ type: SET_ACTIONS_DISPLAY_STATE, payload: displayState });
+    }
   };
 
   const setBookingTimesPage = page => dispatch({ type: SET_BOOKING_TIMES_PAGE, payload: page });
+
+  const isCancelable = CANCELABLE_TRANSITIONS.includes(lastTransition);
+  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isModifiable =
+    MODIFIABLE_TRANSITIONS.includes(lastTransition) && (isRequest || bookingType === 'recurring');
+  const canChangePaymentMethod =
+    bookingType === 'recurring' && !FINAL_TRANSITIONS.includes(lastTransition);
+
+  const hasCurrentDispute =
+    bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
+  const isDisputable =
+    bookingLedger.length > 0 &&
+    bookingLedger[bookingLedger.length - 1].end &&
+    moment()
+      .subtract(2, 'days')
+      .isBefore(bookingLedger[bookingLedger.length - 1].end) &&
+    !hasCurrentDispute;
+
+  const availableActions = {
+    cancel: isCancelable,
+    modifySchedule: isModifiable && userType === EMPLOYER,
+    changePaymentMethod: canChangePaymentMethod && userType === EMPLOYER,
+    dispute: isDisputable && userType === EMPLOYER,
+  };
 
   const bookingDates = useMemo(() => {
     return lineItems?.map(li => new Date(li.date)) ?? [];
@@ -167,6 +205,7 @@ const BookingCardComponent = props => {
     otherUser,
     otherUserDisplayName,
     bookingTimes,
+    availableActions,
   };
 
   let openModal;
@@ -244,16 +283,19 @@ const BookingCardComponent = props => {
           onManageDisableScrolling={onManageDisableScrolling}
           userType={userType}
           modalTypes={MODAL_TYPES}
+          availableActions={availableActions}
+          actionsDisplayState={state.actionsDisplayState}
         />
       );
       break;
     case MODAL_TYPES.CHANGE_END_DATE:
       openModal = (
-        <CancelWeekEndModal
+        <CancelEndDateModal
           isOpen={state.openModalType === MODAL_TYPES.CHANGE_END_DATE}
           onClose={() => handleModalClose(MODAL_TYPES.CHANGE_END_DATE)}
           otherUserDisplayName={otherUserDisplayName}
           booking={booking}
+          onGoBack={handleGoBackToActions}
         />
       );
       break;
@@ -324,10 +366,12 @@ export const BookingCardTitle = () => {
 };
 
 export const BookingCardMenu = () => {
-  const { booking, userType, handleModalOpen } = useBookingCard();
+  const { booking, userType, handleModalOpen, availableActions } = useBookingCard();
 
   const showRespond =
     booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING && userType === CAREGIVER;
+
+  const showActions = Object.values(availableActions).some(action => action);
 
   return (
     <>
@@ -335,11 +379,11 @@ export const BookingCardMenu = () => {
         <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}>
           Respond
         </Button>
-      ) : (
+      ) : showActions ? (
         <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}>
           Actions
         </Button>
-      )}
+      ) : null}
     </>
   );
 };

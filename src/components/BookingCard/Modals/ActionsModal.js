@@ -1,45 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Modal, CancelButton, Button, PrimaryButton } from '../..';
-import {
-  CANCELABLE_TRANSITIONS,
-  TRANSITION_REQUEST_BOOKING,
-  MODIFIABLE_TRANSITIONS,
-} from '../../../util/transaction';
-import { EMPLOYER } from '../../../util/constants';
-import moment from 'moment';
+import { Modal, CancelButton, Button, PrimaryButton, SecondaryButton } from '../..';
+import classNames from 'classnames';
 
 import css from './BookingCardModals.module.css';
 
+const MAIN_ACTIONS = 'mainActions';
+const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
+
 const ActionsModal = props => {
+  const [displayState, setDisplayState] = useState(MAIN_ACTIONS);
+
   const {
     isOpen,
     onClose,
     onManageDisableScrolling,
     onModalOpen,
     booking,
-    userType,
     modalTypes,
+    availableActions,
+    actionsDisplayState,
   } = props;
 
-  const lastTransition = booking.attributes.lastTransition;
-  const { ledger: bookingLedger = [], type: bookingType } = booking.attributes.metadata;
+  useEffect(() => {
+    if (actionsDisplayState) {
+      setDisplayState(actionsDisplayState);
+    }
+  }, [actionsDisplayState]);
 
-  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isCancelable = CANCELABLE_TRANSITIONS.includes(lastTransition);
-  const isModifiable = MODIFIABLE_TRANSITIONS.includes(lastTransition) && userType === EMPLOYER;
-  const canChangePaymentMethod = bookingType === 'recurring' && userType === EMPLOYER;
+  const { type: bookingType } = booking.attributes.metadata;
 
-  const hasCurrentDispute =
-    bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
-  const isDisputable =
-    bookingLedger.length > 0 &&
-    bookingLedger[bookingLedger.length - 1].end &&
-    moment(bookingLedger[bookingLedger.length - 1].end).isAfter(moment().subtract(2, 'days')) &&
-    !hasCurrentDispute &&
-    userType === EMPLOYER;
+  const buttonClass = classNames(css.buttonAnimation, 'w-auto py-2 px-4 mt-4');
 
-  const buttonClass = 'w-auto py-2 px-4 mt-4';
+  const handleModifyScheduleClick = () => {
+    if (bookingType === 'recurring') {
+      setDisplayState(MODIFY_SCHEDULE_ACTIONS);
+    } else {
+      onModalOpen(modalTypes.MODIFY_SCHEDULE);
+    }
+  };
 
   return isOpen ? (
     <Modal
@@ -50,37 +49,68 @@ const ActionsModal = props => {
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
     >
-      <p className={css.modalTitle}>What would you like to do?</p>
-      <div className="grid grid-flow-row grid-cols-2 gap-4 pt-6">
-        {isCancelable ? (
-          <CancelButton onClick={() => onModalOpen(modalTypes.CANCEL)} className={buttonClass}>
-            Cancel Now
-          </CancelButton>
-        ) : null}
-        {isModifiable && bookingType === 'recurring' ? (
-          <Button onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)} className={buttonClass}>
-            Change End Date
-          </Button>
-        ) : null}
-        {isModifiable ? (
-          <Button onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE)} className={buttonClass}>
-            Modify Schedule
-          </Button>
-        ) : null}
-        {canChangePaymentMethod ? (
-          <Button
-            onClick={() => onModalOpen(modalTypes.CHANGE_PAYMENT_METHOD)}
-            className={buttonClass}
-          >
-            Change Payment Method
-          </Button>
-        ) : null}
-        {isDisputable ? (
-          <PrimaryButton onClick={() => onModalOpen(modalTypes.DISPUTE)} className={buttonClass}>
-            Submit Dispute
-          </PrimaryButton>
-        ) : null}
-      </div>
+      {displayState === MAIN_ACTIONS ? (
+        <>
+          <p className={css.modalTitle}>What would you like to do?</p>
+          <div className="flex flex-col gap-4 pt-6">
+            {availableActions.cancel ? (
+              <CancelButton onClick={() => onModalOpen(modalTypes.CANCEL)} className={buttonClass}>
+                Cancel Booking
+              </CancelButton>
+            ) : null}
+            {availableActions.modifySchedule ? (
+              <Button onClick={handleModifyScheduleClick} className={buttonClass}>
+                Modify Schedule
+              </Button>
+            ) : null}
+            {availableActions.changePaymentMethod ? (
+              <PrimaryButton
+                onClick={() => onModalOpen(modalTypes.CHANGE_PAYMENT_METHOD)}
+                className={buttonClass}
+              >
+                Change Payment Method
+              </PrimaryButton>
+            ) : null}
+            {availableActions.dispute ? (
+              <SecondaryButton
+                onClick={() => onModalOpen(modalTypes.DISPUTE)}
+                className={buttonClass}
+              >
+                Submit Dispute
+              </SecondaryButton>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+
+      {displayState === MODIFY_SCHEDULE_ACTIONS ? (
+        <>
+          <p className={css.modalTitle}>What would you like to do?</p>
+          <div className="flex flex-col gap-4 pt-6">
+            <Button onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)} className={buttonClass}>
+              Change End Date
+            </Button>
+            {/* TODO: Change to open correct modals */}
+            <PrimaryButton
+              onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE)}
+              className={buttonClass}
+            >
+              Change Schedule
+            </PrimaryButton>
+            <SecondaryButton
+              onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)}
+              className={buttonClass}
+            >
+              Change Exceptions
+            </SecondaryButton>
+            <div className="pt-16 flex justify-end">
+              <Button onClick={() => setDisplayState(MAIN_ACTIONS)} className="w-[10rem]">
+                Go Back
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : null}
     </Modal>
   ) : null;
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { PaymentMethods, Button, Modal } from '../../../components';
+import { PaymentMethods, Button, Modal, NamedLink } from '../../../components';
 import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';

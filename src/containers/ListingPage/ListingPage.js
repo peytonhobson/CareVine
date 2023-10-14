@@ -87,7 +87,6 @@ export class ListingPageComponent extends Component {
       history,
       getListing,
       params,
-      callSetInitialValues,
       onInitializeCardPaymentData,
       onCreateBookingDraft,
     } = this.props;
@@ -96,6 +95,8 @@ export class ListingPageComponent extends Component {
 
     const { rate: bookingRate, scheduleType } = values;
     const routes = routeConfiguration();
+
+    console.log('here');
 
     // Clear previous Stripe errors from store if there is any
     onInitializeCardPaymentData();

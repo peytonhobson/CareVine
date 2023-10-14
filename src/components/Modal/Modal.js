@@ -52,11 +52,9 @@ export class ModalComponent extends Component {
     this.handleBodyKeyUp = this.handleBodyKeyUp.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleResize = this.handleResize.bind(this);
-    this.handleClick = this.handleClick.bind(this);
 
     this.refDiv = React.createRef();
     this.vh = null;
-    this.scrollLayer = null;
 
     this.state = {
       portalRoot: null,
@@ -106,7 +104,6 @@ export class ModalComponent extends Component {
     const { id, onManageDisableScrolling } = this.props;
     window.document.body.removeEventListener('keyup', this.handleBodyKeyUp);
     window.document.body.removeEventListener('resize', this.handleResize);
-    this.scrollLayer?.removeEventListener('click', this.handleClick);
     onManageDisableScrolling(id, false);
 
     const isMobile = window.innerWidth < 768;
@@ -131,16 +128,6 @@ export class ModalComponent extends Component {
   handleResize() {
     this.vh = window.innerHeight * 0.01;
     window.document.documentElement.style.setProperty('--vh', `${this.vh}px`);
-  }
-
-  handleClick(e) {
-    e.preventDefault();
-    const { id, onClose, onManageDisableScrolling } = this.props;
-
-    if (e.target.id === `scroll-layer-${id}`) {
-      onManageDisableScrolling(id, false);
-      onClose(e);
-    }
   }
 
   render() {
@@ -198,14 +185,7 @@ export class ModalComponent extends Component {
 
     return !usePortal ? (
       <div className={classes}>
-        <div
-          className={scrollLayerClasses}
-          ref={elem => {
-            this.scrollLayer = elem;
-            this.scrollLayer?.addEventListener('click', this.handleClick);
-          }}
-          id={`scroll-layer-${id}`}
-        >
+        <div className={scrollLayerClasses}>
           <div className={containerClasses}>
             {closeBtn}
             <div className={classNames(contentClassName || css.content)}>{children}</div>
@@ -215,14 +195,7 @@ export class ModalComponent extends Component {
     ) : portalRoot ? (
       <Portal portalRoot={portalRoot}>
         <div className={classes}>
-          <div
-            className={scrollLayerClasses}
-            ref={elem => {
-              this.scrollLayer = elem;
-              this.scrollLayer?.addEventListener('click', this.handleClick);
-            }}
-            id={`scroll-layer-${id}`}
-          >
+          <div className={scrollLayerClasses}>
             <div
               className={classNames(containerClasses, css.focusedDiv)}
               ref={this.refDiv}

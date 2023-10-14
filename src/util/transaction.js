@@ -37,7 +37,7 @@ export const TRANSITION_CHARGED_CANCEL = 'transition/charged-cancel';
 export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
 export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-booking-end';
 export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
-export const TRANSITON_WNFW_CANCEL = 'transition/wfnw-cancel';
+export const TRANSITION_WNFW_CANCEL = 'transition/wfnw-cancel';
 
 // Modify Booking Process Transitions
 export const TRANSITION_MODIFY_BOOKING = 'transition/booking-modified';
@@ -144,7 +144,7 @@ export const CANCELED_TRANSITIONS = [
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_ACCEPTED_CANCEL,
   TRANSITION_ACTIVE_CANCEL,
-  TRANSITON_WNFW_CANCEL,
+  TRANSITION_WNFW_CANCEL,
 ];
 
 export const CANCELABLE_TRANSITIONS = [
@@ -165,6 +165,18 @@ export const MODIFIABLE_TRANSITIONS = [
   TRANSITION_COMPLETE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+];
+
+export const FINAL_TRANSITIONS = [
+  TRANSITION_CANCEL_BOOKING_REQUEST,
+  TRANSITION_DECLINE_BOOKING,
+  TRANSITION_EXPIRE_BOOKING,
+  TRANSITION_ACCEPTED_CANCEL,
+  TRANSITION_CHARGED_CANCEL,
+  TRANSITION_DECLINE_PAYMENT,
+  TRANSITION_WNFW_CANCEL,
+  TRANSITION_ACTIVE_CANCEL,
+  TRANSITION_DELIVERED_CANCEL,
 ];
 
 // Get all the transitions from states object in an array

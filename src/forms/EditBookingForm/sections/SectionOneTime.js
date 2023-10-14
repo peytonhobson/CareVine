@@ -10,7 +10,7 @@ import classNames from 'classnames';
 const modifyBufferDays = 2;
 
 const SectionOneTime = props => {
-  const { values, listing, form, className, booking } = props;
+  const { values, listing, form, className, booking, hideLegend } = props;
 
   const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata ?? {};
 
@@ -41,7 +41,7 @@ const SectionOneTime = props => {
     form.change('dateTimes', newDateTimes);
   };
 
-  const legend = (
+  const legend = hideLegend ? null : (
     <>
       <p className="text-xs my-1 text-left mt-4 lg:mt-2">
         <span className={classNames(css.day, css.blocked)}>23</span> Dates in gray are not available
@@ -52,12 +52,6 @@ const SectionOneTime = props => {
       <p className="text-xs my-1 text-left">
         <span className={classNames(css.day, css.highlighted)}>23</span> Dates in blue are selected
       </p>
-      {booking ? (
-        <p className="text-xs my-1 text-left">
-          <span className={classNames(css.day, css.highlighted, css.past)}>23</span> Dates in green
-          are past booking dates
-        </p>
-      ) : null}
     </>
   );
 

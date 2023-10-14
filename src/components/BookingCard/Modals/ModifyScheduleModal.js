@@ -10,11 +10,7 @@ import { ModifyBookingScheduleForm } from '../../../forms';
 
 import css from './BookingCardModals.module.css';
 
-const findEndDate = lineItems =>
-  lineItems.reduce(
-    (acc, curr) => (moment(curr.date).isAfter(acc) ? curr.date : acc),
-    lineItems?.[0]?.date
-  );
+const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
 
 const ModifyScheduleModal = props => {
   const {
@@ -89,7 +85,7 @@ const ModifyScheduleModal = props => {
         updateBookingMetadataInProgress={updateBookingMetadataInProgress}
         updateBookingMetadataError={updateBookingMetadataError}
         updateBookingMetadataSuccess={updateBookingMetadataSuccess}
-        onGoBack={onGoBack}
+        onGoBack={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
       />
     </Modal>
   ) : null;

@@ -18,6 +18,8 @@ import classNames from 'classnames';
 import css from './BookingCardModals.module.css';
 import { checkIsBlockedDay } from '../../../util/bookings';
 
+const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
+
 const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
   const isInRegularDays = bookingSchedule.some(
     d => d.dayOfWeek === WEEKDAYS[moment(date).weekday()]
@@ -90,7 +92,14 @@ const ChangeEndDateModal = props => {
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [showInvalidError, setShowInvalidError] = useState(false);
 
-  const { isOpen, onClose, onManageDisableScrolling, booking, onUpdateBookingEndDate } = props;
+  const {
+    isOpen,
+    onClose,
+    onManageDisableScrolling,
+    booking,
+    onUpdateBookingEndDate,
+    onGoBack,
+  } = props;
 
   const {
     chargedLineItems = [],
@@ -271,7 +280,11 @@ const ChangeEndDateModal = props => {
                 </p>
               ) : null}
               <div className={css.modalButtonContainer}>
-                <Button onClick={onGoBack} className={css.modalButton} type="button">
+                <Button
+                  onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
+                  className={css.modalButton}
+                  type="button"
+                >
                   Back
                 </Button>
                 <PrimaryButton
