@@ -30,13 +30,13 @@ const ActionsModal = props => {
 
   const { type: bookingType } = booking.attributes.metadata;
 
-  const buttonClass = classNames(css.buttonAnimation, 'w-auto py-2 px-4 mt-4');
+  const buttonClass = classNames(css.dropAnimation, 'w-auto py-2 px-4 mt-4');
 
   const handleModifyScheduleClick = () => {
     if (bookingType === 'recurring') {
       setDisplayState(MODIFY_SCHEDULE_ACTIONS);
     } else {
-      onModalOpen(modalTypes.MODIFY_SCHEDULE);
+      onModalOpen(modalTypes.MODIFY_SCHEDULE_ONE_TIME);
     }
   };
 
@@ -92,7 +92,7 @@ const ActionsModal = props => {
             </Button>
             {/* TODO: Change to open correct modals */}
             <PrimaryButton
-              onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE)}
+              onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE_RECURRING)}
               className={buttonClass}
             >
               Change Schedule

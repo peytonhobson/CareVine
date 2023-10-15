@@ -160,7 +160,7 @@ module.exports = async (req, res) => {
       await integrationSdk.transactions.updateMetadata({
         id: txId,
         metadata: {
-          awaitingModificationApproval: true,
+          awaitingModification: modification,
         },
       });
     }

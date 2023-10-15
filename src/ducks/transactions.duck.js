@@ -537,16 +537,19 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
         },
       });
 
-      await sendBookingModifiedNotification({
-        txId,
-        modification: { endDate: formattedEndDate },
-        isRequest: false,
-        previousMetadata: {
-          endDate: oldEndDate,
-          bookingSchedule,
-          exceptions,
-        },
-      });
+      // Don't send notification if booking is a request
+      if (!isRequest) {
+        await sendBookingModifiedNotification({
+          txId,
+          modification: { endDate: formattedEndDate },
+          isRequest: false,
+          previousMetadata: {
+            endDate: oldEndDate,
+            bookingSchedule,
+            exceptions,
+          },
+        });
+      }
     } else {
       // If booking is not a request and end date is later, we need to send request to caregiver
       await sendBookingModifiedNotification({

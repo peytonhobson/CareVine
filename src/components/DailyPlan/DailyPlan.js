@@ -203,7 +203,8 @@ const DailyPlan = props => {
     values,
     intl,
     multipleTimesDisabled,
-    disabledDays,
+    warning,
+    disabled,
     className,
     customName,
   } = props;
@@ -222,7 +223,7 @@ const DailyPlan = props => {
     id: 'EditListingAvailabilityPlanForm.endTimePlaceholder',
   });
 
-  const isUnavailable = disabledDays?.includes(dayOfWeek);
+  const isUnavailable = warning || disabled;
 
   return (
     <div className={classNames(css.weekDay, hasEntries ? css.hasEntries : null, className)}>
@@ -231,19 +232,20 @@ const DailyPlan = props => {
           customName
         ) : (
           <>
-            {isUnavailable && values[dayOfWeek] && (
-              <div className={css.warning}>
-                <InfoTooltip
-                  icon={<WarningIcon color="warning" />}
-                  title={
-                    <p>
-                      One or more {shortWeekdayToLong[dayOfWeek]}s are unavailable during your
-                      chosen start/end dates.
-                    </p>
-                  }
-                />
-              </div>
-            )}
+            {(warning && values[dayOfWeek]) ||
+              (disabled && (
+                <div className={css.warning}>
+                  <InfoTooltip
+                    icon={<WarningIcon color="warning" />}
+                    title={
+                      <p>
+                        One or more {shortWeekdayToLong[dayOfWeek]}s are unavailable during your
+                        chosen start/end dates.
+                      </p>
+                    }
+                  />
+                </div>
+              ))}
             <FormattedMessage id={`EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`} />
           </>
         )}
@@ -271,6 +273,7 @@ const DailyPlan = props => {
                           name={`${name}.startTime`}
                           selectClassName={css.fieldSelect}
                           initialValueSelected={index === 0 && fields.value[index].startTime}
+                          disabled={disabled}
                         >
                           {index !== 0 && (
                             <option disabled value="">
@@ -293,6 +296,7 @@ const DailyPlan = props => {
                           name={`${name}.endTime`}
                           selectClassName={css.fieldSelect}
                           initialValueSelected={index === 0 && fields.value[index].endTime}
+                          disabled={disabled}
                         >
                           {index !== 0 && (
                             <option disabled value="">
@@ -318,11 +322,12 @@ const DailyPlan = props => {
                 );
               })}
 
-              {fields.length === 0 ? (
+              {fields.length === 0 && !disabled ? (
                 <InlineTextButton
                   type="button"
                   className={css.buttonSetHours}
                   onClick={() => fields.push({ startTime: '8:00am', endTime: '5:00pm' })}
+                  disabled={disabled}
                 >
                   <FormattedMessage id="EditListingAvailabilityPlanForm.setHours" />
                 </InlineTextButton>

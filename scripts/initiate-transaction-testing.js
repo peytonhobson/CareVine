@@ -102,7 +102,7 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'tue',
+    dayOfWeek: 'mon',
     startTime: '5:00pm',
     endTime: '8:00pm',
   },
@@ -148,7 +148,7 @@ const BODY_PARAMS = {
     metadata: {
       bookingSchedule,
       startDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-      endDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      endDate: null,
       cancelAtPeriodEnd: false,
       type: 'recurring',
       bookingRate,

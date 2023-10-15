@@ -330,7 +330,7 @@ const EditBookingFormComponent = props => (
                   isLarge={isLarge}
                   onDeleteEndDate={() => form.change('endDate', null)}
                   form={form}
-                  unavailableDates={unavailableDays}
+                  unavailableDays={unavailableDays}
                 />
               )}
               {!isLarge ? (

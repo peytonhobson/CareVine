@@ -28,14 +28,15 @@ import {
   PaymentDetailsModal,
   BookingCalendarModal,
   DisputeModal,
+  ChangePaymentMethodModal,
+  ActionsModal,
+  ChangeEndDateModal,
+  ModifyScheduleRecurringModal,
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
 
 import css from './BookingCards.module.css';
-import ActionsModal from './Modals/ActionsModal';
-import CancelEndDateModal from './Modals/ChangeEndDateModal';
 import ModifyScheduleModal from './Modals/ModifyScheduleModal';
-import ChangePaymentMethodModal from './Modals/ChangePaymentMethodModal';
 
 const MODAL_TYPES = {
   RESPOND: 'respond',
@@ -45,7 +46,8 @@ const MODAL_TYPES = {
   CALENDAR: 'calendar',
   EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
-  MODIFY_SCHEDULE: 'modifySchedule',
+  MODIFY_SCHEDULE_RECURRING: 'modifyScheduleRecurring',
+  MODIFY_SCHEDULE_ONE_TIME: 'modifyScheduleOneTime',
   CHANGE_END_DATE: 'changeEndDate',
   CHANGE_PAYMENT_METHOD: 'changePaymentMethod',
 };
@@ -290,7 +292,7 @@ const BookingCardComponent = props => {
       break;
     case MODAL_TYPES.CHANGE_END_DATE:
       openModal = (
-        <CancelEndDateModal
+        <ChangeEndDateModal
           isOpen={state.openModalType === MODAL_TYPES.CHANGE_END_DATE}
           onClose={() => handleModalClose(MODAL_TYPES.CHANGE_END_DATE)}
           otherUserDisplayName={otherUserDisplayName}
@@ -299,11 +301,11 @@ const BookingCardComponent = props => {
         />
       );
       break;
-    case MODAL_TYPES.MODIFY_SCHEDULE:
+    case MODAL_TYPES.MODIFY_SCHEDULE_RECURRING:
       openModal = (
-        <ModifyScheduleModal
-          isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE}
-          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE)}
+        <ModifyScheduleRecurringModal
+          isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE_RECURRING}
+          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE_RECURRING)}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />

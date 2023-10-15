@@ -31,7 +31,7 @@ const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes)
   return isBlockedDay && !dateInPast ? (
     <div className="text-error cursor-not-allowed">{date.format('D')}</div>
   ) : (
-    <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
+    <span className={!isBlocked ? css.regularDay : null}>{date.format('D')}</span>
   );
 };
 
@@ -43,7 +43,7 @@ const SectionRecurring = props => {
     listing,
     onDeleteEndDate,
     form,
-    unavailableDates,
+    unavailableDays,
     booking,
   } = props;
 
@@ -66,8 +66,6 @@ const SectionRecurring = props => {
     }
   }, [weekdays?.length]);
 
-  console.log(booking?.attributes.metadata.startDate);
-
   const startDateDisabled =
     (booking
       ? !moment()
@@ -87,7 +85,7 @@ const SectionRecurring = props => {
               values={values}
               intl={intl}
               multipleTimesDisabled
-              disabledDays={unavailableDates}
+              warning={unavailableDays?.includes(w)}
               className={css.dailyPlan}
             />
           );

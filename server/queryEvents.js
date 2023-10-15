@@ -306,7 +306,7 @@ module.exports = queryEvents = () => {
           .updateMetadata({
             id: bookingId,
             metadata: {
-              awaitingModificationApproval: false,
+              awaitingModification: null,
             },
           })
           .catch(e => log.error(e, 'Modify Booking Expired Update Failed', { bookingId }));

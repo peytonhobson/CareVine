@@ -284,8 +284,6 @@ export class CheckoutPageComponent extends Component {
         };
       }, {}) || {};
 
-    console.log(this.state.selectedPaymentMethod);
-
     return (
       <Page {...pageProps}>
         {topbar}
