@@ -223,8 +223,6 @@ const DailyPlan = props => {
     id: 'EditListingAvailabilityPlanForm.endTimePlaceholder',
   });
 
-  const isUnavailable = warning || disabled;
-
   return (
     <div className={classNames(css.weekDay, hasEntries ? css.hasEntries : null, className)}>
       <div className={css.dayOfWeek}>
@@ -232,20 +230,19 @@ const DailyPlan = props => {
           customName
         ) : (
           <>
-            {(warning && values[dayOfWeek]) ||
-              (disabled && (
-                <div className={css.warning}>
-                  <InfoTooltip
-                    icon={<WarningIcon color="warning" />}
-                    title={
-                      <p>
-                        One or more {shortWeekdayToLong[dayOfWeek]}s are unavailable during your
-                        chosen start/end dates.
-                      </p>
-                    }
-                  />
-                </div>
-              ))}
+            {(warning && values[dayOfWeek]) || disabled ? (
+              <div className={css.warning}>
+                <InfoTooltip
+                  icon={<WarningIcon color="warning" />}
+                  title={
+                    <p>
+                      One or more {shortWeekdayToLong[dayOfWeek]}s are unavailable during your
+                      chosen start/end dates.
+                    </p>
+                  }
+                />
+              </div>
+            ) : null}
             <FormattedMessage id={`EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`} />
           </>
         )}

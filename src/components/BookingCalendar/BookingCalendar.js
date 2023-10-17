@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
@@ -88,6 +88,7 @@ const formatDay = ({
 };
 
 export const BookingCalendar = props => {
+  const [firstUnavailableDate, setFirstUnavailableDate] = useState(null);
   const {
     bookingDates = [],
     bookedDates = [],
@@ -103,6 +104,42 @@ export const BookingCalendar = props => {
 
   const classes = classNames(className, css.root);
   const initialDate = bookingDates?.[0] || new Date();
+  const [initialMonth, setInitialMonth] = useState(moment(initialDate).startOf('month'));
+
+  const findInitialUnavailableDate = useCallback(() => {
+    const endOfMonth = moment(initialMonth).endOf('month');
+    for (
+      let date = moment(initialMonth).startOf('month');
+      date.isSameOrBefore(endOfMonth, 'day');
+      date.add(1, 'day')
+    ) {
+      const isUnavailable = isDayUnavailable({
+        bookingSchedule,
+        startDate,
+        endDate,
+        bookedDates,
+        bookedDays,
+        date: date.toDate(),
+        exceptions,
+      });
+
+      if (isUnavailable) {
+        const newDate = date.toDate();
+        setFirstUnavailableDate(prevDate =>
+          prevDate ? (moment(prevDate).isBefore(newDate) ? prevDate : newDate) : newDate
+        );
+      }
+    }
+  }, [initialDate, bookingSchedule, startDate, endDate, bookedDates, bookedDays, exceptions]);
+
+  useEffect(() => {
+    const m = moment(initialDate).startOf('month');
+
+    if (!firstUnavailableDate && m.diff(initialMonth, 'months') < 4) {
+      setInitialMonth(moment(initialMonth).add(1, 'month'));
+      findInitialUnavailableDate();
+    }
+  }, [initialDate, firstUnavailableDate, initialMonth, findInitialUnavailableDate]);
 
   return (
     <div className={classes}>
@@ -121,7 +158,7 @@ export const BookingCalendar = props => {
             exceptions,
           })
         }
-        value={initialDate}
+        value={firstUnavailableDate || initialDate}
         calendarType="Hebrew"
       />
       {children}

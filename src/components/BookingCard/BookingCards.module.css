@@ -25,6 +25,7 @@
   justify-content: space-between;
   flex-grow: 1;
   width: 100%;
+  margin-bottom: 2.5rem;
 }
 
 .body {
@@ -66,12 +67,14 @@
 .dateTimes {
   display: flex;
   flex-shrink: 1;
-  border: 1px solid var(--matterColorNegative);
+  border-left: 1px solid var(--matterColorNegative);
 }
 
 .bookingTime {
   padding: 0.5rem 1rem;
-  border-left: 1px solid var(--matterColorNegative);
+  border-right: 1px solid var(--matterColorNegative);
+  border-top: 1px solid var(--matterColorNegative);
+  border-bottom: 1px solid var(--matterColorNegative);
   white-space: nowrap;
   display: flex;
   flex-direction: column;

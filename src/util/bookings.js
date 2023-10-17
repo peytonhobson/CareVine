@@ -292,6 +292,16 @@ export const getUnavailableDays = ({
   return unavailableDays;
 };
 
+export const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
+  const isInRegularDays = bookingSchedule.some(
+    d => d.dayOfWeek === WEEKDAYS[moment(date).weekday()]
+  );
+  const isAddedDay = exceptions?.addedDays?.find(d => moment(d).isSame(date, 'day'));
+  const isRemovedDay = exceptions?.removedDays?.find(d => moment(d).isSame(date, 'day'));
+
+  return (isInRegularDays && !isRemovedDay) || isAddedDay;
+};
+
 export const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNum = 1) => {
   if (attemptNum > 4) return null;
 

@@ -10,7 +10,11 @@ import {
 import { WEEKDAYS } from '../../../util/constants';
 import { useCheckMobileScreen } from '../../../util/hooks';
 import moment from 'moment';
-import { checkIsBlockedDay, mapWeekdays } from '../../../util/bookings';
+import {
+  checkIsBlockedDay,
+  mapWeekdays,
+  checkIsDateInBookingSchedule,
+} from '../../../util/bookings';
 import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';
@@ -19,9 +23,13 @@ const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes) => {
+const renderDayContents = (bookedDays, bookedDates, isMobile, bookingSchedule, exceptions) => (
+  date,
+  classes
+) => {
   const isBlockedDay = checkIsBlockedDay({ date, bookedDays, bookedDates });
   const dateInPast = moment(date).isBefore(moment().startOf('day'));
+  const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
 
   const isBlocked = classes.has('blocked');
 
@@ -29,8 +37,8 @@ const renderDayContents = (bookedDays, bookedDates, isMobile) => (date, classes)
     return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
   }
 
-  return isBlockedDay && !dateInPast ? (
-    <div className="text-error cursor-not-allowed">{date.format('D')}</div>
+  return isBlockedDay || !isInBookingSchedule ? (
+    <span className="text-matter">{date.format('D')}</span>
   ) : (
     <span className={!isBlocked ? css.regularDay : null}>{date.format('D')}</span>
   );
@@ -86,7 +94,7 @@ const SectionRecurring = props => {
               values={values}
               intl={intl}
               multipleTimesDisabled
-              warnings={unavailableDays?.includes(w)}
+              warning={unavailableDays?.includes(w)}
               className={css.dailyPlan}
             />
           );
@@ -115,10 +123,14 @@ const SectionRecurring = props => {
             useMobileMargins
             showErrorMessage={false}
             disabled={startDateDisabled}
-            renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
+            renderDayContents={renderDayContents(
+              bookedDays,
+              bookedDates,
+              isMobile,
+              weekdays,
+              values.exceptions
+            )}
             withPortal={isMobile}
-            // TODO: REmove enable outside days
-            enableOutsideDays
           />
           <div className={css.endDateContainer}>
             <FieldDateInput
@@ -138,7 +150,13 @@ const SectionRecurring = props => {
               useMobileMargins
               showErrorMessage={false}
               disabled={!startDate || !startDate.date}
-              renderDayContents={renderDayContents(bookedDays, bookedDates, isMobile)}
+              renderDayContents={renderDayContents(
+                bookedDays,
+                bookedDates,
+                isMobile,
+                weekdays,
+                values.exceptions
+              )}
               withPortal={isMobile}
             />
             <button

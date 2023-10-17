@@ -42,6 +42,10 @@ module.exports = {
       height: {
         fullHeightDesktop: 'calc(100vh - 4.5rem)',
       },
+      borderRadius: {
+        standard: 'var(--borderRadius)',
+        button: 'var(--borderRadiusButton)',
+      },
     },
   },
   plugins: [

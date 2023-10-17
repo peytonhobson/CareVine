@@ -9,21 +9,11 @@ import { useCheckMobileScreen } from '../../../../util/hooks';
 import classNames from 'classnames';
 import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
 import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../../../util/constants';
-import { checkIsBlockedDay } from '../../../../util/bookings';
+import { checkIsBlockedDay, checkIsDateInBookingSchedule } from '../../../../util/bookings';
 
 import css from '../BookingCardModals.module.css';
 
 const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
-
-const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
-  const isInRegularDays = bookingSchedule.some(
-    d => d.dayOfWeek === WEEKDAYS[moment(date).weekday()]
-  );
-  const isAddedDay = exceptions?.addedDays?.find(d => moment(d).isSame(date, 'day'));
-  const isRemovedDay = exceptions?.removedDays?.find(d => moment(d).isSame(date, 'day'));
-
-  return (isInRegularDays && !isRemovedDay) || isAddedDay;
-};
 
 const filterAvailableBookingEndDates = ({
   bookingSchedule,
@@ -169,7 +159,7 @@ const ChangeEndDateForm = props => (
         ? threeDaysFromNow.format('MMMM Do')
         : startOfSelectedDay.format('MMMM Do');
       const expirationTime = moment(startOfSelectedDay).isAfter(threeDaysFromNow)
-        ? threeDaysFromNow.format('h:mm a')
+        ? moment(expiration).format('h:mm a')
         : startOfSelectedDay.format('h:mm a');
       const futureDateSelected =
         selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');

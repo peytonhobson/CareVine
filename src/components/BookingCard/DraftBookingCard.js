@@ -117,13 +117,19 @@ const DraftBookingCard = props => {
       </div>
       <div className={css.body}>
         <div className={css.dateTimesContainer}>
-          {timeTitle ? <h2 className={css.datesAndTimes}>{timeTitle}</h2> : null}
-          {startDate ? (
-            <p class="text-primary mt-0 mb-2 text-sm">
-              {moment(startDate).format('ddd, MMM DD')} -{' '}
-              {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
-            </p>
+          {startDate && scheduleType === 'recurring' ? (
+            <div className="mb-4">
+              <p className="text-primary my-0 text-lg">
+                Start Date: {moment(startDate).format('dddd, MMM DD')}{' '}
+              </p>
+              {endDate ? (
+                <p className="text-primary my-0 text-lg">
+                  End Date: {moment(endDate).format('dddd, MMM DD')}
+                </p>
+              ) : null}
+            </div>
           ) : null}
+          <h2 className="mt-0">{scheduleType === 'recurring' ? 'Weekly' : null} Schedule</h2>
           <div className={css.dateTimes}>
             {scheduleType === 'recurring'
               ? bookingSchedule

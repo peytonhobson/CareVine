@@ -77,6 +77,8 @@ const RecurringBookingSummaryCard = props => {
       }
     : exceptions;
 
+  console.log(exceptions);
+
   const allExceptions = useMemo(() => {
     return Object.values(exceptions)
       .flat()
@@ -86,7 +88,7 @@ const RecurringBookingSummaryCard = props => {
   const filteredWeekdays = useMemo(() => {
     return filterWeeklyBookingDays({
       weekdays,
-      startDate: showWeekly ? startOfWeek : startDate,
+      startDate: startOfWeek,
       endDate: bookingEndDate,
       exceptions: usedExceptions,
     });
@@ -163,8 +165,8 @@ const RecurringBookingSummaryCard = props => {
             const momentDate = moment(e.date);
 
             return (
-              moment(startDate).isSameOrBefore(momentDate, 'day') &&
-              moment(startDate)
+              moment(startOfWeek).isSameOrBefore(momentDate, 'day') &&
+              moment(startOfWeek)
                 .endOf('week')
                 .isSameOrAfter(momentDate, 'day') &&
               momentDate.weekday() === WEEKDAYS.indexOf(weekday.dayOfWeek)
@@ -175,7 +177,7 @@ const RecurringBookingSummaryCard = props => {
             <RecurringBookingItem
               weekday={weekday}
               bookingRate={bookingRate}
-              startDate={startDate}
+              startDate={startOfWeek}
               key={weekday.dayOfWeek}
               showWeekly={showWeekly}
               isException={isException}

@@ -406,16 +406,18 @@ export const BookingCardDateTimesContainer = ({ children }) => {
   return (
     <div className={css.dateTimesContainer}>
       {startDate && scheduleType === 'recurring' ? (
-        <>
-          <p className="text-primary mt-0 mb-2 text-lg mt-10">
-            Start Date: {moment(startDate).format('MMM DD')}{' '}
+        <div className="mb-4">
+          <p className="text-primary my-0 text-lg">
+            Start Date: {moment(startDate).format('dddd, MMM DD')}{' '}
           </p>
-          <p className="text-primary mt-0 mb-2 text-lg mt-10">
-            {endDate ? `End Date: ${moment(endDate).format('MMM DD')}` : 'No End Date'}
-          </p>
-        </>
+          {endDate ? (
+            <p className="text-primary my-0 text-lg">
+              End Date: {moment(endDate).format('dddd, MMM DD')}
+            </p>
+          ) : null}
+        </div>
       ) : null}
-      <h2>Weekly Schedule</h2>
+      <h2 className="mt-0">{scheduleType === 'recurring' ? 'Weekly' : null} Schedule</h2>
       {children}
     </div>
   );

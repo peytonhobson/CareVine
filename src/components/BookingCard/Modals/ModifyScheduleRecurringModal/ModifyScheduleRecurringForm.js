@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import {
   Button,
@@ -8,14 +8,16 @@ import {
   FieldDateInput,
   BookingException,
   Modal,
+  WeeklyBillingDetails,
 } from '../../..';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
-import { WEEKDAYS } from '../../../../util/constants';
+import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../../../util/constants';
 import {
   getUnavailableDays,
   mapWeekdays,
   checkIsBlockedDay,
   findNextWeekStartTime,
+  checkIsDateInBookingSchedule,
 } from '../../../../util/bookings';
 import arrayMutators from 'final-form-arrays';
 import moment from 'moment';
@@ -24,7 +26,7 @@ import { useCheckMobileScreen } from '../../../../util/hooks';
 import classNames from 'classnames';
 import { formatFieldDateInput, parseFieldDateInput } from '../../../../util/dates';
 import WarningIcon from '@mui/icons-material/Warning';
-import { set } from 'lodash';
+import ModifyScheduleSubmissionModal from './ModifyScheduleSubmissionModal';
 
 const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
 
@@ -56,14 +58,28 @@ const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const checkIsDateInBookingSchedule = (date, bookingSchedule = [], exceptions) => {
-  const isInRegularDays = bookingSchedule.some(
-    d => d.dayOfWeek === WEEKDAYS[moment(date).weekday()]
-  );
-  const isAddedDay = exceptions?.addedDays?.find(d => moment(d).isSame(date, 'day'));
-  const isRemovedDay = exceptions?.removedDays?.find(d => moment(d).isSame(date, 'day'));
+const findFirstBlockedDateInSchedule = (
+  bookingSchedule,
+  exceptions,
+  bookedDates,
+  bookedDays,
+  currentMonth
+) => {
+  const endOfMonth = currentMonth.clone().endOf('month');
+  for (
+    let date = currentMonth.clone();
+    date.isSameOrBefore(endOfMonth, 'day');
+    date.add(1, 'day')
+  ) {
+    const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
+    const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
 
-  return (isInRegularDays && !isRemovedDay) || isAddedDay;
+    if (isDayBlocked && isInBookingSchedule && moment(date).isAfter(TODAY, 'day')) {
+      return date.toDate();
+    }
+  }
+
+  return null;
 };
 
 const filterAvailableBookingEndDates = ({
@@ -72,12 +88,14 @@ const filterAvailableBookingEndDates = ({
   bookedDates,
   bookedDays,
   appliedDay,
+  firstBlockedDay,
 }) => date => {
   const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
   const isBeforeApplied = moment(date).isBefore(appliedDay, 'day');
   const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
+  const afterFirstBlockedDate = moment(date).isAfter(firstBlockedDay, 'day');
 
-  return isDayBlocked || !isInBookingSchedule || isBeforeApplied;
+  return isDayBlocked || !isInBookingSchedule || isBeforeApplied || afterFirstBlockedDate;
 };
 
 const renderDayContents = ({
@@ -87,16 +105,20 @@ const renderDayContents = ({
   bookedDates,
   bookedDays,
   appliedDay,
+  firstBlockedDay,
 }) => (date, classes) => {
-  const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
-  const isBeforeApplied = moment(date).isBefore(appliedDay, 'day');
-  const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
+  const available = !filterAvailableBookingEndDates({
+    bookingSchedule,
+    exceptions,
+    bookedDates,
+    bookedDays,
+    appliedDay,
+    firstBlockedDay,
+  })(date);
 
   if (classes.has('selected') && isMobile) {
     return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
   }
-
-  const available = isInBookingSchedule && !isBeforeApplied && !isDayBlocked;
 
   return (
     <span
@@ -109,12 +131,12 @@ const renderDayContents = ({
   );
 };
 
-const needsNewEndDate = (weekdays = [], exceptions, endDate) => {
+const needsNewEndDate = (weekdays = [], exceptions, endDate, appliedDate) => {
   if (!endDate || !weekdays.length) return false;
 
   const isDateInBookingSchedule = checkIsDateInBookingSchedule(endDate, weekdays, exceptions);
 
-  return !isDateInBookingSchedule;
+  return !isDateInBookingSchedule || moment(endDate).isBefore(appliedDate, 'day');
 };
 
 const sortChargedLineItems = (a, b) => moment(a.date).isBefore(b.date);
@@ -124,6 +146,21 @@ const findChangeAppliedDay = (chargedLineItems, weekdays, exceptions) => {
   const nextWeekStartTime = findNextWeekStartTime(allChargedLineItems, weekdays, exceptions);
 
   return nextWeekStartTime.startOf('day');
+};
+
+const findNewExceptions = (unapplicableExceptions, exceptions, appliedDay) => {
+  return Object.keys(exceptions).reduce((acc, key) => {
+    const newExceptions = exceptions[key].filter(
+      e =>
+        !unapplicableExceptions.some(u => moment(u.date).isSame(e.date, 'day')) &&
+        moment(appliedDay).isBefore(e.date, 'day')
+    );
+
+    return {
+      ...acc,
+      [key]: newExceptions,
+    };
+  }, {});
 };
 
 const findUnapplicableExceptions = (exceptions, weekdays, endDate, appliedDate) =>
@@ -140,9 +177,9 @@ const findUnapplicableExceptions = (exceptions, weekdays, endDate, appliedDate) 
 
       if (e.type === 'addDate') {
         return (isDateInBookingSchedule || isAfterEndDate) && isAfterAppliedDate;
-
-        return false;
       }
+
+      return false;
     });
 
 const ModifyScheduleRecurringForm = props => (
@@ -153,6 +190,8 @@ const ModifyScheduleRecurringForm = props => (
       const [showSelectDaysError, setShowSelectDaysError] = useState(false);
       const [showEndDateError, setShowEndDateError] = useState(false);
       const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+      const [currentEndDateMonth, setCurrentEndDateMonth] = useState(moment().startOf('month'));
+      const [firstBlockedDay, setFirstBlockedDay] = useState(null);
       const {
         handleSubmit,
         onGoBack,
@@ -175,15 +214,44 @@ const ModifyScheduleRecurringForm = props => (
         exceptions,
         chargedLineItems = [],
       } = booking.attributes.metadata;
-      const { listing } = booking;
+      const { listing, provider } = booking;
       const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
       const timezone = listing.attributes.publicData.availabilityPlan?.timezone;
+
+      useEffect(() => {
+        const firstBlockedDayInMonth = findFirstBlockedDateInSchedule(
+          weekdays,
+          exceptions,
+          bookedDates,
+          bookedDays,
+          currentEndDateMonth
+        );
+
+        if (!firstBlockedDay || moment(firstBlockedDayInMonth).isBefore(firstBlockedDay, 'day')) {
+          setFirstBlockedDay(firstBlockedDayInMonth);
+        }
+      }, [
+        JSON.stringify(weekdays),
+        JSON.stringify(exceptions),
+        JSON.stringify(bookedDates),
+        JSON.stringify(bookedDays),
+        currentEndDateMonth,
+      ]);
+
+      useEffect(() => {
+        setFirstBlockedDay(null);
+      }, [JSON.stringify(weekdays)]);
 
       const nextWeekStart = chargedLineItems.sort();
 
       const filteredBookedDays = bookedDays.filter(d => d.txId !== txId);
 
-      const showEndDate = needsNewEndDate(weekdays, exceptions, endDate);
+      const appliedDay = useMemo(
+        () =>
+          weekdays.length ? findChangeAppliedDay(chargedLineItems, weekdays, exceptions) : null,
+        [chargedLineItems, weekdays, exceptions]
+      );
+      const showEndDate = needsNewEndDate(weekdays, exceptions, endDate, appliedDay);
       const lastChargedDate = useMemo(
         () =>
           chargedLineItems
@@ -192,11 +260,6 @@ const ModifyScheduleRecurringForm = props => (
             .sort(sortChargedLineItems)
             .pop()?.date,
         [chargedLineItems]
-      );
-      const appliedDay = useMemo(
-        () =>
-          weekdays.length ? findChangeAppliedDay(chargedLineItems, weekdays, exceptions) : null,
-        [chargedLineItems, weekdays, exceptions]
       );
       const unapplicableExceptions = findUnapplicableExceptions(
         exceptions,
@@ -213,11 +276,11 @@ const ModifyScheduleRecurringForm = props => (
           getUnavailableDays({
             bookedDays: filteredBookedDays,
             startDate: appliedDay || firstPossibleDate,
-            endDate,
+            endDate: values.endDate?.date || endDate,
             bookedDates,
             weekdays: FULL_BOOKING_SCHEDULE,
           }),
-        [filteredBookedDays, appliedDay, endDate, bookedDates, firstPossibleDate]
+        [filteredBookedDays, appliedDay, endDate, bookedDates, firstPossibleDate, values.endDate]
       );
 
       const submitInProgress = updateBookingMetadataInProgress;
@@ -243,6 +306,21 @@ const ModifyScheduleRecurringForm = props => (
       const handleChange = () => {
         setShowSelectDaysError(false);
         setShowEndDateError(false);
+      };
+
+      const newExceptions = findNewExceptions(unapplicableExceptions, exceptions);
+      const newBooking = {
+        ...booking,
+        attributes: {
+          ...booking.attributes,
+          metadata: {
+            ...booking.attributes.metadata,
+            bookingSchedule: weekdays,
+            exceptions: newExceptions,
+            endDate: values.endDate?.date || endDate,
+            startDate: appliedDay,
+          },
+        },
       };
 
       return (
@@ -273,10 +351,18 @@ const ModifyScheduleRecurringForm = props => (
           {showEndDate ? (
             <div className={classNames(css.dropAnimation, 'mb-16')}>
               <h2 className="text-center">Change Your End Date</h2>
-              <p className="text-sm">
-                Your current end date ({moment(endDate).format('MMMM Do')}) no longer falls within
-                your selected schedule. Please select a new end date.
-              </p>
+              {moment(endDate).isBefore(appliedDay, 'day') ? (
+                <p className="text-sm">
+                  You have already been charged for your current end date, (
+                  {moment(endDate).format('MMMM Do')}). Please change your end date to a later date
+                  to continue.
+                </p>
+              ) : (
+                <p className="text-sm">
+                  Your current end date ({moment(endDate).format('MMMM Do')}) no longer falls within
+                  your selected schedule. Please select a new end date.
+                </p>
+              )}
               <FieldDateInput
                 name="endDate"
                 id="endDate"
@@ -291,6 +377,7 @@ const ModifyScheduleRecurringForm = props => (
                   bookedDates,
                   bookedDays: filteredBookedDays,
                   appliedDay,
+                  firstBlockedDay,
                 })}
                 useMobileMargins
                 showErrorMessage={false}
@@ -301,8 +388,11 @@ const ModifyScheduleRecurringForm = props => (
                   bookedDates,
                   bookedDays: filteredBookedDays,
                   appliedDay,
+                  firstBlockedDay,
                 })}
                 withPortal={isMobile}
+                onPrevMonthClick={m => setCurrentEndDateMonth(m.startOf('month'))}
+                onNextMonthClick={m => setCurrentEndDateMonth(m.startOf('month'))}
               />
             </div>
           ) : null}
@@ -336,13 +426,6 @@ const ModifyScheduleRecurringForm = props => (
           {showEndDateError ? (
             <p className="text-error text-center">Please select an end date.</p>
           ) : null}
-          {/* {appliedDay ? (
-            <p className={classNames(css.modalMessage, 'text-primary')}>
-              You have already been charged through {moment(lastChargedDate).format('MMMM Do')}. Any
-              changes you make will be applied starting on{' '}
-              {moment(appliedDay).format('dddd, MMMM Do')}.
-            </p>
-          ) : null} */}
           <div className={css.modalButtonContainer}>
             <Button
               onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
@@ -359,42 +442,22 @@ const ModifyScheduleRecurringForm = props => (
               Continue
             </PrimaryButton>
           </div>
-          {/* TODO: Add submission modal */}
-          <Modal
-            title="Submit Booking Schedule Change"
-            id="SubmitBookingScheduleChangeModal"
+          <ModifyScheduleSubmissionModal
             isOpen={isSubmissionModalOpen}
             onClose={() => setIsSubmissionModalOpen(false)}
             onManageDisableScrolling={onManageDisableScrolling}
-            usePortal
-          >
-            <p className={css.modalTitle}>Before you submit...</p>
-            {appliedDay ? (
-              <p className={classNames(css.modalMessage, 'text-primary')}>
-                You have already been charged through {moment(lastChargedDate).format('MMMM Do')}.
-                The changes to your schedule will be applied starting on{' '}
-                {moment(appliedDay).format('dddd, MMMM Do')}.
-              </p>
-            ) : null}
-            <div className={css.modalButtonContainer}>
-              <Button
-                onClick={() => setIsSubmissionModalOpen(false)}
-                className={css.modalButton}
-                type="button"
-              >
-                Back
-              </Button>
-              <PrimaryButton
-                inProgress={submitInProgress}
-                className="w-auto ml-4 px-6 min-w-[10rem]"
-                ready={submitReady}
-                disabled={submitDisabled}
-                type="submit"
-              >
-                Submit
-              </PrimaryButton>
-            </div>
-          </Modal>
+            weekdays={weekdays}
+            values={values}
+            setIsSubmissionModalOpen={setIsSubmissionModalOpen}
+            submitInProgress={submitInProgress}
+            submitReady={submitReady}
+            submitDisabled={submitDisabled}
+            provider={provider}
+            listing={listing}
+            newBooking={newBooking}
+            appliedDay={appliedDay}
+            lastChargedDate={lastChargedDate}
+          />
         </Form>
       );
     }}
