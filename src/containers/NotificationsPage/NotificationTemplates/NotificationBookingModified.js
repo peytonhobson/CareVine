@@ -57,7 +57,7 @@ const NotificationBookingModified = props => {
 
   const classes = useStyles();
 
-  const modificationType = Object.keys(modification)[0];
+  const modificationTypes = Object.keys(modification);
 
   const sortedPreviousExceptions = useMemo(
     () =>
@@ -106,7 +106,7 @@ const NotificationBookingModified = props => {
                 return (
                   <div
                     key={dayOfWeek}
-                    className={modificationType === 'bookingSchedule' ? 'text-error' : null}
+                    className={modificationTypes.includes('bookingSchedule') ? 'text-error' : null}
                   >
                     <p className="my-0 leading-6">
                       {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
@@ -120,13 +120,13 @@ const NotificationBookingModified = props => {
             </div>
             <div>
               <h3 className="underline">End Date</h3>
-              <p className={modificationType === 'endDate' ? 'text-error' : null}>
+              <p className={modificationTypes.includes('endDate') ? 'text-error' : null}>
                 {previousMetadata?.endDate
                   ? moment(previousMetadata.endDate).format('ddd, MMM DD')
                   : 'No End Date'}
               </p>
             </div>
-            <div className={modificationType === 'exceptions' ? 'text-error' : null}>
+            <div className={modificationTypes.includes('exceptions') ? 'text-error' : null}>
               <h3 className="underline">Exceptions</h3>
               {sortedPreviousExceptions.length > 0 ? (
                 sortedPreviousExceptions.map(exception => {
@@ -153,7 +153,9 @@ const NotificationBookingModified = props => {
                 return (
                   <div
                     key={dayOfWeek}
-                    className={modificationType === 'bookingSchedule' ? 'text-success' : null}
+                    className={
+                      modificationTypes.includes('bookingSchedule') ? 'text-success' : null
+                    }
                   >
                     <p className="my-0 leading-6">
                       {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
@@ -167,13 +169,13 @@ const NotificationBookingModified = props => {
             </div>
             <div>
               <h3 className="underline">End Date</h3>
-              <p className={modificationType === 'endDate' ? 'text-success' : null}>
+              <p className={modificationTypes.includes('endDate') ? 'text-success' : null}>
                 {newSchedule.endDate
                   ? moment(newSchedule.endDate).format('ddd, MMM DD')
                   : 'No End Date'}
               </p>
             </div>
-            <div className={modificationType === 'exceptions' ? 'text-success' : null}>
+            <div className={modificationTypes.includes('exceptions') ? 'text-success' : null}>
               <h3 className="underline">Exceptions</h3>
               {newSchedule.exceptions.length > 0 ? (
                 newSchedule.exceptions.map(exception => {

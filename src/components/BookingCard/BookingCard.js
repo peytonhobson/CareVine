@@ -405,15 +405,17 @@ export const BookingCardDateTimesContainer = ({ children }) => {
 
   return (
     <div className={css.dateTimesContainer}>
-      <h2 className={css.datesAndTimes}>
-        {scheduleType === 'recurring' ? 'Weekly Schedule' : 'Dates & Times'}
-      </h2>
       {startDate && scheduleType === 'recurring' ? (
-        <p className="text-primary mt-0 mb-2 text-sm">
-          {moment(startDate).format('ddd, MMM DD')} -{' '}
-          {endDate ? moment(endDate).format('ddd, MMM DD') : 'No End Date'}
-        </p>
+        <>
+          <p className="text-primary mt-0 mb-2 text-lg mt-10">
+            Start Date: {moment(startDate).format('MMM DD')}{' '}
+          </p>
+          <p className="text-primary mt-0 mb-2 text-lg mt-10">
+            {endDate ? `End Date: ${moment(endDate).format('MMM DD')}` : 'No End Date'}
+          </p>
+        </>
       ) : null}
+      <h2>Weekly Schedule</h2>
       {children}
     </div>
   );
@@ -538,14 +540,14 @@ export const BookingCardDetailsButtons = () => {
       {scheduleType === 'oneTime' ? (
         <SecondaryButton
           className={css.viewButton}
-          onClick={() => handleModalOpen(MODAL_TYPES.VIEW_CALENDAR)}
+          onClick={() => handleModalOpen(MODAL_TYPES.CALENDAR)}
         >
           View Calendar
         </SecondaryButton>
       ) : allExceptions.length ? (
         <CancelButton
           className={css.viewButton}
-          onClick={() => handleModalOpen(MODAL_TYPES.VIEW_EXCEPTIONS)}
+          onClick={() => handleModalOpen(MODAL_TYPES.EXCEPTIONS)}
         >
           Schedule Exceptions
         </CancelButton>

@@ -11,6 +11,7 @@ import { WEEKDAYS } from '../../../util/constants';
 import { useCheckMobileScreen } from '../../../util/hooks';
 import moment from 'moment';
 import { checkIsBlockedDay, mapWeekdays } from '../../../util/bookings';
+import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';
 
@@ -85,7 +86,7 @@ const SectionRecurring = props => {
               values={values}
               intl={intl}
               multipleTimesDisabled
-              warning={unavailableDays?.includes(w)}
+              warnings={unavailableDays?.includes(w)}
               className={css.dailyPlan}
             />
           );
@@ -93,8 +94,8 @@ const SectionRecurring = props => {
       </div>
       <div className={css.timeline}>
         <h2>When do you need care?</h2>
-        <p className={css.leaveEndDate}>
-          Leave end date blank if you want the booking to repeat indefinitely
+        <p className={classNames(css.leaveEndDate, 'text-error', 'text-sm')}>
+          Leave end date blank if you want the booking to repeat indefinitely.
         </p>
         <div className={css.dateInputContainer}>
           <FieldDateInput

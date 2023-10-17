@@ -291,7 +291,7 @@ export const acceptBookingModification = notification => async (dispatch, getSta
   dispatch(acceptBookingModificationRequest());
 
   const { modification, txId, previousMetadata, modifyBookingTxId } = notification.metadata;
-  const modificationType = Object.keys(modification)[0];
+  const modificationTypes = Object.keys(modification);
 
   try {
     const transaction = (
@@ -299,7 +299,7 @@ export const acceptBookingModification = notification => async (dispatch, getSta
     ).data.data;
 
     // TODO: add logic for other modifications here
-    if (modificationType === 'endDate') {
+    if (modificationTypes.length === 1 && modificationTypes.includes('endDate')) {
       await acceptEndDateModification(transaction, modification);
     }
 

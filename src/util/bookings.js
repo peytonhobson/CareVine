@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP } from './constants';
+import { addTimeToStartOfDay } from './dates';
 
 const filterInsideExceptions = (exceptions, startDate) =>
   Object.keys(exceptions).reduce((acc, exceptionKey) => {
@@ -289,4 +290,62 @@ export const getUnavailableDays = ({
   );
 
   return unavailableDays;
+};
+
+export const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNum = 1) => {
+  if (attemptNum > 4) return null;
+
+  // Find start and end of next week
+  // Unlike cron you can use lineItems here because they haven't been updated yet
+  const nextWeekLineItemStart = moment.parseZone(lineItems[0].date).add(7 * attemptNum, 'days');
+  const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
+  const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
+
+  // Filter exceptions for those within next week
+  const insideExceptions = Object.values(exceptions)
+    .flat()
+    .filter(e => moment(e.date).isBetween(nextWeekStart, nextWeekEnd, null, '[]'));
+
+  // Create new booking schedule with exceptions
+  const newBookingSchedule = WEEKDAYS.reduce((acc, day) => {
+    const removeDay = insideExceptions.find(e => e.day === day && e.type === 'removeDate');
+    if (removeDay) return acc;
+
+    const addOrChangeDay = insideExceptions.find(
+      e => e.day === day && (e.type === 'addDate' || e.type === 'changeDate')
+    );
+
+    if (addOrChangeDay) {
+      return [
+        ...acc,
+        {
+          dayOfWeek: day,
+          startTime: addOrChangeDay.startTime,
+          endTime: addOrChangeDay.endTime,
+        },
+      ];
+    }
+
+    const daySchedule = bookingSchedule.find(b => b.dayOfWeek === day);
+    if (!daySchedule) return acc;
+
+    return [...acc, daySchedule];
+  }, []);
+
+  if (newBookingSchedule.length === 0) {
+    return findNextWeekStartTime(lineItems, bookingSchedule, exceptions, attemptNum + 1);
+  }
+
+  const firstDay = newBookingSchedule[0] || {};
+
+  const firstTime = firstDay.startTime;
+  const startTime = addTimeToStartOfDay(
+    nextWeekStart
+      .clone()
+      .weekday(WEEKDAYS.indexOf(firstDay.dayOfWeek))
+      .startOf('day'),
+    firstTime
+  );
+
+  return moment(startTime);
 };

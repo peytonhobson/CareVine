@@ -56,7 +56,7 @@ const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
-  .add(5 - (now.minute() % 5), 'minutes')
+  .add(60 - (now.minute() % 5), 'minutes')
   .set({ second: 0, millisecond: 0 });
 
 const bookingStart = moment(start)
@@ -71,32 +71,32 @@ console.log(bookingStart);
 
 const exceptions = {
   addedDays: [
-    // {
-    //   date: startOfDay.add(3, 'days').format(ISO_OFFSET_FORMAT),
-    //   startTime: '12:00am',
-    //   endTime: '9:00am',
-    //   type: 'addDate',
-    //   day: 'mon',
-    // },
+    {
+      date: startOfDay.add(1, 'days').format(ISO_OFFSET_FORMAT),
+      startTime: '4:00am',
+      endTime: '9:00am',
+      type: 'addDate',
+      day: 'tue',
+    },
   ],
   removedDays: [
-    // {
-    //   date: startOfDay
-    //     .clone()
-    //     .add(7, 'days')
-    //     .format(ISO_OFFSET_FORMAT),
-    //   type: 'removeDate',
-    //   day: 'fri',
-    // },
+    {
+      date: startOfDay
+        .clone()
+        .add(28, 'days')
+        .format(ISO_OFFSET_FORMAT),
+      type: 'removeDate',
+      day: 'mon',
+    },
   ],
   changedDays: [
-    // {
-    //   date: startOfDay.add(7, 'days').format(ISO_OFFSET_FORMAT),
-    //   startTime: '5:00pm',
-    //   endTime: '7:00pm',
-    //   type: 'changeDate',
-    //   day: 'fri',
-    // },
+    {
+      date: startOfDay.add(21, 'days').format(ISO_OFFSET_FORMAT),
+      startTime: '5:00pm',
+      endTime: '7:00pm',
+      type: 'changeDate',
+      day: 'mon',
+    },
   ],
 };
 
@@ -110,16 +110,6 @@ const bookingSchedule = [
     dayOfWeek: 'wed',
     startTime: '5:00pm',
     endTime: '8:00pm',
-  },
-  {
-    dayOfWeek: 'thu',
-    startTime: '5:00pm',
-    endTime: '6:00pm',
-  },
-  {
-    dayOfWeek: 'sat',
-    startTime: '6:00am',
-    endTime: '11:00am',
   },
 ];
 const bookingRate = 23;

@@ -62,20 +62,17 @@ module.exports = async (req, res) => {
     const customerDisplayName = customer.attributes.profile.displayName;
 
     let expiration;
-    const modificationType = Object.keys(modification)[0];
-    switch (modificationType) {
-      case 'bookingSchedule':
-        expiration = findNextWeekStartTime(modification.bookingSchedule);
-        break;
-      case 'endDate':
-        expiration = moment(modification.endDate).startOf('day');
-        break;
-      case 'exceptions':
-        const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
-        expiration = moment(firstExceptionDate).startOf('day');
-        break;
-      default:
-        expiration = moment();
+    const modificationTypes = Object.keys(modification);
+
+    if (modificationTypes.includes('bookingSchedule')) {
+      expiration = findNextWeekStartTime(modification.bookingSchedule);
+    } else if (modificationTypes.includes('exceptions')) {
+      const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
+      expiration = moment(firstExceptionDate).startOf('day');
+    } else if (modificationTypes.includes('endDate')) {
+      expiration = moment(modification.endDate).startOf('day');
+    } else {
+      expiration = moment().add(3, 'days');
     }
 
     const threeDaysFromNow = moment().add(3, 'days');
@@ -108,7 +105,8 @@ module.exports = async (req, res) => {
         !(
           n.type === NOTIFICATION_TYPE_BOOKING_MODIFIED &&
           n.metadata.txId === txId &&
-          Object.keys(n.metadata.modification)[0] === Object.keys(modification)[0]
+          JSON.stringify(Object.keys(n.metadata.modification)) ===
+            JSON.stringify(Object.keys(modification))
         )
     );
 

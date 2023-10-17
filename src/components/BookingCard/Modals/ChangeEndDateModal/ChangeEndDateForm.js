@@ -137,7 +137,7 @@ const ChangeEndDateForm = props => (
       const submitDisabled = updateBookingEndDateInProgress || updateBookingEndDateSuccess;
       const submitReady = updateBookingEndDateSuccess;
 
-      const awaitingModificationType = Object.keys(awaitingModification)[0];
+      const awaitingModificationTypes = Object.keys(awaitingModification);
       const requestedEndDate = awaitingModification?.endDate;
 
       const lastTransition = booking.attributes.lastTransition;
@@ -174,6 +174,10 @@ const ChangeEndDateForm = props => (
       const futureDateSelected =
         selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');
 
+      const hasPendingRequest = awaitingModificationTypes.length > 0;
+      const hasPendingEndDatesRequest =
+        awaitingModificationTypes.length === 1 && awaitingModificationTypes[0] === 'endDate';
+
       return (
         <Form onSubmit={onSubmit}>
           <FieldDateInput
@@ -204,7 +208,9 @@ const ChangeEndDateForm = props => (
               endDateCharged,
             })}
             withPortal={isMobile}
-            disabled={awaitingModificationType && awaitingModificationType !== 'endDate'}
+            disabled={
+              awaitingModificationTypes.length > 1 && awaitingModificationTypes[0] !== 'endDate'
+            }
           />
           {selectedEndDate ? (
             <>
@@ -247,14 +253,14 @@ const ChangeEndDateForm = props => (
               already been charged.
             </p>
           ) : null}
-          {awaitingModificationType === 'endDate' && !selectedEndDate ? (
+          {hasPendingEndDatesRequest && !selectedEndDate ? (
             <p className={classNames(css.dropAnimation, 'text-primary')}>
               You already have a pending request to change your booking end date to{' '}
               {moment(requestedEndDate).format('MMMM Do')}. By clicking 'Submit', you will cancel
               that request and create a new one.
             </p>
           ) : null}
-          {awaitingModificationType && awaitingModificationType !== 'endDate' ? (
+          {hasPendingRequest ? (
             <p className="text-error text-center">
               You cannot change your end date because you have a pending request to modify your
               booking schedule. Please allow the caregiver to accept or decline that request before

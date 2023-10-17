@@ -395,6 +395,7 @@ const EditBookingFormComponent = props => (
             tabClassName={css.tab}
           />
           {tabContent}
+          {/* TODO: Set first month to be one with unavailable dates */}
           {onManageDisableScrolling && isUnavailableWarningModalOpen ? (
             <Modal
               id="UnavailableWarningModal"

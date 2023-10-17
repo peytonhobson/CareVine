@@ -138,10 +138,6 @@
   width: 100%;
   height: auto;
 
-  padding-top: 2rem;
-  margin-bottom: 4rem;
-
-  @media screen(lg) {
-    margin-bottom: 5rem;
-  }
+  margin-top: 1rem;
+  margin-bottom: 3rem;
 }

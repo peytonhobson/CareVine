@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Modal } from '../../..';
 import { manageDisableScrolling } from '../../../../ducks/UI.duck';
@@ -7,28 +7,8 @@ import { connect } from 'react-redux';
 import { updateBookingMetadata } from '../../../../containers/BookingsPage/BookingsPage.duck';
 import ModifyScheduleRecurringForm from './ModifyScheduleRecurringForm';
 import { injectIntl } from '../../../../util/reactIntl';
-import WarningIcon from '@mui/icons-material/Warning';
 
 import css from '../BookingCardModals.module.css';
-
-const sortChargedLineItems = chargedLineItems => {
-  return chargedLineItems
-    .map(c => c.lineItems)
-    .flat()
-    .sort((a, b) => {
-      return moment(a.date).isBefore(moment(b.date)) ? -1 : 1;
-    });
-};
-
-const findChangeAppliedDay = chargedLineItems => {
-  const sortedChargedLineItems = sortChargedLineItems(chargedLineItems);
-  const lastChargedDate = sortedChargedLineItems[sortedChargedLineItems.length - 1].date;
-
-  const startOfNextWeek = moment(lastChargedDate)
-    .add(1, 'week')
-    .startOf('week');
-  return null;
-};
 
 const ModifyScheduleRecurringModal = props => {
   const {
@@ -73,11 +53,7 @@ const ModifyScheduleRecurringModal = props => {
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
     >
-      <p className={css.modalTitle}>Modify Booking Schedule</p>
-      <p className={css.modalMessage}>
-        Days with the <WarningIcon color="warning" /> icon are already booked by another booking.
-        You will not be able to book these days.
-      </p>
+      <p className={css.modalTitle}>Modify Your Booking Schedule</p>
       <ModifyScheduleRecurringForm
         onSubmit={onFormSubmit}
         initialValues={{ ...initialBookingSchedule }}
@@ -87,11 +63,9 @@ const ModifyScheduleRecurringModal = props => {
         updateBookingMetadataError={updateBookingMetadataError}
         updateBookingMetadataSuccess={updateBookingMetadataSuccess}
         intl={intl}
+        initialValuesEqual={() => true}
+        onManageDisableScrolling={onManageDisableScrolling}
       />
-      <p className={css.modalMessage}>
-        Days with the <WarningIcon color="warning" /> icon are already booked by another booking.
-        You will not be able to book these days.
-      </p>
     </Modal>
   ) : null;
 };
