@@ -77,6 +77,7 @@ module.exports = async (req, res) => {
         modification,
         expiration: expiration.format(ISO_OFFSET_FORMAT),
         previousMetadata,
+        appliedDay: appliedDay?.format(ISO_OFFSET_FORMAT),
       },
     };
 
@@ -110,6 +111,8 @@ module.exports = async (req, res) => {
           bookingEnd,
         }
       : {};
+
+    console.log('bookingTimesMaybe', bookingTimesMaybe);
 
     const modifyBookingTransaction = (
       await trustedSdk.transactions.initiate({
@@ -151,7 +154,8 @@ module.exports = async (req, res) => {
 
     res.status(200).json({});
   } catch (e) {
-    handleError(res, e);
+    // handleError(res, e);
+    res.status(500).json({ error: e });
     console.log(e?.data?.errors?.[0]?.source);
   }
 };

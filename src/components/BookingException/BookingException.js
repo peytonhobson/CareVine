@@ -24,9 +24,9 @@ const BookingException = props => {
             })}
           />
           <div className={css.exceptionAvailabilityStatus}>
-            {type === ADD_DATE && 'Added'}
-            {type === REMOVE_DATE && 'Removed'}
-            {type === CHANGE_DATE && 'Changed'}
+            {type === ADD_DATE && 'Add Day'}
+            {type === REMOVE_DATE && 'Remove Day'}
+            {type === CHANGE_DATE && 'Change Day'}
           </div>
         </div>
         {onRemoveException ? (

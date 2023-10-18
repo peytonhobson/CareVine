@@ -22,6 +22,8 @@ const ModifyScheduleSubmissionModal = props => {
     newBooking,
     appliedDay,
     lastChargedDate,
+    onSubmit,
+    error,
   } = props;
 
   const threeDaysFromNow = moment().add(3, 'days');
@@ -48,7 +50,7 @@ const ModifyScheduleSubmissionModal = props => {
           const { dayOfWeek, startTime, endTime } = day;
 
           return (
-            <div className="flex mx-auto">
+            <div className="flex mx-auto" key={dayOfWeek}>
               <span className="px-4 py-2 bg-primary rounded-l-button text-light text-center w-36">
                 {FULL_WEEKDAY_MAP[dayOfWeek]}
               </span>
@@ -103,6 +105,11 @@ const ModifyScheduleSubmissionModal = props => {
           expires, your booking will continue with the original schedule.
         </p>
       )}
+      {error ? (
+        <p className="text-error text-center">
+          Failed to update booking schedule. Please try again.
+        </p>
+      ) : null}
       <div className={css.modalButtonContainer}>
         <Button onClick={onClose} className={css.modalButton} type="button">
           Back
@@ -112,7 +119,7 @@ const ModifyScheduleSubmissionModal = props => {
           className="w-auto ml-4 px-6 min-w-[10rem]"
           ready={submitReady}
           disabled={submitDisabled}
-          type="submit"
+          onClick={onSubmit}
         >
           Submit
         </PrimaryButton>

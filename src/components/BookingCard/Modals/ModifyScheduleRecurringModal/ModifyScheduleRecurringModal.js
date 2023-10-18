@@ -4,7 +4,6 @@ import { Modal } from '../../..';
 import { manageDisableScrolling } from '../../../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { updateBookingMetadata } from '../../../../containers/BookingsPage/BookingsPage.duck';
 import ModifyScheduleRecurringForm from './ModifyScheduleRecurringForm';
 import { injectIntl } from '../../../../util/reactIntl';
 import moment from 'moment';
@@ -13,9 +12,10 @@ import {
   updateBookingSchedule,
 } from '../../../../ducks/transactions.duck';
 import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
-import { checkIsDateInBookingSchedule, mapWeekdays } from '../../../../util/bookings';
+import { mapWeekdays } from '../../../../util/bookings';
 
 import css from '../BookingCardModals.module.css';
+import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
 
 const filterUnapplicableExceptions = (unapplicableExceptions, exceptions) =>
   Object.keys(exceptions).reduce((acc, curr) => {
@@ -57,15 +57,13 @@ const ModifyScheduleRecurringModal = props => {
     const modification = {
       bookingSchedule,
       exceptions: newExceptions,
-      endDate: values.endDate?.date,
+      endDate: moment(values.endDate?.date).format(ISO_OFFSET_FORMAT),
     };
 
-    console.log('modification', modification);
-
     if (isRequest) {
-      onRequestBookingScheduleChange(booking.id.uuid, modification);
-    } else {
       onUpdateBookingSchedule(booking.id.uuid, modification);
+    } else {
+      onRequestBookingScheduleChange(booking.id.uuid, modification);
     }
   };
 

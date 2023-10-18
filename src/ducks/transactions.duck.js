@@ -648,27 +648,29 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       });
     }
 
-    const { listing } = transaction;
-    const listingId = listing.id.uuid;
-    const { bookedDays = [] } = listing.attributes.metadata;
+    if (!isRequest) {
+      const listing = transaction.relationships.listing.data;
+      const listingId = listing.id.uuid;
+      const { bookedDays = [] } = listing.attributes.metadata;
 
-    // Update Booked Days to match end date
-    const newBookedDays = bookedDays.map(bd => {
-      if (bd.txId === txId) {
-        return {
-          ...bd,
-          endDate: formattedEndDate,
-        };
-      }
-      return bd;
-    });
+      // Update Booked Days to match end date
+      const newBookedDays = bookedDays.map(bd => {
+        if (bd.txId === txId) {
+          return {
+            ...bd,
+            endDate: formattedEndDate,
+          };
+        }
+        return bd;
+      });
 
-    await updateListingMetadata({
-      listingId,
-      metadata: {
-        bookedDays: newBookedDays,
-      },
-    });
+      await updateListingMetadata({
+        listingId,
+        metadata: {
+          bookedDays: newBookedDays,
+        },
+      });
+    }
 
     dispatch(updateBookingEndDateSuccess());
     return;
@@ -682,30 +684,16 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
 export const updateBookingSchedule = (txId, modification) => async (dispatch, getState, sdk) => {
   dispatch(updateBookingScheduleRequest());
 
+  const newEndDateMaybe = modification.endDate
+    ? {
+        endDate: moment(modification.endDate)
+          .startOf('day')
+          .format(ISO_OFFSET_FORMAT),
+      }
+    : {};
+  const newExceptionsMaybe = modification.exceptions ? { exceptions: modification.exceptions } : {};
+
   try {
-    // Fetch new transaction in case old one is stale
-    const transaction = (
-      await sdk.transactions.show({
-        id: txId,
-        include: ['listing'],
-      })
-    ).data.data;
-
-    // TODO: Maybe throw error if transaction is not request
-
-    const { endDate: oldEndDate, bookingSchedule, exceptions } = transaction.attributes.metadata;
-
-    const newEndDateMaybe = modification.endDate
-      ? {
-          endDate: moment(modification.endDate)
-            .startOf('day')
-            .format(ISO_OFFSET_FORMAT),
-        }
-      : {};
-    const newExceptionsMaybe = modification.exceptions
-      ? { exceptions: modification.exceptions }
-      : {};
-
     await updateTransactionMetadata({
       txId,
       metadata: {
@@ -722,7 +710,11 @@ export const updateBookingSchedule = (txId, modification) => async (dispatch, ge
   }
 };
 
-export const requestBookingScheduleChange = async (txId, modification, sdk) => {
+export const requestBookingScheduleChange = (txId, modification, sdk) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(requestBookingScheduleChangeRequest());
 
   try {
@@ -730,7 +722,6 @@ export const requestBookingScheduleChange = async (txId, modification, sdk) => {
     const transaction = (
       await sdk.transactions.show({
         id: txId,
-        include: ['listing'],
       })
     ).data.data;
 

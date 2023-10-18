@@ -298,9 +298,7 @@ const ModifyScheduleRecurringForm = props => (
       const submitDisabled = submitInProgress || usedStates.success;
       const submitReady = usedStates.success;
 
-      const onSubmit = e => {
-        e.preventDefault();
-
+      const handleOpenSubmissionModal = () => {
         if (!weekdays.length) {
           setShowSelectDaysError(true);
           return;
@@ -311,7 +309,7 @@ const ModifyScheduleRecurringForm = props => (
           return;
         }
 
-        handleSubmit(e);
+        setIsSubmissionModalOpen(true);
       };
 
       const handleChange = () => {
@@ -335,7 +333,7 @@ const ModifyScheduleRecurringForm = props => (
       };
 
       return (
-        <Form onSubmit={onSubmit}>
+        <Form>
           <FormSpy subscription={{ values: true }} onChange={handleChange} />
 
           {unavailableDays.length ? (
@@ -426,11 +424,6 @@ const ModifyScheduleRecurringForm = props => (
               </div>
             </div>
           ) : null}
-          {usedStates.error ? (
-            <p className="text-error text-center">
-              Failed to update booking schedule. Please try again.
-            </p>
-          ) : null}
           {showSelectDaysError ? (
             <p className="text-error text-center">Please select at least one day.</p>
           ) : null}
@@ -448,7 +441,7 @@ const ModifyScheduleRecurringForm = props => (
             <PrimaryButton
               className="w-auto ml-4 px-6 min-w-[10rem]"
               type="button"
-              onClick={() => setIsSubmissionModalOpen(true)}
+              onClick={handleOpenSubmissionModal}
             >
               Continue
             </PrimaryButton>
@@ -468,6 +461,8 @@ const ModifyScheduleRecurringForm = props => (
             newBooking={newBooking}
             appliedDay={appliedDay}
             lastChargedDate={lastChargedDate}
+            onSubmit={handleSubmit}
+            error={usedStates.error}
           />
         </Form>
       );
