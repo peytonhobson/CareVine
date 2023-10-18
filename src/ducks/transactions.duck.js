@@ -20,6 +20,7 @@ import { addTimeToStartOfDay } from '../util/dates';
 import { denormalisedResponseEntities } from '../util/data';
 import { ISO_OFFSET_FORMAT, NOTIFICATION_TYPE_BOOKING_MODIFIED } from '../util/constants';
 import { v4 as uuidv4 } from 'uuid';
+import d from 'final-form-arrays';
 const { UUID } = sdkTypes;
 
 // ================ Action types ================ //
@@ -53,6 +54,17 @@ export const UPDATE_BOOKING_END_DATE_REQUEST = 'app/transactions/UPDATE_BOOKING_
 export const UPDATE_BOOKING_END_DATE_SUCCESS = 'app/transactions/UPDATE_BOOKING_END_DATE_SUCCESS';
 export const UPDATE_BOOKING_END_DATE_ERROR = 'app/transactions/UPDATE_BOOKING_END_DATE_ERROR';
 
+export const UPDATE_BOOKING_SCHEDULE_REQUEST = 'app/transactions/UPDATE_BOOKING_SCHEDULE_REQUEST';
+export const UPDATE_BOOKING_SCHEDULE_SUCCESS = 'app/transactions/UPDATE_BOOKING_SCHEDULE_SUCCESS';
+export const UPDATE_BOOKING_SCHEDULE_ERROR = 'app/transactions/UPDATE_BOOKING_SCHEDULE_ERROR';
+
+export const REQUEST_BOOKING_SCHEDULE_CHANGE_REQUEST =
+  'app/transactions/REQUEST_BOOKING_SCHEDULE_CHANGE_REQUEST';
+export const REQUEST_BOOKING_SCHEDULE_CHANGE_SUCCESS =
+  'app/transactions/REQUEST_BOOKING_SCHEDULE_CHANGE_SUCCESS';
+export const REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR =
+  'app/transactions/REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -75,6 +87,12 @@ const initialState = {
   updateBookingEndDateInProgress: false,
   updateBookingEndDateError: null,
   updateBookingEndDateSuccess: null,
+  updateBookingScheduleInProgress: false,
+  updateBookingScheduleError: null,
+  updateBookingScheduleSuccess: null,
+  requestBookingScheduleChangeInProgress: false,
+  requestBookingScheduleChangeError: null,
+  requestBookingScheduleChangeSuccess: null,
 };
 
 export default function transactionsReducer(state = initialState, action = {}) {
@@ -188,6 +206,46 @@ export default function transactionsReducer(state = initialState, action = {}) {
         updateBookingEndDateError: payload,
       };
 
+    case UPDATE_BOOKING_SCHEDULE_REQUEST:
+      return {
+        ...state,
+        updateBookingScheduleInProgress: true,
+        updateBookingScheduleError: null,
+        updateBookingScheduleSuccess: false,
+      };
+    case UPDATE_BOOKING_SCHEDULE_SUCCESS:
+      return {
+        ...state,
+        updateBookingScheduleInProgress: false,
+        updateBookingScheduleSuccess: true,
+      };
+    case UPDATE_BOOKING_SCHEDULE_ERROR:
+      return {
+        ...state,
+        updateBookingScheduleInProgress: false,
+        updateBookingScheduleError: payload,
+      };
+
+    case REQUEST_BOOKING_SCHEDULE_CHANGE_REQUEST:
+      return {
+        ...state,
+        requestBookingScheduleChangeInProgress: true,
+        requestBookingScheduleChangeError: null,
+        requestBookingScheduleChangeSuccess: false,
+      };
+    case REQUEST_BOOKING_SCHEDULE_CHANGE_SUCCESS:
+      return {
+        ...state,
+        requestBookingScheduleChangeInProgress: false,
+        requestBookingScheduleChangeSuccess: true,
+      };
+    case REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR:
+      return {
+        ...state,
+        requestBookingScheduleChangeInProgress: false,
+        requestBookingScheduleChangeError: payload,
+      };
+
     default:
       return state;
   }
@@ -264,6 +322,26 @@ export const updateBookingEndDateRequest = () => ({ type: UPDATE_BOOKING_END_DAT
 export const updateBookingEndDateSuccess = () => ({ type: UPDATE_BOOKING_END_DATE_SUCCESS });
 export const updateBookingEndDateError = e => ({
   type: UPDATE_BOOKING_END_DATE_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const updateBookingScheduleRequest = () => ({ type: UPDATE_BOOKING_SCHEDULE_REQUEST });
+export const updateBookingScheduleSuccess = () => ({ type: UPDATE_BOOKING_SCHEDULE_SUCCESS });
+export const updateBookingScheduleError = e => ({
+  type: UPDATE_BOOKING_SCHEDULE_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const requestBookingScheduleChangeRequest = () => ({
+  type: REQUEST_BOOKING_SCHEDULE_CHANGE_REQUEST,
+});
+export const requestBookingScheduleChangeSuccess = () => ({
+  type: REQUEST_BOOKING_SCHEDULE_CHANGE_SUCCESS,
+});
+export const requestBookingScheduleChangeError = e => ({
+  type: REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR,
   error: true,
   payload: e,
 });
@@ -469,28 +547,34 @@ export const declineBooking = transaction => async (dispatch, getState, sdk) => 
   }
 };
 
-export const updateBookingEndDate = (transaction, endDate) => async (dispatch, getState, sdk) => {
+export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState, sdk) => {
   dispatch(updateBookingEndDateRequest());
 
-  const txId = transaction.id.uuid;
-  const tenYearsAhead = moment().add(10, 'years');
-  const {
-    lineItems = [],
-    endDate: oldEndDate,
-    bookingSchedule,
-    exceptions,
-  } = transaction.attributes.metadata;
-
-  const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
-
-  const formattedEndDate = moment(endDate)
-    .startOf('day')
-    .format(ISO_OFFSET_FORMAT);
-  const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate || tenYearsAhead);
-  const isRequest = transaction.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
-  const needsApproval = !isRequest && newEndDateLater;
-
   try {
+    const transaction = (
+      await sdk.transactions.show({
+        id: txId,
+        include: ['listing'],
+      })
+    ).data.data;
+
+    const tenYearsAhead = moment().add(10, 'years');
+    const {
+      lineItems = [],
+      endDate: oldEndDate,
+      bookingSchedule,
+      exceptions,
+    } = transaction.attributes.metadata;
+
+    const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
+
+    const formattedEndDate = moment(endDate)
+      .startOf('day')
+      .format(ISO_OFFSET_FORMAT);
+    const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate || tenYearsAhead);
+    const isRequest = transaction.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
+    const needsApproval = !isRequest && newEndDateLater;
+
     if (
       (transaction.attributes.lastTransition === TRANSITION_START ||
         transaction.attributes.lastTransition === TRANSITION_ACTIVE_UPDATE_BOOKING_END) &&
@@ -591,5 +675,81 @@ export const updateBookingEndDate = (transaction, endDate) => async (dispatch, g
   } catch (e) {
     log.error(e, 'update-booking-end-date-failed', { txId });
     dispatch(updateBookingEndDateError(storableError(e)));
+  }
+};
+
+// Used if employer updates request
+export const updateBookingSchedule = (txId, modification) => async (dispatch, getState, sdk) => {
+  dispatch(updateBookingScheduleRequest());
+
+  try {
+    // Fetch new transaction in case old one is stale
+    const transaction = (
+      await sdk.transactions.show({
+        id: txId,
+        include: ['listing'],
+      })
+    ).data.data;
+
+    // TODO: Maybe throw error if transaction is not request
+
+    const { endDate: oldEndDate, bookingSchedule, exceptions } = transaction.attributes.metadata;
+
+    const newEndDateMaybe = modification.endDate
+      ? {
+          endDate: moment(modification.endDate)
+            .startOf('day')
+            .format(ISO_OFFSET_FORMAT),
+        }
+      : {};
+    const newExceptionsMaybe = modification.exceptions
+      ? { exceptions: modification.exceptions }
+      : {};
+
+    await updateTransactionMetadata({
+      txId,
+      metadata: {
+        ...modification,
+        ...newEndDateMaybe,
+        ...newExceptionsMaybe,
+      },
+    });
+
+    dispatch(updateBookingScheduleSuccess());
+  } catch (e) {
+    log.error(e, 'update-booking-schedule-failed', { txId });
+    dispatch(updateBookingScheduleError(storableError(e)));
+  }
+};
+
+export const requestBookingScheduleChange = async (txId, modification, sdk) => {
+  dispatch(requestBookingScheduleChangeRequest());
+
+  try {
+    // Fetch new transaction in case old one is stale
+    const transaction = (
+      await sdk.transactions.show({
+        id: txId,
+        include: ['listing'],
+      })
+    ).data.data;
+
+    const { endDate: oldEndDate, bookingSchedule, exceptions } = transaction.attributes.metadata;
+
+    await sendBookingModifiedNotification({
+      txId,
+      modification,
+      isRequest: true,
+      previousMetadata: {
+        endDate: oldEndDate,
+        bookingSchedule,
+        exceptions,
+      },
+    });
+
+    dispatch(requestBookingScheduleChangeSuccess());
+  } catch (e) {
+    log.error(e, 'update-booking-schedule-failed', { txId });
+    dispatch(requestBookingScheduleChangeError(storableError(e)));
   }
 };

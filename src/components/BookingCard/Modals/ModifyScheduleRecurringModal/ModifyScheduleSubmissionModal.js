@@ -5,6 +5,7 @@ import { FULL_WEEKDAY_MAP } from '../../../../util/constants';
 import moment from 'moment';
 import css from '../BookingCardModals.module.css';
 import classNames from 'classnames';
+import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
 
 const ModifyScheduleSubmissionModal = props => {
   const {
@@ -27,6 +28,8 @@ const ModifyScheduleSubmissionModal = props => {
   const expiration = moment(appliedDay).isAfter(threeDaysFromNow) ? threeDaysFromNow : appliedDay;
   const expirationDay = moment(expiration).format('dddd, MMMM Do');
   const expirationTime = moment(expiration).format('h:mm a');
+
+  const isRequest = newBooking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
 
   return (
     <Modal
@@ -72,7 +75,8 @@ const ModifyScheduleSubmissionModal = props => {
         listing={listing}
         onManageDisableScrolling={onManageDisableScrolling}
       />
-      {appliedDay ? (
+      {/* TODO: What about a booking in accepted state but not yet charged? */}
+      {appliedDay && !isRequest ? (
         <p className={classNames(css.modalMessage, 'text-attention')}>
           You have already been charged for the week of{' '}
           {moment(lastChargedDate)
@@ -86,12 +90,19 @@ const ModifyScheduleSubmissionModal = props => {
           {moment(appliedDay).format('dddd, MMMM Do')}.
         </p>
       ) : null}
-      <p className={classNames(css.modalMessage, 'text-primary')}>
-        By clicking 'Submit', you are sending a request to your caregiver to change your weekly
-        schedule. Your caregiver will need to approve this request before it is applied to your
-        booking. This request will expire on {expirationDay} at {expirationTime}. If this request
-        expires, your booking will continue with the original schedule.
-      </p>
+      {isRequest ? (
+        <p className={classNames(css.modalMessage, 'text-primary')}>
+          By clicking 'Submit', you are changing your weekly schedule to what's listed above. You
+          are also agreeing to the new weekly billing details.
+        </p>
+      ) : (
+        <p className={classNames(css.modalMessage, 'text-primary')}>
+          By clicking 'Submit', you are sending a request to your caregiver to change your weekly
+          schedule. Your caregiver will need to approve this request before it is applied to your
+          booking. This request will expire on {expirationDay} at {expirationTime}. If this request
+          expires, your booking will continue with the original schedule.
+        </p>
+      )}
       <div className={css.modalButtonContainer}>
         <Button onClick={onClose} className={css.modalButton} type="button">
           Back

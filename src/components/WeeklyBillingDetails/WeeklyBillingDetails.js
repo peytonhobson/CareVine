@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
@@ -77,20 +77,19 @@ export const WeeklyBillingDetails = props => {
     isPayment,
   } = props;
 
-  const {
-    startDate,
-    endDate,
-    bookingRate,
-    exceptions,
-    paymentMethodType,
-    bookingSchedule = [],
-  } = booking.attributes.metadata;
+  const { startDate, endDate, exceptions, bookingSchedule = [] } = booking.attributes.metadata;
 
   const classes = classNames(className, css.root);
-  const initialDate = startDate ? new Date(startDate) : new Date();
 
   const [hoveredDate, setHoveredDate] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(false);
+  const [initialDate, setInitialDate] = useState(startDate ? new Date(startDate) : new Date());
+
+  useEffect(() => {
+    if (selectedWeek) {
+      setInitialDate(selectedWeek);
+    }
+  }, [selectedWeek]);
 
   const handleClickDay = date => {
     const beforeStartWeek = moment(date).isBefore(startDate, 'week');
@@ -149,6 +148,7 @@ export const WeeklyBillingDetails = props => {
           calendarType="Hebrew"
           view="month"
           onClickDay={handleClickDay}
+          onChange={val => console.log(val)}
         />
       )}
     </div>

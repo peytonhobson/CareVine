@@ -2,42 +2,20 @@ const { integrationSdk, handleError, apiBaseUrl, getTrustedSdk } = require('../a
 const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const moment = require('moment');
-const { addTimeToStartOfDay } = require('../bookingHelpers');
+const { addTimeToStartOfDay, findNextWeekStartTime } = require('../bookingHelpers');
 
 const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-const findNextWeekStartTime = bookingSchedule => {
-  const now = moment();
-
-  const nextWeekStart = now
-    .clone()
-    .add(1, 'week')
-    .startOf('week');
-
-  const nextWeekStartDay = WEEKDAYS.indexOf(bookingSchedule[0].dayOfWeek);
-  const nextWeekStartDate = nextWeekStart.clone().weekday(nextWeekStartDay);
-  const nextWeekStartTime = addTimeToStartOfDay(nextWeekStartDate, bookingSchedule[0].startTime);
-
-  return nextWeekStartTime;
-};
-
 const sortExceptionsByDate = exceptions =>
   exceptions.sort((a, b) => moment(a.date).isBefore(b.date));
 
-const sendEmail = async params => {
-  await axios.post(
-    `${apiBaseUrl()}/api/sendgrid-template-email`,
-    {
-      ...params,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/transit+json',
-      },
-    }
-  );
+const findChangeAppliedDay = (chargedLineItems, weekdays, exceptions) => {
+  const allChargedLineItems = chargedLineItems.map(c => c.lineItems).flat();
+  const nextWeekStartTime = findNextWeekStartTime(allChargedLineItems, weekdays, exceptions);
+
+  return nextWeekStartTime.startOf('day');
 };
 
 module.exports = async (req, res) => {
@@ -57,15 +35,22 @@ module.exports = async (req, res) => {
     const customer = (await integrationSdk.users.show({ id: customerId })).data.data;
     const provider = (await integrationSdk.users.show({ id: providerId })).data.data;
 
-    const { bookingNumber } = transaction.attributes.metadata;
+    const { bookingNumber, chargedLineItems = [] } = transaction.attributes.metadata;
 
     const customerDisplayName = customer.attributes.profile.displayName;
 
+    let appliedDay;
     let expiration;
     const modificationTypes = Object.keys(modification);
 
     if (modificationTypes.includes('bookingSchedule')) {
-      expiration = findNextWeekStartTime(modification.bookingSchedule);
+      expiration = appliedDay = findChangeAppliedDay(
+        chargedLineItems,
+        modification.bookingSchedule,
+        modification.exceptions
+      );
+
+      console.log('appliedDay', appliedDay);
     } else if (modificationTypes.includes('exceptions')) {
       const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
       expiration = moment(firstExceptionDate).startOf('day');
@@ -125,6 +110,7 @@ module.exports = async (req, res) => {
           bookingEnd,
         }
       : {};
+
     const modifyBookingTransaction = (
       await trustedSdk.transactions.initiate({
         processAlias: 'modify-booking-process/active',

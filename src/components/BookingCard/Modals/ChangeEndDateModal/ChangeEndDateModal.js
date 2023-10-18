@@ -1,22 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 
 import { Modal } from '../../..';
-import moment from 'moment';
 import { manageDisableScrolling } from '../../../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { injectIntl } from '../../../../util/reactIntl';
-import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../../../util/constants';
 import { updateBookingEndDate } from '../../../../ducks/transactions.duck';
-import classNames from 'classnames';
-import { checkIsBlockedDay } from '../../../../util/bookings';
 import ChangeEndDateForm from './ChangeEndDateForm';
 
 import css from '../BookingCardModals.module.css';
 
 const ChangeEndDateModal = props => {
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
-
   const {
     isOpen,
     onClose,
@@ -32,7 +26,7 @@ const ChangeEndDateModal = props => {
       return;
     }
 
-    onUpdateBookingEndDate(booking, values.endDate.date);
+    onUpdateBookingEndDate(booking.id.uuid, values.endDate.date);
   };
 
   return isOpen ? (

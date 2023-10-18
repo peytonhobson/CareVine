@@ -7,8 +7,27 @@ import { connect } from 'react-redux';
 import { updateBookingMetadata } from '../../../../containers/BookingsPage/BookingsPage.duck';
 import ModifyScheduleRecurringForm from './ModifyScheduleRecurringForm';
 import { injectIntl } from '../../../../util/reactIntl';
+import moment from 'moment';
+import {
+  requestBookingScheduleChange,
+  updateBookingSchedule,
+} from '../../../../ducks/transactions.duck';
+import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
+import { checkIsDateInBookingSchedule, mapWeekdays } from '../../../../util/bookings';
 
 import css from '../BookingCardModals.module.css';
+
+const filterUnapplicableExceptions = (unapplicableExceptions, exceptions) =>
+  Object.keys(exceptions).reduce((acc, curr) => {
+    const newExceptions = exceptions[curr].filter(e => {
+      !unapplicableExceptions.some(ue => moment(ue.date).isSame(e.date, 'day'));
+    });
+
+    return {
+      ...acc,
+      [curr]: newExceptions,
+    };
+  }, {});
 
 const ModifyScheduleRecurringModal = props => {
   const {
@@ -16,20 +35,39 @@ const ModifyScheduleRecurringModal = props => {
     onClose,
     onManageDisableScrolling,
     booking,
-    updateBookingMetadataInProgress,
-    updateBookingMetadataError,
-    updateBookingMetadataSuccess,
-    onUpdateBooking,
     onGoBack,
     intl,
+    updateBookingScheduleInProgress,
+    updateBookingScheduleError,
+    updateBookingScheduleSuccess,
+    requestBookingScheduleChangeInProgress,
+    requestBookingScheduleChangeError,
+    requestBookingScheduleChangeSuccess,
+    onRequestBookingScheduleChange,
+    onUpdateBookingSchedule,
   } = props;
 
-  // TODO: Update
-  const onFormSubmit = values => {
-    onUpdateBooking(booking, values);
-  };
+  const { bookingSchedule, exceptions } = booking.attributes.metadata;
+  const lastTransition = booking.attributes.lastTransition;
+  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
 
-  const { bookingSchedule } = booking.attributes.metadata;
+  const onFormSubmit = values => {
+    const bookingSchedule = mapWeekdays(values);
+    const newExceptions = filterUnapplicableExceptions(values.unapplicableExceptions, exceptions);
+    const modification = {
+      bookingSchedule,
+      exceptions: newExceptions,
+      endDate: values.endDate?.date,
+    };
+
+    console.log('modification', modification);
+
+    if (isRequest) {
+      onRequestBookingScheduleChange(booking.id.uuid, modification);
+    } else {
+      onUpdateBookingSchedule(booking.id.uuid, modification);
+    }
+  };
 
   const initialBookingSchedule =
     bookingSchedule?.reduce((acc, curr) => {
@@ -59,12 +97,15 @@ const ModifyScheduleRecurringModal = props => {
         initialValues={{ ...initialBookingSchedule }}
         onGoBack={onGoBack}
         booking={booking}
-        updateBookingMetadataInProgress={updateBookingMetadataInProgress}
-        updateBookingMetadataError={updateBookingMetadataError}
-        updateBookingMetadataSuccess={updateBookingMetadataSuccess}
         intl={intl}
         initialValuesEqual={() => true}
         onManageDisableScrolling={onManageDisableScrolling}
+        updateBookingScheduleInProgress={updateBookingScheduleInProgress}
+        updateBookingScheduleError={updateBookingScheduleError}
+        updateBookingScheduleSuccess={updateBookingScheduleSuccess}
+        requestBookingScheduleChangeInProgress={requestBookingScheduleChangeInProgress}
+        requestBookingScheduleChangeError={requestBookingScheduleChangeError}
+        requestBookingScheduleChangeSuccess={requestBookingScheduleChangeSuccess}
       />
     </Modal>
   ) : null;
@@ -72,21 +113,28 @@ const ModifyScheduleRecurringModal = props => {
 
 const mapStateToProps = state => {
   const {
-    updateBookingMetadataInProgress,
-    updateBookingMetadataError,
-    updateBookingMetadataSuccess,
-  } = state.BookingsPage;
+    updateBookingScheduleInProgress,
+    updateBookingScheduleError,
+    updateBookingScheduleSuccess,
+    requestBookingScheduleChangeInProgress,
+    requestBookingScheduleChangeError,
+    requestBookingScheduleChangeSuccess,
+  } = state.transactions;
 
   return {
-    updateBookingMetadataInProgress,
-    updateBookingMetadataError,
-    updateBookingMetadataSuccess,
+    updateBookingScheduleInProgress,
+    updateBookingScheduleError,
+    updateBookingScheduleSuccess,
+    requestBookingScheduleChangeInProgress,
+    requestBookingScheduleChangeError,
+    requestBookingScheduleChangeSuccess,
   };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
-  onUpdateBooking: updateBookingMetadata,
+  onRequestBookingScheduleChange: requestBookingScheduleChange,
+  onUpdateBookingSchedule: updateBookingSchedule,
 };
 
 export default compose(

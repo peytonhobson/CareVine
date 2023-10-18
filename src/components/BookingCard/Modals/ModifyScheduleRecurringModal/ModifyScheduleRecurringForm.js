@@ -1,17 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 
-import {
-  Button,
-  Form,
-  PrimaryButton,
-  DailyPlan,
-  FieldDateInput,
-  BookingException,
-  Modal,
-  WeeklyBillingDetails,
-} from '../../..';
+import { Button, Form, PrimaryButton, DailyPlan, FieldDateInput, BookingException } from '../../..';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
-import { WEEKDAYS, FULL_WEEKDAY_MAP } from '../../../../util/constants';
+import { WEEKDAYS } from '../../../../util/constants';
 import {
   getUnavailableDays,
   mapWeekdays,
@@ -27,6 +18,7 @@ import classNames from 'classnames';
 import { formatFieldDateInput, parseFieldDateInput } from '../../../../util/dates';
 import WarningIcon from '@mui/icons-material/Warning';
 import ModifyScheduleSubmissionModal from './ModifyScheduleSubmissionModal';
+import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
 
 const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
 
@@ -141,7 +133,9 @@ const needsNewEndDate = (weekdays = [], exceptions, endDate, appliedDate) => {
 
 const sortChargedLineItems = (a, b) => moment(a.date).isBefore(b.date);
 
-const findChangeAppliedDay = (chargedLineItems, weekdays, exceptions) => {
+const findChangeAppliedDay = (chargedLineItems, weekdays, exceptions, startDate) => {
+  if (chargedLineItems.length === 0) return startDate;
+
   const allChargedLineItems = chargedLineItems.map(c => c.lineItems).flat();
   const nextWeekStartTime = findNextWeekStartTime(allChargedLineItems, weekdays, exceptions);
 
@@ -167,7 +161,7 @@ const findUnapplicableExceptions = (exceptions, weekdays, endDate, appliedDate) 
   Object.values(exceptions)
     .flat()
     .filter(e => {
-      const isDateInBookingSchedule = checkIsDateInBookingSchedule(e.date, weekdays, exceptions);
+      const isDateInBookingSchedule = checkIsDateInBookingSchedule(e.date, weekdays);
       const isAfterEndDate = endDate ? moment(e.date).isAfter(endDate, 'day') : false;
       const isAfterAppliedDate = appliedDate ? moment(e.date).isAfter(appliedDate, 'day') : false;
 
@@ -197,23 +191,22 @@ const ModifyScheduleRecurringForm = props => (
         onGoBack,
         values,
         booking,
-        updateBookingMetadataInProgress,
-        updateBookingMetadataError,
-        updateBookingMetadataSuccess,
         intl,
         onManageDisableScrolling,
+        updateBookingScheduleInProgress,
+        updateBookingScheduleError,
+        updateBookingScheduleSuccess,
+        requestBookingScheduleChangeInProgress,
+        requestBookingScheduleChangeError,
+        requestBookingScheduleChangeSuccess,
+        form,
       } = formRenderProps;
 
       const weekdays = mapWeekdays(values);
       const isMobile = useCheckMobileScreen();
 
       const txId = booking.id.uuid;
-      const {
-        endDate,
-        bookingSchedule = [],
-        exceptions,
-        chargedLineItems = [],
-      } = booking.attributes.metadata;
+      const { endDate, exceptions, chargedLineItems = [], startDate } = booking.attributes.metadata;
       const { listing, provider } = booking;
       const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
       const timezone = listing.attributes.publicData.availabilityPlan?.timezone;
@@ -242,14 +235,14 @@ const ModifyScheduleRecurringForm = props => (
         setFirstBlockedDay(null);
       }, [JSON.stringify(weekdays)]);
 
-      const nextWeekStart = chargedLineItems.sort();
-
       const filteredBookedDays = bookedDays.filter(d => d.txId !== txId);
 
       const appliedDay = useMemo(
         () =>
-          weekdays.length ? findChangeAppliedDay(chargedLineItems, weekdays, exceptions) : null,
-        [chargedLineItems, weekdays, exceptions]
+          weekdays.length
+            ? findChangeAppliedDay(chargedLineItems, weekdays, exceptions, startDate)
+            : null,
+        [chargedLineItems, weekdays, exceptions, startDate]
       );
       const showEndDate = needsNewEndDate(weekdays, exceptions, endDate, appliedDay);
       const lastChargedDate = useMemo(
@@ -268,6 +261,10 @@ const ModifyScheduleRecurringForm = props => (
         appliedDay
       );
 
+      useEffect(() => {
+        form.change('unapplicableExceptions', unapplicableExceptions);
+      }, [JSON.stringify(unapplicableExceptions)]);
+
       const firstPossibleDate = moment(lastChargedDate)
         .endOf('week')
         .add(1, 'day');
@@ -283,9 +280,23 @@ const ModifyScheduleRecurringForm = props => (
         [filteredBookedDays, appliedDay, endDate, bookedDates, firstPossibleDate, values.endDate]
       );
 
-      const submitInProgress = updateBookingMetadataInProgress;
-      const submitDisabled = updateBookingMetadataInProgress || updateBookingMetadataSuccess;
-      const submitReady = updateBookingMetadataSuccess;
+      const lastTransition = booking.attributes.lastTransition;
+      const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+      const usedStates = isRequest
+        ? {
+            inProgress: updateBookingScheduleInProgress,
+            error: updateBookingScheduleError,
+            success: updateBookingScheduleSuccess,
+          }
+        : {
+            inProgress: requestBookingScheduleChangeInProgress,
+            error: requestBookingScheduleChangeError,
+            success: requestBookingScheduleChangeSuccess,
+          };
+
+      const submitInProgress = usedStates.inProgress;
+      const submitDisabled = submitInProgress || usedStates.success;
+      const submitReady = usedStates.success;
 
       const onSubmit = e => {
         e.preventDefault();
@@ -415,7 +426,7 @@ const ModifyScheduleRecurringForm = props => (
               </div>
             </div>
           ) : null}
-          {updateBookingMetadataError ? (
+          {usedStates.error ? (
             <p className="text-error text-center">
               Failed to update booking schedule. Please try again.
             </p>

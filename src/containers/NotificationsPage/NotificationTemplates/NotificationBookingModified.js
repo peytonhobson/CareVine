@@ -177,16 +177,19 @@ const NotificationBookingModified = props => {
             </div>
             <div className={modificationTypes.includes('exceptions') ? 'text-success' : null}>
               <h3 className="underline">Exceptions</h3>
+
               {newSchedule.exceptions.length > 0 ? (
-                newSchedule.exceptions.map(exception => {
-                  return (
-                    <BookingException
-                      {...exception}
-                      key={exception.date}
-                      className={css.exception}
-                    />
-                  );
-                })
+                <div className={css.exceptions}>
+                  {newSchedule.exceptions.map(exception => {
+                    return (
+                      <BookingException
+                        {...exception}
+                        key={exception.date}
+                        className={css.exception}
+                      />
+                    );
+                  })}
+                </div>
               ) : (
                 <p>No Exceptions</p>
               )}

@@ -121,6 +121,8 @@ export class CheckoutPageComponent extends Component {
       .add(1, 'hours')
       .format(ISO_OFFSET_FORMAT);
 
+    console.log('bookingStart', bookingStart);
+
     const orderParams = {
       listingId,
       seats: 1,

@@ -255,3 +255,17 @@
   height: 100%;
   width: 100%;
 }
+
+.exceptions {
+  display: flex;
+  flex-direction: column;
+  border-top: solid 1px var(--matterColorNegative);
+  border-right: solid 1px var(--matterColorNegative);
+  border-left: solid 1px var(--matterColorNegative);
+  border-radius: 4px;
+  margin-block: 2rem;
+
+  & > .exception {
+    border-bottom: solid 1px var(--matterColorNegative);
+  }
+}
