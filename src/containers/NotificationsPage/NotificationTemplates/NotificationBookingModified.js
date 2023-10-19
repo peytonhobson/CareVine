@@ -69,11 +69,21 @@ const NotificationBookingModified = props => {
         : [],
     [previousMetadata]
   );
+  const allNewExceptions = useMemo(
+    () =>
+      modification?.exceptions
+        ? Object.values(modification.exceptions)
+            .flat()
+            .sort(sortExceptionsByDate)
+            .filter(filterExceptionsForFuture)
+        : [],
+    [modification]
+  );
 
   const newSchedule = {
     ...previousMetadata,
-    exceptions: sortedPreviousExceptions,
     ...modification,
+    exceptions: allNewExceptions || sortedPreviousExceptions,
   };
 
   const isExpired =
@@ -177,9 +187,9 @@ const NotificationBookingModified = props => {
             <div>
               <h3 className="underline">Exceptions</h3>
 
-              {newSchedule.exceptions.length > 0 ? (
+              {newSchedule.exceptions.flat().length > 0 ? (
                 <div className={css.exceptions}>
-                  {newSchedule.exceptions.map(exception => {
+                  {newSchedule.exceptions.flat().map(exception => {
                     return (
                       <BookingException
                         {...exception}

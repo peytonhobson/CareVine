@@ -8,12 +8,27 @@ const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-const sortExceptionsByDate = exceptions =>
-  exceptions.sort((a, b) => moment(a.date).isBefore(b.date));
+const sortByDate = (a, b) => moment(a.date).diff(b.date);
 
-const findChangeAppliedDay = (chargedLineItems, weekdays, exceptions) => {
-  const allChargedLineItems = chargedLineItems.map(c => c.lineItems).flat();
-  const nextWeekStartTime = findNextWeekStartTime(allChargedLineItems, weekdays, exceptions);
+const findLastLineItems = (acc, curr) => {
+  const currLineItems = curr.lineItems;
+
+  const sortedLineItems = currLineItems.sort(sortByDate);
+
+  if (acc.length === 0) return sortedLineItems;
+
+  const lastCurrentDate = sortedLineItems[sortedLineItems.length - 1].date;
+  const lastAccDate = acc[acc.length - 1].date;
+
+  return moment(lastCurrentDate).isAfter(lastAccDate) ? sortedLineItems : acc;
+};
+
+const findChangeAppliedDate = (chargedLineItems, weekdays, exceptions, startDate, ledger) => {
+  if (chargedLineItems.length === 0 && ledger.length === 0) return moment(startDate);
+
+  const combinedItems = [...chargedLineItems, ...ledger];
+  const lastLineItems = combinedItems.reduce(findLastLineItems, []);
+  const nextWeekStartTime = findNextWeekStartTime(lastLineItems, weekdays, exceptions);
 
   return nextWeekStartTime.startOf('day');
 };
@@ -35,24 +50,29 @@ module.exports = async (req, res) => {
     const customer = (await integrationSdk.users.show({ id: customerId })).data.data;
     const provider = (await integrationSdk.users.show({ id: providerId })).data.data;
 
-    const { bookingNumber, chargedLineItems = [] } = transaction.attributes.metadata;
+    const {
+      bookingNumber,
+      chargedLineItems = [],
+      startDate,
+      ledger,
+    } = transaction.attributes.metadata;
 
     const customerDisplayName = customer.attributes.profile.displayName;
 
-    let appliedDay;
+    let appliedDate;
     let expiration;
     const modificationTypes = Object.keys(modification);
 
     if (modificationTypes.includes('bookingSchedule')) {
-      expiration = appliedDay = findChangeAppliedDay(
+      expiration = appliedDate = findChangeAppliedDate(
         chargedLineItems,
         modification.bookingSchedule,
-        modification.exceptions
+        modification.exceptions,
+        startDate,
+        ledger
       );
-
-      console.log('appliedDay', appliedDay);
     } else if (modificationTypes.includes('exceptions')) {
-      const firstExceptionDate = sortExceptionsByDate(modification.exceptions)[0].date;
+      const firstExceptionDate = modification.exceptions.sort(sortByDate)[0].date;
       expiration = moment(firstExceptionDate).startOf('day');
     } else if (modificationTypes.includes('endDate')) {
       expiration = moment(modification.endDate).startOf('day');
@@ -61,7 +81,7 @@ module.exports = async (req, res) => {
     }
 
     const threeDaysFromNow = moment().add(3, 'days');
-    expiration = expiration.isAfter(threeDaysFromNow) ? threeDaysFromNow : expiration;
+    expiration = moment(expiration).isAfter(threeDaysFromNow) ? threeDaysFromNow : expiration;
 
     const notificationId = uuidv4();
     const newNotification = {
@@ -77,7 +97,7 @@ module.exports = async (req, res) => {
         modification,
         expiration: expiration.format(ISO_OFFSET_FORMAT),
         previousMetadata,
-        appliedDay: appliedDay?.format(ISO_OFFSET_FORMAT),
+        appliedDate: appliedDate?.format(ISO_OFFSET_FORMAT),
       },
     };
 
@@ -86,15 +106,17 @@ module.exports = async (req, res) => {
 
     // If customer makes multiple requests, we want to replace the old one so caregiver can't accept multiple times
     // Shouldn't be an issue as we only send one request at a time, but here just in case we change that
-    const replacedNotifications = oldNotifications.filter(
-      n =>
-        !(
-          n.type === NOTIFICATION_TYPE_BOOKING_MODIFIED &&
-          n.metadata.txId === txId &&
-          JSON.stringify(Object.keys(n.metadata.modification)) ===
-            JSON.stringify(Object.keys(modification))
-        )
-    );
+    const replacedNotifications = oldNotifications.filter(n => {
+      if (!n.metadata.modification) return true;
+      const oldModificationTypes = Object.keys(n.metadata.modification);
+      const newModificationTypes = Object.keys(modification);
+
+      return !(
+        n.type === NOTIFICATION_TYPE_BOOKING_MODIFIED &&
+        n.metadata.txId === txId &&
+        oldModificationTypes.every(type => newModificationTypes.includes(type))
+      );
+    });
 
     const trustedSdk = await getTrustedSdk(req);
     const bookingStart = moment(expiration)
@@ -111,8 +133,6 @@ module.exports = async (req, res) => {
           bookingEnd,
         }
       : {};
-
-    console.log('bookingTimesMaybe', bookingTimesMaybe);
 
     const modifyBookingTransaction = (
       await trustedSdk.transactions.initiate({
@@ -154,8 +174,7 @@ module.exports = async (req, res) => {
 
     res.status(200).json({});
   } catch (e) {
-    // handleError(res, e);
-    res.status(500).json({ error: e });
+    handleError(res, e);
     console.log(e?.data?.errors?.[0]?.source);
   }
 };

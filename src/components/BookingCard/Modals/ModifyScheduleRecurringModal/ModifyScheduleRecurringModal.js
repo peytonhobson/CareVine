@@ -19,9 +19,9 @@ import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
 
 const filterUnapplicableExceptions = (unapplicableExceptions, exceptions) =>
   Object.keys(exceptions).reduce((acc, curr) => {
-    const newExceptions = exceptions[curr].filter(e => {
-      !unapplicableExceptions.some(ue => moment(ue.date).isSame(e.date, 'day'));
-    });
+    const newExceptions = exceptions[curr].filter(
+      e => !unapplicableExceptions.some(ue => moment(ue.date).isSame(e.date, 'day'))
+    );
 
     return {
       ...acc,
@@ -57,7 +57,7 @@ const ModifyScheduleRecurringModal = props => {
     const modification = {
       bookingSchedule,
       exceptions: newExceptions,
-      endDate: moment(values.endDate?.date).format(ISO_OFFSET_FORMAT),
+      endDate: values.endDate?.date ? moment(values.endDate?.date).format(ISO_OFFSET_FORMAT) : null,
     };
 
     if (isRequest) {

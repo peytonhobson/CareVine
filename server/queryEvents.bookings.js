@@ -10,6 +10,7 @@ const {
   constructBookingMetadataRecurring,
   addTimeToStartOfDay,
   findNextWeekStartTime,
+  updateBookedDays,
 } = require('./bookingHelpers');
 // Time
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
@@ -179,7 +180,7 @@ const updateBookingEnd = async transaction => {
   const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
   const bookingStart = moment(bookingEnd)
     .clone()
-    .subtract(1, 'hours')
+    .subtract(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
 
   try {
@@ -299,42 +300,43 @@ const updateBookingLedger = async transaction => {
 const updateNextWeek = async transaction => {
   const txId = transaction.id.uuid;
   const {
-    bookingSchedule,
+    bookingSchedule: oldBookingSchedule,
     bookingRate,
     endDate,
     paymentMethodType,
     exceptions,
     chargedLineItems = [],
     lineItems,
+    bookingScheduleChange,
   } = transaction.attributes.metadata;
+
+  let appliedDateWithinWeek = false;
+  if (bookingScheduleChange) {
+    const nextWeekStart = moment()
+      .add(1, 'weeks')
+      .startOf('week');
+    const nextWeekEnd = moment(nextWeekStart)
+      .add(1, 'weeks')
+      .endOf('week');
+    appliedDateWithinWeek = moment(bookingScheduleChange?.appliedDate).isBetween(
+      nextWeekStart,
+      nextWeekEnd,
+      'day',
+      []
+    );
+  }
+
+  const bookingSchedule = appliedDateWithinWeek
+    ? bookingScheduleChange?.bookingSchedule
+    : oldBookingSchedule;
 
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions)?.format(
     ISO_OFFSET_FORMAT
   );
   const bookingEnd = moment(nextWeekStartTime)
     .clone()
-    .add(1, 'hours')
+    .add(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
-
-  console.log('nextWeekStartTime', nextWeekStartTime);
-
-  // Update bookingStart to be next week start time
-  try {
-    if (!nextWeekStartTime) {
-      throw new Error('No next week start time found');
-    }
-
-    await integrationSdk.transactions.transition({
-      id: txId,
-      transition: 'transition/update-next-week-start',
-      params: {
-        bookingStart: nextWeekStartTime,
-        bookingEnd,
-      },
-    });
-  } catch (e) {
-    log.error(e?.data, 'update-next-week-start-failed', {});
-  }
 
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
@@ -350,22 +352,40 @@ const updateNextWeek = async transaction => {
 
   const newLedger = await updateBookingLedger(transaction);
 
+  // Update bookingStart to be next week start time
   try {
-    await integrationSdk.transactions.updateMetadata({
-      id: transaction.id.uuid,
-      metadata: {
-        ...newMetadata,
-        ledger: newLedger,
-        chargedLineItems: chargedLineItems.filter(
-          chargedItem =>
-            !chargedItem?.lineItems.some(c =>
-              lineItems.some(l => moment(l.date).isSame(c.date, 'day'))
-            )
-        ),
+    if (!nextWeekStartTime) {
+      throw new Error('No next week start time found');
+    }
+
+    await integrationSdk.transactions.transition({
+      id: txId,
+      transition: 'transition/update-next-week-start',
+      params: {
+        bookingStart: nextWeekStartTime,
+        bookingEnd,
+        metadata: {
+          ...newMetadata,
+          ledger: newLedger,
+          chargedLineItems: chargedLineItems.filter(
+            chargedItem =>
+              !chargedItem?.lineItems.some(c =>
+                lineItems.some(l => moment(l.date).isSame(c.date, 'day'))
+              )
+          ),
+          bookingScheduleChange: appliedDateWithinWeek ? null : bookingScheduleChange,
+        },
       },
     });
+
+    if (appliedDateWithinWeek) {
+      await updateBookedDays({
+        txId,
+        bookingSchedule,
+      });
+    }
   } catch (e) {
-    log.error(e, 'update-next-week-metadata-failed', {});
+    log.error(e?.data, 'update-next-week-start-failed', {});
   }
 };
 

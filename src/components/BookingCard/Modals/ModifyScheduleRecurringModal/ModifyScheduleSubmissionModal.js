@@ -20,18 +20,19 @@ const ModifyScheduleSubmissionModal = props => {
     provider,
     listing,
     newBooking,
-    appliedDay,
+    appliedDate,
     lastChargedDate,
     onSubmit,
     error,
   } = props;
 
   const threeDaysFromNow = moment().add(3, 'days');
-  const expiration = moment(appliedDay).isAfter(threeDaysFromNow) ? threeDaysFromNow : appliedDay;
+  const expiration = moment(appliedDate).isAfter(threeDaysFromNow) ? threeDaysFromNow : appliedDate;
   const expirationDay = moment(expiration).format('dddd, MMMM Do');
   const expirationTime = moment(expiration).format('h:mm a');
 
-  const isRequest = newBooking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
+  const lastTransition = newBooking.attributes.lastTransition;
+  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
 
   return (
     <Modal
@@ -78,7 +79,7 @@ const ModifyScheduleSubmissionModal = props => {
         onManageDisableScrolling={onManageDisableScrolling}
       />
       {/* TODO: What about a booking in accepted state but not yet charged? */}
-      {appliedDay && !isRequest ? (
+      {appliedDate && lastChargedDate ? (
         <p className={classNames(css.modalMessage, 'text-attention')}>
           You have already been charged for the week of{' '}
           {moment(lastChargedDate)
@@ -89,7 +90,7 @@ const ModifyScheduleSubmissionModal = props => {
             .endOf('week')
             .format('MMMM Do')}
           . The changes to your schedule will be applied starting on{' '}
-          {moment(appliedDay).format('dddd, MMMM Do')}.
+          {moment(appliedDate).format('dddd, MMMM Do')}.
         </p>
       ) : null}
       {isRequest ? (

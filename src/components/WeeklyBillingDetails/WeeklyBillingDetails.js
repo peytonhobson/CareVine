@@ -17,8 +17,8 @@ const isInBookingSchedule = (date, bookingSchedule, startDate, endDate, exceptio
     moment(startDate).isSameOrBefore(date, 'day') &&
     (!endDate || moment(endDate).isSameOrAfter(date, 'day'));
   const inBookingSchedule = bookingSchedule.some(b => b.dayOfWeek === WEEKDAYS[date.getDay()]);
-  const isAddedDay = exceptions?.addedDays?.some(d => moment(d.date).isSame(date));
-  const isRemovedDay = exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
+  const isAddedDay = exceptions?.addedDays?.some(d => moment(d.date).isSame(date, 'day'));
+  const isRemovedDay = exceptions?.removedDays?.some(d => moment(d.date).isSame(date, 'day'));
 
   return ((inBookingSchedule && withinTimeFrame) || isAddedDay) && !isRemovedDay;
 };
@@ -53,7 +53,7 @@ const formatDay = (
       className={classNames(css.day, {
         [css.highlighted]: isHoveredWeek && !beforeStartWeek && !afterEndWeek,
         [css.highlightable]: !beforeStartWeek && !afterEndWeek,
-        [css.inBookingSchedule]: inBookingSchedule,
+        [css.inBookingSchedule]: inBookingSchedule && !beforeStartWeek && !afterEndWeek,
         [css.disabled]: beforeStartWeek || afterEndWeek,
         [css.sunday]: isSunday,
         [css.saturday]: isSaturday,

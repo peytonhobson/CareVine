@@ -62,8 +62,6 @@ const NotificationBookingModifiedResponse = props => {
     setShowCancelModal(false);
     onFetchTransaction(txId);
   };
-
-  console.log(currentTransaction);
   const classes = useStyles();
   const modificationTypes = Object.keys(modification);
   const sortedPreviousExceptions = useMemo(
@@ -76,11 +74,21 @@ const NotificationBookingModifiedResponse = props => {
         : [],
     [previousMetadata]
   );
+  const allNewExceptions = useMemo(
+    () =>
+      modification?.exceptions
+        ? Object.values(modification.exceptions)
+            .flat()
+            .sort(sortExceptionsByDate)
+            .filter(filterExceptionsForFuture)
+        : [],
+    [modification]
+  );
 
   const newSchedule = {
     ...previousMetadata,
-    exceptions: sortedPreviousExceptions,
     ...modification,
+    exceptions: allNewExceptions || sortedPreviousExceptions,
   };
 
   const isCancelable = CANCELABLE_TRANSITIONS.includes(

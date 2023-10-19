@@ -207,6 +207,7 @@ const DailyPlan = props => {
     disabled,
     className,
     customName,
+    noClose,
   } = props;
   const getEntryStartTimes = getEntryBoundaries(values, dayOfWeek, intl, true);
   const getEntryEndTimes = getEntryBoundaries(values, dayOfWeek, intl, false);
@@ -308,13 +309,15 @@ const DailyPlan = props => {
                         </FieldSelect>
                       </div>
                     </div>
-                    <div
-                      className={css.fieldArrayRemove}
-                      onClick={() => fields.remove(index)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <IconClose rootClassName={css.closeIcon} />
-                    </div>
+                    {!noClose ? (
+                      <div
+                        className={css.fieldArrayRemove}
+                        onClick={() => fields.remove(index)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <IconClose rootClassName={css.closeIcon} />
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}

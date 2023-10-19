@@ -1,11 +1,8 @@
-const { transactionLineItems } = require('../api-util/lineItems');
-const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
+const { getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
 const log = require('../log');
 
 module.exports = (req, res) => {
   const { bodyParams } = req.body;
-
-  // const { ...restParams } = bodyParams && bodyParams.params ? bodyParams.params : {};
 
   getTrustedSdk(req)
     .then(trustedSdk => {
@@ -26,7 +23,6 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
-      log.error(res);
       handleError(res, e);
     });
 };

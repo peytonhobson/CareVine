@@ -77,8 +77,6 @@ const RecurringBookingSummaryCard = props => {
       }
     : exceptions;
 
-  console.log(exceptions);
-
   const allExceptions = useMemo(() => {
     return Object.values(exceptions)
       .flat()
@@ -231,7 +229,7 @@ const RecurringBookingSummaryCard = props => {
           </div>
         ) : null}
         <div className={css.spread}>
-          <h3 className={css.total}>Total:</h3>
+          <h3 className={css.total}>{showWeekly && 'Weekly'} Total:</h3>
           <h3 className={css.total}>${total}</h3>
         </div>
       </div>

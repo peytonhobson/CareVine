@@ -15,18 +15,17 @@ import {
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
 import { createCreditCard } from '../../ducks/paymentMethods.duck';
-import { stripeCustomer } from '../../ducks/stripe.duck';
 
 import { initiateOrder, updateBookingDraft, setInitialValues } from './CheckoutPage.duck';
-import {
-  findStartTimeFromBookingTimes,
-  constructBookingMetadataOneTime,
-  constructBookingMetadataRecurring,
-  findStartTimeRecurring,
-} from './CheckoutPage.helpers';
 import { ISO_OFFSET_FORMAT } from '../../util/constants';
 import moment from 'moment';
-import { mapWeekdays } from '../../util/bookings';
+import {
+  mapWeekdays,
+  findStartTimeFromBookingTimes,
+  findStartTimeRecurring,
+  constructBookingMetadataOneTime,
+  constructBookingMetadataRecurring,
+} from '../../util/bookings';
 
 import css from './CheckoutPage.module.css';
 
@@ -118,11 +117,8 @@ export class CheckoutPageComponent extends Component {
     const bookingEnd = moment
       .parseZone(bookingStart)
       .clone()
-      .add(1, 'hours')
+      .add(5, 'minutes')
       .format(ISO_OFFSET_FORMAT);
-
-    console.log('bookingStart', bookingStart);
-
     const orderParams = {
       listingId,
       seats: 1,

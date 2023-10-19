@@ -41,6 +41,14 @@
    :to :state/accepted,
    :privileged? true}
 
+   {:name :transition/accept-update-start,
+   :actor :actor.role/provider,
+   :actions
+   [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}],
+   :from :state/accepted
+   :to :state/accepted,
+   :privileged? true}
+
    {:name :transition/accepted-cancel,
    :actions
    [{:name :action/cancel-booking}, {:name :action/privileged-update-metadata}],
@@ -98,9 +106,18 @@
    {:name :transition/update-next-week-start,
     :actor :actor.role/operator,
     :actions
-    [{:name :action/update-booking :config {:type :time}}]
+    [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}]
    :from :state/delivered,
-   :to :state/waiting-for-next-week}
+   :to :state/waiting-for-next-week,
+   :privileged? true}
+
+   {:name :transition/wfnw-update-start,
+   :actions
+   [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}],
+   :actor :actor.role/provider,
+    :from :state/waiting-for-next-week,
+   :to :state/waiting-for-next-week,
+   :privileged? true}
 
   ;; TODO: May need to update this to be 5 mins after booking start to accomdate edge cases
   {:name :transition/update-booking-end-repeat,

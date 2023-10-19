@@ -1,4 +1,5 @@
 const moment = require('moment');
+const { integrationSdk } = require('./api-util/sdk');
 const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const BOOKING_FEE_PERCENTAGE = 0.02;
@@ -391,6 +392,54 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   return moment(startTime);
 };
 
+const updateBookedDays = async ({ txId, bookingSchedule, startDate, endDate, exceptions }) => {
+  try {
+    const transaction = (
+      await integrationSdk.transactions.show({
+        id: txId,
+        include: ['listing'],
+      })
+    ).data.data;
+
+    const listingId = transaction.relationships.listing.data.id.uuid;
+    const listing = (await integrationSdk.listings.show({ id: listingId })).data.data;
+
+    const { bookedDays = [] } = listing.attributes.metadata;
+
+    const isUpdate = bookingSchedule || startDate || endDate || exceptions;
+
+    let newBookedDays;
+    if (isUpdate) {
+      newBookedDays = bookedDays.map(d => {
+        if (d.txId === txId) {
+          return {
+            ...d,
+            days: bookingSchedule ? bookingSchedule.map(b => b.dayOfWeek) : d.days,
+            startDate: startDate ? moment(startDate).format(ISO_OFFSET_FORMAT) : d.startDate,
+            endDate: endDate ? moment(endDate).format(ISO_OFFSET_FORMAT) : d.endDate,
+            exceptions: exceptions ? exceptions : d.exceptions,
+          };
+        }
+        return d;
+      });
+    } else {
+      newBookedDays = bookedDays.filter(d => d.txId !== txId);
+    }
+
+    console.log('newBookedDaysServer', newBookedDays);
+
+    await integrationSdk.listings.update({
+      id: listingId,
+      metadata: {
+        bookedDays: newBookedDays,
+      },
+    });
+  } catch (e) {
+    console.error(e, 'failed to update booked days');
+    throw e;
+  }
+};
+
 module.exports = {
   filterWeeklyBookingDays,
   checkForExceptions,
@@ -403,4 +452,5 @@ module.exports = {
   checkIsBlockedOneTime,
   addTimeToStartOfDay,
   findNextWeekStartTime,
+  updateBookedDays,
 };

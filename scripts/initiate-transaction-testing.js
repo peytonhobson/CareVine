@@ -56,7 +56,7 @@ const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
-  .add(60 - (now.minute() % 5), 'minutes')
+  .add(5 - (now.minute() % 5), 'minutes')
   .set({ second: 0, millisecond: 0 });
 
 const bookingStart = moment(start)
@@ -72,30 +72,30 @@ console.log(bookingStart);
 const exceptions = {
   addedDays: [
     {
-      date: startOfDay.add(1, 'days').format(ISO_OFFSET_FORMAT),
+      date: startOfDay.add(8, 'days').format(ISO_OFFSET_FORMAT),
       startTime: '4:00am',
       endTime: '9:00am',
       type: 'addDate',
-      day: 'tue',
+      day: 'fri',
     },
   ],
   removedDays: [
     {
       date: startOfDay
         .clone()
-        .add(28, 'days')
+        .add(26, 'days')
         .format(ISO_OFFSET_FORMAT),
       type: 'removeDate',
-      day: 'mon',
+      day: 'wed',
     },
   ],
   changedDays: [
     {
-      date: startOfDay.add(21, 'days').format(ISO_OFFSET_FORMAT),
+      date: startOfDay.add(19, 'days').format(ISO_OFFSET_FORMAT),
       startTime: '5:00pm',
       endTime: '7:00pm',
       type: 'changeDate',
-      day: 'mon',
+      day: 'wed',
     },
   ],
 };
@@ -103,13 +103,13 @@ const exceptions = {
 const bookingSchedule = [
   {
     dayOfWeek: 'mon',
-    startTime: '5:00pm',
-    endTime: '8:00pm',
+    startTime: '2:00am',
+    endTime: '12:00pm',
   },
   {
-    dayOfWeek: 'wed',
-    startTime: '5:00pm',
-    endTime: '8:00pm',
+    dayOfWeek: 'thu',
+    startTime: '3:00pm',
+    endTime: '5:00pm',
   },
 ];
 const bookingRate = 23;
@@ -117,7 +117,7 @@ const paymentMethodType = 'us_bank_account';
 
 const metadata = constructBookingMetadataRecurring(
   bookingSchedule,
-  moment().startOf('day'),
+  moment().startOf('week'),
   null,
   bookingRate,
   paymentMethodType,
@@ -155,8 +155,6 @@ const BODY_PARAMS = {
     },
   },
 };
-
-console.log('metadata', metadata);
 
 const main = async () => {
   try {

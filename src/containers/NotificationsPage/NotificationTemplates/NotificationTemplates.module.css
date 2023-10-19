@@ -257,6 +257,7 @@
 }
 
 .exceptions {
+  background-color: var(--matterColorLight);
   display: flex;
   flex-direction: column;
   border-top: solid 1px var(--matterColorNegative);

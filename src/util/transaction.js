@@ -38,6 +38,8 @@ export const TRANSITION_ACCEPTED_CANCEL = 'transition/accepted-cancel';
 export const TRANSITION_ACTIVE_UPDATE_BOOKING_END = 'transition/active-update-booking-end';
 export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
 export const TRANSITION_WNFW_CANCEL = 'transition/wfnw-cancel';
+export const TRANSITION_WNFW_UPDATE_START = 'transition/wfnw-update-start';
+export const TRANSITION_ACCEPT_UPDATE_START = 'transition/accept-update-start';
 
 // Modify Booking Process Transitions
 export const TRANSITION_MODIFY_BOOKING = 'transition/booking-modified';
@@ -155,6 +157,8 @@ export const CANCELABLE_TRANSITIONS = [
   TRANSITION_COMPLETE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_WNFW_UPDATE_START,
+  TRANSITION_ACCEPT_UPDATE_START,
 ];
 
 export const MODIFIABLE_TRANSITIONS = [
@@ -165,6 +169,8 @@ export const MODIFIABLE_TRANSITIONS = [
   TRANSITION_COMPLETE,
   TRANSITION_UPDATE_NEXT_WEEK_START,
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_WNFW_UPDATE_START,
+  TRANSITION_ACCEPT_UPDATE_START,
 ];
 
 export const FINAL_TRANSITIONS = [

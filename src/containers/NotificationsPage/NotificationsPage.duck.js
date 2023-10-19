@@ -1,6 +1,13 @@
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { storableError } from '../../util/errors';
-import { TRANSITION_ACTIVE_UPDATE_BOOKING_END, TRANSITION_START } from '../../util/transaction';
+import {
+  TRANSITION_ACCEPT_BOOKING,
+  TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+  TRANSITION_START,
+  TRANSITION_UPDATE_NEXT_WEEK_START,
+  TRANSITION_WNFW_UPDATE_START,
+} from '../../util/transaction';
 import {
   sendBookingModifiedNotificationResponse,
   transitionPrivileged,
@@ -10,6 +17,7 @@ import { addTimeToStartOfDay } from '../../util/dates';
 import moment from 'moment';
 import { ISO_OFFSET_FORMAT } from '../../util/constants';
 import * as log from '../../util/log';
+import { constructBookingMetadataRecurring, updateBookedDays } from '../../util/bookings';
 
 // ================ Action types ================ //
 
@@ -239,7 +247,7 @@ export const deleteNotification = (notificationId, currentUser) => async (
   }
 };
 
-const acceptEndDateModification = async (transaction, modification) => {
+const acceptEndDateModification = async (transaction, modification, sdk) => {
   const txId = transaction.id.uuid;
 
   const { lineItems = [] } = transaction.attributes.metadata;
@@ -285,12 +293,126 @@ const acceptEndDateModification = async (transaction, modification) => {
       },
     });
   }
+
+  await updateBookedDays({
+    txId,
+    endDate,
+    sdk,
+  });
+};
+
+const acceptBookingScheduleModification = async (transaction, modification, appliedDate, sdk) => {
+  const txId = transaction.id.uuid;
+
+  const {
+    lineItems = [],
+    endDate: oldEndDate,
+    exceptions: oldExceptions,
+    paymentMethodType,
+    bookingRate,
+    startDate,
+  } = transaction.attributes.metadata;
+  const nextWeek = lineItems?.[0]?.date;
+  const lastTransition = transaction.attributes.lastTransition;
+
+  // If last transition is heading into a new week and we haven't been charged for that week,
+  // then we need to update the bookingStart because the applied date will occur at the next week/start time.
+  // In the case of the accepted booking, the appliedDate is the startdate
+  const isAccepted =
+    lastTransition === TRANSITION_ACCEPT_BOOKING ||
+    lastTransition === TRANSITION_ACCEPT_UPDATE_START;
+  const needsTimeUpdate =
+    ((lastTransition === TRANSITION_UPDATE_NEXT_WEEK_START ||
+      lastTransition === TRANSITION_WNFW_UPDATE_START) &&
+      moment(appliedDate).isSame(nextWeek, 'week')) ||
+    isAccepted;
+
+  const bookingSchedule = modification.bookingSchedule;
+  const endDate = modification.endDate || oldEndDate;
+  const exceptions = modification.exceptions || oldExceptions;
+
+  if (needsTimeUpdate) {
+    const newMetadata = constructBookingMetadataRecurring(
+      bookingSchedule,
+      isAccepted
+        ? startDate
+        : moment(nextWeek)
+            .startOf('week')
+            .format(ISO_OFFSET_FORMAT),
+      endDate,
+      bookingRate,
+      paymentMethodType,
+      exceptions
+    );
+
+    const newLineItems = newMetadata.lineItems.sort((a, b) => moment(a).diff(b));
+    const bookingStart = addTimeToStartOfDay(
+      newLineItems[0].date,
+      newLineItems[0].startTime
+    ).format(ISO_OFFSET_FORMAT);
+    const bookingEnd = moment(bookingStart)
+      .add(5, 'minutes')
+      .format(ISO_OFFSET_FORMAT);
+
+    console.log(bookingStart);
+    console.log('newMetadata2', newMetadata);
+    console.log(TRANSITION_ACCEPT_UPDATE_START);
+
+    await transitionPrivileged({
+      bodyParams: {
+        id: txId,
+        transition: isAccepted ? TRANSITION_ACCEPT_UPDATE_START : TRANSITION_WNFW_UPDATE_START,
+        params: {
+          bookingEnd,
+          bookingStart,
+          metadata: {
+            ...newMetadata,
+            exceptions,
+          },
+        },
+      },
+    });
+
+    await updateBookedDays({
+      txId,
+      bookingSchedule,
+      exceptions,
+      endDate,
+      sdk,
+    });
+  } else {
+    // Update end date and exceptions now because they occur in the future and won't affect the current booking
+    updateTransactionMetadata({
+      txId,
+      metadata: {
+        endDate,
+        exceptions,
+        bookingScheduleChange: {
+          bookingSchedule,
+          appliedDate,
+        },
+      },
+    });
+
+    await updateBookedDays({
+      txId,
+      exceptions,
+      endDate,
+      sdk,
+    });
+  }
 };
 
 export const acceptBookingModification = notification => async (dispatch, getState, sdk) => {
   dispatch(acceptBookingModificationRequest());
 
-  const { modification, txId, previousMetadata, modifyBookingTxId } = notification.metadata;
+  const {
+    modification,
+    txId,
+    previousMetadata,
+    modifyBookingTxId,
+    appliedDate,
+  } = notification.metadata;
   const modificationTypes = Object.keys(modification);
 
   try {
@@ -300,7 +422,9 @@ export const acceptBookingModification = notification => async (dispatch, getSta
 
     // TODO: add logic for other modifications here
     if (modificationTypes.length === 1 && modificationTypes.includes('endDate')) {
-      await acceptEndDateModification(transaction, modification);
+      await acceptEndDateModification(transaction, modification, sdk);
+    } else if (modificationTypes.includes('bookingSchedule')) {
+      await acceptBookingScheduleModification(transaction, modification, appliedDate, sdk);
     }
 
     const currentUser = getState().user.currentUser;

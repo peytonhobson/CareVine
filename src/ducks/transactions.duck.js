@@ -18,10 +18,10 @@ import {
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../util/dates';
 import { denormalisedResponseEntities } from '../util/data';
-import { ISO_OFFSET_FORMAT, NOTIFICATION_TYPE_BOOKING_MODIFIED } from '../util/constants';
-import { v4 as uuidv4 } from 'uuid';
-import d from 'final-form-arrays';
+import { ISO_OFFSET_FORMAT } from '../util/constants';
 const { UUID } = sdkTypes;
+import { constructBookingMetadataRecurring, updateBookedDays } from '../util/bookings';
+import { fetchBookings } from '../containers/BookingsPage/BookingsPage.duck';
 
 // ================ Action types ================ //
 
@@ -572,12 +572,13 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       .startOf('day')
       .format(ISO_OFFSET_FORMAT);
     const newEndDateLater = moment(formattedEndDate).isAfter(oldEndDate || tenYearsAhead);
-    const isRequest = transaction.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
+    const lastTransition = transaction.attributes.lastTransition;
+    const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
     const needsApproval = !isRequest && newEndDateLater;
 
     if (
-      (transaction.attributes.lastTransition === TRANSITION_START ||
-        transaction.attributes.lastTransition === TRANSITION_ACTIVE_UPDATE_BOOKING_END) &&
+      (lastTransition === TRANSITION_START ||
+        lastTransition === TRANSITION_ACTIVE_UPDATE_BOOKING_END) &&
       endingLineItem &&
       !needsApproval
     ) {
@@ -603,6 +604,12 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
         },
       });
 
+      await updateBookedDays({
+        txId,
+        endDate,
+        sdk,
+      });
+
       await sendBookingModifiedNotification({
         txId,
         modification: { endDate: formattedEndDate },
@@ -623,6 +630,12 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
 
       // Don't send notification if booking is a request
       if (!isRequest) {
+        await updateBookedDays({
+          txId,
+          endDate,
+          sdk,
+        });
+
         await sendBookingModifiedNotification({
           txId,
           modification: { endDate: formattedEndDate },
@@ -648,30 +661,6 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       });
     }
 
-    if (!isRequest) {
-      const listing = transaction.relationships.listing.data;
-      const listingId = listing.id.uuid;
-      const { bookedDays = [] } = listing.attributes.metadata;
-
-      // Update Booked Days to match end date
-      const newBookedDays = bookedDays.map(bd => {
-        if (bd.txId === txId) {
-          return {
-            ...bd,
-            endDate: formattedEndDate,
-          };
-        }
-        return bd;
-      });
-
-      await updateListingMetadata({
-        listingId,
-        metadata: {
-          bookedDays: newBookedDays,
-        },
-      });
-    }
-
     dispatch(updateBookingEndDateSuccess());
     return;
   } catch (e) {
@@ -684,22 +673,50 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
 export const updateBookingSchedule = (txId, modification) => async (dispatch, getState, sdk) => {
   dispatch(updateBookingScheduleRequest());
 
-  const newEndDateMaybe = modification.endDate
-    ? {
-        endDate: moment(modification.endDate)
-          .startOf('day')
-          .format(ISO_OFFSET_FORMAT),
-      }
-    : {};
-  const newExceptionsMaybe = modification.exceptions ? { exceptions: modification.exceptions } : {};
-
   try {
+    const transaction = (
+      await sdk.transactions.show({
+        id: txId,
+      })
+    ).data.data;
+
+    const {
+      bookingSchedule: oldBookingSchedule,
+      endDate: oldEndDate,
+      exceptions: oldExceptions,
+      bookingRate,
+      paymentMethodType,
+      startDate,
+    } = transaction.attributes.metadata;
+
+    const lastTransition = transaction.attributes.lastTransition;
+
+    const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+
+    if (!isRequest) {
+      dispatch(fetchBookings());
+      throw new Error('Cannot update booking schedule if booking is not a request');
+    }
+
+    const bookingSchedule = modification.bookingSchedule || oldBookingSchedule;
+    const endDate = modification.endDate || oldEndDate;
+    const exceptions = modification.exceptions || oldExceptions;
+
+    const newMetadata = constructBookingMetadataRecurring(
+      bookingSchedule,
+      startDate,
+      endDate,
+      bookingRate,
+      paymentMethodType,
+      exceptions
+    );
+
     await updateTransactionMetadata({
       txId,
       metadata: {
-        ...modification,
-        ...newEndDateMaybe,
-        ...newExceptionsMaybe,
+        ...newMetadata,
+        exceptions,
+        endDate,
       },
     });
 
@@ -710,7 +727,7 @@ export const updateBookingSchedule = (txId, modification) => async (dispatch, ge
   }
 };
 
-export const requestBookingScheduleChange = (txId, modification, sdk) => async (
+export const requestBookingScheduleChange = (txId, modification) => async (
   dispatch,
   getState,
   sdk

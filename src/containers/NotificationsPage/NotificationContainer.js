@@ -46,10 +46,7 @@ const NotificationContainer = props => {
     fetchSenderListingInProgress,
     fetchSenderListingError,
     onManageDisableScrolling,
-    transitionTransactionInProgress,
-    transitionTransactionError,
     currentTransaction,
-    onTransitionTransaction,
     fetchTransactionError,
     fetchTransactionInProgress,
     onFetchTransaction,
@@ -105,10 +102,7 @@ const NotificationContainer = props => {
           notification={notification}
           currentUser={currentUser}
           onManageDisableScrolling={onManageDisableScrolling}
-          transitionTransactionInProgress={transitionTransactionInProgress}
-          transitionTransactionError={transitionTransactionError}
           currentTransaction={currentTransaction}
-          onTransitionTransaction={onTransitionTransaction}
           fetchTransactionError={fetchTransactionError}
           fetchTransactionInProgress={fetchTransactionInProgress}
           onFetchTransaction={onFetchTransaction}
@@ -152,8 +146,6 @@ const NotificationContainer = props => {
 
 const mapStateToProps = state => {
   const {
-    transitionTransactionInProgress,
-    transitionTransactionError,
     currentTransaction,
     fetchTransactionError,
     fetchTransactionInProgress,
@@ -166,8 +158,6 @@ const mapStateToProps = state => {
   } = state.transactions;
 
   return {
-    transitionTransactionInProgress,
-    transitionTransactionError,
     currentTransaction,
     fetchTransactionError,
     fetchTransactionInProgress,
@@ -181,7 +171,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  onTransitionTransaction: transitionTransaction,
   onFetchTransaction: fetchTransaction,
   onAcceptBooking: acceptBooking,
   onDeclineBooking: declineBooking,

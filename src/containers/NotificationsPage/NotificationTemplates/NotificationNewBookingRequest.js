@@ -18,6 +18,7 @@ import {
   TRANSITION_DECLINE_PAYMENT,
   TRANSITION_CHARGE,
   TRANSITION_CANCEL_BOOKING_REQUEST,
+  TRANSITION_ACCEPT_UPDATE_START,
 } from '../../../util/transaction';
 import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
 import {
@@ -81,15 +82,13 @@ const NotificationNewBookingRequest = props => {
   const bookingDates = lineItems?.map(l => new Date(l.date));
 
   const isLarge = useMediaQuery('(min-width:1024px)');
-  const isNotAcceptedOrDeclined =
-    currentTransaction?.attributes.lastTransition === TRANSITION_REQUEST_BOOKING;
-  const isDeclined = currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_BOOKING;
-  const isUpcoming =
-    currentTransaction?.attributes.lastTransition === TRANSITION_ACCEPT_BOOKING ||
-    currentTransaction?.attributes.lastTransition === TRANSITION_CHARGE;
-  const isExpired = currentTransaction?.attributes.lastTransition === TRANSITION_EXPIRE_BOOKING;
-  const isPaymentFailed =
-    currentTransaction?.attributes.lastTransition === TRANSITION_DECLINE_PAYMENT;
+  const lastTransition = currentTransaction?.attributes.lastTransition;
+  const isNotAcceptedOrDeclined = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isDeclined = lastTransition === TRANSITION_DECLINE_BOOKING;
+  const isUpcoming = lastTransition === TRANSITION_ACCEPT_BOOKING || TRANSITION_ACCEPT_UPDATE_START;
+  lastTransition === TRANSITION_CHARGE;
+  const isExpired = lastTransition === TRANSITION_EXPIRE_BOOKING;
+  const isPaymentFailed = lastTransition === TRANSITION_DECLINE_PAYMENT;
   const hasSameDayBooking = useMemo(
     () =>
       (bookingType === 'oneTime'
@@ -98,8 +97,7 @@ const NotificationNewBookingRequest = props => {
       !(acceptBookingSuccess || acceptBookingInProgress),
     [bookingDates, listing, startDate, endDate, exceptions, bookingType]
   );
-  const isCanceledRequest =
-    currentTransaction?.attributes.lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
+  const isCanceledRequest = lastTransition === TRANSITION_CANCEL_BOOKING_REQUEST;
 
   const hasExceptions = checkForExceptions(exceptions);
 

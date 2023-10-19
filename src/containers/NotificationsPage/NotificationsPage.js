@@ -96,8 +96,6 @@ const NotificationsPageComponent = props => {
     params,
   } = props;
 
-  console.log('fetched user');
-
   const isMobile = useCheckMobileScreen();
 
   const { notificationId } = params;

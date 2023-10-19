@@ -370,8 +370,8 @@ export const BookingCardTitle = () => {
 export const BookingCardMenu = () => {
   const { booking, userType, handleModalOpen, availableActions } = useBookingCard();
 
-  const showRespond =
-    booking.attributes.lastTransition === TRANSITION_REQUEST_BOOKING && userType === CAREGIVER;
+  const lastTransition = booking.attributes.lastTransition;
+  const showRespond = lastTransition === TRANSITION_REQUEST_BOOKING && userType === CAREGIVER;
 
   const showActions = Object.values(availableActions).some(action => action);
 
