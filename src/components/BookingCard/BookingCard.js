@@ -526,7 +526,7 @@ export const BookingCardTablePagination = () => {
 export const BookingCardDetailsButtons = () => {
   const { booking, handleModalOpen } = useBookingCard();
 
-  const { scheduleType, exceptions = {} } = booking.attributes.metadata;
+  const { type: scheduleType, exceptions = {} } = booking.attributes.metadata;
 
   const allExceptions = useMemo(() => {
     return Object.values(exceptions)

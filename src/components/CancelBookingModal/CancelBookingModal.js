@@ -6,9 +6,10 @@ import { manageDisableScrolling } from '../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { CAREGIVER } from '../../util/constants';
+import moment from 'moment';
+import { addTimeToStartOfDay } from '../../util/dates';
 
 import css from './CancelBookingModal.module.css';
-import { addTimeToStartOfDay } from '../../util/dates';
 
 const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 

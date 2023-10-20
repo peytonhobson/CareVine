@@ -127,19 +127,6 @@ const ChangeEndDateForm = props => (
           />
           {selectedEndDate ? (
             <>
-              {futureDateSelected && !isRequest ? (
-                <p className={classNames(css.dropAnimation, css.modalMessage, 'text-primary')}>
-                  When you click 'Submit', a request to change your booking end date to{' '}
-                  {formattedEndDate} will be sent to {providerDisplayName}. They have until{' '}
-                  {expiration} at {expirationTime} to accept or decline. If they respond or the
-                  request expires, you will be notified.
-                </p>
-              ) : (
-                <p className={classNames(css.dropAnimation, css.modalMessage, 'text-primary')}>
-                  By clicking 'Submit', the end date of your booking will be changed to{' '}
-                  {formattedEndDate}. You will not be charged for any time after this date.
-                </p>
-              )}
               {hasRefund ? (
                 <div className={css.dropAnimation}>
                   <p className={css.modalMessage}>
@@ -155,6 +142,19 @@ const ChangeEndDateForm = props => (
                   />
                 </div>
               ) : null}
+              {futureDateSelected && !isRequest ? (
+                <p className={classNames(css.dropAnimation, css.modalMessage, 'text-primary')}>
+                  When you click 'Submit', a request to change your booking end date to{' '}
+                  {formattedEndDate} will be sent to {providerDisplayName}. They have until{' '}
+                  {expiration} at {expirationTime} to accept or decline. If they respond or the
+                  request expires, you will be notified.
+                </p>
+              ) : (
+                <p className={classNames(css.dropAnimation, css.modalMessage, 'text-primary')}>
+                  By clicking 'Submit', the end date of your booking will be changed to{' '}
+                  {formattedEndDate}. You will not be charged for any time after this date.
+                </p>
+              )}
             </>
           ) : null}
           {updateBookingEndDateError ? (

@@ -4,12 +4,9 @@ import { Calendar } from 'react-calendar';
 import classNames from 'classnames';
 import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP } from '../../util/constants';
-
-import css from './BookingCalendar.module.css';
 import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bookings';
 
-const isDayHighlightedSingle = (bookingDates, date) =>
-  bookingDates.map(d => d.getTime()).includes(date.getTime());
+import css from './UnavailableBookingCalendar.module.css';
 
 const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, exceptions) =>
   (bookingSchedule.some(
@@ -21,7 +18,7 @@ const isDayHighlightedRecurring = (bookingSchedule, startDate, endDate, date, ex
     exceptions?.addedDays?.some(d => moment(d.date).isSame(date))) &&
   !exceptions?.removedDays?.some(d => moment(d.date).isSame(date));
 
-const isDayDisabled = date => date.getTime() < new Date().getTime();
+const isDayDisabled = date => moment(date).isBefore(moment(), 'day');
 
 const isDayUnavailable = ({
   bookingSchedule,
@@ -43,7 +40,6 @@ const isDayUnavailable = ({
 
 const formatDay = ({
   date,
-  bookingDates,
   bookedDates,
   bookedDays,
   noDisabled,
@@ -53,10 +49,13 @@ const formatDay = ({
   exceptions,
 }) => {
   const day = date.getDate();
-  const isHighlighted =
-    bookingSchedule?.length > 0
-      ? isDayHighlightedRecurring(bookingSchedule, startDate, endDate, date, exceptions)
-      : isDayHighlightedSingle(bookingDates, date);
+  const isHighlighted = isDayHighlightedRecurring(
+    bookingSchedule,
+    startDate,
+    endDate,
+    date,
+    exceptions
+  );
   const isDisabled = noDisabled ? false : isDayDisabled(date);
   const isUnavailable = isDayUnavailable({
     bookingSchedule,
@@ -90,7 +89,6 @@ const formatDay = ({
 export const BookingCalendar = props => {
   const [firstUnavailableDate, setFirstUnavailableDate] = useState(null);
   const {
-    bookingDates = [],
     bookedDates = [],
     bookedDays = [],
     bookingSchedule = [],
@@ -103,8 +101,8 @@ export const BookingCalendar = props => {
   } = props;
 
   const classes = classNames(className, css.root);
-  const initialDate = bookingDates?.[0] || new Date();
-  const [initialMonth, setInitialMonth] = useState(moment(initialDate).startOf('month'));
+  const initialDate = moment();
+  const [initialMonth, setInitialMonth] = useState(initialDate.startOf('month'));
 
   const findInitialUnavailableDate = useCallback(() => {
     const endOfMonth = moment(initialMonth).endOf('month');
@@ -148,7 +146,6 @@ export const BookingCalendar = props => {
           formatDay({
             locale,
             date,
-            bookingDates,
             bookedDays,
             bookedDates,
             noDisabled,

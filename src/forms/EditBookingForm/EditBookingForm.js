@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { compose } from 'redux';
 import { Form as FinalForm, FormSpy } from 'react-final-form';
 import { injectIntl, FormattedMessage } from '../../util/reactIntl';
@@ -10,7 +10,7 @@ import {
   NamedLink,
   ButtonTabNavHorizontal,
   Modal,
-  BookingCalendar,
+  UnavailableBookingCalendar,
 } from '../../components';
 import {
   isTransactionInitiateListingNotFoundError,
@@ -413,7 +413,7 @@ const EditBookingFormComponent = props => (
                 <span className={css.error}>red</span> below.
               </p>
               <p>Please adjust your booking dates to continue.</p>
-              <BookingCalendar
+              <UnavailableBookingCalendar
                 bookingSchedule={weekdays}
                 startDate={values.startDate?.date}
                 endDate={values.endDate?.date}

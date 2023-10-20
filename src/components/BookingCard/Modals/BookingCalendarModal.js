@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Modal, BookingCalendar } from '../..';
+import { Modal, SingleBookingCalendar } from '../..';
 
 import css from './BookingCardModals.module.css';
 
@@ -22,13 +22,7 @@ const BookingCalendarModal = props => {
       <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
         Booking Calendar
       </p>
-      <BookingCalendar
-        bookingDates={bookingDates}
-        bookingSchedule={bookingSchedule}
-        startDate={startDate}
-        endDate={endDate}
-        noDisabled
-      />
+      <SingleBookingCalendar bookingDates={bookingDates} noDisabled />
     </Modal>
   ) : null;
 };
