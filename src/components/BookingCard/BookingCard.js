@@ -32,6 +32,7 @@ import {
   ActionsModal,
   ChangeEndDateModal,
   ModifyScheduleRecurringModal,
+  ModifyExceptionsModal,
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
 
@@ -39,17 +40,18 @@ import css from './BookingCards.module.css';
 import ModifyScheduleModal from './Modals/ModifyScheduleModal';
 
 const MODAL_TYPES = {
-  RESPOND: 'respond',
-  PAYMENT_DETAILS: 'paymentDetails',
-  CANCEL: 'cancel',
-  DISPUTE: 'dispute',
-  CALENDAR: 'calendar',
-  EXCEPTIONS: 'exceptions',
   ACTIONS: 'actions',
-  MODIFY_SCHEDULE_RECURRING: 'modifyScheduleRecurring',
-  MODIFY_SCHEDULE_ONE_TIME: 'modifyScheduleOneTime',
+  CALENDAR: 'calendar',
+  CANCEL: 'cancel',
   CHANGE_END_DATE: 'changeEndDate',
   CHANGE_PAYMENT_METHOD: 'changePaymentMethod',
+  DISPUTE: 'dispute',
+  EXCEPTIONS: 'exceptions',
+  MODIFY_EXCEPTIONS: 'modifyExceptions',
+  MODIFY_SCHEDULE_ONE_TIME: 'modifyScheduleOneTime',
+  MODIFY_SCHEDULE_RECURRING: 'modifyScheduleRecurring',
+  PAYMENT_DETAILS: 'paymentDetails',
+  RESPOND: 'respond',
 };
 
 const BookingCardContext = createContext(null);
@@ -146,7 +148,6 @@ const BookingCardComponent = props => {
     handleModalOpen(MODAL_TYPES.ACTIONS);
     onResetInitialState();
     onResetTransactionsInitialState();
-    onFetchCurrentUserListing();
 
     if (displayState) {
       dispatch({ type: SET_ACTIONS_DISPLAY_STATE, payload: displayState });
@@ -309,6 +310,16 @@ const BookingCardComponent = props => {
         <ModifyScheduleRecurringModal
           isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE_RECURRING}
           onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE_RECURRING)}
+          booking={booking}
+          onGoBack={handleGoBackToActions}
+        />
+      );
+      break;
+    case MODAL_TYPES.MODIFY_EXCEPTIONS:
+      openModal = (
+        <ModifyExceptionsModal
+          isOpen={state.openModalType === MODAL_TYPES.MODIFY_EXCEPTIONS}
+          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_EXCEPTIONS)}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />

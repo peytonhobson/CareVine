@@ -62,36 +62,6 @@ const filterAvailableBookingEndDates = ({
   );
 };
 
-const renderDayContents = ({
-  bookingSchedule,
-  exceptions,
-  bookedDates,
-  bookedDays,
-  appliedDate,
-  firstBlockedDay,
-  lastAvailableDate,
-}) => date => {
-  const available = !filterAvailableBookingEndDates({
-    bookingSchedule,
-    exceptions,
-    bookedDates,
-    bookedDays,
-    appliedDate,
-    firstBlockedDay,
-    lastAvailableDate,
-  })(date);
-
-  return (
-    <span
-      className={
-        available ? 'text-light cursor-pointer hover:bg-light hover:text-primary px-3 py-1' : null
-      }
-    >
-      {date.format('D')}
-    </span>
-  );
-};
-
 const FieldChangeEndDate = props => {
   const [currentEndDateMonth, setCurrentEndDateMonth] = useState(moment().startOf('month'));
   const [firstBlockedDay, setFirstBlockedDay] = useState(null);
@@ -150,15 +120,6 @@ const FieldChangeEndDate = props => {
       })}
       useMobileMargins
       showErrorMessage={false}
-      renderDayContents={renderDayContents({
-        bookingSchedule,
-        exceptions,
-        bookedDates,
-        bookedDays: filteredBookedDays,
-        appliedDate,
-        firstBlockedDay,
-        lastAvailableDate,
-      })}
       onPrevMonthClick={m => setCurrentEndDateMonth(m.startOf('month'))}
       onNextMonthClick={m => setCurrentEndDateMonth(m.startOf('month'))}
       disabled={disabled}

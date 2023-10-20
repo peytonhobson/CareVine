@@ -1,5 +1,3 @@
-
-
 .inputRoot {
   /* Override react-dates default styles to match input styles */
 
@@ -227,13 +225,17 @@
     height: var(--DateInput_selectionHeight);
     background-color: var(--DateInput_hoveredOverlayColor);
   }
-  & :global(.CalendarDay:hover:not(.CalendarDay__blocked_out_of_range) .renderedDay) {
+  &
+    :global(.CalendarDay:hover:not(.CalendarDay__blocked_out_of_range):not(.CalendarDay__blocked_calendar)
+      .renderedDay) {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     height: var(--DateInput_selectionHeight);
-    background-color: var(--DateInput_hoveredOverlayColor);
+    background-color: var(--matterColorLight);
+    color: var(--marketplaceColor);
+    cursor: pointer;
   }
   /* Remove default bg-color and use our extra span instead '.renderedDay' */
   & :global(.CalendarDay__blocked_out_of_range),

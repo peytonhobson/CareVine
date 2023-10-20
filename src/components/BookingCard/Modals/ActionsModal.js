@@ -100,7 +100,7 @@ const ActionsModal = props => {
               Change Schedule
             </PrimaryButton>
             <SecondaryButton
-              onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)}
+              onClick={() => onModalOpen(modalTypes.MODIFY_EXCEPTIONS)}
               className={buttonClass}
             >
               Change Exceptions

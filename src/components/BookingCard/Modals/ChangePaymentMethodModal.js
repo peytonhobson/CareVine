@@ -67,7 +67,7 @@ const ChangePaymentMethodModal = props => {
         <PrimaryButton
           inProgress={submitInProgress}
           onClick={handleUpdatePaymentMethod}
-          className="w-auto ml-4 px-6 min-w-[10rem]"
+          className={css.modalButton}
           ready={submitReady}
           disabled={submitDisabled}
           type="button"

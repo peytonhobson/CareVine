@@ -144,7 +144,7 @@
   "CareScheduleExceptions.exceptionCareNeeded": "Care needed",
   "CareScheduleExceptions.exceptionCareNotNeeded": "Care not needed",
   "CareScheduleExceptions.exceptionNotAvailable": "Not available",
-  "CareScheduleExceptions.exceptionTooltip": "Exceptions are select times or days that are different from the schedule above.",
+  "CareScheduleExceptions.exceptionTooltip": "Exceptions are select times or days that are different from your regular schedule.",
   "CareScheduleExceptions.fetchExceptionsError": "Failed to load exceptions. Please try again.",
   "CareScheduleExceptions.noExceptions": "No exceptions",
   "CareScheduleRecurringTimesContainer.defaultScheduleTitle": "Default schedule",

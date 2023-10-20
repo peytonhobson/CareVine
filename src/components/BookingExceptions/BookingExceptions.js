@@ -56,18 +56,6 @@ const filterAvailableChangeExceptionDays = (startDate, endDate, weekdays, except
   return isAlreadyException || !isInBookingSchedule || !isDateWithinBooking;
 };
 
-const renderChangeDayContents = (bookedDays, bookedDates) => (date, classes) => {
-  const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
-
-  const isBlocked = classes.has('blocked');
-
-  return isBlockedDay ? (
-    <div style={{ color: 'var(--failColor)' }}>{date.format('D')}</div>
-  ) : (
-    <span className={!isBlocked && css.regularDay}>{date.format('D')}</span>
-  );
-};
-
 const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
@@ -75,9 +63,20 @@ const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short'
 const MAX_EXCEPTIONS_COUNT = 100;
 
 const BookingExceptions = props => {
-  const { bookedDates, bookedDays, values, onManageDisableScrolling, intl, timezone, form } = props;
+  const {
+    bookedDates,
+    bookedDays,
+    values,
+    onManageDisableScrolling,
+    intl,
+    timezone,
+    form,
+    booking,
+  } = props;
 
   const isMobile = useCheckMobileScreen();
+
+  const dateSource = booking ? booking.attributes.metadata : values;
 
   const {
     exceptions = {
@@ -85,15 +84,15 @@ const BookingExceptions = props => {
       addedDays: [],
       changedDays: [],
     },
-    startDate,
-    endDate,
   } = values;
+
+  const { startDate, endDate, bookingSchedule } = dateSource;
 
   const sortedExceptions = Object.values(exceptions)
     .flat()
     .sort(sortExceptionsByDate);
 
-  const weekdays = mapWeekdays(pick(values, WEEKDAYS));
+  const weekdays = bookingSchedule || mapWeekdays(pick(values, WEEKDAYS));
 
   useEffect(() => {
     //Remove all exceptions that fall outside of start and end date
@@ -107,7 +106,7 @@ const BookingExceptions = props => {
     };
 
     form.change('exceptions', newExceptions);
-  }, [startDate, endDate]);
+  }, [values.startDate?.date, values.endDate?.date]);
 
   useEffect(() => {
     //Remove all exceptions that interfere with weekdays
@@ -220,8 +219,8 @@ const BookingExceptions = props => {
 
   const currentBookedDays = {
     days: weekdays.map(w => w.dayOfWeek),
-    startDate: startDate?.date,
-    endDate: endDate?.date,
+    startDate: startDate?.date || startDate,
+    endDate: endDate?.date || endDate,
   };
 
   const exceptionCount = Object.values(exceptions).reduce((acc, curr) => {
@@ -243,7 +242,7 @@ const BookingExceptions = props => {
             className={css.addExceptionButton}
             onClick={() => setIsAddDayModalOpen(true)}
             type="button"
-            disabled={!values.startDate}
+            disabled={!startDate}
           >
             Add Day
           </PrimaryButton>
@@ -252,7 +251,7 @@ const BookingExceptions = props => {
           className={css.addExceptionButton}
           onClick={() => setIsChangeDayModalOpen(true)}
           type="button"
-          disabled={!values.startDate}
+          disabled={!startDate}
         >
           Change Day
         </Button>
@@ -260,7 +259,7 @@ const BookingExceptions = props => {
           className={classNames(css.addExceptionButton, css.removeButton)}
           onClick={() => setIsRemoveDayModalOpen(true)}
           type="button"
-          disabled={!values.startDate}
+          disabled={!startDate}
         >
           Remove Day
         </Button>
@@ -311,14 +310,13 @@ const BookingExceptions = props => {
             isDayBlocked={filterAvailableAddExceptionDays(
               bookedDays,
               bookedDates,
-              startDate?.date,
-              endDate?.date,
+              startDate?.date || startDate,
+              endDate?.date || endDate,
               weekdays,
               exceptions
             )}
             useMobileMargins
             showErrorMessage={false}
-            renderDayContents={renderChangeDayContents(bookedDays, bookedDates)}
             onFocus={() => setIsDateInputFocused(true)}
             onBlur={() => setIsDateInputFocused(false)}
           />
@@ -370,14 +368,13 @@ const BookingExceptions = props => {
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
             isDayBlocked={filterAvailableChangeExceptionDays(
-              startDate?.date,
-              endDate?.date,
+              startDate?.date || startDate,
+              endDate?.date || endDate,
               weekdays,
               exceptions
             )}
             useMobileMargins
             showErrorMessage={false}
-            renderDayContents={renderChangeDayContents(bookedDays, bookedDates)}
             onFocus={() => setIsDateInputFocused(true)}
             onBlur={() => setIsDateInputFocused(false)}
           />

@@ -162,7 +162,6 @@ const ResponseModal = props => {
             inProgress={declineBookingInProgress}
             ready={declineBookingSuccess}
             className={css.declineButton}
-            // inProgress={transitionTransactionInProgress === TRANSITION_DECLINE_BOOKING}
             onClick={() => onDeclineBooking(booking)}
             disabled={
               acceptBookingSuccess ||
