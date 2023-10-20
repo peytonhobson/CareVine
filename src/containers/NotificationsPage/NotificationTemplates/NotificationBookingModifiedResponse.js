@@ -113,10 +113,7 @@ const NotificationBookingModifiedResponse = props => {
                 const { dayOfWeek, startTime, endTime } = day;
 
                 return (
-                  <div
-                    key={dayOfWeek}
-                    className={modificationTypes.includes('bookingSchedule') ? 'text-error' : null}
-                  >
+                  <div key={dayOfWeek}>
                     <p className="my-0 leading-6">
                       {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
                       <span className="whitespace-nowrap">
@@ -129,24 +126,26 @@ const NotificationBookingModifiedResponse = props => {
             </div>
             <div>
               <h3 className="underline">End Date</h3>
-              <p className={modificationTypes.includes('endDate') ? 'text-error' : null}>
+              <p>
                 {previousMetadata?.endDate
                   ? moment(previousMetadata.endDate).format('ddd, MMM DD')
                   : 'No End Date'}
               </p>
             </div>
-            <div className={modificationTypes.includes('exceptions') ? 'text-error' : null}>
+            <div>
               <h3 className="underline">Exceptions</h3>
               {sortedPreviousExceptions.length > 0 ? (
-                sortedPreviousExceptions.map(exception => {
-                  return (
-                    <BookingException
-                      {...exception}
-                      key={exception.date}
-                      className={css.exception}
-                    />
-                  );
-                })
+                <div className={css.exceptions}>
+                  {sortedPreviousExceptions.map(exception => {
+                    return (
+                      <BookingException
+                        {...exception}
+                        key={exception.date}
+                        className={css.exception}
+                      />
+                    );
+                  })}
+                </div>
               ) : (
                 <p>No Exceptions</p>
               )}
@@ -184,20 +183,24 @@ const NotificationBookingModifiedResponse = props => {
                   : 'No End Date'}
               </p>
             </div>
-            <div className={modificationTypes.includes('exceptions') ? 'text-success' : null}>
+            <div>
               <h3 className="underline">Exceptions</h3>
               {newSchedule.exceptions.length > 0 ? (
-                newSchedule.exceptions.map(exception => {
-                  return (
-                    <BookingException
-                      {...exception}
-                      key={exception.date}
-                      className={css.exception}
-                    />
-                  );
-                })
+                <div className={css.exceptions}>
+                  {newSchedule.exceptions.map(exception => {
+                    return (
+                      <BookingException
+                        {...exception}
+                        key={exception.date}
+                        className={css.exception}
+                      />
+                    );
+                  })}
+                </div>
               ) : (
-                <p>No Exceptions</p>
+                <p className={modificationTypes.includes('exceptions') ? 'text-success' : null}>
+                  No Exceptions
+                </p>
               )}
             </div>
           </Card>

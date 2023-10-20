@@ -42,6 +42,8 @@ const formatDay = (
 
   const isHoveredWeek = isSameISOWeek(date, hoveredDate);
 
+  const beforeStartDate = moment(date).isBefore(startDate, 'day');
+  const afterEndDate = endDate ? moment(date).isAfter(endDate, 'day') : false;
   const beforeStartWeek = moment(date).isBefore(startDate, 'week');
   const afterEndWeek = endDate ? moment(date).isAfter(endDate, 'week') : false;
   const isSunday = moment(date).day() === 0;
@@ -53,7 +55,7 @@ const formatDay = (
       className={classNames(css.day, {
         [css.highlighted]: isHoveredWeek && !beforeStartWeek && !afterEndWeek,
         [css.highlightable]: !beforeStartWeek && !afterEndWeek,
-        [css.inBookingSchedule]: inBookingSchedule && !beforeStartWeek && !afterEndWeek,
+        [css.inBookingSchedule]: inBookingSchedule && !beforeStartDate && !afterEndDate,
         [css.disabled]: beforeStartWeek || afterEndWeek,
         [css.sunday]: isSunday,
         [css.saturday]: isSaturday,

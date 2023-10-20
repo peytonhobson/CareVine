@@ -48,7 +48,8 @@
 
 .changeButton {
   min-height: 0;
-  width: 7rem;
+  padding-inline: 1rem;
+  width: auto;
   height: 2rem;
 }
 

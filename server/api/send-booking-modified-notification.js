@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
         startDate,
         ledger
       );
-    } else if (modificationTypes.includes('exceptions')) {
+    } else if (modificationTypes.length === 1 && modificationTypes.includes('exceptions')) {
       const firstExceptionDate = modification.exceptions.sort(sortByDate)[0].date;
       expiration = moment(firstExceptionDate).startOf('day');
     } else if (modificationTypes.includes('endDate')) {

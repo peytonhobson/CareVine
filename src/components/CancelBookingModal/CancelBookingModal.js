@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Modal, CancelButton, Button, RefundBookingSummaryCard, NamedLink } from '..';
 import { cancelBooking } from '../../containers/BookingsPage/BookingsPage.duck';
@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { CAREGIVER } from '../../util/constants';
 
 import css from './CancelBookingModal.module.css';
+import { addTimeToStartOfDay } from '../../util/dates';
 
 const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
 
@@ -26,10 +27,19 @@ const CancelBookingModal = props => {
     onGoBack,
   } = props;
 
+  const { chargedLineItems = [] } = booking.attributes.metadata;
   const lastTransition = booking.attributes.lastTransition;
   const showCancellationPolicy = !nonPaidTransitions.includes(lastTransition);
 
   const isCaregiver = userType === CAREGIVER;
+
+  const hasRefund = useMemo(
+    () =>
+      chargedLineItems.some(cl =>
+        cl.lineItems.some(l => moment(addTimeToStartOfDay(l.date, l.startTime)).isAfter())
+      ),
+    [chargedLineItems]
+  );
 
   let policy;
   if (isCaregiver) {
@@ -53,12 +63,19 @@ const CancelBookingModal = props => {
           </NamedLink>
           .
         </p>
-        <RefundBookingSummaryCard
-          booking={booking}
-          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
-          hideAvatar
-          subHeading="Refund Summary"
-        />
+        {hasRefund ? (
+          <RefundBookingSummaryCard
+            booking={booking}
+            className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+            hideAvatar
+            subHeading="Refund Summary"
+          />
+        ) : (
+          <p className={css.modalMessage}>
+            You have not been charged for any future booking times and will therefore not receive a
+            refund.
+          </p>
+        )}
       </>
     ) : (
       <p className={css.modalMessage}>

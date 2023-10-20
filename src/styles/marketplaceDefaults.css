@@ -928,13 +928,12 @@ textarea {
 .marketplaceModalTitleStyles {
   font-weight: var(--fontWeightBold);
   font-size: 1.875rem;
-  line-height: 2rem;
+  line-height: 2.5rem;
   letter-spacing: -0.5px;
   margin: 0;
 
   @media screen(md) {
     font-weight: var(--fontWeightSemiBold);
-    line-height: 2.5rem;
     letter-spacing: -0.9px;
     margin: 0;
   }

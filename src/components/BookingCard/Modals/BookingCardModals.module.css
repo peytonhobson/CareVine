@@ -7,6 +7,12 @@
 /* Title of the modal */
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
+
+  margin-top: 4rem;
+
+  @media screen(md) {
+    margin-top: 0;
+  }
 }
 
 /* Paragraph for the Modal */
@@ -54,17 +60,26 @@
 
 .modalButtonContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-evenly;
   margin-top: 3rem;
+
+  @media screen(md) {
+    justify-content: flex-end;
+  }
 }
 
 .modalButton {
   padding: 1rem 2rem;
-  width: 8rem;
+  min-width: 8rem;
+  width: auto;
   height: auto;
   min-height: 0;
   display: inline;
   margin-left: 1rem;
+
+  @media screen(md) {
+    width: auto;
+  }
 }
 
 .acceptDeclineButtons {

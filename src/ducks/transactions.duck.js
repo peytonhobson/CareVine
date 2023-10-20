@@ -566,6 +566,12 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       exceptions,
     } = transaction.attributes.metadata;
 
+    // If end dates are same then don't do anything
+    if (moment(endDate).isSame(oldEndDate, 'day')) {
+      dispatch(updateBookingEndDateSuccess());
+      return;
+    }
+
     const endingLineItem = lineItems.find(l => moment(l.date).isSame(endDate, 'day'));
 
     const formattedEndDate = moment(endDate)
@@ -575,6 +581,22 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
     const lastTransition = transaction.attributes.lastTransition;
     const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
     const needsApproval = !isRequest && newEndDateLater;
+
+    const newExceptions = Object.keys(exceptions).reduce((acc, curr) => {
+      const newExceptions = exceptions[curr].filter(e =>
+        moment(e.date).isSameOrBefore(endDate, 'day')
+      );
+
+      return {
+        ...acc,
+        [curr]: newExceptions,
+      };
+    }, {});
+
+    const modification = {
+      endDate: formattedEndDate,
+      exceptions: newExceptions,
+    };
 
     if (
       (lastTransition === TRANSITION_START ||
@@ -599,6 +621,7 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
             bookingStart,
             metadata: {
               endDate: formattedEndDate,
+              exceptions: newExceptions,
             },
           },
         },
@@ -607,12 +630,13 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       await updateBookedDays({
         txId,
         endDate,
+        exceptions: newExceptions,
         sdk,
       });
 
       await sendBookingModifiedNotification({
         txId,
-        modification: { endDate: formattedEndDate },
+        modification,
         isRequest: false,
         previousMetadata: {
           endDate: oldEndDate,
@@ -625,6 +649,7 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
         txId,
         metadata: {
           endDate: formattedEndDate,
+          exceptions: newExceptions,
         },
       });
 
@@ -633,12 +658,13 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
         await updateBookedDays({
           txId,
           endDate,
+          exceptions: newExceptions,
           sdk,
         });
 
         await sendBookingModifiedNotification({
           txId,
-          modification: { endDate: formattedEndDate },
+          modification,
           isRequest: false,
           previousMetadata: {
             endDate: oldEndDate,
@@ -651,7 +677,7 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       // If booking is not a request and end date is later, we need to send request to caregiver
       await sendBookingModifiedNotification({
         txId,
-        modification: { endDate: formattedEndDate },
+        modification,
         isRequest: true,
         previousMetadata: {
           endDate: oldEndDate,

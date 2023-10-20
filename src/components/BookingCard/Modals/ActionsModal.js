@@ -20,11 +20,13 @@ const ActionsModal = props => {
     modalTypes,
     availableActions,
     actionsDisplayState,
+    onSetActionsDisplayState,
   } = props;
 
   useEffect(() => {
     if (actionsDisplayState) {
       setDisplayState(actionsDisplayState);
+      onSetActionsDisplayState(null);
     }
   }, [actionsDisplayState]);
 

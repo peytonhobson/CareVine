@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from '../../../../util/reactIntl';
 import { updateBookingEndDate } from '../../../../ducks/transactions.duck';
 import ChangeEndDateForm from './ChangeEndDateForm';
+import classNames from 'classnames';
 
 import css from '../BookingCardModals.module.css';
 
@@ -39,7 +40,7 @@ const ChangeEndDateModal = props => {
       usePortal
       containerClassName={css.modalContainer}
     >
-      <p className={css.modalTitle}>Change End Date</p>
+      <p className={classNames(css.modalTitle, 'text-center md:text-left')}>Change End Date</p>
       <ChangeEndDateForm onSubmit={onFormSubmit} booking={booking} {...rest} />
     </Modal>
   ) : null;

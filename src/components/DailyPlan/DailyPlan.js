@@ -231,6 +231,7 @@ const DailyPlan = props => {
           customName
         ) : (
           <>
+            <FormattedMessage id={`EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`} />
             {(warning && values[dayOfWeek]) || disabled ? (
               <div className={css.warning}>
                 <InfoTooltip
@@ -244,7 +245,6 @@ const DailyPlan = props => {
                 />
               </div>
             ) : null}
-            <FormattedMessage id={`EditListingAvailabilityPlanForm.dayOfWeek.${dayOfWeek}`} />
           </>
         )}
       </div>

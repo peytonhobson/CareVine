@@ -1,77 +1,20 @@
 import React, { useMemo, useState } from 'react';
 
-import { Button, Form, PrimaryButton, FieldDateInput } from '../../..';
+import { Button, Form, PrimaryButton } from '../../..';
 import moment from 'moment';
 import RefundBookingSummaryCard from '../../../BookingSummaryCard/Refund/RefundBookingSummaryCard';
-import { formatFieldDateInput, parseFieldDateInput } from '../../../../util/dates';
-import { Form as FinalForm, FormSpy } from 'react-final-form';
-import { useCheckMobileScreen } from '../../../../util/hooks';
+import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
 import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
-import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../../../util/constants';
-import { checkIsBlockedDay, checkIsDateInBookingSchedule } from '../../../../util/bookings';
+import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
+import FieldChangeEndDate from '../FieldChangeEndDate/FieldChangeEndDate';
+import UnapplicableExceptions from '../UnapplicableExceptions/UnapplicableExceptions';
 
 import css from '../BookingCardModals.module.css';
 
 const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
 
-const filterAvailableBookingEndDates = ({
-  bookingSchedule,
-  exceptions,
-  bookedDates,
-  bookedDays,
-  oldEndDate,
-  endDateCharged,
-}) => date => {
-  // If current end date is in charged line items, all dates after should be unavailable.
-  // This ensures if a user extends the end date that we don't have to deal with the additional
-  // charges that finish out their charged line items.
-  const isCharged = endDateCharged && moment(date).isAfter(oldEndDate, 'day');
-  const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
-  const isInScheduledDays = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
-  const isInPast = moment(date).isBefore(TODAY, 'day');
-  const isCurrentEndDate = moment(date).isSame(oldEndDate, 'day');
-
-  return isDayBlocked || !isInScheduledDays || isInPast || isCurrentEndDate || isCharged;
-};
-
-const TODAY = new Date();
-// Date formatting used for placeholder texts:
-const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
-
-const renderDayContents = ({
-  isMobile,
-  bookingSchedule,
-  exceptions,
-  bookedDates,
-  bookedDays,
-  oldEndDate,
-  endDateCharged,
-}) => (date, classes) => {
-  const isCharged = endDateCharged && moment(date).isAfter(oldEndDate, 'day');
-  const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
-  const isInPast = moment(date).isBefore(TODAY, 'day');
-  const isDayBlocked = checkIsBlockedDay({ date, bookedDays, bookedDates });
-  const isCurrentEndDate = moment(date).isSame(oldEndDate, 'day');
-
-  if (classes.has('selected') && isMobile) {
-    return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
-  }
-
-  const available =
-    isInBookingSchedule && !isInPast && !isDayBlocked && !isCurrentEndDate && !isCharged;
-
-  return (
-    <span
-      className={classNames(
-        available ? 'text-light cursor-pointer hover:bg-light hover:text-primary px-3 py-1' : null,
-        isCurrentEndDate ? 'text-success' : null
-      )}
-    >
-      {date.format('D')}
-    </span>
-  );
-};
+const TODAY = moment();
 
 const ChangeEndDateForm = props => (
   <FinalForm
@@ -87,7 +30,7 @@ const ChangeEndDateForm = props => (
         updateBookingEndDateSuccess,
         onGoBack,
         values,
-        pristine,
+        form,
       } = formRenderProps;
       const selectedEndDate = values.endDate?.date;
       const formattedEndDate = moment(selectedEndDate).format('MMMM Do');
@@ -102,26 +45,16 @@ const ChangeEndDateForm = props => (
         handleSubmit(e);
       };
 
-      const txId = booking.id.uuid;
       const {
         chargedLineItems = [],
         endDate: oldEndDate = moment()
           .add(10, 'years')
           .format(ISO_OFFSET_FORMAT),
+        awaitingModification = {},
         bookingSchedule,
         exceptions,
-        awaitingModification = {},
       } = booking.attributes.metadata;
       const providerDisplayName = booking?.provider?.attributes?.profile?.displayName;
-
-      const { listing } = booking;
-      const timezone = listing.attributes.publicData.availabilityPlan?.timezone;
-      const { bookedDates = [], bookedDays = [] } = booking.listing.attributes.metadata;
-      const filteredBookedDays = useMemo(() => bookedDays.filter(d => d.txId !== txId), [
-        bookedDays,
-      ]);
-
-      const isMobile = useCheckMobileScreen();
 
       const submitInProgress = updateBookingEndDateInProgress;
       const submitDisabled = updateBookingEndDateInProgress || updateBookingEndDateSuccess;
@@ -166,41 +99,31 @@ const ChangeEndDateForm = props => (
 
       const hasPendingRequest = awaitingModificationTypes.length > 0;
       const hasPendingEndDatesRequest =
-        awaitingModificationTypes.length === 1 && awaitingModificationTypes[0] === 'endDate';
-
+        !awaitingModificationTypes.includes('bookingSchedule') &&
+        awaitingModificationTypes.includes('endDate');
       return (
         <Form onSubmit={onSubmit}>
-          <FieldDateInput
-            name="endDate"
-            id="endDate"
+          <h3 className="text-primary text-center md:text-left">
+            Current End Date:{' '}
+            {booking.attributes.metadata.endDate
+              ? moment(oldEndDate).format('dddd, MMM Do')
+              : 'No End Date'}
+          </h3>
+          <FieldChangeEndDate
+            intl={intl}
+            disabled={awaitingModificationTypes.length > 1 && !hasPendingEndDatesRequest}
             className={css.fieldDateInput}
-            label="New End Date"
-            placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
-            format={formatFieldDateInput(timezone)}
-            parse={parseFieldDateInput(timezone)}
-            isDayBlocked={filterAvailableBookingEndDates({
-              bookingSchedule,
-              exceptions,
-              bookedDates,
-              bookedDays: filteredBookedDays,
-              oldEndDate,
-              endDateCharged,
-            })}
-            useMobileMargins
-            showErrorMessage={false}
-            renderDayContents={renderDayContents({
-              isMobile,
-              bookingSchedule,
-              exceptions,
-              bookedDates,
-              bookedDays: filteredBookedDays,
-              oldEndDate,
-              endDateCharged,
-            })}
-            withPortal={isMobile}
-            disabled={
-              awaitingModificationTypes.length > 1 && awaitingModificationTypes[0] !== 'endDate'
-            }
+            booking={booking}
+            appliedDate={TODAY}
+            values={values}
+            lastAvailableDate={endDateCharged ? oldEndDate : null}
+          />
+          <UnapplicableExceptions
+            weekdays={bookingSchedule}
+            exceptions={exceptions}
+            form={form}
+            endDate={values.endDate?.date}
+            appliedDate={TODAY}
           />
           {selectedEndDate ? (
             <>
@@ -270,7 +193,7 @@ const ChangeEndDateForm = props => (
             </Button>
             <PrimaryButton
               inProgress={submitInProgress}
-              className="w-auto ml-4 px-6 min-w-[10rem]"
+              className={css.modalButton}
               ready={submitReady}
               disabled={submitDisabled}
               type="submit"

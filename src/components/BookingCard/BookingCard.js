@@ -287,6 +287,9 @@ const BookingCardComponent = props => {
           modalTypes={MODAL_TYPES}
           availableActions={availableActions}
           actionsDisplayState={state.actionsDisplayState}
+          onSetActionsDisplayState={displayState =>
+            dispatch({ type: SET_ACTIONS_DISPLAY_STATE, payload: displayState })
+          }
         />
       );
       break;

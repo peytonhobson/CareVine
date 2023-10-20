@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { Modal } from '../../..';
 import { manageDisableScrolling } from '../../../../ducks/UI.duck';
@@ -13,9 +13,10 @@ import {
 } from '../../../../ducks/transactions.duck';
 import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
 import { mapWeekdays } from '../../../../util/bookings';
+import classNames from 'classnames';
+import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
 
 import css from '../BookingCardModals.module.css';
-import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
 
 const filterUnapplicableExceptions = (unapplicableExceptions, exceptions) =>
   Object.keys(exceptions).reduce((acc, curr) => {
@@ -89,7 +90,7 @@ const ModifyScheduleRecurringModal = props => {
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
     >
-      <p className={css.modalTitle}>Modify Your Booking Schedule</p>
+      <p className={classNames(css.modalTitle, 'mt-16 md:mt-0')}>Modify Your Booking Schedule</p>
       <ModifyScheduleRecurringForm
         onSubmit={onFormSubmit}
         initialValues={{ ...initialBookingSchedule }}

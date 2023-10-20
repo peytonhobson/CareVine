@@ -387,8 +387,6 @@ export const findStartTimeFromBookingTimes = bookingTimes => {
 };
 
 export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions) => {
-  console.log(startDate);
-  console.log(endDate);
   const filteredWeekdays = sortWeekdays(
     filterWeeklyBookingDays({
       weekdays,

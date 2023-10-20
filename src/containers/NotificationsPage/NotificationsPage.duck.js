@@ -421,10 +421,13 @@ export const acceptBookingModification = notification => async (dispatch, getSta
     ).data.data;
 
     // TODO: add logic for other modifications here
-    if (modificationTypes.length === 1 && modificationTypes.includes('endDate')) {
-      await acceptEndDateModification(transaction, modification, sdk);
-    } else if (modificationTypes.includes('bookingSchedule')) {
+
+    if (modificationTypes.includes('bookingSchedule')) {
       await acceptBookingScheduleModification(transaction, modification, appliedDate, sdk);
+    } else if (modificationTypes.length === 1 && modificationTypes.includes('exceptions')) {
+      // TODO: Add here
+    } else if (modificationTypes.includes('endDate')) {
+      await acceptEndDateModification(transaction, modification, sdk);
     }
 
     const currentUser = getState().user.currentUser;
