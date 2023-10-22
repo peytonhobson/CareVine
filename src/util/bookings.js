@@ -294,7 +294,7 @@ export const getUnavailableDays = ({
   return unavailableDays;
 };
 
-export const checkIsDateInBookingSchedule = (date, bookingSchedule, exceptions) => {
+export const checkIsDateInBookingSchedule = (date, bookingSchedule = [], exceptions) => {
   const isInRegularDays = bookingSchedule.some(
     d => d.dayOfWeek === WEEKDAYS[moment(date).weekday()]
   );

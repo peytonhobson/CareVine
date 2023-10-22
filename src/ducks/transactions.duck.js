@@ -22,6 +22,7 @@ import { ISO_OFFSET_FORMAT } from '../util/constants';
 const { UUID } = sdkTypes;
 import { constructBookingMetadataRecurring, updateBookedDays } from '../util/bookings';
 import { fetchBookings } from '../containers/BookingsPage/BookingsPage.duck';
+import { isEqual } from 'lodash';
 
 // ================ Action types ================ //
 
@@ -65,6 +66,12 @@ export const REQUEST_BOOKING_SCHEDULE_CHANGE_SUCCESS =
 export const REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR =
   'app/transactions/REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR';
 
+export const UPDATE_BOOKING_EXCEPTIONS_REQUEST =
+  'app/transactions/UPDATE_BOOKING_EXCEPTIONS_REQUEST';
+export const UPDATE_BOOKING_EXCEPTIONS_SUCCESS =
+  'app/transactions/UPDATE_BOOKING_EXCEPTIONS_SUCCESS';
+export const UPDATE_BOOKING_EXCEPTIONS_ERROR = 'app/transactions/UPDATE_BOOKING_EXCEPTIONS_ERROR';
+
 export const SET_CURRENT_TRANSACTION = 'app/transactions/SET_CURRENT_TRANSACTION';
 
 // ================ Reducer ================ //
@@ -93,6 +100,9 @@ const initialState = {
   requestBookingScheduleChangeInProgress: false,
   requestBookingScheduleChangeError: null,
   requestBookingScheduleChangeSuccess: null,
+  updateBookingExceptionsInProgress: false,
+  updateBookingExceptionsError: null,
+  updateBookingExceptionsSuccess: null,
 };
 
 export default function transactionsReducer(state = initialState, action = {}) {
@@ -246,6 +256,26 @@ export default function transactionsReducer(state = initialState, action = {}) {
         requestBookingScheduleChangeError: payload,
       };
 
+    case UPDATE_BOOKING_EXCEPTIONS_REQUEST:
+      return {
+        ...state,
+        updateBookingExceptionsInProgress: true,
+        updateBookingExceptionsError: null,
+        updateBookingExceptionsSuccess: false,
+      };
+    case UPDATE_BOOKING_EXCEPTIONS_SUCCESS:
+      return {
+        ...state,
+        updateBookingExceptionsInProgress: false,
+        updateBookingExceptionsSuccess: true,
+      };
+    case UPDATE_BOOKING_EXCEPTIONS_ERROR:
+      return {
+        ...state,
+        updateBookingExceptionsInProgress: false,
+        updateBookingExceptionsError: payload,
+      };
+
     default:
       return state;
   }
@@ -342,6 +372,14 @@ export const requestBookingScheduleChangeSuccess = () => ({
 });
 export const requestBookingScheduleChangeError = e => ({
   type: REQUEST_BOOKING_SCHEDULE_CHANGE_ERROR,
+  error: true,
+  payload: e,
+});
+
+export const updateBookingExceptionsRequest = () => ({ type: UPDATE_BOOKING_EXCEPTIONS_REQUEST });
+export const updateBookingExceptionsSuccess = () => ({ type: UPDATE_BOOKING_EXCEPTIONS_SUCCESS });
+export const updateBookingExceptionsError = e => ({
+  type: UPDATE_BOOKING_EXCEPTIONS_ERROR,
   error: true,
   payload: e,
 });
@@ -785,5 +823,39 @@ export const requestBookingScheduleChange = (txId, modification) => async (
   } catch (e) {
     log.error(e, 'update-booking-schedule-failed', { txId });
     dispatch(requestBookingScheduleChangeError(storableError(e)));
+  }
+};
+
+export const updateBookingExceptions = (txId, modification) => async (dispatch, getState, sdk) => {
+  dispatch(updateBookingExceptionsRequest());
+
+  try {
+    const transaction = (
+      await sdk.transactions.show({
+        id: txId,
+      })
+    ).data.data;
+
+    const {
+      exceptions: oldExceptions,
+      endDate: oldEndDate,
+      bookingSchedule,
+    } = transaction.attributes.metadata;
+
+    await sendBookingModifiedNotification({
+      txId,
+      modification,
+      isRequest: true,
+      previousMetadata: {
+        endDate: oldEndDate,
+        bookingSchedule,
+        exceptions: oldExceptions,
+      },
+    });
+
+    dispatch(updateBookingExceptionsSuccess());
+  } catch (e) {
+    log.error(e, 'update-booking-exceptions-failed', { txId });
+    dispatch(updateBookingExceptionsError(storableError(e)));
   }
 };

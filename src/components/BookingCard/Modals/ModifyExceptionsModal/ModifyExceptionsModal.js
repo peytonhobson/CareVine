@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Modal } from '../../..';
 import { manageDisableScrolling } from '../../../../ducks/UI.duck';
@@ -7,8 +7,28 @@ import { connect } from 'react-redux';
 import { injectIntl } from '../../../../util/reactIntl';
 import classNames from 'classnames';
 import ModifyExceptionsForm from './ModifyExceptionsForm';
+import { updateBookingExceptions } from '../../../../ducks/transactions.duck';
+import moment from 'moment';
 
 import css from '../BookingCardModals.module.css';
+
+const reduceUnchargedExceptions = (exceptions, chargedLineItems) => {
+  const lastChargedDate = chargedLineItems
+    .map(cl => cl.lineItems)
+    .flat()
+    .sort((a, b) => moment(b.date).diff(a.date))?.[0]?.date;
+
+  const unchargedExceptions = Object.keys(exceptions).reduce((acc, curr) => {
+    const newExceptions = exceptions[curr].filter(e => moment(e.date).isAfter(lastChargedDate));
+
+    return {
+      ...acc,
+      [curr]: newExceptions,
+    };
+  }, {});
+
+  return { unchargedExceptions, lastChargedDate };
+};
 
 const ModifyExceptionsModal = props => {
   const {
@@ -18,23 +38,11 @@ const ModifyExceptionsModal = props => {
     booking,
     onGoBack,
     intl,
-    updateBookingScheduleInProgress,
-    updateBookingScheduleError,
-    updateBookingScheduleSuccess,
-    requestBookingScheduleChangeInProgress,
-    requestBookingScheduleChangeError,
-    requestBookingScheduleChangeSuccess,
-    onRequestBookingScheduleChange,
-    onUpdateBookingSchedule,
+    updateBookingExceptionsInProgress,
+    updateBookingExceptionsError,
+    updateBookingExceptionsSuccess,
+    onUpdateExceptions,
   } = props;
-
-  const {
-    exceptions = {
-      addedDays: [],
-      changedDays: [],
-      removedDays: [],
-    },
-  } = booking.attributes.metadata;
 
   const onFormSubmit = values => {
     const modification = {
@@ -44,8 +52,22 @@ const ModifyExceptionsModal = props => {
     onUpdateExceptions(booking.id.uuid, modification);
   };
 
+  const {
+    exceptions = {
+      addedDays: [],
+      changedDays: [],
+      removedDays: [],
+    },
+    chargedLineItems = [],
+  } = booking.attributes.metadata;
+
+  const { unchargedExceptions, lastChargedDate } = useMemo(
+    () => reduceUnchargedExceptions(exceptions, chargedLineItems),
+    [exceptions, chargedLineItems]
+  );
+
   const initialValues = {
-    exceptions,
+    exceptions: unchargedExceptions,
   };
 
   return isOpen ? (
@@ -68,19 +90,33 @@ const ModifyExceptionsModal = props => {
         onManageDisableScrolling={onManageDisableScrolling}
         onSubmit={onFormSubmit}
         initialValues={initialValues}
+        updateBookingExceptionsInProgress={updateBookingExceptionsInProgress}
+        updateBookingExceptionsError={updateBookingExceptionsError}
+        updateBookingExceptionsSuccess={updateBookingExceptionsSuccess}
+        bookingExceptions={unchargedExceptions}
+        lastChargedDate={lastChargedDate}
       />
     </Modal>
   ) : null;
 };
 
 const mapStateToProps = state => {
-  const {} = state.transactions;
+  const {
+    updateBookingExceptionsInProgress,
+    updateBookingExceptionsError,
+    updateBookingExceptionsSuccess,
+  } = state.transactions;
 
-  return {};
+  return {
+    updateBookingExceptionsInProgress,
+    updateBookingExceptionsError,
+    updateBookingExceptionsSuccess,
+  };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
+  onUpdateExceptions: updateBookingExceptions,
 };
 
 export default compose(

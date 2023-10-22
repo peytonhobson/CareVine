@@ -15,24 +15,31 @@ import classNames from 'classnames';
 import { formatFieldDateInput, parseFieldDateInput } from '../../util/dates';
 import { ISO_OFFSET_FORMAT, WEEKDAYS } from '../../util/constants';
 import moment from 'moment';
-import { pick } from 'lodash';
+import { first, pick } from 'lodash';
 import { useCheckMobileScreen } from '../../util/hooks';
 import {
   sortExceptionsByDate,
   mapWeekdays,
   checkIsBlockedDay,
   checkIsDateWithinBookingWindow,
+  checkIsDateInBookingSchedule,
 } from '../../util/bookings';
 
 import css from './BookingExceptions.module.css';
 
+const TODAY = new Date();
+// Date formatting used for placeholder texts:
+const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
+
+const MAX_EXCEPTIONS_COUNT = 100;
+
 const filterAvailableAddExceptionDays = (
   bookedDays,
   bookedDates,
-  startDate,
   endDate,
   weekdays,
-  exceptions
+  exceptions,
+  firstAvailableDate
 ) => date => {
   const day = date.day();
   const isBlockedDay = checkIsBlockedDay({ bookedDays, bookedDates, date });
@@ -40,27 +47,57 @@ const filterAvailableAddExceptionDays = (
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => moment(e.date).isSame(date, 'day'));
-  const isWithinBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
+  const isWithinBookingWindow = checkIsDateWithinBookingWindow({
+    startDate: firstAvailableDate,
+    endDate,
+    date,
+  });
 
   return isBlockedDay || isAlreadySelected || isAlreadyException || !isWithinBookingWindow;
 };
 
-const filterAvailableChangeExceptionDays = (startDate, endDate, weekdays, exceptions) => date => {
+const filterAvailableChangeExceptionDays = (
+  endDate,
+  weekdays = [],
+  exceptions,
+  firstAvailableDate
+) => date => {
   const day = moment(date).weekday();
   const isAlreadyException = Object.values(exceptions)
     .flat()
     .some(e => moment(date).isSame(e.date, 'day'));
   const isInBookingSchedule = weekdays.some(w => w.dayOfWeek === WEEKDAYS[day]);
-  const isDateWithinBooking = checkIsDateWithinBookingWindow({ startDate, endDate, date });
+  const isDateWithinBooking = checkIsDateWithinBookingWindow({
+    startDate: firstAvailableDate || TODAY,
+    endDate,
+    date,
+  });
 
   return isAlreadyException || !isInBookingSchedule || !isDateWithinBooking;
 };
 
-const TODAY = new Date();
-// Date formatting used for placeholder texts:
-const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
+const filterRemoveExceptionsDays = ({
+  endDate,
+  weekdays = [],
+  firstAvailableDate,
+  exceptions,
+  bookedDates,
+  bookedDays,
+}) => date => {
+  console.log(weekdays);
+  const isWithinBookingWindow = checkIsDateWithinBookingWindow({
+    startDate: firstAvailableDate,
+    endDate,
+    date,
+  });
+  const isSelectedWeekday = checkIsDateInBookingSchedule(date, weekdays);
+  const isException = Object.values(exceptions)
+    .flat()
+    .some(e => moment(e.date).isSame(date, 'day'));
+  const isBlocked = checkIsBlockedDay({ bookedDays, date, bookedDates });
 
-const MAX_EXCEPTIONS_COUNT = 100;
+  return !isWithinBookingWindow || !isSelectedWeekday || isException || isBlocked;
+};
 
 const BookingExceptions = props => {
   const {
@@ -72,6 +109,7 @@ const BookingExceptions = props => {
     timezone,
     form,
     booking,
+    firstAvailableDate,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -310,10 +348,10 @@ const BookingExceptions = props => {
             isDayBlocked={filterAvailableAddExceptionDays(
               bookedDays,
               bookedDates,
-              startDate?.date || startDate,
               endDate?.date || endDate,
               weekdays,
-              exceptions
+              exceptions,
+              firstAvailableDate
             )}
             useMobileMargins
             showErrorMessage={false}
@@ -368,10 +406,10 @@ const BookingExceptions = props => {
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
             isDayBlocked={filterAvailableChangeExceptionDays(
-              startDate?.date || startDate,
               endDate?.date || endDate,
               weekdays,
-              exceptions
+              exceptions,
+              firstAvailableDate
             )}
             useMobileMargins
             showErrorMessage={false}
@@ -418,12 +456,17 @@ const BookingExceptions = props => {
           <p className={css.modalTitle}>Remove day(s) from your booking</p>
           <FieldDatePicker
             className={css.datePicker}
-            currentBookedDays={currentBookedDays}
             name="removeDates"
             id="removeDates"
             highlightedClassName={css.highlightedRemoveDay}
-            bookedDates={sortedExceptions.map(exception => exception.date).concat(bookedDates)}
-            bookedDays={bookedDays}
+            isDayDisabled={filterRemoveExceptionsDays({
+              endDate: endDate?.date || endDate,
+              weekdays,
+              firstAvailableDate,
+              exceptions,
+              bookedDates,
+              bookedDays,
+            })}
           />
           <p className={css.daysToRemove}>Days To Remove From Booking</p>
           <ul className={css.removeDateList}>

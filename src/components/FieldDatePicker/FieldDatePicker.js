@@ -8,72 +8,15 @@ import { WEEKDAY_MAP, WEEKDAYS } from '../../util/constants';
 
 import css from './FieldDatePicker.module.css';
 import { InlineTextButton } from '../Button/Button';
-import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../util/bookings';
 
 const isDayHighlighted = (selectedDays, date) =>
   selectedDays.some(d => moment(d).isSame(date, 'day'));
 
-// TODO: Change default buffer days to one
-const isDayDisabled = ({ selectedDays, date, currentBookedDays, bufferDays = 0 }) => {
-  const inPastOrToday = moment()
-    .add(bufferDays, 'days')
-    .isSameOrAfter(date, 'day');
-
-  let isCurrentBookedDay = false;
-  if (currentBookedDays) {
-    const { startDate, endDate } = currentBookedDays;
-    const isWithinBookingWindow = checkIsDateWithinBookingWindow({ startDate, endDate, date });
-    const isSelectedWeekday = currentBookedDays.days.includes(WEEKDAYS[date.getDay()]);
-
-    isCurrentBookedDay = !isWithinBookingWindow || !isSelectedWeekday;
-  }
-
-  if (selectedDays.length == 0) {
-    return inPastOrToday || isCurrentBookedDay;
-  }
-
-  const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
-
-  const firstSelectedDay = sortedSelectedDays[0];
-  const lastSelectedDay = sortedSelectedDays[sortedSelectedDays.length - 1];
-
-  const twoWeeksAfterFirstSelectedDay = moment(firstSelectedDay)
-    .add(2, 'weeks')
-    .toDate();
-
-  const twoWeeksBeforeLastSelectedDay = moment(lastSelectedDay)
-    .subtract(2, 'weeks')
-    .toDate();
-
-  const isBeforeFirstSelectedDay = moment(date).isSameOrAfter(twoWeeksAfterFirstSelectedDay);
-  const isAfterLastSelectedDay = moment(date).isSameOrBefore(twoWeeksBeforeLastSelectedDay);
-
-  return inPastOrToday || isBeforeFirstSelectedDay || isAfterLastSelectedDay || isCurrentBookedDay;
-};
-
-const formatDay = ({
-  date,
-  selectedDays,
-  bookedDates,
-  bookedDays,
-  onClick,
-  currentBookedDays,
-  highlightedClassName,
-  bufferDays,
-  isModify,
-}) => {
+const formatDay = ({ date, selectedDays, onClick, highlightedClassName, isDayDisabled }) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled({
-    selectedDays,
-    date,
-    currentBookedDays,
-    bufferDays,
-  });
-  const isUnavailable = checkIsBlockedDay({ bookedDays, date, bookedDates });
-  const isPast = moment()
-    .add(bufferDays, 'days')
-    .isSameOrAfter(date, 'day');
+  const isDisabled = isDayDisabled ? isDayDisabled(date) : false;
+  const isPast = moment().isSameOrAfter(date, 'day');
 
   if (isHighlighted && isPast) {
     return (
@@ -90,7 +33,7 @@ const formatDay = ({
         <span>{day}</span>
       </div>
     );
-  } else if (isDisabled || isUnavailable) {
+  } else if (isDisabled) {
     return <span className={classNames(css.day, css.blocked)}>{day}</span>;
   } else {
     return (
@@ -102,18 +45,7 @@ const formatDay = ({
 };
 
 export const FieldDatePickerComponent = props => {
-  const {
-    bookedDates = [],
-    bookedDays = [],
-    input,
-    children,
-    className,
-    onChange,
-    currentBookedDays,
-    highlightedClassName,
-    bufferDays,
-    isModify,
-  } = props;
+  const { input, children, className, onChange, highlightedClassName, isDayDisabled } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -156,13 +88,9 @@ export const FieldDatePickerComponent = props => {
           formatDay({
             date,
             selectedDays,
-            bookedDates,
-            bookedDays,
             onClick: handleSelectDay,
-            currentBookedDays,
             highlightedClassName,
-            bufferDays,
-            isModify,
+            isDayDisabled,
           })
         }
         value={initialDate}
