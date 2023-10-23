@@ -83,8 +83,7 @@ const filterRemoveExceptionsDays = ({
   exceptions,
   bookedDates,
   bookedDays,
-}) => date => {
-  console.log(weekdays);
+}) => ({ date }) => {
   const isWithinBookingWindow = checkIsDateWithinBookingWindow({
     startDate: firstAvailableDate,
     endDate,

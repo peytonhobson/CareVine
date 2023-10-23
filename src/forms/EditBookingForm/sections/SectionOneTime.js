@@ -3,11 +3,41 @@ import React, { useMemo } from 'react';
 import { FieldDatePicker } from '../../../components';
 import DateTimeSelect from '../DateTimeSelect';
 import moment from 'moment';
-
-import css from '../EditBookingForm.module.css';
+import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../../util/bookings';
 import classNames from 'classnames';
 
+import css from '../EditBookingForm.module.css';
+
 const modifyBufferDays = 2;
+
+const isDayDisabled = ({ bookedDays, bookedDates }) => ({ date, selectedDays }) => {
+  const inPastOrToday = moment()
+    .add(1, 'days')
+    .isSameOrAfter(date, 'day');
+  const isBlocked = checkIsBlockedDay({ bookedDays, bookedDates, date });
+
+  if (selectedDays.length === 0) {
+    return inPastOrToday || isBlocked;
+  }
+
+  const sortedSelectedDays = selectedDays.sort((a, b) => a - b);
+
+  const firstSelectedDay = sortedSelectedDays[0];
+  const lastSelectedDay = sortedSelectedDays[sortedSelectedDays.length - 1];
+
+  const twoWeeksAfterFirstSelectedDay = moment(firstSelectedDay)
+    .add(2, 'weeks')
+    .toDate();
+
+  const twoWeeksBeforeLastSelectedDay = moment(lastSelectedDay)
+    .subtract(2, 'weeks')
+    .toDate();
+
+  const isBeforeFirstSelectedDay = moment(date).isSameOrAfter(twoWeeksAfterFirstSelectedDay);
+  const isAfterLastSelectedDay = moment(date).isSameOrBefore(twoWeeksBeforeLastSelectedDay);
+
+  return inPastOrToday || isBeforeFirstSelectedDay || isAfterLastSelectedDay || isBlocked;
+};
 
 const SectionOneTime = props => {
   const { values, listing, form, className, booking, hideLegend } = props;
@@ -69,8 +99,10 @@ const SectionOneTime = props => {
           id="bookingDates"
           bookedDays={bookedDays}
           onChange={handleBookingDatesChange}
-          bufferDays={booking ? modifyBufferDays : 0}
-          isModify={booking}
+          isDayDisabled={isDayDisabled({
+            bookedDays,
+            bookedDates,
+          })}
         >
           <p className={css.bookingTimeText}>
             Caregivers can only be booked within a two-week period

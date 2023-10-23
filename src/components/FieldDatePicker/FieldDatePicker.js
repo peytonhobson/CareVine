@@ -15,7 +15,7 @@ const isDayHighlighted = (selectedDays, date) =>
 const formatDay = ({ date, selectedDays, onClick, highlightedClassName, isDayDisabled }) => {
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
-  const isDisabled = isDayDisabled ? isDayDisabled(date) : false;
+  const isDisabled = isDayDisabled ? isDayDisabled({ date, selectedDays }) : false;
   const isPast = moment().isSameOrAfter(date, 'day');
 
   if (isHighlighted && isPast) {
