@@ -5,7 +5,10 @@ import { FULL_WEEKDAY_MAP } from '../../../../util/constants';
 import moment from 'moment';
 import css from '../BookingCardModals.module.css';
 import classNames from 'classnames';
-import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
+import {
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_REQUEST_UPDATE_START,
+} from '../../../../util/transaction';
 
 const ModifyScheduleSubmissionModal = props => {
   const {
@@ -33,7 +36,9 @@ const ModifyScheduleSubmissionModal = props => {
   const expirationTime = moment(expiration).format('h:mm a');
 
   const lastTransition = newBooking.attributes.lastTransition;
-  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isRequest =
+    lastTransition === TRANSITION_REQUEST_BOOKING ||
+    lastTransition === TRANSITION_REQUEST_UPDATE_START;
 
   return (
     <Modal

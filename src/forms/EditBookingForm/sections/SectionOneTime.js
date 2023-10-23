@@ -8,12 +8,8 @@ import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';
 
-const modifyBufferDays = 2;
-
 const isDayDisabled = ({ bookedDays, bookedDates }) => ({ date, selectedDays }) => {
-  const inPastOrToday = moment()
-    .add(1, 'days')
-    .isSameOrAfter(date, 'day');
+  const inPastOrToday = moment().isSameOrAfter(date, 'day');
   const isBlocked = checkIsBlockedDay({ bookedDays, bookedDates, date });
 
   if (selectedDays.length === 0) {
@@ -97,7 +93,6 @@ const SectionOneTime = props => {
           bookedDates={filteredBookedDates}
           name="bookingDates"
           id="bookingDates"
-          bookedDays={bookedDays}
           onChange={handleBookingDatesChange}
           isDayDisabled={isDayDisabled({
             bookedDays,
@@ -115,20 +110,7 @@ const SectionOneTime = props => {
           {values.bookingDates?.map(date => {
             const formattedDate = moment(date).format('MM/DD');
 
-            const disabled = booking
-              ? moment()
-                  .add(modifyBufferDays, 'days')
-                  .isSameOrAfter(date, 'day')
-              : false;
-
-            return (
-              <DateTimeSelect
-                key={formattedDate}
-                date={formattedDate}
-                values={values}
-                disabled={disabled}
-              />
-            );
+            return <DateTimeSelect key={formattedDate} date={formattedDate} values={values} />;
           })}
         </div>
       </div>

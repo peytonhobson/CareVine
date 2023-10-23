@@ -92,7 +92,6 @@ const ActionsModal = props => {
             <Button onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)} className={buttonClass}>
               Change End Date
             </Button>
-            {/* TODO: Change to open correct modals */}
             <PrimaryButton
               onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE_RECURRING)}
               className={buttonClass}

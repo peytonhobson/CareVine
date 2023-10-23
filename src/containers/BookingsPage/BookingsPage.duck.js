@@ -12,6 +12,7 @@ import {
   TRANSITION_WNFW_CANCEL,
   TRANSITION_WNFW_UPDATE_START,
   TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_REQUEST_UPDATE_START,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -24,7 +25,7 @@ import {
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
-const requestTransitions = [TRANSITION_REQUEST_BOOKING];
+const requestTransitions = [TRANSITION_REQUEST_BOOKING, TRANSITION_REQUEST_UPDATE_START];
 
 // Transitions not included because they are temporary for updates
 // TRANSITION_COMPLETE

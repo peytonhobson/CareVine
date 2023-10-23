@@ -9,9 +9,12 @@ import { injectIntl } from '../../../../util/reactIntl';
 import moment from 'moment';
 import {
   requestBookingScheduleChange,
-  updateBookingSchedule,
+  updateRequestedBooking,
 } from '../../../../ducks/transactions.duck';
-import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
+import {
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_REQUEST_UPDATE_START,
+} from '../../../../util/transaction';
 import { mapWeekdays } from '../../../../util/bookings';
 import classNames from 'classnames';
 import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
@@ -43,7 +46,9 @@ const ModifyScheduleRecurringModal = props => {
 
   const { bookingSchedule, exceptions } = booking.attributes.metadata;
   const lastTransition = booking.attributes.lastTransition;
-  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isRequest =
+    lastTransition === TRANSITION_REQUEST_BOOKING ||
+    lastTransition === TRANSITION_REQUEST_UPDATE_START;
 
   const onFormSubmit = values => {
     const bookingSchedule = mapWeekdays(values);
@@ -99,18 +104,18 @@ const ModifyScheduleRecurringModal = props => {
 
 const mapStateToProps = state => {
   const {
-    updateBookingScheduleInProgress,
-    updateBookingScheduleError,
-    updateBookingScheduleSuccess,
+    updateRequestedBookingInProgress,
+    updateRequestedBookingError,
+    updateRequestedBookingSuccess,
     requestBookingScheduleChangeInProgress,
     requestBookingScheduleChangeError,
     requestBookingScheduleChangeSuccess,
   } = state.transactions;
 
   return {
-    updateBookingScheduleInProgress,
-    updateBookingScheduleError,
-    updateBookingScheduleSuccess,
+    updateRequestedBookingInProgress,
+    updateRequestedBookingError,
+    updateRequestedBookingSuccess,
     requestBookingScheduleChangeInProgress,
     requestBookingScheduleChangeError,
     requestBookingScheduleChangeSuccess,
@@ -120,7 +125,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onRequestBookingScheduleChange: requestBookingScheduleChange,
-  onUpdateBookingSchedule: updateBookingSchedule,
+  onUpdateBookingSchedule: updateRequestedBooking,
 };
 
 export default compose(

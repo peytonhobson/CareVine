@@ -16,15 +16,8 @@ const formatDay = ({ date, selectedDays, onClick, highlightedClassName, isDayDis
   const day = date.getDate();
   const isHighlighted = isDayHighlighted(selectedDays, date);
   const isDisabled = isDayDisabled ? isDayDisabled({ date, selectedDays }) : false;
-  const isPast = moment().isSameOrAfter(date, 'day');
 
-  if (isHighlighted && isPast) {
-    return (
-      <div className={classNames(css.day, css.past, highlightedClassName ?? css.highlighted)}>
-        <span>{day}</span>
-      </div>
-    );
-  } else if (isHighlighted) {
+  if (isHighlighted) {
     return (
       <div
         className={classNames(css.day, highlightedClassName ?? css.highlighted)}
@@ -96,6 +89,7 @@ export const FieldDatePickerComponent = props => {
         value={initialDate}
         view="month"
         calendarType="Hebrew"
+        showNeighboringMonth={false}
       />
       <InlineTextButton className={css.clearDatesButton} type="button" onClick={handleClearDates}>
         Clear Dates

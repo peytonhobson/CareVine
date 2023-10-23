@@ -7,10 +7,14 @@ import { connect } from 'react-redux';
 import { injectIntl } from '../../../../util/reactIntl';
 import classNames from 'classnames';
 import ModifyExceptionsForm from './ModifyExceptionsForm';
-import { updateBookingExceptions } from '../../../../ducks/transactions.duck';
+import {
+  updateBookingExceptions,
+  updateRequestedBooking,
+} from '../../../../ducks/transactions.duck';
 import moment from 'moment';
 
 import css from '../BookingCardModals.module.css';
+import { txIsRequest } from '../../../../util/transaction';
 
 const reduceUnchargedExceptions = (exceptions, chargedLineItems) => {
   const lastChargedDate = chargedLineItems
@@ -36,12 +40,9 @@ const ModifyExceptionsModal = props => {
     onClose,
     onManageDisableScrolling,
     booking,
-    onGoBack,
-    intl,
-    updateBookingExceptionsInProgress,
-    updateBookingExceptionsError,
-    updateBookingExceptionsSuccess,
     onUpdateExceptions,
+    onUpdateRequest,
+    ...rest
   } = props;
 
   const onFormSubmit = values => {
@@ -49,7 +50,11 @@ const ModifyExceptionsModal = props => {
       exceptions: values.exceptions,
     };
 
-    onUpdateExceptions(booking.id.uuid, modification);
+    if (txIsRequest(booking)) {
+      onUpdateRequest(booking.id.uuid, modification);
+    } else {
+      onUpdateExceptions(booking.id.uuid, modification);
+    }
   };
 
   const {
@@ -84,16 +89,14 @@ const ModifyExceptionsModal = props => {
       </p>
       <ModifyExceptionsForm
         onSubmit={onFormSubmit}
-        onGoBack={onGoBack}
         booking={booking}
-        intl={intl}
         onManageDisableScrolling={onManageDisableScrolling}
         initialValues={initialValues}
-        updateBookingExceptionsInProgress={updateBookingExceptionsInProgress}
-        updateBookingExceptionsError={updateBookingExceptionsError}
-        updateBookingExceptionsSuccess={updateBookingExceptionsSuccess}
         bookingExceptions={unchargedExceptions}
         lastChargedDate={lastChargedDate}
+        initialValuesEqual={() => true}
+        onClose={onClose}
+        {...rest}
       />
     </Modal>
   ) : null;
@@ -104,18 +107,25 @@ const mapStateToProps = state => {
     updateBookingExceptionsInProgress,
     updateBookingExceptionsError,
     updateBookingExceptionsSuccess,
+    updateRequestedBookingInProgress,
+    updateRequestedBookingError,
+    updateRequestedBookingSuccess,
   } = state.transactions;
 
   return {
     updateBookingExceptionsInProgress,
     updateBookingExceptionsError,
     updateBookingExceptionsSuccess,
+    updateRequestedBookingInProgress,
+    updateRequestedBookingError,
+    updateRequestedBookingSuccess,
   };
 };
 
 const mapDispatchToProps = {
   onManageDisableScrolling: manageDisableScrolling,
   onUpdateExceptions: updateBookingExceptions,
+  onUpdateRequest: updateRequestedBooking,
 };
 
 export default compose(

@@ -6,6 +6,7 @@ import arrayMutators from 'final-form-arrays';
 import { isEqual } from 'lodash';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../../../util/dates';
+import classNames from 'classnames';
 
 import css from '../BookingCardModals.module.css';
 
@@ -28,8 +29,12 @@ const ModifyScheduleRecurringForm = props => (
         updateBookingExceptionsInProgress,
         updateBookingExceptionsError,
         updateBookingExceptionsSuccess,
+        updateRequestedBookingInProgress,
+        updateRequestedBookingError,
+        updateRequestedBookingSuccess,
         bookingExceptions,
         lastChargedDate,
+        onClose,
       } = formRenderProps;
 
       const txId = booking.id.uuid;
@@ -69,9 +74,15 @@ const ModifyScheduleRecurringForm = props => (
         ? moment(threeDaysFromNow).format('h:mm a')
         : moment(firstExceptionDateTime).format('h:mm a');
 
-      const submitInProgress = updateBookingExceptionsInProgress;
-      const submitReady = updateBookingExceptionsSuccess;
-      const submitDisabled = submitInProgress || submitReady;
+      const usedStates = {
+        inProgress: updateRequestedBookingInProgress || updateBookingExceptionsInProgress,
+        error: updateRequestedBookingError || updateBookingExceptionsError,
+        success: updateRequestedBookingSuccess || updateBookingExceptionsSuccess,
+      };
+
+      const submitInProgress = usedStates.inProgress;
+      const submitReady = usedStates.success;
+      const submitDisabled = submitReady || submitInProgress;
 
       const handleChange = () => {
         setShowNoChangeError(false);
@@ -110,7 +121,7 @@ const ModifyScheduleRecurringForm = props => (
               submitting.
             </p>
           ) : null}
-          {updateBookingExceptionsError ? (
+          {usedStates.error ? (
             <p className="text-error">Failed to update booking exceptions. Please try again.</p>
           ) : null}
           {!isEqual(bookingExceptions, values.exceptions) ? (
@@ -121,13 +132,23 @@ const ModifyScheduleRecurringForm = props => (
             </p>
           ) : null}
           <div className={css.modalButtonContainer}>
-            <Button
-              onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
-              className={css.modalButton}
-              type="button"
-            >
-              Back
-            </Button>
+            {submitReady ? (
+              <Button
+                onClick={onClose}
+                className={classNames(css.dropAnimation, css.modalButton)}
+                type="button"
+              >
+                Close
+              </Button>
+            ) : (
+              <Button
+                onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
+                className={css.modalButton}
+                type="button"
+              >
+                Back
+              </Button>
+            )}
             <PrimaryButton
               className={css.modalButton}
               type="submit"

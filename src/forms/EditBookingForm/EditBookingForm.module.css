@@ -184,7 +184,6 @@
 
 .pickYourTimes {
   display: inline;
-  margin-right: 2rem;
 
   @media screen(md) {
     margin-top: 0;

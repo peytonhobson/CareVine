@@ -40,6 +40,7 @@ export const TRANSITION_DELIVERED_CANCEL = 'transition/delivered-cancel';
 export const TRANSITION_WNFW_CANCEL = 'transition/wfnw-cancel';
 export const TRANSITION_WNFW_UPDATE_START = 'transition/wfnw-update-start';
 export const TRANSITION_ACCEPT_UPDATE_START = 'transition/accept-update-start';
+export const TRANSITION_REQUEST_UPDATE_START = 'transition/request-update-start';
 
 // Modify Booking Process Transitions
 export const TRANSITION_MODIFY_BOOKING = 'transition/booking-modified';
@@ -159,6 +160,7 @@ export const CANCELABLE_TRANSITIONS = [
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
   TRANSITION_WNFW_UPDATE_START,
   TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_REQUEST_UPDATE_START,
 ];
 
 export const MODIFIABLE_TRANSITIONS = [
@@ -171,6 +173,7 @@ export const MODIFIABLE_TRANSITIONS = [
   TRANSITION_ACTIVE_UPDATE_BOOKING_END,
   TRANSITION_WNFW_UPDATE_START,
   TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_REQUEST_UPDATE_START,
 ];
 
 export const FINAL_TRANSITIONS = [
@@ -234,6 +237,15 @@ export const txIsPaymentPending = tx =>
 
 export const txIsPaymentExpired = tx =>
   getTransitionsToState(STATE_PAYMENT_EXPIRED).includes(txLastTransition(tx));
+
+export const txIsRequest = tx => {
+  const lastTransition = txLastTransition(tx);
+
+  return (
+    lastTransition === TRANSITION_REQUEST_BOOKING ||
+    lastTransition === TRANSITION_REQUEST_UPDATE_START
+  );
+};
 
 // Note: state name used in Marketplace API docs (and here) is actually preauthorized
 // However, word "requested" is used in many places so that we decided to keep it.

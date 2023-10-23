@@ -13,6 +13,7 @@ import {
   CANCELABLE_TRANSITIONS,
   FINAL_TRANSITIONS,
   MODIFIABLE_TRANSITIONS,
+  TRANSITION_REQUEST_UPDATE_START,
 } from '../../util/transaction';
 import MuiTablePagination from '@mui/material/TablePagination';
 import { useCheckMobileScreen } from '../../util/hooks';
@@ -33,11 +34,12 @@ import {
   ChangeEndDateModal,
   ModifyScheduleRecurringModal,
   ModifyExceptionsModal,
+  ModifyScheduleSingleModal,
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
+import { v4 as uuid } from 'uuid';
 
 import css from './BookingCards.module.css';
-import ModifyScheduleModal from './Modals/ModifyScheduleModal';
 
 const MODAL_TYPES = {
   ACTIONS: 'actions',
@@ -157,7 +159,9 @@ const BookingCardComponent = props => {
   const setBookingTimesPage = page => dispatch({ type: SET_BOOKING_TIMES_PAGE, payload: page });
 
   const isCancelable = CANCELABLE_TRANSITIONS.includes(lastTransition);
-  const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isRequest =
+    lastTransition === TRANSITION_REQUEST_BOOKING ||
+    lastTransition === TRANSITION_REQUEST_UPDATE_START;
   const isModifiable =
     MODIFIABLE_TRANSITIONS.includes(lastTransition) && (isRequest || bookingType === 'recurring');
   const canChangePaymentMethod =
@@ -315,6 +319,16 @@ const BookingCardComponent = props => {
         />
       );
       break;
+    case MODAL_TYPES.MODIFY_SCHEDULE_ONE_TIME:
+      openModal = (
+        <ModifyScheduleSingleModal
+          isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE_ONE_TIME}
+          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE_ONE_TIME)}
+          booking={booking}
+          onGoBack={handleGoBackToActions}
+        />
+      );
+      break;
     case MODAL_TYPES.MODIFY_EXCEPTIONS:
       openModal = (
         <ModifyExceptionsModal
@@ -385,7 +399,10 @@ export const BookingCardMenu = () => {
   const { booking, userType, handleModalOpen, availableActions } = useBookingCard();
 
   const lastTransition = booking.attributes.lastTransition;
-  const showRespond = lastTransition === TRANSITION_REQUEST_BOOKING && userType === CAREGIVER;
+  const showRespond =
+    (lastTransition === TRANSITION_REQUEST_BOOKING ||
+      lastTransition === TRANSITION_REQUEST_UPDATE_START) &&
+    userType === CAREGIVER;
 
   const showActions = Object.values(availableActions).some(action => action);
 
@@ -472,7 +489,7 @@ export const BookingCardDateTimes = () => {
             )
             .map(({ date, startTime, endTime }) => {
               return (
-                <div className={css.bookingTime} key={date}>
+                <div className={css.bookingTime} key={uuid()}>
                   <h3 className={css.summaryDate}>{date}</h3>
                   <span className={css.summaryTimes}>
                     {startTime} - {endTime}

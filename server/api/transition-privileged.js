@@ -23,6 +23,7 @@ module.exports = (req, res) => {
         .end();
     })
     .catch(e => {
+      console.log(e?.data?.errors?.[0]?.source);
       handleError(res, e);
     });
 };

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { WEEKDAYS, WEEKDAY_MAP, ISO_OFFSET_FORMAT, BOOKING_FEE_PERCENTAGE } from './constants';
 import { addTimeToStartOfDay, calculateTimeBetween } from './dates';
-import { calculateProcessingFee } from './data';
+import { calculateProcessingFee, convertTimeFrom12to24 } from './data';
 import { updateListingMetadata } from './api';
 
 const filterInsideExceptions = (exceptions, startDate) =>
@@ -513,6 +513,7 @@ export const constructBookingMetadataRecurring = (
     endDate: endDate ? moment(endDate).format(ISO_OFFSET_FORMAT) : null,
     cancelAtPeriodEnd: false,
     type: 'recurring',
+    exceptions,
   };
 };
 

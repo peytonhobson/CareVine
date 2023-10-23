@@ -5,7 +5,10 @@ import moment from 'moment';
 import RefundBookingSummaryCard from '../../../BookingSummaryCard/Refund/RefundBookingSummaryCard';
 import { Form as FinalForm } from 'react-final-form';
 import classNames from 'classnames';
-import { TRANSITION_REQUEST_BOOKING } from '../../../../util/transaction';
+import {
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_REQUEST_UPDATE_START,
+} from '../../../../util/transaction';
 import { ISO_OFFSET_FORMAT } from '../../../../util/constants';
 import FieldChangeEndDate from '../FieldChangeEndDate/FieldChangeEndDate';
 import UnapplicableExceptions from '../UnapplicableExceptions/UnapplicableExceptions';
@@ -65,7 +68,9 @@ const ChangeEndDateForm = props => (
       const requestedEndDate = awaitingModification?.endDate;
 
       const lastTransition = booking.attributes.lastTransition;
-      const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+      const isRequest =
+        lastTransition === TRANSITION_REQUEST_BOOKING ||
+        lastTransition === TRANSITION_REQUEST_UPDATE_START;
 
       const hasRefund = useMemo(
         () =>

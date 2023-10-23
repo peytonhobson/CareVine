@@ -20,6 +20,7 @@ import {
   TRANSITION_ACCEPT_BOOKING,
   TRANSITION_REQUEST_BOOKING,
   TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_REQUEST_UPDATE_START,
 } from '../../../../util/transaction';
 import FieldChangeEndDate from '../FieldChangeEndDate/FieldChangeEndDate';
 import UnapplicableExceptions from '../UnapplicableExceptions/UnapplicableExceptions';
@@ -80,7 +81,7 @@ const findChangeAppliedDate = (
   startDate,
   ledger = []
 ) => {
-  if (chargedLineItems.length === 0 && ledger.length === 0) moment(startDate);
+  if (chargedLineItems.length === 0 && ledger.length === 0) return moment(startDate);
 
   const combinedItems = [...chargedLineItems, ...ledger];
   const lastLineItems = combinedItems.reduce(findLastLineItems, []);
@@ -117,9 +118,9 @@ const ModifyScheduleRecurringForm = props => (
         booking,
         intl,
         onManageDisableScrolling,
-        updateBookingScheduleInProgress,
-        updateBookingScheduleError,
-        updateBookingScheduleSuccess,
+        updateRequestedBookingInProgress,
+        updateRequestedBookingError,
+        updateRequestedBookingSuccess,
         requestBookingScheduleChangeInProgress,
         requestBookingScheduleChangeError,
         requestBookingScheduleChangeSuccess,
@@ -179,16 +180,18 @@ const ModifyScheduleRecurringForm = props => (
       );
 
       const lastTransition = booking.attributes.lastTransition;
-      const isRequest = lastTransition === TRANSITION_REQUEST_BOOKING;
+      const isRequest =
+        lastTransition === TRANSITION_REQUEST_BOOKING ||
+        lastTransition === TRANSITION_REQUEST_UPDATE_START;
       const notYetCharged =
         isRequest ||
         lastTransition === TRANSITION_ACCEPT_BOOKING ||
         lastTransition === TRANSITION_ACCEPT_UPDATE_START;
       const usedStates = isRequest
         ? {
-            inProgress: updateBookingScheduleInProgress,
-            error: updateBookingScheduleError,
-            success: updateBookingScheduleSuccess,
+            inProgress: updateRequestedBookingInProgress,
+            error: updateRequestedBookingError,
+            success: updateRequestedBookingSuccess,
           }
         : {
             inProgress: requestBookingScheduleChangeInProgress,

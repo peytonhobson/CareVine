@@ -9,6 +9,14 @@
    :to :state/booking-requested,
    :privileged? true}
 
+   {:name :transition/request-update-start,
+   :actor :actor.role/customer,
+   :actions
+   [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}],
+   :from :state/booking-requested,
+   :to :state/booking-requested,
+   :privileged? true}
+
    {:name :transition/cancel-request,
    :actor :actor.role/operator,
    :actions

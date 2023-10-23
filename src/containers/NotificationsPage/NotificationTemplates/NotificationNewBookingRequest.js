@@ -19,6 +19,7 @@ import {
   TRANSITION_CHARGE,
   TRANSITION_CANCEL_BOOKING_REQUEST,
   TRANSITION_ACCEPT_UPDATE_START,
+  TRANSITION_REQUEST_UPDATE_START,
 } from '../../../util/transaction';
 import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
 import {
@@ -83,7 +84,9 @@ const NotificationNewBookingRequest = props => {
 
   const isLarge = useMediaQuery('(min-width:1024px)');
   const lastTransition = currentTransaction?.attributes.lastTransition;
-  const isNotAcceptedOrDeclined = lastTransition === TRANSITION_REQUEST_BOOKING;
+  const isNotAcceptedOrDeclined =
+    lastTransition === TRANSITION_REQUEST_BOOKING ||
+    lastTransition === TRANSITION_REQUEST_UPDATE_START;
   const isDeclined = lastTransition === TRANSITION_DECLINE_BOOKING;
   const isUpcoming = lastTransition === TRANSITION_ACCEPT_BOOKING || TRANSITION_ACCEPT_UPDATE_START;
   lastTransition === TRANSITION_CHARGE;
