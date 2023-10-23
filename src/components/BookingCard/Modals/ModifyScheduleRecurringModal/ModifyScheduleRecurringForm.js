@@ -124,6 +124,7 @@ const ModifyScheduleRecurringForm = props => (
         requestBookingScheduleChangeError,
         requestBookingScheduleChangeSuccess,
         form,
+        onCloseFully,
       } = formRenderProps;
 
       const weekdays = mapWeekdays(values);
@@ -336,6 +337,7 @@ const ModifyScheduleRecurringForm = props => (
             lastChargedDate={lastChargedDate}
             onSubmit={handleSubmit}
             error={usedStates.error}
+            onCloseFully={onCloseFully}
           />
         </Form>
       );

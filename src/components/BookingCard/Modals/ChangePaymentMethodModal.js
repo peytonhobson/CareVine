@@ -6,6 +6,7 @@ import { manageDisableScrolling } from '../../../ducks/UI.duck';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { updateBookingMetadata } from '../../../containers/BookingsPage/BookingsPage.duck';
+import classNames from 'classnames';
 
 import css from './BookingCardModals.module.css';
 import { SectionPayment } from '../../../forms/EditBookingForm/sections';
@@ -61,9 +62,15 @@ const ChangePaymentMethodModal = props => {
         <p className="text-error">Failed to update payment method. Please try again.</p>
       ) : null}
       <div className={css.modalButtonContainer}>
-        <Button onClick={onGoBack} className={css.modalButton} type="button">
-          Back
-        </Button>
+        {updateBookingMetadataSuccess ? (
+          <Button onClick={onClose} className={classNames(css.dropAnimation, css.modalButton)}>
+            Close
+          </Button>
+        ) : (
+          <Button onClick={onGoBack} className={css.modalButton}>
+            Back
+          </Button>
+        )}
         <PrimaryButton
           inProgress={submitInProgress}
           onClick={handleUpdatePaymentMethod}

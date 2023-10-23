@@ -41,7 +41,7 @@ const ChangeEndDateModal = props => {
       containerClassName={css.modalContainer}
     >
       <p className={classNames(css.modalTitle, 'text-center md:text-left')}>Change End Date</p>
-      <ChangeEndDateForm onSubmit={onFormSubmit} booking={booking} {...rest} />
+      <ChangeEndDateForm onSubmit={onFormSubmit} booking={booking} onClose={onClose} {...rest} />
     </Modal>
   ) : null;
 };

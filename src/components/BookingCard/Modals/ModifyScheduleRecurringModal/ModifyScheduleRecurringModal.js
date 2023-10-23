@@ -36,16 +36,9 @@ const ModifyScheduleRecurringModal = props => {
     onClose,
     onManageDisableScrolling,
     booking,
-    onGoBack,
-    intl,
-    updateBookingScheduleInProgress,
-    updateBookingScheduleError,
-    updateBookingScheduleSuccess,
-    requestBookingScheduleChangeInProgress,
-    requestBookingScheduleChangeError,
-    requestBookingScheduleChangeSuccess,
     onRequestBookingScheduleChange,
     onUpdateBookingSchedule,
+    ...rest
   } = props;
 
   const { bookingSchedule, exceptions } = booking.attributes.metadata;
@@ -94,17 +87,11 @@ const ModifyScheduleRecurringModal = props => {
       <ModifyScheduleRecurringForm
         onSubmit={onFormSubmit}
         initialValues={{ ...initialBookingSchedule }}
-        onGoBack={onGoBack}
         booking={booking}
-        intl={intl}
         initialValuesEqual={() => true}
         onManageDisableScrolling={onManageDisableScrolling}
-        updateBookingScheduleInProgress={updateBookingScheduleInProgress}
-        updateBookingScheduleError={updateBookingScheduleError}
-        updateBookingScheduleSuccess={updateBookingScheduleSuccess}
-        requestBookingScheduleChangeInProgress={requestBookingScheduleChangeInProgress}
-        requestBookingScheduleChangeError={requestBookingScheduleChangeError}
-        requestBookingScheduleChangeSuccess={requestBookingScheduleChangeSuccess}
+        onCloseFully={onClose}
+        {...rest}
       />
     </Modal>
   ) : null;

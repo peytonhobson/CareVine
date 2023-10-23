@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const moment = require('moment');
 const { addTimeToStartOfDay, findNextWeekStartTime } = require('../bookingHelpers');
+const { isEqual } = require('lodash');
 
 const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
@@ -23,7 +24,7 @@ const findLastLineItems = (acc, curr) => {
   return moment(lastCurrentDate).isAfter(lastAccDate) ? sortedLineItems : acc;
 };
 
-const findChangeAppliedDate = (chargedLineItems, weekdays, exceptions, startDate, ledger) => {
+const findChangeAppliedDate = (chargedLineItems, weekdays, exceptions, startDate, ledger = []) => {
   if (chargedLineItems.length === 0 && ledger.length === 0) return moment(startDate);
 
   const combinedItems = [...chargedLineItems, ...ledger];
@@ -31,6 +32,26 @@ const findChangeAppliedDate = (chargedLineItems, weekdays, exceptions, startDate
   const nextWeekStartTime = findNextWeekStartTime(lastLineItems, weekdays, exceptions);
 
   return nextWeekStartTime.startOf('day');
+};
+
+const findExceptionExpiration = (modification = {}, previousMetadata = {}) => {
+  const allNewExceptions = Object.values(modification.exceptions).flat();
+  const allOldExceptions = Object.values(previousMetadata.exceptions).flat();
+
+  const addedExceptions = allNewExceptions.filter(e => !allOldExceptions.some(o => isEqual(e, o)));
+  const removedExceptions = allOldExceptions.filter(
+    o => !allNewExceptions.some(e => isEqual(e, o))
+  );
+
+  const firstException = [...addedExceptions, ...removedExceptions].sort((a, b) =>
+    moment(a.date).diff(b.date)
+  )?.[0];
+  const firstExceptionDateTime = addTimeToStartOfDay(
+    firstException?.date,
+    firstException?.startTime
+  );
+
+  return firstExceptionDateTime;
 };
 
 module.exports = async (req, res) => {
@@ -54,7 +75,7 @@ module.exports = async (req, res) => {
       bookingNumber,
       chargedLineItems = [],
       startDate,
-      ledger,
+      ledger = [],
     } = transaction.attributes.metadata;
 
     const customerDisplayName = customer.attributes.profile.displayName;
@@ -72,8 +93,7 @@ module.exports = async (req, res) => {
         ledger
       );
     } else if (modificationTypes.length === 1 && modificationTypes.includes('exceptions')) {
-      const firstExceptionDate = modification.exceptions.sort(sortByDate)[0].date;
-      expiration = moment(firstExceptionDate).startOf('day');
+      expiration = findExceptionExpiration(modification, previousMetadata);
     } else if (modificationTypes.includes('endDate')) {
       expiration = moment(modification.endDate).startOf('day');
     } else {

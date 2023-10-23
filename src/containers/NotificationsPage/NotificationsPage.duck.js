@@ -354,10 +354,6 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
       .add(5, 'minutes')
       .format(ISO_OFFSET_FORMAT);
 
-    console.log(bookingStart);
-    console.log('newMetadata2', newMetadata);
-    console.log(TRANSITION_ACCEPT_UPDATE_START);
-
     await transitionPrivileged({
       bodyParams: {
         id: txId,
@@ -381,16 +377,22 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
       sdk,
     });
   } else {
+    const bookingScheduleChangeMaybe = bookingSchedule
+      ? {
+          bookingScheduleChange: {
+            bookingSchedule,
+            appliedDate,
+          },
+        }
+      : {};
+
     // Update end date and exceptions now because they occur in the future and won't affect the current booking
     updateTransactionMetadata({
       txId,
       metadata: {
         endDate,
         exceptions,
-        bookingScheduleChange: {
-          bookingSchedule,
-          appliedDate,
-        },
+        ...bookingScheduleChangeMaybe,
       },
     });
 
@@ -420,14 +422,15 @@ export const acceptBookingModification = notification => async (dispatch, getSta
       await sdk.transactions.show({ id: txId, include: ['customer', 'provider'] })
     ).data.data;
 
-    // TODO: add logic for other modifications here
-
-    if (modificationTypes.includes('bookingSchedule')) {
+    if (
+      modificationTypes.includes('bookingSchedule') ||
+      (modificationTypes.length === 1 && modificationTypes.includes('exceptions'))
+    ) {
       await acceptBookingScheduleModification(transaction, modification, appliedDate, sdk);
-    } else if (modificationTypes.length === 1 && modificationTypes.includes('exceptions')) {
-      // TODO: Add here
     } else if (modificationTypes.includes('endDate')) {
       await acceptEndDateModification(transaction, modification, sdk);
+    } else {
+      throw new Error('Unknown modification type');
     }
 
     const currentUser = getState().user.currentUser;

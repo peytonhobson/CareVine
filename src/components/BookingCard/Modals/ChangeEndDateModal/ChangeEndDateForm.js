@@ -31,6 +31,7 @@ const ChangeEndDateForm = props => (
         onGoBack,
         values,
         form,
+        onClose,
       } = formRenderProps;
       const selectedEndDate = values.endDate?.date;
       const formattedEndDate = moment(selectedEndDate).format('MMMM Do');
@@ -89,11 +90,10 @@ const ChangeEndDateForm = props => (
       const startOfSelectedDay = moment(selectedEndDate).startOf('day');
       const threeDaysFromNow = moment().add(3, 'days');
       const expiration = moment(startOfSelectedDay).isAfter(threeDaysFromNow)
-        ? threeDaysFromNow.format('MMMM Do')
-        : startOfSelectedDay.format('MMMM Do');
-      const expirationTime = moment(startOfSelectedDay).isAfter(threeDaysFromNow)
-        ? moment(expiration).format('h:mm a')
-        : startOfSelectedDay.format('h:mm a');
+        ? threeDaysFromNow
+        : startOfSelectedDay;
+      const expirationDay = moment(expiration).format('dddd, MMMM Do');
+      const expirationTime = moment(expiration).format('h:mm a');
       const futureDateSelected =
         selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');
 
@@ -146,7 +146,7 @@ const ChangeEndDateForm = props => (
                 <p className={classNames(css.dropAnimation, css.modalMessage, 'text-primary')}>
                   When you click 'Submit', a request to change your booking end date to{' '}
                   {formattedEndDate} will be sent to {providerDisplayName}. They have until{' '}
-                  {expiration} at {expirationTime} to accept or decline. If they respond or the
+                  {expirationDay} at {expirationTime} to accept or decline. If they respond or the
                   request expires, you will be notified.
                 </p>
               ) : (
@@ -184,13 +184,23 @@ const ChangeEndDateForm = props => (
             <p className="text-error text-center">Please select a date.</p>
           ) : null}
           <div className={css.modalButtonContainer}>
-            <Button
-              onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
-              className={css.modalButton}
-              type="button"
-            >
-              Back
-            </Button>
+            {updateBookingEndDateSuccess ? (
+              <Button
+                onClick={onClose}
+                className={classNames(css.dropAnimation, css.modalButton)}
+                type="button"
+              >
+                Close
+              </Button>
+            ) : (
+              <Button
+                onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
+                className={css.modalButton}
+                type="button"
+              >
+                Back
+              </Button>
+            )}
             <PrimaryButton
               inProgress={submitInProgress}
               className={css.modalButton}

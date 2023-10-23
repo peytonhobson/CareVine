@@ -66,7 +66,7 @@ const ModifyScheduleRecurringForm = props => (
         ? threeDaysFromNow.format('MMMM Do')
         : moment(firstExceptionDateTime).format('MMMM Do');
       const expirationTime = moment(firstExceptionDateTime).isAfter(threeDaysFromNow)
-        ? moment(expiration).format('h:mm a')
+        ? moment(threeDaysFromNow).format('h:mm a')
         : moment(firstExceptionDateTime).format('h:mm a');
 
       const submitInProgress = updateBookingExceptionsInProgress;

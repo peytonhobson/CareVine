@@ -84,20 +84,4 @@ const ResponsiveImage = props => {
   return <img {...imgProps} />;
 };
 
-ResponsiveImage.defaultProps = {
-  className: null,
-  rootClassName: null,
-  image: null,
-  noImageMessage: null,
-};
-
-ResponsiveImage.propTypes = {
-  className: string,
-  rootClassName: string,
-  alt: string.isRequired,
-  image: propTypes.image,
-  variants: arrayOf(string).isRequired,
-  noImageMessage: string,
-};
-
 export default ResponsiveImage;

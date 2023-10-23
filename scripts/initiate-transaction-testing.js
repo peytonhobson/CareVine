@@ -56,7 +56,7 @@ const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
-  .add(5 - (now.minute() % 5), 'minutes')
+  .add(60 - (now.minute() % 5), 'minutes')
   .set({ second: 0, millisecond: 0 });
 
 const bookingStart = moment(start)

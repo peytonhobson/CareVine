@@ -24,6 +24,7 @@ const ModifyScheduleSubmissionModal = props => {
     lastChargedDate,
     onSubmit,
     error,
+    onCloseFully,
   } = props;
 
   const threeDaysFromNow = moment().add(3, 'days');
@@ -39,7 +40,7 @@ const ModifyScheduleSubmissionModal = props => {
       title="Submit Booking Schedule Change"
       id="SubmitBookingScheduleChangeModal"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={submitReady ? onCloseFully : onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
       key={isOpen}
@@ -113,9 +114,19 @@ const ModifyScheduleSubmissionModal = props => {
         </p>
       ) : null}
       <div className={css.modalButtonContainer}>
-        <Button onClick={onClose} className={css.modalButton} type="button">
-          Back
-        </Button>
+        {submitReady ? (
+          <Button
+            onClick={onCloseFully}
+            className={classNames(css.dropAnimation, css.modalButton)}
+            type="button"
+          >
+            Close
+          </Button>
+        ) : (
+          <Button onClick={onClose} className={css.modalButton} type="button">
+            Back
+          </Button>
+        )}
         <PrimaryButton
           inProgress={submitInProgress}
           className="w-auto ml-4 px-6 min-w-[10rem]"

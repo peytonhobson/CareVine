@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { CAREGIVER } from '../../util/constants';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
+import classNames from 'classnames';
 
 import css from './CancelBookingModal.module.css';
 
@@ -105,9 +106,15 @@ const CancelBookingModal = props => {
         </p>
       ) : null}
       <div className={css.modalButtonContainer}>
-        <Button onClick={onGoBack} className={css.modalButton}>
-          Back
-        </Button>
+        {!cancelBookingSuccess ? (
+          <Button onClick={onGoBack} className={css.modalButton}>
+            Back
+          </Button>
+        ) : (
+          <Button onClick={onClose} className={classNames(css.dropAnimation, css.modalButton)}>
+            Close
+          </Button>
+        )}
         <CancelButton
           inProgress={cancelBookingInProgress}
           onClick={() => onCancelBooking(booking)}

@@ -83,12 +83,11 @@ const ModifyExceptionsModal = props => {
         Modify Your Booking Exceptions
       </p>
       <ModifyExceptionsForm
-        handleSubmit={onFormSubmit}
+        onSubmit={onFormSubmit}
         onGoBack={onGoBack}
         booking={booking}
         intl={intl}
         onManageDisableScrolling={onManageDisableScrolling}
-        onSubmit={onFormSubmit}
         initialValues={initialValues}
         updateBookingExceptionsInProgress={updateBookingExceptionsInProgress}
         updateBookingExceptionsError={updateBookingExceptionsError}
