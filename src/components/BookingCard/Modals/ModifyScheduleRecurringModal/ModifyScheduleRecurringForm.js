@@ -137,6 +137,7 @@ const ModifyScheduleRecurringForm = props => (
         chargedLineItems = [],
         startDate,
         ledger = [],
+        awaitingModification = {},
       } = booking.attributes.metadata;
       const { listing, provider } = booking;
       const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
@@ -237,6 +238,10 @@ const ModifyScheduleRecurringForm = props => (
         },
       };
 
+      const awaitingModificationType = awaitingModification?.type;
+      const hasPendingBookingScheduleRequest = awaitingModificationType === 'bookingSchedule';
+      const hasPendingRequest = awaitingModificationType;
+
       return (
         <Form>
           <FormSpy subscription={{ values: true }} onChange={handleChange} />
@@ -263,9 +268,15 @@ const ModifyScheduleRecurringForm = props => (
                   values={values}
                   intl={intl}
                   multipleTimesDisabled
-                  disabled={unavailableDays?.includes(w)}
+                  disabled={
+                    unavailableDays?.includes(w) ||
+                    (hasPendingRequest && !hasPendingBookingScheduleRequest)
+                  }
                   className={css.dailyPlan}
-                  noClose={startDateWeekday === w && notYetCharged}
+                  noClose={
+                    (startDateWeekday === w && notYetCharged) ||
+                    (hasPendingRequest && !hasPendingBookingScheduleRequest)
+                  }
                 />
               );
             })}
@@ -307,6 +318,13 @@ const ModifyScheduleRecurringForm = props => (
           {showEndDateError ? (
             <p className="text-error text-center">Please select an end date.</p>
           ) : null}
+          {hasPendingRequest && !hasPendingBookingScheduleRequest ? (
+            <p className="text-error">
+              You cannot change your booking schedule because you have another pending request to
+              modify your booking. Please allow the caregiver to accept or decline that request
+              before changing your booking schedule.
+            </p>
+          ) : null}
           <div className={css.modalButtonContainer}>
             <Button
               onClick={() => onGoBack(MODIFY_SCHEDULE_ACTIONS)}
@@ -319,6 +337,7 @@ const ModifyScheduleRecurringForm = props => (
               className="w-auto ml-4 px-6 min-w-[10rem]"
               type="button"
               onClick={handleOpenSubmissionModal}
+              disabled={hasPendingRequest && !hasPendingBookingScheduleRequest}
             >
               Continue
             </PrimaryButton>

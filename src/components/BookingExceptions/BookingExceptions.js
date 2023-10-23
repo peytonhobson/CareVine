@@ -109,6 +109,7 @@ const BookingExceptions = props => {
     form,
     booking,
     firstAvailableDate,
+    disabled,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -254,12 +255,6 @@ const BookingExceptions = props => {
     form.change('exceptions', newExceptions);
   };
 
-  const currentBookedDays = {
-    days: weekdays.map(w => w.dayOfWeek),
-    startDate: startDate?.date || startDate,
-    endDate: endDate?.date || endDate,
-  };
-
   const exceptionCount = Object.values(exceptions).reduce((acc, curr) => {
     return acc + curr.length;
   }, 0);
@@ -279,7 +274,7 @@ const BookingExceptions = props => {
             className={css.addExceptionButton}
             onClick={() => setIsAddDayModalOpen(true)}
             type="button"
-            disabled={!startDate}
+            disabled={!startDate || disabled}
           >
             Add Day
           </PrimaryButton>
@@ -288,7 +283,7 @@ const BookingExceptions = props => {
           className={css.addExceptionButton}
           onClick={() => setIsChangeDayModalOpen(true)}
           type="button"
-          disabled={!startDate}
+          disabled={!startDate || disabled}
         >
           Change Day
         </Button>
@@ -296,7 +291,7 @@ const BookingExceptions = props => {
           className={classNames(css.addExceptionButton, css.removeButton)}
           onClick={() => setIsRemoveDayModalOpen(true)}
           type="button"
-          disabled={!startDate}
+          disabled={!startDate || disabled}
         >
           Remove Day
         </Button>
@@ -312,10 +307,12 @@ const BookingExceptions = props => {
       </header>
       <div className={css.exceptions}>
         {sortedExceptions.map(exception => {
+          const onRemoveException = () => handleRemoveException(exception);
+
           return (
             <BookingException
               {...exception}
-              onRemoveException={() => handleRemoveException(exception)}
+              onRemoveException={disabled ? null : onRemoveException}
               key={exception.date}
               className={css.exception}
             />

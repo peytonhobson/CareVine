@@ -57,7 +57,7 @@ const NotificationBookingModified = props => {
 
   const classes = useStyles();
 
-  const modificationTypes = Object.keys(modification);
+  const modificationType = modification.type;
 
   const sortedPreviousExceptions = useMemo(
     () =>
@@ -162,9 +162,7 @@ const NotificationBookingModified = props => {
                 return (
                   <div
                     key={dayOfWeek}
-                    className={
-                      modificationTypes.includes('bookingSchedule') ? 'text-success' : null
-                    }
+                    className={modificationType === 'bookingSchedule' ? 'text-success' : null}
                   >
                     <p className="my-0 leading-6">
                       {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
@@ -178,7 +176,7 @@ const NotificationBookingModified = props => {
             </div>
             <div>
               <h3 className="underline">End Date</h3>
-              <p className={modificationTypes.includes('endDate') ? 'text-success' : null}>
+              <p className={modificationType === 'endDate' ? 'text-success' : null}>
                 {newSchedule.endDate
                   ? moment(newSchedule.endDate).format('ddd, MMM DD')
                   : 'No End Date'}
@@ -200,7 +198,7 @@ const NotificationBookingModified = props => {
                   })}
                 </div>
               ) : (
-                <p className={modificationTypes.includes('exceptions') ? 'text-success' : null}>
+                <p className={modificationType === 'exceptions' ? 'text-success' : null}>
                   No Exceptions
                 </p>
               )}

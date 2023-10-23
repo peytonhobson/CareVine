@@ -415,19 +415,16 @@ export const acceptBookingModification = notification => async (dispatch, getSta
     modifyBookingTxId,
     appliedDate,
   } = notification.metadata;
-  const modificationTypes = Object.keys(modification);
+  const modificationType = modification.type;
 
   try {
     const transaction = (
       await sdk.transactions.show({ id: txId, include: ['customer', 'provider'] })
     ).data.data;
 
-    if (
-      modificationTypes.includes('bookingSchedule') ||
-      (modificationTypes.length === 1 && modificationTypes.includes('exceptions'))
-    ) {
+    if (modificationType === 'bookingSchedule' || modificationType === 'exceptions') {
       await acceptBookingScheduleModification(transaction, modification, appliedDate, sdk);
-    } else if (modificationTypes.includes('endDate')) {
+    } else if (modificationType === 'endDate') {
       await acceptEndDateModification(transaction, modification, sdk);
     } else {
       throw new Error('Unknown modification type');

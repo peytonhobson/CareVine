@@ -640,6 +640,7 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
     const modification = {
       endDate: formattedEndDate,
       exceptions: newExceptions,
+      type: 'endDate',
     };
 
     if (

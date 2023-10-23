@@ -48,6 +48,7 @@ const ModifyExceptionsModal = props => {
   const onFormSubmit = values => {
     const modification = {
       exceptions: values.exceptions,
+      type: 'exceptions',
     };
 
     if (txIsRequest(booking)) {

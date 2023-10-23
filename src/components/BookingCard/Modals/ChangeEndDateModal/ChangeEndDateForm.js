@@ -64,7 +64,7 @@ const ChangeEndDateForm = props => (
       const submitDisabled = updateBookingEndDateInProgress || updateBookingEndDateSuccess;
       const submitReady = updateBookingEndDateSuccess;
 
-      const awaitingModificationTypes = Object.keys(awaitingModification);
+      const awaitingModificationType = awaitingModification?.type;
       const requestedEndDate = awaitingModification?.endDate;
 
       const lastTransition = booking.attributes.lastTransition;
@@ -102,10 +102,9 @@ const ChangeEndDateForm = props => (
       const futureDateSelected =
         selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');
 
-      const hasPendingRequest = awaitingModificationTypes.length > 0;
-      const hasPendingEndDatesRequest =
-        !awaitingModificationTypes.includes('bookingSchedule') &&
-        awaitingModificationTypes.includes('endDate');
+      const hasPendingRequest = awaitingModificationType;
+      const hasPendingEndDatesRequest = awaitingModificationType === 'endDate';
+
       return (
         <Form onSubmit={onSubmit}>
           <h3 className="text-primary text-center md:text-left">
@@ -116,7 +115,7 @@ const ChangeEndDateForm = props => (
           </h3>
           <FieldChangeEndDate
             intl={intl}
-            disabled={awaitingModificationTypes.length > 1 && !hasPendingEndDatesRequest}
+            disabled={hasPendingRequest && !hasPendingEndDatesRequest}
             className={css.fieldDateInput}
             booking={booking}
             appliedDate={TODAY}
@@ -179,9 +178,9 @@ const ChangeEndDateForm = props => (
             </p>
           ) : null}
           {hasPendingRequest ? (
-            <p className="text-error text-center">
-              You cannot change your end date because you have a pending request to modify your
-              booking schedule. Please allow the caregiver to accept or decline that request before
+            <p className="text-error">
+              You cannot change your end date because you have another pending request to modify
+              your booking. Please allow the caregiver to accept or decline that request before
               changing your end date.
             </p>
           ) : null}

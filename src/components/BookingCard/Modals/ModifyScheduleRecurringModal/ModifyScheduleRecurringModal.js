@@ -57,6 +57,7 @@ const ModifyScheduleRecurringModal = props => {
       bookingSchedule,
       exceptions: newExceptions,
       endDate: values.endDate?.date ? moment(values.endDate?.date).format(ISO_OFFSET_FORMAT) : null,
+      type: 'bookingSchedule',
     };
 
     if (isRequest) {

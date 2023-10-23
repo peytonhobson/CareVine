@@ -82,9 +82,9 @@ module.exports = async (req, res) => {
 
     let appliedDate;
     let expiration;
-    const modificationTypes = Object.keys(modification);
+    const modificationType = modification.type;
 
-    if (modificationTypes.includes('bookingSchedule')) {
+    if (modificationType === 'bookingSchedule') {
       expiration = appliedDate = findChangeAppliedDate(
         chargedLineItems,
         modification.bookingSchedule,
@@ -92,9 +92,9 @@ module.exports = async (req, res) => {
         startDate,
         ledger
       );
-    } else if (modificationTypes.length === 1 && modificationTypes.includes('exceptions')) {
+    } else if (modificationType === 'exceptions') {
       expiration = findExceptionExpiration(modification, previousMetadata);
-    } else if (modificationTypes.includes('endDate')) {
+    } else if (modificationType === 'endDate') {
       expiration = moment(modification.endDate).startOf('day');
     } else {
       expiration = moment().add(3, 'days');
@@ -128,13 +128,13 @@ module.exports = async (req, res) => {
     // Shouldn't be an issue as we only send one request at a time, but here just in case we change that
     const replacedNotifications = oldNotifications.filter(n => {
       if (!n.metadata.modification) return true;
-      const oldModificationTypes = Object.keys(n.metadata.modification);
-      const newModificationTypes = Object.keys(modification);
+      const oldModificationType = n.metadata.modification.type;
+      const newModificationType = modification.type;
 
       return !(
         n.type === NOTIFICATION_TYPE_BOOKING_MODIFIED &&
         n.metadata.txId === txId &&
-        oldModificationTypes.every(type => newModificationTypes.includes(type))
+        oldModificationType === newModificationType
       );
     });
 

@@ -7,6 +7,7 @@ import { isEqual } from 'lodash';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../../../util/dates';
 import classNames from 'classnames';
+import { txIsRequest } from '../../../../util/transaction';
 
 import css from '../BookingCardModals.module.css';
 
@@ -38,6 +39,7 @@ const ModifyScheduleRecurringForm = props => (
       } = formRenderProps;
 
       const txId = booking.id.uuid;
+      const { awaitingModification = {} } = booking.attributes.metadata;
       const { listing, provider } = booking;
       const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
       const timezone = listing.attributes.publicData.availabilityPlan?.timezone;
@@ -73,6 +75,12 @@ const ModifyScheduleRecurringForm = props => (
       const expirationTime = moment(firstExceptionDateTime).isAfter(threeDaysFromNow)
         ? moment(threeDaysFromNow).format('h:mm a')
         : moment(firstExceptionDateTime).format('h:mm a');
+
+      const awaitingModificationType = awaitingModification?.type;
+      const formChanged = !isEqual(bookingExceptions, values.exceptions);
+
+      const hasPendingExceptionsRequest = awaitingModificationType === 'exceptions';
+      const hasPendingRequest = awaitingModificationType;
 
       const usedStates = {
         inProgress: updateRequestedBookingInProgress || updateBookingExceptionsInProgress,
@@ -114,6 +122,7 @@ const ModifyScheduleRecurringForm = props => (
             firstAvailableDate={moment(lastChargedDate)
               .add('1', 'weeks')
               .startOf('week')}
+            disabled={hasPendingRequest && !hasPendingExceptionsRequest}
           />
           {showNoChangeError ? (
             <p className="text-error">
@@ -124,11 +133,30 @@ const ModifyScheduleRecurringForm = props => (
           {usedStates.error ? (
             <p className="text-error">Failed to update booking exceptions. Please try again.</p>
           ) : null}
-          {!isEqual(bookingExceptions, values.exceptions) ? (
-            <p className="text-primary">
-              When you click 'Submit', a request to change your booking exceptions will be sent to{' '}
-              {providerDisplayName}. They have until {expiration} at {expirationTime} to accept or
-              decline. If they respond or the request expires, you will be notified.
+          {formChanged ? (
+            txIsRequest(booking) ? (
+              <p className="text-primary">
+                When you click 'Submit', your booking exceptions will be updated for this request.
+              </p>
+            ) : (
+              <p className="text-primary">
+                When you click 'Submit', a request to change your booking exceptions will be sent to{' '}
+                {providerDisplayName}. They have until {expiration} at {expirationTime} to accept or
+                decline. If they respond or the request expires, you will be notified.
+              </p>
+            )
+          ) : null}
+          {hasPendingExceptionsRequest && !formChanged ? (
+            <p className={classNames(css.dropAnimation, 'text-primary')}>
+              You already have a pending request to change your booking exceptions. By clicking
+              'Submit', you will cancel that request and create a new one.
+            </p>
+          ) : null}
+          {hasPendingRequest && !hasPendingExceptionsRequest ? (
+            <p className="text-error">
+              You cannot change your exceptions because you have another pending request to modify
+              your booking. Please allow the caregiver to accept or decline that request before
+              changing your exceptions.
             </p>
           ) : null}
           <div className={css.modalButtonContainer}>

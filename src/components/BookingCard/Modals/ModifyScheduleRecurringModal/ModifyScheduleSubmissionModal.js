@@ -40,6 +40,10 @@ const ModifyScheduleSubmissionModal = props => {
     lastTransition === TRANSITION_REQUEST_BOOKING ||
     lastTransition === TRANSITION_REQUEST_UPDATE_START;
 
+  const { awaitingModification = {} } = newBooking.attributes.metadata;
+  const awaitingModificationType = awaitingModification?.type;
+  const hasPendingBookingScheduleRequest = awaitingModificationType === 'bookingSchedule';
+
   return (
     <Modal
       title="Submit Booking Schedule Change"
@@ -112,6 +116,12 @@ const ModifyScheduleSubmissionModal = props => {
             request expires, your booking will continue with the original schedule.
           </p>
         )}
+        {hasPendingBookingScheduleRequest ? (
+          <p className={classNames(css.modalMessage, 'text-attention')}>
+            You already have a pending request to change your booking exceptions. By clicking
+            'Submit', you will cancel that request and create a new one.
+          </p>
+        ) : null}
       </div>
       {error ? (
         <p className="text-error text-center">
