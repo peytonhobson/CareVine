@@ -122,11 +122,13 @@ module.exports = async (req, res) => {
           );
           const applicationFeeRefund = parseInt(refundAmount * BOOKING_FEE_PERCENTAGE);
 
-          await stripeCreateRefund({
-            paymentIntentId,
-            amount: refundAmount,
-            applicationFeeRefund,
-          });
+          if (refundAmount > 0) {
+            await stripeCreateRefund({
+              paymentIntentId,
+              amount: refundAmount,
+              applicationFeeRefund,
+            });
+          }
         })
       );
 

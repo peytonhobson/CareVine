@@ -71,23 +71,26 @@ console.log(bookingStart);
 
 const exceptions = {
   addedDays: [
-    // {
-    //   date: startOfDay.add(8, 'days').format(ISO_OFFSET_FORMAT),
-    //   startTime: '4:00am',
-    //   endTime: '9:00am',
-    //   type: 'addDate',
-    //   day: 'fri',
-    // },
+    {
+      date: startOfDay
+        .clone()
+        .add(4, 'days')
+        .format(ISO_OFFSET_FORMAT),
+      startTime: '4:00am',
+      endTime: '9:00am',
+      type: 'addDate',
+      day: 'sat',
+    },
   ],
   removedDays: [
-    // {
-    //   date: startOfDay
-    //     .clone()
-    //     .add(26, 'days')
-    //     .format(ISO_OFFSET_FORMAT),
-    //   type: 'removeDate',
-    //   day: 'wed',
-    // },
+    {
+      date: startOfDay
+        .clone()
+        .add(2, 'days')
+        .format(ISO_OFFSET_FORMAT),
+      type: 'removeDate',
+      day: 'thu',
+    },
   ],
   changedDays: [
     // {
@@ -102,9 +105,9 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'mon',
-    startTime: '2:00am',
-    endTime: '12:00pm',
+    dayOfWeek: 'wed',
+    startTime: '4:00am',
+    endTime: '5:00pm',
   },
   {
     dayOfWeek: 'thu',
@@ -113,8 +116,8 @@ const bookingSchedule = [
   },
   {
     dayOfWeek: 'fri',
-    startTime: '3:00pm',
-    endTime: '9:00pm',
+    startTime: '11:00am',
+    endTime: '12:00pm',
   },
 ];
 const bookingRate = 23;
@@ -157,6 +160,15 @@ const BODY_PARAMS = {
       providerName: 'Peyton C',
       exceptions,
       ...metadata,
+      lineItems: metadata.lineItems.map(l => ({
+        ...l,
+        date: moment(l.date)
+          .subtract(1, 'week')
+          .format(ISO_OFFSET_FORMAT),
+        shortDate: moment(l.date)
+          .subtract(1, 'week')
+          .format('MM/DD'),
+      })),
     },
   },
 };

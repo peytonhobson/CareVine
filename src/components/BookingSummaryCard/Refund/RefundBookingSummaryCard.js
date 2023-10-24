@@ -15,6 +15,7 @@ const calculateBookingFee = subTotal =>
   parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const mapRefundItems = (chargedLineItems, cancelDate) => {
+  console.log('chargedLineItems', chargedLineItems);
   return chargedLineItems.reduce((acc, curr) => {
     const refundedLineItems = curr.lineItems
       .filter(l => {
@@ -49,7 +50,7 @@ const RefundBookingSummaryCard = props => {
 
   const { chargedLineItems = [] } = booking.attributes.metadata;
 
-  const dateOfCancellation = moment(cancelDate).endOf('day') ?? moment();
+  const dateOfCancellation = cancelDate ? moment(cancelDate).endOf('day') : moment();
 
   const refundItems = useMemo(() => mapRefundItems(chargedLineItems, dateOfCancellation), [
     chargedLineItems,
