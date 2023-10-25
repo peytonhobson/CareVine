@@ -70,28 +70,8 @@ const bookingEnd = moment(bookingStart)
 console.log(bookingStart);
 
 const exceptions = {
-  addedDays: [
-    {
-      date: startOfDay
-        .clone()
-        .add(4, 'days')
-        .format(ISO_OFFSET_FORMAT),
-      startTime: '4:00am',
-      endTime: '9:00am',
-      type: 'addDate',
-      day: 'sat',
-    },
-  ],
-  removedDays: [
-    {
-      date: startOfDay
-        .clone()
-        .add(2, 'days')
-        .format(ISO_OFFSET_FORMAT),
-      type: 'removeDate',
-      day: 'thu',
-    },
-  ],
+  addedDays: [],
+  removedDays: [],
   changedDays: [
     // {
     //   date: startOfDay.add(19, 'days').format(ISO_OFFSET_FORMAT),
@@ -104,11 +84,6 @@ const exceptions = {
 };
 
 const bookingSchedule = [
-  {
-    dayOfWeek: 'wed',
-    startTime: '4:00am',
-    endTime: '5:00pm',
-  },
   {
     dayOfWeek: 'thu',
     startTime: '3:00pm',

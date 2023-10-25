@@ -190,6 +190,12 @@ const updateBookingEnd = async transaction => {
       params: {
         bookingStart,
         bookingEnd,
+        metadata: {
+          flags: {
+            sentPaymentReminder: false,
+            sentBookingReminder: false,
+          },
+        },
       },
     });
   } catch (e) {

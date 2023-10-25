@@ -202,7 +202,7 @@ export const removeOldDrafts = () => ({ type: REMOVE_OLD_DRAFTS });
 
 /* ================ Thunks ================ */
 
-export const fetchBookings = ({ tab, page, perPage: BOOKINGS_PER_PAGE }) => async (
+export const fetchBookings = (tab = 'requests', page, perPage) => async (
   dispatch,
   getState,
   sdk
@@ -393,7 +393,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
 
   console.log(tab);
 
-  return dispatch(fetchBookings({ tab, page, perPage: BOOKINGS_PER_PAGE })).then(bookings => {
+  return dispatch(fetchBookings(tab, page, BOOKINGS_PER_PAGE)).then(bookings => {
     return bookings;
   });
 };

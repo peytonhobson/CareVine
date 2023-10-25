@@ -132,8 +132,6 @@ const BookingCardComponent = props => {
   }, [exceptions]);
 
   const handleModalOpen = modalType => {
-    onFetchBookings();
-
     dispatch({ type: SET_OPEN_MODAL_TYPE, payload: modalType });
   };
 
