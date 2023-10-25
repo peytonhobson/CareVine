@@ -111,6 +111,13 @@ const routeConfiguration = () => {
       component: BookingsPage,
       auth: true,
       loadData: pageDataLoadingAPI.BookingsPage.loadData,
+   },
+    {
+      path: '/bookings/:tab',
+      name: 'BookingsPage',
+      component: BookingsPage,
+      auth: true,
+      loadData: pageDataLoadingAPI.BookingsPage.loadData,
     },
     {
       path: '/contact-us',

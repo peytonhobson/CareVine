@@ -1,5 +1,11 @@
 import moment from 'moment';
-import { WEEKDAYS, WEEKDAY_MAP, ISO_OFFSET_FORMAT, BOOKING_FEE_PERCENTAGE } from './constants';
+import {
+  WEEKDAYS,
+  WEEKDAY_MAP,
+  ISO_OFFSET_FORMAT,
+  BOOKING_FEE_PERCENTAGE,
+  FULL_WEEKDAY_MAP,
+} from './constants';
 import { addTimeToStartOfDay, calculateTimeBetween } from './dates';
 import { calculateProcessingFee, convertTimeFrom12to24 } from './data';
 import { updateListingMetadata } from './api';
@@ -185,7 +191,12 @@ export const mapWeekdays = values =>
     if (values[val]) {
       return [
         ...acc,
-        { dayOfWeek: val, startTime: values[val][0].startTime, endTime: values[val][0].endTime },
+        {
+          dayOfWeek: val,
+          dayOfWeekFull: FULL_WEEKDAY_MAP[dayOfWeek],
+          startTime: values[val][0].startTime,
+          endTime: values[val][0].endTime,
+        },
       ];
     }
 

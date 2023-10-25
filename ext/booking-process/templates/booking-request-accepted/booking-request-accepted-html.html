@@ -11,6 +11,11 @@
         .button {
           color: #1c1c1c !important;
         }
+
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
+        }
       }
 
       @media screen and (max-width: 768px) {
@@ -75,7 +80,7 @@
                           <td>
                             <p
                               class="title"
-                              style="padding-top: 32px; padding-bottom: 16px;width: 100%;margin: 0;font-size: 16px; line-height: 150%;"
+                              style="padding-top: 32px; padding-bottom: 16px;width: 100%;margin: 0;font-size: 16px; line-height: 150%; text-align: center;"
                             >
                               <span style="white-space: nowrap"
                                 >{{transaction.provider.display-name}}</span
@@ -89,24 +94,25 @@
                         <tr>
                           <td align="center">
                             <table
-                              class="title"
-                              style="width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;"
+                              class="booking-summary black-text"
+                              style="border-collapse:collapse; border:0; background-color: #6ba0b6; border-radius: 10px; color: #FFFFFF; width: 90%; max-width: 350px;"
                             >
                               <tbody>
                                 <tr>
-                                  <td>
+                                  <td style="padding-left: 20px;">
                                     <p
-                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;"
+                                      style="padding-top: 16px; padding-bottom: 16px;width: 100%;text-align: left;margin: 0;font-size: 20px; line-height: 150%; "
                                     >
-                                      <b>Booking Summary</b>
+                                      <b>First Week Schedule</b>
                                     </p>
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td>
+                                  <td style="padding-left: 20px;">
                                     {{#each transaction.metadata.lineItems}}
                                     <table
-                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%; border-bottom: 1px solid #6BA0B6;"
+                                      class="black-text"
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;font-size: 12px; line-height: 150%; border-bottom: 1px solid #FFFFFF; color: #FFFFFF;"
                                     >
                                       <tbody>
                                         <tr>
@@ -147,7 +153,8 @@
                                     </table>
                                     {{/each}}
                                     <table
-                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #6BA0B6"
+                                      class="black-text"
+                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #FFFFFF;"
                                     >
                                       <tr>
                                         <td style="font-size:14px;padding-left:20px">
@@ -184,7 +191,7 @@
                                       </tr>
                                       <tr>
                                         <td
-                                          style="vertical-align:top; padding-left: 20px; font-size:18px; line-height: 200%;"
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; line-height: 200%; padding-bottom: 10px;"
                                         >
                                           <b>Total</b>
                                         </td>
@@ -215,7 +222,7 @@
                         <tr align="center">
                           <td>
                             <a
-                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
+                              href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
                               style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
                               class="button"
                               >Go to Booking</a
@@ -234,14 +241,19 @@
                             >
                               <li style="padding: 4px 0;">
                                 Now that the booking has been accepted, your chosen payment method
-                                will be charged for the full booking, including booking and
-                                processing fees. CareVine will hold your payment in escrow until the
-                                booking has been canceled or completed. Once the booking is
-                                complete, all applicable funds will be transferred to the caregiver.
+                                will be charged for the first booking week 48 hours prior to it
+                                starting. CareVine will hold your payment in escrow until the
+                                booking has been canceled or the full week completed. Once the week
+                                is complete, all applicable funds will be transferred to the
+                                caregiver.
                               </li>
                               <li style="padding: 4px 0;">
-                                After the booking is complete, you will have 48 hours to submit any
+                                After the week is complete, you will have 48 hours to submit any
                                 disputes if issues arise.
+                              </li>
+                              <li style="padding: 4px 0;">
+                                Forty-eight hours prior to the first booking of each week, your
+                                payment method will be charged for that week.
                               </li>
                               <li style="padding: 4px 0;">
                                 You can cancel the booking at any time, however, your refund will be

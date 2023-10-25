@@ -12,6 +12,7 @@ import {
   Footer,
   ButtonTabNavHorizontal,
   DraftBookingCard,
+  IconSpinner,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
@@ -60,7 +61,6 @@ const BookingCardComponent = props => {
 };
 
 const BookingsPage = props => {
-  const [selectedTab, setSelectedTab] = useState('Drafts');
   const [initialBookingsFetched, setInitialBookingsFetched] = useState(false);
 
   const {
@@ -77,11 +77,13 @@ const BookingsPage = props => {
     history,
     onRemoveDrafts,
     onResetTransactionsInitialState,
+    params,
   } = props;
+
+  const selectedTab = params?.tab || 'requests';
 
   const currentUser = ensureCurrentUser(user);
   const userType = currentUser.attributes.profile.metadata.userType;
-  const totalBookings = bookings?.requests.length + bookings?.bookings.length;
   const bookingDrafts = currentUser?.attributes?.profile?.privateData?.bookingDrafts || [];
 
   const sortedBookingDrafts = useMemo(() => {
@@ -99,29 +101,19 @@ const BookingsPage = props => {
   }, [currentUser.id?.uuid]);
 
   useEffect(() => {
-    if (userType === CAREGIVER) {
-      setSelectedTab('Requests');
-    }
-  }, [userType]);
-
-  useEffect(() => {
-    if (searchString?.tab) {
-      setSelectedTab(searchString.tab);
-    }
-
     if (searchString?.bookingId && initialBookingsFetched) {
       const element = document.getElementById(searchString.bookingId);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-  }, [searchString?.tab, searchString?.bookingId, initialBookingsFetched]);
+  }, [searchString?.bookingId, initialBookingsFetched]);
 
   useEffect(() => {
-    if (!initialBookingsFetched && totalBookings > 0) {
+    if (!initialBookingsFetched && bookings.length > 0) {
       setInitialBookingsFetched(true);
     }
-  }, [totalBookings]);
+  }, [bookings.length]);
 
   const cardProps = {
     onManageDisableScrolling,
@@ -132,13 +124,17 @@ const BookingsPage = props => {
     userType,
   };
 
+  const handleChangeTab = tab => {
+    history.push(`/bookings/${tab}`);
+  };
+
   const draftTabMaybe =
     userType === EMPLOYER
       ? [
           {
             text: 'Drafts',
-            selected: 'Drafts' === selectedTab,
-            onClick: () => setSelectedTab('Drafts'),
+            selected: 'drafts' === selectedTab,
+            onClick: () => handleChangeTab('drafts'),
           },
         ]
       : [];
@@ -147,19 +143,19 @@ const BookingsPage = props => {
     ...draftTabMaybe,
     {
       text: 'Requests',
-      selected: 'Requests' === selectedTab,
-      onClick: () => setSelectedTab('Requests'),
+      selected: 'requests' === selectedTab,
+      onClick: () => handleChangeTab('requests'),
     },
     {
       text: 'Bookings',
-      selected: 'Bookings' === selectedTab,
-      onClick: () => setSelectedTab('Bookings'),
+      selected: 'bookings' === selectedTab,
+      onClick: () => handleChangeTab('bookings'),
     },
   ];
 
   let cardSection = null;
   switch (selectedTab) {
-    case 'Drafts':
+    case 'drafts':
       cardSection =
         sortedBookingDrafts.length > 0 ? (
           sortedBookingDrafts.map(draft => (
@@ -172,10 +168,10 @@ const BookingsPage = props => {
         );
 
       break;
-    case 'Requests':
+    case 'requests':
       cardSection =
-        bookings.requests.length > 0 ? (
-          bookings.requests.map(b => (
+        bookings.length > 0 ? (
+          bookings.map(b => (
             <span id={b.id.uuid} key={b.id.uuid}>
               <BookingCardComponent booking={b} {...cardProps} />
             </span>
@@ -184,10 +180,10 @@ const BookingsPage = props => {
           <h2>No Requested Bookings</h2>
         );
       break;
-    case 'Bookings':
+    case 'bookings':
       cardSection =
-        bookings.bookings.length > 0 ? (
-          bookings.bookings.map(b => (
+        bookings.length > 0 ? (
+          bookings.map(b => (
             <span id={b.id.uuid} style={{ display: 'flex' }} key={b.id.uuid}>
               <BookingCardComponent booking={b} {...cardProps} />
             </span>
@@ -228,7 +224,13 @@ const BookingsPage = props => {
               tabClassName={css.tab}
             />
 
-            <section className={css.cardSection}>{cardSection}</section>
+            {fetchBookingsInProgress ? (
+              <div className="flex flex-col flex-grow items-center justify-center w-full h-full">
+                <IconSpinner className="h-20 w-20" />
+              </div>
+            ) : (
+              <section className={css.cardSection}>{cardSection}</section>
+            )}
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>

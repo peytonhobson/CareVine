@@ -1,11 +1,12 @@
-
-
 .root {
   margin-inline: auto;
   padding-bottom: 3rem;
   padding: 3rem 1rem;
   width: 100%;
   min-height: calc(100vh - var(--topbarHeight));
+
+  display: flex;
+  flex-direction: column;
 
   @media screen(md) {
     width: 45rem;

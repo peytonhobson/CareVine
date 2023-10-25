@@ -24,6 +24,9 @@ import {
 } from '../../util/api';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { parse } from '../../util/urlHelpers';
+
+const BOOKINGS_PER_PAGE = 10;
 
 const requestTransitions = [TRANSITION_REQUEST_BOOKING, TRANSITION_REQUEST_UPDATE_START];
 
@@ -199,7 +202,11 @@ export const removeOldDrafts = () => ({ type: REMOVE_OLD_DRAFTS });
 
 /* ================ Thunks ================ */
 
-export const fetchBookings = () => async (dispatch, getState, sdk) => {
+export const fetchBookings = ({ tab, page, perPage: BOOKINGS_PER_PAGE }) => async (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(fetchBookingsRequest());
   let currentUser = getState().user.currentUser;
 
@@ -219,27 +226,25 @@ export const fetchBookings = () => async (dispatch, getState, sdk) => {
     'booking',
   ];
 
+  const lastTransitions = tab === 'requests' ? requestTransitions : bookingTransitions;
+
+  if (tab === 'drafts') {
+    dispatch(fetchBookingsSuccess([]));
+    return;
+  }
+
   try {
     const response = await sdk.transactions.query({
       processNames: ['single-booking-process', 'booking-process'],
       userId: currentUser.id.uuid,
       include,
-      lastTransitions: [...requestTransitions, ...bookingTransitions],
+      lastTransitions: lastTransitions,
     });
 
     const denormalizedBookings = denormalisedResponseEntities(response);
 
-    const sortedBookings = {
-      requests: denormalizedBookings.filter(b =>
-        requestTransitions.includes(b.attributes.lastTransition)
-      ),
-      bookings: denormalizedBookings.filter(b =>
-        bookingTransitions.includes(b.attributes.lastTransition)
-      ),
-    };
-
-    dispatch(fetchBookingsSuccess(sortedBookings));
-    return sortedBookings;
+    dispatch(fetchBookingsSuccess(denormalizedBookings));
+    return denormalizedBookings;
   } catch (e) {
     log.error(e, 'fetch-bookings-failed', { params });
     dispatch(fetchBookingsError(storableError(e)));
@@ -380,8 +385,15 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const loadData = () => (dispatch, getState, sdk) => {
-  return dispatch(fetchBookings()).then(bookings => {
+export const loadData = (params, search) => (dispatch, getState, sdk) => {
+  const { tab } = params;
+
+  const queryParams = parse(search);
+  const { page = 1 } = queryParams;
+
+  console.log(tab);
+
+  return dispatch(fetchBookings({ tab, page, perPage: BOOKINGS_PER_PAGE })).then(bookings => {
     return bookings;
   });
 };
