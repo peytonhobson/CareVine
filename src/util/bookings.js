@@ -193,7 +193,7 @@ export const mapWeekdays = values =>
         ...acc,
         {
           dayOfWeek: val,
-          dayOfWeekFull: FULL_WEEKDAY_MAP[dayOfWeek],
+          dayOfWeekFull: FULL_WEEKDAY_MAP[val],
           startTime: values[val][0].startTime,
           endTime: values[val][0].endTime,
         },

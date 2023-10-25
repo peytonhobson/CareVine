@@ -48,6 +48,17 @@ const bookingTransitions = [
   TRANSITION_ACCEPT_UPDATE_START,
 ];
 
+const transactionsInclude = [
+  'author',
+  'customer',
+  'customer.profileImage',
+  'listing',
+  'listing.author',
+  'provider',
+  'provider.profileImage',
+  'booking',
+];
+
 // ================ Action types ================ //
 
 export const SET_INTIIAL_STATE = 'app/BookingsPage/SET_INTIIAL_STATE';
@@ -55,6 +66,8 @@ export const SET_INTIIAL_STATE = 'app/BookingsPage/SET_INTIIAL_STATE';
 export const FETCH_BOOKINGS_REQUEST = 'app/BookingsPage/FETCH_BOOKINGS_REQUEST';
 export const FETCH_BOOKINGS_SUCCESS = 'app/BookingsPage/FETCH_BOOKINGS_SUCCESS';
 export const FETCH_BOOKINGS_ERROR = 'app/BookingsPage/FETCH_BOOKINGS_ERROR';
+
+export const FETCH_BOOKING_SUCCESS = 'app/BookingsPage/FETCH_BOOKING_SUCCESS';
 
 export const CANCEL_BOOKING_REQUEST = 'app/BookingsPage/CANCEL_BOOKING_REQUEST';
 export const CANCEL_BOOKING_SUCCESS = 'app/BookingsPage/CANCEL_BOOKING_SUCCESS';
@@ -147,6 +160,12 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
         updateBookingMetadataError: payload,
       };
 
+    case FETCH_BOOKING_SUCCESS:
+      return {
+        ...state,
+        bookings: payload,
+      };
+
     case REMOVE_OLD_DRAFTS:
       return {
         ...state,
@@ -173,6 +192,8 @@ export const fetchBookingsError = e => ({
   error: true,
   payload: e,
 });
+
+export const fetchBookingSuccess = bookings => ({ type: FETCH_BOOKING_SUCCESS, payload: bookings });
 
 export const cancelBookingRequest = () => ({ type: CANCEL_BOOKING_REQUEST });
 export const cancelBookingSuccess = () => ({ type: CANCEL_BOOKING_SUCCESS });
@@ -215,17 +236,6 @@ export const fetchBookings = (tab = 'requests', page, perPage) => async (
     currentUser = getState().user.currentUser;
   }
 
-  const include = [
-    'author',
-    'customer',
-    'customer.profileImage',
-    'listing',
-    'listing.author',
-    'provider',
-    'provider.profileImage',
-    'booking',
-  ];
-
   const lastTransitions = tab === 'requests' ? requestTransitions : bookingTransitions;
 
   if (tab === 'drafts') {
@@ -237,7 +247,7 @@ export const fetchBookings = (tab = 'requests', page, perPage) => async (
     const response = await sdk.transactions.query({
       processNames: ['single-booking-process', 'booking-process'],
       userId: currentUser.id.uuid,
-      include,
+      include: transactionsInclude,
       lastTransitions: lastTransitions,
     });
 
@@ -247,6 +257,31 @@ export const fetchBookings = (tab = 'requests', page, perPage) => async (
     return denormalizedBookings;
   } catch (e) {
     log.error(e, 'fetch-bookings-failed', { params });
+    dispatch(fetchBookingsError(storableError(e)));
+  }
+};
+
+export const fetchBooking = txId => async (dispatch, getState, sdk) => {
+  try {
+    const response = await sdk.transactions.show({
+      id: txId,
+      include: transactionsInclude,
+    });
+
+    const denormalizedBooking = denormalisedResponseEntities(response)[0];
+
+    const currentBookings = getState().BookingsPage.bookings;
+
+    const newBookings = currentBookings.map(booking => {
+      if (booking.id.uuid === txId) {
+        return denormalizedBooking;
+      }
+      return booking;
+    });
+
+    dispatch(fetchBookingSuccess(newBookings));
+  } catch (e) {
+    log.error(e, 'fetch-booking-failed', { txId });
     dispatch(fetchBookingsError(storableError(e)));
   }
 };

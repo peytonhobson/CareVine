@@ -17,7 +17,7 @@ import {
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
-import { fetchBookings, setInitialState, removeDrafts } from './BookingsPage.duck';
+import { fetchBookings, setInitialState, removeDrafts, fetchBooking } from './BookingsPage.duck';
 import { setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
@@ -78,6 +78,7 @@ const BookingsPage = props => {
     onRemoveDrafts,
     onResetTransactionsInitialState,
     params,
+    onFetchBooking,
   } = props;
 
   const selectedTab = params?.tab || 'requests';
@@ -122,6 +123,7 @@ const BookingsPage = props => {
     onFetchCurrentUserListing,
     onResetTransactionsInitialState,
     userType,
+    onFetchBooking,
   };
 
   const handleChangeTab = tab => {
@@ -266,6 +268,7 @@ const mapDispatchToProps = {
   onResetTransactionsInitialState: setInitialValues,
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
   onRemoveDrafts: removeDrafts,
+  onFetchBooking: fetchBooking,
 };
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

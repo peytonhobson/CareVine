@@ -96,7 +96,7 @@ const BookingCardComponent = props => {
 
   const {
     booking,
-    onFetchBookings,
+    onFetchBooking,
     onResetInitialState,
     userType,
     onManageDisableScrolling,
@@ -106,6 +106,7 @@ const BookingCardComponent = props => {
     onResetTransactionsInitialState,
   } = props;
 
+  const txId = booking.id.uuid;
   const bookingMetadata = booking.attributes.metadata;
   const lastTransition = booking.attributes.lastTransition;
   const {
@@ -132,6 +133,7 @@ const BookingCardComponent = props => {
   }, [exceptions]);
 
   const handleModalOpen = modalType => {
+    onFetchBooking(txId);
     dispatch({ type: SET_OPEN_MODAL_TYPE, payload: modalType });
   };
 
@@ -140,7 +142,7 @@ const BookingCardComponent = props => {
 
     onResetInitialState();
     onResetTransactionsInitialState();
-    onFetchBookings();
+    onFetchBooking(txId);
     onFetchCurrentUserListing();
   };
 
