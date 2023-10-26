@@ -3,13 +3,14 @@
     <meta name="supported-color-schemes" content="light dark" />
 
     <style>
+      .black-text {
+        color: #1c1c1c !important;
+        border-color: #1c1c1c !important;
+      }
+
       @media (prefers-color-scheme: dark) {
         .inner-table {
           background-color: #1c1c1c !important;
-        }
-
-        .button {
-          color: #1c1c1c !important;
         }
       }
 
@@ -28,7 +29,7 @@
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6; width: 100%;">
     <table
       style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
       width="100%"
@@ -48,7 +49,7 @@
           >
             <table
               class="inner-table"
-              style="border-collapse:collapse; border:0; max-width: 450px; background-color: #FFFFFF; border-radius: 10px;"
+              style="border-collapse:collapse; border:0; max-width: 450px; width: 100%; background-color: #FFFFFF; border-radius: 10px;"
               cellspacing="0"
               cellpadding="0"
               border="0"
@@ -60,20 +61,30 @@
                       <tbody>
                         <tr>
                           <td align="center">
-                            <a href="{{marketplace.url}}">
+                            <a href="{{marketplace.url}}" class="logo-link">
                               <img
                                 src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
                                 class="logo"
                                 style="height: 50px;width: 176px;padding-top: 16px;"
                               />
                             </a>
+                            <p
+                              style="padding: 0; margin-top: 8px;width: 100%;text-align: center;color: #77a08a;font-size: 16px; line-height: 150%;font-family: Helvetica; font-weight: bold;"
+                            >
+                              <a
+                                href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
+                                style="text-decoration: underline; color: #77a08a;"
+                                >Booking #{{transaction.metadata.bookingNumber}}</a
+                              >
+                            </p>
                           </td>
                         </tr>
+                        {{#if transaction.metadata.employerCancel}}
                         <tr>
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; padding-bottom: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               {{transaction.customer.display-name}} has canceled the remainder of
                               your booking. {{#if transaction.metadata.payout}} You will be paid
@@ -82,17 +93,38 @@
                                 href="{{marketplace.url}}/terms-of-service#cancellation-policy"
                                 style="color: #6ba0b6; text-decoration: underline; white-space: nowrap;"
                                 >cancellation policy</a
-                              >. Below is a summary of your payout. {{else}} You did not complete
-                              any booking times and will not receive a payout. {{/if}}
+                              >. Below is a summary of your payout. {{else}} In accordance with our
+                              cancellation policy, you will not receive a payout. {{/if}}
                             </p>
                           </td>
                         </tr>
-                        {{#if transaction.metadata.payout}}
+                        {{else}}
                         <tr>
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-bottom: 24px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              You have successfully canceled your booking with
+                              <span style="white-space: nowrap"
+                                >{{transaction.customer.display-name}}</span
+                              >. {{#if transaction.metadata.payout}} You will be paid out
+                              ${{transaction.metadata.payout}} in accordance with our
+                              <a
+                                href="{{marketplace.url}}/terms-of-service#cancellation-policy"
+                                style="color: #6ba0b6; white-space: nowrap; text-decoration: underline"
+                                >cancellation policy</a
+                              >. {{else}} In accordance with our cancellation policy, you will not
+                              receive a payout. {{/if}}
+                            </p>
+                          </td>
+                        </tr>
+                        {{/if}} {{#if transaction.metadata.payout}}
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 16px;padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               If no disputes are submitted by the client, you will receive payment
                               in the next 3-7 days. If you don't receive payment within 10 days,
@@ -105,50 +137,67 @@
                             </p>
                           </td>
                         </tr>
+
                         <tr>
                           <td align="center">
                             <table
                               class="title"
-                              style="width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: left;color: #FFFFFF;font-size: 14px; line-height: 150%;font-family: Helvetica; background-color: #6BA0B6; border-radius: 10px;"
                             >
                               <tbody>
                                 <tr>
                                   <td>
                                     <p
-                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                      class="black-text"
+                                      style="padding-top: 16px;padding-bottom: 20px;width: 100%;text-align: left;margin: 0;color: #FFFFFF;font-size: 20px; line-height: 150%;font-family: Helvetica;padding-left: 20px;"
                                     >
-                                      <b
-                                        >Booking Summary
-                                        (#{{transaction.metadata.bookingNumber}})</b
-                                      >
+                                      <b>Booking Summary</b>
                                     </p>
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td>
+                                  <td style="padding-left: 20px;">
                                     {{#each transaction.metadata.lineItems}}
                                     <table
-                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #6BA0B6;"
+                                      class="black-text"
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #FFFFFF; font-size: 14px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #FFFFFF;"
                                     >
                                       <tbody>
                                         <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>{{this.shortDate}}</b>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>({{this.startTime}} - {{this.endTime}})</b>
+                                          <td
+                                            class="black-text"
+                                            style="vertical-align:top; padding-left: 20px;color: #FFFFFF; padding-top: 8px;"
+                                          >
+                                            <b
+                                              ><span style="white-space: nowrap"
+                                                >{{formatDate this.date "ddd"}},
+                                                {{this.shortDate}}</span
+                                              ></b
+                                            >
                                           </td>
                                         </tr>
                                         <tr>
                                           <td
-                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px;"
+                                            class="black-text"
+                                            style="vertical-align:top; padding-left: 20px;color: #FFFFFF;"
+                                          >
+                                            <b
+                                              ><span style="white-space: nowrap"
+                                                >{{this.startTime}} - {{this.endTime}}</span
+                                              ></b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            class="black-text"
+                                            style="font-size:16px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px; color: #FFFFFF;"
                                           >
                                             Payout {{#if this.isFifty}} (50%) {{/if}}
                                           </td>
                                           <td
-                                            style="font-size:14px; padding-right: 20px;"
+                                            class="black-text"
+                                            style="font-size:16px; padding-right: 20px; color: #FFFFFF;"
                                             align="right"
                                           >
                                             ${{this.amount}}
@@ -162,12 +211,14 @@
                                     >
                                       <tr>
                                         <td
-                                          style="vertical-align:top; padding-left: 20px; font-size:18px"
+                                          class="black-text"
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; color: #FFFFFF; padding-bottom: 20px;padding-top: 10px;"
                                         >
                                           <b>Total Payout</b>
                                         </td>
                                         <td
-                                          style="font-size:18px; padding-right: 20px;"
+                                          class="black-text"
+                                          style="font-size:18px; padding-right: 20px; color: #FFFFFF;padding-bottom: 20px;padding-top: 10px;"
                                           align="right"
                                         >
                                           <b>${{transaction.metadata.payout}}</b>
@@ -184,32 +235,21 @@
                         <tr>
                           <td style="padding-top: 32px;">
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica; text-decoration: underline;"
+                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Cancellation Policy
+                              For any questions regarding refunds or cancellations, please refer to
+                              our
+                              <a
+                                href="{{marketplace.url}}/terms-of-service#cancellation-policy"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
+                                >cancellation policy</a
+                              >.
                             </p>
-                            <ul
-                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; padding-left: 30px;"
-                            >
-                              <li style="padding: 4px 0;">
-                                No payout for booked times canceled by clients more than 48 hours in
-                                advance
-                              </li>
-                              <li style="padding: 4px 0;">
-                                50% payout for booked times canceled by clients less than 48 hours
-                                in advance
-                              </li>
-                              <li style="padding: 4px 0;">
-                                Bookings cancelled by caregivers will be refunded 100% to the client
-                                for any remaining time not completed. Caregivers will be paid for
-                                any time already completed.
-                              </li>
-                            </ul>
                           </td>
                         </tr>
                         <tr>
                           <td
-                            style="padding-top: 64px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
+                            style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
                           >
                             <p
                               style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
@@ -217,7 +257,7 @@
                               If you have any questions or concerns, please contact
                               <a
                                 href="mailto:support@carevine.us"
-                                style="color: #6BA0B6; text-decoration: underline;white-space: nowrap;"
+                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
                                 >CareVine Support</a
                               >.
                             </p>
@@ -231,7 +271,7 @@
                                   <td>
                                     <a
                                       class="footer-link"
-                                      href="{{marketplace.url}}/contact-us"
+                                      href="https://carevine.us/contact-us"
                                       style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
                                       >Contact Us</a
                                     >
@@ -239,7 +279,7 @@
                                   <td>
                                     <a
                                       class="footer-link"
-                                      href="{{marketplace.url}}/privacy-policy"
+                                      href="https://carevine.us/privacy-policy"
                                       style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
                                       >Privacy-Policy</a
                                     >
@@ -247,7 +287,7 @@
                                   <td>
                                     <a
                                       class="footer-link"
-                                      href="{{marketplace.url}}/terms-of-service"
+                                      href="https://carevine.us/terms-of-service"
                                       style="color: #6BA0B6;margin-left: 8px;margin-right: 8px;font-family: Trebuchet MS, Verdana, Arial;font-size: 10.8px;font-weight: bold;line-height: 12px; white-space: nowrap; text-decoration: underline;"
                                       >Terms &amp; Conditions</a
                                     >

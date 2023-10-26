@@ -112,9 +112,9 @@ module.exports = async (req, res) => {
       cl.lineItems.some(l => addTimeToStartOfDay(l.date, l.startTime).isAfter())
     );
 
-    let metadataMaybe = {};
+    let metadata = {};
     if (hasRefund) {
-      metadataMaybe.metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
+      metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
     }
 
     const isActive = activeTransitions.includes(lastTransition);
@@ -136,7 +136,10 @@ module.exports = async (req, res) => {
       params: {
         bookingStart: newBookingStart,
         bookingEnd: newBookingEnd,
-        ...metadataMaybe,
+        metadata: {
+          employerCancel: cancelingUserType === 'employer',
+          ...metadata,
+        },
       },
     });
 

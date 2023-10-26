@@ -194,4 +194,74 @@
    :on :transition/accept,
    :to :actor.role/provider,
    :template :booking-confirmed}
+
+   ; Payment Declined
+   {:name :notification/payment-declined-customer,
+   :on :transition/payment-declined,
+   :to :actor.role/customer,
+   :template :payment-failed-customer}
+   {:name :notification/payment-declined-provider,
+   :on :transition/payment-declined,
+   :to :actor.role/provider,
+   :template :payment-failed-provider}
+
+   ; Accepted Cancel
+   {:name :notification/accepted-cancel-customer,
+   :on :transition/accepted-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/accepted-cancel-provider,
+   :on :transition/accepted-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; Charged Cancel
+   {:name :notification/charged-cancel-customer,
+   :on :transition/charged-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/charged-cancel-provider,
+   :on :transition/charged-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; Active Cancel
+   {:name :notification/active-cancel-customer,
+   :on :transition/active-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/active-cancel-provider,
+   :on :transition/active-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; WFNW Cancel
+   {:name :notification/wfnw-cancel-customer,
+   :on :transition/wfnw-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/wfnw-cancel-provider,
+   :on :transition/wfnw-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; Completed
+   {:name :notification/booking-completed-customer,
+   :on :transition/complete,
+   :to :actor.role/customer,
+   :template :booking-completed-customer}
+   {:name :notification/booking-completed-provider,
+   :on :transition/complete,
+   :to :actor.role/provider,
+   :template :booking-completed-provider}
+
+   ; Final
+   {:name :notification/booking-final-customer,
+   :on :transition/delivered-cancel,
+   :to :actor.role/customer,
+   :template :booking-final-customer}
+   {:name :notification/booking-final-provider,
+   :on :transition/delivered-cancel,
+   :to :actor.role/provider,
+   :template :booking-final-provider}
 ]}
