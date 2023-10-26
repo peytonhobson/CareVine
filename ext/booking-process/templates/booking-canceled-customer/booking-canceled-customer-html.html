@@ -3,18 +3,22 @@
     <meta name="supported-color-schemes" content="light dark" />
 
     <style>
-      .black-text {
-        color: #1c1c1c !important;
-        border-color: #1c1c1c !important;
-      }
-
       @media (prefers-color-scheme: dark) {
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
+        }
+
         .inner-table {
           background-color: #1c1c1c !important;
         }
       }
 
       @media screen and (max-width: 768px) {
+        .booking-summary-card {
+          max-width: 90% !important;
+        }
+
         .inner-table {
           border-radius: 0 !important;
         }
@@ -71,7 +75,11 @@
                             <p
                               style="padding: 0; margin-top: 8px;width: 100%;text-align: center;color: #77a08a;font-size: 16px; line-height: 150%;font-family: Helvetica; font-weight: bold;"
                             >
-                              Booking #{{transaction.metadata.bookingNumber}}
+                              <a
+                                style="color: #77a08a; text-decoration: underline;"
+                                href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
+                                >Booking #{{transaction.metadata.bookingNumber}}</a
+                              >
                             </p>
                           </td>
                         </tr>
@@ -133,7 +141,7 @@
                         <tr>
                           <td align="center">
                             <table
-                              class="title"
+                              class="booking-summary-card"
                               style="margin-top: 24px;width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica; background-color: #6BA0B6; border-radius: 10px;"
                             >
                               <tbody>
@@ -255,7 +263,7 @@
                         <tr>
                           <td style="padding-top: 32px;">
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"
                             >
                               For any questions regarding refunds or cancellations, please refer to
                               our

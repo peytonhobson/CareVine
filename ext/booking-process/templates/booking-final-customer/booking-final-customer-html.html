@@ -4,12 +4,25 @@
 
     <style>
       @media (prefers-color-scheme: dark) {
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
+        }
+
         .inner-table {
           background-color: #1c1c1c !important;
+        }
+
+        .button {
+          color: #1c1c1c !important;
         }
       }
 
       @media screen and (max-width: 768px) {
+        .booking-summary-card {
+          max-width: 90% !important;
+        }
+
         .inner-table {
           border-radius: 0 !important;
         }
@@ -63,98 +76,73 @@
                                 style="height: 50px;width: 176px;padding-top: 16px;"
                               />
                             </a>
+                            <p
+                              style="padding: 0; margin-top: 8px;width: 100%;text-align: center;color: #77a08a;font-size: 16px; line-height: 150%;font-family: Helvetica; font-weight: bold;"
+                            >
+                              <a
+                                href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
+                                style="text-decoration: underline; color: #77a08a;"
+                                >Booking #{{transaction.metadata.bookingNumber}}</a
+                              >
+                            </p>
                           </td>
                         </tr>
                         <tr>
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 32px;padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              Your booking with
+                              This is a notice that your full booking with
                               <span style="white-space: nowrap"
-                                >{{transaction.customer.display-name}}</span
+                                >{{transaction.provider.display-name}}</span
                               >
-                              has been completed. If no disputes are submitted by the client, you
-                              will receive payment in the next 3-7 days. If you don't receive
-                              payment within 10 days, please contact
-                              <a
-                                href="mailto:support@carevine.us"
-                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6; line-height: 150%;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
-                                >CareVine Support</a
-                              >.
+                              has reached its end date. Listed below is a summary of your booking
+                              schedule.
                             </p>
                           </td>
                         </tr>
                         <tr>
                           <td align="center">
                             <table
-                              class="title"
-                              style="margin-top: 24px;width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              class="booking-summary-card black-text"
+                              style="border-collapse:collapse; border:0; background-color: #6ba0b6; border-radius: 10px; color: #FFFFFF; max-width: 350px;font-family: Helvetica;"
                             >
                               <tbody>
                                 <tr>
-                                  <td>
+                                  <td style="padding: 0 40px;">
                                     <p
-                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                      style="padding-top: 16px; padding-bottom: 16px;width: 100%;text-align: center;margin: 0;font-size: 20px; line-height: 150%;font-family: Helvetica; "
                                     >
-                                      <b
-                                        >Booking Summary
-                                        (#{{transaction.metadata.bookingNumber}})</b
-                                      >
+                                      <b>Booking Schedule</b>
                                     </p>
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td>
-                                    {{#each transaction.metadata.lineItems}}
+                                  <td align="center" style="padding: 0 40px;">
+                                    {{#each transaction.metadata.bookingSchedule}}
                                     <table
-                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #6BA0B6;"
+                                      class="black-text"
+                                      style="width: 100%;border-collapse:collapse;font-size: 12px; line-height: 150%; border-bottom: 1px solid #FFFFFF; color: #FFFFFF;{{#if @last}} border: none{{/if}}"
                                     >
                                       <tbody>
                                         <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>{{this.shortDate}}</b>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>({{this.startTime}} - {{this.endTime}})</b>
+                                          <td
+                                            style="vertical-align:top;padding-top: 10px; text-align:center;font-size: 18px;padding-bottom: 8px;"
+                                          >
+                                            <b>{{this.dayOfWeekFull}} </b>
                                           </td>
                                         </tr>
                                         <tr>
                                           <td
-                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px;"
+                                            style="vertical-align:top; padding-top: 4px;text-align:center; font-size: 16px;padding-bottom: 10px;{{#if @last}}padding-bottom: 20px;{{/if}}"
                                           >
-                                            Payout
-                                          </td>
-                                          <td
-                                            style="font-size:14px; padding-right: 20px;"
-                                            align="right"
-                                          >
-                                            ${{this.amount}}
+                                            {{this.startTime}} - {{this.endTime}}
                                           </td>
                                         </tr>
                                       </tbody>
                                     </table>
                                     {{/each}}
-                                    <table
-                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size: 16px; line-height: 150%;font-family: Helvetica;"
-                                    >
-                                      <tr>
-                                        <td
-                                          style="vertical-align:top; padding-left: 20px; font-size:18px"
-                                        >
-                                          <b>Total Payout</b>
-                                        </td>
-                                        <td
-                                          style="font-size:18px; padding-right: 20px;"
-                                          align="right"
-                                        >
-                                          <b>${{transaction.metadata.payout}}</b>
-                                        </td>
-                                      </tr>
-                                    </table>
                                   </td>
                                 </tr>
                               </tbody>
@@ -162,11 +150,31 @@
                           </td>
                         </tr>
                         <tr>
+                          <td>
+                            <p
+                              style="padding-top: 24px;padding-bottom: 24px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
+                              Click the button below to go to CareVine and create another booking.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr align="center">
+                          <td>
+                            <a
+                              href="{{marketplace.url}}"
+                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              class="button"
+                              >Go to CareVine</a
+                            >
+                          </td>
+                        </tr>
+
+                        <tr>
                           <td
-                            style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
+                            style="padding-top: 80px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
                           >
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               If you have any questions or concerns, please contact
                               <a
