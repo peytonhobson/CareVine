@@ -12,6 +12,10 @@
         .inner-table {
           background-color: #1c1c1c !important;
         }
+
+        .button {
+          color: #1c1c1c !important;
+        }
       }
 
       @media screen and (max-width: 768px) {
@@ -90,6 +94,12 @@
                               class="title"
                               style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
+                              {{#if transaction.metadata.waitingForPayment}}
+                              <span style="white-space: nowrap"
+                                >{{transaction.customer.display-name}}'s</span
+                              >
+                              payment method was not able to be charged prior to your booking.
+                              Because of this, your booking is now canceled. {{else}}
                               {{transaction.customer.display-name}} has canceled the remainder of
                               your booking. {{#if transaction.metadata.payout}} You will be paid
                               ${{transaction.metadata.payout}} in accordance with our
@@ -98,7 +108,7 @@
                                 style="color: #6ba0b6; text-decoration: underline; white-space: nowrap;"
                                 >cancellation policy</a
                               >. Below is a summary of your payout. {{else}} In accordance with our
-                              cancellation policy, you will not receive a payout. {{/if}}
+                              cancellation policy, you will not receive a payout. {{/if}} {{/if}}
                             </p>
                           </td>
                         </tr>
@@ -123,7 +133,8 @@
                             </p>
                           </td>
                         </tr>
-                        {{/if}} {{#if transaction.metadata.payout}}
+                        {{/if}} {{#unless transaction.metadata.waitingForPayment}} {{#if
+                        transaction.metadata.payout}}
                         <tr>
                           <td align="center">
                             <p
@@ -235,22 +246,27 @@
                             </table>
                           </td>
                         </tr>
-                        {{/if}}
+                        {{/if}} {{/unless}} {{#if transaction.metadata.waitingForPayment}}
                         <tr>
-                          <td style="padding-top: 32px;">
+                          <td>
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 40px;padding-bottom: 24px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
-                              For any questions regarding refunds or cancellations, please refer to
-                              our
-                              <a
-                                href="{{marketplace.url}}/terms-of-service#cancellation-policy"
-                                style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-family: Helvetica; text-decoration: underline; white-space: nowrap;"
-                                >cancellation policy</a
-                              >.
+                              Click the button below to go to CareVine and find jobs.
                             </p>
                           </td>
                         </tr>
+                        <tr align="center">
+                          <td style="padding-bottom: 40px;">
+                            <a
+                              href="{{marketplace.url}}"
+                              style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
+                              class="button"
+                              >Go to CareVine</a
+                            >
+                          </td>
+                        </tr>
+                        {{/if}}
                         <tr>
                           <td
                             style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
