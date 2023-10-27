@@ -18,6 +18,7 @@ import {
   sendgridTemplateEmail,
 } from '../../util/api';
 import {
+  EMPLOYER,
   NOTIFICATION_TYPE_NEW_MESSAGE,
   NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,
 } from '../../util/constants';
@@ -38,10 +39,6 @@ export const SHOW_LISTING_ERROR = 'app/ListingPage/SHOW_LISTING_ERROR';
 export const SEND_ENQUIRY_REQUEST = 'app/ListingPage/SEND_ENQUIRY_REQUEST';
 export const SEND_ENQUIRY_SUCCESS = 'app/ListingPage/SEND_ENQUIRY_SUCCESS';
 export const SEND_ENQUIRY_ERROR = 'app/ListingPage/SEND_ENQUIRY_ERROR';
-
-export const SEND_MESSAGE_REQUEST = 'app/ListingPage/SEND_MESSAGE_REQUEST';
-export const SEND_MESSAGE_SUCCESS = 'app/ListingPage/SEND_MESSAGE_SUCCESS';
-export const SEND_MESSAGE_ERROR = 'app/ListingPage/SEND_MESSAGE_ERROR';
 
 export const FETCH_EXISTING_CONVERSATION_REQUEST =
   'app/ListingPage/FETCH_EXISTING_CONVERSATION_REQUEST';
@@ -113,13 +110,6 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, sendEnquiryInProgress: false };
     case SEND_ENQUIRY_ERROR:
       return { ...state, sendEnquiryInProgress: false, sendEnquiryError: payload };
-
-    case SEND_MESSAGE_REQUEST:
-      return { ...state, sendMessageInProgress: true, sendMessageError: null };
-    case SEND_MESSAGE_SUCCESS:
-      return { ...state, sendMessageInProgress: false };
-    case SEND_MESSAGE_ERROR:
-      return { ...state, sendMessageInProgress: false, sendMessageError: payload };
 
     case FETCH_EXISTING_CONVERSATION_REQUEST:
       return {
@@ -293,20 +283,21 @@ export const sendEnquiry = (listing, message, history, routes) => async (
 
   const listingId = listing.id.uuid;
 
+  const senderType = getState().user.currentUser.attributes.profile.metadata.userType;
   let previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
   const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
   const emailRegex = /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g;
   const messageEmails = previewMessage.match(emailRegex);
   const messagePhoneNumbers = previewMessage.match(phoneRegex);
 
-  if (messageEmails) {
+  if (messageEmails && senderType === EMPLOYER) {
     // loop through all message emails and replace each with stars
     messageEmails.forEach(email => {
       previewMessage = previewMessage.replace(email, '*'.repeat(email.length));
     });
   }
 
-  if (messagePhoneNumbers) {
+  if (messagePhoneNumbers && senderType === EMPLOYER) {
     // loop through all message phone numbers and replace each with stars
     messagePhoneNumbers.forEach(phoneNumber => {
       previewMessage = previewMessage.replace(phoneNumber, '*'.repeat(phoneNumber.length));
@@ -318,7 +309,10 @@ export const sendEnquiry = (listing, message, history, routes) => async (
     processAlias: config.messageProcessAlias,
     params: {
       listingId,
-      metadata: { message: previewMessage, redacted: messageEmails || messagePhoneNumbers },
+      metadata: {
+        message: previewMessage,
+        redacted: (messageEmails || messagePhoneNumbers) && senderType === EMPLOYER,
+      },
     },
   };
 
@@ -365,84 +359,6 @@ export const sendEnquiry = (listing, message, history, routes) => async (
   } catch (e) {
     log.error(e, 'send-enquiry-failed', { listingId: listingId.uuid, message });
     dispatch(sendEnquiryError(storableError(e)));
-  }
-};
-
-export const sendMessage = (txId, message, receiverId) => async (dispatch, getState, sdk) => {
-  dispatch(sendMessageRequest());
-
-  try {
-    await sdk.messages.send({ transactionId: txId, content: message });
-
-    const sendWebsocketMessage = getState().TopbarContainer.sendWebsocketMessage;
-
-    if (sendWebsocketMessage) {
-      sendWebsocketMessage(
-        JSON.stringify({
-          type: 'message/sent',
-          receiverId,
-        })
-      );
-    }
-
-    dispatch(sendMessageSuccess());
-  } catch (e) {
-    log.error(e, 'send-message-failed', { txId, message });
-    dispatch(sendMessageError(storableError(e)));
-  }
-
-  try {
-    const messagesResponse = await sdk.messages.query({
-      transactionId: txId,
-      perPage: 2,
-      page: 1,
-      include: ['sender'],
-      'fields.message': ['createdAt'],
-      'fields.user': ['profile.displayName'],
-    });
-
-    const messages = denormalisedResponseEntities(messagesResponse);
-
-    const lastMessage = messages[messages.length - 1];
-
-    const lastMessageMoreThan1HourAgo =
-      new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() > 1000 * 60 * 60;
-
-    if (lastMessageMoreThan1HourAgo) {
-      let previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
-      const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
-      const emailRegex = /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g;
-      const messageEmails = previewMessage.match(emailRegex);
-      const messagePhoneNumbers = previewMessage.match(phoneRegex);
-
-      if (messageEmails) {
-        // loop through all message emails and replace each with stars
-        messageEmails.forEach(email => {
-          previewMessage = previewMessage.replace(email, '*'.repeat(email.length));
-        });
-      }
-
-      if (messagePhoneNumbers) {
-        // loop through all message phone numbers and replace each with stars
-        messagePhoneNumbers.forEach(phoneNumber => {
-          previewMessage = previewMessage.replace(phoneNumber, '*'.repeat(phoneNumber.length));
-        });
-      }
-
-      await sendgridTemplateEmail({
-        receiverId,
-        templateData: {
-          marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
-          message: previewMessage,
-          senderName: lastMessage.sender.attributes.profile.displayName,
-          txId,
-          redacted: messageEmails || messagePhoneNumbers,
-        },
-        templateName: 'new-message',
-      });
-    }
-  } catch (err) {
-    log.error(e, 'send-new-message-notification-failed', { txId, message });
   }
 };
 

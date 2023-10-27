@@ -19,7 +19,7 @@ import * as log from '../../util/log';
 import { v4 as uuidv4 } from 'uuid';
 import { updateUserNotifications, updateUser, sendgridTemplateEmail } from '../../util/api';
 import config from '../../config';
-import { NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
+import { EMPLOYER, NOTIFICATION_TYPE_PAYMENT_REQUESTED } from '../../util/constants';
 
 const MESSAGES_PAGE_SIZE = 10;
 const { UUID } = sdkTypes;
@@ -495,21 +495,25 @@ export const sendMessage = (tx, message) => async (dispatch, getState, sdk) => {
         new Date().getTime() - new Date(lastMessage.attributes.createdAt).getTime() >
         1000 * 60 * 60;
 
+      console.log('lastMessageMoreThan1HourAgo', lastMessageMoreThan1HourAgo);
+
       if (lastMessageMoreThan1HourAgo) {
+        const senderType = getState().user.currentUser.attributes.profile.metadata.userType;
+
         let previewMessage = message.length > 160 ? `${message.substring(0, 160)}...` : message;
         const phoneRegex = /(\+?\d{1,4}[-.\s]?)?(\d{1,3}[-.\s]?)?(\d{1,3}[-.\s]?)\d{4}/;
         const emailRegex = /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/g;
         const messageEmails = previewMessage.match(emailRegex);
         const messagePhoneNumbers = previewMessage.match(phoneRegex);
 
-        if (messageEmails) {
+        if (messageEmails && senderType === EMPLOYER) {
           // loop through all message emails and replace each with stars
           messageEmails.forEach(email => {
             previewMessage = previewMessage.replace(email, '*'.repeat(email.length));
           });
         }
 
-        if (messagePhoneNumbers) {
+        if (messagePhoneNumbers && senderType === EMPLOYER) {
           // loop through all message phone numbers and replace each with stars
           messagePhoneNumbers.forEach(phoneNumber => {
             previewMessage = previewMessage.replace(phoneNumber, '*'.repeat(phoneNumber.length));
@@ -523,13 +527,13 @@ export const sendMessage = (tx, message) => async (dispatch, getState, sdk) => {
             message: previewMessage,
             senderName: lastMessage.sender.attributes.profile.displayName,
             txId: txId?.uuid,
-            redacted: messageEmails || messagePhoneNumbers,
+            redacted: (messageEmails || messagePhoneNumbers) && senderType === EMPLOYER,
           },
           templateName: 'new-message',
         });
       }
     } catch (err) {
-      log.error(e, 'send-new-message-notification-failed', { txId, message });
+      log.error(err, 'send-new-message-notification-failed', { txId, message });
     }
   }
 };

@@ -83,6 +83,7 @@ const ListingSummaryComponent = props => {
     onSendNotifyForBooking,
     sendNotifyForBookingError,
     onFetchExistingConversation,
+    existingConversation,
   } = props;
 
   const previousListing = usePrevious(listing);
@@ -124,6 +125,10 @@ const ListingSummaryComponent = props => {
       return;
     }
 
+    if (existingConversation) {
+      history.push('/inbox/' + existingConversation.id.uuid);
+    }
+
     const missingInfoModalValue = getMissingInfoModalValue(currentUser, currentUserListing);
 
     if (missingInfoModalValue) {
@@ -159,16 +164,17 @@ const ListingSummaryComponent = props => {
     SUBSCRIPTION_ACTIVE_TYPES.includes(backgroundCheckSubscription?.status) &&
     backgroundCheckSubscription?.type === 'vine';
 
-  const userType = author?.attributes?.profile?.metadata?.userType;
+  const authorType = author?.attributes.profile.metadata.userType;
+  const currentUserType = currentUser?.attributes.profile.metadata.userType;
 
   const displayName = userDisplayNameAsString(author);
 
   const richName = (
     <span
-      className={userType === CAREGIVER ? css.name : css.title}
-      style={{ width: userType === CAREGIVER && isMobile && 'auto !important' }}
+      className={authorType === CAREGIVER ? css.name : css.title}
+      style={{ width: authorType === CAREGIVER && isMobile && 'auto !important' }}
     >
-      {richText(userType === CAREGIVER ? displayName : title, {
+      {richText(authorType === CAREGIVER ? displayName : title, {
         longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
         longWordClass: css.longWord,
       })}
@@ -191,8 +197,7 @@ const ListingSummaryComponent = props => {
     </p>
   );
 
-  const listingUserType = listing.attributes.metadata.listingType;
-  const hasBooking = listingUserType === CAREGIVER && !isOwnListing;
+  const hasBooking = authorType === CAREGIVER && !isOwnListing;
   const isLarge = useMediaQuery('(min-width:1024px)');
 
   const hasActiveSubscription = SUBSCRIPTION_ACTIVE_TYPES.includes(
@@ -222,7 +227,7 @@ const ListingSummaryComponent = props => {
               disableProfileLink
             />
             {isMobile ? (
-              userType === EMPLOYER ? (
+              authorType === EMPLOYER ? (
                 <div className={css.priceValue} title={priceTitle}>
                   {formattedMinPrice}-{maxPrice / 100}
                   <span className={css.perUnit}>
@@ -254,13 +259,13 @@ const ListingSummaryComponent = props => {
           <div
             className={css.topInfo}
             style={{
-              flexDirection: userType !== CAREGIVER && 'row',
-              alignItems: userType === CAREGIVER ? 'flex-start' : 'center',
-              justifyContent: userType === CAREGIVER && isMobile && 'center',
-              marginTop: userType === CAREGIVER && '0',
+              flexDirection: authorType !== CAREGIVER && 'row',
+              alignItems: authorType === CAREGIVER ? 'flex-start' : 'center',
+              justifyContent: authorType === CAREGIVER && isMobile && 'center',
+              marginTop: authorType === CAREGIVER && '0',
             }}
           >
-            {isMobile && userType === CAREGIVER ? null : (
+            {isMobile && authorType === CAREGIVER ? null : (
               <div className={css.nameContainer}>
                 {richName}
                 {hasPremiumSubscription && (
@@ -279,11 +284,11 @@ const ListingSummaryComponent = props => {
                 )}
               </div>
             )}
-            {(!isMobile || userType === CAREGIVER) && (
+            {(!isMobile || authorType === CAREGIVER) && (
               <div
                 className={css.priceValue}
                 title={priceTitle}
-                style={{ marginTop: userType === CAREGIVER && '0' }}
+                style={{ marginTop: authorType === CAREGIVER && '0' }}
               >
                 {formattedMinPrice}-{maxPrice / 100}
                 <span className={css.perUnit}>
@@ -295,7 +300,7 @@ const ListingSummaryComponent = props => {
             <div
               className={css.locations}
               style={{
-                color: userType !== CAREGIVER && 'var(--marketplaceColor)',
+                color: authorType !== CAREGIVER && 'var(--marketplaceColor)',
                 alignItems: !distanceToUse ? 'flex-start' : null,
               }}
             >
@@ -313,29 +318,31 @@ const ListingSummaryComponent = props => {
             </div>
           </div>
         </div>
-        {userType === CAREGIVER ? (
+        {authorType === CAREGIVER ? (
           <SectionReviews providerDisplayName={displayName} listingId={listing?.id.uuid} />
         ) : null}
       </div>
       {!isOwnListing ? (
-        <div className={css.buttonContainer}>
-          <Button
-            className={css.button}
-            onClick={handleClickMessage}
-            disabled={fetchExistingConversationInProgress}
-          >
-            <FormattedMessage id="ListingSummary.message" />
-          </Button>
-          {hasActiveSubscription && isLarge ? (
+        authorType !== currentUserType ? (
+          <div className={css.buttonContainer}>
             <Button
               className={css.button}
-              onClick={handleClickBook}
-              disabled={hasStripeAccount?.userId !== author.id.uuid}
+              onClick={handleClickMessage}
+              disabled={fetchExistingConversationInProgress}
             >
-              Book Now
+              <FormattedMessage id="ListingSummary.message" />
             </Button>
-          ) : null}
-        </div>
+            {hasActiveSubscription && isLarge ? (
+              <Button
+                className={css.button}
+                onClick={handleClickBook}
+                disabled={hasStripeAccount?.userId !== author.id.uuid}
+              >
+                Book Now
+              </Button>
+            ) : null}
+          </div>
+        ) : null
       ) : (
         <div className={css.buttonContainer}>
           {!isListingClosed ? (

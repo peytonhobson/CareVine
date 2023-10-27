@@ -26,7 +26,7 @@ class FieldTextInputComponent extends Component {
       inputRef,
       required,
       exampleLink,
-      showError,
+      hideError,
       ...rest
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -108,6 +108,8 @@ class FieldTextInputComponent extends Component {
           ...getIOSInputEventHandlers(),
         };
 
+    console.log(fieldMeta);
+
     const classes = classNames(rootClassName || css.root, className);
     return (
       <div className={classes}>
@@ -133,7 +135,7 @@ class FieldTextInputComponent extends Component {
             <span className={css.lowerText}>{exampleLink}</span>
           </>
         )}
-        <ValidationError fieldMeta={fieldMeta} showError={showError} />
+        <ValidationError fieldMeta={fieldMeta} hideError={hideError} />
       </div>
     );
   }

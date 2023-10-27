@@ -53,7 +53,6 @@ import {
 import {
   sendEnquiry,
   setInitialValues,
-  sendMessage,
   closeListing,
   openListing,
   notifyForBooking,
@@ -173,39 +172,18 @@ export class ListingPageComponent extends Component {
   }
 
   async onSubmitEnquiry(values) {
-    const {
-      history,
-      onSendEnquiry,
-      onSendMessage,
-      getListing,
-      params,
-      existingConversation,
-    } = this.props;
+    const { history, onSendEnquiry, getListing, params } = this.props;
     const routes = routeConfiguration();
     const listingId = new UUID(params.id);
     const listing = ensureListing(getListing(listingId));
-    const otherUserId = listing.author.id.uuid;
     const { message } = values;
 
-    if (existingConversation) {
-      const txId = existingConversation.id.uuid;
-      try {
-        onSendMessage(txId, message.trim(), otherUserId);
-        this.setState({ enquiryModalOpen: false });
+    try {
+      await onSendEnquiry(listing, message.trim(), history, routes);
 
-        // Redirect to InboxPage
-        history.push(createResourceLocatorString('InboxPageWithId', routes, { id: txId }));
-      } catch (e) {
-        // Error handling in duck
-      }
-    } else {
-      try {
-        await onSendEnquiry(listing, message.trim(), history, routes);
-
-        this.setState({ enquiryModalOpen: false });
-      } catch (e) {
-        // Error handling in duck
-      }
+      this.setState({ enquiryModalOpen: false });
+    } catch (e) {
+      // Error handling in duck
     }
   }
 
@@ -461,6 +439,7 @@ export class ListingPageComponent extends Component {
                       sendNotifyForBookingSuccess={sendNotifyForBookingSuccess}
                       onSendNotifyForBooking={onSendNotifyForBooking}
                       onFetchExistingConversation={this.props.onFetchExistingConversation}
+                      existingConversation={this.props.existingConversation}
                     />
                     <ListingTabs
                       currentUser={currentUser}
@@ -607,7 +586,6 @@ const mapDispatchToProps = dispatch => ({
   onChangeModalValue: value => dispatch(changeModalValue(value)),
   onSendEnquiry: (listing, message, history, routes) =>
     dispatch(sendEnquiry(listing, message, history, routes)),
-  onSendMessage: (txId, message, otherUserId) => dispatch(sendMessage(txId, message, otherUserId)),
   onCloseListing: listingId => dispatch(closeListing(listingId)),
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),

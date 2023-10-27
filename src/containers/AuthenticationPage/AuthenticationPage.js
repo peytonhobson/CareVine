@@ -6,7 +6,6 @@ import { withRouter, Redirect } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import classNames from 'classnames';
 import { isEmpty } from 'lodash';
-import { useHistory } from 'react-router-dom';
 
 import queryString from 'query-string';
 import routeConfiguration from '../../routeConfiguration';
@@ -117,6 +116,7 @@ export class AuthenticationPageComponent extends Component {
       intl,
       isAuthenticated,
       location,
+      history,
       loginError,
       scrollingDisabled,
       signupError,
@@ -223,6 +223,7 @@ export class AuthenticationPageComponent extends Component {
         ...rest,
       };
       submitSignup(params);
+      history.push(`/select-user-type`);
     };
 
     const handleSubmitConfirm = values => {

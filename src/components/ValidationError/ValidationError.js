@@ -11,15 +11,11 @@ import css from './ValidationError.module.css';
  * shown.
  */
 const ValidationError = props => {
-  const { rootClassName, className, fieldMeta, showError } = props;
+  const { rootClassName, className, fieldMeta, hideError } = props;
   const { touched, error } = fieldMeta;
   const classes = classNames(rootClassName || css.root, className);
 
-  if (showError !== null) {
-    return showError ? <div className={classes}>{error}</div> : null;
-  }
-
-  return touched && error ? <div className={classes}>{error}</div> : null;
+  return touched && error && !hideError ? <div className={classes}>{error}</div> : null;
 };
 
 ValidationError.defaultProps = { rootClassName: null, className: null };
