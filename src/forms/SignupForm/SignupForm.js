@@ -15,7 +15,6 @@ import {
   InlineTextButton,
   NamedLink,
 } from '../../components';
-import { useHistory } from 'react-router-dom';
 import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './SignupForm.module.css';
@@ -38,6 +37,7 @@ const SignupFormComponent = props => (
         onOpenTermsOfService,
         form,
         onManageDisableScrolling,
+        values,
       } = fieldRenderProps;
 
       const isMobile = useCheckMobileScreen();
@@ -152,19 +152,9 @@ const SignupFormComponent = props => (
         </span>
       );
 
-      const history = useHistory();
-
-      const onSubmit = values => {
-        values.preventDefault();
-
-        handleSubmit(values);
-
-        history.push(`/select-user-type`);
-      };
-
       return (
         <>
-          <Form className={classes} onSubmit={onSubmit}>
+          <Form className={classes} onSubmit={handleSubmit}>
             <div>
               <FieldTextInput
                 type="email"
@@ -225,7 +215,7 @@ const SignupFormComponent = props => (
                   />
                 </span>
               </p>
-              <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+              <PrimaryButton type="submit" inProgress={submitInProgress}>
                 <FormattedMessage id="SignupForm.signUp" />
               </PrimaryButton>
               {isMobile && (
