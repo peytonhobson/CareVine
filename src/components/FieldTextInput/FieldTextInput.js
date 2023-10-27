@@ -135,7 +135,7 @@ class FieldTextInputComponent extends Component {
             <span className={css.lowerText}>{exampleLink}</span>
           </>
         )}
-        <ValidationError fieldMeta={fieldMeta} showError={!hideError} />
+        <ValidationError fieldMeta={fieldMeta} hideError={hideError} />
       </div>
     );
   }
