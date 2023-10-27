@@ -233,27 +233,6 @@ export const ActivityFeedComponent = props => {
   );
 };
 
-ActivityFeedComponent.defaultProps = {
-  rootClassName: null,
-  className: null,
-};
-
-ActivityFeedComponent.propTypes = {
-  rootClassName: string,
-  className: string,
-
-  currentUser: propTypes.currentUser,
-  transaction: propTypes.transaction,
-  messages: arrayOf(propTypes.message),
-  hasOlderMessages: bool.isRequired,
-  onOpenReviewModal: func.isRequired,
-  onShowOlderMessages: func.isRequired,
-  fetchMessagesInProgress: bool.isRequired,
-
-  // from injectIntl
-  intl: intlShape.isRequired,
-};
-
 const ActivityFeed = injectIntl(ActivityFeedComponent);
 
 export default ActivityFeed;
