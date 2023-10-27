@@ -66,7 +66,7 @@ const ContactSectionForm = props => (
               name="name"
               placeholder="Name"
               validate={required('Name is required')}
-              showError={isSubmitted}
+              hideError={!isSubmitted}
             />
             <FieldTextInput
               inputRootClass={css.textInput}
@@ -78,7 +78,7 @@ const ContactSectionForm = props => (
                 required('Email is required'),
                 emailFormatValid('Please provide a valid email address')
               )}
-              showError={isSubmitted}
+              hideError={!isSubmitted}
             />
           </div>
           <FieldTextInput
@@ -95,7 +95,7 @@ const ContactSectionForm = props => (
               minLength50Message
             )}
             characterCount
-            showError={isSubmitted}
+            hideError={!isSubmitted}
           />
           {sendContactEmailError ? (
             <p className="text-error">
