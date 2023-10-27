@@ -229,8 +229,6 @@ export class ListingPageComponent extends Component {
     } = this.props;
 
     const isFromSearchPage = location.state?.from === 'SearchPage';
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const isLarge = typeof window !== 'undefined' && window.innerWidth > 1024;
 
     const listingId = new UUID(rawParams.id);
     const isPendingApprovalVariant = rawParams.variant === LISTING_PAGE_PENDING_APPROVAL_VARIANT;
@@ -403,7 +401,6 @@ export class ListingPageComponent extends Component {
                       onContactUser={this.onContactUser}
                       isOwnListing={isOwnListing}
                       onShowListingPreview={() => this.setState({ showListingPreview: true })}
-                      isMobile={isMobile}
                       fetchExistingConversationInProgress={fetchExistingConversationInProgress}
                       closeListingInProgress={closeListingInProgress}
                       closeListingError={closeListingError}
@@ -437,7 +434,6 @@ export class ListingPageComponent extends Component {
                       listing={currentListing}
                       onManageDisableScrolling={onManageDisableScrolling}
                       currentUserListing={currentUserListing}
-                      isMobile={isMobile}
                     />
                   </>
                 ) : (
@@ -446,7 +442,6 @@ export class ListingPageComponent extends Component {
                     currentUserListing={currentUserListing}
                     onShowFullProfile={() => this.setState({ showListingPreview: false })}
                     onManageDisableScrolling={onManageDisableScrolling}
-                    isMobile={isMobile}
                   />
                 )}
               </div>

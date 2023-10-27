@@ -12,7 +12,7 @@ import BookingContainer from '../../containers/ListingPage/BookingContainer';
 import { useMediaQuery } from '@mui/material';
 import { getMissingInfoModalValue } from '../../util/data';
 import NotifyForPaymentContainer from '../../containers/StripePaymentModal/NotifyForPaymentContainer';
-import { usePrevious } from '../../util/hooks';
+import { useCheckMobileScreen, usePrevious } from '../../util/hooks';
 
 import css from './ListingSummary.module.css';
 
@@ -57,7 +57,6 @@ const ListingSummaryComponent = props => {
     onContactUser,
     isOwnListing,
     onShowListingPreview,
-    isMobile,
     fetchExistingConversationInProgress,
     onCloseListing,
     closeListingInProgress,
@@ -83,6 +82,8 @@ const ListingSummaryComponent = props => {
     onFetchExistingConversation,
     existingConversation,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const previousListing = usePrevious(listing);
   const previousCurrentUser = usePrevious(currentUser);

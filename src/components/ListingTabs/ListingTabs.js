@@ -1,6 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { CAREGIVER } from '../../util/constants';
-import { BookingPanel } from '..';
 import config from '../../config';
 
 import { ButtonTabNavHorizontal } from '..';
@@ -15,11 +14,14 @@ import {
   JobDescriptionSection,
   ServicesSection,
 } from './Sections';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './ListingTabs.module.css';
 
 const ListingTabs = props => {
-  const { listing, currentUserListing, isMobile } = props;
+  const { listing, currentUserListing } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const caregiverTabs = [
     'Availability',
