@@ -68,18 +68,12 @@ const createBookingPayment = async transaction => {
 
     const paymentIntentId = paymentIntent.id;
 
-    await integrationSdk.transactions.updateMetadata({
-      id: txId,
-      metadata: {
-        paymentIntentId,
-      },
-    });
-
     await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
 
     await integrationSdk.transactions.updateMetadata({
       id: txId,
       metadata: {
+        paymentIntentId,
         chargedLineItems: [{ paymentIntentId, lineItems }],
       },
     });
@@ -124,7 +118,7 @@ const createCaregiverPayout = async transaction => {
 
   const amount = lineItems?.reduce((acc, item) => acc + item.amount, 0) * 100;
 
-  if (!amount || amount === 0 || !paymentIntentId) return;
+  if (!amount || !paymentIntentId) return;
 
   try {
     const providerId = transaction.relationships.provider.data.id.uuid;

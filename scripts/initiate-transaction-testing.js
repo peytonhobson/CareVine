@@ -85,8 +85,8 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'thu',
-    startTime: '3:00pm',
+    dayOfWeek: 'sun',
+    startTime: '4:00am',
     endTime: '5:00pm',
   },
   {
@@ -134,16 +134,17 @@ const BODY_PARAMS = {
       stripeAccountId: 'acct_1MFf3NQw1sFyCVAj',
       providerName: 'Peyton C',
       exceptions,
+      bookingNumber: '22342342',
       ...metadata,
-      lineItems: metadata.lineItems.map(l => ({
-        ...l,
-        date: moment(l.date)
-          .subtract(1, 'week')
-          .format(ISO_OFFSET_FORMAT),
-        shortDate: moment(l.date)
-          .subtract(1, 'week')
-          .format('MM/DD'),
-      })),
+      // lineItems: metadata.lineItems.map(l => ({
+      //   ...l,
+      //   date: moment(l.date)
+      //     .subtract(1, 'week')
+      //     .format(ISO_OFFSET_FORMAT),
+      //   shortDate: moment(l.date)
+      //     .subtract(1, 'week')
+      //     .format('MM/DD'),
+      // })),
     },
   },
 };

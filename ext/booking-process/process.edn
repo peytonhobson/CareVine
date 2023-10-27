@@ -197,11 +197,11 @@
 
    ; Payment Declined
    {:name :notification/payment-declined-customer,
-   :on :transition/payment-declined,
+   :on :transition/decline-payment,
    :to :actor.role/customer,
    :template :payment-failed-customer}
    {:name :notification/payment-declined-provider,
-   :on :transition/payment-declined,
+   :on :transition/decline-payment,
    :to :actor.role/provider,
    :template :payment-failed-provider}
 

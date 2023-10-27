@@ -3,12 +3,12 @@
     <meta name="supported-color-schemes" content="light dark" />
 
     <style>
-      .black-text {
-        color: #1c1c1c !important;
-        border-color: #1c1c1c !important;
-      }
-
       @media (prefers-color-scheme: dark) {
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
+        }
+
         .inner-table {
           background-color: #1c1c1c !important;
         }
@@ -127,7 +127,7 @@
                                             style="vertical-align:top; padding-left: 20px; padding-top: 4px;"
                                           >
                                             <b
-                                              >{{formatDate this.date "ddd"}}, {{this.shortDate}}
+                                              >{{date this.date "EEE"}}, {{this.shortDate}}
                                               ({{this.startTime}} - {{this.endTime}})</b
                                             >
                                           </td>

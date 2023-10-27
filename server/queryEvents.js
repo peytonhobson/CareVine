@@ -309,7 +309,10 @@ module.exports = queryEvents = () => {
               awaitingModification: null,
             },
           })
-          .catch(e => log.error(e, 'Modify Booking Expired Update Failed', { bookingId }));
+          .catch(e => {
+            console.log(e?.data?.errors);
+            log.error(e, 'Modify Booking Expired Update Failed', { bookingId });
+          });
       }
     }
 
