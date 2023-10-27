@@ -5,8 +5,6 @@ import { NamedLink } from '..';
 
 import css from './TermsOfService.module.css';
 
-const marketplaceUrl = process.env.REACT_APP_CANONICAL_ROOT_URL;
-
 const TermsOfService = props => {
   const { rootClassName, className } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -17,7 +15,7 @@ const TermsOfService = props => {
       <p className={css.lastUpdated}>Last updated: July, 25 2023</p>
 
       <p>
-        This website, <a href={`https://${marketplaceUrl}`}>www.carevine.us</a> ("Site"), is
+        This website, <NamedLink name="LandingPage">www.carevine.us</NamedLink> ("Site"), is
         operated by CareVine. The terms "we," "us," and "our" refer to CareVine. By using the Site,
         including its information, tools, and services (collectively, "Services"), you accept and
         agree to comply with these Terms of Service ("Terms"), as well as any additional terms,
