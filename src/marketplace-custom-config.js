@@ -201,7 +201,7 @@ export const filters = [
     config: {
       // Optional modes: 'has_all', 'has_any'
       // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_all',
+      searchMode: 'has_any',
 
       // "key" is the option you see in Flex Console.
       // "label" is set here for this web app's UI only.
@@ -324,7 +324,7 @@ export const filters = [
     config: {
       // Optional modes: 'has_all', 'has_any'
       // https://www.sharetribe.com/api-reference/marketplace.html#extended-data-filtering
-      searchMode: 'has_all',
+      searchMode: 'has_any',
 
       // "key" is the option you see in Flex Console.
       // "label" is set here for this web app's UI only.
