@@ -81,6 +81,7 @@ const ListingSummaryComponent = props => {
     onSendNotifyForBooking,
     sendNotifyForBookingError,
     onFetchExistingConversation,
+    existingConversation,
   } = props;
 
   const previousListing = usePrevious(listing);
@@ -120,6 +121,10 @@ const ListingSummaryComponent = props => {
     if (!currentUser?.id.uuid) {
       history.push('/signup');
       return;
+    }
+
+    if (existingConversation) {
+      history.push('/inbox/' + existingConversation.id.uuid);
     }
 
     const missingInfoModalValue = getMissingInfoModalValue(currentUser, currentUserListing);
