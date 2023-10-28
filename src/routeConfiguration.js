@@ -46,13 +46,6 @@ const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionP
 const UserTypePage = loadable(() => import(/* webpackChunkName: "UserTypePage" */ './containers/UserTypePage/UserTypePage'));
 const ListingTrackingPage = loadable(() => import(/* webpackChunkName: "ListingTrackingPage" */ './containers/ListingTrackingPage/ListingTrackingPage'));
 
-const listingTrackingPageMaybe = {
-  path: '/listing-tracking',
-  name: 'ListingTrackingPage',
-  component: ListingTrackingPage,
-  loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
-}
-
 
 export const ACCOUNT_SETTINGS_PAGES = [
   'ContactDetailsPage',
@@ -383,7 +376,14 @@ const routeConfiguration = () => {
       path: '/notfound',
       name: 'NotFoundPage',
       component: props => <NotFoundPage {...props} />,
-    },
+   },
+   {
+    path: '/listing-tracking',
+    name: 'ListingTrackingPage',
+    component: ListingTrackingPage,
+    auth: isDev,
+    loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
+   },
 
 
     // Do not change this path!
@@ -401,12 +401,8 @@ const routeConfiguration = () => {
       authPage: 'LoginPage',
       component: EmailVerificationPage,
       loadData: pageDataLoadingAPI.EmailVerificationPage.loadData,
-    },
+   },
  ];
-
-  if (isDev) {
-    routeConfig.push(listingTrackingPageMaybe)
-  }
 
   return routeConfig;
 };
