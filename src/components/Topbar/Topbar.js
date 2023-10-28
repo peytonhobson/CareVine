@@ -148,13 +148,11 @@ class TopbarComponent extends Component {
     });
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.find(
+    const hasUnreadNotifications = ensuredCurrentUser.attributes.profile.privateData.notifications?.some(
       notification => !notification.isRead
     );
 
-    const notificationDot = unreadNotificationCount ? (
-      <div className={css.notificationDot} />
-    ) : null;
+    const notificationDot = hasUnreadNotifications ? <div className={css.notificationDot} /> : null;
 
     const messageDot = unreadMessages > 0 ? <div className={css.notificationDot} /> : null;
 
@@ -167,12 +165,11 @@ class TopbarComponent extends Component {
         currentUserHasListings={currentUserHasListings}
         currentUserListing={currentUserListing}
         currentUserListingFetched={currentUserListingFetched}
-        currentUser={currentUser}
+        currentUser={ensuredCurrentUser}
         onLogout={this.handleLogout}
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
         unreadMessages={unreadMessages}
-        unreadNotificationCount={unreadNotificationCount}
         isOpen={isMobileMenuOpen}
       />
     );
@@ -185,7 +182,7 @@ class TopbarComponent extends Component {
         <LimitedAccessBanner
           isAuthenticated={isAuthenticated}
           authScopes={authScopes}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           onLogout={this.handleLogout}
           currentPage={currentPage}
         />
@@ -229,7 +226,7 @@ class TopbarComponent extends Component {
               currentUserHasListings={currentUserHasListings}
               currentUserListing={currentUserListing}
               currentUserListingFetched={currentUserListingFetched}
-              currentUser={currentUser}
+              currentUser={ensuredCurrentUser}
               currentPage={currentPage}
               intl={intl}
               isAuthenticated={isAuthenticated}
@@ -237,7 +234,6 @@ class TopbarComponent extends Component {
               onSearchSubmit={this.handleSubmit}
               onChangeModalValue={onChangeModalValue}
               unreadMessages={unreadMessages}
-              unreadNotificationCount={unreadNotificationCount}
             />
           </div>
         )}
@@ -253,7 +249,7 @@ class TopbarComponent extends Component {
         <ModalMissingInformation
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           currentUserListing={currentUserListing}
           location={location}
           onManageDisableScrolling={onManageDisableScrolling}
