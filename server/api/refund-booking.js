@@ -151,9 +151,10 @@ module.exports = async (req, res) => {
       };
     } else {
       metadataToUpdate = {
+        // Filter line items to past ones for caregiver payout
         lineItems: lineItems.filter(lineItem => {
           const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-          return moment().isBefore(startTime);
+          return moment().isAfter(startTime);
         }),
         refundAmount: 0,
         payout: 0,
