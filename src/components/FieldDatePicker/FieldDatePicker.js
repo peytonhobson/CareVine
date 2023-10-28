@@ -38,7 +38,15 @@ const formatDay = ({ date, selectedDays, onClick, highlightedClassName, isDayDis
 };
 
 export const FieldDatePickerComponent = props => {
-  const { input, children, className, onChange, highlightedClassName, isDayDisabled } = props;
+  const {
+    input,
+    children,
+    className,
+    onChange,
+    highlightedClassName,
+    isDayDisabled,
+    initialMonth,
+  } = props;
 
   const handleSelectDay = date => {
     const isDaySelected = Array.isArray(input.value)
@@ -71,7 +79,7 @@ export const FieldDatePickerComponent = props => {
 
   const classes = classNames(css.root, className);
   const selectedDays = Array.isArray(input.value) ? input.value : [];
-  const initialDate = input.value?.[0] ?? new Date();
+  const initialDate = initialMonth || input.value?.[0] || new Date();
 
   return (
     <div className={classes}>

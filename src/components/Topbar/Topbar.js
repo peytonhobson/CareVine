@@ -148,13 +148,11 @@ class TopbarComponent extends Component {
     });
 
     const ensuredCurrentUser = ensureCurrentUser(currentUser);
-    const unreadNotificationCount = ensuredCurrentUser.attributes.profile.privateData.notifications?.find(
+    const hasUnreadNotifications = ensuredCurrentUser.attributes.profile.privateData.notifications?.some(
       notification => !notification.isRead
     );
 
-    const notificationDot = unreadNotificationCount ? (
-      <div className={css.notificationDot} />
-    ) : null;
+    const notificationDot = hasUnreadNotifications ? <div className={css.notificationDot} /> : null;
 
     const messageDot = unreadMessages > 0 ? <div className={css.notificationDot} /> : null;
 
@@ -172,7 +170,6 @@ class TopbarComponent extends Component {
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
         unreadMessages={unreadMessages}
-        unreadNotificationCount={unreadNotificationCount}
         isOpen={isMobileMenuOpen}
       />
     );
@@ -237,7 +234,6 @@ class TopbarComponent extends Component {
               onSearchSubmit={this.handleSubmit}
               onChangeModalValue={onChangeModalValue}
               unreadMessages={unreadMessages}
-              unreadNotificationCount={unreadNotificationCount}
             />
           </div>
         )}

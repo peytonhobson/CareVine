@@ -3,7 +3,11 @@
 // and slows down the first paint.
 import moment from 'moment-timezone/builds/moment-timezone-with-data-10-year-range.min';
 import jstz from 'jstimezonedetect';
-import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from './bookings';
+import {
+  checkIsBlockedDay,
+  checkIsDateWithinBookingWindow,
+  checkIsDateInBookingSchedule,
+} from './bookings';
 /**
  * Input names for the DateRangePicker from react-dates.
  */
@@ -905,23 +909,35 @@ export const getAvailableStartDates = endDate => day => {
 
 const TODAY = new Date();
 
-export const filterAvailableBookingStartDates = (endDate, bookedDays, bookedDates) => date => {
-  // TODO: Remove subtract
+export const filterAvailableBookingStartDates = (
+  endDate,
+  bookedDays,
+  bookedDates,
+  bookingSchedule
+) => date => {
   const isAfterOrSameDay = checkIsDateWithinBookingWindow({
     date,
     endDate,
-    startDate: moment().subtract(1, 'days'),
+    startDate: moment().add(1, 'days'),
   });
   const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
+  const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule);
 
-  return !isAfterOrSameDay || isBooked;
+  return !isAfterOrSameDay || isBooked || !inBookingSchedule;
 };
 
-export const filterAvailableBookingEndDates = (startDate, bookedDays, bookedDates) => date => {
-  const isBeforeOrSameDay = checkIsDateWithinBookingWindow({ date, endDate: TODAY, startDate });
+export const filterAvailableBookingEndDates = (
+  startDate,
+  bookedDays,
+  bookedDates,
+  bookingSchedule,
+  exceptions
+) => date => {
+  const isAfterOrSameStartDate = checkIsDateWithinBookingWindow({ date, endDate: null, startDate });
   const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
+  const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
 
-  return isBooked || isBeforeOrSameDay;
+  return isBooked || !isAfterOrSameStartDate || !inBookingSchedule;
 };
 
 export const calculateTimeBetween = (bookingStart, bookingEnd) => {

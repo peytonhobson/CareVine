@@ -167,12 +167,6 @@
    :to :actor.role/provider,
    :template :new-booking-request}
 
-   ; Customer Cancel Booking Request
-   {:name :notification/cancel-booking-request,
-   :on :transition/cancel-request,
-   :to :actor.role/customer,
-   :template :booking-request-canceled-confirmation}
-
     ; Booking request expired
    {:name :notification/booking-request-auto-declined,
    :on :transition/expire,

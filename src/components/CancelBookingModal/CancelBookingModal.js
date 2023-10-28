@@ -9,10 +9,19 @@ import { CAREGIVER } from '../../util/constants';
 import moment from 'moment';
 import { addTimeToStartOfDay } from '../../util/dates';
 import classNames from 'classnames';
+import {
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_REQUEST_UPDATE_START,
+  TRANSITION_ACCEPT_BOOKING,
+} from '../../util/transaction';
 
 import css from './CancelBookingModal.module.css';
 
-const nonPaidTransitions = ['transition/request-booking', 'transition/accept'];
+const nonPaidTransitions = [
+  TRANSITION_REQUEST_BOOKING,
+  TRANSITION_REQUEST_UPDATE_START,
+  TRANSITION_ACCEPT_BOOKING,
+];
 
 const CancelBookingModal = props => {
   const {

@@ -1,1 +1,1 @@
-{{transaction.customer.display-name}} has requested to book you
+{{transaction.customer.display-name}} has Requested to Book You

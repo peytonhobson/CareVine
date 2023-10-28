@@ -83,11 +83,7 @@ const defaultProps = {
 
   // outside range -><- today ... today+available days -1 -><- outside range
   isOutsideRange: day => {
-    const endOfRange = 100;
-    return (
-      !isInclusivelyAfterDay(day, moment()) ||
-      !isInclusivelyBeforeDay(day, moment().add(endOfRange, 'days'))
-    );
+    return !isInclusivelyAfterDay(day, moment());
   },
   isDayHighlighted: () => {},
 

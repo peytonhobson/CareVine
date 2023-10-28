@@ -23,27 +23,6 @@ const TODAY = new Date();
 // Date formatting used for placeholder texts:
 const dateFormattingOptions = { month: 'short', day: 'numeric', weekday: 'short' };
 
-const renderDayContents = (bookedDays, bookedDates, isMobile, bookingSchedule, exceptions) => (
-  date,
-  classes
-) => {
-  const isBlockedDay = checkIsBlockedDay({ date, bookedDays, bookedDates });
-  const dateInPast = moment(date).isBefore(moment().startOf('day'));
-  const isInBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
-
-  const isBlocked = classes.has('blocked');
-
-  if (classes.has('selected') && isMobile) {
-    return <div className={css.mobileSelectedDay}>{date.format('D')}</div>;
-  }
-
-  return isBlockedDay || !isInBookingSchedule ? (
-    <span className="text-matter">{date.format('D')}</span>
-  ) : (
-    <span className={!isBlocked ? css.regularDay : null}>{date.format('D')}</span>
-  );
-};
-
 const SectionRecurring = props => {
   const {
     values,
@@ -123,13 +102,6 @@ const SectionRecurring = props => {
             useMobileMargins
             showErrorMessage={false}
             disabled={startDateDisabled}
-            renderDayContents={renderDayContents(
-              bookedDays,
-              bookedDates,
-              isMobile,
-              weekdays,
-              values.exceptions
-            )}
             withPortal={isMobile}
           />
           <div className={css.endDateContainer}>
@@ -145,19 +117,14 @@ const SectionRecurring = props => {
                 startDay,
                 bookedDays,
                 bookedDates,
-                weekdays
+                weekdays,
+                values.exceptions
               )}
               useMobileMargins
               showErrorMessage={false}
               disabled={!startDate || !startDate.date}
-              renderDayContents={renderDayContents(
-                bookedDays,
-                bookedDates,
-                isMobile,
-                weekdays,
-                values.exceptions
-              )}
               withPortal={isMobile}
+              initialVisibleMonth={() => moment(startDate?.date)}
             />
             <button
               className={css.removeExceptionButton}
