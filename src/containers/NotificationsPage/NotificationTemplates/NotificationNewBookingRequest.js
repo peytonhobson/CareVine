@@ -249,7 +249,12 @@ const NotificationNewBookingRequest = props => {
               {isUpcoming ? (
                 <>
                   <h2 className={css.bookingAccepted}>Booking Accepted</h2>
-                  <NamedLink className={css.viewBookingLink} name="BookingsPage">
+                  <NamedLink
+                    className={css.viewBookingLink}
+                    name="BookingsPageWithTab"
+                    params={{ tab: 'bookings' }}
+                    to={{ search: `?bookingId=${txId}` }}
+                  >
                     View Booking
                   </NamedLink>
                 </>
