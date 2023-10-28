@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 
 import { CAREGIVER } from '../../util/constants';
 import { CaregiverListingCard, EmployerListingCard, GradientButton } from '..';
-
 import { FormattedMessage } from '../../util/reactIntl';
+import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './ListingPreview.module.css';
-import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
 
 const ListingPreview = props => {
   const {
@@ -14,8 +14,9 @@ const ListingPreview = props => {
     currentUserListing: userListing,
     onShowFullProfile,
     onManageDisableScrolling,
-    isMobile,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const currentUserListing = useMemo(() => {
     return userListing;
