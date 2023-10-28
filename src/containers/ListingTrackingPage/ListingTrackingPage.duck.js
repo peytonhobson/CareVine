@@ -133,7 +133,3 @@ export const showListings = () => (dispatch, getState, sdk) => {
       console.log(e);
     });
 };
-
-export const loadData = (params, search) => {
-  return showListings();
-};

@@ -23,15 +23,11 @@ import {
 import { loadData as UserTypePageLoader } from './UserTypePage/UserTypePage.duck';
 import { loadData as NotificationsPageLoader } from './NotificationsPage/NotificationsPage.duck';
 import { loadData as InboxPageLoader } from './InboxPage/InboxPage.duck';
-import { loadData as ListingTrackingPageLoader } from './ListingTrackingPage/ListingTrackingPage.duck';
 
 const getPageDataLoadingAPI = () => {
   return {
     BookingsPage: {
       loadData: BookingsPageLoader,
-    },
-    ListingTrackingPage: {
-      loadData: ListingTrackingPageLoader,
     },
     CheckoutPage: {
       setInitialValues: CheckoutPageInitialValues,

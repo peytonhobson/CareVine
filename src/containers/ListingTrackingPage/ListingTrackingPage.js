@@ -3,6 +3,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { isScrollingDisabled } from '../../ducks/UI.duck';
+import { showListings } from './ListingTrackingPage.duck';
 
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import {
@@ -27,6 +28,10 @@ export const InboxPageComponent = props => {
       return { lat: g.lat, lng: g.lng };
     });
   }, [geolocations]);
+
+  useEffect(() => {
+    props.onShowListings();
+  }, []);
 
   const onLoad = map => {
     setMap(map);
@@ -78,7 +83,9 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  onShowListings: showListings,
+};
 
 const InboxPage = compose(connect(mapStateToProps, mapDispatchToProps))(InboxPageComponent);
 

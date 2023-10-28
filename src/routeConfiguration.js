@@ -382,7 +382,6 @@ const routeConfiguration = () => {
     name: 'ListingTrackingPage',
     component: ListingTrackingPage,
     auth: isDev,
-    loadData: pageDataLoadingAPI.ListingTrackingPage.loadData,
    },
 
 
