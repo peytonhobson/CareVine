@@ -32,15 +32,10 @@ const TopbarMobileMenu = props => {
   const {
     isAuthenticated,
     currentPage,
-    currentUserHasListings,
     currentUserListing,
     currentUserListingFetched,
     currentUser,
     onLogout,
-    onChangeModalValue,
-    unreadMessages,
-    unreadNotificationCount,
-    isOpen,
   } = props;
 
   const user = ensureCurrentUser(currentUser);

@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { bool, func, object, number, string, array } from 'prop-types';
-import { FormattedMessage, intlShape } from '../../util/reactIntl';
+import React, { useState, useEffect, useMemo } from 'react';
+import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';
-import { propTypes } from '../../util/types';
 import {
   Avatar,
   InlineTextButton,
@@ -41,13 +39,23 @@ const TopbarDesktop = props => {
     onLogout,
     onChangeModalValue,
     unreadMessages,
-    unreadNotificationCount,
   } = props;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const unreadNotificationCount = useMemo(
+    () =>
+      currentUser.attributes.profile.privateData.notifications?.reduce((acc, notification) => {
+        if (!notification.isRead) {
+          acc += 1;
+        }
+        return acc;
+      }, 0),
+    [currentUser]
+  );
 
   const authenticatedOnClientSide = mounted && isAuthenticated;
   const isAuthenticatedOrJustHydrated = isAuthenticated || !mounted;
