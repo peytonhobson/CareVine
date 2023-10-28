@@ -165,7 +165,7 @@ class TopbarComponent extends Component {
         currentUserHasListings={currentUserHasListings}
         currentUserListing={currentUserListing}
         currentUserListingFetched={currentUserListingFetched}
-        currentUser={currentUser}
+        currentUser={ensuredCurrentUser}
         onLogout={this.handleLogout}
         currentPage={currentPage}
         onChangeModalValue={onChangeModalValue}
@@ -182,7 +182,7 @@ class TopbarComponent extends Component {
         <LimitedAccessBanner
           isAuthenticated={isAuthenticated}
           authScopes={authScopes}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           onLogout={this.handleLogout}
           currentPage={currentPage}
         />
@@ -226,7 +226,7 @@ class TopbarComponent extends Component {
               currentUserHasListings={currentUserHasListings}
               currentUserListing={currentUserListing}
               currentUserListingFetched={currentUserListingFetched}
-              currentUser={currentUser}
+              currentUser={ensuredCurrentUser}
               currentPage={currentPage}
               intl={intl}
               isAuthenticated={isAuthenticated}
@@ -249,7 +249,7 @@ class TopbarComponent extends Component {
         <ModalMissingInformation
           id="MissingInformationReminder"
           containerClassName={css.missingInformationModal}
-          currentUser={currentUser}
+          currentUser={ensuredCurrentUser}
           currentUserListing={currentUserListing}
           location={location}
           onManageDisableScrolling={onManageDisableScrolling}

@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { bool, func, object, number, string, array } from 'prop-types';
-import { FormattedMessage, intlShape } from '../../util/reactIntl';
+import React, { useState, useEffect, useMemo, useMemo } from 'react';
+import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routeConfiguration';
-import { propTypes } from '../../util/types';
 import {
   Avatar,
   InlineTextButton,
