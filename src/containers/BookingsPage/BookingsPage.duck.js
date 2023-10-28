@@ -294,13 +294,11 @@ export const cancelBooking = transaction => async (dispatch, getState, sdk) => {
   const listingId = transaction.listing.id.uuid;
 
   try {
-    console.log('beforeCall');
     await apiCancelBooking({ txId, listingId, cancelingUserType: userType });
 
     dispatch(cancelBookingSuccess());
   } catch (e) {
     log.error(e, 'cancel-booking-failed', { txId });
-    dispatch(fetchBookings());
     dispatch(cancelBookingError(storableError(e)));
   }
 };

@@ -97,6 +97,7 @@ const BookingCardComponent = props => {
   const {
     booking,
     onFetchBooking,
+    onFetchBookings,
     onResetInitialState,
     userType,
     onManageDisableScrolling,
@@ -137,13 +138,18 @@ const BookingCardComponent = props => {
     dispatch({ type: SET_OPEN_MODAL_TYPE, payload: modalType });
   };
 
-  const handleModalClose = modalType => {
+  const handleModalClose = (fetchAll = false) => {
     dispatch({ type: CLOSE_MODAL });
 
     onResetInitialState();
     onResetTransactionsInitialState();
-    onFetchBooking(txId);
     onFetchCurrentUserListing();
+
+    if (fetchAll) {
+      onFetchBookings();
+    } else {
+      onFetchBooking(txId);
+    }
   };
 
   const handleGoBackToActions = displayState => {
@@ -151,7 +157,7 @@ const BookingCardComponent = props => {
     onResetInitialState();
     onResetTransactionsInitialState();
 
-    if (displayState) {
+    if (typeof displayState === 'string') {
       dispatch({ type: SET_ACTIONS_DISPLAY_STATE, payload: displayState });
     }
   };
@@ -221,7 +227,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ResponseModal
           isOpen={state.openModalType === MODAL_TYPES.RESPOND}
-          onClose={() => handleModalClose(MODAL_TYPES.RESPOND)}
+          onClose={handleModalClose}
           customerDisplayName={otherUserDisplayName}
           booking={booking}
           bookingDates={bookingDates}
@@ -233,7 +239,7 @@ const BookingCardComponent = props => {
       openModal = (
         <PaymentDetailsModal
           isOpen={state.openModalType === MODAL_TYPES.PAYMENT_DETAILS}
-          onClose={() => handleModalClose(MODAL_TYPES.PAYMENT_DETAILS)}
+          onClose={handleModalClose}
           onManageDisableScrolling={onManageDisableScrolling}
           booking={booking}
         />
@@ -243,7 +249,7 @@ const BookingCardComponent = props => {
       openModal = (
         <CancelBookingModal
           isOpen={state.openModalType === MODAL_TYPES.CANCEL}
-          onClose={() => handleModalClose(MODAL_TYPES.CANCEL)}
+          onClose={() => handleModalClose(true)}
           otherUserDisplayName={otherUserDisplayName}
           userType={userType}
           booking={booking}
@@ -255,7 +261,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ExceptionsModal
           isOpen={state.openModalType === MODAL_TYPES.EXCEPTIONS}
-          onClose={() => handleModalClose(MODAL_TYPES.EXCEPTIONS)}
+          onClose={handleModalClose}
           onManageDisableScrolling={onManageDisableScrolling}
           exceptions={allExceptions}
         />
@@ -265,7 +271,7 @@ const BookingCardComponent = props => {
       openModal = (
         <BookingCalendarModal
           isOpen={state.openModalType === MODAL_TYPES.CALENDAR}
-          onClose={() => handleModalClose(MODAL_TYPES.CALENDAR)}
+          onClose={handleModalClose}
           onManageDisableScrolling={onManageDisableScrolling}
           bookingDates={bookingDates}
           booking={booking}
@@ -276,7 +282,7 @@ const BookingCardComponent = props => {
       openModal = (
         <DisputeModal
           isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
-          onClose={() => handleModalClose(MODAL_TYPES.DISPUTE)}
+          onClose={handleModalClose}
         />
       );
       break;
@@ -284,7 +290,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ActionsModal
           isOpen={state.openModalType === MODAL_TYPES.ACTIONS}
-          onClose={() => handleModalClose(MODAL_TYPES.ACTIONS)}
+          onClose={handleModalClose}
           booking={booking}
           onModalOpen={handleModalOpen}
           onManageDisableScrolling={onManageDisableScrolling}
@@ -302,7 +308,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ChangeEndDateModal
           isOpen={state.openModalType === MODAL_TYPES.CHANGE_END_DATE}
-          onClose={() => handleModalClose(MODAL_TYPES.CHANGE_END_DATE)}
+          onClose={handleModalClose}
           otherUserDisplayName={otherUserDisplayName}
           booking={booking}
           onGoBack={handleGoBackToActions}
@@ -313,7 +319,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ModifyScheduleRecurringModal
           isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE_RECURRING}
-          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE_RECURRING)}
+          onClose={handleModalClose}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />
@@ -323,7 +329,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ModifyScheduleSingleModal
           isOpen={state.openModalType === MODAL_TYPES.MODIFY_SCHEDULE_ONE_TIME}
-          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_SCHEDULE_ONE_TIME)}
+          onClose={handleModalClose}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />
@@ -333,7 +339,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ModifyExceptionsModal
           isOpen={state.openModalType === MODAL_TYPES.MODIFY_EXCEPTIONS}
-          onClose={() => handleModalClose(MODAL_TYPES.MODIFY_EXCEPTIONS)}
+          onClose={handleModalClose}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />
@@ -343,7 +349,7 @@ const BookingCardComponent = props => {
       openModal = (
         <ChangePaymentMethodModal
           isOpen={state.openModalType === MODAL_TYPES.CHANGE_PAYMENT_METHOD}
-          onClose={() => handleModalClose(MODAL_TYPES.CHANGE_PAYMENT_METHOD)}
+          onClose={handleModalClose}
           booking={booking}
           onGoBack={handleGoBackToActions}
         />
