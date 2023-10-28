@@ -88,7 +88,9 @@ const NotificationNewBookingRequest = props => {
     lastTransition === TRANSITION_REQUEST_BOOKING ||
     lastTransition === TRANSITION_REQUEST_UPDATE_START;
   const isDeclined = lastTransition === TRANSITION_DECLINE_BOOKING;
-  const isUpcoming = lastTransition === TRANSITION_ACCEPT_BOOKING || TRANSITION_ACCEPT_UPDATE_START;
+  const isUpcoming =
+    lastTransition === TRANSITION_ACCEPT_BOOKING ||
+    lastTransition === TRANSITION_ACCEPT_UPDATE_START;
   lastTransition === TRANSITION_CHARGE;
   const isExpired = lastTransition === TRANSITION_EXPIRE_BOOKING;
   const isPaymentFailed = lastTransition === TRANSITION_DECLINE_PAYMENT;
@@ -244,14 +246,14 @@ const NotificationNewBookingRequest = props => {
             )
           ) : (
             <div className={css.bookingDecisionContainer}>
-              {isUpcoming && (
+              {isUpcoming ? (
                 <>
                   <h2 className={css.bookingAccepted}>Booking Accepted</h2>
                   <NamedLink className={css.viewBookingLink} name="BookingsPage">
                     View Booking
                   </NamedLink>
                 </>
-              )}
+              ) : null}
               {isDeclined && <h2 className={css.bookingDeclined}>Booking Declined</h2>}
               {isExpired && <h2 className={css.bookingDeclined}>Booking Request Expired</h2>}
               {isPaymentFailed && <h2 className={css.bookingDeclined}>Client Payment Failed</h2>}
