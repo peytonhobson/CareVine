@@ -270,7 +270,7 @@ module.exports = queryEvents = () => {
         lastTransition === 'transition/charged-cancel' ||
         lastTransition === 'transition/delivered-cancel' ||
         lastTransition === 'transition/wfnw-cancel' ||
-        lastTransition === 'transition/accepted-cancel' ||
+        lastTransition === 'transition/accepted-cancel'
       ) {
         createCaregiverPayout(transaction);
       }
