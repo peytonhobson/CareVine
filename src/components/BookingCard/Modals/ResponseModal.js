@@ -52,8 +52,6 @@ const ResponseModal = props => {
     },
   } = booking.attributes.metadata;
 
-  console.log('bookingDates', bookingDates);
-
   const hasSameDayBooking = useMemo(
     () =>
       (scheduleType === 'oneTime'
@@ -73,7 +71,7 @@ const ResponseModal = props => {
       title="Respond to Booking"
       id="RespondModal"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={declineBookingSuccess ? onClose : () => onClose(true)}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
       containerClassName={css.modalContainer}
