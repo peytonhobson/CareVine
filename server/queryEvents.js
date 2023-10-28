@@ -264,7 +264,14 @@ module.exports = queryEvents = () => {
         createBookingPayment(transaction);
       }
 
-      if (lastTransition === 'transition/charged-cancel') {
+      // TODO: Test this to see if it gives proper payout amount
+      // TODO: Make sure wfnw is handled properly for uncharged bookings. May need to update line items
+      if (
+        lastTransition === 'transition/charged-cancel' ||
+        lastTransition === 'transition/delivered-cancel' ||
+        lastTransition === 'transition/wfnw-cancel' ||
+        lastTransition === 'transition/accepted-cancel' ||
+      ) {
         createCaregiverPayout(transaction);
       }
 
@@ -286,9 +293,7 @@ module.exports = queryEvents = () => {
 
         if (bookingType === 'recurring' && !hasNextBooking) {
           // Must create any refunds and adjust line items before creating payout
-          endRecurring(transaction).then(() => {
-            createCaregiverPayout(transaction);
-          });
+          endRecurring(transaction);
         } else if (hasNextBooking) {
           // Must create caregiver payout before updating lineItems
           createCaregiverPayout(transaction).then(() => {

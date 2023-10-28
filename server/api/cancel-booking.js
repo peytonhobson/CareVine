@@ -114,15 +114,7 @@ module.exports = async (req, res) => {
       };
     }
 
-    // Employer has refund if there are any future charged line items
-    const hasRefund = chargedLineItems.some(cl =>
-      cl.lineItems.some(l => addTimeToStartOfDay(l.date, l.startTime).isAfter())
-    );
-
-    let metadata = {};
-    if (hasRefund) {
-      metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
-    }
+    const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
 
     const isActive = activeTransitions.includes(lastTransition);
     const newBookingEnd = isActive

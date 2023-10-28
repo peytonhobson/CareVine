@@ -103,7 +103,7 @@ module.exports = async (req, res) => {
   try {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
 
-    const { chargedLineItems = [] } = transaction.attributes.metadata;
+    const { chargedLineItems = [], lineItems } = transaction.attributes.metadata;
 
     const allLineItems = chargedLineItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
     const refundItems = mapRefundItems(chargedLineItems, cancelingUserType === 'caregiver');
@@ -151,7 +151,10 @@ module.exports = async (req, res) => {
       };
     } else {
       metadataToUpdate = {
-        lineItems: [],
+        lineItems: lineItems.filter(lineItem => {
+          const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+          return moment().isBefore(startTime);
+        }),
         refundAmount: 0,
         payout: 0,
         refundItems: [],

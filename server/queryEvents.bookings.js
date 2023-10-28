@@ -392,15 +392,9 @@ const updateNextWeek = async transaction => {
 const endRecurring = async transaction => {
   const txId = transaction.id.uuid;
 
-  const { chargedLineItems = [] } = transaction.attributes.metadata;
-
   try {
-    const hasRefund = chargedLineItems.some(cl =>
-      cl.lineItems.some(l => addTimeToStartOfDay(l.date, l.startTime).isBefore())
-    );
-
-    if (hasRefund) {
-      // Refund any future chargedLineItems
+    // Update metadata for refunding if any
+    const refundMetadata = (
       await axios.post(
         `${apiBaseUrl()}/api/refund-booking`,
         {
@@ -411,13 +405,15 @@ const endRecurring = async transaction => {
             'Content-Type': 'application/transit+json',
           },
         }
-      );
-    }
+      )
+    )?.data?.metadata;
 
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/delivered-cancel',
-      params: {},
+      params: {
+        metadata: refundMetadata,
+      },
     });
   } catch (e) {
     log.error(e?.data?.errors, 'end-recurring-failed', {});
