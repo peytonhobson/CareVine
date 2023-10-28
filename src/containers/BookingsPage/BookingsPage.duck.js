@@ -88,10 +88,7 @@ export const REMOVE_OLD_DRAFTS = 'app/BookingsPage/REMOVE_OLD_DRAFTS';
 const initialState = {
   fetchBookingsInProgress: false,
   fetchBookingsError: null,
-  bookings: {
-    requests: [],
-    bookings: [],
-  },
+  bookings: [],
   cancelBookingInProgress: false,
   cancelBookingError: null,
   cancelBookingSuccess: false,
