@@ -276,7 +276,7 @@ module.exports = queryEvents = () => {
 
       // If user cancels while booking is active, make reviewable and create caregiver payout.
       // This assumes lineItems have already been adjusted during cancellation.
-      if (lastTransition === 'active-cancel') {
+      if (lastTransition === 'transition/active-cancel') {
         makeReviewable(transaction);
         createCaregiverPayout(transaction);
       }
