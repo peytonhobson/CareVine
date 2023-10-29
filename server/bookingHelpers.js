@@ -201,6 +201,7 @@ const constructBookingMetadataRecurring = (
       endTime,
       seats: 1,
       date: isoDate,
+      shortDay: moment(isoDate).format('ddd'),
       shortDate: moment(isoDate).format('MM/DD'),
       hours,
       amount,

@@ -915,14 +915,14 @@ export const filterAvailableBookingStartDates = (endDate, bookingSchedule) => da
   });
   const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule);
 
-  return !isAfterOrSameDay || isBooked || !inBookingSchedule;
+  return !isAfterOrSameDay || !inBookingSchedule;
 };
 
 export const filterAvailableBookingEndDates = (startDate, bookingSchedule, exceptions) => date => {
   const isAfterOrSameStartDate = checkIsDateWithinBookingWindow({ date, endDate: null, startDate });
   const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
 
-  return isBooked || !isAfterOrSameStartDate || !inBookingSchedule;
+  return !isAfterOrSameStartDate || !inBookingSchedule;
 };
 
 export const calculateTimeBetween = (bookingStart, bookingEnd) => {
