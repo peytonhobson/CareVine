@@ -417,12 +417,13 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
     });
 };
 
-export const fetchTransaction = txId => (dispatch, getState, sdk) => {
+export const fetchTransaction = (txId, params) => (dispatch, getState, sdk) => {
   dispatch(fetchTransactionRequest());
   return sdk.transactions
     .show({
       id: new UUID(txId),
       include: ['booking', 'customer', 'provider', 'listing'],
+      ...params,
     })
     .then(response => {
       const transaction = denormalisedResponseEntities(response)[0];

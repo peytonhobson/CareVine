@@ -48,6 +48,7 @@ export const SingleBookingCalendar = props => {
         }
         value={initialDate}
         calendarType="Hebrew"
+        showNeighboringMonth={false}
       />
       {children}
     </div>

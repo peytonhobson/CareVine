@@ -72,6 +72,7 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
           bookingFee,
           amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
           date: moment(lineItem.date).format('MM/DD'),
+          fullDate: lineItem.date,
         };
       });
 

@@ -157,6 +157,7 @@ export const BookingCalendar = props => {
         }
         value={firstUnavailableDate || initialDate}
         calendarType="Hebrew"
+        showNeighboringMonth={false}
       />
       {children}
     </div>

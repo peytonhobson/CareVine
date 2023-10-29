@@ -55,7 +55,9 @@ const NotificationNewBookingRequest = props => {
 
   useEffect(() => {
     if (txId) {
-      onFetchTransaction(txId);
+      onFetchTransaction(txId, {
+        include: ['booking', 'customer', 'customer.profileImage', 'provider', 'listing'],
+      });
     }
   }, [txId]);
 
