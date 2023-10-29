@@ -37,6 +37,13 @@ const BLOG = `
         attributes {
           slug
           title
+          plainHero {
+            data {
+              attributes {
+                url
+              }
+            }
+          }
           hero {
             data {
               attributes {
@@ -52,7 +59,7 @@ const BLOG = `
   }
 `;
 
-const SectionBlog = props => {
+const SectionBlog = () => {
   const classes = useStyles();
 
   const containerRef = useRef(null);
@@ -66,10 +73,12 @@ const SectionBlog = props => {
 
   const blogCardProps = data?.blogs?.data.map((blog, index) => {
     return {
-      hero: blog.attributes.hero?.data?.attributes?.url,
+      hero:
+        blog.attributes.plainHero?.data?.attributes?.url ||
+        blog.attributes.hero?.data?.attributes?.url,
       title: blog.attributes.title,
       slug: blog.attributes.slug,
-      description: index === 0 ? blog.attributes.description : null,
+      description: index === 0 && !isMobile ? blog.attributes.description : null,
     };
   });
 
@@ -80,15 +89,9 @@ const SectionBlog = props => {
           <section className={css.blogSection}>
             <h2 className={css.contentTitle}>Recent Blog Posts</h2>
             <div className={css.blogCardContainer}>
-              {data?.blogs?.data.map(blog => {
-                const blogCardProps = {
-                  hero: blog.attributes.hero?.data?.attributes?.url,
-                  title: blog.attributes.title,
-                  slug: blog.attributes.slug,
-                };
-
-                return <BlogCard {...blogCardProps} key={blogCardProps.title} />;
-              })}
+              {blogCardProps.map(blogProps => (
+                <BlogCard {...blogProps} key={blogProps.title} />
+              ))}
             </div>
           </section>
         ) : (
