@@ -412,7 +412,12 @@ const endRecurring = async transaction => {
       id: txId,
       transition: 'transition/delivered-cancel',
       params: {
-        metadata: refundMetadata,
+        metadata: {
+          ...refundMetadata,
+          endDate: moment()
+            .startOf('day')
+            .format(ISO_OFFSET_FORMAT),
+        },
       },
     });
   } catch (e) {

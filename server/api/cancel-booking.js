@@ -136,8 +136,11 @@ module.exports = async (req, res) => {
         bookingStart: newBookingStart,
         bookingEnd: newBookingEnd,
         metadata: {
-          employerCancel: cancelingUserType === 'employer',
           ...metadata,
+          employerCancel: cancelingUserType === 'employer',
+          endDate: moment()
+            .startOf('day')
+            .format(ISO_OFFSET_FORMAT),
         },
       },
     });
