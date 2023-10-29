@@ -170,7 +170,7 @@
                                     {{#each transaction.metadata.refundItems}}
                                     <table
                                       class="black-text"
-                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #FFFFFF;color: #FFFFFF;"
+                                      style="width:94%;margin-top:8px;border-collapse:collapse;color: #6BA0B6; font-size:14px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #FFFFFF;color: #FFFFFF;"
                                     >
                                       <tbody>
                                         <tr>
@@ -180,20 +180,20 @@
                                           >
                                             <b
                                               >{{this.shortDay}}, {{this.date}} {{#if this.isFifty}}
-                                              <span style="color: #ff0000">(50%)</span> {{/if}}
+                                              (50% Refund) {{/if}}
                                             </b>
                                           </td>
                                         </tr>
                                         <tr>
                                           <td
                                             class="black-text"
-                                            style="font-size:14px;padding-left: 20px;color: #FFFFFF;"
+                                            style="padding-left: 20px;color: #FFFFFF;"
                                           >
                                             Base Fee Refund
                                           </td>
                                           <td
                                             class="black-text"
-                                            style="font-size:14px; padding-right: 20px;color: #FFFFFF;"
+                                            style="padding-right: 20px;color: #FFFFFF;"
                                             align="right"
                                           >
                                             ${{this.base}}
@@ -202,13 +202,13 @@
                                         <tr>
                                           <td
                                             class="black-text"
-                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px;color: #FFFFFF;"
+                                            style="padding-left: 20px; padding-bottom: 8px;color: #FFFFFF;"
                                           >
                                             Booking Fee Refund
                                           </td>
                                           <td
                                             class="black-text"
-                                            style="font-size:14px; padding-right: 20px;color: #FFFFFF;"
+                                            style="padding-right: 20px;color: #FFFFFF;"
                                             align="right"
                                           >
                                             ${{this.bookingFee}}

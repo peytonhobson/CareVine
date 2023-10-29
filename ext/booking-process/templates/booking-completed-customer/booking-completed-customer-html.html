@@ -119,7 +119,7 @@
                                     {{#each transaction.metadata.lineItems}}
                                     <table
                                       class="black-text"
-                                      style="width:94%;padding-top: 8px;border-collapse:collapse;font-size: 12px; line-height: 150%; border-bottom: 1px solid #FFFFFF; color: #FFFFFF;"
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;font-size: 14px; line-height: 150%; border-bottom: 1px solid #FFFFFF; color: #FFFFFF;"
                                     >
                                       <tbody>
                                         <tr>
@@ -133,26 +133,18 @@
                                           </td>
                                         </tr>
                                         <tr>
-                                          <td style="font-size:14px;padding-left: 20px">
+                                          <td style="padding-left: 20px">
                                             Base Fee
                                           </td>
-                                          <td
-                                            style="font-size:14px; padding-right: 20px;"
-                                            align="right"
-                                          >
+                                          <td style=" padding-right: 20px;" align="right">
                                             ${{this.amount}}
                                           </td>
                                         </tr>
                                         <tr>
-                                          <td
-                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px;"
-                                          >
+                                          <td style="padding-left: 20px; padding-bottom: 8px;">
                                             Booking Fee
                                           </td>
-                                          <td
-                                            style="font-size:14px; padding-right: 20px;"
-                                            align="right"
-                                          >
+                                          <td style=" padding-right: 20px;" align="right">
                                             ${{this.bookingFee}}
                                           </td>
                                         </tr>
@@ -161,38 +153,29 @@
                                     {{/each}}
                                     <table
                                       class="black-text"
-                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #FFFFFF;"
+                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 14px; line-height: 120%; color: #FFFFFF;"
                                     >
                                       <tr>
-                                        <td style="font-size:14px;padding-left:20px">
+                                        <td style="padding-left:20px">
                                           Total Base Fee
                                         </td>
-                                        <td
-                                          style="font-size:14px; padding-right: 20px;"
-                                          align="right"
-                                        >
+                                        <td style="padding-right: 20px;" align="right">
                                           ${{transaction.metadata.payout}}
                                         </td>
                                       </tr>
                                       <tr>
-                                        <td style="font-size:14px;padding-left: 20px">
+                                        <td style="padding-left: 20px">
                                           Total Booking Fee
                                         </td>
-                                        <td
-                                          style="font-size:14px; padding-right: 20px;"
-                                          align="right"
-                                        >
+                                        <td style=" padding-right: 20px;" align="right">
                                           ${{transaction.metadata.bookingFee}}
                                         </td>
                                       </tr>
                                       <tr>
-                                        <td style="font-size:14px;padding-left: 20px">
+                                        <td style="padding-left: 20px">
                                           Processing Fee
                                         </td>
-                                        <td
-                                          style="font-size:14px; padding-right: 20px;"
-                                          align="right"
-                                        >
+                                        <td style="padding-right: 20px;" align="right">
                                           ${{transaction.metadata.processingFee}}
                                         </td>
                                       </tr>

@@ -90,7 +90,7 @@ const bookingSchedule = [
     endTime: '5:00pm',
   },
   {
-    dayOfWeek: 'wed',
+    dayOfWeek: 'tue',
     startTime: '10:00am',
     endTime: '12:00pm',
   },
