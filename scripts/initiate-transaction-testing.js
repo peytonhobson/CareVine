@@ -6,7 +6,7 @@ const {
   constructBookingMetadataRecurring,
   constructBookingMetadataOneTime,
 } = require('../server/bookingHelpers');
-const isDev = false;
+const isDev = true;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const employerUserTokenLocal = {
@@ -64,7 +64,7 @@ const bookingStart = moment(start)
   .format(ISO_OFFSET_FORMAT);
 const bookingEnd = moment(bookingStart)
   .clone()
-  .add(5, 'minutes')
+  .add(15, 'minutes')
   .format(ISO_OFFSET_FORMAT);
 
 console.log(bookingStart);
@@ -85,13 +85,13 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'sun',
+    dayOfWeek: 'mon',
     startTime: '4:00am',
     endTime: '5:00pm',
   },
   {
-    dayOfWeek: 'fri',
-    startTime: '11:00am',
+    dayOfWeek: 'wed',
+    startTime: '10:00am',
     endTime: '12:00pm',
   },
 ];
@@ -168,6 +168,7 @@ const main = async () => {
 
     console.log('SUCCESS');
   } catch (err) {
+    console.log(err);
     if (err?.data?.errors) {
       console.log(err.data.errors);
     }
