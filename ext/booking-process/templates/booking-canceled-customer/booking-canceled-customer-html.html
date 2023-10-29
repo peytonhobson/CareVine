@@ -178,7 +178,10 @@
                                             class="black-text"
                                             style="vertical-align:top; padding-left: 20px;color: #FFFFFF;"
                                           >
-                                            <b>{{this.date}} {{#if this.isFifty}} (50%) {{/if}} </b>
+                                            <b
+                                              >{{this.shortDay}}, {{this.date}} {{#if this.isFifty}}
+                                              <span style="color: #ff0000">(50%)</span> {{/if}}
+                                            </b>
                                           </td>
                                         </tr>
                                         <tr>

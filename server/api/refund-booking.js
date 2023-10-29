@@ -66,6 +66,7 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
           : parseFloat(lineItem.amount).toFixed(2);
         const bookingFee = parseFloat(base * BOOKING_FEE_PERCENTAGE).toFixed(2);
         return {
+          shortDay: moment(lineItem.date).format('ddd'),
           isFifty,
           base,
           bookingFee,
