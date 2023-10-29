@@ -907,34 +907,19 @@ export const getAvailableStartDates = endDate => day => {
   return true;
 };
 
-const TODAY = new Date();
-
-export const filterAvailableBookingStartDates = (
-  endDate,
-  bookedDays,
-  bookedDates,
-  bookingSchedule
-) => date => {
+export const filterAvailableBookingStartDates = (endDate, bookingSchedule) => date => {
   const isAfterOrSameDay = checkIsDateWithinBookingWindow({
     date,
     endDate,
     startDate: moment().add(1, 'days'),
   });
-  const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
   const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule);
 
   return !isAfterOrSameDay || isBooked || !inBookingSchedule;
 };
 
-export const filterAvailableBookingEndDates = (
-  startDate,
-  bookedDays,
-  bookedDates,
-  bookingSchedule,
-  exceptions
-) => date => {
+export const filterAvailableBookingEndDates = (startDate, bookingSchedule, exceptions) => date => {
   const isAfterOrSameStartDate = checkIsDateWithinBookingWindow({ date, endDate: null, startDate });
-  const isBooked = checkIsBlockedDay({ bookedDays, bookedDates, date });
   const inBookingSchedule = checkIsDateInBookingSchedule(date, bookingSchedule, exceptions);
 
   return isBooked || !isAfterOrSameStartDate || !inBookingSchedule;

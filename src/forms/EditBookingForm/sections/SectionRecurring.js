@@ -93,12 +93,7 @@ const SectionRecurring = props => {
             placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
-            isDayBlocked={filterAvailableBookingStartDates(
-              endDay,
-              bookedDays,
-              bookedDates,
-              weekdays
-            )}
+            isDayBlocked={filterAvailableBookingStartDates(endDay, weekdays)}
             useMobileMargins
             showErrorMessage={false}
             disabled={startDateDisabled}
@@ -113,13 +108,7 @@ const SectionRecurring = props => {
               placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
               format={formatFieldDateInput(timezone)}
               parse={parseFieldDateInput(timezone)}
-              isDayBlocked={filterAvailableBookingEndDates(
-                startDay,
-                bookedDays,
-                bookedDates,
-                weekdays,
-                values.exceptions
-              )}
+              isDayBlocked={filterAvailableBookingEndDates(startDay, weekdays, values.exceptions)}
               useMobileMargins
               showErrorMessage={false}
               disabled={!startDate || !startDate.date}
