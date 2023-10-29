@@ -96,7 +96,7 @@ module.exports = async (req, res) => {
   try {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
 
-    const { chargedLineItems = [], paymentIntentId } = transaction.attributes.metadata;
+    const { paymentIntentId } = transaction.attributes.metadata;
 
     const lastTransition = transaction.attributes.lastTransition;
 

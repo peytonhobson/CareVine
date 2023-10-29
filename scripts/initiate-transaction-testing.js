@@ -64,7 +64,7 @@ const bookingStart = moment(start)
   .format(ISO_OFFSET_FORMAT);
 const bookingEnd = moment(bookingStart)
   .clone()
-  .add(15, 'minutes')
+  .add(5, 'minutes')
   .format(ISO_OFFSET_FORMAT);
 
 console.log(bookingStart);
@@ -85,7 +85,7 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'mon',
+    dayOfWeek: 'sun',
     startTime: '4:00am',
     endTime: '5:00pm',
   },
@@ -93,6 +93,11 @@ const bookingSchedule = [
     dayOfWeek: 'wed',
     startTime: '10:00am',
     endTime: '12:00pm',
+  },
+  {
+    dayOfWeek: 'fri',
+    startTime: '10:00am',
+    endTime: '2:00pm',
   },
 ];
 const bookingRate = 23;

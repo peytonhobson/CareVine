@@ -29,11 +29,9 @@ const mapLineItemsForCancellationCustomer = lineItems => {
     })
     .filter(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return (
-        moment()
-          .add(2, 'days')
-          .isAfter(startTime) && moment().isBefore(startTime)
-      );
+      return moment()
+        .add(2, 'days')
+        .isAfter(startTime);
     });
 };
 
