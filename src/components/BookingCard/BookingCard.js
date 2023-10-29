@@ -105,6 +105,7 @@ const BookingCardComponent = props => {
     intl,
     onFetchCurrentUserListing,
     onResetTransactionsInitialState,
+    currentTab,
   } = props;
 
   const txId = booking.id.uuid;
@@ -138,15 +139,16 @@ const BookingCardComponent = props => {
     dispatch({ type: SET_OPEN_MODAL_TYPE, payload: modalType });
   };
 
-  const handleModalClose = (fetchAll = false) => {
+  const handleModalClose = (fetchAll = false, fetchAllTab) => {
     dispatch({ type: CLOSE_MODAL });
 
     onResetInitialState();
     onResetTransactionsInitialState();
     onFetchCurrentUserListing();
 
-    if (fetchAll) {
-      onFetchBookings();
+    // Fetch all must be equal to true to not be triggered by event
+    if (fetchAll === true) {
+      onFetchBookings(fetchAllTab);
     } else {
       onFetchBooking(txId);
     }
@@ -249,7 +251,7 @@ const BookingCardComponent = props => {
       openModal = (
         <CancelBookingModal
           isOpen={state.openModalType === MODAL_TYPES.CANCEL}
-          onClose={() => handleModalClose(true)}
+          onClose={() => handleModalClose(true, currentTab)}
           otherUserDisplayName={otherUserDisplayName}
           userType={userType}
           booking={booking}

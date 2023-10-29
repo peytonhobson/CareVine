@@ -124,6 +124,7 @@ const BookingsPage = props => {
     onResetTransactionsInitialState,
     userType,
     onFetchBooking,
+    currentTab: selectedTab,
   };
 
   const handleChangeTab = tab => {

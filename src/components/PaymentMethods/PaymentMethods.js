@@ -85,11 +85,7 @@ const BookingPaymentComponent = props => {
         bankAccount => bankAccount.id === initialPaymentMethodId
       );
 
-      console.log(initialPaymentMethodId);
-      console.log(defaultPaymentMethods);
-
       if (isCard) {
-        console.log('setting card');
         setSelectedTab(CREDIT_CARD);
       }
 

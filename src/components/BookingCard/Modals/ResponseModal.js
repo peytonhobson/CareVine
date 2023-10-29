@@ -71,7 +71,7 @@ const ResponseModal = props => {
       title="Respond to Booking"
       id="RespondModal"
       isOpen={isOpen}
-      onClose={declineBookingSuccess ? onClose : () => onClose(true)}
+      onClose={declineBookingSuccess || acceptBookingSuccess ? () => onClose(true) : onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
       containerClassName={css.modalContainer}

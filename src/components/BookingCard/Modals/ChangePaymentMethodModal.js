@@ -25,10 +25,21 @@ const ChangePaymentMethodModal = props => {
   } = props;
 
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const [showNoPaymentMethodError, setShowNoPaymentMethodError] = useState(false);
 
   const isLarge = useMediaQuery('(min-width:1024px)');
 
+  const handleChangePaymentMethod = paymentMethod => {
+    setPaymentMethod(paymentMethod);
+    setShowNoPaymentMethodError(false);
+  };
+
   const handleUpdatePaymentMethod = () => {
+    if (!paymentMethod?.id) {
+      setShowNoPaymentMethodError(true);
+      return;
+    }
+
     onUpdateBooking(booking, { paymentMethodId: paymentMethod.id });
   };
 
@@ -55,11 +66,14 @@ const ChangePaymentMethodModal = props => {
         isLarge={isLarge}
         onManageDisableScrolling={onManageDisableScrolling}
         hideDisclaimer
-        onChangePaymentMethod={setPaymentMethod}
+        onChangePaymentMethod={handleChangePaymentMethod}
         booking={booking}
       />
       {updateBookingMetadataError ? (
         <p className="text-error">Failed to update payment method. Please try again.</p>
+      ) : null}
+      {showNoPaymentMethodError ? (
+        <p className="text-error">Please select or add a payment method.</p>
       ) : null}
       <div className={css.modalButtonContainer}>
         {updateBookingMetadataSuccess ? (
