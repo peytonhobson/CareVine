@@ -264,17 +264,13 @@ module.exports = queryEvents = () => {
         createBookingPayment(transaction);
       }
 
-      console.log(lastTransition);
-
       // TODO: Test this to see if it gives proper payout amount
       // TODO: Make sure wfnw is handled properly for uncharged bookings. May need to update line items
       if (
         lastTransition === 'transition/charged-cancel' ||
         lastTransition === 'transition/delivered-cancel' ||
         lastTransition === 'transition/wfnw-cancel' ||
-        lastTransition === 'transition/accepted-cancel'
       ) {
-        console.log('here');
         createCaregiverPayout(transaction);
       }
 
