@@ -90,6 +90,55 @@ const updateListing = async ({ listingId, transaction }) => {
   }
 };
 
+const transitionBooking = async ({
+  txId,
+  lastTransition,
+  metadata,
+  cancelingUserType,
+  newBookingEnd,
+}) => {
+  try {
+    const newBookingStart = moment(newBookingEnd)
+      .subtract(5, 'minutes')
+      .format(ISO_OFFSET_FORMAT);
+
+    const response = await integrationSdk.transactions.transition({
+      id: txId,
+      transition: cancelTransitionMap[lastTransition],
+      params: {
+        bookingStart: newBookingStart,
+        bookingEnd: newBookingEnd,
+        metadata: {
+          ...metadata,
+          employerCancel: cancelingUserType === 'employer',
+          endDate: moment()
+            .startOf('day')
+            .format(ISO_OFFSET_FORMAT),
+        },
+      },
+    });
+
+    return response;
+  } catch (e) {
+    // Add another five minutes to booking end if not available
+    if (e.data.errors[0].code === 'transaction-booking-time-not-available') {
+      const bookingEnd = moment(newBookingEnd)
+        .add(5 - (now.minute() % 5), 'minutes')
+        .set({ second: 0, millisecond: 0 })
+        .format(ISO_OFFSET_FORMAT);
+      transitionBooking({
+        txId,
+        lastTransition,
+        metadata,
+        cancelingUserType,
+        newBookingEnd: bookingEnd,
+      });
+    } else {
+      throw e;
+    }
+  }
+};
+
 module.exports = async (req, res) => {
   const { txId, listingId, cancelingUserType } = req.body;
 
@@ -116,36 +165,17 @@ module.exports = async (req, res) => {
 
     const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
 
-    const isActive = activeTransitions.includes(lastTransition);
+    const newBookingEnd = isActivemoment()
+      .add(5 - (now.minute() % 5), 'minutes')
+      .set({ second: 0, millisecond: 0 })
+      .format(ISO_OFFSET_FORMAT);
 
-    // Change booking end to half hour mark to not interfere with any other booking start/end times
-    // Otherwise it can throw error if booking time is taken
-    const newBookingEnd = isActive
-      ? moment()
-          .add(1, 'hour')
-          .set({ minutes: '30', second: 0, millisecond: 0 })
-          .format(ISO_OFFSET_FORMAT)
-      : null;
-    const newBookingStart = isActive
-      ? moment(newBookingEnd)
-          .subtract(5, 'minutes')
-          .format(ISO_OFFSET_FORMAT)
-      : null;
-
-    const response = await integrationSdk.transactions.transition({
-      id: txId,
-      transition: cancelTransitionMap[lastTransition],
-      params: {
-        bookingStart: newBookingStart,
-        bookingEnd: newBookingEnd,
-        metadata: {
-          ...metadata,
-          employerCancel: cancelingUserType === 'employer',
-          endDate: moment()
-            .startOf('day')
-            .format(ISO_OFFSET_FORMAT),
-        },
-      },
+    const response = await transitionBooking({
+      txId,
+      lastTransition,
+      metadata,
+      cancelingUserType,
+      newBookingEnd,
     });
 
     // Update listing metadata to remove cancelled booking dates/days
