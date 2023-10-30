@@ -533,10 +533,7 @@ export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk)
     log.error(e, 'fetch-default-payment-failed', {});
   };
 
-  const customerId =
-    stripeCustomerId || getState().user.currentUser.stripeCustomer?.attributes.stripeCustomerId;
-
-  return stripePaymentMethods({ stripeCustomerId: customerId })
+  return stripePaymentMethods({ stripeCustomerId })
     .then(handleSuccess)
     .catch(handleError);
 };

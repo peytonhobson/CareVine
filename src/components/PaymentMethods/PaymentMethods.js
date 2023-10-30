@@ -75,8 +75,10 @@ const BookingPaymentComponent = props => {
   const stripeCustomerId = stripeCustomer.attributes.stripeCustomerId;
 
   useEffect(() => {
-    onFetchDefaultPayment();
-  }, []);
+    if (stripeCustomerId) {
+      onFetchDefaultPayment();
+    }
+  }, [stripeCustomerId]);
 
   useEffect(() => {
     if (initialPaymentMethodId) {
