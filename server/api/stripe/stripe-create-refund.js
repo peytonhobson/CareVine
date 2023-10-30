@@ -25,11 +25,15 @@ module.exports = (req, res) => {
             stripe.applicationFees
               .createRefund(applicationFeeId, { amount: applicationFeeRefund })
               .catch(e => {
-                log.error('Error refunding application fee', e);
+                log.error(e, 'Error refunding application fee', {
+                  applicationFeeId,
+                  amount,
+                  applicationFeeRefund,
+                });
               });
           })
           .catch(e => {
-            log.error('Error listing application fees', e);
+            log.error(e, 'Error listing application fees', { paymentIntentId });
           });
       }
 
