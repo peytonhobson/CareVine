@@ -165,7 +165,7 @@ module.exports = async (req, res) => {
 
     const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
 
-    const newBookingEnd = isActivemoment()
+    const newBookingEnd = moment()
       .add(5 - (now.minute() % 5), 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);

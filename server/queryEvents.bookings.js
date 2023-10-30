@@ -386,7 +386,7 @@ const updateNextWeek = async transaction => {
       });
     }
   } catch (e) {
-    log.error(e?.data, 'update-next-week-start-failed', {});
+    log.error(e, 'update-next-week-start-failed', { errors: e?.data?.errors });
   }
 };
 
