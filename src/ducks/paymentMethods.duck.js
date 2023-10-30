@@ -523,6 +523,11 @@ export const createCreditCard = (
 export const fetchDefaultPayment = stripeCustomerId => (dispatch, getState, sdk) => {
   dispatch(fetchDefaultPaymentRequest());
 
+  if (!stripeCustomerId) {
+    dispatch(fetchDefaultPaymentSuccess([]));
+    return;
+  }
+
   const handleSuccess = response => {
     dispatch(fetchDefaultPaymentSuccess(response.data.data));
     return response;
