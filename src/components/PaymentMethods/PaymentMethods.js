@@ -149,11 +149,11 @@ const BookingPaymentComponent = props => {
 
         if (!stripeCustomerId) {
           return onFetchStripeCustomer();
+        } else {
+          onFetchDefaultPayment(stripeCustomerId);
         }
-        return;
       })
       .then(() => {
-        onFetchDefaultPayment(stripeCustomerId);
         setIsSubmitting(false);
       })
       .catch(error => {
@@ -299,7 +299,7 @@ const BookingPaymentComponent = props => {
             </div>
           ) : fetchDefaultPaymentError ? (
             fetchDefaultPaymentErrorMessage
-          ) : fetchDefaultPaymentInProgress ? (
+          ) : fetchDefaultPaymentInProgress && !createCreditCardInProgress ? (
             <IconSpinner />
           ) : (
             <>

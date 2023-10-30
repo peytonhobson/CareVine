@@ -1026,13 +1026,14 @@ export const updateCustomerCreditBalance = (referralCode, amount) => (dispatch, 
 export const stripeCustomer = () => (dispatch, getState, sdk) => {
   dispatch(fetchStripeCustomerRequest());
 
-  return dispatch(fetchCurrentUser({ include: ['stripeCustomer.defaultPaymentMethod'] }))
+  return dispatch(fetchCurrentUser({ include: ['stripeCustomer'] }))
     .then(response => {
       dispatch(fetchStripeCustomerSuccess());
       return response;
     })
     .catch(e => {
       const error = storableError(e);
+      s;
       log.error(error, 'fetch-stripe-customer-failed');
       dispatch(fetchStripeCustomerError(error));
     });
