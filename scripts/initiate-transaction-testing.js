@@ -87,8 +87,8 @@ const bookingSchedule = [
   {
     dayOfWeek: 'tue',
     dayOfWeekFull: 'Tuesday',
-    startTime: '5:00pm',
-    endTime: '6:00pm',
+    startTime: '7:00pm',
+    endTime: '11:00pm',
   },
   {
     dayOfWeek: 'fri',
