@@ -256,7 +256,7 @@ const makeReviewable = async transaction => {
   }
 };
 
-const updateBookingLedger = async transaction => {
+const updateBookingLedger = transaction => {
   const {
     lineItems,
     paymentMethodType,
@@ -351,7 +351,7 @@ const updateNextWeek = async transaction => {
     exceptions
   );
 
-  const newLedger = await updateBookingLedger(transaction);
+  const newLedger = updateBookingLedger(transaction);
 
   // Update bookingStart to be next week start time
   try {

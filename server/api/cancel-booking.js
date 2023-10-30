@@ -23,12 +23,6 @@ const nonPaidTransitions = [
   'transition/request-update-start',
 ];
 
-const activeTransitions = [
-  'transition/start',
-  'transition/update-next-week-start',
-  'transition/active-update-booking-end',
-];
-
 const requestTransitions = ['transition/request-booking', 'transition/request-update-start'];
 
 const createRefund = async params => {
@@ -100,7 +94,10 @@ const transitionBooking = async ({
   try {
     const newBookingStart = moment(newBookingEnd)
       .subtract(5, 'minutes')
+      .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
+
+    console.log(newBookingStart);
 
     const response = await integrationSdk.transactions.transition({
       id: txId,
@@ -127,6 +124,7 @@ const transitionBooking = async ({
         .add(5 - (moment().minute() % 5), 'minutes')
         .set({ second: 0, millisecond: 0 })
         .format(ISO_OFFSET_FORMAT);
+
       return transitionBooking({
         txId,
         lastTransition,
