@@ -109,6 +109,7 @@ const transitionBooking = async ({
         metadata: {
           ...metadata,
           employerCancel: cancelingUserType === 'employer',
+          // TODO: This can cause end date to be set as past day
           endDate: moment()
             .startOf('day')
             .format(ISO_OFFSET_FORMAT),

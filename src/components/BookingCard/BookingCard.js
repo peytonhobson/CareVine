@@ -285,6 +285,7 @@ const BookingCardComponent = props => {
         <DisputeModal
           isOpen={state.openModalType === MODAL_TYPES.DISPUTE}
           onClose={handleModalClose}
+          booking={booking}
         />
       );
       break;

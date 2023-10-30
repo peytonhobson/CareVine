@@ -18,6 +18,7 @@ const DisputeModal = props => {
     disputeBookingError,
     disputeBookingSuccess,
     onDisputeBooking,
+    booking,
   } = props;
 
   const handleDisputeBooking = values => {
