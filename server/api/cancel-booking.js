@@ -121,6 +121,7 @@ const transitionBooking = async ({
     return response;
   } catch (e) {
     // Add another five minutes to booking end if not available
+    console.log(e?.data?.errors?.[0]?.code);
     if (e?.data?.errors?.[0]?.code === 'transaction-booking-time-not-available') {
       const bookingEnd = moment(newBookingEnd)
         .add(5 - (moment().minute() % 5), 'minutes')
@@ -166,7 +167,7 @@ module.exports = async (req, res) => {
     const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
 
     const newBookingEnd = moment()
-      .add(5 - (now.minute() % 5), 'minutes')
+      .add(5 - (moment().minute() % 5), 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
 
