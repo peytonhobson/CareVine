@@ -269,6 +269,10 @@ const updateNextWeek = async transaction => {
     bookingScheduleChange,
   } = transaction.attributes.metadata;
 
+  const lastTransition = transaction.attributes.lastTransition;
+
+  if (lastTransition !== 'transition/complete') return;
+
   let appliedDateWithinWeek = false;
   if (bookingScheduleChange) {
     const nextWeekStart = moment()

@@ -436,8 +436,7 @@ const updateBookedDays = async ({ txId, bookingSchedule, startDate, endDate, exc
       },
     });
   } catch (e) {
-    console.error(e, 'failed to update booked days');
-    throw e;
+    log.error(e, 'update-booked-days-failed', {});
   }
 };
 

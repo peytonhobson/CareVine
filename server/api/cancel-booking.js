@@ -97,7 +97,8 @@ const transitionBooking = async ({
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
 
-    console.log(newBookingStart);
+    console.log('newBookingEnd', newBookingEnd);
+    console.log('newBookingStart', newBookingStart);
 
     const response = await integrationSdk.transactions.transition({
       id: txId,
