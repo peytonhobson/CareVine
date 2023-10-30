@@ -179,10 +179,10 @@ const BookingCardComponent = props => {
     bookingLedger.length > 0 && bookingLedger[bookingLedger.length - 1].dispute;
   const isDisputable =
     bookingLedger.length > 0 &&
-    bookingLedger[bookingLedger.length - 1].end &&
+    bookingLedger[bookingLedger.length - 1].createdAt &&
     moment()
       .subtract(2, 'days')
-      .isBefore(bookingLedger[bookingLedger.length - 1].end) &&
+      .isBefore(bookingLedger[bookingLedger.length - 1].createdAt) &&
     !hasCurrentDispute;
 
   const availableActions = {
@@ -412,7 +412,7 @@ export const BookingCardMenu = () => {
       lastTransition === TRANSITION_REQUEST_UPDATE_START) &&
     userType === CAREGIVER;
 
-  const showActions = Object.values(availableActions).some(action => action);
+  const showActions = Object.values(availableActions).some(Boolean);
 
   return (
     <>

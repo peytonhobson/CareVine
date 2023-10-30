@@ -477,6 +477,7 @@ const updateBookingLedger = transaction => {
       startTime: item.startTime,
       endTime: item.endTime,
     })),
+    createdAt: moment().format(ISO_OFFSET_FORMAT),
   };
 
   return [...ledger, ledgerEntry];
