@@ -117,10 +117,13 @@ module.exports = async (req, res) => {
     const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
 
     const isActive = activeTransitions.includes(lastTransition);
+
+    // Change booking end to half hour mark to not interfere with any other booking start/end times
+    // Otherwise it can throw error if booking time is taken
     const newBookingEnd = isActive
       ? moment()
-          .add(5 - (moment().minute() % 5), 'minutes')
-          .set({ second: 0, millisecond: 0 })
+          .add(1, 'hour')
+          .set({ minutes: '30', second: 0, millisecond: 0 })
           .format(ISO_OFFSET_FORMAT)
       : null;
     const newBookingStart = isActive

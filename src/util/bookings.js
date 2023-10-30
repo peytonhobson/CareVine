@@ -572,8 +572,6 @@ export const updateBookedDays = async ({
       newBookedDays = bookedDays.filter(d => d.txId !== txId);
     }
 
-    console.log('newBookedDays', newBookedDays);
-
     await updateListingMetadata({
       listingId,
       metadata: {

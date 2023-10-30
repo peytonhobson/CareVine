@@ -182,6 +182,7 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
+        // TODO: Put back
         // bookingStart,
         // bookingEnd,
         metadata: {
