@@ -15,7 +15,6 @@ const calculateBookingFee = subTotal =>
   parseFloat(Number(subTotal) * BOOKING_FEE_PERCENTAGE).toFixed(2);
 
 const mapRefundItems = (chargedLineItems, cancelDate) => {
-  console.log('chargedLineItems', chargedLineItems);
   return chargedLineItems.reduce((acc, curr) => {
     const refundedLineItems = curr.lineItems
       .filter(l => {

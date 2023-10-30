@@ -86,7 +86,7 @@ const exceptions = {
 const bookingSchedule = [
   {
     dayOfWeek: 'tue',
-    startTime: '10:00am',
+    startTime: '12:00am',
     endTime: '12:00pm',
   },
   {
