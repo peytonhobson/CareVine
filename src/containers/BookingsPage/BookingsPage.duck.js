@@ -352,6 +352,7 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
         marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
         providerName: booking.provider.attributes.profile.displayName,
         bookingId: bookingId,
+        bookingNumber: booking.attributes.metadata.bookingNumber,
       },
       templateName: 'dispute-in-review',
     });
@@ -361,6 +362,8 @@ export const disputeBooking = (booking, disputeReason) => async (dispatch, getSt
       templateData: {
         marketplaceUrl: process.env.REACT_APP_CANONICAL_ROOT_URL,
         customerName: booking.customer.attributes.profile.displayName,
+        bookingId: bookingId,
+        bookingNumber: booking.attributes.metadata.bookingNumber,
       },
       templateName: 'customer-disputed',
     });
