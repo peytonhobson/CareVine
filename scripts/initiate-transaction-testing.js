@@ -90,6 +90,11 @@ const bookingSchedule = [
     endTime: '5:00pm',
   },
   {
+    dayOfWeek: 'mon',
+    startTime: '4:00am',
+    endTime: '11:00am',
+  },
+  {
     dayOfWeek: 'tue',
     startTime: '10:00am',
     endTime: '12:00pm',
@@ -105,7 +110,9 @@ const paymentMethodType = 'us_bank_account';
 
 const metadata = constructBookingMetadataRecurring(
   bookingSchedule,
-  moment().startOf('week'),
+  moment()
+    .startOf('week')
+    .subtract(1, 'week'),
   null,
   bookingRate,
   paymentMethodType,
@@ -125,7 +132,10 @@ const BODY_PARAMS = {
     bookingEnd,
     metadata: {
       bookingSchedule,
-      startDate: start.startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+      startDate: start
+        .startOf('day')
+        .subtract(1, 'week')
+        .format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
       endDate: null,
       cancelAtPeriodEnd: false,
       type: 'recurring',
