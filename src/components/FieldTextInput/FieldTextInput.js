@@ -108,8 +108,6 @@ class FieldTextInputComponent extends Component {
           ...getIOSInputEventHandlers(),
         };
 
-    console.log(fieldMeta);
-
     const classes = classNames(rootClassName || css.root, className);
     return (
       <div className={classes}>

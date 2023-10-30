@@ -76,7 +76,7 @@ const BookingPaymentComponent = props => {
 
   useEffect(() => {
     if (stripeCustomerId) {
-      onFetchDefaultPayment();
+      onFetchDefaultPayment(stripeCustomerId);
     }
   }, [stripeCustomerId]);
 
