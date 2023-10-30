@@ -232,9 +232,9 @@ export const sortCaregiverMatch = (caregiverListing, employerListing) => {
   cgScore += cgExperienceAreasScore;
 
   const cgOpenToLiveIn = cgPublicData.openToLiveIn;
-  const employerCareSchedule = employerPublicData.careSchedule;
+  const employerCareSchedule = employerPublicData?.careSchedule || {};
 
-  if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
+  if (employerCareSchedule?.liveIn && cgOpenToLiveIn) {
     cgScore += 20;
   }
 
@@ -317,7 +317,7 @@ export const sortEmployerMatch = (employerListing, caregiverListing) => {
   empScore += employerExperienceAreasScore;
 
   const cgOpenToLiveIn = cgPublicData.openToLiveIn;
-  const employerCareSchedule = employerPublicData.careSchedule;
+  const employerCareSchedule = employerPublicData.careSchedule || {};
 
   if (employerCareSchedule.liveIn && cgOpenToLiveIn) {
     empScore += 20;

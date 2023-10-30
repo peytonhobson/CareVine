@@ -26,7 +26,7 @@ import { useMediaQuery } from '@mui/material';
 import shareImage from '../../assets/Background_Share_Image.png';
 import css from './LandingPage.module.css';
 
-const isDev = process.env.REACT_APP_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development';
 
 export const LandingPageComponent = props => {
   const {
@@ -35,7 +35,6 @@ export const LandingPageComponent = props => {
     location,
     scrollingDisabled,
     currentUserListing,
-    currentUserListingFetched,
     currentUser,
     currentUserFetched,
     onManageDisableScrolling,
