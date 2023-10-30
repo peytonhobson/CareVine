@@ -164,7 +164,9 @@ module.exports = async (req, res) => {
     }
 
     const refundMetadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
-    const ledger = updateBookingLedger(transaction);
+    const ledgerMaybe = !nonPaidTransitions.includes(lastTransition)
+      ? { ledger: updateBookingLedger(transaction) }
+      : {};
 
     const newBookingEnd = moment()
       .add(5 - (moment().minute() % 5), 'minutes')
@@ -176,7 +178,7 @@ module.exports = async (req, res) => {
       lastTransition,
       metadata: {
         ...refundMetadata,
-        ledger,
+        ...ledgerMaybe,
       },
       cancelingUserType,
       newBookingEnd,
