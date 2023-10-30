@@ -441,6 +441,48 @@ const updateBookedDays = async ({ txId, bookingSchedule, startDate, endDate, exc
   }
 };
 
+const updateBookingLedger = transaction => {
+  const {
+    lineItems,
+    paymentMethodType,
+    bookingRate,
+    paymentMethodId,
+    paymentIntentId,
+    refundAmount,
+    ledger = [],
+  } = transaction.attributes.metadata;
+
+  const amount = parseFloat(
+    lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0)
+  ).toFixed(2);
+  const bookingFee = parseInt(Math.round(amount * BOOKING_FEE_PERCENTAGE));
+  const processingFee =
+    paymentMethodType === 'Bank Account'
+      ? parseFloat(Math.round(amount * 0.008)).toFixed(2)
+      : parseFloat(Math.round(amount * 0.029) + 0.3).toFixed(2);
+
+  const ledgerEntry = {
+    bookingRate,
+    paymentMethodId,
+    paymentMethodType,
+    bookingFee,
+    processingFee,
+    paymentIntentId,
+    totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(amount)).toFixed(
+      2
+    ),
+    payout: parseFloat(amount).toFixed(2),
+    refundAmount: refundAmount ? refundAmount : null,
+    lineItems: lineItems.map(item => ({
+      date: item.date,
+      startTime: item.startTime,
+      endTime: item.endTime,
+    })),
+  };
+
+  return [...ledger, ledgerEntry];
+};
+
 module.exports = {
   filterWeeklyBookingDays,
   checkForExceptions,
@@ -454,4 +496,5 @@ module.exports = {
   addTimeToStartOfDay,
   findNextWeekStartTime,
   updateBookedDays,
+  updateBookingLedger,
 };

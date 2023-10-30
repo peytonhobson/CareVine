@@ -1,5 +1,5 @@
 const { apiBaseUrl, integrationSdk, handleError } = require('../api-util/sdk');
-const { addTimeToStartOfDay } = require('../bookingHelpers');
+const { udpateBookingLedger, updateBookingLedger } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');
@@ -162,7 +162,8 @@ module.exports = async (req, res) => {
       };
     }
 
-    const metadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
+    const refundMetadata = (await createRefund({ txId, cancelingUserType }))?.data?.metadata;
+    const ledger = updateBookingLedger(transaction);
 
     const newBookingEnd = moment()
       .add(5 - (moment().minute() % 5), 'minutes')
@@ -172,7 +173,10 @@ module.exports = async (req, res) => {
     const response = await transitionBooking({
       txId,
       lastTransition,
-      metadata,
+      metadata: {
+        ...refundMetadata,
+        ledger,
+      },
       cancelingUserType,
       newBookingEnd,
     });
