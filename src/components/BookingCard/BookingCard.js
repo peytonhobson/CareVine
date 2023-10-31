@@ -1,13 +1,6 @@
 import React, { useReducer, useMemo, createContext, useContext } from 'react';
 
-import {
-  Avatar,
-  UserDisplayName,
-  Button,
-  SecondaryButton,
-  CancelButton,
-  CancelBookingModal,
-} from '..';
+import { Avatar, UserDisplayName, Button, SecondaryButton, CancelBookingModal } from '..';
 import {
   TRANSITION_REQUEST_BOOKING,
   CANCELABLE_TRANSITIONS,
@@ -16,7 +9,6 @@ import {
   TRANSITION_REQUEST_UPDATE_START,
 } from '../../util/transaction';
 import MuiTablePagination from '@mui/material/TablePagination';
-import { useCheckMobileScreen } from '../../util/hooks';
 import { styled } from '@mui/material/styles';
 import { compose } from 'redux';
 import { injectIntl } from 'react-intl';
@@ -458,12 +450,12 @@ export const BookingCardMenu = () => {
               Manage Booking
             </Button>
           ) : null}
-          <Button
+          <SecondaryButton
             className="min-h-0 py-4 px-4 md:py-2"
             onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
           >
             Booking Details
-          </Button>
+          </SecondaryButton>
         </div>
       )}
     </>

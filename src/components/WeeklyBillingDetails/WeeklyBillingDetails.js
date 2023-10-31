@@ -49,8 +49,6 @@ const formatDay = (
   const isSunday = moment(date).day() === 0;
   const isSaturday = moment(date).day() === 6;
   const day = date.getDate();
-  const isLastDayOfMonth = moment(date).isSame(moment(date).endOf('month'), 'day');
-  const isFirstDayOfMonth = moment(date).isSame(moment(date).startOf('month'), 'day');
 
   return (
     <div
@@ -59,8 +57,8 @@ const formatDay = (
         [css.highlightable]: !beforeStartWeek && !afterEndWeek,
         [css.inBookingSchedule]: inBookingSchedule && !beforeStartDate && !afterEndDate,
         [css.disabled]: beforeStartWeek || afterEndWeek,
-        [css.sunday]: isSunday || isFirstDayOfMonth,
-        [css.saturday]: isSaturday || isLastDayOfMonth,
+        [css.sunday]: isSunday,
+        [css.saturday]: isSaturday,
       })}
       onMouseEnter={() => setHoveredDate(date)}
       onMouseLeave={() => setHoveredDate(null)}
@@ -158,8 +156,6 @@ export const WeeklyBillingDetails = props => {
           calendarType="Hebrew"
           view="month"
           onClickDay={handleClickDay}
-          onChange={val => console.log(val)}
-          showNeighboringMonth={false}
         />
       )}
     </div>
