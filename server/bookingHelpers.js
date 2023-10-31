@@ -195,8 +195,6 @@ const constructBookingMetadataRecurring = (
       .weekday(WEEKDAYS.indexOf(dayOfWeek))
       .format(ISO_OFFSET_FORMAT);
 
-    console.log('isoDate', isoDate);
-
     return {
       code: 'line-item/booking',
       startTime,
@@ -345,6 +343,8 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   const nextWeekLineItemStart = moment.parseZone(lineItems[0].date).add(7 * attemptNum, 'days');
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
+
+  console.log('nextWeekLineItemStart', nextWeekLineItemStart.format(ISO_OFFSET_FORMAT));
 
   // Filter exceptions for those within next week
   const insideExceptions = Object.values(exceptions)

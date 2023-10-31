@@ -160,9 +160,14 @@ const findEndTimeFromLineItems = lineItems => {
   const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
+
+  console.log('additionalTime', additionalTime);
+
   const endTime = moment
     .parseZone(sortedLineItems[sortedLineItems.length - 1].date)
     .add(additionalTime, 'hours');
+
+  console.log('endTime', endTime);
 
   return endTime;
 };
@@ -172,6 +177,7 @@ const updateBookingEnd = async transaction => {
   const { lineItems, dontUpdateBookingEnd } = transaction.attributes.metadata;
 
   const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
+
   const bookingStart = moment(bookingEnd)
     .subtract(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
@@ -295,7 +301,6 @@ const updateNextWeek = async transaction => {
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions)?.format(
     ISO_OFFSET_FORMAT
   );
-  console.log('nextWeekStartTime', moment(nextWeekStartTime).format(ISO_OFFSET_FORMAT));
 
   const bookingEnd = moment(nextWeekStartTime)
     .add(5, 'minutes')
@@ -320,12 +325,22 @@ const updateNextWeek = async transaction => {
       throw new Error('No next week start time found');
     }
 
+    console.log('nextWeekStartTime', nextWeekStartTime);
+
+    const bookingStart = moment()
+      .add(5 - (moment().minute() % 5), 'minutes')
+      .set({ second: 0, millisecond: 0 })
+      .format(ISO_OFFSET_FORMAT);
+    const newBookingEnd = moment(bookingStart)
+      .add(5, 'minutes')
+      .format(ISO_OFFSET_FORMAT);
+
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/update-next-week-start',
       params: {
-        bookingStart: nextWeekStartTime,
-        bookingEnd,
+        bookingStart,
+        bookingEnd: newBookingEnd,
         metadata: {
           ...newMetadata,
           ledger: newLedger,

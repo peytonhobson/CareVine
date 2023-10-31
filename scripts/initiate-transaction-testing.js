@@ -6,7 +6,7 @@ const {
   constructBookingMetadataRecurring,
   constructBookingMetadataOneTime,
 } = require('../server/bookingHelpers');
-const isDev = true;
+const isDev = false;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const employerUserTokenLocal = {
@@ -66,7 +66,7 @@ const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
-  .add(50 - (now.minute() % 5), 'minutes')
+  .add(5 - (now.minute() % 5), 'minutes')
   .set({ second: 0, millisecond: 0 });
 
 const bookingStart = moment(start)
@@ -74,7 +74,7 @@ const bookingStart = moment(start)
   .format(ISO_OFFSET_FORMAT);
 const bookingEnd = moment(bookingStart)
   .clone()
-  .add(15, 'minutes')
+  .add(5, 'minutes')
   .format(ISO_OFFSET_FORMAT);
 
 console.log(bookingStart);
@@ -152,6 +152,7 @@ const BODY_PARAMS = {
       providerName: 'Peyton C',
       exceptions,
       bookingNumber: '22342342',
+      dontUpdateBookingEnd: true,
       ...metadata,
       // lineItems: metadata.lineItems.map(l => ({
       //   ...l,
