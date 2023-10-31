@@ -1,5 +1,6 @@
 export { default as ActionsModal } from './ActionsModal';
 export { default as BookingCalendarModal } from './BookingCalendarModal';
+export { default as BookingDetailsModal } from './BookingDetailsModal';
 export { default as ChangeEndDateModal } from './ChangeEndDateModal/ChangeEndDateModal';
 export { default as ChangePaymentMethodModal } from './ChangePaymentMethodModal';
 export { default as DisputeModal } from './DisputeModal';
@@ -9,3 +10,4 @@ export { default as ResponseModal } from './ResponseModal';
 export { default as ModifyScheduleRecurringModal } from './ModifyScheduleRecurringModal/ModifyScheduleRecurringModal';
 export { default as ModifyExceptionsModal } from './ModifyExceptionsModal/ModifyExceptionsModal';
 export { default as ModifyScheduleSingleModal } from './ModifyScheduleSingleModal/ModifyScheduleSingleModal';
+export { default as FullWeeklyScheduleModal } from './FullWeeklyScheduleModal';

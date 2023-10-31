@@ -35,6 +35,8 @@ import {
   ModifyScheduleRecurringModal,
   ModifyExceptionsModal,
   ModifyScheduleSingleModal,
+  BookingDetailsModal,
+  FullWeeklyScheduleModal,
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
 import { v4 as uuid } from 'uuid';
@@ -54,6 +56,8 @@ const MODAL_TYPES = {
   MODIFY_SCHEDULE_RECURRING: 'modifyScheduleRecurring',
   PAYMENT_DETAILS: 'paymentDetails',
   RESPOND: 'respond',
+  BOOKING_DETAILS: 'bookingDetails',
+  FULL_WEEKLY_SCHEDULE: 'fullWeeklySchedule',
 };
 
 const BookingCardContext = createContext(null);
@@ -106,6 +110,7 @@ const BookingCardComponent = props => {
     onFetchCurrentUserListing,
     onResetTransactionsInitialState,
     currentTab,
+    isMobile,
   } = props;
 
   const txId = booking.id.uuid;
@@ -122,7 +127,7 @@ const BookingCardComponent = props => {
     type: bookingType,
   } = bookingMetadata;
 
-  const { customer, provider, listing } = booking;
+  const { customer, provider } = booking;
   const otherUser = userType === EMPLOYER ? provider : customer;
   const otherUserDisplayName = (
     <UserDisplayName user={otherUser} intl={intl} className={css.userDisplayName} />
@@ -206,8 +211,6 @@ const BookingCardComponent = props => {
         })) ?? []
     );
   }, [lineItems]);
-
-  const isMobile = useCheckMobileScreen();
 
   const contextValue = {
     userType,
@@ -358,6 +361,30 @@ const BookingCardComponent = props => {
         />
       );
       break;
+    case MODAL_TYPES.BOOKING_DETAILS:
+      openModal = (
+        <BookingDetailsModal
+          isOpen={state.openModalType === MODAL_TYPES.BOOKING_DETAILS}
+          onClose={handleModalClose}
+          booking={booking}
+          onManageDisableScrolling={onManageDisableScrolling}
+          modalTypes={MODAL_TYPES}
+          allExceptions={allExceptions}
+          onModalOpen={handleModalOpen}
+        />
+      );
+      break;
+    case MODAL_TYPES.FULL_WEEKLY_SCHEDULE:
+      openModal = (
+        <FullWeeklyScheduleModal
+          isOpen={state.openModalType === MODAL_TYPES.FULL_WEEKLY_SCHEDULE}
+          onClose={handleModalClose}
+          booking={booking}
+          onManageDisableScrolling={onManageDisableScrolling}
+          allExceptions={allExceptions}
+        />
+      );
+      break;
     default:
       openModal = null;
   }
@@ -379,7 +406,7 @@ export const BookingCardTitle = () => {
   const { bookingNumber, senderListingTitle } = booking.attributes.metadata;
 
   const TitleTag = isMobile ? 'h3' : 'h2';
-  const isCaregiver = userType === EMPLOYER;
+  const isCaregiver = userType === CAREGIVER;
 
   return (
     <div>
@@ -418,14 +445,27 @@ export const BookingCardMenu = () => {
   return (
     <>
       {showRespond ? (
-        <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}>
+        <Button className="min-h-0 py-2 px-4" onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}>
           Respond
         </Button>
-      ) : showActions ? (
-        <Button className={css.changeButton} onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}>
-          Actions
-        </Button>
-      ) : null}
+      ) : (
+        <div className="flex w-full md:w-auto gap-4 md:flex-col">
+          {showActions ? (
+            <Button
+              className="min-h-0 py-4 px-4 md:py-2"
+              onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}
+            >
+              Manage Booking
+            </Button>
+          ) : null}
+          <Button
+            className="min-h-0 py-4 px-4 md:py-2"
+            onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
+          >
+            Booking Details
+          </Button>
+        </div>
+      )}
     </>
   );
 };
@@ -441,24 +481,12 @@ export const BookingCardBody = ({ children }) => {
 export const BookingCardDateTimesContainer = ({ children }) => {
   const { booking } = useBookingCard();
 
-  const { startDate, endDate, type: scheduleType } = booking.attributes.metadata;
+  const { type: scheduleType } = booking.attributes.metadata;
 
   return (
     <div className={css.dateTimesContainer}>
-      {startDate && scheduleType === 'recurring' ? (
-        <div className="mb-4">
-          <p className="text-primary my-0 text-lg">
-            Start Date: {moment(startDate).format('dddd, MMM DD')}{' '}
-          </p>
-          {endDate ? (
-            <p className="text-primary my-0 text-lg">
-              End Date: {moment(endDate).format('dddd, MMM DD')}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-      <h2 className="mt-0">{scheduleType === 'recurring' ? 'Weekly' : null} Schedule</h2>
-      {children}
+      <h2 className="mt-0 mb-3">{scheduleType === 'recurring' ? 'Weekly' : null} Schedule</h2>
+      <div className="flex justify-between">{children}</div>
     </div>
   );
 };
@@ -560,40 +588,72 @@ export const BookingCardTablePagination = () => {
   );
 };
 
-export const BookingCardDetailsButtons = () => {
-  const { booking, handleModalOpen } = useBookingCard();
+export const BookingStartEndDates = () => {
+  const { booking } = useBookingCard();
 
-  const { type: scheduleType, exceptions = {} } = booking.attributes.metadata;
+  const { startDate, endDate, type: scheduleType } = booking.attributes.metadata;
 
-  const allExceptions = useMemo(() => {
-    return Object.values(exceptions)
-      .flat()
-      .sort(sortExceptionsByDate);
-  }, [exceptions]);
-
-  return (
-    <div className={css.viewContainer}>
-      <Button
-        className={css.viewButton}
-        onClick={() => handleModalOpen(MODAL_TYPES.PAYMENT_DETAILS)}
-      >
-        Payment Details
-      </Button>
-      {scheduleType === 'oneTime' ? (
-        <SecondaryButton
-          className={css.viewButton}
-          onClick={() => handleModalOpen(MODAL_TYPES.CALENDAR)}
-        >
-          View Calendar
-        </SecondaryButton>
-      ) : allExceptions.length ? (
-        <CancelButton
-          className={css.viewButton}
-          onClick={() => handleModalOpen(MODAL_TYPES.EXCEPTIONS)}
-        >
-          Schedule Exceptions
-        </CancelButton>
+  return startDate && scheduleType === 'recurring' ? (
+    <div className="mb-4">
+      <p className="text-primary my-0 text-lg whitespace-nowrap">
+        Start Date: {moment(startDate).format('MMM DD')}{' '}
+      </p>
+      {endDate ? (
+        <p className="text-primary my-0 text-lg whitespace-nowrap">
+          End Date: {moment(endDate).format('MMM DD')}
+        </p>
       ) : null}
     </div>
-  );
+  ) : null;
+};
+
+export const BookingScheduleMobile = () => {
+  const { booking, bookingTimes } = useBookingCard();
+
+  const { bookingSchedule, type: scheduleType } = booking.attributes.metadata;
+
+  if (scheduleType === 'recurring') {
+    return (
+      <div className="mb-10 w-full">
+        <h2 className="mt-0 mb-6 text-center underline">Weekly Schedule</h2>
+        <div className="flex justify-center flex-wrap gap-4">
+          {bookingSchedule.map(b => {
+            const { dayOfWeek } = b;
+            const formattedDayOfWeek = dayOfWeek.toUpperCase();
+
+            return (
+              <div
+                className="bg-secondary h-16 w-16 text-light rounded-full flex justify-center items-center"
+                key={dayOfWeek}
+              >
+                <h3 className="text-center">{formattedDayOfWeek}</h3>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  } else if (scheduleType === 'oneTime') {
+    return (
+      <div className="mb-10 w-full">
+        <h2 className="mt-0 mb-6 text-center underline">Schedule</h2>
+        <div className="flex justify-center flex-wrap gap-4">
+          {bookingTimes.map(time => {
+            const { date } = time;
+            const formattedDate = moment(date).format('MM/DD');
+            return (
+              <div
+                className="bg-secondary h-16 w-16 text-light rounded-full flex justify-center items-center"
+                key={date}
+              >
+                <h3>{formattedDate}</h3>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
 };

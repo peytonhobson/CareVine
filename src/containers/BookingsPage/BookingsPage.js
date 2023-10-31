@@ -27,11 +27,13 @@ import {
   BookingCardBody,
   BookingCardDateTimes,
   BookingCardDateTimesContainer,
-  BookingCardDetailsButtons,
   BookingCardTablePagination,
   BookingCardTitle,
   BookingCardMenu,
+  BookingStartEndDates,
+  BookingScheduleMobile,
 } from '../../components';
+import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BookingsPage.module.css';
 
@@ -43,19 +45,30 @@ const sortDrafts = (a, b) => {
 };
 
 const BookingCardComponent = props => {
+  const { isMobile } = props;
+
   return (
     <BookingCard {...props}>
       <BookingCardHeader>
         <BookingCardTitle />
-        <BookingCardMenu />
+        {isMobile ? null : <BookingCardMenu />}
       </BookingCardHeader>
-      <BookingCardBody>
-        <BookingCardDateTimesContainer>
-          <BookingCardDateTimes />
-          <BookingCardTablePagination />
-        </BookingCardDateTimesContainer>
-        <BookingCardDetailsButtons />
-      </BookingCardBody>
+      {isMobile ? (
+        <>
+          <BookingScheduleMobile />
+          <BookingCardMenu />
+        </>
+      ) : (
+        <BookingCardBody>
+          <BookingCardDateTimesContainer>
+            <div className="flex flex-col">
+              <BookingCardDateTimes />
+              <BookingCardTablePagination />
+            </div>
+            <BookingStartEndDates />
+          </BookingCardDateTimesContainer>
+        </BookingCardBody>
+      )}
     </BookingCard>
   );
 };
@@ -80,6 +93,8 @@ const BookingsPage = props => {
     params,
     onFetchBooking,
   } = props;
+
+  const isMobile = useCheckMobileScreen();
 
   const selectedTab = params?.tab || 'requests';
 
@@ -125,6 +140,7 @@ const BookingsPage = props => {
     userType,
     onFetchBooking,
     currentTab: selectedTab,
+    isMobile,
   };
 
   const handleChangeTab = tab => {

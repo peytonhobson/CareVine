@@ -155,7 +155,7 @@ export { default as Avatar, AvatarMedium, AvatarLarge } from './Avatar/Avatar';
 export { default as BookingBreakdown } from './BookingBreakdown/BookingBreakdown';
 export { default as SingleBookingCalendar } from './SingleBookingCalendar/SingleBookingCalendar';
 export { default as UnavailableBookingCalendar } from './UnavailableBookingCalendar/UnavailableBookingCalendar';
-export { BookingCard, BookingCardHeader, BookingCardBody, BookingCardDateTimes, BookingCardDateTimesContainer, BookingCardDetailsButtons, BookingCardTablePagination, BookingCardTitle, BookingCardMenu} from './BookingCard/BookingCard';
+export { BookingCard, BookingCardHeader, BookingCardBody, BookingCardDateTimes, BookingCardDateTimesContainer, BookingStartEndDates, BookingScheduleMobile, BookingCardTablePagination, BookingCardTitle, BookingCardMenu} from './BookingCard/BookingCard';
 export { default as BookingConfirmationCard } from './BookingConfirmationCard/BookingConfirmationCard';
 export { default as BookingDateRangeFilter } from './BookingDateRangeFilter/BookingDateRangeFilter';
 export { default as BookingDateRangeLengthFilter } from './BookingDateRangeLengthFilter/BookingDateRangeLengthFilter';

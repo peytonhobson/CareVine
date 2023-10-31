@@ -161,13 +161,9 @@ const findEndTimeFromLineItems = lineItems => {
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
 
-  console.log('additionalTime', additionalTime);
-
   const endTime = moment
     .parseZone(sortedLineItems[sortedLineItems.length - 1].date)
     .add(additionalTime, 'hours');
-
-  console.log('endTime', endTime);
 
   return endTime;
 };
@@ -177,11 +173,9 @@ const updateBookingEnd = async transaction => {
   const { lineItems, dontUpdateBookingEnd } = transaction.attributes.metadata;
 
   const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
-
   const bookingStart = moment(bookingEnd)
     .subtract(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
-
   const bookingTimesMaybe = dontUpdateBookingEnd ? {} : { bookingStart, bookingEnd };
 
   try {
@@ -195,6 +189,7 @@ const updateBookingEnd = async transaction => {
             sentPaymentReminder: false,
             sentBookingReminder: false,
           },
+          dontUpdateBookingEnd: false,
         },
       },
     });
