@@ -186,12 +186,16 @@ const constructBookingMetadataRecurring = (
     exceptions,
   });
 
+  const momentStartOfWeek =
+    typeof startOfWeek === 'string' ? moment.parseZone(startOfWeek) : moment(startOfWeek);
+
   const lineItems = filteredWeekdays.map(day => {
     const { dayOfWeek, startTime, endTime } = day;
 
     const hours = calculateTimeBetween(startTime, endTime);
     const amount = parseFloat(hours * bookingRate).toFixed(2);
-    const isoDate = moment(startOfWeek)
+    const isoDate = momentStartOfWeek
+      .clone()
       .weekday(WEEKDAYS.indexOf(dayOfWeek))
       .format(ISO_OFFSET_FORMAT);
 

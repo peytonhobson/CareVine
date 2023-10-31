@@ -308,7 +308,8 @@ const updateNextWeek = async transaction => {
 
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
-    moment(nextWeekStartTime)
+    moment
+      .parseZone(nextWeekStartTime)
       .startOf('week')
       .format(ISO_OFFSET_FORMAT),
     endDate,
