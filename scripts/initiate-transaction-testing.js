@@ -6,7 +6,7 @@ const {
   constructBookingMetadataRecurring,
   constructBookingMetadataOneTime,
 } = require('../server/bookingHelpers');
-const isDev = false;
+const isDev = true;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 
 const employerUserTokenLocal = {

@@ -326,22 +326,12 @@ const updateNextWeek = async transaction => {
       throw new Error('No next week start time found');
     }
 
-    console.log('nextWeekStartTime', nextWeekStartTime);
-
-    const bookingStart = moment()
-      .add(5 - (moment().minute() % 5), 'minutes')
-      .set({ second: 0, millisecond: 0 })
-      .format(ISO_OFFSET_FORMAT);
-    const newBookingEnd = moment(bookingStart)
-      .add(5, 'minutes')
-      .format(ISO_OFFSET_FORMAT);
-
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/update-next-week-start',
       params: {
-        bookingStart,
-        bookingEnd: newBookingEnd,
+        bookingStart: nextWeekStartTime,
+        bookingEnd,
         metadata: {
           ...newMetadata,
           ledger: newLedger,

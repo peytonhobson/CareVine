@@ -348,8 +348,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
   const nextWeekStart = nextWeekLineItemStart.clone().startOf('week');
   const nextWeekEnd = nextWeekLineItemStart.clone().endOf('week');
 
-  console.log('nextWeekLineItemStart', nextWeekLineItemStart.format(ISO_OFFSET_FORMAT));
-
   // Filter exceptions for those within next week
   const insideExceptions = Object.values(exceptions)
     .flat()
@@ -396,8 +394,6 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
     firstTime
   );
 
-  console.log('startTime', startTime.format(ISO_OFFSET_FORMAT));
-
   return moment(startTime);
 };
 
@@ -434,8 +430,6 @@ const updateBookedDays = async ({ txId, bookingSchedule, startDate, endDate, exc
     } else {
       newBookedDays = bookedDays.filter(d => d.txId !== txId);
     }
-
-    console.log('newBookedDaysServer', newBookedDays);
 
     await integrationSdk.listings.update({
       id: listingId,
