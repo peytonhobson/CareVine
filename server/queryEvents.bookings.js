@@ -171,20 +171,24 @@ const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
-  const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
-  const bookingStart = moment(bookingEnd)
+  let bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
+  let bookingStart = moment(bookingEnd)
     .clone()
     .subtract(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
+
+  if (moment(bookingEnd).isBefore()) {
+    bookingEnd = null;
+    bookingStart = null;
+  }
 
   try {
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/start',
       params: {
-        // TODO: Put back
-        // bookingStart,
-        // bookingEnd,
+        bookingStart,
+        bookingEnd,
         metadata: {
           flags: {
             sentPaymentReminder: false,

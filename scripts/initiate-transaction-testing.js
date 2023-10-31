@@ -29,12 +29,12 @@ const providerUserTokenLocal = {
 };
 const employerUserTokenDev = {
   access_token:
-    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjODdlZTY0ZS0yMDMwLTQ0ZjMtYjUwNS1jNDkyYjUyMjAzNmEiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMGNhYy00MzA5LTgyYjktN2UwNjYzMjI3OTllIiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk4NzAzMTQzLCJlbnYiOiJkZXYiLCJpZGVudCI6ImNhcmVnaXZlci1kZXYiLCJ1c2VyLWlkIjoiNjU0MDIxZDctOWU2My00YmQyLTk3MTQtMmUwMzk0OWU4MzczIiwidXNlci1yb2xlcyI6WyJ1c2VyLnJvbGUvcHJvdmlkZXIiLCJ1c2VyLnJvbGUvY3VzdG9tZXIiXX0.ge-5VnPxOEqtHvVpX7iF9Ed8xnTagYE7PLCLxGo_fsg',
+    'eyJhbGciOiJIUzI1NiJ9.eyJjbGllbnQtaWQiOiJjODdlZTY0ZS0yMDMwLTQ0ZjMtYjUwNS1jNDkyYjUyMjAzNmEiLCJ0ZW5hbmN5LWlkIjoiNjM1MWE0Y2YtMGNhYy00MzA5LTgyYjktN2UwNjYzMjI3OTllIiwic2NvcGUiOiJ1c2VyIiwiZXhwIjoxNjk4NzA0NDg2LCJlbnYiOiJkZXYiLCJpZGVudCI6ImNhcmVnaXZlci1kZXYiLCJ1c2VyLWlkIjoiNjU0MDIxZDctOWU2My00YmQyLTk3MTQtMmUwMzk0OWU4MzczIiwidXNlci1yb2xlcyI6WyJ1c2VyLnJvbGUvcHJvdmlkZXIiLCJ1c2VyLnJvbGUvY3VzdG9tZXIiXX0.j-hYxz88fDvn0dgkWncqCq7DMBst5A8vJ_Y2G2HeUsc',
   scope: 'user',
   token_type: 'bearer',
   expires_in: 600,
   refresh_token:
-    'v2--66cf2ab8-0b6b-4985-9fa8-690224ec5891--141a3b97c652b31c71980ec53d8e58e758c2eb14',
+    'v2--bef83b03-b310-4f5b-8694-2c00d6137ba7--dff1ba61c1ca0ea6b9747d0921923a0948b239b2',
 };
 
 // {
@@ -95,10 +95,10 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'tue',
-    dayOfWeekFull: 'Tuesday',
-    startTime: '10:00pm',
-    endTime: '11:00pm',
+    dayOfWeek: 'mon',
+    dayOfWeekFull: 'Monday',
+    startTime: '5:00pm',
+    endTime: '6:00pm',
   },
   {
     dayOfWeek: 'fri',
@@ -137,7 +137,7 @@ const BODY_PARAMS = {
       startDate: start
         .startOf('day')
         .subtract(1, 'week')
-        .format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        .format(ISO_OFFSET_FORMAT),
       endDate: null,
       cancelAtPeriodEnd: false,
       type: 'recurring',
