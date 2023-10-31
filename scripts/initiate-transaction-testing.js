@@ -66,7 +66,7 @@ const now = moment();
 const startOfDay = now.clone().startOf('day');
 const start = now
   .clone()
-  .add(5 - (now.minute() % 5), 'minutes')
+  .add(50 - (now.minute() % 5), 'minutes')
   .set({ second: 0, millisecond: 0 });
 
 const bookingStart = moment(start)
@@ -74,7 +74,7 @@ const bookingStart = moment(start)
   .format(ISO_OFFSET_FORMAT);
 const bookingEnd = moment(bookingStart)
   .clone()
-  .add(5, 'minutes')
+  .add(15, 'minutes')
   .format(ISO_OFFSET_FORMAT);
 
 console.log(bookingStart);
@@ -95,8 +95,8 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'wed',
-    dayOfWeekFull: 'Monday',
+    dayOfWeek: 'tue',
+    dayOfWeekFull: 'Tuesday',
     startTime: '8:00am',
     endTime: '9:00am',
   },

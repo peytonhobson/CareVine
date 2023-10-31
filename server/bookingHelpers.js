@@ -195,6 +195,8 @@ const constructBookingMetadataRecurring = (
       .weekday(WEEKDAYS.indexOf(dayOfWeek))
       .format(ISO_OFFSET_FORMAT);
 
+    console.log('isoDate', isoDate);
+
     return {
       code: 'line-item/booking',
       startTime,
@@ -389,6 +391,8 @@ const findNextWeekStartTime = (lineItems, bookingSchedule, exceptions, attemptNu
       .startOf('day'),
     firstTime
   );
+
+  console.log('startTime', startTime.format(ISO_OFFSET_FORMAT));
 
   return moment(startTime);
 };

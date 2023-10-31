@@ -295,15 +295,15 @@ const updateNextWeek = async transaction => {
   const nextWeekStartTime = findNextWeekStartTime(lineItems, bookingSchedule, exceptions)?.format(
     ISO_OFFSET_FORMAT
   );
+  console.log('nextWeekStartTime', moment(nextWeekStartTime).format(ISO_OFFSET_FORMAT));
+
   const bookingEnd = moment(nextWeekStartTime)
-    .clone()
     .add(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
 
   const newMetadata = constructBookingMetadataRecurring(
     bookingSchedule,
     moment(nextWeekStartTime)
-      .clone()
       .startOf('week')
       .format(ISO_OFFSET_FORMAT),
     endDate,
