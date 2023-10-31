@@ -36,6 +36,7 @@ import {
 import { useCheckMobileScreen } from '../../util/hooks';
 
 import css from './BookingsPage.module.css';
+import BookingCardLoading from '../../components/BookingCard/BookingCardLoading';
 
 const sortDrafts = (a, b) => {
   const aDate = new Date(a.createdAt);
@@ -243,13 +244,17 @@ const BookingsPage = props => {
               tabClassName={css.tab}
             />
 
-            {fetchBookingsInProgress ? (
-              <div className="flex flex-col flex-grow items-center justify-center w-full h-full">
-                <IconSpinner className="h-20 w-20" />
-              </div>
-            ) : (
-              <section className={css.cardSection}>{cardSection}</section>
-            )}
+            <section className={css.cardSection}>
+              {fetchBookingsInProgress ? (
+                <>
+                  <BookingCardLoading />
+                  <BookingCardLoading />
+                  <BookingCardLoading />
+                </>
+              ) : (
+                cardSection
+              )}
+            </section>
           </div>
         </LayoutWrapperMain>
         <LayoutWrapperFooter>
