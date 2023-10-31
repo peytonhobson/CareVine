@@ -34,7 +34,6 @@ const DisputeModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Submit Dispute</p>
       <p className={css.modalMessage}>

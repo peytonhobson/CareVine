@@ -88,6 +88,7 @@ const ModifyScheduleRecurringModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={classNames(css.modalTitle, 'mt-16 md:mt-0')}>Modify Your Booking Schedule</p>
       <ModifyScheduleRecurringForm

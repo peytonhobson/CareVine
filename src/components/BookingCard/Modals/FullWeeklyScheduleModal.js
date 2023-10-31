@@ -20,10 +20,11 @@ const FullWeeklyScheduleModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Booking Schedule</p>
       <div className="mb-4 mt-10">
-        <h2 className="text-primary my-0 text-xl whitespace-nowrap text-center">
+        <h2 className="text-primary my-0 text- whitespace-nowrap text-center">
           Start Date: {moment(startDate).format('MMM DD')}{' '}
         </h2>
         {endDate ? (

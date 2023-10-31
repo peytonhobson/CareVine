@@ -1,7 +1,5 @@
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
-
-  justify-content: center;
 }
 
 /* Title of the modal */

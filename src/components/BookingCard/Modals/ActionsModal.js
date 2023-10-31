@@ -50,6 +50,7 @@ const ActionsModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       {displayState === MAIN_ACTIONS ? (
         <>

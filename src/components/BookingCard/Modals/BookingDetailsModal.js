@@ -31,6 +31,7 @@ const BookingDetailsModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Booking Details</p>
       <div className="flex flex-col gap-4 pt-6">

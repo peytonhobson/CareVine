@@ -1,12 +1,15 @@
 .modalContainer {
   composes: marketplaceModalBaseStyles from global;
-
-  justify-content: center;
 }
 
 /* Title of the modal */
 .modalTitle {
   composes: marketplaceModalTitleStyles from global;
+  margin-top: 4rem;
+
+  @media screen(md) {
+    margin-top: 0;
+  }
 }
 
 /* Paragraph for the Modal */

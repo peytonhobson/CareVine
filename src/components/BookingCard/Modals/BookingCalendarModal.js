@@ -5,9 +5,7 @@ import { Modal, SingleBookingCalendar } from '../..';
 import css from './BookingCardModals.module.css';
 
 const BookingCalendarModal = props => {
-  const { isOpen, onClose, onManageDisableScrolling, bookingDates, booking } = props;
-
-  const { bookingSchedule, startDate, endDate } = booking;
+  const { isOpen, onClose, onManageDisableScrolling, bookingDates } = props;
 
   return isOpen ? (
     <Modal
@@ -15,9 +13,9 @@ const BookingCalendarModal = props => {
       id="BookingCalendarModal"
       isOpen={isOpen}
       onClose={onClose}
-      containerClassName={css.modalContainer}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle} style={{ marginBottom: '1.5rem' }}>
         Booking Calendar

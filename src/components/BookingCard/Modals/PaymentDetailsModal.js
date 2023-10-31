@@ -17,9 +17,9 @@ const PaymentDetailsModal = props => {
       id="PaymentDetailsModal"
       isOpen={isOpen}
       onClose={onClose}
-      containerClassName={css.modalContainer}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Payment Summary</p>
       {scheduleType === 'oneTime' ? (
