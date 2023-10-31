@@ -171,15 +171,17 @@ const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
   const { lineItems } = transaction.attributes.metadata;
 
-  let bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
-  let bookingStart = moment(bookingEnd)
-    .clone()
-    .subtract(5, 'minutes')
-    .format(ISO_OFFSET_FORMAT);
+  const newBookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
 
-  if (moment(bookingEnd).isBefore()) {
-    bookingEnd = null;
-    bookingStart = null;
+  let bookingTimesMaybe = {};
+  if (moment(newBookingEnd).isAfter()) {
+    const bookingEnd = newBookingEnd
+    const bookingStart = moment(bookingEnd)
+      .clone()
+      .subtract(5, 'minutes')
+      .format(ISO_OFFSET_FORMAT);
+
+    bookingTimesMaybe = { bookingStart, bookingEnd };
   }
 
   try {
@@ -187,8 +189,7 @@ const updateBookingEnd = async transaction => {
       id: txId,
       transition: 'transition/start',
       params: {
-        bookingStart,
-        bookingEnd,
+        ...bookingTimesMaybe
         metadata: {
           flags: {
             sentPaymentReminder: false,
