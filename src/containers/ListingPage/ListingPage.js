@@ -573,7 +573,7 @@ const mapDispatchToProps = dispatch => ({
   onCloseListing: listingId => dispatch(closeListing(listingId)),
   onOpenListing: listingId => dispatch(openListing(listingId)),
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
-  onSendNotifyForBooking: (listing, otherUser) => dispatch(notifyForBooking(listing, otherUser)),
+  onSendNotifyForBooking: listing => dispatch(notifyForBooking(listing)),
   onFetchExistingConversation: listing => dispatch(fetchExistingConversation(listing)),
 });
 

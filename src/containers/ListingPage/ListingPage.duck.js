@@ -410,12 +410,12 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     });
 };
 
-export const notifyForBooking = (listing, otherUser) => async (dispatch, getState, sdk) => {
+export const notifyForBooking = listing => async (dispatch, getState, sdk) => {
   dispatch(sendNotifyForBookingRequest());
 
   const currentUser = getState().user.currentUser;
   const senderName = userDisplayNameAsString(currentUser);
-  const userId = otherUser?.id?.uuid;
+  const userId = listing.author?.id?.uuid;
   const newNotification = {
     id: uuidv4(),
     type: NOTIFICATION_TYPE_NOTIFY_FOR_PAYMENT,

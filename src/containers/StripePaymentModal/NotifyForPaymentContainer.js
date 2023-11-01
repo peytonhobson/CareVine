@@ -34,17 +34,13 @@ const NotifyForPaymentContainer = props => {
   const providerName = userDisplayNameAsString(author);
 
   const handleNotifyForPayment = () => {
-    onSendNotifyForPayment(listing, author);
+    onSendNotifyForPayment(listing);
   };
 
   const notifiedInLastDay = checkIfNotifiedInLastDay(currentUser, listing?.id.uuid);
 
   const notifyButtonDisabled =
     !currentUser || !author || !listing || sendNotifyForPaymentSuccess || notifiedInLastDay;
-
-  const notifyProviderMessage = intl.formatMessage({
-    id: 'NotifyForPaymentContainer.notifyButtonLabel',
-  });
 
   const rootClasses = classNames(css.root, css.single);
 
