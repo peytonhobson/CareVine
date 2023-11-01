@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { BookingException, CancelButton, PrimaryButton } from '../../../components';
+import { BookingException, CancelButton, PrimaryButton, NamedLink } from '../../../components';
 import { makeStyles } from '@material-ui/core/styles';
 import { sortExceptionsByDate } from '../../../util/bookings';
 import moment from 'moment';
@@ -92,17 +92,26 @@ const NotificationBookingModified = props => {
       .add(3, 'days')
       .isBefore();
 
+  const bookingNumberLink = (
+    <NamedLink
+      name="BookingsPageWithTab"
+      params={{ tab: 'bookings', search: `?bookingId=${txId}` }}
+    >
+      #{bookingNumber}
+    </NamedLink>
+  );
+
   return (
     <div className={css.root}>
       <Card className={classes.card}>
         <h1 className={css.title}>Booking Modification {isRequest ? 'Request' : ''}</h1>
         {isRequest ? (
           <p className={classNames(css.message, '!my-8')}>
-            {customerDisplayName} has requested a modification to booking #{bookingNumber}.
+            {customerDisplayName} has requested a modification to booking {bookingNumberLink}.
           </p>
         ) : (
           <p className={classNames(css.message, '!my-8')}>
-            {customerDisplayName} has modified booking #{bookingNumber}.
+            {customerDisplayName} has modified booking {bookingNumberLink}.
           </p>
         )}
         <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">

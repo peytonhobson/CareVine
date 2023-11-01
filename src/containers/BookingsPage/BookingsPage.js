@@ -127,10 +127,10 @@ const BookingsPage = props => {
   }, [searchString?.bookingId, initialBookingsFetched]);
 
   useEffect(() => {
-    if (!initialBookingsFetched && bookings.length > 0) {
+    if (!initialBookingsFetched && bookings.length > 0 && !fetchBookingsInProgress) {
       setInitialBookingsFetched(true);
     }
-  }, [bookings.length]);
+  }, [bookings.length, fetchBookingsInProgress, initialBookingsFetched]);
 
   const cardProps = {
     onManageDisableScrolling,
