@@ -15,7 +15,7 @@ import { isEqual } from 'lodash';
 
 import css from './NotificationTemplates.module.css';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   card: {
     borderRadius: 'var(--borderRadius)',
     transition: 'all 0.2s ease-in 0s !important',

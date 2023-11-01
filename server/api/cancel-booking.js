@@ -99,6 +99,11 @@ const transitionBooking = async ({
       .subtract(5, 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
+    const utcOffset = moment(newBookingStart).utcOffset();
+    const newBookingEndUtc = moment()
+      .startOf('day')
+      .utcOffset(utcOffset)
+      .format(ISO_OFFSET_FORMAT);
 
     const response = await integrationSdk.transactions.transition({
       id: txId,
@@ -110,9 +115,7 @@ const transitionBooking = async ({
           ...metadata,
           employerCancel: cancelingUserType === 'employer',
           // TODO: This can cause end date to be set as past day
-          endDate: moment()
-            .startOf('day')
-            .format(ISO_OFFSET_FORMAT),
+          endDate: newBookingEndUtc,
         },
       },
     });

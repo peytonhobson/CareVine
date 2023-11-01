@@ -332,8 +332,6 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
   const endDate = modification.endDate || oldEndDate;
   const exceptions = modification.exceptions || oldExceptions;
 
-  console.log('modification', modification);
-
   if (needsTimeUpdate) {
     const newMetadata = constructBookingMetadataRecurring(
       bookingSchedule,

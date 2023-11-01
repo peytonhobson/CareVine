@@ -354,6 +354,7 @@ const updateNextWeek = async transaction => {
 
 const endRecurring = async transaction => {
   const txId = transaction.id.uuid;
+  const { startDate } = transaction.attributes.metadata;
 
   try {
     // Update metadata for refunding if any
@@ -371,15 +372,19 @@ const endRecurring = async transaction => {
       )
     )?.data?.metadata;
 
+    const utcOffset = moment(startDate).utcOffset();
+    const newBookingEndUtc = moment()
+      .startOf('day')
+      .utcOffset(utcOffset)
+      .format(ISO_OFFSET_FORMAT);
+
     await integrationSdk.transactions.transition({
       id: txId,
       transition: 'transition/delivered-cancel',
       params: {
         metadata: {
           ...refundMetadata,
-          endDate: moment()
-            .startOf('day')
-            .format(ISO_OFFSET_FORMAT),
+          endDate: newBookingEndUtc,
         },
       },
     });
