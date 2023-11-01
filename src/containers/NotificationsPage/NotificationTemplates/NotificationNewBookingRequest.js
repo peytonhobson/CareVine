@@ -159,9 +159,11 @@ const NotificationNewBookingRequest = props => {
                 <p className={css.listingLocation}>{senderCity}</p>
               </div>
             </div>
-            <h2 className={css.listingTitle}>
-              {senderListingTitle !== 'Title' ? senderListingTitle : ''}
-            </h2>
+            {senderListingTitle ? (
+              <h2 className={css.listingTitle}>
+                {senderListingTitle !== 'Title' ? senderListingTitle : ''}
+              </h2>
+            ) : null}
           </div>
           {message || senderListingDescription ? (
             <div className={css.messageContainer}>

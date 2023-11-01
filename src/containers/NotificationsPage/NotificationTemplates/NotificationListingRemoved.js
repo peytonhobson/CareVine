@@ -1,8 +1,6 @@
 import React from 'react';
 
-import { NamedLink } from '../../../components';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Card from '@material-ui/core/Card';
 
 import css from './NotificationTemplates.module.css';
@@ -18,9 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const NotificationListingRemoved = props => {
-  const { notification } = props;
-
+const NotificationListingRemoved = () => {
   const classes = useStyles();
 
   return (
