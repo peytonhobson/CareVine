@@ -1,28 +1,25 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { string } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
-import { HeroSearchForm } from '../../forms';
+import UnauthenticatedContainer from './UnauthenticatedContainer';
+import { useMediaQuery } from '@mui/material';
 
 import backgroundImage from '../../assets/landing-background.jpg';
 import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
-import UnauthenticatedContainer from './UnauthenticatedContainer';
-import { useMediaQuery } from '@mui/material';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
   const [showLearnMore, setShowLearnMore] = useState(true);
-  const [heroLoaded, setHeroLoaded] = useState(false);
 
   const isMobile = useCheckMobileScreen();
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const heroRef = useRef(null);
   const imageRef = useRef(null);
 
   const {
@@ -52,22 +49,20 @@ const SectionHero = props => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (heroRef?.current) {
-      const image = new Image();
+  const heroRef = useCallback(node => {
+    const image = new Image();
 
-      image.onload = () => {
-        heroRef.current.style.background = `url('${image.src}')`;
-        heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        heroRef.current.style.backgroundPosition = 'center';
-        heroRef.current.style.backgroundSize = 'cover';
-        setHeroLoaded(true);
-      };
+    image.onload = () => {
+      if (!node) return;
+      node.style.background = `url('${image.src}')`;
+      node.style.backgroundColor = 'var(--matterColor)';
+      node.style.backgroundPosition = 'center';
+      node.style.backgroundSize = 'cover';
+    };
 
-      image.src = isLarge ? backgroundImage : mobileBackgroundImage;
-      imageRef.current = image;
-    }
-  }, [heroRef?.current]);
+    image.src = isLarge ? backgroundImage : mobileBackgroundImage;
+    imageRef.current = image;
+  }, []);
 
   useEffect(() => {
     if (imageRef?.current) {
@@ -75,7 +70,7 @@ const SectionHero = props => {
 
       imageRef.current.src = isLarge ? backgroundImage : mobileBackgroundImage;
     }
-  }, [imageRef?.current, isLarge]);
+  }, [isLarge]);
 
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;
@@ -91,8 +86,7 @@ const SectionHero = props => {
   const classes = classNames(
     rootClassName || css.root,
     className,
-    isMobile && !currentUser && css.middleHero,
-    heroLoaded ? css.show : css.hidden
+    isMobile && !currentUser && css.middleHero
   );
 
   const itemsToBrowse = userType === CAREGIVER ? 'Jobs' : 'Caregivers';
