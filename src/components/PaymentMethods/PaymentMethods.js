@@ -78,7 +78,7 @@ const BookingPaymentComponent = props => {
     if (stripeCustomerId) {
       onFetchDefaultPayment(stripeCustomerId);
     }
-  }, [stripeCustomerId]);
+  }, [stripeCustomerId, createCreditCardSuccess]);
 
   useEffect(() => {
     if (initialPaymentMethodId) {
@@ -144,15 +144,6 @@ const BookingPaymentComponent = props => {
     const billingDetails = getBillingDetails(currentUser, formValues);
 
     onCreateCreditCard(stripeCustomerId, stripe, billingDetails, card)
-      .then(() => {
-        // Update default payment methods
-
-        if (!stripeCustomerId) {
-          return onFetchStripeCustomer();
-        } else {
-          onFetchDefaultPayment(stripeCustomerId);
-        }
-      })
       .then(() => {
         setIsSubmitting(false);
       })

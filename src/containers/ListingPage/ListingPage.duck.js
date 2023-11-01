@@ -448,8 +448,6 @@ export const createBookingDraft = (listingId, bookingData) => async (dispatch, g
 
   const newBookingDrafts = [newBookingDraft, ...bookingDrafts];
 
-  console.log(newBookingDrafts);
-
   try {
     await sdk.currentUser.updateProfile({
       privateData: {

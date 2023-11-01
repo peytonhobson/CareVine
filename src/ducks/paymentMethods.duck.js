@@ -514,6 +514,9 @@ export const createCreditCard = (
         });
       }
     })
+    .then(() => {
+      dispatch(createCreditCardSuccess());
+    })
     .catch(e => {
       log.error(storableError(e), 'create-credit-card-failed');
       dispatch(createCreditCardError(storableError(e)));
