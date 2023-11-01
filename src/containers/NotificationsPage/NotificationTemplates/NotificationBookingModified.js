@@ -10,6 +10,7 @@ import Card from '@material-ui/core/Card';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { acceptBookingModification, declineBookingModification } from '../NotificationsPage.duck';
+import { isEqual } from 'lodash';
 
 import css from './NotificationTemplates.module.css';
 
@@ -101,6 +102,10 @@ const NotificationBookingModified = props => {
     </NamedLink>
   );
 
+  const differentSchedule = !isEqual(previousMetadata.bookingSchedule, newSchedule.bookingSchedule);
+  const differentEndDate = !isEqual(previousMetadata.endDate, newSchedule.endDate);
+  const differentExceptions = !isEqual(previousMetadata.exceptions, newSchedule.exceptions);
+
   return (
     <div className={css.root}>
       <Card className={classes.card}>
@@ -169,10 +174,7 @@ const NotificationBookingModified = props => {
                 const { dayOfWeek, startTime, endTime } = day;
 
                 return (
-                  <div
-                    key={dayOfWeek}
-                    className={modificationType === 'bookingSchedule' ? 'text-success' : null}
-                  >
+                  <div key={dayOfWeek} className={differentSchedule ? 'text-success' : null}>
                     <p className="my-0 leading-6">
                       {FULL_WEEKDAY_MAP[dayOfWeek]}:{' '}
                       <span className="whitespace-nowrap">
@@ -185,7 +187,7 @@ const NotificationBookingModified = props => {
             </div>
             <div>
               <h3 className="underline">End Date</h3>
-              <p className={modificationType === 'endDate' ? 'text-success' : null}>
+              <p className={differentEndDate ? 'text-success' : null}>
                 {newSchedule.endDate
                   ? moment(newSchedule.endDate).format('ddd, MMM DD')
                   : 'No End Date'}
@@ -195,21 +197,24 @@ const NotificationBookingModified = props => {
               <h3 className="underline">Exceptions</h3>
 
               {newSchedule.exceptions.flat().length > 0 ? (
-                <div className={css.exceptions}>
+                <div
+                  className={classNames(css.exceptions, differentExceptions && 'border-success')}
+                >
                   {newSchedule.exceptions.flat().map(exception => {
                     return (
                       <BookingException
                         {...exception}
                         key={exception.date}
-                        className={css.exception}
+                        className={classNames(
+                          css.exception,
+                          differentExceptions && 'border-success'
+                        )}
                       />
                     );
                   })}
                 </div>
               ) : (
-                <p className={modificationType === 'exceptions' ? 'text-success' : null}>
-                  No Exceptions
-                </p>
+                <p className={differentExceptions ? 'text-success' : null}>No Exceptions</p>
               )}
             </div>
           </Card>
