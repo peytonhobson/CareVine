@@ -93,13 +93,15 @@ const transitionBooking = async ({
   metadata = {},
   cancelingUserType,
   newBookingEnd,
+  startDate,
 }) => {
   try {
     const newBookingStart = moment(newBookingEnd)
       .subtract(5, 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
-    const utcOffset = moment.parseZone(newBookingStart).utcOffset();
+
+    const utcOffset = moment.parseZone(startDate).utcOffset();
     const newBookingEndUtc = moment()
       .startOf('day')
       .utcOffset(utcOffset)
@@ -148,7 +150,7 @@ module.exports = async (req, res) => {
   try {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
 
-    const { paymentIntentId } = transaction.attributes.metadata;
+    const { paymentIntentId, startDate } = transaction.attributes.metadata;
 
     const lastTransition = transaction.attributes.lastTransition;
 
@@ -185,6 +187,7 @@ module.exports = async (req, res) => {
       },
       cancelingUserType,
       newBookingEnd,
+      startDate,
     });
 
     // Update listing metadata to remove cancelled booking dates/days
