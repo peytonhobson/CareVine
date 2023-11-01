@@ -44,7 +44,7 @@ const ModifyScheduleRecurringModal = props => {
     ...rest
   } = props;
 
-  const { bookingSchedule, exceptions } = booking.attributes.metadata;
+  const { bookingSchedule, exceptions, endDate: oldEndDate } = booking.attributes.metadata;
   const lastTransition = booking.attributes.lastTransition;
   const isRequest =
     lastTransition === TRANSITION_REQUEST_BOOKING ||
@@ -56,7 +56,9 @@ const ModifyScheduleRecurringModal = props => {
     const modification = {
       bookingSchedule,
       exceptions: newExceptions,
-      endDate: values.endDate?.date ? moment(values.endDate?.date).format(ISO_OFFSET_FORMAT) : null,
+      endDate: values.endDate?.date
+        ? moment(values.endDate?.date).format(ISO_OFFSET_FORMAT)
+        : oldEndDate,
       type: 'bookingSchedule',
     };
 

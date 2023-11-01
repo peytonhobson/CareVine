@@ -190,6 +190,7 @@
   padding: 2rem;
   background-color: var(--matterColorLight);
   border-radius: var(--borderRadius);
+  width: 100%;
 }
 
 .userInfoContainer {
