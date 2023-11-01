@@ -85,7 +85,7 @@ const ResponseModal = props => {
       ) : null}
       {scheduleType === 'oneTime' ? (
         <SingleBookingSummaryCard
-          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border"
+          className="mt-6 rounded-[var(--borderRadius)] border-anti pt-8 border max-h-96"
           listing={listing}
           onManageDisableScrolling={onManageDisableScrolling}
           booking={booking}

@@ -239,6 +239,7 @@ const BookingCardComponent = props => {
           onClose={handleModalClose}
           onManageDisableScrolling={onManageDisableScrolling}
           booking={booking}
+          userType={userType}
         />
       );
       break;
@@ -401,7 +402,7 @@ export const BookingCardTitle = () => {
   const isCaregiver = userType === CAREGIVER;
 
   return (
-    <div>
+    <div className="md:max-w-[70%]">
       {bookingNumber ? <h4 className={css.bookingNumber}>Booking #{bookingNumber}</h4> : null}
       <div className={css.bookingTitle}>
         <Avatar
@@ -432,33 +433,33 @@ export const BookingCardMenu = () => {
       lastTransition === TRANSITION_REQUEST_UPDATE_START) &&
     userType === CAREGIVER;
 
-  const showActions = Object.values(availableActions).some(Boolean);
+  const showActions = Object.values(availableActions).some(Boolean) && !showRespond;
 
   return (
-    <>
+    <div className="flex w-full md:w-auto gap-4 md:flex-col">
       {showRespond ? (
-        <Button className="min-h-0 py-2 px-4" onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}>
+        <Button
+          className="min-h-0 py-4 px-4 md:py-2"
+          onClick={() => handleModalOpen(MODAL_TYPES.RESPOND)}
+        >
           Respond
         </Button>
-      ) : (
-        <div className="flex w-full md:w-auto gap-4 md:flex-col">
-          {showActions ? (
-            <Button
-              className="min-h-0 py-4 px-4 md:py-2"
-              onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}
-            >
-              Manage Booking
-            </Button>
-          ) : null}
-          <SecondaryButton
-            className="min-h-0 py-4 px-4 md:py-2"
-            onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
-          >
-            Booking Details
-          </SecondaryButton>
-        </div>
-      )}
-    </>
+      ) : null}
+      {showActions ? (
+        <Button
+          className="min-h-0 py-4 px-4 md:py-2"
+          onClick={() => handleModalOpen(MODAL_TYPES.ACTIONS)}
+        >
+          Manage Booking
+        </Button>
+      ) : null}
+      <SecondaryButton
+        className="min-h-0 py-4 px-4 md:py-2"
+        onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
+      >
+        Booking Details
+      </SecondaryButton>
+    </div>
   );
 };
 

@@ -3,9 +3,10 @@ import React from 'react';
 import { Modal, SingleBookingSummaryCard, WeeklyBillingDetails } from '../..';
 
 import css from './BookingCardModals.module.css';
+import { CAREGIVER } from '../../../util/constants';
 
 const PaymentDetailsModal = props => {
-  const { isOpen, onClose, booking, onManageDisableScrolling } = props;
+  const { isOpen, onClose, booking, onManageDisableScrolling, userType } = props;
 
   const { provider, listing } = booking;
 
@@ -30,6 +31,7 @@ const PaymentDetailsModal = props => {
           booking={booking}
           hideRatesButton
           hideAvatar
+          hideFees={userType === CAREGIVER}
         />
       ) : (
         <>
