@@ -99,10 +99,10 @@ const transitionBooking = async ({
       .subtract(5, 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
-    const utcOffset = moment(newBookingStart).utcOffset();
+    const utcOffset = moment(newBookingStart).utcOffset() * -1;
     const newBookingEndUtc = moment()
       .startOf('day')
-      .utcOffset(utcOffset)
+      .add(utcOffset, 'minutes')
       .format(ISO_OFFSET_FORMAT);
 
     const response = await integrationSdk.transactions.transition({
