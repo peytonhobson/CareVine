@@ -29,6 +29,7 @@ const SectionReviews = props => {
 
   const handleReviewSubmit = values => {
     const { reviewRating, reviewContent } = values;
+
     onSubmitReview(reviewRating, reviewContent, listingId);
   };
 
@@ -46,7 +47,7 @@ const SectionReviews = props => {
 
   const reviewCount = reviews?.length || 0;
   const pendingReviews = currentUser?.attributes.profile.metadata.pendingReviews || [];
-  const canWriteReview = !pendingReviews.includes(listingId);
+  const canWriteReview = pendingReviews.includes(listingId);
 
   const previewReview = reviewCount ? reviews[0] : null;
   const shortenedReviews = previewReview
