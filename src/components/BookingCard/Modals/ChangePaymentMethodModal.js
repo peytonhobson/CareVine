@@ -94,7 +94,7 @@ const ChangePaymentMethodModal = props => {
           disabled={submitDisabled}
           type="button"
         >
-          Change Payment
+          Submit
         </PrimaryButton>
       </div>
     </Modal>

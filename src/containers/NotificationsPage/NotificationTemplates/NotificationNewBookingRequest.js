@@ -21,14 +21,13 @@ import {
   TRANSITION_ACCEPT_UPDATE_START,
   TRANSITION_REQUEST_UPDATE_START,
 } from '../../../util/transaction';
-import { userDisplayNameAsString, findStartTimeFromLineItems } from '../../../util/data';
+import { userDisplayNameAsString } from '../../../util/data';
 import {
   checkForExceptions,
   checkIsBlockedOneTime,
   checkIsBlockedRecurring,
 } from '../../../util/bookings';
 import { useMediaQuery } from '@material-ui/core';
-import moment from 'moment';
 
 import css from './NotificationTemplates.module.css';
 

@@ -277,6 +277,7 @@ const RecurringBookingSummaryCard = props => {
           onClose={() => setIsExceptionsModalOpen(false)}
           onManageDisableScrolling={onManageDisableScrolling}
           usePortal
+          containerClassName={css.modalContainer}
         >
           <p className={css.modalTitle}>Booking Exceptions</p>
           <p className={css.modalMessage}>

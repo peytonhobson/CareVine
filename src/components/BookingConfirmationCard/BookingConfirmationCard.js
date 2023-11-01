@@ -9,30 +9,19 @@ const BookingConfirmationCard = props => {
   const {
     authorDisplayName,
     currentAuthor,
-    className,
     transaction,
     listing,
     onManageDisableScrolling,
   } = props;
 
-  const {
-    bookingRate,
-    paymentMethodType,
-    bookingSchedule,
-    exceptions,
-    startDate,
-    type,
-  } = transaction.attributes.metadata;
-
-  const endOfFirstWeek =
-    type === 'recurring' ? getFirstWeekEndDate(startDate, bookingSchedule, exceptions) : null;
+  const { paymentMethodType, startDate, type } = transaction.attributes.metadata;
 
   return (
     <div className={css.root}>
       <h2 className={css.newBookingRequested}>New Booking Requested!</h2>
       <h3 style={{ textAlign: 'center', maxWidth: '100%' }}>
         A notification has been sent to {authorDisplayName}. They have 72 hours or until the start
-        of the booking to accept the request or it will expire.
+        of the booking to accept the request before it expires.
       </h3>
       {type === 'recurring' ? (
         <RecurringBookingSummaryCard

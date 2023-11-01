@@ -1,5 +1,5 @@
 const { apiBaseUrl, integrationSdk, handleError } = require('../api-util/sdk');
-const { udpateBookingLedger, updateBookingLedger } = require('../bookingHelpers');
+const { updateBookingLedger } = require('../bookingHelpers');
 const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');
@@ -11,15 +11,18 @@ const cancelTransitionMap = {
   'transition/request-booking': 'transition/cancel-request',
   'transition/request-update-start': 'transition/cancel-request',
   'transition/accept': 'transition/accepted-cancel',
+  'transition/accept-update-start': 'transition/accepted-cancel',
   'transition/charge': 'transition/charged-cancel',
   'transition/start': 'transition/active-cancel',
   'transition/active-update-booking-end': 'transition/active-cancel',
   'transition/update-next-week-start': 'transition/wfnw-cancel',
+  'transition/wfnw-update-start': 'transition/wfnw-cancel',
 };
 
 const nonPaidTransitions = [
   'transition/request-booking',
   'transition/accept',
+  'transition/accept-update-start',
   'transition/request-update-start',
 ];
 
@@ -96,9 +99,6 @@ const transitionBooking = async ({
       .subtract(5, 'minutes')
       .set({ second: 0, millisecond: 0 })
       .format(ISO_OFFSET_FORMAT);
-
-    console.log('newBookingEnd', newBookingEnd);
-    console.log('newBookingStart', newBookingStart);
 
     const response = await integrationSdk.transactions.transition({
       id: txId,
