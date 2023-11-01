@@ -28,20 +28,6 @@
   }
 }
 
-.hidden {
-  @media screen(md) {
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-  }
-}
-
-.show {
-  @media screen(md) {
-    opacity: 1;
-    transition: opacity 0.5s ease-in;
-  }
-}
-
 .content {
   composes: marketplaceModalBaseStyles from global;
   padding-top: 29px;
