@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 
-import { BookingException, CancelButton, CancelBookingModal } from '../../../components';
+import { BookingException, CancelButton, CancelBookingModal, NamedLink } from '../../../components';
 import { makeStyles } from '@material-ui/core/styles';
 import { sortExceptionsByDate } from '../../../util/bookings';
 import moment from 'moment';
