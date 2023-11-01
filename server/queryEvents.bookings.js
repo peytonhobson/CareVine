@@ -372,10 +372,10 @@ const endRecurring = async transaction => {
       )
     )?.data?.metadata;
 
-    const utcOffset = moment(startDate).utcOffset() * -1;
+    const utcOffset = moment.parseZone(startDate).utcOffset();
     const newBookingEndUtc = moment()
       .startOf('day')
-      .add(utcOffset, 'minutes')
+      .utcOffset(utcOffset)
       .format(ISO_OFFSET_FORMAT);
 
     await integrationSdk.transactions.transition({
