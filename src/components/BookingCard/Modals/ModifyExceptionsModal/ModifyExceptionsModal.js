@@ -84,6 +84,7 @@ const ModifyExceptionsModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
+      containerClassName={css.modalContainer}
     >
       <p className={classNames(css.modalTitle, 'mt-16 md:mt-0 mb-12')}>
         Modify Your Booking Exceptions

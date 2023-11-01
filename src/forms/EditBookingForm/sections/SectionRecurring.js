@@ -52,6 +52,15 @@ const SectionRecurring = props => {
       form.change('startDate', null);
       form.change('endDate', null);
     }
+
+    const startDateWeekday = moment(startDate?.date)
+      .format('ddd')
+      .toLocaleLowerCase();
+    const startDateInWeekdays = weekdays.some(w => w.dayOfWeek === startDateWeekday);
+
+    if (!startDateInWeekdays) {
+      form.change('startDate', null);
+    }
   }, [weekdays?.length]);
 
   const startDateDisabled =
@@ -86,7 +95,6 @@ const SectionRecurring = props => {
         </p>
         <div className={css.dateInputContainer}>
           <FieldDateInput
-            className={css.fieldDateInput}
             name="startDate"
             id="startDate"
             label="Start Date"
@@ -103,7 +111,6 @@ const SectionRecurring = props => {
             <FieldDateInput
               name="endDate"
               id="endDate"
-              className={css.fieldDateInput}
               label="End Date • optional"
               placeholderText={intl.formatDate(TODAY, dateFormattingOptions)}
               format={formatFieldDateInput(timezone)}

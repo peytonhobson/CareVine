@@ -102,7 +102,7 @@ const ChangeEndDateForm = props => (
       const futureDateSelected =
         selectedEndDate && moment(selectedEndDate).isAfter(oldEndDate, 'day');
 
-      const hasPendingRequest = awaitingModificationType;
+      const hasPendingRequest = awaitingModificationType && awaitingModificationType !== 'endDate';
       const hasPendingEndDatesRequest = awaitingModificationType === 'endDate';
 
       return (
