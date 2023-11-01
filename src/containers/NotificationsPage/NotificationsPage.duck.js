@@ -311,6 +311,7 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
     paymentMethodType,
     bookingRate,
     startDate,
+    bookingSchedule: oldBookingSchedule,
   } = transaction.attributes.metadata;
   const nextWeek = lineItems?.[0]?.date;
   const lastTransition = transaction.attributes.lastTransition;
@@ -327,9 +328,11 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
       moment(appliedDate).isSame(nextWeek, 'week')) ||
     isAccepted;
 
-  const bookingSchedule = modification.bookingSchedule;
+  const bookingSchedule = modification.bookingSchedule || oldBookingSchedule;
   const endDate = modification.endDate || oldEndDate;
   const exceptions = modification.exceptions || oldExceptions;
+
+  console.log('modification', modification);
 
   if (needsTimeUpdate) {
     const newMetadata = constructBookingMetadataRecurring(
@@ -378,10 +381,10 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
       sdk,
     });
   } else {
-    const bookingScheduleChangeMaybe = bookingSchedule
+    const bookingScheduleChangeMaybe = modification.bookingSchedule
       ? {
           bookingScheduleChange: {
-            bookingSchedule,
+            bookingSchedule: modification.bookingSchedule,
             appliedDate,
           },
         }

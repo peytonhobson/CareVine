@@ -25,6 +25,16 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'var(--marketplaceColor)',
     color: 'var(--matterColorLight)',
     paddingInline: '2rem',
+    minWidth: '20rem',
+    maxWidth: 'calc(50% - 0.5rem)',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '100%',
+      minWidth: 'auto',
+    },
   },
 }));
 
@@ -57,8 +67,6 @@ const NotificationBookingModified = props => {
   } = notification.metadata;
 
   const classes = useStyles();
-
-  const modificationType = modification.type;
 
   const sortedPreviousExceptions = useMemo(
     () =>
@@ -119,7 +127,7 @@ const NotificationBookingModified = props => {
             {customerDisplayName} has modified booking {bookingNumberLink}.
           </p>
         )}
-        <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">
+        <div className="flex flex-col gap-10 justify-center lg:flex-row lg:flex-wrap lg:gap-4">
           <Card className={classes.innerCard}>
             <h2 className="text-center">Original</h2>
             <div>
@@ -198,7 +206,7 @@ const NotificationBookingModified = props => {
 
               {newSchedule.exceptions.flat().length > 0 ? (
                 <div
-                  className={classNames(css.exceptions, differentExceptions && 'border-success')}
+                  className={classNames(css.exceptions, differentExceptions && '!border-success')}
                 >
                   {newSchedule.exceptions.flat().map(exception => {
                     return (
@@ -207,7 +215,7 @@ const NotificationBookingModified = props => {
                         key={exception.date}
                         className={classNames(
                           css.exception,
-                          differentExceptions && 'border-success'
+                          differentExceptions && '!border-success'
                         )}
                       />
                     );

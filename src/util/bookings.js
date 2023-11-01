@@ -57,7 +57,7 @@ const reduceWeekdays = (acc, weekday, insideExceptions, startDate, endDate) => {
   return isAfterStartDate ? [...acc, weekday] : acc;
 };
 
-export const filterWeeklyBookingDays = ({ weekdays, startDate, endDate, exceptions }) => {
+export const filterWeeklyBookingDays = ({ weekdays = [], startDate, endDate, exceptions }) => {
   if (!weekdays.length) return [];
 
   const insideExceptions = filterInsideExceptions(exceptions, startDate);

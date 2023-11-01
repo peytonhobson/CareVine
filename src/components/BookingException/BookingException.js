@@ -37,7 +37,16 @@ const BookingException = props => {
       </div>
       <p className={css.timeRange}>
         {moment(date).format('dddd, MMM DD')}
-        {type !== REMOVE_DATE ? `, ${startTime} - ${endTime}` : ''}
+        {type !== REMOVE_DATE ? (
+          <span>
+            ,{' '}
+            <span className="whitespace-nowrap">
+              {startTime} - {endTime}
+            </span>
+          </span>
+        ) : (
+          ''
+        )}
       </p>
     </div>
   );

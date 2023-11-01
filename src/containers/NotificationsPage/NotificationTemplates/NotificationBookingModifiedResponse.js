@@ -26,6 +26,16 @@ const useStyles = makeStyles(() => ({
     backgroundColor: 'var(--marketplaceColor)',
     color: 'var(--matterColorLight)',
     paddingInline: '2rem',
+    minWidth: '20rem',
+    maxWidth: 'calc(50% - 0.5rem)',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+
+    [theme.breakpoints.down('md')]: {
+      maxWidth: '100%',
+      minWidth: 'auto',
+    },
   },
 }));
 
@@ -118,7 +128,7 @@ const NotificationBookingModifiedResponse = props => {
           {providerDisplayName} has {isAccepted ? 'accepted' : 'declined'} your modification to
           booking {bookingNumberLink}.
         </p>
-        <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">
+        <div className="flex flex-col gap-10 justify-center lg:flex-row lg:flex-wrap lg:gap-4">
           <Card className={classes.innerCard}>
             <h2 className="text-center">Original</h2>
             <div>
@@ -196,7 +206,7 @@ const NotificationBookingModifiedResponse = props => {
               <h3 className="underline">Exceptions</h3>
               {newSchedule.exceptions.length > 0 ? (
                 <div
-                  className={classNames(css.exceptions, differentExceptions && 'border-success')}
+                  className={classNames(css.exceptions, differentExceptions && '!border-success')}
                 >
                   {newSchedule.exceptions.map(exception => {
                     return (
@@ -205,7 +215,7 @@ const NotificationBookingModifiedResponse = props => {
                         key={exception.date}
                         className={classNames(
                           css.exception,
-                          differentExceptions && 'border-success'
+                          differentExceptions && '!border-success'
                         )}
                       />
                     );
