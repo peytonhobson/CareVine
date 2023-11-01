@@ -46,7 +46,7 @@ const SectionReviews = props => {
 
   const reviewCount = reviews?.length || 0;
   const pendingReviews = currentUser?.attributes.profile.metadata.pendingReviews || [];
-  const canWriteReview = pendingReviews.includes(listingId);
+  const canWriteReview = !pendingReviews.includes(listingId);
 
   const previewReview = reviewCount ? reviews[0] : null;
   const shortenedReviews = previewReview
@@ -61,16 +61,18 @@ const SectionReviews = props => {
       ]
     : [];
 
-  return reviewCount ? (
+  return reviewCount || canWriteReview ? (
     <div className={css.sectionReviews}>
       <h2 className={css.reviewsHeading}>
         <FormattedMessage id="ListingPage.reviewsHeading" values={{ count: reviews?.length }} />
-        <InlineTextButton
-          className={css.seeMoreButton}
-          onClick={() => setIsAllReviewsModalOpen(true)}
-        >
-          See All Reviews
-        </InlineTextButton>
+        {reviewCount ? (
+          <InlineTextButton
+            className={css.seeMoreButton}
+            onClick={() => setIsAllReviewsModalOpen(true)}
+          >
+            See All Reviews
+          </InlineTextButton>
+        ) : null}
       </h2>
       {fetchReviewsError ? reviewsError : null}
       <Reviews reviews={shortenedReviews} />
