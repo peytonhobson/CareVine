@@ -55,7 +55,6 @@ const ChangePaymentMethodModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Change Your Payment Method for this Booking</p>
       <p className={css.modalMessage}>
@@ -94,7 +93,7 @@ const ChangePaymentMethodModal = props => {
           disabled={submitDisabled}
           type="button"
         >
-          Submit
+          Change Payment
         </PrimaryButton>
       </div>
     </Modal>
