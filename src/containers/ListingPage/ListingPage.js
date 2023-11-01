@@ -586,7 +586,7 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onCreateBookingDraft: (listingId, bookingData) =>
     dispatch(createBookingDraft(listingId, bookingData)),
-  onSendNotifyForBooking: (listing, otherUser) => dispatch(notifyForBooking(listing, otherUser)),
+  onSendNotifyForBooking: listing => dispatch(notifyForBooking(listing)),
   onFetchExistingConversation: listing => dispatch(fetchExistingConversation(listing)),
 });
 
