@@ -104,7 +104,7 @@ const transitionBooking = async ({
     const utcOffset = moment.parseZone(startDate).utcOffset();
     const newBookingEndUtc = moment()
       .startOf('day')
-      .utcOffset(utcOffset)
+      .utcOffset(utcOffset, true)
       .format(ISO_OFFSET_FORMAT);
 
     const response = await integrationSdk.transactions.transition({
