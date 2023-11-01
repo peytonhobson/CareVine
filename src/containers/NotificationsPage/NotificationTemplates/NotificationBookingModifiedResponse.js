@@ -96,13 +96,22 @@ const NotificationBookingModifiedResponse = props => {
   );
   const isCanceled = CANCELED_TRANSITIONS.includes(currentTransaction?.attributes.lastTransition);
 
+  const bookingNumberLink = (
+    <NamedLink
+      name="BookingsPageWithTab"
+      params={{ tab: 'bookings', search: `?bookingId=${txId}` }}
+    >
+      #{bookingNumber}
+    </NamedLink>
+  );
+
   return (
     <div className={css.root}>
       <Card className={classes.card}>
         <h1 className={css.title}>Booking Modification {isAccepted ? 'Accepted' : 'Declined'}</h1>
         <p className={classNames(css.message, '!my-8')}>
           {providerDisplayName} has {isAccepted ? 'accepted' : 'declined'} your modification to
-          booking #{bookingNumber}.
+          booking {bookingNumberLink}.
         </p>
         <div className="flex flex-col gap-10 lg:grid lg:grid-cols-2 lg:gap-4">
           <Card className={classes.innerCard}>

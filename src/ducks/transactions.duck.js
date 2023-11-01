@@ -804,6 +804,7 @@ export const updateRequestedBooking = (txId, modification) => async (dispatch, g
       .add(5, 'minutes')
       .format(ISO_OFFSET_FORMAT);
 
+    // Update start transition needed for single bookings where start date changes
     await transitionPrivileged({
       bodyParams: {
         id: txId,

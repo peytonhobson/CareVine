@@ -354,6 +354,7 @@ const acceptBookingScheduleModification = async (transaction, modification, appl
       .add(5, 'minutes')
       .format(ISO_OFFSET_FORMAT);
 
+    // Note: ACCEPT_UPDATE_START transition is necessary if a user changes the time on start date with exception
     await transitionPrivileged({
       bodyParams: {
         id: txId,

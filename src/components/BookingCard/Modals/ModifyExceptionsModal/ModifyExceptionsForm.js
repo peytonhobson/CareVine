@@ -119,9 +119,13 @@ const ModifyScheduleRecurringForm = props => (
             timezone={timezone}
             form={form}
             booking={booking}
-            firstAvailableDate={moment(lastChargedDate)
-              .add('1', 'weeks')
-              .startOf('week')}
+            firstAvailableDate={
+              lastChargedDate && moment(lastChargedDate).isAfter()
+                ? moment(lastChargedDate)
+                    .add('1', 'weeks')
+                    .startOf('week')
+                : null
+            }
             disabled={hasPendingRequest && !hasPendingExceptionsRequest}
           />
           {showNoChangeError ? (

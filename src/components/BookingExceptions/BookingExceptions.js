@@ -126,7 +126,18 @@ const BookingExceptions = props => {
 
   const { startDate, endDate, bookingSchedule } = dateSource;
 
-  const firstAvailableDate = firstAvailableDateProp || startDate?.date || startDate;
+  let firstAvailableDate;
+  if (firstAvailableDateProp) {
+    firstAvailableDate = firstAvailableDateProp;
+  } else if (startDate?.date) {
+    firstAvailableDate = moment(startDate.date).isBefore()
+      ? moment(TODAY).add(1, 'day')
+      : startDate.date;
+  } else if (startDate) {
+    firstAvailableDate = moment(startDate).isBefore() ? moment(TODAY).add(1, 'day') : startDate;
+  } else {
+    firstAvailableDate = moment(TODAY).add(1, 'day');
+  }
 
   const sortedExceptions = Object.values(exceptions)
     .flat()
