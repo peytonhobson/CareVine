@@ -230,6 +230,21 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
     });
 };
 
+const checkBoundsHaveNumbers = bounds => {
+  const { ne, sw } = bounds;
+
+  if (ne && sw) {
+    const { lat: neLat, lng: neLng } = ne;
+    const { lat: swLat, lng: swLng } = sw;
+
+    if (isNaN(neLat) || isNaN(neLng) || isNaN(swLat) || isNaN(swLng)) {
+      return false;
+    }
+    return true;
+  }
+  return false;
+};
+
 export const searchListings = searchParams => (dispatch, getState, sdk) => {
   dispatch(searchListingsRequest(searchParams));
 
@@ -260,13 +275,17 @@ export const searchListings = searchParams => (dispatch, getState, sdk) => {
       Number(JSON.parse(location)?.origin?.lng)
     );
 
+  const bounds =
+    selectedLocation || origin ? expandBounds(selectedLocation || origin, distance) : null;
+  const boundsHaveNumbers = checkBoundsHaveNumbers(bounds);
+
   const params = {
     ...rest,
     // ...priceMaybe,
     ...minPriceMaybe,
     ...maxPriceMaybe,
     per_page: perPage,
-    bounds: selectedLocation || origin ? expandBounds(selectedLocation || origin, distance) : null,
+    bounds: boundsHaveNumbers ? bounds : null,
     ...sortMaybe,
     meta_listingType: listingType,
   };
