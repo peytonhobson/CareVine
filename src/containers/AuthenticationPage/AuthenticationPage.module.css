@@ -25,20 +25,7 @@
 
   @media screen(md) {
     padding: 0;
-  }
-}
-
-.hidden {
-  @media screen(md) {
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-  }
-}
-
-.show {
-  @media screen(md) {
-    opacity: 1;
-    transition: opacity 0.5s ease-in;
+    background-color: var(--matterColorLight);
   }
 }
 

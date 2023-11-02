@@ -1,18 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { string } from 'prop-types';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
 import { NamedLink, OwnListingLink, IconArrowHead, InlineTextButton } from '../../components';
 import { CAREGIVER, EMPLOYER } from '../../util/constants';
 import { useCheckMobileScreen } from '../../util/hooks';
-import { HeroSearchForm } from '../../forms';
+import UnauthenticatedContainer from './UnauthenticatedContainer';
+import { useMediaQuery } from '@mui/material';
 
 import backgroundImage from '../../assets/landing-background.jpg';
 import mobileBackgroundImage from '../../assets/Landing-Mobile.jpg';
 
 import css from './SectionHero.module.css';
-import UnauthenticatedContainer from './UnauthenticatedContainer';
-import { useMediaQuery } from '@mui/material';
 
 const SectionHero = props => {
   const [mounted, setMounted] = useState(false);
@@ -22,7 +21,6 @@ const SectionHero = props => {
   const isMobile = useCheckMobileScreen();
   const isLarge = useMediaQuery('(min-width:1024px)');
 
-  const heroRef = useRef(null);
   const imageRef = useRef(null);
 
   const {
@@ -52,22 +50,20 @@ const SectionHero = props => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (heroRef?.current) {
-      const image = new Image();
+  const heroRef = useCallback(node => {
+    const image = new Image();
 
-      image.onload = () => {
-        heroRef.current.style.background = `url('${image.src}')`;
-        heroRef.current.style.backgroundColor = 'var(--matterColor)';
-        heroRef.current.style.backgroundPosition = 'center';
-        heroRef.current.style.backgroundSize = 'cover';
-        setHeroLoaded(true);
-      };
+    image.onload = () => {
+      if (!node) return;
+      node.style.background = `url('${image.src}')`;
+      node.style.backgroundPosition = 'center';
+      node.style.backgroundSize = 'cover';
+      setHeroLoaded(true);
+    };
 
-      image.src = isLarge ? backgroundImage : mobileBackgroundImage;
-      imageRef.current = image;
-    }
-  }, [heroRef?.current]);
+    image.src = isLarge ? backgroundImage : mobileBackgroundImage;
+    imageRef.current = image;
+  }, []);
 
   useEffect(() => {
     if (imageRef?.current) {
@@ -75,7 +71,7 @@ const SectionHero = props => {
 
       imageRef.current.src = isLarge ? backgroundImage : mobileBackgroundImage;
     }
-  }, [imageRef?.current, isLarge]);
+  }, [isLarge]);
 
   const handleSearchSubmit = values => {
     const valOrigin = values.location.selectedPlace.origin;
@@ -91,8 +87,7 @@ const SectionHero = props => {
   const classes = classNames(
     rootClassName || css.root,
     className,
-    isMobile && !currentUser && css.middleHero,
-    heroLoaded ? css.show : css.hidden
+    isMobile && !currentUser && css.middleHero
   );
 
   const itemsToBrowse = userType === CAREGIVER ? 'Jobs' : 'Caregivers';
@@ -120,64 +115,81 @@ const SectionHero = props => {
 
   return (
     <div className={classes} ref={heroRef}>
-      {currentUserFetched ? (
-        currentUser ? (
-          <div className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}>
-            <h1 className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}>
-              <FormattedMessage id={title} />
-            </h1>
-            {userType === CAREGIVER ? (
-              <h3 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
-                <FormattedMessage id="SectionHero.subTitleCaregiver" />
-              </h3>
-            ) : (
-              <h3 className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}>
-                <FormattedMessage id="SectionHero.subTitleEmployer" />
-              </h3>
-            )}
-            {location ? (
-              <NamedLink
-                name="SearchPage"
-                to={{
-                  search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
-                    `&listingType=${oppositeUserType}`}`,
-                }}
-                className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+      {heroLoaded ? (
+        <>
+          {currentUserFetched ? (
+            currentUser ? (
+              <div
+                className={classNames(css.heroContent, isMobile && !currentUser && css.middleHero)}
               >
-                <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
-              </NamedLink>
-            ) : userType ? (
-              currentUserListing ? (
-                <OwnListingLink
-                  listing={currentUserListing}
-                  listingFetched={!!currentUserListing}
-                  className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                <h1
+                  className={classNames(css.heroMainTitle, { [css.heroMainTitleFEDelay]: mounted })}
                 >
-                  <FormattedMessage id="SectionHero.finishYourProfileButton" />
-                </OwnListingLink>
-              ) : (
-                <NamedLink
-                  className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
-                  name="NewListingPage"
-                >
-                  <FormattedMessage id="SectionHero.addYourProfileButton" />
-                </NamedLink>
-              )
-            ) : null}
-          </div>
-        ) : (
-          <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
-        )
-      ) : null}
+                  <FormattedMessage id={title} />
+                </h1>
+                {userType === CAREGIVER ? (
+                  <h3
+                    className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
+                  >
+                    <FormattedMessage id="SectionHero.subTitleCaregiver" />
+                  </h3>
+                ) : (
+                  <h3
+                    className={classNames(css.heroSubTitle, { [css.heroSubTitleFEDelay]: mounted })}
+                  >
+                    <FormattedMessage id="SectionHero.subTitleEmployer" />
+                  </h3>
+                )}
+                {location ? (
+                  <NamedLink
+                    name="SearchPage"
+                    to={{
+                      search: `?${origin}&${distance}&sort=relevant${oppositeUserType &&
+                        `&listingType=${oppositeUserType}`}`,
+                    }}
+                    className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                  >
+                    <FormattedMessage id="SectionHero.browseButton" values={{ itemsToBrowse }} />
+                  </NamedLink>
+                ) : userType ? (
+                  currentUserListing ? (
+                    <OwnListingLink
+                      listing={currentUserListing}
+                      listingFetched={!!currentUserListing}
+                      className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                    >
+                      <FormattedMessage id="SectionHero.finishYourProfileButton" />
+                    </OwnListingLink>
+                  ) : (
+                    <NamedLink
+                      className={classNames(css.heroButton, { [css.heroButtonFEDelay]: mounted })}
+                      name="NewListingPage"
+                    >
+                      <FormattedMessage id="SectionHero.addYourProfileButton" />
+                    </NamedLink>
+                  )
+                ) : null}
+              </div>
+            ) : (
+              <UnauthenticatedContainer handleSearchSubmit={handleSearchSubmit} />
+            )
+          ) : null}
 
-      <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
-        {showLearnMore && (
-          <InlineTextButton className={css.learnMoreButton}>
-            Learn More{' '}
-            <IconArrowHead direction="down" className={css.arrowHead} height="1em" width="1em" />
-          </InlineTextButton>
-        )}
-      </div>
+          <div className={css.learnMoreButtonContainer} onClick={scrollToContent}>
+            {showLearnMore && (
+              <InlineTextButton className={css.learnMoreButton}>
+                Learn More{' '}
+                <IconArrowHead
+                  direction="down"
+                  className={css.arrowHead}
+                  height="1em"
+                  width="1em"
+                />
+              </InlineTextButton>
+            )}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 };
