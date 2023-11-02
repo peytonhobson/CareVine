@@ -21,9 +21,11 @@
 .root {
   composes: marketplaceModalRootStyles from global;
   padding: 1rem;
+  background-color: var(--marketplaceColor);
 
   @media screen(md) {
     padding: 0;
+    background-color: var(--matterColorLight);
   }
 }
 
