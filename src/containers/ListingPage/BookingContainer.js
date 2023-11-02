@@ -44,29 +44,24 @@ const BookingContainer = props => {
             <p className={css.startingRateText}>Starting Rate</p>
             <p className={css.startingRate}>${minPrice / 100}</p>
           </div>
-          {hasActiveSubscription ? (
+
+          {hasStripeAccountInProgress ? (
+            <div className={css.noStripeAccountContainer}>
+              <IconSpinner className={css.spinner} />
+              <p style={{ color: 'var(--marketplaceColor)', textAlign: 'center' }}>
+                Loading caregiver's booking details...
+              </p>
+            </div>
+          ) : hasStripeAccountError ? (
+            <div className={css.noStripeAccountContainer}>
+              <p style={{ color: 'var(--failColor)', textAlign: 'center' }}>
+                Error loading booking details.
+              </p>
+            </div>
+          ) : (
             <Button className={css.availabilityButton} onClick={onBookingModalOpen}>
               Book Now
             </Button>
-          ) : (
-            <div className={css.noStripeAccountContainer}>
-              {hasStripeAccountInProgress ? (
-                <>
-                  <IconSpinner className={css.spinner} />
-                  <p style={{ color: 'var(--marketplaceColor)', textAlign: 'center' }}>
-                    Loading caregiver's booking details...
-                  </p>
-                </>
-              ) : hasStripeAccountError ? (
-                <p style={{ color: 'var(--failColor)', textAlign: 'center' }}>
-                  Error loading booking details.
-                </p>
-              ) : (
-                <h3 style={{ color: 'var(--marketplaceColor)', textAlign: 'center' }}>
-                  Booking Not Available
-                </h3>
-              )}
-            </div>
           )}
         </div>
       ) : null}
