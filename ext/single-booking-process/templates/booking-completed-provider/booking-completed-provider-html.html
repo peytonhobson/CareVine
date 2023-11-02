@@ -4,16 +4,21 @@
 
     <style>
       @media (prefers-color-scheme: dark) {
-        .inner-table {
-          background-color: #1c1c1c !important;
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
         }
 
-        .body {
+        .inner-table {
           background-color: #1c1c1c !important;
         }
       }
 
       @media screen and (max-width: 768px) {
+        .booking-summary-card {
+          max-width: 90% !important;
+        }
+
         .inner-table {
           border-radius: 0 !important;
         }
@@ -23,12 +28,12 @@
         }
 
         .inner-td {
-          padding: 0 8px 25px 8px !important;
+          padding: 0 0 25px 0 !important;
         }
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0; background-color: #FFFFFF;" class="body">
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
     <table
       style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
       width="100%"
@@ -65,16 +70,24 @@
                                 src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
                                 class="logo"
                                 style="height: 50px;width: 176px;padding-top: 16px;"
-                                alt="CareVine Logo"
                               />
                             </a>
+                            <p
+                              style="padding: 0; margin-top: 8px;margin-bottom: 0;width: 100%;text-align: center;color: #77a08a;font-size: 16px; line-height: 150%;font-family: Helvetica; font-weight: bold;"
+                            >
+                              <a
+                                href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
+                                style="text-decoration: underline; color: #77a08a;"
+                                >Booking #{{transaction.metadata.bookingNumber}}</a
+                              >
+                            </p>
                           </td>
                         </tr>
                         <tr>
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding: 32px 0;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               Your booking with
                               <span style="white-space: nowrap"
@@ -94,47 +107,62 @@
                         <tr>
                           <td align="center">
                             <table
-                              class="title"
-                              style="margin-top: 24px;width: 100%;text-align: left;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              class="booking-summary-card"
+                              style="width: 100%;text-align: left;color: #FFFFFF;font-size: 14px; line-height: 150%;font-family: Helvetica; background-color: #6BA0B6; border-radius: 10px;"
                             >
                               <tbody>
                                 <tr>
                                   <td>
                                     <p
-                                      style="padding-top: 16px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica;"
+                                      class="black-text"
+                                      style="padding-top: 16px;padding-bottom: 20px;width: 100%;text-align: left;margin: 0;color: #FFFFFF;font-size: 20px; line-height: 150%;font-family: Helvetica;padding-left: 20px;"
                                     >
-                                      <b
-                                        >Booking Summary
-                                        (#{{transaction.metadata.bookingNumber}})</b
-                                      >
+                                      <b>Booking Summary</b>
                                     </p>
                                   </td>
                                 </tr>
                                 <tr>
-                                  <td>
+                                  <td style="padding-left: 20px;">
                                     {{#each transaction.metadata.lineItems}}
                                     <table
-                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #6BA0B6; font-size: 12px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #6BA0B6;"
+                                      class="black-text"
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;color: #FFFFFF; font-size: 14px; line-height: 150%;font-family: Helvetica; border-bottom: 1px solid #FFFFFF;"
                                     >
                                       <tbody>
                                         <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>{{this.shortDate}}</b>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style="vertical-align:top; padding-left: 20px">
-                                            <b>({{this.startTime}} - {{this.endTime}})</b>
-                                          </td>
-                                        </tr>
-                                        <tr>
                                           <td
-                                            style="font-size:14px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px;"
+                                            class="black-text"
+                                            style="vertical-align:top; padding-left: 20px;color: #FFFFFF; padding-top: 8px;"
                                           >
-                                            Payout
+                                            <b
+                                              ><span style="white-space: nowrap"
+                                                >{{this.shortDay}}, {{this.shortDate}}</span
+                                              ></b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            class="black-text"
+                                            style="vertical-align:top; padding-left: 20px;color: #FFFFFF;"
+                                          >
+                                            <b
+                                              ><span style="white-space: nowrap"
+                                                >{{this.startTime}} - {{this.endTime}}</span
+                                              ></b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            class="black-text"
+                                            style="font-size:16px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px; color: #FFFFFF;"
+                                          >
+                                            Payout {{#if this.isFifty}} (50%) {{/if}}
                                           </td>
                                           <td
-                                            style="font-size:14px; padding-right: 20px;"
+                                            class="black-text"
+                                            style="font-size:16px; padding-right: 20px; color: #FFFFFF;"
                                             align="right"
                                           >
                                             ${{this.amount}}
@@ -148,12 +176,14 @@
                                     >
                                       <tr>
                                         <td
-                                          style="vertical-align:top; padding-left: 20px; font-size:18px"
+                                          class="black-text"
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; color: #FFFFFF; padding-bottom: 20px;padding-top: 10px;"
                                         >
                                           <b>Total Payout</b>
                                         </td>
                                         <td
-                                          style="font-size:18px; padding-right: 20px;"
+                                          class="black-text"
+                                          style="font-size:18px; padding-right: 20px; color: #FFFFFF;padding-bottom: 20px;padding-top: 10px;"
                                           align="right"
                                         >
                                           <b>${{transaction.metadata.payout}}</b>
@@ -171,7 +201,7 @@
                             style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
                           >
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               If you have any questions or concerns, please contact
                               <a

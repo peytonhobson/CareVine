@@ -131,45 +131,70 @@
    :to :actor.role/provider,
    :template :booking-confirmed}
 
-    ; Customer canceled booking request
-    {:name :notification/booking-request-canceled-confirmation,
-    :on :transition/cancel-request,
-    :to :actor.role/customer,
-    :template :booking-request-canceled-confirmation}
-
-    ; Customer Payment was declined
-    {:name :notification/payment-failed-customer,
+    ; Payment Declined
+   {:name :notification/payment-declined-customer,
    :on :transition/decline-payment,
    :to :actor.role/customer,
    :template :payment-failed-customer}
-   {:name :notification/payment-failed-provider
+   {:name :notification/payment-declined-provider,
    :on :transition/decline-payment,
    :to :actor.role/provider,
    :template :payment-failed-provider}
 
-    ; Booking completed normally
-    {:name :notification/booking-completed,
-    :on :transition/complete,
-    :to :actor.role/customer,
-    :template :booking-completed}
-    {:name :notification/booking-completed-provider,
+   ; Accepted Cancel
+   {:name :notification/accepted-cancel-customer,
+   :on :transition/accepted-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/accepted-cancel-provider,
+   :on :transition/accepted-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; Charged Cancel
+   {:name :notification/charged-cancel-customer,
+   :on :transition/charged-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/charged-cancel-provider,
+   :on :transition/charged-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+   ; Active Cancel
+   {:name :notification/active-cancel-customer,
+   :on :transition/active-cancel,
+   :to :actor.role/customer,
+   :template :booking-canceled-customer}
+   {:name :notification/active-cancel-provider,
+   :on :transition/active-cancel,
+   :to :actor.role/provider,
+   :template :booking-canceled-provider}
+
+
+    ; Completed
+   {:name :notification/booking-completed-customer,
+   :on :transition/complete,
+   :to :actor.role/customer,
+   :template :booking-completed-customer}
+   {:name :notification/booking-completed-provider,
    :on :transition/complete,
    :to :actor.role/provider,
    :template :booking-completed-provider}
 
-    {:name :notification/booking-reminder-customer
-    :on :transition/charge,
-    :to :actor.role/customer,
-    :template :booking-reminder-customer,
-    :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
-    }
-
-    {:name :notification/booking-reminder-provider
-    :on :transition/charge,
-    :to :actor.role/provider,
-    :template :booking-reminder-provider,
-    :at
-    {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
-    }
+   ; Booking Reminder
+   {:name :notification/booking-reminder-customer
+   :on :transition/charge,
+   :to :actor.role/customer,
+   :template :booking-reminder-customer,
+   :at
+   {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
+   }
+   {:name :notification/booking-reminder-provider
+   :on :transition/charge,
+   :to :actor.role/provider,
+   :template :booking-reminder-provider,
+   :at
+   {:fn/ignore-if-past [{:fn/minus [{:fn/timepoint [:time/booking-start]} {:fn/period ["P2DT-5M"]}]}]}
+   }
 ]}

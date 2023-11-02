@@ -1,1 +1,1 @@
-{{transaction.provider.display-name}} Accepted Your Booking Request
+Booking Request Accepted

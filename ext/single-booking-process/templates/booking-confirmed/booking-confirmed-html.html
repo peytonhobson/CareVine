@@ -12,8 +12,9 @@
           color: #1c1c1c !important;
         }
 
-        .body {
-          background-color: #1c1c1c !important;
+        .black-text {
+          color: #1c1c1c !important;
+          border-color: #1c1c1c !important;
         }
       }
 
@@ -27,12 +28,12 @@
         }
 
         .inner-td {
-          padding: 0 8px 25px 8px !important;
+          padding: 0 0 25px 0 !important;
         }
       }
     </style>
   </head>
-  <body style="padding: 0; margin: 0; background-color: #FFFFFF;" class="body">
+  <body style="padding: 0; margin: 0; background-color: #6BA0B6;">
     <table
       style="border-collapse:collapse;margin:0;padding:0;height:100%; width:100%; background-color: #6BA0B6; color: #6BA0B6"
       width="100%"
@@ -69,16 +70,24 @@
                                 src="https://carevine-email-images.s3.us-west-2.amazonaws.com/carevine-logo.png"
                                 class="logo"
                                 style="height: 50px;width: 176px;padding-top: 16px;"
-                                alt="CareVine Logo"
                               />
                             </a>
+                            <p
+                              style="padding: 0; margin-top: 8px;margin-bottom: 0;width: 100%;text-align: center;color: #77a08a;font-size: 16px; line-height: 150%;font-family: Helvetica; font-weight: bold;"
+                            >
+                              <a
+                                href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
+                                style="text-decoration: underline; color: #77a08a;"
+                                >Booking #{{transaction.metadata.bookingNumber}}</a
+                              >
+                            </p>
                           </td>
                         </tr>
                         <tr>
                           <td align="center">
                             <p
                               class="title"
-                              style="padding-top: 32px; padding-bottom: 32px;width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                              style="padding-top: 32px; padding-bottom: 32px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
                             >
                               Your booking with
                               <span style="white-space: nowrap"
@@ -86,6 +95,89 @@
                               >
                               starting on {{transaction.metadata.lineItems.[0].shortDate}} at
                               {{transaction.metadata.lineItems.[0].startTime}} has been confirmed.
+                            </p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <table
+                              class="booking-summary black-text"
+                              style="border-collapse:collapse; border:0; background-color: #6ba0b6; border-radius: 10px; color: #FFFFFF; width: 90%; max-width: 350px; font-family: Helvetica; margin-bottom: 16px;"
+                            >
+                              <tbody>
+                                <tr>
+                                  <td style="padding-left: 20px;">
+                                    <p
+                                      style="padding-top: 16px; padding-bottom: 16px;width: 100%;text-align: left;margin: 0;font-size: 20px; line-height: 150%; "
+                                    >
+                                      <b>Booking Summary</b>
+                                    </p>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td style="padding-left: 20px;">
+                                    {{#each transaction.metadata.lineItems}}
+                                    <table
+                                      class="black-text"
+                                      style="width:94%;padding-top: 8px;border-collapse:collapse;font-size: 14px; line-height: 150%; border-bottom: 1px solid #FFFFFF; color: #FFFFFF; padding: 8px 0;"
+                                    >
+                                      <tbody>
+                                        <tr>
+                                          <td
+                                            style="vertical-align:top; padding-left: 20px; padding-top: 8px;"
+                                          >
+                                            <b
+                                              >{{this.shortDay}}, {{this.shortDate}}
+                                              ({{this.startTime}} - {{this.endTime}})</b
+                                            >
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td
+                                            style="font-size:16px;padding-left: 20px; padding-bottom: 8px; padding-top: 8px;"
+                                          >
+                                            Payout
+                                          </td>
+                                          <td
+                                            style="font-size:16px; padding-right: 20px; padding-bottom: 8px; padding-top: 8px;"
+                                            align="right"
+                                          >
+                                            ${{this.amount}}
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                    {{/each}}
+                                    <table
+                                      class="black-text"
+                                      style="width:94%;margin-top:8px;border-collapse:collapse; font-size: 16px; line-height: 120%; color: #FFFFFF;"
+                                    >
+                                      <tr>
+                                        <td
+                                          style="vertical-align:top; padding-left: 20px; font-size:18px; line-height: 200%; padding-bottom: 10px;"
+                                        >
+                                          <b>Total</b>
+                                        </td>
+                                        <td
+                                          style="font-size:18px; padding-right: 20px;"
+                                          align="right"
+                                        >
+                                          <b>${{transaction.metadata.payout}}</b>
+                                        </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center">
+                            <p
+                              class="title"
+                              style="padding-top: 32px; padding-bottom: 32px;width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 16px; line-height: 150%;font-family: Helvetica;"
+                            >
                               You can view and manage this booking by clicking the button below.
                             </p>
                           </td>
@@ -93,7 +185,7 @@
                         <tr align="center">
                           <td>
                             <a
-                              href="{{marketplace.url}}/bookings?tab=Upcoming&bookingId={{transaction.id}}"
+                              href="{{marketplace.url}}/bookings/bookings?bookingId={{transaction.id}}"
                               style="padding: 12px 24px;height: 44px;margin-top: 12px;background: #6BA0B6;border-radius: 10px;border: none;color: #ffffff; font-family: Trebuchet MS, Verdana, Arial; font-weight: bold; font-size: 14px; line-height: 20px; color: #FFFFFF; text-decoration: none;"
                               class="button"
                               >Go to Booking</a
@@ -101,20 +193,21 @@
                           </td>
                         </tr>
                         <tr>
-                          <td style="padding-top: 48px;">
+                          <td style="padding-top: 60px;" align="center">
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 14px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 18px; line-height: 150%;font-family: Helvetica; text-decoration:underline"
                             >
                               So what happens now?
                             </p>
                             <ul
-                              style="width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;padding-left: 30px;"
+                              style="max-width: 80%; text-align: left;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;padding-left: 10px;"
                             >
                               <li style="padding: 4px 0;">
                                 Now that the booking has been confirmed, the client will be charged
-                                for the full booking. CareVine will hold your payment in escrow
-                                until the booking has been canceled or completed. Once the booking
-                                is complete, all applicable funds will be transferred to the you.
+                                for the full booking 48 hours prior to the start. CareVine will hold
+                                your payment in escrow until the booking has been canceled or
+                                completed. Once the booking is complete, all applicable funds will
+                                be transferred to the you.
                               </li>
                               <li style="padding: 4px 0;">
                                 After the booking is complete, the client will have 48 hours to
@@ -133,7 +226,7 @@
                             style="padding-top: 32px; padding-bottom: 16px; border-bottom: 1px solid #6BA0B6"
                           >
                             <p
-                              style="width: 100%;text-align: left;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
+                              style="width: 100%;text-align: center;margin: 0;color: #6BA0B6;font-size: 12px; line-height: 150%;font-family: Helvetica;"
                             >
                               If you have any questions or concerns, please contact
                               <a
