@@ -56,7 +56,6 @@ const SectionHero = props => {
     image.onload = () => {
       if (!node) return;
       node.style.background = `url('${image.src}')`;
-      node.style.backgroundColor = 'var(--matterColor)';
       node.style.backgroundPosition = 'center';
       node.style.backgroundSize = 'cover';
       setHeroLoaded(true);
