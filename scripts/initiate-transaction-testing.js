@@ -2,12 +2,91 @@
 require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
-const {
-  constructBookingMetadataRecurring,
-  constructBookingMetadataOneTime,
-} = require('../server/bookingHelpers');
+const { constructBookingMetadataRecurring } = require('../server/bookingHelpers');
 const isDev = true;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+const BOOKING_FEE_PERCENTAGE = 0.2;
+const BANK_ACCOUNT = 'us_bank_account';
+const CARD_PROCESSING_FEE = 0.029;
+const BANK_PROCESSING_FEE = 0.008;
+
+const calculateTimeBetween = (bookingStart, bookingEnd) => {
+  // Convert time from 12 hour to 24 hour format using moment
+  const start = moment(bookingStart, ['h:mma']).format('HH');
+  const end = bookingEnd === '12:00am' ? 24 : moment(bookingEnd, ['h:mma']).format('HH');
+
+  return end - start;
+};
+
+const calculateProcessingFee = (subTotal, transactionFee, selectedPaymentMethod) => {
+  const totalAmount = Number(subTotal) + Number(transactionFee);
+  if (selectedPaymentMethod === BANK_ACCOUNT) {
+    const calculatedFee = parseFloat(
+      Math.round(((totalAmount * BANK_PROCESSING_FEE) / (1 - BANK_PROCESSING_FEE)) * 100) / 100
+    ).toFixed(2);
+    return calculatedFee > 5 ? '5.00' : calculatedFee;
+  }
+
+  return parseFloat(
+    Math.round(((totalAmount * CARD_PROCESSING_FEE + 0.3) / (1 - CARD_PROCESSING_FEE)) * 100) / 100
+  ).toFixed(2);
+};
+
+const formatDateTimeValues = dateTimes =>
+  Object.keys(dateTimes).map(key => {
+    const startTime = dateTimes[key].startTime;
+    const endTime = dateTimes[key].endTime;
+
+    return {
+      startTime,
+      endTime,
+      date: key,
+    };
+  });
+
+const constructBookingMetadataOneTime = (
+  bookingDates,
+  bookingTimes,
+  bookingRate,
+  paymentMethodType
+) => {
+  const lineItems = formatDateTimeValues(bookingTimes).map((booking, index) => {
+    const { startTime, endTime } = booking;
+
+    const hours = calculateTimeBetween(startTime, endTime);
+    const amount = parseFloat(hours * bookingRate).toFixed(2);
+    const isoDate = moment(bookingDates[index])?.format(ISO_OFFSET_FORMAT);
+
+    return {
+      code: 'line-item/booking',
+      startTime,
+      endTime,
+      date: isoDate,
+      shortDay: moment(isoDate).format('ddd'),
+      shortDate: moment(isoDate).format('MM/DD'),
+      hours,
+      amount,
+      bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
+    };
+  });
+
+  const payout = lineItems.reduce((acc, item) => acc + Number(item.amount), 0);
+
+  const bookingFee = parseFloat(Number(payout) * BOOKING_FEE_PERCENTAGE).toFixed(2);
+  const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
+
+  return {
+    lineItems,
+    bookingRate,
+    bookingFee,
+    processingFee,
+    totalPayment: parseFloat(Number(bookingFee) + Number(processingFee) + Number(payout)).toFixed(
+      2
+    ),
+    payout: parseFloat(payout).toFixed(2),
+    type: 'oneTime',
+  };
+};
 
 const employerUserTokenLocal = {
   access_token:
@@ -110,19 +189,31 @@ const bookingSchedule = [
 const bookingRate = 23;
 const paymentMethodType = 'us_bank_account';
 
-const metadata = constructBookingMetadataRecurring(
-  bookingSchedule,
-  moment()
-    .startOf('week')
-    .subtract(1, 'week'),
-  null,
-  bookingRate,
-  paymentMethodType,
-  exceptions
+const metadata = constructBookingMetadataOneTime(
+  ['2023-11-02T06:00:00.000Z'],
+  {
+    '11/02': {
+      startTime: '2:00pm',
+      endTime: '3:00pm',
+    },
+  },
+  '27',
+  'us_bank_account'
 );
 
+//   constructBookingMetadataRecurring(
+//   bookingSchedule,
+//   moment()
+//     .startOf('week')
+//     .subtract(1, 'week'),
+//   null,
+//   bookingRate,
+//   paymentMethodType,
+//   exceptions
+// );
+
 const BODY_PARAMS = {
-  processAlias: 'booking-process/active',
+  processAlias: 'single-booking-process/active',
   transition: 'transition/request-booking',
   params: {
     listingId: {
@@ -133,14 +224,14 @@ const BODY_PARAMS = {
     bookingStart,
     bookingEnd,
     metadata: {
-      bookingSchedule,
-      startDate: start
-        .startOf('day')
-        .subtract(1, 'week')
-        .format(ISO_OFFSET_FORMAT),
-      endDate: null,
-      cancelAtPeriodEnd: false,
-      type: 'recurring',
+      // bookingSchedule,
+      // startDate: start
+      //   .startOf('day')
+      //   .subtract(1, 'week')
+      //   .format(ISO_OFFSET_FORMAT),
+      // endDate: null,
+      // cancelAtPeriodEnd: false,
+      // type: 'oneTime',
       bookingRate,
       paymentMethodId: 'pm_1NYH31JsU2TVwfKB4U3Rja7M',
       paymentMethodType,
@@ -150,9 +241,9 @@ const BODY_PARAMS = {
       clientEmail: 'peyton.hobson1@gmail.com',
       stripeAccountId: 'acct_1MFf3NQw1sFyCVAj',
       providerName: 'Peyton C',
-      exceptions,
+      // exceptions,
       bookingNumber: '22342342',
-      dontUpdateBookingEnd: true,
+      // dontUpdateBookingEnd: true,
       ...metadata,
       // lineItems: metadata.lineItems.map(l => ({
       //   ...l,

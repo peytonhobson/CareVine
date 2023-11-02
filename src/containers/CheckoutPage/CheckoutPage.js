@@ -132,6 +132,13 @@ export class CheckoutPageComponent extends Component {
       changedDays: [],
     };
 
+    console.log({
+      bookingDates,
+      bookingTimes,
+      bookingRate,
+      paymentMethodType: this.state.selectedPaymentMethod.type,
+    });
+
     const scheduleTypeMetadata =
       scheduleType === 'oneTime'
         ? constructBookingMetadataOneTime(

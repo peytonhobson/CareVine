@@ -84,9 +84,12 @@
    :to :state/updating-booking-end}
 
    {:name :transition/start,
+   :actions
+   [{:name :action/update-booking :config {:type :time}},{:name :action/privileged-update-metadata}],
    :actor :actor.role/operator,
    :from :state/updating-booking-end,
-   :to :state/active}
+   :to :state/active,
+   :privileged? true}
 
    {:name :transition/active-cancel,
    :actions

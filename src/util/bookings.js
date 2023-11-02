@@ -449,13 +449,13 @@ export const constructBookingMetadataOneTime = (
       shortDate: moment(isoDate).format('MM/DD'),
       hours,
       amount,
-      bookingFee: parseFloat(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
+      bookingFee: Number(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
     };
   });
 
-  const payout = lineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
+  const payout = lineItems.reduce((acc, item) => acc + Number(item.amount), 0);
 
-  const bookingFee = parseFloat(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
+  const bookingFee = Number(payout * BOOKING_FEE_PERCENTAGE).toFixed(2);
   const processingFee = calculateProcessingFee(payout, bookingFee, paymentMethodType);
 
   return {

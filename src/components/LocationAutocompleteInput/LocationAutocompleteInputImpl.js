@@ -558,37 +558,4 @@ LocationAutocompleteInputImpl.defaultProps = {
   inputRef: null,
 };
 
-LocationAutocompleteInputImpl.propTypes = {
-  autoFocus: bool,
-  rootClassName: string,
-  className: string,
-  closeOnBlur: bool,
-  iconClassName: string,
-  inputClassName: string,
-  predictionsClassName: string,
-  predictionsAttributionClassName: string,
-  validClassName: string,
-  placeholder: string,
-  useDefaultPredictions: bool,
-  input: shape({
-    name: string.isRequired,
-    value: oneOfType([
-      shape({
-        search: string,
-        predictions: any,
-        selectedPlace: propTypes.place,
-      }),
-      string,
-    ]),
-    onChange: func.isRequired,
-    onFocus: func.isRequired,
-    onBlur: func.isRequired,
-  }).isRequired,
-  meta: shape({
-    valid: bool.isRequired,
-    touched: bool.isRequired,
-  }),
-  inputRef: func,
-};
-
 export default LocationAutocompleteInputImpl;
