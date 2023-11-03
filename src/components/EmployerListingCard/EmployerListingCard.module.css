@@ -1,5 +1,3 @@
-
-
 .root {
   /* Layout */
   display: flex;
@@ -354,4 +352,21 @@
   margin: 0;
   padding: 0;
   color: var(--marketplaceColor);
+}
+
+.loadingCard {
+  composes: loadingCard from global;
+
+  border-radius: var(--borderRadius);
+  width: 100%;
+  max-width: 30rem;
+  min-height: 25rem;
+  margin-bottom: 1.5rem;
+
+  @media screen(md) {
+    margin-inline: 1.5rem;
+    width: 60rem;
+    min-height: 19rem;
+    max-width: none;
+  }
 }

@@ -352,3 +352,20 @@
   align-items: flex-start;
   margin-top: 0.5rem;
 }
+
+.loadingCard {
+  composes: loadingCard from global;
+
+  min-height: 25rem;
+  border-radius: var(--borderRadius);
+  width: 100%;
+  max-width: 30rem;
+  margin-bottom: 3rem;
+  margin-inline: 0;
+
+  @media screen(md) {
+    width: 30rem;
+    margin-inline: 1.5rem;
+    min-height: 30rem;
+  }
+}

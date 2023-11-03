@@ -248,13 +248,6 @@ class MainPanel extends Component {
         }
       : {};
 
-    // With time-based availability filtering, pagination is NOT
-    // supported. In these cases we get the pagination support info in
-    // the response meta object, and we can use the count of listings
-    // as the result count.
-    //
-    // See: https://www.sharetribe.com/api-reference/marketplace.html#availability-filtering
-    const hasPaginationInfo = !!pagination && !pagination.paginationUnsupported;
     const listingsLength = listings ? listings.length : 0;
     const totalItems = listingsLength;
 
@@ -426,6 +419,7 @@ class MainPanel extends Component {
               onManageDisableScrolling={onManageDisableScrolling}
               urlQueryParams={urlQueryParams}
               reviews={reviews}
+              searchInProgress={searchInProgress}
             />
           </div>
         )}

@@ -1,15 +1,11 @@
 import React from 'react';
 
-import { array, string, func } from 'prop-types';
 import classNames from 'classnames';
-import { types } from 'sharetribe-flex-sdk';
-const { Money } = types;
 import { Card as MuiCard } from '@mui/material';
 import { makeStyles } from '@material-ui/styles';
 import { styled } from '@material-ui/styles';
 
-import { FormattedMessage, intlShape, injectIntl } from '../../util/reactIntl';
-import { propTypes } from '../../util/types';
+import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { ensureListing, userDisplayNameAsString } from '../../util/data';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
@@ -17,16 +13,11 @@ import config from '../../config';
 import {
   NamedLink,
   Avatar,
-  IconCheckmark,
   InfoTooltip,
-  IconSearch,
   IconCertification,
   IconCar,
   IconHouse,
-  IconCalendar,
-  AvailabilityPreview,
   IconCareVineGold,
-  Button,
   ReviewRating,
 } from '..';
 import { findOptionsForSelectFilter } from '../../util/search';
@@ -45,7 +36,6 @@ export const CaregiverListingCardComponent = props => {
     intl,
     listing,
     filtersConfig,
-    currentUserListing,
     disableProfileLink,
     isMobile,
     origin,
@@ -60,7 +50,6 @@ export const CaregiverListingCardComponent = props => {
   const {
     location = {},
     careTypes: providedServices,
-    availabilityPlan,
     additionalInfo,
     certificationsAndTraining,
     experienceLevel,
@@ -109,13 +98,6 @@ export const CaregiverListingCardComponent = props => {
   const additionalServices = providedServices
     .filter((service, index) => index > 1)
     .map(service => servicesMap.get(service));
-  const additionalServicesText = (
-    <ul>
-      {additionalServices?.map(service => (
-        <li>{service && service.split('/')[0]}</li>
-      ))}
-    </ul>
-  );
   const backgroundCheckTitle = (
     <p>
       <FormattedMessage id="CaregiverListingCard.continuouslyVerified" />
@@ -353,17 +335,7 @@ export const CaregiverListingCardComponent = props => {
 };
 
 CaregiverListingCardComponent.defaultProps = {
-  className: null,
-  rootClassName: null,
   filtersConfig: config.custom.filters,
-};
-
-CaregiverListingCardComponent.propTypes = {
-  className: string,
-  rootClassName: string,
-  filtersConfig: array,
-  intl: intlShape.isRequired,
-  listing: propTypes.listing.isRequired,
 };
 
 export default injectIntl(CaregiverListingCardComponent);

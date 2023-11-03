@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { propTypes } from '../../util/types';
 import {
-  ListingCard,
   PaginationLinks,
   CaregiverListingCard,
   EmployerListingCard,
+  CaregiverListingCardLoading,
+  EmployerListingCardLoading,
 } from '../../components';
 import { EMPLOYER, CAREGIVER } from '../../util/constants';
 import EmployerListingCardMobile from '../EmployerListingCard/EmployerListingCardMobile';
@@ -22,13 +23,13 @@ const SearchResultsPanel = props => {
     pagination,
     search,
     setActiveListing,
-    currentUserType,
     currentUser,
     onContactUser,
     currentUserListing,
     onManageDisableScrolling,
     urlQueryParams,
     reviews,
+    searchInProgress,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
@@ -62,6 +63,30 @@ const SearchResultsPanel = props => {
     const listingReviews = reviews[listing.id.uuid] || [];
     return { ...listing, reviews: listingReviews };
   });
+
+  if (searchInProgress) {
+    return (
+      <div className={classes}>
+        <div className={css.listingCards}>
+          {listingType === CAREGIVER ? (
+            <>
+              <CaregiverListingCardLoading />
+              <CaregiverListingCardLoading />
+              <CaregiverListingCardLoading />
+              <CaregiverListingCardLoading />
+            </>
+          ) : (
+            <>
+              <EmployerListingCardLoading />
+              <EmployerListingCardLoading />
+              <EmployerListingCardLoading />
+              <EmployerListingCardLoading />
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={classes}>
