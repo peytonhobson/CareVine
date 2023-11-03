@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { injectIntl, intlShape } from '../../util/reactIntl';
 import { parseSelectFilterOptions } from '../../util/search';
 import { FieldCheckbox } from '../../components';
-
 import { FilterPopup, FilterPlain } from '../../components';
+
 import css from './SelectMultipleFilter.module.css';
 
 // SelectMultipleFilter doesn't need array mutators since it doesn't require validation.
@@ -159,7 +159,6 @@ class SelectMultipleFilter extends Component {
         label={labelForPlain}
         isSelected={hasInitialValues}
         id={`${id}.plain`}
-        liveEdit
         contentPlacementOffset={contentStyle}
         onSubmit={handleSubmit}
         initialValues={namedInitialValues}

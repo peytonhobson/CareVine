@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { IconReviewStar } from '../../components';
 import { REVIEW_RATINGS } from '../../util/types';
 
+// TODO: Allow partial stars
 const ReviewRating = props => {
   const { className, rootClassName, reviewStarClassName, rating } = props;
   const classes = classNames(rootClassName, className);
@@ -20,21 +21,6 @@ const ReviewRating = props => {
       ))}
     </span>
   );
-};
-
-ReviewRating.defaultProps = {
-  rootClassName: null,
-  className: null,
-  reviewStarClassName: null,
-};
-
-const { string, oneOf } = PropTypes;
-
-ReviewRating.propTypes = {
-  rating: oneOf(REVIEW_RATINGS).isRequired,
-  reviewStartClassName: string,
-  rootClassName: string,
-  className: string,
 };
 
 export default ReviewRating;
