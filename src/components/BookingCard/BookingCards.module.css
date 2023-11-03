@@ -271,12 +271,8 @@
   width: 100%;
 }
 
-.continueButton {
+.buttonLink {
   composes: button buttonFont buttonText buttonBorders buttonColors from global;
-  composes: changeButton;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .menuLabel {

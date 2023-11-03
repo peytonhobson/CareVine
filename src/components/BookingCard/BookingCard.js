@@ -1,6 +1,13 @@
 import React, { useReducer, useMemo, createContext, useContext } from 'react';
 
-import { Avatar, UserDisplayName, Button, SecondaryButton, CancelBookingModal } from '..';
+import {
+  Avatar,
+  UserDisplayName,
+  Button,
+  SecondaryButton,
+  CancelBookingModal,
+  NamedLink,
+} from '..';
 import {
   TRANSITION_REQUEST_BOOKING,
   CANCELABLE_TRANSITIONS,
@@ -32,6 +39,7 @@ import {
 } from './Modals';
 import { calculateTimeBetween } from '../../util/dates';
 import { v4 as uuid } from 'uuid';
+import classNames from 'classnames';
 
 import css from './BookingCards.module.css';
 
@@ -428,12 +436,15 @@ export const BookingCardMenu = () => {
   const { booking, userType, handleModalOpen, availableActions } = useBookingCard();
 
   const lastTransition = booking.attributes.lastTransition;
+  const showContinue = lastTransition === 'transition/draft';
   const showRespond =
     (lastTransition === TRANSITION_REQUEST_BOOKING ||
       lastTransition === TRANSITION_REQUEST_UPDATE_START) &&
-    userType === CAREGIVER;
+    userType === CAREGIVER &&
+    !showContinue;
 
-  const showActions = Object.values(availableActions).some(Boolean) && !showRespond;
+  const showActions =
+    Object.values(availableActions).some(Boolean) && !showRespond && !showContinue;
 
   return (
     <div className="flex w-full md:w-auto gap-4 md:flex-col">
@@ -453,12 +464,22 @@ export const BookingCardMenu = () => {
           Manage Booking
         </Button>
       ) : null}
-      <SecondaryButton
-        className="min-h-0 py-4 px-4 md:py-2"
-        onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
-      >
-        Booking Details
-      </SecondaryButton>
+      {showContinue ? (
+        <NamedLink
+          className={classNames(css.buttonLink, 'min-h-0 py-4 px-4 md:py-2')}
+          name="CheckoutPage"
+          params={{ id: booking.listing?.id.uuid, slug: 'title', draftId: booking.id.uuid }}
+        >
+          Continue Booking
+        </NamedLink>
+      ) : (
+        <SecondaryButton
+          className="min-h-0 py-4 px-4 md:py-2"
+          onClick={() => handleModalOpen(MODAL_TYPES.BOOKING_DETAILS)}
+        >
+          Booking Details
+        </SecondaryButton>
+      )}
     </div>
   );
 };
@@ -610,7 +631,7 @@ export const BookingScheduleMobile = () => {
       <div className="mb-10 w-full">
         <h2 className="mt-0 mb-6 text-center underline">Weekly Schedule</h2>
         <div className="flex justify-center flex-wrap gap-4">
-          {bookingSchedule.map(b => {
+          {bookingSchedule?.map(b => {
             const { dayOfWeek } = b;
             const formattedDayOfWeek = dayOfWeek.toUpperCase();
 
@@ -631,7 +652,7 @@ export const BookingScheduleMobile = () => {
       <div className="mb-10 w-full">
         <h2 className="mt-0 mb-6 text-center underline">Schedule</h2>
         <div className="flex justify-center flex-wrap gap-4">
-          {bookingTimes.map(time => {
+          {bookingTimes?.map(time => {
             const { date } = time;
             const formattedDate = moment(date).format('MM/DD');
             return (

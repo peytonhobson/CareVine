@@ -132,13 +132,6 @@ export class CheckoutPageComponent extends Component {
       changedDays: [],
     };
 
-    console.log({
-      bookingDates,
-      bookingTimes,
-      bookingRate,
-      paymentMethodType: this.state.selectedPaymentMethod.type,
-    });
-
     const scheduleTypeMetadata =
       scheduleType === 'oneTime'
         ? constructBookingMetadataOneTime(
@@ -209,7 +202,7 @@ export class CheckoutPageComponent extends Component {
     const {
       bookingDates = [],
       bookingRate,
-      scheduleType,
+      type: scheduleType,
       startDate,
       endDate,
       bookingSchedule = [],

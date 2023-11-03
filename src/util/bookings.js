@@ -415,7 +415,7 @@ export const findStartTimeRecurring = (weekdays, startDate, endDate, exceptions)
   return startTime;
 };
 
-const formatDateTimeValues = dateTimes =>
+export const formatDateTimeValues = dateTimes =>
   Object.keys(dateTimes).map(key => {
     const startTime = dateTimes[key].startTime;
     const endTime = dateTimes[key].endTime;

@@ -11,12 +11,10 @@ import {
   LayoutWrapperFooter,
   Footer,
   ButtonTabNavHorizontal,
-  DraftBookingCard,
-  IconSpinner,
 } from '../../components';
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
-import { CAREGIVER, EMPLOYER } from '../../util/constants';
+import { BOOKING_FEE_PERCENTAGE, EMPLOYER, ISO_OFFSET_FORMAT } from '../../util/constants';
 import { fetchBookings, setInitialState, removeDrafts, fetchBooking } from './BookingsPage.duck';
 import { setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
@@ -34,15 +32,87 @@ import {
   BookingScheduleMobile,
 } from '../../components';
 import { useCheckMobileScreen } from '../../util/hooks';
+import { calculateTimeBetween } from '../../util/dates';
+import { formatDateTimeValues } from '../../util/bookings';
+import moment from 'moment';
+import BookingCardLoading from '../../components/BookingCard/BookingCardLoading';
 
 import css from './BookingsPage.module.css';
-import BookingCardLoading from '../../components/BookingCard/BookingCardLoading';
 
 const sortDrafts = (a, b) => {
   const aDate = new Date(a.createdAt);
   const bDate = new Date(b.createdAt);
 
   return bDate - aDate;
+};
+
+const createDraftLineItems = draft => {
+  const { dateTimes: bookingTimes, bookingDates, bookingRate } = draft.attributes;
+
+  const lineItems = formatDateTimeValues(bookingTimes).map((booking, index) => {
+    const { startTime, endTime } = booking;
+
+    const hours = calculateTimeBetween(startTime, endTime);
+    const amount = parseFloat(hours * bookingRate).toFixed(2);
+    const isoDate = moment(bookingDates[index])?.format(ISO_OFFSET_FORMAT);
+
+    return {
+      code: 'line-item/booking',
+      startTime,
+      endTime,
+      date: isoDate,
+      shortDay: moment(isoDate).format('ddd'),
+      shortDate: moment(isoDate).format('MM/DD'),
+      hours,
+      amount,
+      bookingFee: Number(amount * BOOKING_FEE_PERCENTAGE).toFixed(2),
+    };
+  });
+
+  return lineItems;
+};
+
+const createBookingDrafts = drafts => {
+  return drafts.map(draft => {
+    const splitName = draft.attributes.providerDisplayName?.split(' ');
+
+    if (draft.attributes.dateTimes) {
+      draft.attributes.lineItems = createDraftLineItems(draft);
+    }
+
+    return {
+      createdAt: draft.createdAt,
+      id: {
+        uuid: draft.id,
+      },
+      listing: {
+        id: {
+          uuid: draft.attributes.listingId,
+        },
+      },
+      provider: {
+        profileImage: draft.attributes.providerProfileImage,
+        attributes: {
+          profile: {
+            displayName: draft.attributes.providerDisplayName,
+            abbreviatedName: splitName
+              ? `${splitName[0].charAt(0)}${splitName[1].charAt(0)}`
+              : null,
+            publicData: {
+              defaultAvatar: draft.attributes.providerDefaultAvatar,
+            },
+          },
+        },
+      },
+      attributes: {
+        lastTransition: 'transition/draft',
+        metadata: {
+          ...draft.attributes,
+          bookingTimes: draft.attributes.dateTimes,
+        },
+      },
+    };
+  });
 };
 
 const BookingCardComponent = props => {
@@ -103,8 +173,8 @@ const BookingsPage = props => {
   const userType = currentUser.attributes.profile.metadata.userType;
   const bookingDrafts = currentUser?.attributes?.profile?.privateData?.bookingDrafts || [];
 
-  const sortedBookingDrafts = useMemo(() => {
-    return bookingDrafts.sort(sortDrafts);
+  const formattedBookingDrafts = useMemo(() => {
+    return createBookingDrafts(bookingDrafts).sort(sortDrafts);
   }, [bookingDrafts]);
 
   const searchString = qs.parse(history.location.search, {
@@ -177,10 +247,10 @@ const BookingsPage = props => {
   switch (selectedTab) {
     case 'drafts':
       cardSection =
-        sortedBookingDrafts.length > 0 ? (
-          sortedBookingDrafts.map(draft => (
-            <span id={draft.id} key={draft.id}>
-              <DraftBookingCard {...cardProps} draft={draft} />
+        formattedBookingDrafts.length > 0 ? (
+          formattedBookingDrafts.map(draft => (
+            <span id={draft.id} key={draft.id.uuid}>
+              <BookingCardComponent booking={draft} {...cardProps} />
             </span>
           ))
         ) : (

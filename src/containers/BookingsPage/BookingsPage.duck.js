@@ -399,7 +399,9 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
   // Remove any drafts older than 48 hours or don't have selected dates
   const newBookingDrafts = bookingDrafts.filter(
     draft =>
-      new Date(draft.createdAt) > new Date() - 48 * 36e5 &&
+      moment()
+        .subtract(48, 'hours')
+        .isAfter(draft.createdAt) &&
       (draft.attributes?.bookingSchedule?.length || draft.attributes?.dateTimes)
   );
 

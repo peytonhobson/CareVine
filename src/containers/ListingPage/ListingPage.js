@@ -95,15 +95,12 @@ export class ListingPageComponent extends Component {
     const { rate: bookingRate, scheduleType } = values;
     const routes = routeConfiguration();
 
-    console.log('here');
-
     // Clear previous Stripe errors from store if there is any
     onInitializeCardPaymentData();
 
     try {
       const bookingDraftId = await onCreateBookingDraft(listing.id.uuid, {
         bookingRate: bookingRate?.[0],
-        scheduleType,
         providerDisplayName: userDisplayNameAsString(listing.author),
         providerProfileImage: listing.author.profileImage
           ? {
@@ -112,6 +109,7 @@ export class ListingPageComponent extends Component {
             }
           : null,
         providerDefaultAvatar: listing.author.attributes.profile.publicData.defaultAvatar || null,
+        type: scheduleType,
       });
 
       history.push(
