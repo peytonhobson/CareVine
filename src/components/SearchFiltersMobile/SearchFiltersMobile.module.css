@@ -1,5 +1,3 @@
-
-
 .root {
   display: flex;
   flex-direction: column;
@@ -137,5 +135,5 @@
 .showListingsButton {
   background-color: var(--marketplaceColor);
   display: inline-block;
-  border-radius: 3px;
+  border-radius: var(--borderRadiusButton);
 }

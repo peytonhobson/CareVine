@@ -93,12 +93,7 @@ class PriceFilter extends Component {
         )
       : label;
 
-    const labelForPlain = hasInitialValues
-      ? intl.formatMessage(
-          { id: 'PriceFilterPlainForm.labelSelected' },
-          { labelText: initialValues[urlParam] }
-        )
-      : label;
+    const labelForPlain = hasInitialValues ? 'Price' : label;
 
     const filterText = intl.formatMessage(
       {

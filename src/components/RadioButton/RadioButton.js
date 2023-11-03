@@ -60,7 +60,7 @@ const RadioButtonComponent = props => {
     className: css.input,
     component: 'input',
     type: 'radio',
-    checked: selected,
+    defaultChecked: selected,
     // onChange: handleChange,
     ...rest,
   };

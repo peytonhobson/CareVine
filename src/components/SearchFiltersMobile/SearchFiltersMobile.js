@@ -7,7 +7,7 @@ import config from '../../config';
 
 import routeConfiguration from '../../routeConfiguration';
 import { createResourceLocatorString } from '../../util/routes';
-import { ModalInMobile, Button, ChangeLocationFilter } from '../../components';
+import { ModalInMobile, Button, ChangeLocationFilter, CancelButton } from '../../components';
 import css from './SearchFiltersMobile.module.css';
 
 const FILTER_DROPDOWN_OFFSET = -14;
@@ -21,6 +21,7 @@ class SearchFiltersMobileComponent extends Component {
     this.cancelFilters = this.cancelFilters.bind(this);
     this.closeFilters = this.closeFilters.bind(this);
     this.resetAll = this.resetAll.bind(this);
+    this.applyFilters = this.applyFilters.bind(this);
   }
 
   // Open filters modal, set the initial parameters to current ones
@@ -62,6 +63,11 @@ class SearchFiltersMobileComponent extends Component {
     }
   }
 
+  applyFilters() {
+    this.props.onApplyFilters();
+    this.closeFilters();
+  }
+
   render() {
     const {
       rootClassName,
@@ -72,7 +78,6 @@ class SearchFiltersMobileComponent extends Component {
       resultsCount,
       searchInProgress,
       showAsModalMaxWidth,
-      onMapIconClick,
       onManageDisableScrolling,
       selectedFiltersCount,
       intl,
@@ -148,14 +153,11 @@ class SearchFiltersMobileComponent extends Component {
               <FormattedMessage id={'SearchFiltersMobile.resetAll'} />
             </button>
           </div>
-          {this.state.isFiltersOpenOnMobile ? (
-            <div className={css.filtersWrapper}>{children}</div>
-          ) : null}
+          <div className={css.filtersWrapper}>{children}</div>
 
           <div className={css.showListingsContainer}>
-            <Button className={css.showListingsButton} onClick={this.closeFilters}>
-              {showListingsLabel}
-            </Button>
+            <CancelButton onClick={this.resetAll}>Reset All</CancelButton>
+            <Button onClick={this.applyFilters}>Apply</Button>
           </div>
         </ModalInMobile>
       </div>
