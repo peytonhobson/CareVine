@@ -1,13 +1,11 @@
-const { integrationSdk, handleError, apiBaseUrl, getTrustedSdk } = require('../api-util/sdk');
+const { integrationSdk, handleError, getTrustedSdk } = require('../api-util/sdk');
 const { v4: uuidv4 } = require('uuid');
-const axios = require('axios');
 const moment = require('moment');
 const { addTimeToStartOfDay, findNextWeekStartTime } = require('../bookingHelpers');
 const { isEqual } = require('lodash');
 
 const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
-const WEEKDAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const sortByDate = (a, b) => moment(a.date).diff(b.date);
 

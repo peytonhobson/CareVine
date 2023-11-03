@@ -41,7 +41,7 @@ const main = async () => {
     console.log(1);
     const transactions = await queryAllPages();
 
-    const all = transactions.filter(t => t.attributes.processName === 'booking-process');
+    const all = transactions.filter(t => t.attributes.processName === 'recurring-booking-process');
 
     await Promise.all(
       all.map(async tx => {

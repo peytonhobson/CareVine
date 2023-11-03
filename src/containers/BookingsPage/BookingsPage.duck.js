@@ -242,7 +242,7 @@ export const fetchBookings = (tab = 'requests', page, perPage) => async (
 
   try {
     const response = await sdk.transactions.query({
-      processNames: ['single-booking-process', 'booking-process'],
+      processNames: ['single-booking-process', 'recurring-booking-process'],
       userId: currentUser.id.uuid,
       include: transactionsInclude,
       lastTransitions: lastTransitions,

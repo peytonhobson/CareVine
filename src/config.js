@@ -41,7 +41,7 @@ const sortSearchByDistance = true;
 // this particular web application is able to handle.
 const messageProcessAlias = `message-process/active`;
 const singleActionProcessAlias = `single-action-process/active`;
-const recurringBookingProcessAlias = `booking-process/active`;
+const recurringBookingProcessAlias = `recurring-booking-process/active`;
 const singleBookingProcessAlias = `single-booking-process/active`;
 const modifyBookingProcessAlias = `modify-booking-process/active`;
 
