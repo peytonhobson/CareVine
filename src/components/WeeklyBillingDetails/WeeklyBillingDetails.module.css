@@ -179,6 +179,11 @@
       border-top-left-radius: var(--borderRadius);
       border-bottom-left-radius: var(--borderRadius);
     }
+
+    & .removedDay {
+      color: var(--failColor);
+      text-decoration: line-through;
+    }
   }
 
   & :global(.react-calendar__tile:disabled) {

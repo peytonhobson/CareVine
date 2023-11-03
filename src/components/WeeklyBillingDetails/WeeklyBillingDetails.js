@@ -49,6 +49,7 @@ const formatDay = (
   const isSunday = moment(date).day() === 0;
   const isSaturday = moment(date).day() === 6;
   const day = date.getDate();
+  const isRemovedDay = exceptions?.removedDays?.some(d => moment(d.date).isSame(date, 'day'));
 
   return (
     <div
@@ -59,6 +60,7 @@ const formatDay = (
         [css.disabled]: beforeStartWeek || afterEndWeek,
         [css.sunday]: isSunday,
         [css.saturday]: isSaturday,
+        [css.removedDay]: isRemovedDay,
       })}
       onMouseEnter={() => setHoveredDate(date)}
       onMouseLeave={() => setHoveredDate(null)}
