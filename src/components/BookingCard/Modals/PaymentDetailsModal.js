@@ -20,7 +20,6 @@ const PaymentDetailsModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Payment Summary</p>
       {scheduleType === 'oneTime' ? (

@@ -3,7 +3,6 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Avatar, IconArrowHead } from '../../components';
 import classNames from 'classnames';
 import { useMediaQuery } from '@mui/material';
-import { BOOKING_FEE_PERCENTAGE } from '../../util/constants';
 
 import css from './BookingSummaryCard.module.css';
 
