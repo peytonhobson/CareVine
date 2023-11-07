@@ -305,7 +305,6 @@ module.exports = queryEvents = () => {
 
       if (lastTransition === 'transition/expire' && processName === 'modify-booking-process') {
         const bookingId = transaction.attributes.metadata.bookingId;
-        // TODO: Needs to be tested
         integrationSdk.transactions
           .updateMetadata({
             id: bookingId,
