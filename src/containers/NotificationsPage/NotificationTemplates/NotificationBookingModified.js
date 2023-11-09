@@ -222,7 +222,7 @@ const NotificationBookingModified = props => {
                   })}
                 </div>
               ) : (
-                <p className={differentExceptions ? 'text-success' : null}>No Exceptions</p>
+                <p>No Exceptions</p>
               )}
             </div>
           </Card>

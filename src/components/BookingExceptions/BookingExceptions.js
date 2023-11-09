@@ -322,10 +322,12 @@ const BookingExceptions = props => {
         {sortedExceptions.map(exception => {
           const onRemoveException = () => handleRemoveException(exception);
 
+          const isDisabled = disabled || moment(firstAvailableDate).isAfter(exception.date);
+
           return (
             <BookingException
               {...exception}
-              onRemoveException={disabled ? null : onRemoveException}
+              onRemoveException={isDisabled ? null : onRemoveException}
               key={exception.date}
               className={css.exception}
             />
