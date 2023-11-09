@@ -259,6 +259,7 @@ export const updateBookingDraft = (bookingData, draftId) => async (dispatch, get
   };
 
   const { bookingSchedule, dateTimes } = bookingData;
+  console.log(bookingSchedule, dateTimes);
   const isEmptyDraft = !bookingSchedule.length && !dateTimes;
 
   const updatedBookingDrafts = isEmptyDraft

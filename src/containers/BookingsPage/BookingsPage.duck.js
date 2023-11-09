@@ -25,6 +25,7 @@ import {
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { parse } from '../../util/urlHelpers';
+import moment from 'moment';
 
 const BOOKINGS_PER_PAGE = 10;
 

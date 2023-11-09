@@ -351,6 +351,8 @@
 
 .rootNextMonthIcon,
 .rootPreviousMonthIcon {
-  stroke: var(--matterColorLight);
-  fill: var(--matterColorLight);
+  @media screen(md) {
+    stroke: var(--matterColorLight);
+    fill: var(--matterColorLight);
+  }
 }

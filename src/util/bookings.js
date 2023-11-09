@@ -557,7 +557,6 @@ export const updateBookedDays = async ({
     if (isUpdate) {
       newBookedDays = bookedDays.map(d => {
         if (d.txId === txId) {
-          console.log(bookingSchedule);
           return {
             ...d,
             days: bookingSchedule ? bookingSchedule.map(b => b.dayOfWeek) : d.days,

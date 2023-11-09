@@ -97,6 +97,8 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
 ) => {
   dispatch(submitReviewRequest());
 
+  console.log({ reviewRating, reviewContent, listingId });
+
   const params = { reviewRating, reviewContent, listingId };
 
   try {
@@ -106,14 +108,6 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
       params,
     });
 
-    dispatch(fetchReviews(listingId));
-    dispatch(submitReviewSuccess());
-  } catch (e) {
-    log.error(e, 'review-submission-failed', { txId });
-    dispatch(submitReviewError(storableError(e)));
-  }
-
-  try {
     const userId = getState().user.currentUser.id.uuid;
     const pendingReviews =
       getState().user.currentUser.attributes.profile.metadata.pendingReviews ?? [];
@@ -122,9 +116,12 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
 
     await updateUser({ userId, metadata: { pendingReviews: newPendingReviews } });
 
+    dispatch(fetchReviews(listingId));
     dispatch(fetchCurrentUser());
+    dispatch(submitReviewSuccess());
   } catch (e) {
-    log.error(e, 'update-user-pending-reviews-failed', { userId });
+    log.error(e, 'review-submission-failed', { listingId });
+    dispatch(submitReviewError(storableError(e)));
   }
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
-import { FieldSelect, InlineTextButton, IconClose, InfoTooltip } from '../../components';
+import { FieldSelect, InlineTextButton, IconClose, InfoTooltip, Button } from '../../components';
 import { FieldArray } from 'react-final-form-arrays';
 import WarningIcon from '@mui/icons-material/Warning';
 
@@ -323,14 +323,14 @@ const DailyPlan = props => {
               })}
 
               {fields.length === 0 && !disabled ? (
-                <InlineTextButton
+                <Button
                   type="button"
                   className={css.buttonSetHours}
                   onClick={() => fields.push({ startTime: '8:00am', endTime: '5:00pm' })}
                   disabled={disabled}
                 >
                   <FormattedMessage id="EditListingAvailabilityPlanForm.setHours" />
-                </InlineTextButton>
+                </Button>
               ) : multipleTimesDisabled ? null : (
                 <InlineTextButton
                   type="button"

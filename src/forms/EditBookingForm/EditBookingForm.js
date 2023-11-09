@@ -309,17 +309,14 @@ const EditBookingFormComponent = props => (
         case 'Dates/Times':
           tabContent = (
             <>
-              {isLarge && goToPaymentError ? (
-                <div className={css.nextButton}>
-                  <p className={css.error}>{goToPaymentError}</p>
-                </div>
-              ) : null}
               {values.scheduleType === 'oneTime' ? (
                 <SectionOneTime
                   bookedDates={bookedDates}
                   values={values}
                   listing={currentListing}
                   form={form}
+                  onGoToPayment={handleGoToPayment}
+                  goToPaymentError={goToPaymentError}
                 />
               ) : (
                 <SectionRecurring
@@ -331,17 +328,10 @@ const EditBookingFormComponent = props => (
                   onDeleteEndDate={() => form.change('endDate', null)}
                   form={form}
                   unavailableDays={unavailableDays}
+                  onGoToPayment={handleGoToPayment}
+                  goToPaymentError={goToPaymentError}
                 />
               )}
-              {!isLarge ? (
-                <div className={css.nextButton}>
-                  {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
-
-                  <Button onClick={handleGoToPayment} type="button">
-                    Next: Payment
-                  </Button>
-                </div>
-              ) : null}
             </>
           );
           break;
@@ -354,6 +344,7 @@ const EditBookingFormComponent = props => (
               onGoToRequest={handleGoToRequest}
               goToRequestError={goToRequestError}
               setGoToRequestError={setGoToRequestError}
+              selectedPaymentMethod={selectedPaymentMethod}
             />
           );
           break;

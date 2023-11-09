@@ -16,6 +16,7 @@ const SectionPayment = props => {
     hideDisclaimer,
     className,
     booking,
+    selectedPaymentMethod,
   } = props;
 
   const [isPaymentLearnMoreModalOpen, setIsPaymentLearnMoreModalOpen] = useState(false);
@@ -63,10 +64,10 @@ const SectionPayment = props => {
           removeDisabled
           initialPaymentMethodId={initialPaymentMethodId}
         />
-        {!isLarge && onGoToRequest ? (
+        {selectedPaymentMethod ? (
           <div className={css.nextButton}>
             {goToRequestError ? <p className={css.error}>{goToRequestError}</p> : null}
-            <Button onClick={onGoToRequest} type="button">
+            <Button onClick={onGoToRequest} type="button" className="mt-6">
               Next: Request
             </Button>
           </div>

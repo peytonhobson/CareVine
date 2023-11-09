@@ -168,13 +168,12 @@
 .paymentInfo {
   composes: h5 from global;
 
-  color: var(--matterColorAnti);
   text-align: center;
   padding: 0 2.5rem;
   margin: 3rem 0 0 0;
 
   @media screen(lg) {
-    /* TODO this is ugly overwrite to fix unconsistent font styles */
+    /* TODO this is ugly overwrite to fix inconsistent font styles */
     padding: 0;
   }
 }
@@ -269,8 +268,11 @@
 }
 
 .submissionContainer {
-  margin-top: 3rem;
   left: calc(100vw - 76rem);
+
+  @media screen(md) {
+    margin-top: 3rem;
+  }
 }
 
 .paymentLearnMore {

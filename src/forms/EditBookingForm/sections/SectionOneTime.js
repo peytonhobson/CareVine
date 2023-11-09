@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 
-import { FieldDatePicker } from '../../../components';
+import { FieldDatePicker, Button } from '../../../components';
 import DateTimeSelect from '../DateTimeSelect';
 import moment from 'moment';
-import { checkIsBlockedDay, checkIsDateWithinBookingWindow } from '../../../util/bookings';
+import { checkIsBlockedDay } from '../../../util/bookings';
 import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';
@@ -36,7 +36,16 @@ const isDayDisabled = ({ bookedDays, bookedDates }) => ({ date, selectedDays }) 
 };
 
 const SectionOneTime = props => {
-  const { values, listing, form, className, booking, hideLegend } = props;
+  const {
+    values,
+    listing,
+    form,
+    className,
+    booking,
+    hideLegend,
+    goToPaymentError,
+    onGoToPayment,
+  } = props;
 
   const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata ?? {};
 
@@ -104,7 +113,7 @@ const SectionOneTime = props => {
           </p>
         </FieldDatePicker>
       </div>
-      <div>
+      <div className="mt-8 md:mt-0">
         <h2 className={css.pickYourTimes}>Pick your Times</h2>
         <div className={css.datesContainer}>
           {values.bookingDates?.map(date => {
@@ -113,6 +122,15 @@ const SectionOneTime = props => {
             return <DateTimeSelect key={formattedDate} date={formattedDate} values={values} />;
           })}
         </div>
+        {values.bookingDates?.length ? (
+          <div className={css.nextButton}>
+            {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
+
+            <Button onClick={onGoToPayment} type="button">
+              Next: Payment
+            </Button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
 
-import { DailyPlan, FieldDateInput, IconClose, BookingExceptions } from '../../../components';
+import {
+  DailyPlan,
+  FieldDateInput,
+  IconClose,
+  BookingExceptions,
+  Button,
+} from '../../../components';
 import {
   formatFieldDateInput,
   parseFieldDateInput,
@@ -10,11 +16,7 @@ import {
 import { WEEKDAYS } from '../../../util/constants';
 import { useCheckMobileScreen } from '../../../util/hooks';
 import moment from 'moment';
-import {
-  checkIsBlockedDay,
-  mapWeekdays,
-  checkIsDateInBookingSchedule,
-} from '../../../util/bookings';
+import { mapWeekdays } from '../../../util/bookings';
 import classNames from 'classnames';
 
 import css from '../EditBookingForm.module.css';
@@ -33,6 +35,8 @@ const SectionRecurring = props => {
     form,
     unavailableDays,
     booking,
+    onGoToPayment,
+    goToPaymentError,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -102,9 +106,9 @@ const SectionRecurring = props => {
             format={formatFieldDateInput(timezone)}
             parse={parseFieldDateInput(timezone)}
             isDayBlocked={filterAvailableBookingStartDates(endDay, weekdays)}
-            useMobileMargins
             showErrorMessage={false}
             disabled={startDateDisabled}
+            useMobileMargins
             withPortal={isMobile}
           />
           <div className={css.endDateContainer}>
@@ -116,11 +120,12 @@ const SectionRecurring = props => {
               format={formatFieldDateInput(timezone)}
               parse={parseFieldDateInput(timezone)}
               isDayBlocked={filterAvailableBookingEndDates(startDay, weekdays, values.exceptions)}
-              useMobileMargins
               showErrorMessage={false}
               disabled={!startDate || !startDate.date}
-              withPortal={isMobile}
               initialVisibleMonth={() => moment(startDate?.date)}
+              className={css.endDateInput}
+              useMobileMargins
+              withPortal={isMobile}
             />
             <button
               className={css.removeExceptionButton}
@@ -143,6 +148,13 @@ const SectionRecurring = props => {
           timezone={timezone}
           form={form}
         />
+      </div>
+      <div className={classNames(css.nextButton, 'mt-16')}>
+        {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
+
+        <Button onClick={onGoToPayment} type="button">
+          Next: Payment
+        </Button>
       </div>
     </div>
   );

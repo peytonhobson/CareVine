@@ -118,7 +118,7 @@ const NotificationBookingModifiedResponse = props => {
 
   const differentSchedule = !isEqual(previousMetadata.bookingSchedule, newSchedule.bookingSchedule);
   const differentEndDate = !isEqual(previousMetadata.endDate, newSchedule.endDate);
-  const differentExceptions = !isEqual(previousMetadata.exceptions, newSchedule.exceptions);
+  const differentExceptions = !isEqual(previousMetadata.exceptions, modification.exceptions);
 
   return (
     <div className={css.root}>

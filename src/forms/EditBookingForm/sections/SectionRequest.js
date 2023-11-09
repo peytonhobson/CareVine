@@ -12,6 +12,7 @@ import { mapWeekdays, getFirstWeekEndDate } from '../../../util/bookings';
 import css from '../EditBookingForm.module.css';
 import { calculateTimeBetween } from '../../../util/dates';
 import { ISO_OFFSET_FORMAT } from '../../../util/constants';
+import { useCheckMobileScreen } from '../../../util/hooks';
 
 const FULL_WEEKDAY_MAP = {
   sun: 'Sunday',
@@ -57,9 +58,7 @@ const SectionRequest = props => {
 
   const weekdays = mapWeekdays(values);
 
-  const endOfFirstWeek = weekdays?.length
-    ? getFirstWeekEndDate(values.startDate?.date, weekdays, values.exceptions)
-    : null;
+  const isMobile = useCheckMobileScreen();
 
   const currentBooking = {
     attributes: {
@@ -116,7 +115,7 @@ const SectionRequest = props => {
             id="message"
             name="message"
             type="textarea"
-            label="Message"
+            label={isMobile ? null : 'Message'}
             placeholder={`Hello ${authorDisplayName}! I'm looking forward to…`}
             className={css.message}
           />

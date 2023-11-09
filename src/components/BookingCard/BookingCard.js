@@ -545,9 +545,11 @@ export const BookingCardDateTimes = () => {
                   <span className={css.summaryTimes}>
                     {startTime} - {endTime}
                   </span>
-                  <p className={css.tinyNoMargin}>
-                    ({calculateTimeBetween(startTime, endTime)} hours)
-                  </p>
+                  {startTime && endTime ? (
+                    <p className={css.tinyNoMargin}>
+                      ({calculateTimeBetween(startTime, endTime)} hours)
+                    </p>
+                  ) : null}
                 </div>
               );
             })}

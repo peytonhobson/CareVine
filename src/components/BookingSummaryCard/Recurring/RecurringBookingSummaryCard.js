@@ -63,7 +63,6 @@ const RecurringBookingSummaryCard = props => {
     endDate: bookingEndDate,
     exceptions = { addedDays: [], removedDays: [], changedDays: [] },
     bookingRate,
-    refundItems,
   } = booking?.attributes.metadata || {};
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);

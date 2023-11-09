@@ -20,15 +20,4 @@ const ValidationError = props => {
 
 ValidationError.defaultProps = { rootClassName: null, className: null };
 
-const { shape, bool, string } = PropTypes;
-
-ValidationError.propTypes = {
-  rootClassName: string,
-  className: string,
-  fieldMeta: shape({
-    touched: bool.isRequired,
-    error: string,
-  }).isRequired,
-};
-
 export default ValidationError;

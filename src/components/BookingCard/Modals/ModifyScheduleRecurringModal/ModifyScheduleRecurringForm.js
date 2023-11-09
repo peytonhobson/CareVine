@@ -12,7 +12,6 @@ import {
 import arrayMutators from 'final-form-arrays';
 import moment from 'moment';
 import css from '../BookingCardModals.module.css';
-import { useCheckMobileScreen } from '../../../../util/hooks';
 import classNames from 'classnames';
 import WarningIcon from '@mui/icons-material/Warning';
 import ModifyScheduleSubmissionModal from './ModifyScheduleSubmissionModal';
@@ -165,14 +164,17 @@ const ModifyScheduleRecurringForm = props => (
         [chargedLineItems]
       );
 
-      const firstPossibleDate = moment(lastChargedDate)
-        .endOf('week')
-        .add(1, 'day');
+      const firstPossibleDate = lastChargedDate
+        ? moment(lastChargedDate)
+            .endOf('week')
+            .add(1, 'day')
+        : moment();
+
       const unavailableDays = useMemo(
         () =>
           getUnavailableDays({
             bookedDays: filteredBookedDays,
-            startDate: appliedDate || firstPossibleDate,
+            startDate: firstPossibleDate,
             endDate: values.endDate?.date || endDate,
             bookedDates,
             weekdays: FULL_BOOKING_SCHEDULE,

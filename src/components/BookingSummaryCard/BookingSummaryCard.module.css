@@ -12,7 +12,6 @@
     background-color: var(--matterColorLight);
     border: 1px solid var(--matterColorNegative);
     border-radius: 2px;
-    max-height: 33rem;
     overflow-y: auto;
     position: relative;
   }
@@ -100,10 +99,12 @@
   overflow-y: auto;
   position: relative;
   scroll-behavior: smooth;
+  max-height: 12rem;
 }
 
 .bookingTime {
   padding-block: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .bookingTime:not(:first-of-type) {
@@ -249,7 +250,7 @@
 
 .startEndDates {
   composes: marketplaceTinyFontStyles from global;
-  margin: 0;
+  margin: 0.2rem 0 0 0;
   color: var(--marketplaceColor);
 }
 

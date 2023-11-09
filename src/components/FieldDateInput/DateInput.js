@@ -145,6 +145,7 @@ class DateInputComponent extends Component {
       value,
       children,
       render,
+      withPortal,
       ...datePickerProps
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -185,6 +186,9 @@ class DateInputComponent extends Component {
           placeholder={placeholder}
           screenReaderInputMessage={screenReaderInputText}
           phrases={{ closeDatePicker: closeDatePickerText, clearDate: clearDateText }}
+          withPortal={withPortal}
+          navPrev={withPortal ? null : datePickerProps.navPrev}
+          navNext={withPortal ? null : datePickerProps.navNext}
         />
       </div>
     );

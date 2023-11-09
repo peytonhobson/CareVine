@@ -91,6 +91,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  min-height: 4.5rem;
+  min-width: 8rem;
 }
 
 .bookingTime:not:first-of-type {
