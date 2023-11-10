@@ -223,6 +223,7 @@ const ModifyScheduleRecurringForm = props => (
 
         if (isEqual(weekdays, booking.attributes.metadata.bookingSchedule)) {
           setShowSameScheduleError(true);
+          return;
         }
 
         setIsSubmissionModalOpen(true);
@@ -231,6 +232,7 @@ const ModifyScheduleRecurringForm = props => (
       const handleChange = () => {
         setShowSelectDaysError(false);
         setShowEndDateError(false);
+        setShowSameScheduleError(false);
       };
 
       const newExceptions = findNewExceptions(values.unapplicableExceptions, exceptions);
