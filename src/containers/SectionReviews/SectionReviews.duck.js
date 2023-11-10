@@ -96,12 +96,6 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
 
   const params = { reviewRating: Number(reviewRating), reviewContent, listingId };
 
-  console.log({
-    processAlias: config.singleActionProcessAlias,
-    transition: TRANSITION_REVIEW,
-    params,
-  });
-
   try {
     await sdk.transactions.initiate({
       processAlias: config.singleActionProcessAlias,

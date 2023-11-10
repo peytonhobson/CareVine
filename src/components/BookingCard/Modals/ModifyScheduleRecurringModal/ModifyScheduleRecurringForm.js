@@ -110,6 +110,7 @@ const ModifyScheduleRecurringForm = props => (
       const [showSelectDaysError, setShowSelectDaysError] = useState(false);
       const [showEndDateError, setShowEndDateError] = useState(false);
       const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+      const [showSameScheduleError, setShowSameScheduleError] = useState(false);
       const {
         handleSubmit,
         onGoBack,
@@ -219,6 +220,10 @@ const ModifyScheduleRecurringForm = props => (
           return;
         }
 
+        if (isEqual(weekdays, booking.attributes.metadata.bookingSchedule)) {
+          setShowSameScheduleError(true);
+        }
+
         setIsSubmissionModalOpen(true);
       };
 
@@ -322,6 +327,11 @@ const ModifyScheduleRecurringForm = props => (
           ) : null}
           {showEndDateError ? (
             <p className="text-error text-center">Please select an end date.</p>
+          ) : null}
+          {showSameScheduleError ? (
+            <p className="text-error text-center">
+              You have not made any changes to your schedule. Please make changes to continue.
+            </p>
           ) : null}
           {requestDisabled ? (
             <p className="text-error">
