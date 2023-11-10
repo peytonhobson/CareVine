@@ -2,7 +2,7 @@
 require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
-const { constructBookingMetadataRecurring } = require('../server/bookingHelpers');
+const { constructBookingMetadataRecurring } = require('../server/booking-helpers');
 const isDev = true;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const BOOKING_FEE_PERCENTAGE = 0.2;

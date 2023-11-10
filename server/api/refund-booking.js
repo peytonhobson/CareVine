@@ -1,5 +1,5 @@
 const { apiBaseUrl, integrationSdk, handleStripeError } = require('../api-util/sdk');
-const { addTimeToStartOfDay } = require('../bookingHelpers');
+const { addTimeToStartOfDay } = require('../booking-helpers');
 const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');

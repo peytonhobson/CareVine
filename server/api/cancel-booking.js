@@ -1,5 +1,5 @@
 const { apiBaseUrl, integrationSdk, handleError } = require('../api-util/sdk');
-const { updateBookingLedger } = require('../bookingHelpers');
+const { updateBookingLedger } = require('../booking-helpers');
 const moment = require('moment');
 const axios = require('axios');
 const log = require('../log');

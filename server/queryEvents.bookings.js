@@ -10,7 +10,7 @@ const {
   findNextWeekStartTime,
   updateBookedDays,
   updateBookingLedger,
-} = require('./bookingHelpers');
+} = require('./booking-helpers');
 // Time
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 

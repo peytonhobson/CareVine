@@ -1,7 +1,7 @@
 const { integrationSdk, handleError, getTrustedSdk } = require('../api-util/sdk');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
-const { addTimeToStartOfDay, findNextWeekStartTime } = require('../bookingHelpers');
+const { addTimeToStartOfDay, findNextWeekStartTime } = require('../booking-helpers');
 const { isEqual } = require('lodash');
 
 const NOTIFICATION_TYPE_BOOKING_MODIFIED = 'bookingModified';

@@ -1,5 +1,5 @@
 const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/sdk');
-const { checkIsBlockedOneTime, checkIsBlockedRecurring } = require('../bookingHelpers');
+const { checkIsBlockedOneTime, checkIsBlockedRecurring } = require('../booking-helpers');
 
 module.exports = (req, res) => {
   const { bodyParams, queryParams } = req.body;
