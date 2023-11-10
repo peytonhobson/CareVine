@@ -8,8 +8,6 @@ import { types as sdkTypes } from '../../util/sdkLoader';
 import { updateUser } from '../../util/api';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
-const { UUID } = sdkTypes;
-
 // ================ Action types ================ //
 
 export const SET_INTIIAL_STATE = 'app/SectionReviews/SET_INTIIAL_STATE';
@@ -97,9 +95,13 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
 ) => {
   dispatch(submitReviewRequest());
 
-  console.log({ reviewRating, reviewContent, listingId });
-
   const params = { reviewRating, reviewContent, listingId };
+
+  console.log({
+    processAlias: config.singleActionProcessAlias,
+    transition: TRANSITION_REVIEW,
+    params,
+  });
 
   try {
     await sdk.transactions.initiate({
