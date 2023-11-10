@@ -21,8 +21,6 @@ module.exports = async (req, res) => {
       });
 
       const applicationFeeId = charges.data?.find(c => c.application_fee)?.application_fee;
-      console.log('applicationFeeId', applicationFeeId);
-      console.log('creating refund');
 
       try {
         await stripe.applicationFees.createRefund(applicationFeeId, {
