@@ -23,6 +23,7 @@ import {
 } from '../../../../util/transaction';
 import FieldChangeEndDate from '../FieldChangeEndDate/FieldChangeEndDate';
 import UnapplicableExceptions from '../UnapplicableExceptions/UnapplicableExceptions';
+import { isEqual } from 'lodash';
 
 const MODIFY_SCHEDULE_ACTIONS = 'modifyScheduleActions';
 
