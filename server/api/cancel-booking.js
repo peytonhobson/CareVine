@@ -124,6 +124,7 @@ const transitionBooking = async ({
 
     return response;
   } catch (e) {
+    console.log(e?.data?.errors?.[0]?.code);
     // Add another five minutes to booking end if not available
     if (e?.data?.errors?.[0]?.code === 'transaction-booking-time-not-available') {
       const bookingEnd = moment(newBookingEnd)

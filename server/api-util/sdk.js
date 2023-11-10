@@ -135,9 +135,9 @@ exports.getSdk = (req, res) => {
 exports.getTrustedSdk = req => {
   const userToken = getUserToken(req);
 
-  if (process.env.REACT_APP_ENV === 'development') {
-    console.log('userToken', userToken);
-  }
+  // if (process.env.REACT_APP_ENV === 'development') {
+  //   console.log('userToken', userToken);
+  // }
 
   // Initiate an SDK instance for token exchange
   const sdk = sharetribeSdk.createInstance({

@@ -66,7 +66,9 @@ const createBookingPayment = async transaction => {
 
     const paymentIntentId = paymentIntent.id;
 
-    await stripe.paymentIntents.confirm(paymentIntentId, { payment_method: paymentMethodId });
+    await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: paymentMethodId,
+    });
 
     await integrationSdk.transactions.updateMetadata({
       id: txId,
@@ -352,15 +354,19 @@ const updateNextWeek = async transaction => {
 
 const endRecurring = async transaction => {
   const txId = transaction.id.uuid;
-  const { startDate } = transaction.attributes.metadata;
+  const { startDate, endDateChange, endDate } = transaction.attributes.metadata;
 
   try {
+    const cancelDate =
+      endDateChange && endDateChange.endDate === endDate ? endDateChange.changedAt : null;
+
     // Update metadata for refunding if any
     const refundMetadata = (
       await axios.post(
         `${apiBaseUrl()}/api/refund-booking`,
         {
           txId,
+          cancelDate,
         },
         {
           headers: {

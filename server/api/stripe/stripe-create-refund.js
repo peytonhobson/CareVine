@@ -1,52 +1,44 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleStripeError, serialize } = require('../../api-util/sdk');
+const { handleStripeError } = require('../../api-util/sdk');
 const log = require('../../log');
 
-module.exports = (req, res) => {
-  const { paymentIntentId, amount, applicationFeeRefund, params = {} } = req.body;
+module.exports = async (req, res) => {
+  const { paymentIntentId, amount, applicationFeeRefund, chargeId, params = {} } = req.body;
 
-  stripe.refunds
-    .create({
+  try {
+    const apiResponse = await stripe.refunds.create({
       payment_intent: paymentIntentId,
       amount: amount + applicationFeeRefund,
       reason: 'requested_by_customer',
       reverse_transfer: true,
       ...params,
-    })
-    .then(apiResponse => {
-      if (applicationFeeRefund) {
-        stripe.applicationFees
-          .list({
-            limit: 3,
-          })
-          .then(response => {
-            const applicationFeeId = response.data?.[0].id;
-
-            stripe.applicationFees
-              .createRefund(applicationFeeId, { amount: applicationFeeRefund })
-              .catch(e => {
-                log.error(e, 'Error refunding application fee', {
-                  applicationFeeId,
-                  amount,
-                  applicationFeeRefund,
-                });
-              });
-          })
-          .catch(e => {
-            log.error(e, 'Error listing application fees', { paymentIntentId });
-          });
-      }
-
-      res
-        .set('Content-Type', 'application/transit+json')
-        .send(
-          serialize({
-            ...apiResponse,
-          })
-        )
-        .end();
-    })
-    .catch(e => {
-      handleStripeError(res, e);
     });
+
+    if (applicationFeeRefund && chargeId) {
+      const charges = await stripe.charges.list({
+        limit: 3,
+        payment_intent: paymentIntentId,
+      });
+
+      const applicationFeeId = charges.data?.find(c => c.application_fee)?.application_fee;
+      console.log('applicationFeeId', applicationFeeId);
+      console.log('creating refund');
+
+      try {
+        await stripe.applicationFees.createRefund(applicationFeeId, {
+          amount: applicationFeeRefund,
+        });
+      } catch (e) {
+        log.error(e, 'Error refunding application fee', {
+          applicationFeeId,
+          amount,
+          applicationFeeRefund,
+        });
+      }
+    }
+
+    res.status(200).json({ ...apiResponse });
+  } catch (e) {
+    handleStripeError(res, e);
+  }
 };

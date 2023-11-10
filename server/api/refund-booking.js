@@ -6,15 +6,23 @@ const log = require('../log');
 
 const BOOKING_FEE_PERCENTAGE = 0.02;
 
-const mapLineItemsForCancellationCustomer = lineItems => {
+const mapLineItemsForCancellationCustomer = (lineItems, cancelDate) => {
   // Half the amount of the line item if it is within 48 hours of the start time.
   // Remove line items that are more than 48 hours away.
   // This is to create the correct amount for caregiver payout
   return lineItems
+    .filter(lineItem => {
+      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
+      return (
+        moment(cancelDate)
+          .add(2, 'days')
+          .isAfter(startTime) || moment().isAfter(startTime)
+      );
+    })
     .map(lineItem => {
       const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
       const isWithin48Hours =
-        moment()
+        moment(cancelDate)
           .add(2, 'days')
           .isAfter(startTime) && moment().isBefore(startTime);
       if (isWithin48Hours) {
@@ -26,12 +34,6 @@ const mapLineItemsForCancellationCustomer = lineItems => {
       }
 
       return lineItem;
-    })
-    .filter(lineItem => {
-      const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-      return moment()
-        .add(2, 'days')
-        .isAfter(startTime);
     });
 };
 
@@ -46,8 +48,8 @@ const mapLineItemsForCancellationProvider = lineItems => {
 // Determine items to refund based on time in future
 // If within 48 hours, refund 50% of base
 // If more than 48 hours, refund 100% of base
-const mapRefundItems = (chargedLineItems, isCaregiver) => {
-  return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
+const mapRefundItems = (chargedLineItems, isCaregiver, cancelDate) => {
+  return chargedLineItems.map(({ lineItems, paymentIntentId, chargeId }) => {
     const refundedLineItems = lineItems
       .filter(l => {
         const startTime = addTimeToStartOfDay(l.date, l.startTime);
@@ -55,22 +57,22 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
       })
       .map(lineItem => {
         const startTime = addTimeToStartOfDay(lineItem.date, lineItem.startTime);
-        const isWithin48Hours = moment()
+        const isWithin48Hours = moment(cancelDate)
           .add(2, 'days')
           .isAfter(startTime);
 
         const isFifty = isWithin48Hours && !isCaregiver;
 
         const base = isFifty
-          ? parseFloat(lineItem.amount / 2).toFixed(2)
-          : parseFloat(lineItem.amount).toFixed(2);
-        const bookingFee = parseFloat(base * BOOKING_FEE_PERCENTAGE).toFixed(2);
+          ? Number(lineItem.amount / 2).toFixed(2)
+          : Number(lineItem.amount).toFixed(2);
+        const bookingFee = Number(base * BOOKING_FEE_PERCENTAGE).toFixed(2);
         return {
           shortDay: moment(lineItem.date).format('ddd'),
           isFifty,
           base,
           bookingFee,
-          amount: parseFloat(Number(base) + Number(bookingFee)).toFixed(2),
+          amount: Number(Number(base) + Number(bookingFee)).toFixed(2),
           date: moment(lineItem.date).format('MM/DD'),
           fullDate: lineItem.date,
         };
@@ -79,6 +81,7 @@ const mapRefundItems = (chargedLineItems, isCaregiver) => {
     return {
       lineItems: refundedLineItems,
       paymentIntentId,
+      chargeId,
     };
   });
 };
@@ -98,7 +101,7 @@ const stripeCreateRefund = async params => {
 };
 
 module.exports = async (req, res) => {
-  const { txId, cancelingUserType = 'employer' } = req.body;
+  const { txId, cancelingUserType = 'employer', cancelDate = moment() } = req.body;
 
   try {
     const transaction = (await integrationSdk.transactions.show({ id: txId })).data.data;
@@ -106,7 +109,11 @@ module.exports = async (req, res) => {
     const { chargedLineItems = [], lineItems } = transaction.attributes.metadata;
 
     const allLineItems = chargedLineItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
-    const refundItems = mapRefundItems(chargedLineItems, cancelingUserType === 'caregiver');
+    const refundItems = mapRefundItems(
+      chargedLineItems,
+      cancelingUserType === 'caregiver',
+      cancelDate
+    );
     const allRefundItems = refundItems.reduce((acc, curr) => [...acc, ...curr.lineItems], []);
     const totalRefundAmount = parseInt(
       allRefundItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
@@ -116,7 +123,7 @@ module.exports = async (req, res) => {
     let metadataToUpdate;
     if (totalRefundAmount > 0) {
       await Promise.all(
-        refundItems.map(async ({ lineItems, paymentIntentId }) => {
+        refundItems.map(async ({ lineItems, paymentIntentId, chargeId }) => {
           const refundAmount = parseInt(
             lineItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
           );
@@ -127,6 +134,7 @@ module.exports = async (req, res) => {
               paymentIntentId,
               amount: refundAmount,
               applicationFeeRefund,
+              chargeId,
             });
           }
         })
