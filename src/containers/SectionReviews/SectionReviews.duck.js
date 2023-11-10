@@ -4,7 +4,6 @@ import * as log from '../../util/log';
 import { SET_INITIAL_STATE } from '../ProfilePage/ProfilePage.duck';
 import config from '../../config';
 import { denormalisedResponseEntities } from '../../util/data';
-import { types as sdkTypes } from '../../util/sdkLoader';
 import { updateUser } from '../../util/api';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 
@@ -95,7 +94,7 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
 ) => {
   dispatch(submitReviewRequest());
 
-  const params = { reviewRating, reviewContent, listingId };
+  const params = { reviewRating: Number(reviewRating), reviewContent, listingId };
 
   console.log({
     processAlias: config.singleActionProcessAlias,
