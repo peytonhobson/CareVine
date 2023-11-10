@@ -122,6 +122,7 @@ export const submitReview = (reviewRating, reviewContent, listingId) => async (
     dispatch(fetchCurrentUser());
     dispatch(submitReviewSuccess());
   } catch (e) {
+    console.error(e);
     log.error(e, 'review-submission-failed', { listingId });
     dispatch(submitReviewError(storableError(e)));
   }
