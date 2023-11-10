@@ -71,7 +71,8 @@
 }
 
 .summaryDetailsContainer {
-  margin: 0 3rem;
+  padding: 0 3rem;
+  width: 100%;
 }
 
 .detailsHeadings {
@@ -104,7 +105,7 @@
 
 .bookingTime {
   padding-block: 0.5rem;
-  padding-right: 0.5rem;
+  padding-right: 0.75rem;
 }
 
 .bookingTime:not(:first-of-type) {

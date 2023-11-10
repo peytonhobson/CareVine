@@ -45,6 +45,7 @@ const SectionOneTime = props => {
     hideLegend,
     goToPaymentError,
     onGoToPayment,
+    hideNextButton,
   } = props;
 
   const { bookedDays = [], bookedDates = [] } = listing.attributes.metadata ?? {};
@@ -122,7 +123,7 @@ const SectionOneTime = props => {
             return <DateTimeSelect key={formattedDate} date={formattedDate} values={values} />;
           })}
         </div>
-        {values.bookingDates?.length ? (
+        {values.bookingDates?.length && !hideNextButton ? (
           <div className={css.nextButton}>
             {goToPaymentError ? <p className={css.error}>{goToPaymentError}</p> : null}
 

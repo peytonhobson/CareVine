@@ -126,14 +126,12 @@
   padding: 2rem 0;
   width: 100%;
   box-shadow: var(--boxShadowCard);
+  flex-grow: 1;
 
   /* Coloring */
   background-color: var(--matterColorLight);
   border: 1px solid var(--matterColorNegative);
   border-radius: var(--borderRadius);
-  & > div {
-    width: calc(100% - 6rem);
-  }
 
   @media screen(md) {
     max-height: 28rem;

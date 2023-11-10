@@ -168,6 +168,8 @@ const ModifyScheduleRecurringForm = props => (
         ? moment(lastChargedDate)
             .endOf('week')
             .add(1, 'day')
+        : moment(startDate).isAfter()
+        ? startDate
         : moment();
 
       const unavailableDays = useMemo(
@@ -243,6 +245,7 @@ const ModifyScheduleRecurringForm = props => (
       const awaitingModificationType = awaitingModification?.type;
       const hasPendingBookingScheduleRequest = awaitingModificationType === 'bookingSchedule';
       const hasPendingRequest = awaitingModificationType;
+      const requestDisabled = hasPendingRequest && !hasPendingBookingScheduleRequest;
 
       return (
         <Form>
@@ -320,7 +323,7 @@ const ModifyScheduleRecurringForm = props => (
           {showEndDateError ? (
             <p className="text-error text-center">Please select an end date.</p>
           ) : null}
-          {hasPendingRequest && !hasPendingBookingScheduleRequest ? (
+          {requestDisabled ? (
             <p className="text-error">
               You cannot change your booking schedule because you have another pending request to
               modify your booking. Please allow the caregiver to accept or decline that request
@@ -339,7 +342,7 @@ const ModifyScheduleRecurringForm = props => (
               className="w-auto ml-4 px-6 min-w-[10rem]"
               type="button"
               onClick={handleOpenSubmissionModal}
-              disabled={hasPendingRequest && !hasPendingBookingScheduleRequest}
+              disabled={requestDisabled || submitDisabled}
             >
               Continue
             </PrimaryButton>
@@ -353,7 +356,7 @@ const ModifyScheduleRecurringForm = props => (
             setIsSubmissionModalOpen={setIsSubmissionModalOpen}
             submitInProgress={submitInProgress}
             submitReady={submitReady}
-            submitDisabled={submitDisabled}
+            submitDisabled={submitDisabled || requestDisabled}
             provider={provider}
             listing={listing}
             newBooking={newBooking}

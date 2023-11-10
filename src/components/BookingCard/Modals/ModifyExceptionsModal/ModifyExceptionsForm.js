@@ -81,6 +81,7 @@ const ModifyScheduleRecurringForm = props => (
 
       const hasPendingExceptionsRequest = awaitingModificationType === 'exceptions';
       const hasPendingRequest = awaitingModificationType;
+      const requestDisabled = hasPendingRequest && !hasPendingExceptionsRequest;
 
       const usedStates = {
         inProgress: updateRequestedBookingInProgress || updateBookingExceptionsInProgress,
@@ -126,7 +127,7 @@ const ModifyScheduleRecurringForm = props => (
                     .startOf('week')
                 : null
             }
-            disabled={hasPendingRequest && !hasPendingExceptionsRequest}
+            disabled={requestDisabled}
           />
           {showNoChangeError ? (
             <p className="text-error">
@@ -156,7 +157,7 @@ const ModifyScheduleRecurringForm = props => (
               'Submit', you will cancel that request and create a new one.
             </p>
           ) : null}
-          {hasPendingRequest && !hasPendingExceptionsRequest ? (
+          {requestDisabled ? (
             <p className="text-error">
               You cannot change your exceptions because you have another pending request to modify
               your booking. Please allow the caregiver to accept or decline that request before
@@ -185,7 +186,7 @@ const ModifyScheduleRecurringForm = props => (
               className={css.modalButton}
               type="submit"
               inProgress={submitInProgress}
-              disabled={submitDisabled}
+              disabled={requestDisabled || submitDisabled}
               ready={submitReady}
             >
               Submit

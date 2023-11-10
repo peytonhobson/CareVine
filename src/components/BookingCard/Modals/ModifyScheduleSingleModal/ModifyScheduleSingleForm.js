@@ -38,6 +38,7 @@ const ModifyScheduleSingleForm = props => (
             form={form}
             className={css.sectionOneTime}
             booking={booking}
+            hideNextButton
           />
           {updateRequestedBookingError ? (
             <p className="text-error">Failed to update booking. Please try again.</p>

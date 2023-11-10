@@ -104,6 +104,7 @@ const ChangeEndDateForm = props => (
 
       const hasPendingRequest = awaitingModificationType && awaitingModificationType !== 'endDate';
       const hasPendingEndDatesRequest = awaitingModificationType === 'endDate';
+      const requestDisabled = hasPendingRequest && !hasPendingEndDatesRequest;
 
       return (
         <Form onSubmit={onSubmit}>
@@ -115,7 +116,7 @@ const ChangeEndDateForm = props => (
           </h3>
           <FieldChangeEndDate
             intl={intl}
-            disabled={hasPendingRequest && !hasPendingEndDatesRequest}
+            disabled={requestDisabled}
             className={css.fieldDateInput}
             booking={booking}
             appliedDate={TODAY}
@@ -209,7 +210,7 @@ const ChangeEndDateForm = props => (
               inProgress={submitInProgress}
               className={css.modalButton}
               ready={submitReady}
-              disabled={submitDisabled}
+              disabled={submitDisabled || requestDisabled}
               type="submit"
             >
               Submit

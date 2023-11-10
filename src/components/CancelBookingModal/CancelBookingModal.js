@@ -103,7 +103,6 @@ const CancelBookingModal = props => {
       onClose={onClose}
       onManageDisableScrolling={onManageDisableScrolling}
       usePortal
-      containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>
         Cancel Booking with <span className="whitespace-nowrap">{otherUserDisplayName}</span>

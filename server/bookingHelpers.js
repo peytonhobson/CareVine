@@ -263,7 +263,7 @@ const addTimeToStartOfDay = (day, time) => {
 const checkIsBlockedOneTime = ({ dates, listing }) => {
   if (!dates || !listing) return false;
 
-  const { bookedDates = [], bookedDays } = listing.attributes.metadata;
+  const { bookedDates = [], bookedDays = [] } = listing.attributes.metadata;
 
   // Dates are blocked if they are in the bookedDates array
   const overlappingDates = bookedDates.filter(d =>
