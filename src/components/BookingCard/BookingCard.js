@@ -205,7 +205,7 @@ const BookingCardComponent = props => {
       lineItems
         ?.filter(l => l.code === 'line-item/booking')
         .map(l => ({
-          date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
+          date: moment(l.date).format('MM/DD'),
           startTime: l.startTime,
           endTime: l.endTime,
         })) ?? []
