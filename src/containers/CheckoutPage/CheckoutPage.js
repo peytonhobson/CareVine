@@ -108,16 +108,12 @@ export class CheckoutPageComponent extends Component {
 
     const listingId = listing.id;
 
-    const now = moment();
-    const bookingStart = now
-      .add(5 - (now.minute() % 5), 'minutes')
-      .set({ second: 0, millisecond: 0 })
-      .format(ISO_OFFSET_FORMAT);
-    // scheduleType === 'oneTime'
-    //   ? findStartTimeFromBookingTimes(bookingTimes).format(ISO_OFFSET_FORMAT)
-    //   : findStartTimeRecurring(weekdays, startDate, endDate, exceptions).format(
-    //       ISO_OFFSET_FORMAT
-    //     );
+    const bookingStart =
+      scheduleType === 'oneTime'
+        ? findStartTimeFromBookingTimes(bookingTimes).format(ISO_OFFSET_FORMAT)
+        : findStartTimeRecurring(weekdays, startDate, endDate, exceptions).format(
+            ISO_OFFSET_FORMAT
+          );
     const bookingEnd = moment
       .parseZone(bookingStart)
       .add(5, 'minutes')
