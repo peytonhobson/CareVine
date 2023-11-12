@@ -5,7 +5,7 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { TRANSITION_REQUEST_BOOKING } from '../../util/transaction';
 import * as log from '../../util/log';
-import { fetchCurrentUserHasOrdersSuccess, fetchCurrentUser } from '../../ducks/user.duck';
+import { fetchCurrentUserHasOrdersSuccess } from '../../ducks/user.duck';
 import {
   setInitialValues as setInitialValuesForPaymentMethods,
   fetchDefaultPayment,

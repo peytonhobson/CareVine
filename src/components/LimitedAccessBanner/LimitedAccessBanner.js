@@ -54,16 +54,4 @@ LimitedAccessBanner.defaultProps = {
   currentPage: null,
 };
 
-const { array, bool, func, string } = PropTypes;
-
-LimitedAccessBanner.propTypes = {
-  rootClassName: string,
-  className: string,
-  isAuthenticated: bool.isRequired,
-  authScopes: array,
-  currentUser: propTypes.currentUser,
-  onLogout: func.isRequired,
-  currentPage: string,
-};
-
 export default LimitedAccessBanner;

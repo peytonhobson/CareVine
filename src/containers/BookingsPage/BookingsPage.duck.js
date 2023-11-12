@@ -402,7 +402,7 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
     draft =>
       moment()
         .subtract(48, 'hours')
-        .isAfter(draft.createdAt) &&
+        .isBefore(draft.createdAt) &&
       (draft.attributes?.bookingSchedule?.length || draft.attributes?.dateTimes)
   );
 
@@ -426,8 +426,6 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
 
   const queryParams = parse(search);
   const { page = 1 } = queryParams;
-
-  console.log(tab);
 
   return dispatch(fetchBookings(tab, page, BOOKINGS_PER_PAGE)).then(bookings => {
     return bookings;

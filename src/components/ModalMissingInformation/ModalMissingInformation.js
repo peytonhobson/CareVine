@@ -137,18 +137,6 @@ ModalMissingInformation.defaultProps = {
   currentUser: null,
 };
 
-ModalMissingInformation.propTypes = {
-  id: string.isRequired,
-  className: string,
-  rootClassName: string,
-  containerClassName: string,
-
-  currentUser: propTypes.currentUser,
-  onManageDisableScrolling: func.isRequired,
-  sendVerificationEmailError: propTypes.error,
-  sendVerificationEmailInProgress: bool.isRequired,
-};
-
 ModalMissingInformation.displayName = 'ModalMissingInformation';
 
 export default ModalMissingInformation;
