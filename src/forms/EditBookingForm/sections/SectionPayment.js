@@ -97,7 +97,7 @@ const SectionPayment = props => {
               the booking is complete.
             </li>
             <li className={css.learnMoreListItem}>
-              <strong>Dispute Resolution</strong>: If anything goes awry during the booking, you
+              <strong>Dispute Resolution</strong>: If anything goes wrong during the booking, you
               have a 48-hour window to raise a dispute. Our dedicated review team will evaluate the
               situation thoroughly and refund the amount we find appropriate based on the
               circumstances.
