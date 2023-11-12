@@ -656,13 +656,13 @@ export const BookingScheduleMobile = () => {
         <div className="flex justify-center flex-wrap gap-4">
           {bookingTimes?.map(time => {
             const { date } = time;
-            const formattedDate = moment(date).format('MM/DD');
+
             return (
               <div
                 className="bg-secondary h-16 w-16 text-light rounded-full flex justify-center items-center"
                 key={date}
               >
-                <h3>{formattedDate}</h3>
+                <h3>{date}</h3>
               </div>
             );
           })}
