@@ -668,6 +668,10 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
             metadata: {
               endDate: formattedEndDate,
               exceptions: newExceptions,
+              endDateChange: {
+                endDate: formattedEndDate,
+                changedAt: moment().format(ISO_OFFSET_FORMAT),
+              },
             },
           },
         },
