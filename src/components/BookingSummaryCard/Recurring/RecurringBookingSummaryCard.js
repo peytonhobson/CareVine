@@ -207,7 +207,7 @@ const RecurringBookingSummaryCard = props => {
             {!hideFees ? (
               <>
                 <div className={css.spread}>
-                  <h4 className={css.paymentCalc}>CareVine Service Fee</h4>
+                  <h4 className={css.paymentCalc}>CareVine Service Fee (2%)</h4>
                   <h4 className={css.paymentCalc}>${bookingFee}</h4>
                 </div>
                 <div className={css.spread}>

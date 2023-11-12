@@ -83,13 +83,15 @@ const ChangeEndDateForm = props => (
       );
 
       // Used to determine if the user can select future end dates to change to
-      const endDateCharged = useMemo(() =>
-        oldEndDate
-          ? chargedLineItems
-              .map(item => item.lineItems?.map(i => i.date))
-              .flat()
-              .some(d => moment(d).isSame(oldEndDate, 'day'))
-          : false[(chargedLineItems, oldEndDate)]
+      const endDateCharged = useMemo(
+        () =>
+          oldEndDate
+            ? chargedLineItems
+                .map(item => item.lineItems?.map(i => i.date))
+                .flat()
+                .some(d => moment(d).isSame(oldEndDate, 'day'))
+            : false,
+        [chargedLineItems, oldEndDate]
       );
 
       const startOfSelectedDay = moment(selectedEndDate).startOf('day');

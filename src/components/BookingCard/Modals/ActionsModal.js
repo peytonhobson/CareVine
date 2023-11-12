@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import { Modal, CancelButton, Button, PrimaryButton, SecondaryButton } from '../..';
 import classNames from 'classnames';
+import moment from 'moment';
 
 import css from './BookingCardModals.module.css';
 
@@ -30,7 +31,13 @@ const ActionsModal = props => {
     }
   }, [actionsDisplayState]);
 
-  const { type: bookingType } = booking.attributes.metadata;
+  const {
+    type: bookingType,
+    endDate: oldEndDate = moment()
+      .add(10, 'years')
+      .format(ISO_OFFSET_FORMAT),
+    chargedLineItems = [],
+  } = booking.attributes.metadata;
 
   const buttonClass = classNames(css.dropAnimation, 'w-auto py-2 px-4 mt-4');
 
@@ -41,6 +48,18 @@ const ActionsModal = props => {
       onModalOpen(modalTypes.MODIFY_SCHEDULE_ONE_TIME);
     }
   };
+
+  // Used to determine if the user can select future end dates to change to
+  const endDateCharged = useMemo(
+    () =>
+      oldEndDate
+        ? chargedLineItems
+            .map(item => item.lineItems?.map(i => i.date))
+            .flat()
+            .some(d => moment(d).isSame(oldEndDate, 'day'))
+        : false,
+    [chargedLineItems, oldEndDate]
+  );
 
   return isOpen ? (
     <Modal
@@ -93,18 +112,22 @@ const ActionsModal = props => {
             <Button onClick={() => onModalOpen(modalTypes.CHANGE_END_DATE)} className={buttonClass}>
               Change End Date
             </Button>
-            <PrimaryButton
-              onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE_RECURRING)}
-              className={buttonClass}
-            >
-              Change Schedule
-            </PrimaryButton>
-            <SecondaryButton
-              onClick={() => onModalOpen(modalTypes.MODIFY_EXCEPTIONS)}
-              className={buttonClass}
-            >
-              Change Exceptions
-            </SecondaryButton>
+            {!endDateCharged ? (
+              <>
+                <PrimaryButton
+                  onClick={() => onModalOpen(modalTypes.MODIFY_SCHEDULE_RECURRING)}
+                  className={buttonClass}
+                >
+                  Change Schedule
+                </PrimaryButton>
+                <SecondaryButton
+                  onClick={() => onModalOpen(modalTypes.MODIFY_EXCEPTIONS)}
+                  className={buttonClass}
+                >
+                  Change Exceptions
+                </SecondaryButton>
+              </>
+            ) : null}
             <div className="pt-16 flex justify-end">
               <Button onClick={() => setDisplayState(MAIN_ACTIONS)} className="w-[10rem]">
                 Go Back
