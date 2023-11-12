@@ -103,6 +103,15 @@ const RecurringBookingSummaryCard = props => {
 
   const visibleEndDate = showWeekly ? bookingEndDate : moment(startOfWeek).endOf('week');
 
+  const handleOpenModal = func => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+    func(true);
+  };
+
   const cardHeading =
     weekdays.length > 0 ? (
       <>
@@ -112,7 +121,7 @@ const RecurringBookingSummaryCard = props => {
             <PrimaryButton
               className={css.weeklyBillingDetailsButton}
               type="button"
-              onClick={() => setIsWeeklyBillingDetailsOpen(true)}
+              onClick={() => handleOpenModal(setIsWeeklyBillingDetailsOpen)}
             >
               Weekly Billing Details
             </PrimaryButton>
@@ -121,7 +130,7 @@ const RecurringBookingSummaryCard = props => {
             <PrimaryButton
               className="min-h-0 py-2 mb-4"
               type="button"
-              onClick={() => setIsWeeklyBillingDetailsOpen(true)}
+              onClick={() => handleOpenModal(setIsWeeklyBillingDetailsOpen)}
             >
               Full Schedule
             </PrimaryButton>
@@ -130,7 +139,7 @@ const RecurringBookingSummaryCard = props => {
             <Button
               className="min-h-0 py-2 mb-4"
               type="button"
-              onClick={() => setIsExceptionsModalOpen(true)}
+              onClick={() => handleOpenModal(setIsExceptionsModalOpen)}
             >
               Exceptions
             </Button>

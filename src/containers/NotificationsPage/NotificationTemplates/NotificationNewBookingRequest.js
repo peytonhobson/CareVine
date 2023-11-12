@@ -83,7 +83,6 @@ const NotificationNewBookingRequest = props => {
 
   const bookingDates = lineItems?.map(l => new Date(l.date));
 
-  const isLarge = useMediaQuery('(min-width:1024px)');
   const lastTransition = currentTransaction?.attributes.lastTransition;
   const isNotAcceptedOrDeclined =
     lastTransition === TRANSITION_REQUEST_BOOKING ||
