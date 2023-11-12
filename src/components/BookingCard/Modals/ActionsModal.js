@@ -49,7 +49,7 @@ const ActionsModal = props => {
     }
   };
 
-  // Used to determine if the user can select future end dates to change to
+  // If end date is charged then the schedule/exceptions should not be modifiable
   const endDateCharged = useMemo(
     () =>
       oldEndDate

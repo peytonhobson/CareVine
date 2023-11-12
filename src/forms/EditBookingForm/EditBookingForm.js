@@ -309,6 +309,9 @@ const EditBookingFormComponent = props => (
         case 'Dates/Times':
           tabContent = (
             <>
+              {goToPaymentError && isLarge ? (
+                <p className="text-center text-error">{goToPaymentError}</p>
+              ) : null}
               {values.scheduleType === 'oneTime' ? (
                 <SectionOneTime
                   bookedDates={bookedDates}
