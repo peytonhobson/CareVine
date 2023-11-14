@@ -157,14 +157,11 @@ const findEndTimeFromLineItems = (lineItems, endDate) => {
     return moment(a.date).diff(b.date);
   });
 
-  let lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
-  if (endDate && moment(lastDay.date).isAfter(endDate, 'day')) {
-    for (let i = sortedLineItems.length - 1; i >= 0; i--) {
-      if (moment(sortedLineItems[i].date).isSame(endDate, 'day')) {
-        lastDay = sortedLineItems[i];
-        break;
-      }
-    }
+  let lastDay;
+  if (moment(endDate).isSame(lineItems[0].date, 'week')) {
+    lastDay = sortedLineItems.find(l => moment(l.date).isSame(endDate, 'day'));
+  } else {
+    lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
   }
 
   const additionalTime =
