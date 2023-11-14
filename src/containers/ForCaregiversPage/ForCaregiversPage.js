@@ -147,7 +147,7 @@ export const ForCaregiversPageComponent = props => {
               <p className={css.title}>Direct Payouts</p>
               <p className={css.description}>
                 As a caregiver on our platform, you have the convenience of direct payments through{' '}
-                <a to="https://stripe.com/">Stripe</a>. By linking your bank account, you enable
+                <a href="https://stripe.com/">Stripe</a>. By linking your bank account, you enable
                 seamless transactions right on our site. This means, once you're paid for your
                 services, the payment is automatically transferred to your bank account. This
                 feature simplifies your finances, ensuring you receive your earnings promptly,
@@ -155,6 +155,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
+              {/* Styling to ensure swipe down effect doesn't occur */}
               <div style={{ visibility: !fourthImageLoaded ? 'hidden' : null }}>
                 <LazyLoadImage
                   src={stripeLogo}

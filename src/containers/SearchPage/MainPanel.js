@@ -208,7 +208,6 @@ class MainPanel extends Component {
       onCloseModal,
       onContactUser,
       onManageDisableScrolling,
-      onMapIconClick,
       onOpenModal,
       pagination,
       rootClassName,
@@ -333,7 +332,6 @@ class MainPanel extends Component {
           searchInProgress={searchInProgress}
           searchListingsError={searchListingsError}
           showAsModalMaxWidth={showAsModalMaxWidth}
-          onMapIconClick={onMapIconClick}
           onManageDisableScrolling={onManageDisableScrolling}
           onOpenModal={onOpenModal}
           onCloseModal={onCloseModal}
@@ -341,6 +339,7 @@ class MainPanel extends Component {
           selectedFiltersCount={selectedFiltersCount}
           initialLocation={this.initialValues(['location'])}
           onLocationChange={this.getHandleChangedValueFn(true)}
+          onApplyFilters={this.applyFilters}
         >
           {filterConfig
             .filter(filter =>
@@ -357,7 +356,6 @@ class MainPanel extends Component {
                   urlQueryParams={urlQueryParams}
                   initialValues={this.initialValues}
                   getHandleChangedValueFn={this.getHandleChangedValueFn}
-                  liveEdit
                   showAsPopup={false}
                 />
               );
@@ -452,7 +450,6 @@ MainPanel.propTypes = {
   onManageDisableScrolling: func.isRequired,
   onOpenModal: func.isRequired,
   onCloseModal: func.isRequired,
-  onMapIconClick: func.isRequired,
   pagination: propTypes.pagination,
   searchParamsForPagination: object,
   showAsModalMaxWidth: number.isRequired,
