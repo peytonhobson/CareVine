@@ -155,6 +155,7 @@ export const ForCaregiversPageComponent = props => {
               </p>
             </div>
             <div className={css.imageContainer}>
+              {/* Styling to ensure swipe down effect doesn't occur */}
               <div style={{ visibility: !fourthImageLoaded ? 'hidden' : null }}>
                 <LazyLoadImage
                   src={stripeLogo}
