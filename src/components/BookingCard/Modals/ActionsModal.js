@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, CancelButton, Button, PrimaryButton, SecondaryButton } from '../..';
 import classNames from 'classnames';
 import moment from 'moment';
+import { ISO_OFFSET_FORMAT } from '../../../util/constants';
 
 import css from './BookingCardModals.module.css';
 
