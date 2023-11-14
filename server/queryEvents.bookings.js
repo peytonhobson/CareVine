@@ -151,13 +151,22 @@ const createCaregiverPayout = async transaction => {
   }
 };
 
-const findEndTimeFromLineItems = lineItems => {
+const findEndTimeFromLineItems = (lineItems, endDate) => {
   if (!lineItems || lineItems.length === 0) return null;
   const sortedLineItems = lineItems.sort((a, b) => {
-    return new Date(a.date) - new Date(b.date);
+    return moment(a.date).diff(b.date);
   });
 
-  const lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  let lastDay = sortedLineItems[sortedLineItems.length - 1] ?? { endTime: '12:00am' };
+  if (endDate && moment(lastDay.date).isAfter(endDate, 'day')) {
+    for (let i = sortedLineItems.length - 1; i >= 0; i--) {
+      if (moment(sortedLineItems[i].date).isSame(endDate, 'day')) {
+        lastDay = sortedLineItems[i];
+        break;
+      }
+    }
+  }
+
   const additionalTime =
     lastDay.endTime === '12:00am' ? 24 : moment(lastDay.endTime, ['h:mma']).format('HH');
 
@@ -170,9 +179,9 @@ const findEndTimeFromLineItems = lineItems => {
 
 const updateBookingEnd = async transaction => {
   const txId = transaction.id.uuid;
-  const { lineItems, dontUpdateBookingEnd } = transaction.attributes.metadata;
+  const { lineItems, dontUpdateBookingEnd, endDate } = transaction.attributes.metadata;
 
-  const bookingEnd = findEndTimeFromLineItems(lineItems).format(ISO_OFFSET_FORMAT);
+  const bookingEnd = findEndTimeFromLineItems(lineItems, endDate).format(ISO_OFFSET_FORMAT);
   const bookingStart = moment(bookingEnd)
     .subtract(5, 'minutes')
     .format(ISO_OFFSET_FORMAT);
