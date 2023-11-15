@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import moment from 'moment';
 
 import css from './SingleBookingCalendar.module.css';
-import { checkIsBlockedDay } from '../../util/bookings';
 
 const isDayHighlightedSingle = (bookingDates, date) =>
   bookingDates.some(d => moment(d).isSame(date, 'day'));
