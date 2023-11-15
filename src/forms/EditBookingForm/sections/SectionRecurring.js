@@ -138,7 +138,6 @@ const SectionRecurring = props => {
         </div>
       </div>
       <div className={css.exceptions}>
-        <h2>Are there any exceptions to this schedule?</h2>
         <BookingExceptions
           bookedDates={bookedDates}
           bookedDays={bookedDays}

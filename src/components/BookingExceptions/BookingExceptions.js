@@ -281,6 +281,7 @@ const BookingExceptions = props => {
 
   return (
     <section className={css.section}>
+      <h2 className="mb-6">Add, change, or remove a date.</h2>
       <div className={css.exceptionButtonContainer}>
         {exceptionCount <= MAX_EXCEPTIONS_COUNT ? (
           <PrimaryButton
@@ -289,7 +290,7 @@ const BookingExceptions = props => {
             type="button"
             disabled={!startDate || disabled}
           >
-            Add Day
+            Add
           </PrimaryButton>
         ) : null}
         <Button
@@ -298,7 +299,7 @@ const BookingExceptions = props => {
           type="button"
           disabled={!startDate || disabled}
         >
-          Change Day
+          Change
         </Button>
         <Button
           className={classNames(css.addExceptionButton, css.removeButton)}
@@ -306,7 +307,7 @@ const BookingExceptions = props => {
           type="button"
           disabled={!startDate || disabled}
         >
-          Remove Day
+          Remove
         </Button>
       </div>
       <header className={css.sectionHeader}>

@@ -95,8 +95,11 @@ export class ModalComponent extends Component {
       window.$crisp.push(['do', 'chat:show']);
     }
 
-    if (this.props.isOpen && !isOpen && window.$crisp && isMobile) {
-      window.$crisp.push(['do', 'chat:hide']);
+    if (this.props.isOpen && !isOpen && isMobile) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      if (window.$crisp) {
+        window.$crisp.push(['do', 'chat:hide']);
+      }
     }
   }
 

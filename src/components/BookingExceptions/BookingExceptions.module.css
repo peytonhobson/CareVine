@@ -186,7 +186,6 @@
 .removeButton {
   border: 1px solid var(--failColor);
   background-color: var(--failColor);
-  padding: 0;
 
   &:hover {
     background: rgb(150, 0, 0);
