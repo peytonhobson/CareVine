@@ -74,7 +74,7 @@ const InitialBookingFormComponent = props => (
             />
           </div>
           <div className={css.fieldContainer}>
-            <h2 className={css.fieldLabel}>How often do you need care?</h2>
+            <h2 className={css.fieldLabel}>What type of booking do you need?</h2>
             <FieldButtonGroup
               id="scheduleType"
               name="scheduleType"

@@ -54,13 +54,13 @@ const formatDay = (
   return (
     <div
       className={classNames(css.day, {
-        [css.highlighted]: isHoveredWeek && !beforeStartWeek && !afterEndWeek,
         [css.highlightable]: !beforeStartWeek && !afterEndWeek,
         [css.inBookingSchedule]: inBookingSchedule && !beforeStartDate && !afterEndDate,
         [css.disabled]: beforeStartWeek || afterEndWeek,
         [css.sunday]: isSunday,
         [css.saturday]: isSaturday,
         [css.removedDay]: isRemovedDay,
+        [css.highlighted]: isHoveredWeek && !beforeStartWeek && !afterEndWeek,
       })}
       onMouseEnter={() => setHoveredDate(date)}
       onMouseLeave={() => setHoveredDate(null)}

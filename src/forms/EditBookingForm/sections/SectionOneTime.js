@@ -78,17 +78,17 @@ const SectionOneTime = props => {
   };
 
   const legend = hideLegend ? null : (
-    <>
-      <p className="text-xs my-1 text-left mt-4 lg:mt-2">
-        <span className={classNames(css.day, css.blocked)}>23</span> Dates in gray are not available
+    <div className="flex flex-wrap gap-x-6 gap-y-2 justify-center items-center">
+      <p className="text-xs my-1 text-left">
+        <span className={classNames(css.day)}>23</span> Available
       </p>
       <p className="text-xs my-1 text-left">
-        <span className={classNames(css.day)}>23</span> Dates in black are available
+        <span className={classNames(css.day, css.blocked)}>23</span> Unavailable
       </p>
       <p className="text-xs my-1 text-left">
-        <span className={classNames(css.day, css.highlighted)}>23</span> Dates in blue are selected
+        <span className={classNames(css.day, css.highlighted)}>23</span> Selected
       </p>
-    </>
+    </div>
   );
 
   const classes = classNames(css.datesTimesContainer, className);
@@ -97,7 +97,6 @@ const SectionOneTime = props => {
     <div className={classes}>
       <div>
         <h2 className={css.pickYourTimes}>Pick your Dates</h2>
-        {legend}
         <FieldDatePicker
           className={css.datePicker}
           bookedDates={filteredBookedDates}
@@ -113,8 +112,9 @@ const SectionOneTime = props => {
             Caregivers can only be booked within a two-week period
           </p>
         </FieldDatePicker>
+        {legend}
       </div>
-      <div className="mt-8 md:mt-0">
+      <div className="mt-8 lg:mt-0">
         <h2 className={css.pickYourTimes}>Pick your Times</h2>
         <div className={css.datesContainer}>
           {values.bookingDates?.map(date => {

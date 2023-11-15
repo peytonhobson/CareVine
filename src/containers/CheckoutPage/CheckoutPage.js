@@ -11,6 +11,7 @@ import {
   IconConfirm,
   BookingConfirmationCard,
   GenericError,
+  InlineTextButton,
 } from '../../components';
 import { EditBookingForm } from '../../forms';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/UI.duck';
@@ -26,6 +27,7 @@ import {
   constructBookingMetadataOneTime,
   constructBookingMetadataRecurring,
 } from '../../util/bookings';
+import { calculateDistanceBetweenOrigins } from '../../util/maps';
 
 import css from './CheckoutPage.module.css';
 
@@ -150,6 +152,13 @@ export class CheckoutPageComponent extends Component {
 
     const currentUserListingTitle = currentUserListing.attributes.title;
     const currentUserListingCity = currentUserListing.attributes.publicData.location.city;
+    const currentUserListingGeo = currentUserListing.attributes.geolocation;
+
+    const senderGeolocation = listing?.attributes?.geolocation;
+    const senderListingDistance =
+      currentUserListingGeo && senderGeolocation
+        ? calculateDistanceBetweenOrigins(senderGeolocation, currentUserListingGeo)
+        : null;
 
     const metadata = {
       ...scheduleTypeMetadata,
@@ -160,6 +169,7 @@ export class CheckoutPageComponent extends Component {
       senderListingTitle: currentUserListingTitle,
       senderCity: currentUserListingCity,
       senderListingDescription: currentUserListing?.attributes.description,
+      senderListingDistance,
       stripeCustomerId: currentUser.stripeCustomer.attributes.stripeCustomerId,
       clientEmail: currentUser.attributes.email,
       stripeAccountId: listing.author.attributes.profile.metadata.stripeAccountId,
@@ -224,6 +234,9 @@ export class CheckoutPageComponent extends Component {
     const pageProps = { title, scrollingDisabled };
     const topbar = (
       <div className={css.topbar}>
+        <InlineTextButton className={css.home} onClick={() => history.goBack()}>
+          Back to Listing
+        </InlineTextButton>
         <NamedLink className={css.home} name="LandingPage">
           Home
         </NamedLink>

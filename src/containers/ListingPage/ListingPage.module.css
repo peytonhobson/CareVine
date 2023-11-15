@@ -1,5 +1,3 @@
-
-
 .root {
 }
 
@@ -767,10 +765,15 @@
 }
 
 .bookingModalHeader {
-  padding-block: 2rem;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media screen(md) {
+    padding-top: 0;
+  }
 }
 
 .bookingAvatar {

@@ -31,7 +31,7 @@ const SectionPayment = props => {
         {isLarge && goToRequestError ? <p className={css.error}>{goToRequestError}</p> : null}
         {hideDisclaimer ? null : (
           <p>
-            We understand the importance of trust and security, particularly when it comes to your
+            We understand the importance of trust and security, especially when it comes to your
             financial information. Click{' '}
             <span
               className={css.paymentLearnMore}

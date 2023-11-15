@@ -75,6 +75,7 @@ const NotificationNewBookingRequest = props => {
       removedDays: [],
       changedDays: [],
     },
+    senderListingDistance,
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
@@ -130,6 +131,10 @@ const NotificationNewBookingRequest = props => {
     }
   }, [message, senderListingDescription]);
 
+  const senderListingDistanceText = senderListingDistance
+    ? `- ${senderListingDistance} miles away`
+    : '';
+
   return fetchTransactionInProgress ? (
     <div className={css.fullContainer}>
       <IconSpinner className={css.bookingRequestSpinner} />
@@ -155,7 +160,9 @@ const NotificationNewBookingRequest = props => {
               />
               <div className={css.userInfo}>
                 <h2 className={css.senderName}>{senderName}</h2>
-                <p className={css.listingLocation}>{senderCity}</p>
+                <p className={css.listingLocation}>
+                  {senderCity} {senderListingDistanceText}
+                </p>
               </div>
             </div>
             {senderListingTitle ? (

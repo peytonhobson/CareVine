@@ -150,6 +150,7 @@
       align-items: center;
       margin: 0.3rem 0;
       cursor: pointer;
+      color: var(--matterColorAnti);
     }
 
     & .disabled {
@@ -162,12 +163,14 @@
     }
 
     & .highlighted {
-      background-color: var(--marketplaceColor);
-      color: var(--matterColorLight);
+      background-color: var(--marketplaceColor) !important;
+      color: var(--matterColorLight) !important;
     }
 
     & .inBookingSchedule {
-      color: var(--successColor);
+      color: var(--matterColorLight);
+      font-weight: var(--fontWeightBold);
+      background-color: var(--successColor);
     }
 
     & .saturday {
@@ -181,8 +184,9 @@
     }
 
     & .removedDay {
-      color: var(--failColor);
-      text-decoration: line-through;
+      color: var(--matterColorLight);
+      font-weight: var(--fontWeightBold);
+      background-color: var(--failColor);
     }
   }
 

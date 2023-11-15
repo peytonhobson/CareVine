@@ -79,7 +79,9 @@ const BookingContainer = props => {
             initialsClassName={css.bookingAvatarInitials}
             user={listing.author}
           />
-          <h1 className={css.modalTitle}>Book {authorDisplayName}</h1>
+          <h2 className="text-4xl">
+            Book <span className="whitespace-nowrap">{authorDisplayName}</span>
+          </h2>
         </div>
         <InitialBookingForm
           className={css.bookingForm}

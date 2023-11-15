@@ -126,7 +126,6 @@
   padding: 2rem 0;
   width: 100%;
   box-shadow: var(--boxShadowCard);
-  flex-grow: 1;
 
   /* Coloring */
   background-color: var(--matterColorLight);

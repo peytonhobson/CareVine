@@ -1,10 +1,8 @@
-
-
 .fieldContainer {
-  margin-bottom: 4rem;
+  padding-bottom: 4rem;
 
   @media screen(lg) {
-    margin-block: 1rem;
+    padding-bottom: 3rem;
   }
 }
 

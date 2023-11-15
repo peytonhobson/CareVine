@@ -200,10 +200,12 @@ const RecurringBookingSummaryCard = props => {
         {totalHours ? (
           <div className={css.totalCalc}>
             <div className={css.spread}>
-              <h4 className={css.paymentCalc}>
-                <span style={{ paddingRight: '0.5rem' }}>
-                  {totalHours} hours x ${bookingRate}
-                </span>
+              <div className="flex flex-wrap">
+                <h4 className={css.paymentCalc}>
+                  <span style={{ paddingRight: '0.5rem' }}>
+                    {totalHours} hours x ${bookingRate}
+                  </span>
+                </h4>
                 {!hideRatesButton ? (
                   <InlineTextButton
                     className={css.changeRateButton}
@@ -213,7 +215,7 @@ const RecurringBookingSummaryCard = props => {
                     Change Hourly Rate
                   </InlineTextButton>
                 ) : null}
-              </h4>
+              </div>
 
               <h4 className={css.paymentCalc}>${subTotal}</h4>
             </div>
