@@ -12,8 +12,6 @@
     background-color: var(--matterColorLight);
     border: 1px solid var(--matterColorNegative);
     border-radius: 2px;
-    overflow-y: auto;
-    position: relative;
   }
 }
 
@@ -105,7 +103,11 @@
 
 .bookingTime {
   padding-block: 0.5rem;
-  padding-right: 0.75rem;
+  padding-right: 1.5rem;
+
+  @media screen(lg) {
+    padding-right: 0.75rem;
+  }
 }
 
 .bookingTime:not(:first-of-type) {
@@ -211,9 +213,11 @@
 
 .arrow {
   position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  bottom: 0rem;
+  right: 0.2rem;
   cursor: pointer;
+  fill: var(--matterColorAnti);
+  stroke: var(--matterColorAnti);
 }
 
 .spread {

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { calculateTimeBetween } from '../../../util/dates';
+import moment from 'moment';
 
 import css from '../BookingSummaryCard.module.css';
 
@@ -11,11 +12,12 @@ const SingleBookingItem = props => {
   const { bookingTime, bookingRate } = props;
 
   const { date, startTime, endTime } = bookingTime;
+  const formattedDate = moment(date).format('ddd, MM/DD');
 
   return startTime && endTime ? (
     <div className={css.bookingTime}>
       <div className={css.spread}>
-        <h3 className={css.summaryDate}>{date}</h3>
+        <h3 className={css.summaryDate}>{formattedDate}</h3>
         <h3 className={css.summaryDate}>${calculateCost(startTime, endTime, bookingRate)}</h3>
       </div>
 

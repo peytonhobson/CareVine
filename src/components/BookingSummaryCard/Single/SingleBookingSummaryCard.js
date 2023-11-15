@@ -7,6 +7,7 @@ import ChangeRatesModal from '../ChangeRatesModal';
 import SingleBookingItem from './SingleBookingItem';
 import { calculateTimeBetween } from '../../../util/dates';
 import { BOOKING_FEE_PERCENTAGE } from '../../../util/constants';
+import moment from 'moment';
 
 import css from '../BookingSummaryCard.module.css';
 
@@ -50,16 +51,7 @@ const SingleBookingSummaryCard = props => {
 
   const [isChangeRatesModalOpen, setIsChangeRatesModalOpen] = useState(false);
 
-  const bookingTimes = useMemo(
-    () =>
-      lineItems?.map(l => ({
-        date: `${new Date(l.date).getMonth() + 1}/${new Date(l.date).getDate()}`,
-        startTime: l.startTime,
-        endTime: l.endTime,
-      })),
-    [lineItems]
-  );
-  const totalHours = calculateTotalHours(bookingTimes);
+  const totalHours = calculateTotalHours(lineItems);
 
   const subTotal = calculateSubTotal(totalHours, bookingRate);
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
@@ -68,22 +60,26 @@ const SingleBookingSummaryCard = props => {
     ? subTotal
     : calculateTotalCost(subTotal, bookingFee, processingFee, refundAmount);
 
+  const bookingItems = useMemo(
+    () =>
+      lineItems?.map(bookingTime => (
+        <SingleBookingItem
+          bookingTime={bookingTime}
+          bookingRate={bookingRate}
+          key={bookingTime.date}
+        />
+      )),
+    [lineItems, bookingRate]
+  );
+
   return (
     <BookingSummaryCard
       currentAuthor={currentAuthor}
       className={className}
       hideAvatar={hideAvatar}
       subHeading={subHeading}
+      bookingItems={bookingItems}
     >
-      <div className={css.bookingTimes}>
-        {bookingTimes?.map(bookingTime => (
-          <SingleBookingItem
-            bookingTime={bookingTime}
-            bookingRate={bookingRate}
-            key={bookingTime.date}
-          />
-        ))}
-      </div>
       <div className={css.totalContainer}>
         {totalHours ? (
           <div className={css.totalCalc}>

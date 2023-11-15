@@ -158,6 +158,35 @@ const RecurringBookingSummaryCard = props => {
       </>
     ) : null;
 
+  const bookingItems = useMemo(
+    () =>
+      filteredWeekdays?.map(weekday => {
+        const isException = allExceptions.find(e => {
+          const momentDate = moment(e.date);
+
+          return (
+            moment(startOfWeek).isSameOrBefore(momentDate, 'day') &&
+            moment(startOfWeek)
+              .endOf('week')
+              .isSameOrAfter(momentDate, 'day') &&
+            momentDate.weekday() === WEEKDAYS.indexOf(weekday.dayOfWeek)
+          );
+        });
+
+        return (
+          <RecurringBookingItem
+            weekday={weekday}
+            bookingRate={bookingRate}
+            startDate={startOfWeek}
+            key={weekday.dayOfWeek}
+            showWeekly={showWeekly}
+            isException={isException}
+          />
+        );
+      }),
+    [filteredWeekdays, bookingRate, startOfWeek, showWeekly, allExceptions]
+  );
+
   return (
     <BookingSummaryCard
       currentAuthor={currentAuthor}
@@ -165,33 +194,8 @@ const RecurringBookingSummaryCard = props => {
       hideAvatar={hideAvatar}
       subHeading={cardHeading}
       avatarText={avatarText}
+      bookingItems={bookingItems}
     >
-      <div className={css.bookingTimes}>
-        {filteredWeekdays?.map(weekday => {
-          const isException = allExceptions.find(e => {
-            const momentDate = moment(e.date);
-
-            return (
-              moment(startOfWeek).isSameOrBefore(momentDate, 'day') &&
-              moment(startOfWeek)
-                .endOf('week')
-                .isSameOrAfter(momentDate, 'day') &&
-              momentDate.weekday() === WEEKDAYS.indexOf(weekday.dayOfWeek)
-            );
-          });
-
-          return (
-            <RecurringBookingItem
-              weekday={weekday}
-              bookingRate={bookingRate}
-              startDate={startOfWeek}
-              key={weekday.dayOfWeek}
-              showWeekly={showWeekly}
-              isException={isException}
-            />
-          );
-        })}
-      </div>
       <div className={css.totalContainer}>
         {totalHours ? (
           <div className={css.totalCalc}>

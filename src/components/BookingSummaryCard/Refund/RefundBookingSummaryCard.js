@@ -63,18 +63,20 @@ const RefundBookingSummaryCard = props => {
   const bookingFee = hideFees ? 0 : calculateBookingFee(subTotal);
   const total = hideFees ? subTotal : calculateTotalCost(subTotal, bookingFee);
 
+  const bookingItems = useMemo(
+    () =>
+      refundItems.map((lineItem, index) => <RefundBookingItem lineItem={lineItem} key={index} />),
+    [refundItems]
+  );
+
   return (
     <BookingSummaryCard
       currentAuthor={currentAuthor}
       className={className}
       hideAvatar={hideAvatar}
       subHeading={subHeading}
+      bookingItems={bookingItems}
     >
-      <div className={css.bookingTimes}>
-        {refundItems.map((lineItem, index) => (
-          <RefundBookingItem lineItem={lineItem} key={index} />
-        ))}
-      </div>
       <div className={css.totalContainer}>
         {totalHours ? (
           <div className={css.totalCalc}>
