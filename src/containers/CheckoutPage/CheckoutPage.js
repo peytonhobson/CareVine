@@ -81,6 +81,7 @@ export class CheckoutPageComponent extends Component {
 
     if (this.state.pageData.transaction && !transaction && !this.state.showBookingSummary) {
       this.setState({ showBookingSummary: true });
+      window.scrollTo(0, 0);
     }
   }
 

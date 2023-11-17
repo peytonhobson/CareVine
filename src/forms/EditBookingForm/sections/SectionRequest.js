@@ -124,7 +124,8 @@ const SectionRequest = props => {
           {listingNotFoundErrorMessage}
           {initiateOrderErrorMessage}
           <p className={css.paymentInfo}>
-            You will not be charged until the caregiver accepts the booking
+            You will not be charged immediately upon booking. Charges apply only after the caregiver
+            has accepted your request and 48 hours before the booking date.
           </p>
           <Button
             className={css.submitButton}
