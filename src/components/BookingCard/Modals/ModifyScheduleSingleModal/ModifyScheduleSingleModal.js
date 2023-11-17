@@ -53,6 +53,7 @@ const ModifyScheduleSingleModal = props => {
         booking={booking}
         initialValuesEqual={() => true}
         onClose={onClose}
+        onManageDisableScrolling={onManageDisableScrolling}
         {...rest}
       />
     </Modal>
