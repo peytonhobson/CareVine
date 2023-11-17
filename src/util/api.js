@@ -17,8 +17,12 @@ export const apiBaseUrl = () => {
     // return `http://10.0.0.222:${port}`;
   }
 
+  if (typeof window === 'undefined') {
+    return process.env.REACT_APP_CANONICAL_ROOT_URL;
+  }
+
   // Otherwise, use the same domain and port as the frontend
-  return window ? `${window.location.origin}` : process.env.REACT_APP_CANONICAL_ROOT_URL;
+  return `${window.location.origin}`;
 };
 
 // Application type handlers for JS SDK.
