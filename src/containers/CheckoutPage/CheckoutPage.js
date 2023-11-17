@@ -76,12 +76,14 @@ export class CheckoutPageComponent extends Component {
       this.setState(prevState => {
         return { pageData: { ...prevState.pageData, transaction } };
       });
-      setTimeout(() => this.setState({ showBookingSummary: true }), 3000);
+      setTimeout(() => {
+        this.setState({ showBookingSummary: true });
+        window.scrollTo(0, 0);
+      }, 3000);
     }
 
     if (this.state.pageData.transaction && !transaction && !this.state.showBookingSummary) {
       this.setState({ showBookingSummary: true });
-      window.scrollTo(0, 0);
     }
   }
 
