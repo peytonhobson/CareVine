@@ -10,7 +10,7 @@ const optionLabel = (options, key) => {
   return option ? option.label : key;
 };
 
-const SortByIcon = () => {
+export const SortByIcon = () => {
   return (
     <svg className={css.icon} width="10" height="16" xmlns="http://www.w3.org/2000/svg">
       <g

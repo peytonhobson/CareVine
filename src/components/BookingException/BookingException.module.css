@@ -101,7 +101,7 @@
 .timeRange {
   composes: h5 from global;
   margin: -2px 12px 13px 32px;
-  color: var(--matterColorAnti);
+  color: var(--matterColor);
 }
 
 .removeIcon {

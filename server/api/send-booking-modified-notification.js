@@ -186,6 +186,7 @@ module.exports = async (req, res) => {
         id: txId,
         metadata: {
           awaitingModification: modification,
+          lastModified: moment().format(ISO_OFFSET_FORMAT),
         },
       });
     }

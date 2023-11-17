@@ -50,6 +50,7 @@ const ResponseModal = props => {
       removedDays: [],
       changedDays: [],
     },
+    lastModified,
   } = booking.attributes.metadata;
 
   const hasSameDayBooking = useMemo(
@@ -77,6 +78,11 @@ const ResponseModal = props => {
       containerClassName={css.modalContainer}
     >
       <p className={css.modalTitle}>Accept or Decline Booking with {customerDisplayName}</p>
+      {lastModified && (
+        <p className="text-error mt-2 mb-0">
+          The employer has modified this booking from its original request.
+        </p>
+      )}
       {exceptions.length ? (
         <p className={classNames(css.modalMessage, 'text-error')}>
           This schedule contains exceptions. Please review the full schedule and exceptions before

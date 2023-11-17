@@ -13,6 +13,15 @@ const CHANGE_DATE = 'changeDate';
 const BookingException = props => {
   const { date, startTime, endTime, type, onRemoveException, className } = props;
 
+  let colorClass;
+  if (type === ADD_DATE) {
+    colorClass = 'text-success';
+  } else if (type === REMOVE_DATE) {
+    colorClass = 'text-error';
+  } else if (type === CHANGE_DATE) {
+    colorClass = 'text-primary';
+  }
+
   return (
     <div className={className || css.exception}>
       <div className={css.exceptionHeader}>
@@ -23,7 +32,7 @@ const BookingException = props => {
               [css.isChanged]: type === CHANGE_DATE,
             })}
           />
-          <div className={css.exceptionAvailabilityStatus}>
+          <div className={classNames(css.exceptionAvailabilityStatus, colorClass)}>
             {type === ADD_DATE && 'Add Day'}
             {type === REMOVE_DATE && 'Remove Day'}
             {type === CHANGE_DATE && 'Change Day'}

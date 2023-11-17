@@ -13,6 +13,10 @@ import {
   TRANSITION_WNFW_UPDATE_START,
   TRANSITION_ACCEPT_UPDATE_START,
   TRANSITION_REQUEST_UPDATE_START,
+  TRANSITION_CHARGED_CANCEL,
+  TRANSITION_COMPLETE,
+  TRANSITION_UPDATE_BOOKING_END_REPEAT,
+  TRANSITION_UPDATE_BOOKING_END,
 } from '../../util/transaction';
 import * as log from '../../util/log';
 import {
@@ -31,23 +35,49 @@ const BOOKINGS_PER_PAGE = 10;
 
 const requestTransitions = [TRANSITION_REQUEST_BOOKING, TRANSITION_REQUEST_UPDATE_START];
 
-// Transitions not included because they are temporary for updates
-// TRANSITION_COMPLETE
-// TRANSITION_UPDATE_BOOKING_END
-// TRANSITION_UPDATE_BOOKING_END_REPEAT
+const bookingTransitions = {
+  upcoming: [TRANSITION_ACCEPT_BOOKING, TRANSITION_CHARGE, TRANSITION_ACCEPT_UPDATE_START],
+  active: [
+    TRANSITION_START,
+    TRANSITION_UPDATE_NEXT_WEEK_START,
+    TRANSITION_ACTIVE_UPDATE_BOOKING_END,
+    TRANSITION_WNFW_UPDATE_START,
+    TRANSITION_UPDATE_BOOKING_END_REPEAT,
+    TRANSITION_UPDATE_BOOKING_END,
+  ],
+  past: [
+    TRANSITION_DELIVERED_CANCEL,
+    TRANSITION_ACTIVE_CANCEL,
+    TRANSITION_WNFW_CANCEL,
+    TRANSITION_COMPLETE,
+  ],
+  canceled: [TRANSITION_ACTIVE_CANCEL, TRANSITION_WNFW_CANCEL, TRANSITION_CHARGED_CANCEL],
+};
 
-const bookingTransitions = [
-  TRANSITION_ACCEPT_BOOKING,
-  TRANSITION_CHARGE,
-  TRANSITION_START,
-  TRANSITION_UPDATE_NEXT_WEEK_START,
-  TRANSITION_ACTIVE_UPDATE_BOOKING_END,
-  TRANSITION_DELIVERED_CANCEL,
-  TRANSITION_ACTIVE_CANCEL,
-  TRANSITION_WNFW_CANCEL,
-  TRANSITION_WNFW_UPDATE_START,
-  TRANSITION_ACCEPT_UPDATE_START,
-];
+const findLastTransitions = (tab, bookingType) => {
+  if (tab === 'requests') {
+    return requestTransitions;
+  }
+
+  if (tab === 'bookings') {
+    switch (bookingType) {
+      case 'upcoming':
+        return bookingTransitions.upcoming;
+      case 'active':
+        return bookingTransitions.active;
+      case 'past':
+        return bookingTransitions.past;
+      case 'canceled':
+        return bookingTransitions.canceled;
+      case 'all':
+        return Object.values(bookingTransitions).flat();
+      default:
+        return [];
+    }
+  }
+
+  return [];
+};
 
 const transactionsInclude = [
   'author',
@@ -82,6 +112,8 @@ export const UPDATE_BOOKING_METADATA_REQUEST = 'app/BookingsPage/UPDATE_BOOKING_
 export const UPDATE_BOOKING_METADATA_SUCCESS = 'app/BookingsPage/UPDATE_BOOKING_METADATA_SUCCESS';
 export const UPDATE_BOOKING_METADATA_ERROR = 'app/BookingsPage/UPDATE_BOOKING_METADATA_ERROR';
 
+export const UPDATE_BOOKING_FILTER_VALUE = 'app/BookingsPage/UPDATE_BOOKING_FILTER_VALUE';
+
 export const REMOVE_OLD_DRAFTS = 'app/BookingsPage/REMOVE_OLD_DRAFTS';
 
 // ================ Reducer ================ //
@@ -99,6 +131,7 @@ const initialState = {
   updateBookingMetadataInProgress: false,
   updateBookingMetadataError: null,
   updateBookingMetadataSuccess: false,
+  bookingFilterValue: 'all',
 };
 
 export default function bookingsPageReducer(state = initialState, action = {}) {
@@ -169,6 +202,12 @@ export default function bookingsPageReducer(state = initialState, action = {}) {
         ...state,
       };
 
+    case UPDATE_BOOKING_FILTER_VALUE:
+      return {
+        ...state,
+        bookingFilterValue: payload,
+      };
+
     default:
       return state;
   }
@@ -219,9 +258,14 @@ export const updateBookingMetadataError = e => ({
 
 export const removeOldDrafts = () => ({ type: REMOVE_OLD_DRAFTS });
 
+export const updateBookingFilterValue = value => ({
+  type: UPDATE_BOOKING_FILTER_VALUE,
+  payload: value,
+});
+
 /* ================ Thunks ================ */
 
-export const fetchBookings = (tab = 'requests', page, perPage) => async (
+export const fetchBookings = ({ tab = 'requests', filterValue, page, perPage }) => async (
   dispatch,
   getState,
   sdk
@@ -234,12 +278,14 @@ export const fetchBookings = (tab = 'requests', page, perPage) => async (
     currentUser = getState().user.currentUser;
   }
 
-  const lastTransitions = tab === 'requests' ? requestTransitions : bookingTransitions;
-
+  // Drafts are stored in user profile. If tab is drafts, return empty array.
   if (tab === 'drafts') {
     dispatch(fetchBookingsSuccess([]));
     return;
   }
+
+  const bookingFilterValue = filterValue ?? getState().BookingsPage.bookingFilterValue;
+  const lastTransitions = findLastTransitions(tab, bookingFilterValue);
 
   try {
     const response = await sdk.transactions.query({
@@ -427,7 +473,7 @@ export const loadData = (params, search) => (dispatch, getState, sdk) => {
   const queryParams = parse(search);
   const { page = 1 } = queryParams;
 
-  return dispatch(fetchBookings(tab, page, BOOKINGS_PER_PAGE)).then(bookings => {
+  return dispatch(fetchBookings({ tab, page, perPage: BOOKINGS_PER_PAGE })).then(bookings => {
     return bookings;
   });
 };

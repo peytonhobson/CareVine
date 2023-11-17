@@ -175,6 +175,7 @@ export { default as Discussion } from './Discussion/Discussion';
 export { default as DistanceFilter } from './DistanceFilter/DistanceFilter';
 export { default as EmployerListingCard } from './EmployerListingCard/EmployerListingCard';
 export { default as EmployerListingCardLoading } from './EmployerListingCard/EmployerListingCardLoading';
+export { default as FilterByMenu } from './FilterByMenu/FilterByMenu';
 export { default as FilterPlain } from './FilterPlain/FilterPlain';
 export { default as FilterPopup } from './FilterPopup/FilterPopup';
 export { default as KeywordFilter } from './KeywordFilter/KeywordFilter';

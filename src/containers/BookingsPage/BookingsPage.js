@@ -15,7 +15,13 @@ import {
 import { TopbarContainer } from '../../containers';
 import { ensureCurrentUser } from '../../util/data';
 import { BOOKING_FEE_PERCENTAGE, EMPLOYER, ISO_OFFSET_FORMAT } from '../../util/constants';
-import { fetchBookings, setInitialState, removeDrafts, fetchBooking } from './BookingsPage.duck';
+import {
+  fetchBookings,
+  setInitialState,
+  removeDrafts,
+  fetchBooking,
+  updateBookingFilterValue,
+} from './BookingsPage.duck';
 import { setInitialValues } from '../../ducks/transactions.duck';
 import { fetchCurrentUserHasListings } from '../../ducks/user.duck';
 import qs from 'qs';
@@ -30,6 +36,7 @@ import {
   BookingCardMenu,
   BookingStartEndDates,
   BookingScheduleMobile,
+  FilterByMenu,
 } from '../../components';
 import { useCheckMobileScreen } from '../../util/hooks';
 import { calculateTimeBetween } from '../../util/dates';
@@ -38,6 +45,29 @@ import moment from 'moment';
 import BookingCardLoading from '../../components/BookingCard/BookingCardLoading';
 
 import css from './BookingsPage.module.css';
+
+const FILTER_OPTIONS = [
+  {
+    label: 'All',
+    key: 'all',
+  },
+  {
+    label: 'Upcoming',
+    key: 'upcoming',
+  },
+  {
+    label: 'Active',
+    key: 'active',
+  },
+  {
+    label: 'Past',
+    key: 'past',
+  },
+  {
+    label: 'Canceled',
+    key: 'canceled',
+  },
+];
 
 const sortDrafts = (a, b) => {
   const aDate = new Date(a.createdAt);
@@ -163,6 +193,7 @@ const BookingsPage = props => {
     onResetTransactionsInitialState,
     params,
     onFetchBooking,
+    onUpdateBookingFilterValue,
   } = props;
 
   const isMobile = useCheckMobileScreen();
@@ -216,6 +247,11 @@ const BookingsPage = props => {
 
   const handleChangeTab = tab => {
     history.push(`/bookings/${tab}`);
+  };
+
+  const handleUpdateFilter = filter => {
+    onUpdateBookingFilterValue(filter);
+    onFetchBookings({ tab: selectedTab, filtervalue: filter });
   };
 
   const draftTabMaybe =
@@ -306,13 +342,25 @@ const BookingsPage = props => {
             <div className={css.container}>
               <h1 className={css.title}>Bookings</h1>
             </div>
-            <ButtonTabNavHorizontal
-              tabs={tabs}
-              rootClassName={css.nav}
-              tabRootClassName={css.tab}
-              tabContentClass={css.tabContent}
-              tabClassName={css.tab}
-            />
+            <div className="md:flex md:flex-row md:justify-between md:items-center">
+              <ButtonTabNavHorizontal
+                tabs={tabs}
+                className="mr-4"
+                rootClassName={css.nav}
+                tabRootClassName={css.tab}
+                tabContentClass={css.tabContent}
+                tabClassName={css.tab}
+              />
+              {selectedTab === 'bookings' && (
+                <FilterByMenu
+                  initialValue="all"
+                  options={FILTER_OPTIONS}
+                  label="Filter by"
+                  onSelect={handleUpdateFilter}
+                  className={css.filterMenu}
+                />
+              )}
+            </div>
 
             <section className={css.cardSection}>
               {fetchBookingsInProgress ? (
@@ -336,7 +384,12 @@ const BookingsPage = props => {
 };
 
 const mapStateToProps = state => {
-  const { fetchBookingsInProgress, fetchBookingsError, bookings } = state.BookingsPage;
+  const {
+    fetchBookingsInProgress,
+    fetchBookingsError,
+    bookings,
+    bookingFilterValue,
+  } = state.BookingsPage;
   const { currentUser, currentUserListing } = state.user;
 
   const { acceptBookingInProgress, acceptBookingSuccess } = state.transactions;
@@ -350,6 +403,7 @@ const mapStateToProps = state => {
     acceptBookingInProgress,
     acceptBookingSuccess,
     currentUserListing,
+    bookingFilterValue,
   };
 };
 
@@ -361,6 +415,7 @@ const mapDispatchToProps = {
   onFetchCurrentUserListing: fetchCurrentUserHasListings,
   onRemoveDrafts: removeDrafts,
   onFetchBooking: fetchBooking,
+  onUpdateBookingFilterValue: updateBookingFilterValue,
 };
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsPage);

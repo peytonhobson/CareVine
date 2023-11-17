@@ -27,7 +27,7 @@ import {
   checkIsBlockedOneTime,
   checkIsBlockedRecurring,
 } from '../../../util/bookings';
-import { useMediaQuery } from '@material-ui/core';
+import classNames from 'classnames';
 
 import css from './NotificationTemplates.module.css';
 
@@ -76,6 +76,7 @@ const NotificationNewBookingRequest = props => {
       changedDays: [],
     },
     senderListingDistance,
+    lastModified,
   } = currentTransaction?.attributes.metadata || {};
 
   const { customer, listing } = currentTransaction || {};
@@ -147,7 +148,14 @@ const NotificationNewBookingRequest = props => {
     </div>
   ) : (
     <div className={css.bookingRequestRoot}>
-      <h1 className={css.requestTitle}>New Booking Request</h1>
+      <div className="mb-4">
+        <h1 className={classNames(css.requestTitle, 'mb-0')}>New Booking Request</h1>
+        {lastModified && (
+          <p className="text-error my-0">
+            The employer has modified this booking from its original request.
+          </p>
+        )}
+      </div>
       <div className={css.bookingRequestSubContainer}>
         <div className={css.leftColumn}>
           <div className={css.listingContainer}>

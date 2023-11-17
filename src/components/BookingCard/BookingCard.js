@@ -153,7 +153,7 @@ const BookingCardComponent = props => {
 
     // Fetch all must be equal to true to not be triggered by event
     if (fetchAll === true) {
-      onFetchBookings(fetchAllTab);
+      onFetchBookings({ tab: fetchAllTab });
     } else {
       onFetchBooking(txId);
     }

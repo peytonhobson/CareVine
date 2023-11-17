@@ -81,13 +81,7 @@ export const WeeklyBillingDetails = props => {
     isPayment,
   } = props;
 
-  const {
-    startDate,
-    endDate,
-    exceptions,
-    bookingSchedule = [],
-    refundItems,
-  } = booking.attributes.metadata;
+  const { startDate, endDate, exceptions, bookingSchedule = [] } = booking.attributes.metadata;
 
   const classes = classNames(className, css.root);
 
@@ -119,7 +113,10 @@ export const WeeklyBillingDetails = props => {
       {selectedWeek ? (
         <>
           <Button
-            onClick={() => setSelectedWeek(null)}
+            onClick={() => {
+              setSelectedWeek(null);
+              setHoveredDate(null);
+            }}
             rootClassName={css.goBackButton}
             type="button"
           >

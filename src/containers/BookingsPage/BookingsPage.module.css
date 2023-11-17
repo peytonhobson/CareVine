@@ -35,3 +35,16 @@
   margin-top: 2rem;
   margin-bottom: 3rem;
 }
+
+.filterMenu {
+  border: 1px solid var(--matterColorNegative);
+  border-radius: var(--borderRadiusButton);
+  width: fit-content;
+  margin-top: 1rem;
+
+  composes: dropAnimation from global;
+
+  @media screen(md) {
+    margin-top: 0;
+  }
+}
