@@ -165,6 +165,7 @@
     & .highlighted {
       background-color: var(--marketplaceColor) !important;
       color: var(--matterColorLight) !important;
+      font-weight: var(--fontWeightNormal) !important;
     }
 
     & .inBookingSchedule {
