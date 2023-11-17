@@ -49,7 +49,7 @@ const PaymentMethodsPageComponent = props => {
           currentTab="PaymentMethodsPage"
           currentUser={currentUser}
         />
-        <LayoutWrapperMain>
+        <LayoutWrapperMain className={css.wrapper}>
           <div className={css.content}>
             <h1 className={css.title}>
               <FormattedMessage id="PaymentMethodsPage.heading" />

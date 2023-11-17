@@ -98,7 +98,7 @@ const MissingRequirementsReminder = props => {
                 onClick={() => closeModalOnLinkClick(emailVerified)}
               >
                 <span className={css.listCircle} />
-                <NamedLink name="SignupPage" target="_blank">
+                <NamedLink name="SignupPage">
                   <FormattedMessage id="ModalMissingInformation.verifyEmail" />
                 </NamedLink>
               </li>
@@ -109,14 +109,10 @@ const MissingRequirementsReminder = props => {
                 onClick={() => closeModalOnLinkClick(backgroundCheckApprovedStatus)}
               >
                 <span className={css.listCircle} />
-                {!!currentUserListing ? (
-                  <NamedLink name="BackgroundCheckPage" target="_blank">
-                    Complete Your Background Check
-                  </NamedLink>
+                {currentUserListing ? (
+                  <NamedLink name="BackgroundCheckPage">Complete Your Background Check</NamedLink>
                 ) : (
-                  <NamedLink name="NewListingPage" target="_blank">
-                    Complete Your Background Check
-                  </NamedLink>
+                  <NamedLink name="NewListingPage">Complete Your Background Check</NamedLink>
                 )}
               </li>
             ) : null}
@@ -135,14 +131,11 @@ const MissingRequirementsReminder = props => {
                       type: listingType,
                       tab: 'profile-picture',
                     }}
-                    target="_blank"
                   >
                     Finish Creating Your Listing
                   </NamedLink>
                 ) : (
-                  <NamedLink name="NewListingPage" target="_blank">
-                    Finish Creating Your Listing
-                  </NamedLink>
+                  <NamedLink name="NewListingPage">Finish Creating Your Listing</NamedLink>
                 )}
               </li>
             ) : null}
