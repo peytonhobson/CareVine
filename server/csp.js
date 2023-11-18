@@ -122,7 +122,8 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat(`${process.env.REACT_APP_CANONICAL_ROOT_URL.replace('https', 'wss')}/ws`)
     .concat('*.googlesyndication.com')
     .concat('ws://localhost:3000/ws')
-    .concat('*.google.com');
+    .concat('*.google.com')
+    .concat('*.hscollectedforms.net');
 
   const customImgSrc = [self, data, blob, ...devImagesMaybe, 'https:'];
   const customScriptSrc = scriptSrc
@@ -131,7 +132,12 @@ module.exports = (reportUri, enforceSsl, reportOnly) => {
     .concat('www.google.com')
     .concat('*.googlesyndication.com')
     .concat('*.crisp.chat')
-    .concat('*.doubleclick.net');
+    .concat('*.doubleclick.net')
+    .concat('*.hs-scripts.com')
+    .concat('*.hs-banner.com')
+    .concat('*.hs-analytics.net')
+    .concat('*.hscollectedforms.net')
+    .concat('*.hsadspixel.net');
   const customFrameSrc = frameSrc.concat('*.googlesyndication.com');
   const customStyleSrc = styleSrc.concat('*.crisp.chat');
   const customFontSrc = fontSrc.concat('*.crisp.chat');
