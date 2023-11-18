@@ -300,7 +300,7 @@ export const fetchBookings = ({ tab = 'requests', filterValue, page, perPage }) 
     dispatch(fetchBookingsSuccess(denormalizedBookings));
     return denormalizedBookings;
   } catch (e) {
-    log.error(e, 'fetch-bookings-failed', { params });
+    log.error(e, 'fetch-bookings-failed', { tab, filterValue });
     dispatch(fetchBookingsError(storableError(e)));
   }
 };
@@ -467,7 +467,7 @@ export const removeDrafts = () => async (dispatch, getState, sdk) => {
   }
 };
 
-export const loadData = (params, search) => (dispatch, getState, sdk) => {
+export const loadData = (params = {}, search) => (dispatch, getState, sdk) => {
   const { tab } = params;
 
   const queryParams = parse(search);
