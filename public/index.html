@@ -161,6 +161,17 @@
             // If loading takes over 5 seconds, let's just show fallback fonts.
             console.warn('Font loading took too long time - using system fonts instead.');
           });
+
+          // Append hubspot script to body in production
+        if("%REACT_APP_ENV%" === "production") {
+          var hubspotScript = document.createElement("script");
+          hubspotScript.src = "//js.hs-scripts.com/44439384.js";
+          hubspotScript.async = true;
+          hubspotScript.defer = true;
+          hubspotScript.type = "text/javascript";
+          hubspotScript.id = "hs-script-loader";
+          document.body.appendChild(hubspotScript);
+        }
       })(document);
     </script>
 
