@@ -609,10 +609,6 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       exceptions,
     } = transaction.attributes.metadata;
 
-    console.log('endDate', endDate);
-    console.log('oldEndDate', oldEndDate);
-    console.log(moment(endDate).isSame(oldEndDate, 'day'));
-
     // If end dates are same then don't do anything
     if (oldEndDate && moment(endDate).isSame(oldEndDate, 'day')) {
       dispatch(updateBookingEndDateSuccess());
@@ -647,11 +643,6 @@ export const updateBookingEndDate = (txId, endDate) => async (dispatch, getState
       exceptions: newExceptions,
       type: 'endDate',
     };
-
-    console.log('needsApproval', needsApproval);
-    console.log('formattedEndDate', formattedEndDate);
-    console.log('endingLineItem', endingLineItem);
-    console.log('lastTransition', lastTransition);
 
     if (
       (lastTransition === TRANSITION_START ||
