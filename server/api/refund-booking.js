@@ -143,7 +143,7 @@ module.exports = async (req, res) => {
       const newLineItems =
         cancelingUserType === 'caregiver'
           ? mapLineItemsForCancellationProvider(allLineItems)
-          : mapLineItemsForCancellationCustomer(allLineItems);
+          : mapLineItemsForCancellationCustomer(allLineItems, cancelDate);
       const payout = newLineItems.reduce((acc, item) => acc + parseFloat(item.amount), 0);
 
       // Update line items so caregiver is paid out correct amount after refund
