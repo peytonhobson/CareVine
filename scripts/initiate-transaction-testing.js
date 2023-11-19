@@ -3,7 +3,7 @@ require('dotenv').config();
 const moment = require('moment');
 const { getTrustedSdk } = require('./sdk');
 const { constructBookingMetadataRecurring } = require('../server/booking-helpers');
-const isDev = true;
+const isDev = false;
 const ISO_OFFSET_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
 const BOOKING_FEE_PERCENTAGE = 0.2;
 const BANK_ACCOUNT = 'us_bank_account';
@@ -174,46 +174,39 @@ const exceptions = {
 
 const bookingSchedule = [
   {
-    dayOfWeek: 'wed',
-    dayOfWeekFull: 'Wednesday',
-    startTime: '4:00pm',
-    endTime: '6:00pm',
-  },
-  {
-    dayOfWeek: 'fri',
-    dayOfWeekFull: 'Friday',
-    startTime: '10:00am',
-    endTime: '7:00pm',
+    dayOfWeek: 'sun',
+    dayOfWeekFull: 'Sunday',
+    startTime: '2:00pm',
+    endTime: '3:00pm',
   },
 ];
 const bookingRate = 23;
 const paymentMethodType = 'us_bank_account';
 
-const metadata = constructBookingMetadataOneTime(
-  ['2023-11-02T06:00:00.000Z'],
-  {
-    '11/02': {
-      startTime: '2:00pm',
-      endTime: '3:00pm',
-    },
-  },
-  '27',
-  'us_bank_account'
-);
+const metadata =
+  //   constructBookingMetadataOneTime(
+  //   ['2023-11-02T06:00:00.000Z'],
+  //   {
+  //     '11/02': {
+  //       startTime: '2:00pm',
+  //       endTime: '3:00pm',
+  //     },
+  //   },
+  //   '27',
+  //   'us_bank_account'
+  // );
 
-//   constructBookingMetadataRecurring(
-//   bookingSchedule,
-//   moment()
-//     .startOf('week')
-//     .subtract(1, 'week'),
-//   null,
-//   bookingRate,
-//   paymentMethodType,
-//   exceptions
-// );
+  constructBookingMetadataRecurring(
+    bookingSchedule,
+    moment().startOf('week'),
+    null,
+    bookingRate,
+    paymentMethodType,
+    exceptions
+  );
 
 const BODY_PARAMS = {
-  processAlias: 'single-booking-process/active',
+  processAlias: 'recurring-booking-process/active',
   transition: 'transition/request-booking',
   params: {
     listingId: {
@@ -224,14 +217,14 @@ const BODY_PARAMS = {
     bookingStart,
     bookingEnd,
     metadata: {
-      // bookingSchedule,
-      // startDate: start
-      //   .startOf('day')
-      //   .subtract(1, 'week')
-      //   .format(ISO_OFFSET_FORMAT),
-      // endDate: null,
-      // cancelAtPeriodEnd: false,
-      // type: 'oneTime',
+      bookingSchedule,
+      startDate: start
+        .startOf('day')
+        .subtract(1, 'week')
+        .format(ISO_OFFSET_FORMAT),
+      endDate: null,
+      cancelAtPeriodEnd: false,
+      type: 'recurring',
       bookingRate,
       paymentMethodId: 'pm_1NYH31JsU2TVwfKB4U3Rja7M',
       paymentMethodType,
@@ -241,9 +234,9 @@ const BODY_PARAMS = {
       clientEmail: 'peyton.hobson1@gmail.com',
       stripeAccountId: 'acct_1MFf3NQw1sFyCVAj',
       providerName: 'Peyton C',
-      // exceptions,
+      exceptions,
       bookingNumber: '22342342',
-      // dontUpdateBookingEnd: true,
+      dontUpdateBookingEnd: true,
       ...metadata,
       // lineItems: metadata.lineItems.map(l => ({
       //   ...l,

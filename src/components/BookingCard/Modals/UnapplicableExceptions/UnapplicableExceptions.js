@@ -7,7 +7,7 @@ import moment from 'moment';
 
 import css from '../BookingCardModals.module.css';
 
-const findUnapplicableExceptions = (exceptions, weekdays, endDate, appliedDate) =>
+const findUnapplicableExceptions = (exceptions = {}, weekdays, endDate, appliedDate) =>
   Object.values(exceptions)
     .flat()
     .filter(e => {
