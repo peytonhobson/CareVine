@@ -230,7 +230,7 @@ export const fetchCurrentUserTransactions = () => (dispatch, getState, sdk) => {
     });
 };
 
-const checkBoundsHaveNumbers = bounds => {
+const checkBoundsHaveNumbers = (bounds = {}) => {
   const { ne, sw } = bounds;
 
   if (ne && sw) {

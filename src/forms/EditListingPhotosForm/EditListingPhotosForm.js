@@ -479,7 +479,9 @@ export class EditListingPhotosFormComponent extends Component {
                       onClick={() => {
                         const croppedImage = this.cropperRef.current?.cropper
                           ?.getCroppedCanvas()
-                          .toDataURL();
+                          ?.toDataURL();
+
+                        if (!croppedImage) return;
 
                         const file = dataURLtoFile(croppedImage, 'profileImage.png');
 
