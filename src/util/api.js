@@ -47,6 +47,10 @@ const deserialize = str => {
 };
 
 const post = (path, body) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   const url = `${apiBaseUrl()}${path}`;
   const options = {
     method: 'POST',
