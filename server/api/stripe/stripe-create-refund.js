@@ -3,7 +3,7 @@ const { handleStripeError } = require('../../api-util/sdk');
 const log = require('../../log');
 
 module.exports = async (req, res) => {
-  const { paymentIntentId, amount, applicationFeeRefund, chargeId, params = {} } = req.body;
+  const { paymentIntentId, amount, applicationFeeRefund, params = {} } = req.body;
 
   try {
     const apiResponse = await stripe.refunds.create({
@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
       ...params,
     });
 
-    if (applicationFeeRefund && chargeId) {
+    if (applicationFeeRefund) {
       const charges = await stripe.charges.list({
         limit: 3,
         payment_intent: paymentIntentId,

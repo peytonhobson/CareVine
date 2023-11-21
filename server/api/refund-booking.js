@@ -49,7 +49,7 @@ const mapLineItemsForCancellationProvider = lineItems => {
 // If within 48 hours, refund 50% of base
 // If more than 48 hours, refund 100% of base
 const mapRefundItems = (chargedLineItems, isCaregiver, cancelDate) => {
-  return chargedLineItems.map(({ lineItems, paymentIntentId, chargeId }) => {
+  return chargedLineItems.map(({ lineItems, paymentIntentId }) => {
     const refundedLineItems = lineItems
       .filter(l => {
         const startTime = addTimeToStartOfDay(l.date, l.startTime);
@@ -81,7 +81,6 @@ const mapRefundItems = (chargedLineItems, isCaregiver, cancelDate) => {
     return {
       lineItems: refundedLineItems,
       paymentIntentId,
-      chargeId,
     };
   });
 };
@@ -123,7 +122,7 @@ module.exports = async (req, res) => {
     let metadataToUpdate;
     if (totalRefundAmount > 0) {
       await Promise.all(
-        refundItems.map(async ({ lineItems, paymentIntentId, chargeId }) => {
+        refundItems.map(async ({ lineItems, paymentIntentId }) => {
           const refundAmount = parseInt(
             lineItems.reduce((acc, curr) => acc + Number(curr.base), 0) * 100
           );
@@ -134,7 +133,6 @@ module.exports = async (req, res) => {
               paymentIntentId,
               amount: refundAmount,
               applicationFeeRefund,
-              chargeId,
             });
           }
         })
