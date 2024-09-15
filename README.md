@@ -10,7 +10,7 @@ for production use.
 
 ## Project Overview
 
-CareVine connects caregivers with those seeking care services. Key features include:
+CareVine connected caregivers with those seeking care services. Key features included:
 
 - User profiles for caregivers and care seekers
 - Booking system for care services
